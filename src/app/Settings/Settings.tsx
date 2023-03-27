@@ -69,20 +69,11 @@ import { DeletionDialogControl } from './DeletionDialogControl';
 import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
+import { SettingCategory, _SettingCategoryKeys, _TransformedUserSetting } from './SettingsUtils';
+import { Theme } from './Theme';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
-const _SettingCategoryKeys = [
-  'SETTINGS.CATEGORIES.CONNECTIVITY',
-  'SETTINGS.CATEGORIES.LANGUAGE_REGION',
-  'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
-  'SETTINGS.CATEGORIES.DASHBOARD',
-  'SETTINGS.CATEGORIES.ADVANCED',
-] as const;
-
-// Use translation keys for internal categorization
-export type SettingCategory = (typeof _SettingCategoryKeys)[number];
-
-export interface SettingGroup {
+interface SettingGroup {
   groupLabel: SettingCategory;
   groupKey: string;
   featureLevel: FeatureLevel;
@@ -90,41 +81,11 @@ export interface SettingGroup {
   settings: _TransformedUserSetting[];
 }
 
-export interface UserSetting {
-  titleKey: string;
-  disabled?: boolean;
-  // Translation Key or { Translation Key, React Component Parts }
-  // https://react.i18next.com/latest/trans-component#how-to-get-the-correct-translation-string
-  descConstruct:
-    | string
-    | {
-        key: string;
-        parts: React.ReactNode[];
-      };
-  content: React.FunctionComponent;
-  category: SettingCategory;
-  orderInGroup?: number; // default -1
-  featureLevel?: FeatureLevel; // default PRODUCTION
-}
-
-interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
-  title: string;
-  description: React.ReactNode;
-  element: React.FunctionComponentElement<Record<string, never>>;
-  orderInGroup: number;
-  featureLevel: FeatureLevel;
-}
-
 const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLevel => {
   if (!settings.length) {
     return FeatureLevel.DEVELOPMENT;
   }
   return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
-};
-
-export const selectTab = (tabKey: SettingCategory) => {
-  const tab = document.getElementById(`pf-tab-${tabKey}-${hashCode(tabKey)}`);
-  tab && tab.click();
 };
 
 export interface SettingsProps {}
@@ -145,6 +106,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         FeatureLevels,
         Language,
         DatetimeControl,
+        Theme,
       ].map(
         (c) =>
           ({

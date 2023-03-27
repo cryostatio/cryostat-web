@@ -41,6 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import { StaticContext } from 'react-router';
@@ -121,7 +122,10 @@ export const Events: React.FC<RouteComponentProps<Record<string, never>, StaticC
                     isAriaDisabled={!agentDetected}
                     tooltip={
                       agentDetected ? undefined : (
-                        <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
+                        <Tooltip
+                          content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM"
+                          appendTo={portalRoot}
+                        />
                       )
                     }
                   >

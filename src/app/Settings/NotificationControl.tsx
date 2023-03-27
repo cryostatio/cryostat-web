@@ -50,7 +50,7 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './Settings';
+import { UserSetting } from './SettingsUtils';
 
 const min = 0;
 const max = 10;

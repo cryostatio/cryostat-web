@@ -65,6 +65,29 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="tablist"
                   >
                     <li
+                      className="pf-c-tabs__item"
+                      role="presentation"
+                    >
+                      <button
+                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.GENERAL--445403487"
+                        aria-selected={false}
+                        className="pf-c-tabs__link"
+                        data-ouia-component-type="PF4/TabButton"
+                        data-ouia-safe={true}
+                        data-quickstart-id="settings-general-tab"
+                        id="pf-tab-SETTINGS.CATEGORIES.GENERAL--445403487"
+                        onClick={[Function]}
+                        role="tab"
+                        type="button"
+                      >
+                        <span
+                          className="pf-c-tabs__item-text"
+                        >
+                          General
+                        </span>
+                      </button>
+                    </li>
+                    <li
                       className="pf-c-tabs__item pf-m-current"
                       role="presentation"
                     >
@@ -84,29 +107,6 @@ exports[`<Settings/> renders correctly 1`] = `
                           className="pf-c-tabs__item-text"
                         >
                           Connectivity
-                        </span>
-                      </button>
-                    </li>
-                    <li
-                      className="pf-c-tabs__item"
-                      role="presentation"
-                    >
-                      <button
-                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.LANGUAGE_REGION--663170412"
-                        aria-selected={false}
-                        className="pf-c-tabs__link"
-                        data-ouia-component-type="PF4/TabButton"
-                        data-ouia-safe={true}
-                        data-quickstart-id="settings-language&region-tab"
-                        id="pf-tab-SETTINGS.CATEGORIES.LANGUAGE_REGION--663170412"
-                        onClick={[Function]}
-                        role="tab"
-                        type="button"
-                      >
-                        <span
-                          className="pf-c-tabs__item-text"
-                        >
-                          Language & Region
                         </span>
                       </button>
                     </li>
@@ -186,7 +186,7 @@ exports[`<Settings/> renders correctly 1`] = `
                 className="pf-c-sidebar__content"
               >
                 <div
-                  className="settings__content active"
+                  className="settings__content"
                 >
                   <form
                     className="pf-c-form"
@@ -207,6 +207,117 @@ exports[`<Settings/> renders correctly 1`] = `
                             <h2
                               className="pf-c-title pf-m-lg"
                               data-ouia-component-id="OUIA-Generated-Title-1"
+                              data-ouia-component-type="PF4/Title"
+                              data-ouia-safe={true}
+                            >
+                              Date & Time
+                            </h2>
+                          </span>
+                        </label>
+                         
+                      </div>
+                      <div
+                        className="pf-c-form__group-control"
+                      >
+                        <div
+                          className="pf-c-helper-text"
+                        >
+                          <div
+                            className="pf-c-helper-text__item"
+                          >
+                            <span
+                              className="pf-c-helper-text__item-text"
+                            >
+                              
+                            </span>
+                          </div>
+                        </div>
+                        <p
+                          className=""
+                          data-ouia-component-id="OUIA-Generated-Text-1"
+                          data-ouia-component-type="PF4/Text"
+                          data-ouia-safe={true}
+                          data-pf-content={true}
+                        >
+                          DatetimeControl Component
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      className="pf-c-form__group"
+                    >
+                      <div
+                        className="pf-c-form__group-label"
+                      >
+                        <label
+                          className="pf-c-form__label"
+                        >
+                          <span
+                            className="pf-c-form__label-text"
+                          >
+                            <h2
+                              className="pf-c-title pf-m-lg"
+                              data-ouia-component-id="OUIA-Generated-Title-2"
+                              data-ouia-component-type="PF4/Title"
+                              data-ouia-safe={true}
+                            >
+                              Theme
+                            </h2>
+                          </span>
+                        </label>
+                         
+                      </div>
+                      <div
+                        className="pf-c-form__group-control"
+                      >
+                        <div
+                          className="pf-c-helper-text"
+                        >
+                          <div
+                            className="pf-c-helper-text__item"
+                          >
+                            <span
+                              className="pf-c-helper-text__item-text"
+                            >
+                              Set the current theme for web console.
+                            </span>
+                          </div>
+                        </div>
+                        <p
+                          className=""
+                          data-ouia-component-id="OUIA-Generated-Text-2"
+                          data-ouia-component-type="PF4/Text"
+                          data-ouia-safe={true}
+                          data-pf-content={true}
+                        >
+                          Theme Component
+                        </p>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div
+                  className="settings__content active"
+                >
+                  <form
+                    className="pf-c-form"
+                    noValidate={true}
+                  >
+                    <div
+                      className="pf-c-form__group"
+                    >
+                      <div
+                        className="pf-c-form__group-label"
+                      >
+                        <label
+                          className="pf-c-form__label"
+                        >
+                          <span
+                            className="pf-c-form__label-text"
+                          >
+                            <h2
+                              className="pf-c-title pf-m-lg"
+                              data-ouia-component-id="OUIA-Generated-Title-3"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -234,7 +345,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-1"
+                          data-ouia-component-id="OUIA-Generated-Text-3"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -257,7 +368,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-2"
+                              data-ouia-component-id="OUIA-Generated-Title-4"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -285,7 +396,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-2"
+                          data-ouia-component-id="OUIA-Generated-Text-4"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -317,67 +428,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-3"
-                              data-ouia-component-type="PF4/Title"
-                              data-ouia-safe={true}
-                            >
-                              Date & Time
-                            </h2>
-                          </span>
-                        </label>
-                         
-                      </div>
-                      <div
-                        className="pf-c-form__group-control"
-                      >
-                        <div
-                          className="pf-c-helper-text"
-                        >
-                          <div
-                            className="pf-c-helper-text__item"
-                          >
-                            <span
-                              className="pf-c-helper-text__item-text"
-                            >
-                              
-                            </span>
-                          </div>
-                        </div>
-                        <p
-                          className=""
-                          data-ouia-component-id="OUIA-Generated-Text-3"
-                          data-ouia-component-type="PF4/Text"
-                          data-ouia-safe={true}
-                          data-pf-content={true}
-                        >
-                          DatetimeControl Component
-                        </p>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-                <div
-                  className="settings__content"
-                >
-                  <form
-                    className="pf-c-form"
-                    noValidate={true}
-                  >
-                    <div
-                      className="pf-c-form__group"
-                    >
-                      <div
-                        className="pf-c-form__group-label"
-                      >
-                        <label
-                          className="pf-c-form__label"
-                        >
-                          <span
-                            className="pf-c-form__label-text"
-                          >
-                            <h2
-                              className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-4"
+                              data-ouia-component-id="OUIA-Generated-Title-5"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -405,7 +456,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-4"
+                          data-ouia-component-id="OUIA-Generated-Text-5"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -428,7 +479,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-5"
+                              data-ouia-component-id="OUIA-Generated-Title-6"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -456,7 +507,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-5"
+                          data-ouia-component-id="OUIA-Generated-Text-6"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -488,7 +539,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-6"
+                              data-ouia-component-id="OUIA-Generated-Title-7"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -516,7 +567,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-6"
+                          data-ouia-component-id="OUIA-Generated-Text-7"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -539,7 +590,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-7"
+                              data-ouia-component-id="OUIA-Generated-Title-8"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -567,7 +618,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-7"
+                          data-ouia-component-id="OUIA-Generated-Text-8"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -599,7 +650,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-8"
+                              data-ouia-component-id="OUIA-Generated-Title-9"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -629,7 +680,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-8"
+                          data-ouia-component-id="OUIA-Generated-Text-9"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -652,7 +703,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-9"
+                              data-ouia-component-id="OUIA-Generated-Title-10"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -680,7 +731,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-9"
+                          data-ouia-component-id="OUIA-Generated-Text-10"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}

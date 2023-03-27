@@ -38,6 +38,7 @@
 
 import { automatedAnalysisAddGlobalFilterIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { AutomatedAnalysisScore } from '@app/Shared/Services/Report.service';
+import { portalRoot } from '@app/utils/utils';
 import {
   Button,
   Level,
@@ -116,7 +117,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
 
   return (
     <>
-      <Tooltip content={t('AutomatedAnalysisScoreFilter.TOOLTIP.CONTENT')}>
+      <Tooltip content={t('AutomatedAnalysisScoreFilter.TOOLTIP.CONTENT')} appendTo={portalRoot}>
         <Text component={TextVariants.small}>
           {t('AutomatedAnalysisScoreFilter.CURRENT_SCORE_TEXT', { val: currentScore })}
         </Text>

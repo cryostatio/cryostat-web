@@ -49,7 +49,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode } from '@app/utils/utils';
+import { hashCode, portalRoot } from '@app/utils/utils';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -306,6 +306,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                     selected recordings.
                   </div>
                 }
+                appendTo={portalRoot}
               >
                 <HelpIcon noVerticalAlign />
               </Tooltip>

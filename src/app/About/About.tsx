@@ -37,8 +37,11 @@
  */
 
 import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_default.svg';
+import cryostatLogoDark from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import build from '@app/build.json';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -48,12 +51,27 @@ export interface AboutProps {}
 
 export const About: React.FC<AboutProps> = (_) => {
   const { t } = useTranslation('public');
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [logo, setLogo] = React.useState(cryostatLogo);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.settings.theme().subscribe((theme) => {
+        if (theme === 'dark') {
+          setLogo(cryostatLogoDark);
+        } else {
+          setLogo(cryostatLogo);
+        }
+      })
+    );
+  }, [addSubscription, context.settings]);
 
   return (
     <BreadcrumbPage pageTitle={t('About.ABOUT')}>
       <Card>
         <CardHeader>
-          <Brand alt={build.productName} src={cryostatLogo} className="cryostat-logo" />
+          <Brand alt={build.productName} src={logo} className="cryostat-logo" />
         </CardHeader>
         <CardBody>
           <AboutDescription />

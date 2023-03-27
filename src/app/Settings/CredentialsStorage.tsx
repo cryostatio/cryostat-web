@@ -41,7 +41,7 @@ import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { UserSetting } from './Settings';
+import { UserSetting } from './SettingsUtils';
 
 export interface Location {
   key: string;

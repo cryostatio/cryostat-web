@@ -223,21 +223,7 @@
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
-    "CARD_TITLE": "Target JVM Details",
-    "terms": {
-      "ALIAS": "Alias",
-      "AVAILABLE_PROCESSORS": "Available Processors",
-      "CONNECTION_URL": "Connection URL",
-      "CRYOSTAT_ANNOTATIONS": "Cryostat Annotations",
-      "JVM_ID": "JVM Hash ID",
-      "LABELS": "Platform Labels",
-      "OS_ARCH": "Operating System Architecture",
-      "OS_VERSION": "Operating System Version",
-      "PLATFORM_ANNOTATIONS": "Platform Annotations",
-      "START_TIME": "Start Time",
-      "VM_VENDOR": "Vendor",
-      "VM_VERSION": "Version"
-    }
+    "CARD_TITLE": "Target JVM Details"
   },
   "MeridiemPicker": {
     "ARIA_LABELS": {
@@ -279,7 +265,7 @@
       "ADVANCED": "Advanced",
       "CONNECTIVITY": "Connectivity",
       "DASHBOARD": "Dashboard",
-      "LANGUAGE_REGION": "Language & Region",
+      "GENERAL": "General",
       "NOTIFICATION_MESSAGE": "Notifications & Messages"
     },
     "CHARTS_CONFIG": {
@@ -331,6 +317,15 @@
       "INPUT_DESCRIPTION": "Enable or disable all notifications.",
       "SWITCH_LABEL": "All Notifications",
       "TITLE": "Notifications"
+    },
+    "THEME": {
+      "DARK": "Dark",
+      "DESCRIPTION": "Set the current theme for web console.",
+      "LIGHT": "Light",
+      "SELECT": {
+        "LABEL": "Select a theme"
+      },
+      "TITLE": "Theme"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
       "DESCRIPTION": "Set the debounce time (in milliseconds) used when establishing WebSocket connections. Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages. Decrease this time if the web-interface takes a long time to populate on startup.",

@@ -42,7 +42,7 @@ import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { UserSetting } from './Settings';
+import { UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const [target, setTarget] = React.useState(NO_TARGET);

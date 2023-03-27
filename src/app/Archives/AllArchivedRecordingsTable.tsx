@@ -43,7 +43,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResources } from '@app/utils/utils';
+import { portalRoot, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -236,7 +236,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                 <Text>{dir.connectUrl}</Text>
               </SplitItem>
               <SplitItem>
-                <Tooltip hidden={!dir.jvmId} content={`JVM hash ID: ${dir.jvmId}`}>
+                <Tooltip hidden={!dir.jvmId} content={`JVM hash ID: ${dir.jvmId}`} appendTo={portalRoot}>
                   <HelpIcon />
                 </Tooltip>
               </SplitItem>

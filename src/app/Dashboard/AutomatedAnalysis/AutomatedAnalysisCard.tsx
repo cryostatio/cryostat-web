@@ -71,7 +71,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes, FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { calculateAnalysisTimer } from '@app/utils/utils';
+import { calculateAnalysisTimer, portalRoot } from '@app/utils/utils';
 import {
   Button,
   CardActions,
@@ -593,7 +593,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
               units: reportStalenessTimerUnits,
             })}
           </span>
-          <Tooltip content={t('AutomatedAnalysisCard.STALE_REPORT.TOOLTIP')}>
+          <Tooltip content={t('AutomatedAnalysisCard.STALE_REPORT.TOOLTIP')} appendTo={portalRoot}>
             <OutlinedQuestionCircleIcon
               style={{ height: '0.85em', width: '0.85em', color: 'var(--pf-global--Color--100)' }}
             />

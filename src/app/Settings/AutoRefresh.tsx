@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Checkbox } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './Settings';
+import { UserSetting } from './SettingsUtils';
 
 const defaultPreferences = {
   autoRefreshEnabled: true,

@@ -35,36 +35,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE')
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION')
- * t('SETTINGS.CHARTS_CONFIG.TITLE')
- * t('SETTINGS.CHARTS_CONFIG.DESCRIPTION')
- * t('SETTINGS.AUTO_REFRESH.TITLE')
- * t('SETTINGS.AUTO_REFRESH.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION')
- * t('SETTINGS.DATETIME_CONTROL.TITLE')
- * t('SETTINGS.DATETIME_CONTROL.DESCRIPTION')
- * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
- * t('SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION')
- * t('SETTINGS.FEATURE_LEVEL.TITLE')
- * t('SETTINGS.FEATURE_LEVEL.DESCRIPTION')
- * t('SETTINGS.LANGUAGE.TITLE')
- * t('SETTINGS.LANGUAGE.DESCRIPTION')
- * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
- * t('SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION')
- * t('SETTINGS.THEME.TITLE')
- * t('SETTINGS.THEME.DESCRIPTION')
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE')
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION')
- * t('SETTINGS.CATEGORIES.CONNECTIVITY')
- * t('SETTINGS.CATEGORIES.GENERAL')
- * t('SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE')
- * t('SETTINGS.CATEGORIES.DASHBOARD')
- * t('SETTINGS.CATEGORIES.ADVANCED')
- */
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { hashCode } from '@app/utils/utils';
+
+export interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
+  title: string;
+  description: React.ReactNode;
+  element: React.FunctionComponentElement<Record<string, never>>;
+  orderInGroup: number;
+  featureLevel: FeatureLevel;
+}
+
+export const _SettingCategoryKeys = [
+  'SETTINGS.CATEGORIES.GENERAL',
+  'SETTINGS.CATEGORIES.CONNECTIVITY',
+  'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
+  'SETTINGS.CATEGORIES.DASHBOARD',
+  'SETTINGS.CATEGORIES.ADVANCED',
+] as const;
+
+// Use translation keys for internal categorization
+export type SettingCategory = (typeof _SettingCategoryKeys)[number];
+
+export interface UserSetting {
+  titleKey: string;
+  disabled?: boolean;
+  // Translation Key or { Translation Key, React Component Parts }
+  // https://react.i18next.com/latest/trans-component#how-to-get-the-correct-translation-string
+  descConstruct:
+    | string
+    | {
+        key: string;
+        parts: React.ReactNode[];
+      };
+  content: React.FunctionComponent;
+  category: SettingCategory;
+  orderInGroup?: number; // default -1
+  featureLevel?: FeatureLevel; // default PRODUCTION
+}
+
+export const selectTab = (tabKey: SettingCategory) => {
+  const tab = document.getElementById(`pf-tab-${tabKey}-${hashCode(tabKey)}`);
+  tab && tab.click();
+};
+
+export const enum ThemeType {
+  LIGHT = 'light',
+  DARK = 'dark',
+}

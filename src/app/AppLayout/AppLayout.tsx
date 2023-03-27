@@ -42,7 +42,7 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
-import { selectTab } from '@app/Settings/Settings';
+import { selectTab, ThemeType } from '@app/Settings/SettingsUtils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -136,6 +136,18 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
   const location = useLocation();
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.settings.theme().subscribe((theme) => {
+        if (theme === ThemeType.DARK) {
+          document.documentElement.classList.add('pf-theme-dark');
+        } else {
+          document.documentElement.classList.remove('pf-theme-dark');
+        }
+      })
+    );
+  }, [addSubscription, serviceContext.settings]);
 
   React.useEffect(() => {
     addSubscription(
@@ -291,7 +303,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handleLanguagePref = React.useCallback(() => {
     if (routerHistory.location.pathname === '/settings') {
-      selectTab('SETTINGS.CATEGORIES.LANGUAGE_REGION');
+      selectTab('SETTINGS.CATEGORIES.GENERAL');
     } else {
       routerHistory.push('/settings', { preSelectedTab: 'SETTINGS.CATEGORIES.LANGUAGE_REGION' });
     }
@@ -320,7 +332,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const UserInfoToggle = React.useMemo(
     () => (
       <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-        {username || <UserIcon color="white" size="sm" />}
+        {username || <UserIcon color="var(--pf-global--palette--white)" size="sm" />}
       </DropdownToggle>
     ),
     [username, handleUserInfoToggle]
@@ -398,7 +410,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   <Button
                     variant="link"
                     onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
-                    icon={<PlusCircleIcon color="white" size="sm" />}
+                    icon={<PlusCircleIcon color="var(--pf-global--palette--white)" size="sm" />}
                   />
                 </ToolbarItem>
               </FeatureFlag>
@@ -419,7 +431,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   <Button
                     onClick={handleSettingsButtonClick}
                     variant="link"
-                    icon={<CogIcon color="white" size="sm" />}
+                    icon={<CogIcon color="var(--pf-global--palette--white)" size="sm" />}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                   />

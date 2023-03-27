@@ -47,7 +47,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr } from '@app/utils/utils';
+import { evaluateTargetWithExpr, portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -364,6 +364,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         label="Match Expression"
         labelIcon={
           <Popover
+            appendTo={portalRoot}
             headerContent="Match Expression Hint"
             bodyContent={
               <>

@@ -37,11 +37,14 @@
  */
 import i18n from '@app/../i18n/config';
 import { About } from '@app/About/About';
+import { ThemeType } from '@app/Settings/SettingsUtils';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import * as React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import renderer, { act } from 'react-test-renderer';
+import { of } from 'rxjs';
 import { renderDefault, testT } from '../Common';
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
@@ -55,6 +58,8 @@ jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
     }),
   };
 });
+
+jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeType.DARK));
 
 jest.mock('@app/About/AboutDescription', () => {
   return {
@@ -88,6 +93,6 @@ describe('<About />', () => {
     expect(logo).toHaveClass('pf-c-brand cryostat-logo');
     expect(logo).toHaveAttribute('alt', 'Cryostat');
     expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', 'common'))).toBeInTheDocument();
+    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', { ns: 'common' }))).toBeInTheDocument();
   });
 });
