@@ -56,6 +56,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { sortResouces } from '@app/utils/utils';
 import {
@@ -80,7 +81,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, ISortBy, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -112,6 +113,12 @@ const tableColumns = [
   {
     title: 'Duration',
     keyPaths: ['duration'],
+    transform: (duration: number) => {
+      if (duration === 0) {
+        return Number.MAX_VALUE;
+      }
+      return duration;
+    },
     sortable: true,
   },
   {
@@ -128,6 +135,13 @@ const tableColumns = [
 const mapper = (index?: number) => {
   if (index !== undefined) {
     return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
+
+const getTransform = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].transform;
   }
   return undefined;
 };
@@ -160,21 +174,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     DELETE: false,
     STOP: false,
   });
-  const [sortBy, setSortBy] = React.useState({} as ISortBy);
-
-  const getSortParams = React.useCallback(
-    (columnIndex: number): ThProps['sort'] => ({
-      sortBy: sortBy,
-      onSort: (_event, index, direction) => {
-        setSortBy({
-          index: index,
-          direction: direction,
-        });
-      },
-      columnIndex,
-    }),
-    [sortBy, setSortBy]
-  );
+  const [sortBy, getSortParams] = useSort();
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -345,7 +345,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    setFilteredRecordings(sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper));
+    setFilteredRecordings(
+      sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+    );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 
   React.useEffect(() => {

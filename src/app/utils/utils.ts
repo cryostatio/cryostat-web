@@ -195,16 +195,22 @@ export const getValue = (object: any, keyPath: string[]) => {
 export const sortResouces = (
   { index, direction }: ISortBy,
   resources: any[],
-  mapper: (index?: number) => string[] | undefined
+  mapper: (index?: number) => string[] | undefined,
+  getTransform: (index?: number) => ((value: any) => any) | undefined
 ) => {
   const keyPaths = mapper(index);
   if (!keyPaths || !keyPaths.length) {
     return resources;
   }
   const sorted = resources.sort((a, b) => {
-    a = getValue(a, keyPaths);
-    b = getValue(b, keyPaths);
-    return a < b ? -1 : a > b ? 1 : 0;
+    let aVal = getValue(a, keyPaths);
+    let bVal = getValue(b, keyPaths);
+    const transform = getTransform(index);
+    if (transform) {
+      aVal = transform(aVal);
+      bVal = transform(bVal);
+    }
+    return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
   });
-  return direction === SortByDirection.asc ? sorted : sorted.reverse();
+  return [...(direction === SortByDirection.asc ? sorted : sorted.reverse())];
 };

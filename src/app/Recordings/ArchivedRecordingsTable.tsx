@@ -56,6 +56,7 @@ import { ArchivedRecording, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@ap
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { formatBytes, hashCode, sortResouces } from '@app/utils/utils';
 import {
@@ -78,7 +79,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { UploadIcon } from '@patternfly/react-icons';
-import { Tbody, Tr, Td, ExpandableRowContent, TableComposable, ISortBy, ThProps } from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
@@ -114,6 +115,8 @@ const mapper = (index?: number) => {
   return undefined;
 };
 
+const getTransform = (index?: number) => undefined;
+
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
   isUploadsTable: boolean;
@@ -146,21 +149,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ArchiveActions, boolean>>({ DELETE: false });
-  const [sortBy, setSortBy] = React.useState({} as ISortBy);
+  const [sortBy, getSortParams] = useSort();
 
-  const getSortParams = React.useCallback(
-    (columnIndex: number): ThProps['sort'] => ({
-      sortBy: sortBy,
-      onSort: (_event, index, direction) => {
-        setSortBy({
-          index: index,
-          direction: direction,
-        });
-      },
-      columnIndex,
-    }),
-    [sortBy, setSortBy]
-  );
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
       (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL
@@ -376,7 +366,9 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   }, [addSubscription, context, context.notificationChannel, setRecordings, propsTarget]);
 
   React.useEffect(() => {
-    setFilteredRecordings(sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper));
+    setFilteredRecordings(
+      sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+    );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 
   React.useEffect(() => {
