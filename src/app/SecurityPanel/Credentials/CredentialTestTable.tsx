@@ -40,7 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr } from '@app/utils/utils';
+import { evaluateTargetWithExpr, portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -261,6 +261,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
             headerIcon={status.state === TestState.INVALID ? <ExclamationCircleIcon /> : <WarningTriangleIcon />}
             headerContent={<div>{status.state === TestState.INVALID ? 'Test failed' : 'Caution'}</div>}
             bodyContent={<div>{status.error?.message || 'Unknown error'}</div>}
+            appendTo={portalRoot}
           >
             <Label style={{ cursor: 'pointer' }} color={getColor(status.state)}>
               {status.state}
@@ -312,7 +313,7 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({ onFilter, onSearc
           <StatusFilter onChange={onFilter} />
         </ToolbarGroup>
         <ToolbarItem>
-          <Tooltip content={'Test credentials against all matching targets (ignoring filters).'}>
+          <Tooltip content={'Test credentials against all matching targets (ignoring filters).'} appendTo={portalRoot}>
             <Button variant="primary" onClick={handleTestAll} isAriaDisabled={disableTestButton}>
               Test All
             </Button>
