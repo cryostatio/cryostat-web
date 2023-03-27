@@ -121,7 +121,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           content: (
             <p>
               Create, delete, enable, and view Cryostat <strong>Automated Rules</strong> in this view. Automated Rules
-              allow you start recordings on a target JVM based on a set of conditions.
+              allow you start recordings on target JVMs based on a set of conditions.
             </p>
           ),
           target: '*[data-tour-id="automatedrules"]',
@@ -143,7 +143,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           content: (
             <p>
               The <strong>Archives</strong> view provides a list of all saved recordings that have been saved to
-              Cryostat. Download, delete, and generate <strong>reports</strong> from this view.
+              Cryostat. Download, delete, and generate reports from this view.
             </p>
           ),
           target: '*[data-tour-id="archives"]',
@@ -153,8 +153,9 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           title: 'Events',
           content: (
             <p>
-              The Events page lists the <strong>Event Templates</strong> that Cryostat can currently apply to a JFR
-              recording. It also lists <strong>Event Types</strong> that are available on the target JVM.
+              The <strong>Events</strong> page lists the <strong>Event Templates</strong> that can be used for creating Flight
+              Recordings. It also details the JFR <strong>Event Types</strong> that can be recorded within each target
+              JVM.
             </p>
           ),
           target: '*[data-tour-id="events"]',
