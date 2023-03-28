@@ -35,10 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/Topology/styles/base.css';
-import '@app/app.css';
+
 import '@patternfly/react-core/dist/styles/base.css';
 import '@patternfly/quickstarts/dist/quickstarts.css';
+import '@app/app.css';
+import '@app/Topology/styles/base.css';
 import '@i18n/config';
 import { AppLayout } from '@app/AppLayout/AppLayout';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';

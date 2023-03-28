@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { portalRoot } from '@app/utils/utils';
 import { Tooltip } from '@patternfly/react-core';
 import { CloseIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -52,7 +53,7 @@ export const HintBanner: React.FC<HintBannerProps> = ({ className, style, childr
   return show ? (
     <div className={css('topology__hint-banner', className)} style={style} {...props}>
       {children}
-      <Tooltip content={'Do not show again.'}>
+      <Tooltip content={'Do not show again.'} appendTo={portalRoot}>
         <CloseIcon className="close-icon" onClick={onClose} />
       </Tooltip>
     </div>

@@ -44,13 +44,63 @@ import {
   ArchivedRecording,
   EventProbe,
   Recording,
+  RecordingState,
   StoredCredential,
   UPLOADS_SUBDIRECTORY,
 } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import {
+  Bullseye,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTermHelpText,
+  DescriptionListTermHelpTextButton,
+  Flex,
+  FlexItem,
+  Label,
+  LabelProps,
+  Popover,
+} from '@patternfly/react-core';
+import { BanIcon, RunningIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { concatMap, defaultIfEmpty, forkJoin, map, Observable, of } from 'rxjs';
+import {
+  combineLatest,
+  concatMap,
+  defaultIfEmpty,
+  forkJoin,
+  map,
+  merge,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+  switchMap,
+} from 'rxjs';
 import { TargetNode } from '../../typings';
+import { EmptyText } from '../EmptyText';
+
+export type DescriptionConfig = {
+  key: React.Key;
+  title: React.ReactNode;
+  helperTitle: React.ReactNode;
+  helperDescription: React.ReactNode;
+  content: React.ReactNode;
+};
+
+export const mapSection = (d: DescriptionConfig) => (
+  <DescriptionListGroup key={d.key}>
+    <DescriptionListTermHelpText>
+      <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
+        <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
+      </Popover>
+    </DescriptionListTermHelpText>
+    <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>{d.content}</DescriptionListDescription>
+  </DescriptionListGroup>
+);
 
 export type ResourceTypes = Recording | EventTemplate | EventType | EventProbe | Rule | StoredCredential;
 
@@ -180,10 +230,14 @@ export const getTargetOwnedResources = (
   }
 };
 
-export const getResourceAddedEvent = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
+export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   switch (resourceType) {
     case 'activeRecordings':
-      return [NotificationCategory.ActiveRecordingCreated, NotificationCategory.SnapshotCreated];
+      return [
+        NotificationCategory.ActiveRecordingCreated,
+        NotificationCategory.SnapshotCreated,
+        NotificationCategory.ActiveRecordingStopped, // State Update
+      ];
     case 'archivedRecordings':
       return [NotificationCategory.ArchivedRecordingCreated, NotificationCategory.ActiveRecordingSaved];
     case 'archivedUploadRecordings':
@@ -203,7 +257,7 @@ export const getResourceAddedEvent = (resourceType: TargetOwnedResourceType | Ta
   }
 };
 
-export const getResourceRemovedEvent = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
+export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   switch (resourceType) {
     case 'activeRecordings':
       return [NotificationCategory.ActiveRecordingDeleted, NotificationCategory.SnapshotDeleted];
@@ -226,8 +280,11 @@ export const getResourceRemovedEvent = (resourceType: TargetOwnedResourceType | 
   }
 };
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export type PatchFn = (arr: ResourceTypes[], eventData: any, removed?: boolean) => Observable<ResourceTypes[]>;
+export type PatchFn = (
+  arr: ResourceTypes[],
+  eventData: NotificationMessage,
+  removed?: boolean
+) => Observable<ResourceTypes[]>;
 
 export const getResourceListPatchFn = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
@@ -238,7 +295,7 @@ export const getResourceListPatchFn = (
     case 'activeRecordings':
     case 'archivedRecordings':
     case 'archivedUploadRecordings':
-      return (arr: Recording[], eventData: any, removed?: boolean) => {
+      return (arr: Recording[], eventData: NotificationMessage, removed?: boolean) => {
         const recording: Recording = eventData.message.recording;
         let newArr = arr.filter((r) => r.name !== recording.name);
         if (!removed) {
@@ -247,7 +304,7 @@ export const getResourceListPatchFn = (
         return of(newArr);
       };
     case 'eventTemplates':
-      return (arr: EventTemplate[], eventData: any, removed?: boolean) => {
+      return (arr: EventTemplate[], eventData: NotificationMessage, removed?: boolean) => {
         const template: EventTemplate = eventData.message.template;
         let newArr = arr.filter((r) => r.name !== template.name);
         if (!removed) {
@@ -256,7 +313,7 @@ export const getResourceListPatchFn = (
         return of(newArr);
       };
     case 'agentProbes':
-      return (arr: EventProbe[], eventData: any, removed?: boolean) => {
+      return (arr: EventProbe[], eventData: NotificationMessage, removed?: boolean) => {
         // Only support remove all
         if (removed) {
           return of([]);
@@ -266,7 +323,7 @@ export const getResourceListPatchFn = (
         return of([...arr.filter((probe) => !probeIds.includes(probe.id)), ...probes]);
       };
     case 'automatedRules':
-      return (arr: Rule[], eventData: any, removed?: boolean) => {
+      return (arr: Rule[], eventData: NotificationMessage, removed?: boolean) => {
         const rule: Rule = eventData.message;
 
         return apiService.isTargetMatched(rule.matchExpression, target).pipe(
@@ -283,7 +340,7 @@ export const getResourceListPatchFn = (
         );
       };
     case 'credentials':
-      return (arr: StoredCredential[], eventData: any, removed?: boolean) => {
+      return (arr: StoredCredential[], eventData: NotificationMessage, removed?: boolean) => {
         const credential: StoredCredential = eventData.message;
 
         return apiService.isTargetMatched(credential.matchExpression, target).pipe(
@@ -330,6 +387,160 @@ export const getLinkPropsForTargetResource = (
   }
 };
 
+const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ resources, ...props }) => {
+  const stateGroupConfigs = React.useMemo(
+    () => [
+      {
+        groupLabel: 'Running',
+        color: 'green',
+        icon: <RunningIcon color="green" />,
+        items: resources.filter((rec) => rec.state === RecordingState.RUNNING),
+      },
+      {
+        groupLabel: 'Stopped',
+        color: 'orange',
+        icon: <BanIcon color="orange" />,
+        items: resources.filter((rec) => rec.state === RecordingState.STOPPED),
+      },
+    ],
+    [resources]
+  );
+
+  return (
+    <DescriptionList>
+      <DescriptionListGroup>
+        <DescriptionListTermHelpText>Recording Status</DescriptionListTermHelpText>
+        <DescriptionListDescription>
+          <Flex {...props}>
+            {stateGroupConfigs.map(({ groupLabel, items, color, icon }) => (
+              <Flex key={groupLabel}>
+                <FlexItem spacer={{ default: 'spacerSm' }}>
+                  <span style={{ fontSize: '1.1em' }}>{items.length}</span>
+                </FlexItem>
+                <FlexItem>
+                  <Label icon={icon} color={color as LabelProps['color']}>
+                    {groupLabel}
+                  </Label>
+                </FlexItem>
+              </Flex>
+            ))}
+          </Flex>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+    </DescriptionList>
+  );
+};
+
+const Nothing: React.FC<{ resources: ResourceTypes[] }> = () => {
+  return (
+    <Bullseye>
+      <EmptyText text={'Nothing to show.'} />
+    </Bullseye>
+  );
+};
+
+export const getExpandedResourceDetails = (
+  resourceType: TargetOwnedResourceType | TargetRelatedResourceType
+): React.FC<{ resources: ResourceTypes[] }> => {
+  switch (resourceType) {
+    case 'activeRecordings':
+      return ActiveRecDetail;
+    default:
+      return Nothing;
+  }
+};
+
 export const getConnectUrlFromEvent = (event: NotificationMessage): string | undefined => {
   return event.message.target || event.message.targetId;
+};
+
+export const useResources = <R = ResourceTypes,>(
+  targetNode: TargetNode,
+  resourceType: TargetOwnedResourceType | TargetRelatedResourceType
+): { resources: R[]; error?: Error; loading?: boolean } => {
+  const { api, notificationChannel } = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
+  const [resources, setResources] = React.useState<ResourceTypes[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<Error>();
+
+  const targetSubjectRef = React.useRef(new Subject<TargetNode>());
+  const targetSubject = targetSubjectRef.current;
+
+  React.useEffect(() => {
+    addSubscription(
+      targetSubject.pipe(switchMap((tn) => getTargetOwnedResources(resourceType, tn, api))).subscribe({
+        next: (rs) => {
+          setLoading(false);
+          setError(undefined);
+          setResources(rs);
+        },
+        error: (error) => {
+          setLoading(false);
+          setError(error);
+        },
+      })
+    );
+  }, [addSubscription, setLoading, setError, setResources, api, targetSubject, resourceType]);
+
+  React.useEffect(() => {
+    const patchEventConfig = [
+      {
+        categories: getResourceAddedOrModifiedEvents(resourceType),
+      },
+      {
+        categories: getResourceRemovedEvents(resourceType),
+        deleted: true,
+      },
+    ];
+
+    patchEventConfig.forEach(({ categories, deleted }) => {
+      addSubscription(
+        targetSubject
+          .pipe(
+            switchMap((tn) =>
+              combineLatest([of(tn), merge(...categories.map((cat) => notificationChannel.messages(cat)))])
+            )
+          )
+          .subscribe(([targetNode, event]) => {
+            const extractedUrl = getConnectUrlFromEvent(event);
+            const isOwned = isOwnedResource(resourceType);
+            if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
+              setLoading(true);
+              setResources((old) => {
+                // Avoid accessing state directly, which
+                // causes the effect to run every time
+                addSubscription(
+                  getResourceListPatchFn(resourceType, targetNode, api)(old, event, deleted).subscribe({
+                    next: (rs) => {
+                      setLoading(false);
+                      setError(undefined);
+                      setResources(rs);
+                    },
+                    error: (error) => {
+                      setLoading(false);
+                      setError(error);
+                    },
+                  })
+                );
+                return old;
+              });
+            }
+          })
+      );
+    });
+  }, [addSubscription, setLoading, api, targetSubject, resourceType, notificationChannel, setResources, setError]);
+
+  // Need to call after registering listeners
+  // Do not reorder
+  React.useEffect(() => {
+    targetSubject.next(targetNode);
+  }, [targetNode, targetSubject]);
+
+  return {
+    error: error,
+    loading: loading,
+    resources: resources as R[],
+  };
 };

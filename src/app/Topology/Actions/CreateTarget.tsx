@@ -47,6 +47,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import '@app/Topology/styles/base.css';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   Accordion,
   AccordionContent,
@@ -495,6 +496,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
       <Flex className={css(className)} direction={{ default: 'column' }}>
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <Tooltip
+            appendTo={portalRoot}
             content={
               _actionEnabled
                 ? `Click to test${validation.option !== ValidatedOptions.default ? ' again' : ''}.`
@@ -519,7 +521,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
         </FlexItem>
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <div className={css('sample-node-donut__node-label')}>
-            <Tooltip content={'Custom Target'}>
+            <Tooltip content={'Custom Target'} appendTo={portalRoot}>
               <span className="sample-node-donut__node-label-badge">{'CT'}</span>
             </Tooltip>
             {_transformedTarget.alias || '<Name>'}

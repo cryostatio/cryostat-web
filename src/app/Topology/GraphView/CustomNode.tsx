@@ -60,6 +60,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { getStatusTargetNode, isTargetMatched, nodeTypeToAbbr, useSearchExpression } from '../Shared/utils';
 import { TargetNode } from '../typings';
+import { getNodeDecorators } from './NodeDecorator';
 import { RESOURCE_NAME_TRUNCATE_LENGTH } from './UtilsFactory';
 
 export const NODE_ICON_PADDING = 5;
@@ -112,17 +113,20 @@ const CustomNode: React.FC<CustomNodeProps> = ({
   const labelIcon = React.useMemo(() => <img src={cryostatSvg} />, []);
 
   const data: TargetNode = element.getData();
-  const [nodeStatus, extra] = getStatusTargetNode(data);
+  const [nodeStatus] = getStatusTargetNode(data);
 
   const classNames = React.useMemo(() => {
     const additional = expression === '' || isTargetMatched(data, expression) ? '' : 'search-inactive';
     return css('topology__target-node', additional);
   }, [data, expression]);
 
+  const nodeDecorators = React.useMemo(() => (showStatus ? getNodeDecorators(element) : null), [element, showStatus]);
+
   return (
     <Layer id={contextMenuOpen ? TOP_LAYER : DEFAULT_LAYER}>
       <g className={classNames} id={'target-node-visual-group'} ref={hoverRef as React.LegacyRef<SVGGElement>}>
         <DefaultNode
+          {...props}
           element={element}
           onSelect={onSelect}
           selected={selected}
@@ -134,14 +138,12 @@ const CustomNode: React.FC<CustomNodeProps> = ({
           badgeColor={NODE_BADGE_COLOR}
           badgeClassName={'topology__node-badge'}
           nodeStatus={showStatus ? nodeStatus : undefined}
-          showStatusDecorator={showStatus}
           showStatusBackground={!hover && detailsLevel === ScaleDetailsLevel.low}
-          statusDecoratorTooltip={showStatus ? extra?.title : undefined}
           truncateLength={RESOURCE_NAME_TRUNCATE_LENGTH}
           labelIcon={showIcon ? labelIcon : undefined}
           secondaryLabel={showConnectUrl ? data.target.connectUrl : undefined}
           showLabel
-          {...props}
+          attachments={nodeDecorators}
         >
           <g id={'target-node-visual-inner-icon'}>{renderIcon(data, element, !showIcon)}</g>
         </DefaultNode>
