@@ -505,16 +505,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [
-      isNavOpen,
-      isMobileView,
-      aboutModalOpen,
-      HeaderToolbar,
-      onNavToggleMobile,
-      handleCloseAboutModal,
-      onNavToggle,
-      levelBadge,
-    ]
+    [isNavOpen, aboutModalOpen, HeaderToolbar, handleCloseAboutModal, onNavToggle, levelBadge]
   );
 
   const isActiveRoute = React.useCallback(
@@ -577,7 +568,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const Sidebar = React.useMemo(
     () => <PageSidebar theme="dark" nav={Navigation} isNavOpen={isNavOpen} />,
-    [Navigation, isMobileView, isNavOpen]
+    [Navigation, isNavOpen]
   );
 
   const PageSkipToContent = React.useMemo(
