@@ -41,7 +41,7 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
 import { EnvironmentNode } from '@app/Topology/typings';
 import { createBlobURL } from '@app/utils/utils';
-import { Base64 } from 'js-base64';
+import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
@@ -1180,54 +1180,50 @@ export class ApiService {
   ): Observable<
     | {
         error: Error;
-        errorType: string;
+        severeLevel: ValidatedOptions;
       }
     | undefined
   > {
-    const headers = new Headers();
-    headers.set('X-JMX-Authorization', `Basic ${Base64.encode(`${credentials.username}:${credentials.password}`)}`);
-    return this.graphql<any>(
-      `
-      query CheckCredentialForTarget($filter: TargetNodesFilterInput) {
-        targetNodes(filter: $filter) {
-          name
-          mbeanMetrics {
-            runtime {
-              inputArguments
-            }
-          }
-        }
-      }
-      `,
-      {
-        filter: { name: target.connectUrl },
-      },
+    const body = new window.FormData();
+    body.append('username', credentials.username);
+    body.append('password', credentials.password);
+
+    return this.sendRequest(
+      'beta',
+      `credentials/${encodeURIComponent(target.connectUrl)}`,
+      { method: 'POST', body },
+      undefined,
       true,
-      true,
-      headers
+      true
     ).pipe(
       first(),
-      map(({ data, errors }) => {
-        if (errors && errors.length) {
-          return { error: new Error(getGraphqlRootCause(errors[0].message)), errorType: 'danger' };
+      concatMap((resp) => resp.json()),
+      map((body) => {
+        const result: string | undefined = body?.data?.result;
+        switch (result?.toUpperCase()) {
+          case 'FAILURE':
+            return { error: new Error('Invalid username or password.'), severeLevel: ValidatedOptions.error };
+          case 'NA':
+            return {
+              error: new Error('This target does not have authentication enabled.'),
+              severeLevel: ValidatedOptions.warning,
+            };
+          case 'SUCCESS':
+            return undefined;
+          default:
+            return {
+              error: new Error('Could not determine test results. Try again!'),
+              severeLevel: ValidatedOptions.error,
+            };
         }
-        const metrics: MBeanMetrics | null | undefined = (data?.targetNodes || [])[0]?.mbeanMetrics;
-        if (!metrics) {
-          return { error: new Error('Test failed with unknown error.'), errorType: 'danger' };
-        }
-        if (!isAuthEnabledForTarget(metrics.runtime?.inputArguments)) {
-          return {
-            error: new Error('This target does not have authentication enabled.'),
-            errorType: 'warning',
-          };
-        }
-        return undefined;
       }),
       catchError((err) => {
         if (isHttpError(err)) {
-          return err.httpResponse.text().then((detail) => ({ error: new Error(detail), errorType: 'danger' }));
+          return err.httpResponse
+            .text()
+            .then((detail) => ({ error: new Error(detail), severeLevel: ValidatedOptions.error }));
         }
-        return of({ error: err, errorType: 'danger' });
+        return of({ error: err, severeLevel: ValidatedOptions.error });
       })
     );
   }

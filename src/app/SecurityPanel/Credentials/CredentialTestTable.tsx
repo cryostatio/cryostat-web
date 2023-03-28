@@ -61,6 +61,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
   Tooltip,
+  ValidatedOptions,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import {
@@ -84,7 +85,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
 
   const [targets, setTargets] = React.useState<Target[]>([]);
   const [matchExpression] = useSearchExpression();
-  const [filters, setFilters] = React.useState<TestState[]>([]);
+  const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
   const [searchText, setSearchText] = React.useState('');
 
   React.useEffect(() => {
@@ -166,35 +167,35 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
   );
 };
 
-enum TestState {
+export enum CredentialTestState {
   NO_STATUS = 'No Status',
   INVALID = 'Invalid',
   VALID = 'Valid',
-  NOT_APPLICABLE = 'Not Applicable',
+  NA = 'Not Applicable',
 }
 
-const getColor = (state: TestState): LabelProps['color'] => {
+const getColor = (state: CredentialTestState): LabelProps['color'] => {
   switch (state) {
-    case TestState.VALID:
+    case CredentialTestState.VALID:
       return 'green';
-    case TestState.INVALID:
+    case CredentialTestState.INVALID:
       return 'red';
-    case TestState.NOT_APPLICABLE:
+    case CredentialTestState.NA:
       return 'orange';
-    case TestState.NO_STATUS:
+    case CredentialTestState.NO_STATUS:
     default:
       return 'grey';
   }
 };
 
 interface TestStatus {
-  state: TestState;
+  state: CredentialTestState;
   error?: Error;
 }
 
 export interface CredentialTestRowProps {
   target: Target;
-  filters?: TestState[];
+  filters?: CredentialTestState[];
   searchText?: string;
 }
 
@@ -205,7 +206,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
   ...props
 }) => {
   const [status, setStatus] = React.useState<TestStatus>({
-    state: TestState.NO_STATUS,
+    state: CredentialTestState.NO_STATUS,
     error: undefined,
   });
   const context = React.useContext(ServiceContext);
@@ -240,7 +241,11 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
         testPool.delete(test);
         setStatus({
           error: err?.error,
-          state: !err ? TestState.VALID : err.errorType === 'warning' ? TestState.NOT_APPLICABLE : TestState.INVALID,
+          state: !err
+            ? CredentialTestState.VALID
+            : err.severeLevel === ValidatedOptions.warning
+            ? CredentialTestState.NA
+            : CredentialTestState.INVALID,
         });
       })
     );
@@ -254,12 +259,14 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
           <Bullseye>
             <LinearDotSpinner />
           </Bullseye>
-        ) : status.state === TestState.INVALID || status.state === TestState.NOT_APPLICABLE ? (
+        ) : status.state === CredentialTestState.INVALID || status.state === CredentialTestState.NA ? (
           <Popover
             aria-label={`Test Result Details (${target.connectUrl})`}
-            alertSeverityVariant={status.state === TestState.INVALID ? 'danger' : 'warning'}
-            headerIcon={status.state === TestState.INVALID ? <ExclamationCircleIcon /> : <WarningTriangleIcon />}
-            headerContent={<div>{status.state === TestState.INVALID ? 'Test failed' : 'Caution'}</div>}
+            alertSeverityVariant={status.state === CredentialTestState.INVALID ? 'danger' : 'warning'}
+            headerIcon={
+              status.state === CredentialTestState.INVALID ? <ExclamationCircleIcon /> : <WarningTriangleIcon />
+            }
+            headerContent={<div>{status.state === CredentialTestState.INVALID ? 'Test failed' : 'Caution'}</div>}
             bodyContent={<div>{status.error?.message || 'Unknown error'}</div>}
             appendTo={portalRoot}
           >
@@ -286,7 +293,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
 };
 
 interface CredentialToolbarProps {
-  onFilter?: (filters: TestState[]) => void;
+  onFilter?: (filters: CredentialTestState[]) => void;
   onSearch?: (searchText: string) => void;
 }
 
@@ -324,14 +331,14 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({ onFilter, onSearc
   );
 };
 
-const StatusFilter: React.FC<{ onChange?: (filters: TestState[]) => void }> = ({ onChange, ...props }) => {
+const StatusFilter: React.FC<{ onChange?: (filters: CredentialTestState[]) => void }> = ({ onChange, ...props }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [filters, setFilters] = React.useState<TestState[]>([]);
+  const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
 
   const handleToggle = React.useCallback(() => setIsOpen((old) => !old), [setIsOpen]);
 
   const handleSelect = React.useCallback(
-    (_: React.MouseEvent, value: TestState) => {
+    (_: React.MouseEvent, value: CredentialTestState) => {
       setFilters((old) => {
         if (old.includes(value)) {
           return old.filter((v) => v !== value);
@@ -355,7 +362,7 @@ const StatusFilter: React.FC<{ onChange?: (filters: TestState[]) => void }> = ({
       isOpen={isOpen}
       placeholderText="Status"
     >
-      {Object.values(TestState).map((state) => (
+      {Object.values(CredentialTestState).map((state) => (
         <SelectOption key={state} value={state}>
           <Label color={getColor(state)}>{state}</Label>
         </SelectOption>
