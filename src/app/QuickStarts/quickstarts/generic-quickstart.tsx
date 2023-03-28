@@ -36,14 +36,15 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 
-// This is mostly adapted from the example quickstart from patternfly/quickstart docs
 // Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 const GenericQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'generic-quickstart',
+    featureLevel: FeatureLevel.DEVELOPMENT,
     // you can add additional metadata here
   },
   spec: {

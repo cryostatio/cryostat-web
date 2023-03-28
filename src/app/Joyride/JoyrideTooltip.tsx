@@ -52,7 +52,7 @@ import {
 import React from 'react';
 import { TooltipRenderProps } from 'react-joyride';
 
-const CustomTooltip: React.FC<TooltipRenderProps> = ({
+const JoyrideTooltip: React.FC<TooltipRenderProps> = ({
   backProps,
   primaryProps,
   skipProps,
@@ -125,4 +125,4 @@ const CustomTooltip: React.FC<TooltipRenderProps> = ({
   );
 };
 
-export default CustomTooltip;
+export default JoyrideTooltip;

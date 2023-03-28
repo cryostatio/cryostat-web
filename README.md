@@ -95,9 +95,6 @@ To workaround this, specify static values in `i18n.ts` file under any top-level 
 
 To add a new quickstart, create a new tsx/ts file under `src/app/QuickStarts` with your Quick Start name, like `my-quickstart.tsx`. 
 
-Cryostat's Quick Starts use a markdown extension which allows components to be highlighted using a button within the markdown in the Quick Start content itself. It was taken from OpenShift Console's GitHub repo and modified to fit Cryostat's needs.
-
-The following are taken from patternfly/patternfly-quickstarts GitHub repo.
 ### Highlighting elements
 
 You can highlight an element on the page from within a quick start. The element that should be highlightable needs a data-quickstart-id attribute. Example:
@@ -127,8 +124,3 @@ You can have inline or block copyable text.
     ```{{copy}}
 ```
 
-## COLOR PALETTE
-
-The color palette for Cryostat is defined in `src/app/app.css` in `:root`. The colors are defined as variables and can be used throughout the application.
-
-![Palette](./src/app/assets/palette.svg)

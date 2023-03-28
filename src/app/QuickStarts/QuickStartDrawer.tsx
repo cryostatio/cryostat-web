@@ -40,7 +40,7 @@ import { LoadingView } from '@app/LoadingView/LoadingView';
 import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   QuickStartContext,
@@ -50,15 +50,13 @@ import {
 } from '@patternfly/quickstarts';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { distinctUntilChanged } from 'rxjs';
-import GenericQuickStart from './quickstarts/generic-quickstart';
 
 const LINK_LABEL = "[\\d\\w\\s-()$!&']+"; // has extra &' in matcher
 const HIGHLIGHT_ACTIONS = ['highlight']; // use native quickstarts highlight markdown extension
 const SELECTOR_ID = `[\\w-&]+`; // has extra &'
 
 // [linkLabel]{{action id}}
-const HIGHLIGHT_REGEXP = new RegExp(`\\[(${LINK_LABEL})]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`, 'g');
+const HIGHLIGHT_REGEXP = new RegExp(`\\[(${LINK_LABEL})\\]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`, 'g');
 export interface GlobalQuickStartDrawerProps {
   children: React.ReactNode;
 }
@@ -70,54 +68,7 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
   const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
 
-  React.useEffect(() => {
-    addSubscription(
-      context.settings
-        .featureLevel()
-        .pipe(distinctUntilChanged())
-        .subscribe((level) => {
-          if (level === FeatureLevel.DEVELOPMENT) {
-            if (!allQuickStarts.includes(GenericQuickStart)) {
-              allQuickStarts.push(GenericQuickStart);
-            }
-          } else {
-            if (allQuickStarts.includes(GenericQuickStart)) {
-              allQuickStarts.splice(allQuickStarts.indexOf(GenericQuickStart), 1);
-            }
-          }
-        })
-    );
-  }, [addSubscription, context.settings]);
-
-  const valuesForQuickStartContext = useValuesForQuickStartContext({
-    allQuickStarts,
-    activeQuickStartID,
-    setActiveQuickStartID,
-    allQuickStartStates,
-    setAllQuickStartStates,
-    language: i18n.language,
-    markdown: {
-      extensions: [
-        {
-          // this only takes into effect if the regex matches the HIGHLIGHT_REGEXP i.e. contains the extra matching tokens the patternfly/quickstarts highlight extension regex does not
-          type: 'lang',
-          regex: HIGHLIGHT_REGEXP,
-          replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
-            if (!linkLabel || !linkType || !linkId) return text;
-            return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
-          },
-        },
-        {
-          // replace [APP] with bolded productName like <strong>Cryostat</strong>
-          type: 'output',
-          regex: new RegExp(`\\[APP\\]`, 'g'),
-          replace: (_text: string): string => {
-            return `<strong>${build.productName}</strong>`;
-          },
-        },
-      ],
-    },
-  });
+  const activeLevel = useFeatureLevel();
 
   React.useEffect(() => {
     addSubscription(
@@ -128,6 +79,43 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
       })
     );
   }, [addSubscription, context.login, setActiveQuickStartID]);
+
+  const filteredQuickStarts = React.useMemo(() => {
+    return allQuickStarts.filter((qs) => qs.metadata.featureLevel >= activeLevel);
+  }, [activeLevel]);
+
+  // useValues... hook seems to use first render value of allQuickStarts, so we need to re-render on activeLevel change
+  const valuesForQuickStartContext = {
+    ...useValuesForQuickStartContext({
+      activeQuickStartID,
+      setActiveQuickStartID,
+      allQuickStartStates,
+      setAllQuickStartStates,
+      language: i18n.language,
+      markdown: {
+        extensions: [
+          {
+            // this only takes into effect if the regex matches the HIGHLIGHT_REGEXP i.e. contains the extra matching tokens the patternfly/quickstarts highlight extension regex does not
+            type: 'lang',
+            regex: HIGHLIGHT_REGEXP,
+            replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
+              if (!linkLabel || !linkType || !linkId) return text;
+              return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
+            },
+          },
+          {
+            // replace [APP] with bolded productName like <strong>Cryostat</strong>
+            type: 'output',
+            regex: new RegExp(`\\[APP\\]`, 'g'),
+            replace: (_text: string): string => {
+              return `<strong>${build.productName}</strong>`;
+            },
+          },
+        ],
+      },
+    }),
+    allQuickStarts: filteredQuickStarts,
+  };
 
   return (
     <React.Suspense fallback={<LoadingView />}>

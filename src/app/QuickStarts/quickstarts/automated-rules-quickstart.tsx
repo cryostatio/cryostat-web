@@ -37,6 +37,7 @@
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Add quickstarts based on the following example:
@@ -44,6 +45,7 @@ const AutomatedRulesQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'automated-rule-quickstart',
+    featureLevel: FeatureLevel.PRODUCTION,
   },
   spec: {
     version: 2.3,

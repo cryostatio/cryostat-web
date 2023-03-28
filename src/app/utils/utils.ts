@@ -48,6 +48,7 @@ const DAY_MILLIS = 24 * HOUR_MILLIS;
 // [     0,    1,    2,    3     ] array
 //       0     1     2     3       indexes
 // {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function move(arr: any[], from: number, gapIndex: number) {
   if (gapIndex > from) {
     gapIndex--;
@@ -60,6 +61,7 @@ export function swap(arr: any[], from: number, to: number) {
   arr[from] = arr.splice(to, 1, arr[from])[0];
   return arr;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export const openTabForUrl = (url: string) => {
   const anchor = document.createElement('a') as HTMLAnchorElement;

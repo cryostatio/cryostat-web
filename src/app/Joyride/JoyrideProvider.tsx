@@ -51,12 +51,19 @@ const defaultState = {
   steps: [] as Step[],
 };
 
+export interface JoyrideContextType {
+  state: JoyrideState;
+  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => void;
+  isNavBarOpen: boolean;
+  setIsNavBarOpen: (isOpen: React.SetStateAction<boolean>) => void;
+}
+
 /* eslint-disable @typescript-eslint/no-empty-function */
-export const JoyrideContext = React.createContext({
+export const JoyrideContext = React.createContext<JoyrideContextType>({
   state: defaultState,
-  setState: (_patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => {},
-  setIsNavBarOpen: (_isOpen: boolean) => {},
+  setState: () => undefined,
   isNavBarOpen: true,
+  setIsNavBarOpen: () => undefined,
 });
 /* eslint-enable @typescript-eslint/no-empty-function */
 
@@ -74,15 +81,6 @@ export const JoyrideProvider: React.FC<{ children }> = (props) => {
   );
 };
 
-export const useJoyride = (): {
-  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => void;
-  state: JoyrideState;
-  isNavBarOpen: boolean;
-  setIsNavBarOpen: React.Dispatch<React.SetStateAction<boolean>>;
-} => {
-  const context = React.useContext(JoyrideContext);
-  if (context === undefined) {
-    throw new Error('useCryostatJoyride must be used within a CryostatJoyrideProvider');
-  }
-  return context;
+export const useJoyride = (): JoyrideContextType => {
+  return React.useContext(JoyrideContext);
 };

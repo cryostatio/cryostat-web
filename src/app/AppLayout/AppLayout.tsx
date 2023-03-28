@@ -122,7 +122,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const [isNavOpen, setIsNavOpen] = [joyNavOpen, setJoyNavOpen];
   const [isMobileView, setIsMobileView] = React.useState(true);
-  const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
@@ -234,8 +233,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const dismissSslErrorModal = React.useCallback(() => setShowSslErrorModal(false), [setShowSslErrorModal]);
 
   const onNavToggleMobile = React.useCallback(() => {
-    setIsNavOpenMobile((isNavOpenMobile) => !isNavOpenMobile);
-  }, [setIsNavOpenMobile]);
+    setIsNavOpen((isNavOpenMobile) => !isNavOpenMobile);
+  }, [setIsNavOpen]);
 
   const onNavToggle = React.useCallback(() => {
     setIsNavOpen((isNavOpen) => {
@@ -246,20 +245,26 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     });
   }, [setIsNavOpen, joyState, setJoyState]);
 
+  // prevent page resize to close nav during tour
   const onPageResize = React.useCallback(
     (props: { mobileView: boolean; windowSize: number }) => {
-      setIsMobileView(props.mobileView);
+      if (joyState.run === false) {
+        setIsMobileView(props.mobileView);
+        if (props.mobileView) {
+          setIsNavOpen(false);
+        }
+      }
     },
-    [setIsMobileView]
+    [joyState, setIsMobileView, setIsNavOpen]
   );
 
   const mobileOnSelect = React.useCallback(
     (_) => {
       if (isMobileView) {
-        setIsNavOpenMobile(false);
+        setIsNavOpen(false);
       }
     },
-    [isMobileView, setIsNavOpenMobile]
+    [isMobileView, setIsNavOpen]
   );
 
   const handleSettingsButtonClick = React.useCallback(() => {
@@ -354,7 +359,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <ApplicationLauncherItem
         key={'Quickstarts'}
         component={<NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>}
-      ></ApplicationLauncherItem>,
+      />,
       <ApplicationLauncherItem key={'Documentation'} onClick={handleOpenDocumentation}>
         <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
@@ -479,7 +484,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               variant="plain"
               aria-label="Navigation"
               isNavOpen={isNavOpen}
-              onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
+              onNavToggle={onNavToggle}
               data-quickstart-id="nav-toggle-btn"
               data-tour-id="nav-toggle-btn"
             >
@@ -571,8 +576,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   );
 
   const Sidebar = React.useMemo(
-    () => <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />,
-    [Navigation, isMobileView, isNavOpenMobile, isNavOpen]
+    () => <PageSidebar theme="dark" nav={Navigation} isNavOpen={isNavOpen} />,
+    [Navigation, isMobileView, isNavOpen]
   );
 
   const PageSkipToContent = React.useMemo(

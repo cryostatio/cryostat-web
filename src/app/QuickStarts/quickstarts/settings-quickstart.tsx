@@ -37,6 +37,7 @@
  */
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
 import build from '@app/build.json';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -46,6 +47,7 @@ const SettingsQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'settings-quickstart',
+    featureLevel: FeatureLevel.PRODUCTION,
   },
   spec: {
     version: 2.3,

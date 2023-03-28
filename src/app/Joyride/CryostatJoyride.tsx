@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
-import CustomTooltip from '@app/Joyride/CustomTooltip';
 import { useJoyride } from '@app/Joyride/JoyrideProvider';
+import JoyrideTooltip from '@app/Joyride/JoyrideTooltip';
 import React from 'react';
 import ReactJoyride, { CallBackProps, ACTIONS, EVENTS, STATUS } from 'react-joyride';
 interface CryostatJoyrideProps {
@@ -181,7 +181,6 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
             </p>
           ),
           target: '*[data-tour-id="settings-link"]',
-          disableBeacon: true,
         },
         {
           title: 'Help',
@@ -258,7 +257,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
   return (
     <>
       <ReactJoyride
-        tooltipComponent={CustomTooltip}
+        tooltipComponent={JoyrideTooltip}
         debug={true}
         callback={callback}
         continuous

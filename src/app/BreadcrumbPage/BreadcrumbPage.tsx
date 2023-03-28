@@ -39,6 +39,7 @@ import {
   Breadcrumb,
   BreadcrumbHeading,
   BreadcrumbItem,
+  PageBreadcrumb,
   PageGroup,
   PageSection,
   Stack,
@@ -61,7 +62,7 @@ export interface BreadcrumbTrail {
 export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
   return (
     <PageGroup>
-      <PageSection>
+      <PageBreadcrumb>
         <Breadcrumb>
           {(props.breadcrumbs || []).map(({ title, path }) => (
             <BreadcrumbItem key={path}>
@@ -70,6 +71,8 @@ export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
           ))}
           <BreadcrumbHeading>{props.pageTitle}</BreadcrumbHeading>
         </Breadcrumb>
+      </PageBreadcrumb>
+      <PageSection>
         <Stack hasGutter={true}>
           {React.Children.map(props.children, (child) => (
             <StackItem isFilled={isItemFilled(child)}>{child}</StackItem>
