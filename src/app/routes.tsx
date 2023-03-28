@@ -36,32 +36,31 @@
  * SOFTWARE.
  */
 
-import React, { lazy, Suspense } from 'react';
+import * as React from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { LoadingView } from './LoadingView/LoadingView';
+import About from './About/About';
+import Archives from './Archives/Archives';
+import CreateRecording from './CreateRecording/CreateRecording';
+import Dashboard from './Dashboard/Dashboard';
+import DashboardSolo from './Dashboard/DashboardSolo';
+import Events from './Events/Events';
+import Login from './Login/Login';
+import NotFound from './NotFound/NotFound';
+import QuickStarts from './QuickStarts/QuickStarts';
+import Recordings from './Recordings/Recordings';
+import CreateRule from './Rules/CreateRule';
+import Rules from './Rules/Rules';
+import SecurityPanel from './SecurityPanel/SecurityPanel';
+import Settings from './Settings/Settings';
 import { SessionState } from './Shared/Services/Login.service';
 import { ServiceContext } from './Shared/Services/Services';
 import { FeatureLevel } from './Shared/Services/Settings.service';
+import CreateTarget from './Topology/Actions/CreateTarget';
+import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/useDocumentTitle';
 import { useSubscriptions } from './utils/useSubscriptions';
 import { accessibleRouteChangeHandler } from './utils/utils';
-const About = lazy(() => import('@app/About/About'));
-const Archives = lazy(() => import('@app/Archives/Archives'));
-const CreateRecording = lazy(() => import('@app/CreateRecording/CreateRecording'));
-const Dashboard = lazy(() => import('@app/Dashboard/Dashboard'));
-const DashboardSolo = lazy(() => import('./Dashboard/DashboardSolo'));
-const Events = lazy(() => import('@app/Events/Events'));
-const Login = lazy(() => import('@app/Login/Login'));
-const NotFound = lazy(() => import('@app/NotFound/NotFound'));
-const Recordings = lazy(() => import('@app/Recordings/Recordings'));
-const CreateRule = lazy(() => import('@app/Rules/CreateRule'));
-const QuickStarts = lazy(() => import('@app/QuickStarts/QuickStarts'));
-const Rules = lazy(() => import('@app/Rules/Rules'));
-const Settings = lazy(() => import('@app/Settings/Settings'));
-const SecurityPanel = lazy(() => import('@app/SecurityPanel/SecurityPanel'));
-const Topology = lazy(() => import('@app/Topology/Topology'));
-const CreateTarget = lazy(() => import('@app/Topology/Actions/CreateTarget'));
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -282,24 +281,22 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
 
   return (
     <LastLocationProvider>
-      <Suspense fallback={<LoadingView />}>
-        <Switch>
-          {flatten(routes)
-            .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
-            .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
-            .map(({ path, exact, component, title, isAsync }, idx) => (
-              <RouteWithTitleUpdates
-                path={path}
-                exact={exact}
-                component={component}
-                key={idx}
-                title={title}
-                isAsync={isAsync}
-              />
-            ))}
-          <PageNotFound title="404 Page Not Found" />
-        </Switch>
-      </Suspense>
+      <Switch>
+        {flatten(routes)
+          .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
+          .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
+          .map(({ path, exact, component, title, isAsync }, idx) => (
+            <RouteWithTitleUpdates
+              path={path}
+              exact={exact}
+              component={component}
+              key={idx}
+              title={title}
+              isAsync={isAsync}
+            />
+          ))}
+        <PageNotFound title="404 Page Not Found" />
+      </Switch>
     </LastLocationProvider>
   );
 };

@@ -1,8 +1,7 @@
 {
   "name": "cryostat-web",
-  "version": "0.0.1",
+  "version": "2.3.0",
   "description": "Web-Client for Cryostat",
-  "main": "server.js",
   "repository": "https://github.com/cryostatio/cryostat-web.git",
   "license": "UPL",
   "private": true,
@@ -44,7 +43,6 @@
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
-    "@vue/preload-webpack-plugin": "^2.0.0",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^4.2.2",
     "dotenv-webpack": "^8.0.1",
