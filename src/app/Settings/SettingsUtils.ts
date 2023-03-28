@@ -79,7 +79,7 @@ export const selectTab = (tabKey: SettingCategory) => {
   tab && tab.click();
 };
 
-export const enum ThemeType {
+export enum ThemeType {
   LIGHT = 'light',
   DARK = 'dark',
 }

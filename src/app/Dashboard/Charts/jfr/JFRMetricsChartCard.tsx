@@ -39,8 +39,10 @@
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
 import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ThemeType } from '@app/Settings/SettingsUtils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Bullseye,
@@ -321,8 +323,8 @@ export const JFRMetricsChartCardDescriptor: DashboardCardDescriptor = {
     {
       name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
       key: 'theme',
-      values: ['light', 'dark'],
-      defaultValue: 'light',
+      values: Object.values(ThemeType),
+      defaultValue: getFromLocalStorage('THEME', ThemeType.LIGHT),
       description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
       kind: 'select',
     },

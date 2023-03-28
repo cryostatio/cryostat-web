@@ -189,10 +189,10 @@ describe('<Settings/>', () => {
     expect(hiddenTab).not.toBeInTheDocument();
   });
 
-  it('should select Connectivity tab as default', async () => {
+  it('should select General tab as default', async () => {
     renderWithServiceContextAndRouter(<Settings />);
 
-    const generalTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.CONNECTIVITY') });
+    const generalTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.GENERAL') });
     expect(generalTab).toBeInTheDocument();
     expect(generalTab).toBeVisible();
     expect(generalTab.getAttribute('aria-selected')).toBe('true');

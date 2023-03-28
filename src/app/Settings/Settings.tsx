@@ -131,7 +131,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
 
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState<SettingCategory>(
-    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'SETTINGS.CATEGORIES.CONNECTIVITY'
+    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'SETTINGS.CATEGORIES.GENERAL'
   );
 
   const onTabSelect = React.useCallback(

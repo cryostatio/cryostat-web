@@ -305,7 +305,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     if (routerHistory.location.pathname === '/settings') {
       selectTab('SETTINGS.CATEGORIES.GENERAL');
     } else {
-      routerHistory.push('/settings', { preSelectedTab: 'SETTINGS.CATEGORIES.LANGUAGE_REGION' });
+      routerHistory.push('/settings', { preSelectedTab: 'SETTINGS.CATEGORIES.GENERAL' });
     }
   }, [routerHistory]);
 

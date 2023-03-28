@@ -150,6 +150,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
             icon={<CogIcon />}
           />
           <Button
+            id={'automated-analysis-config-drawer-create-recording-button'}
             aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
             variant="control"
             onClick={onDefaultRecordingStart}

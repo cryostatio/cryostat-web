@@ -316,7 +316,7 @@ Below CSS rules only apply to Topology components
 }
 
 .pf-theme-dark .topology__quicksearch__tab-content {
-  background-color: var(--pf-global--BackgroundColor--300);
+  background-color: var(--pf-global--BackgroundColor--dark-300);
 }
 
 .topology__quicksearch__tab-content-title {

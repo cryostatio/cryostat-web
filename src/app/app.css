@@ -205,6 +205,10 @@ html, body, #root {
   --pf-c-label__content--before--BorderWidth: 2.5px;
 }
 
+:where(.pf-theme-dark) .recording-filter__toolbar-filter .pf-c-label {
+  --pf-c-label--BackgroundColor: var(--pf-global--BackgroundColor--400);
+}
+
 .pf-c-label-group.pf-m-vertical.pf-c-label-group {
   height: 100%;
   width: 100%;
@@ -313,6 +317,10 @@ html, body, #root {
   margin-top: 0.5em;
 }
 
+:where(.pf-theme-dark) #automated-analysis-config-drawer-create-recording-button {
+  --pf-c-button--after--BorderColor: var(--pf-c-button--m-control--after--BorderTopColor) var(--pf-c-button--m-control--after--BorderRightColor) var(--pf-c-button--m-control--after--BorderBottomColor) var(--pf-global--BorderColor--300);
+}
+
 .draggable-ref-wrapper__left {
   transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
   transform: translate(-50px, 0px);
@@ -410,6 +418,11 @@ html, body, #root {
   color: var(--pf-global--palette--blue-500);
 }
 
+.pf-theme-dark .datetime-picker__meridiem-tile.selected {
+  background-color: var(--pf-global--palette--blue-500);
+  color: var(--pf-global--palette--blue-100);
+}
+
 .datetime-picker__meridiem-tile.unselected {
   color: var(--pf-global--palette--black-500);
 }
@@ -438,6 +451,14 @@ input[type=number].datetime-picker__number-input {
   font-weight: 600;
 }
 
+:where(.pf-theme-dark) input[type=number].datetime-picker__number-input {
+  background-color: var(--pf-global--palette--black-500);
+}
+
+:where(.pf-theme-dark) .datetime-picker__time-spin-box {
+  background-color: var(--pf-global--palette--blue-500) !important;
+}
+
 .datetime-picker__time-spin-box {
   width: 3.6rem;
   height: 2.2rem;
@@ -460,6 +481,10 @@ input[type=number].datetime-picker__number-input {
   text-align: center;
   color: var(--pf-global--palette--black-600);
   margin: 0 0 0.5em 0 !important;
+}
+
+:where(.pf-theme-dark) .datetime-picker__time-text-top-label {
+  color: var(--pf-global--palette--black-300);
 }
 
 .datetime-picker__datetime-selected-display {
@@ -504,7 +529,7 @@ input[type=number].datetime-picker__number-input {
 }
 
 .pf-theme-dark .expandable-form__help-block {
-  color: #aaaaaa;
+  color: var(--pf-global--Color--200);
 }
 
 .console-form-group .pf-c-form__group {
@@ -521,6 +546,10 @@ input[type=number].datetime-picker__number-input {
 
 .expandable-form__form-group.pf-c-form__group .pf-c-form__label-text {
   color: var(--pf-global--Color--100);
+}
+
+.pf-theme-dark .expandable-form__form-group.pf-c-form__group .pf-c-form__label-text {
+  color: var(--pf-global--palette--white);
 }
 
 .target-context-selector__wrapper {
