@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useTheme } from '@app/utils/useTheme';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,14 +44,9 @@ import { ThemeType, UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const { t } = useTranslation();
-  const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [open, setOpen] = React.useState(false);
-  const [theme, setTheme] = React.useState(ThemeType.LIGHT);
-
-  React.useLayoutEffect(() => {
-    addSubscription(context.settings.theme().subscribe(setTheme));
-  }, [addSubscription, context.settings, setTheme]);
+  const theme = useTheme();
 
   const handleThemeToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
 
@@ -66,7 +61,7 @@ const Component = () => {
   return (
     <Select
       isOpen={open}
-      aria-label={t('SETTINGS.THEME.SELECT.LABEL') || ''}
+      aria-label={t('SETTINGS.THEME.SELECT.LABEL')}
       onToggle={handleThemeToggle}
       onSelect={handleThemeSelect}
       selections={theme}

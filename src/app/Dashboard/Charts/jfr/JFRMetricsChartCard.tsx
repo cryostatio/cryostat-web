@@ -39,11 +39,10 @@
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ThemeType } from '@app/Settings/SettingsUtils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useTheme } from '@app/utils/useTheme';
 import {
   Bullseye,
   Button,
@@ -68,7 +67,6 @@ import { ChartContext } from './../ChartContext';
 import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';
 
 export interface JFRMetricsChartCardProps extends DashboardCardProps {
-  theme: string;
   chartKind: string;
   duration: number;
   period: number;
@@ -112,6 +110,7 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
   const controllerContext = React.useContext(ChartContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
+  const theme = useTheme();
   const [controllerState, setControllerState] = React.useState(ControllerState.NO_DATA);
   const [randomKey, setRandomKey] = React.useState(Math.floor(Math.random()));
   const [chartSrc, setChartSrc] = React.useState('');
@@ -136,13 +135,13 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
       return;
     }
     const u = new URL('/d-solo/main', dashboardUrl);
-    u.searchParams.append('theme', props.theme);
+    u.searchParams.append('theme', theme);
     u.searchParams.append('panelId', String(kindToId(props.chartKind)));
     u.searchParams.append('to', 'now');
     u.searchParams.append('from', `now-${props.duration}s`);
     u.searchParams.append('refresh', `${props.period}s`);
     setChartSrc(u.toString());
-  }, [dashboardUrl, setControllerState, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
+  }, [dashboardUrl, setControllerState, theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
     addSubscription(controllerContext.jfrController.attach().subscribe(setControllerState));
@@ -320,14 +319,6 @@ export const JFRMetricsChartCardDescriptor: DashboardCardDescriptor = {
   descriptionFull: 'CHART_CARD.JFR_METRICS_CARD_DESCRIPTION_FULL',
   component: JFRMetricsChartCard,
   propControls: [
-    {
-      name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
-      key: 'theme',
-      values: Object.values(ThemeType),
-      defaultValue: getFromLocalStorage('THEME', ThemeType.LIGHT),
-      description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
-      kind: 'select',
-    },
     {
       name: 'CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME',
       key: 'chartKind',

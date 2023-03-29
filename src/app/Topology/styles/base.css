@@ -54,6 +54,10 @@ Below CSS rules only apply to Topology components
   margin: 1em;
 }
 
+:where(.pf-theme-dark) .sample-node-donut__node-wrapper {
+  background-color: var(--pf-global--BackgroundColor--300);
+}
+
 .sample-node-donut__node-wrapper .sample-node-donut__node-icon {
   position: absolute;
   width: 90%;
@@ -89,6 +93,10 @@ Below CSS rules only apply to Topology components
   left: 10%;
   border: 1px solid var(--pf-global--palette--black-300);
   background-color: var(--pf-global--palette--white);
+}
+
+:where(.pf-theme-dark) .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
+  background-color: var(--pf-global--BackgroundColor--300);
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__status-indicator svg {
@@ -162,6 +170,10 @@ Below CSS rules only apply to Topology components
   color:  var(--pf-global--palette--blue-500);
 }
 
+:where(.pf-theme-dark) .entity-overview__entity-title-wrapper {
+  color: var(--pf-global--palette--blue-300);
+}
+
 .entity-overview__entity-title-badge {
   background-color: var(--pf-global--palette--blue-500);
   color: var(--pf-global--palette--white);
@@ -195,6 +207,10 @@ Below CSS rules only apply to Topology components
   font-size: 1.2em;
   color:  var(--pf-global--palette--blue-500);
   margin-right: 0.5em;
+}
+
+:where(.pf-theme-dark) .topology-listview__realm-title {
+  color: var(--pf-global--palette--blue-300);
 }
 
 .topology__help-icon {
@@ -315,7 +331,7 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-global--BackgroundColor--200);
 }
 
-.pf-theme-dark .topology__quicksearch__tab-content {
+:where(.pf-theme-dark) .topology__quicksearch__tab-content {
   background-color: var(--pf-global--BackgroundColor--dark-300);
 }
 
@@ -353,7 +369,7 @@ Below CSS rules only apply to Topology components
   padding: 1em;
 }
 
-.pf-theme-dark .topology__list-view__entity-details {
+:where(.pf-theme-dark) .topology__list-view__entity-details {
   background-color: var(--pf-global--BackgroundColor--dark-100);
 }
 

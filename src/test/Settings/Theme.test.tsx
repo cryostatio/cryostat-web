@@ -35,46 +35,66 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_default.svg';
-import cryostatLogoDark from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import build from '@app/build.json';
 import { ThemeType } from '@app/Settings/SettingsUtils';
-import { useTheme } from '@app/utils/useTheme';
-import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { AboutDescription } from './AboutDescription';
+import { Theme } from '@app/Settings/Theme';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { cleanup, screen, act, within } from '@testing-library/react';
+import * as React from 'react';
+import { of } from 'rxjs';
+import { renderWithServiceContext, testT } from '../Common';
 
-export interface AboutProps {}
+jest
+  .spyOn(defaultServices.settings, 'theme')
+  .mockReturnValueOnce(of(ThemeType.LIGHT))
+  .mockReturnValueOnce(of(ThemeType.DARK));
 
-export const About: React.FC<AboutProps> = (_) => {
-  const { t } = useTranslation('public');
-  const theme = useTheme();
-  const [logo, setLogo] = React.useState(cryostatLogo);
+describe('<Theme/>', () => {
+  beforeEach(() => {
+    jest.mocked(defaultServices.settings.setTheme).mockClear();
+  });
 
-  React.useEffect(() => {
-    if (theme === ThemeType.DARK) {
-      setLogo(cryostatLogoDark);
-    } else {
-      setLogo(cryostatLogo);
-    }
-  }, [setLogo, theme]);
+  afterEach(cleanup);
 
-  return (
-    <BreadcrumbPage pageTitle={t('About.ABOUT')}>
-      <Card>
-        <CardHeader>
-          <Brand alt={build.productName} src={logo} className="cryostat-logo" />
-        </CardHeader>
-        <CardBody>
-          <AboutDescription />
-        </CardBody>
-        <CardFooter>{t('CRYOSTAT_TRADEMARK', { ns: 'common' })}</CardFooter>
-      </Card>
-    </BreadcrumbPage>
-  );
-};
+  it('should show LIGHT as default', async () => {
+    renderWithServiceContext(React.createElement(Theme.content, null));
 
-export default About;
+    const lightOption = screen.getByText(testT('SETTINGS.THEME.LIGHT'));
+    expect(lightOption).toBeInTheDocument();
+    expect(lightOption).toBeVisible();
+  });
+
+  it('should set value to local storage when configured', async () => {
+    const { user } = renderWithServiceContext(React.createElement(Theme.content, null));
+
+    const themeSelect = screen.getByLabelText('Options menu');
+    expect(themeSelect).toBeInTheDocument();
+    expect(themeSelect).toBeVisible();
+
+    await act(async () => {
+      await user.click(themeSelect);
+    });
+
+    const ul = screen.getByRole('listbox');
+    expect(ul).toBeInTheDocument();
+    expect(ul).toBeVisible();
+
+    const option = within(ul).getByText(testT('SETTINGS.THEME.DARK'));
+    expect(option).toBeInTheDocument();
+    expect(option).toBeVisible();
+
+    await act(async () => {
+      await user.click(option);
+    });
+
+    screen.logTestingPlaygroundURL();
+
+    expect(ul).not.toBeInTheDocument(); // Should close menu
+
+    const darkOption = screen.getByText(testT('SETTINGS.THEME.DARK'));
+    expect(darkOption).toBeInTheDocument();
+    expect(darkOption).toBeVisible();
+
+    const lightOption = screen.queryByText(testT('SETTINGS.THEME.LIGHT'));
+    expect(lightOption).not.toBeInTheDocument();
+  });
+});

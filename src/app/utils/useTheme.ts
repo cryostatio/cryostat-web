@@ -35,46 +35,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_default.svg';
-import cryostatLogoDark from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import build from '@app/build.json';
 import { ThemeType } from '@app/Settings/SettingsUtils';
-import { useTheme } from '@app/utils/useTheme';
-import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { AboutDescription } from './AboutDescription';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import * as React from 'react';
+import { Subscription } from 'rxjs';
 
-export interface AboutProps {}
-
-export const About: React.FC<AboutProps> = (_) => {
-  const { t } = useTranslation('public');
-  const theme = useTheme();
-  const [logo, setLogo] = React.useState(cryostatLogo);
+export function useTheme() {
+  const [theme, setTheme] = React.useState(ThemeType.LIGHT);
+  const subRef = React.useRef<Subscription>();
+  const services = React.useContext(ServiceContext);
 
   React.useEffect(() => {
-    if (theme === ThemeType.DARK) {
-      setLogo(cryostatLogoDark);
-    } else {
-      setLogo(cryostatLogo);
-    }
-  }, [setLogo, theme]);
+    subRef.current = services.settings.theme().subscribe(setTheme);
+    return () => subRef.current && subRef.current.unsubscribe();
+  }, [subRef, services.settings]);
 
-  return (
-    <BreadcrumbPage pageTitle={t('About.ABOUT')}>
-      <Card>
-        <CardHeader>
-          <Brand alt={build.productName} src={logo} className="cryostat-logo" />
-        </CardHeader>
-        <CardBody>
-          <AboutDescription />
-        </CardBody>
-        <CardFooter>{t('CRYOSTAT_TRADEMARK', { ns: 'common' })}</CardFooter>
-      </Card>
-    </BreadcrumbPage>
-  );
-};
-
-export default About;
+  return theme;
+}

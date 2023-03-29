@@ -49,6 +49,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useTheme } from '@app/utils/useTheme';
 import { cleanDataId, openTabForUrl, portalRoot } from '@app/utils/utils';
 import {
   Alert,
@@ -136,18 +137,15 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
   const location = useLocation();
+  const theme = useTheme();
 
   React.useEffect(() => {
-    addSubscription(
-      serviceContext.settings.theme().subscribe((theme) => {
-        if (theme === ThemeType.DARK) {
-          document.documentElement.classList.add('pf-theme-dark');
-        } else {
-          document.documentElement.classList.remove('pf-theme-dark');
-        }
-      })
-    );
-  }, [addSubscription, serviceContext.settings]);
+    if (theme === ThemeType.DARK) {
+      document.documentElement.classList.add('pf-theme-dark');
+    } else {
+      document.documentElement.classList.remove('pf-theme-dark');
+    }
+  }, [theme]);
 
   React.useEffect(() => {
     addSubscription(
