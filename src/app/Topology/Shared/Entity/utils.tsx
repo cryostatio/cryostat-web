@@ -77,7 +77,6 @@ import {
   Observable,
   of,
   Subject,
-  Subscription,
   switchMap,
 } from 'rxjs';
 import { TargetNode } from '../../typings';

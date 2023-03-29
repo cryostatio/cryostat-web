@@ -82,9 +82,9 @@ export interface CredentialTestTableProps {}
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
+  const [matchExpression] = useSearchExpression();
 
   const [targets, setTargets] = React.useState<Target[]>([]);
-  const [matchExpression] = useSearchExpression();
   const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
   const [searchText, setSearchText] = React.useState('');
 
@@ -115,55 +115,47 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
   );
 
   const toolbar = React.useMemo(
-    () => <CredentialToolbar onFilter={setFilters} onSearch={setSearchText} />,
-    [setFilters, setSearchText]
+    () => (
+      <CredentialToolbar
+        onFilter={setFilters}
+        onSearch={setSearchText}
+        filters={filters}
+        searchText={searchText}
+        matchedTargets={matchedTargets}
+      />
+    ),
+    [setFilters, setSearchText, filters, searchText, matchedTargets]
   );
 
-  return (
-    <>
-      {matchedTargets.length ? (
-        rows.length ? (
-          <OuterScrollContainer>
-            {toolbar}
-            <InnerScrollContainer>
-              <TableComposable {...props}>
-                <Thead>
-                  <Tr>
-                    <Th>Target</Th>
-                    <Th textCenter width={20}>
-                      Status
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{rows}</Tbody>
-              </TableComposable>
-            </InnerScrollContainer>
-          </OuterScrollContainer>
-        ) : (
-          <Bullseye>
-            <EmptyState variant={EmptyStateVariant.full}>
-              <EmptyStateIcon variant="container" component={SearchIcon} />
-              <Title headingLevel="h3" size="lg">
-                No Targets Found
-              </Title>
-              <EmptyStateBody>Clear filters and try again.</EmptyStateBody>
-            </EmptyState>
-          </Bullseye>
-        )
-      ) : (
-        <Bullseye>
-          <EmptyState variant={EmptyStateVariant.full}>
-            <EmptyStateIcon variant="container" component={SearchIcon} />
-            <Title headingLevel="h3" size="lg">
-              No Targets Matched
-            </Title>
-            <EmptyStateBody>{`${
-              matchExpression === '' ? 'Enter another' : 'Clear'
-            } Match Expression and try again.`}</EmptyStateBody>
-          </EmptyState>
-        </Bullseye>
-      )}
-    </>
+  return rows.length ? (
+    <OuterScrollContainer>
+      {toolbar}
+      <InnerScrollContainer>
+        <TableComposable {...props}>
+          <Thead>
+            <Tr>
+              <Th>Target</Th>
+              <Th textCenter width={20}>
+                Status
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>{rows}</Tbody>
+        </TableComposable>
+      </InnerScrollContainer>
+    </OuterScrollContainer>
+  ) : (
+    <Bullseye>
+      <EmptyState variant={EmptyStateVariant.full}>
+        <EmptyStateIcon variant="container" component={SearchIcon} />
+        <Title headingLevel="h3" size="lg">
+          No Targets Matched
+        </Title>
+        <EmptyStateBody>{`${
+          matchExpression === '' ? 'Enter another' : 'Clear'
+        } Match Expression and try again.`}</EmptyStateBody>
+      </EmptyState>
+    </Bullseye>
   );
 };
 
@@ -293,12 +285,23 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
 };
 
 interface CredentialToolbarProps {
+  matchedTargets: Target[];
+  filters: CredentialTestState[];
+  searchText: string;
   onFilter?: (filters: CredentialTestState[]) => void;
   onSearch?: (searchText: string) => void;
 }
 
-const CredentialToolbar: React.FC<CredentialToolbarProps> = ({ onFilter, onSearch, ...props }) => {
+const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
+  onFilter,
+  onSearch,
+  matchedTargets,
+  filters,
+  searchText,
+  ...props
+}) => {
   const [credential] = useAuthCredential();
+  const [disableTest, setDisableTest] = React.useState(false);
 
   const handleTestAll = React.useCallback(() => {
     const buttons = document.getElementsByClassName('credential__test-button');
@@ -308,20 +311,28 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({ onFilter, onSearc
     }
   }, []);
 
-  const disableTestButton = React.useMemo(() => credential.username === '' || credential.password === '', [credential]);
+  React.useEffect(() => {
+    const buttons = document.getElementsByClassName('credential__test-button');
+    const disabled =
+      !matchedTargets.length ||
+      ((filters.length || searchText) && (!buttons || !buttons.length)) ||
+      credential.username === '' ||
+      credential.password === '';
+    setDisableTest(disabled);
+  }, [filters, searchText, credential, setDisableTest, matchedTargets]);
 
   return (
     <Toolbar {...props} isSticky id="credential-test-table-toolbar" aria-label="credential-test-table-toolbar">
       <ToolbarContent>
         <ToolbarItem variant="search-filter">
-          <SearchInput aria-label="Items example search input" onChange={onSearch} />
+          <SearchInput aria-label="Items example search input" onChange={onSearch} value={searchText} />
         </ToolbarItem>
         <ToolbarGroup variant="filter-group">
-          <StatusFilter onChange={onFilter} />
+          <StatusFilter onChange={onFilter} filters={filters} />
         </ToolbarGroup>
         <ToolbarItem>
-          <Tooltip content={'Test credentials against all matching targets (ignoring filters).'} appendTo={portalRoot}>
-            <Button variant="primary" onClick={handleTestAll} isAriaDisabled={disableTestButton}>
+          <Tooltip content={'Test credentials against all matching targets.'} appendTo={portalRoot}>
+            <Button variant="primary" onClick={handleTestAll} isAriaDisabled={disableTest}>
               Test All
             </Button>
           </Tooltip>
@@ -331,25 +342,22 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({ onFilter, onSearc
   );
 };
 
-const StatusFilter: React.FC<{ onChange?: (filters: CredentialTestState[]) => void }> = ({ onChange, ...props }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
+interface StatusFilterProps {
+  onChange?: (filters: CredentialTestState[]) => void;
+  filters: CredentialTestState[];
+}
 
+const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
   const handleToggle = React.useCallback(() => setIsOpen((old) => !old), [setIsOpen]);
 
   const handleSelect = React.useCallback(
     (_: React.MouseEvent, value: CredentialTestState) => {
-      setFilters((old) => {
-        if (old.includes(value)) {
-          return old.filter((v) => v !== value);
-        }
-        return [...old, value];
-      });
+      const old = filters;
+      onChange && onChange(old.includes(value) ? old.filter((v) => v !== value) : [...old, value]);
     },
-    [setFilters]
+    [onChange, filters]
   );
-
-  React.useEffect(() => onChange && onChange(filters), [filters, onChange]);
 
   return (
     <Select
