@@ -2374,16 +2374,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/preload-webpack-plugin@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@vue/preload-webpack-plugin@npm:2.0.0"
-  peerDependencies:
-    html-webpack-plugin: ^5.0.0 || ^4.5.1
-    webpack: ^5.20.0 || ^4.1.0
-  checksum: 8c8247c2a7dafa14c66adb92e14d44305970cb8642392b5f5b174282c1a5f146d85457575af02e86787aa58d9eee5ee3994aac6b275b9539f7310d3763c262fe
-  languageName: node
-  linkType: hard
-
 "@webassemblyjs/ast@npm:1.11.1":
   version: 1.11.1
   resolution: "@webassemblyjs/ast@npm:1.11.1"
@@ -3941,7 +3931,6 @@ __metadata:
     "@types/react-test-renderer": ^18.0.0
     "@typescript-eslint/eslint-plugin": ^5.53.0
     "@typescript-eslint/parser": ^5.53.0
-    "@vue/preload-webpack-plugin": ^2.0.0
     css-loader: ^6.7.3
     css-minimizer-webpack-plugin: ^4.2.2
     dayjs: ^1.11.7
