@@ -86,8 +86,6 @@ describe('<Theme/>', () => {
       await user.click(option);
     });
 
-    screen.logTestingPlaygroundURL();
-
     expect(ul).not.toBeInTheDocument(); // Should close menu
 
     const darkOption = screen.getByText(testT('SETTINGS.THEME.DARK'));

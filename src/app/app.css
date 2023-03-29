@@ -275,7 +275,7 @@ html, body, #root {
   max-width: 100%;
 }
 
-:where(.pf-theme-dark) .automated-analysis-grid-item .pf-c-label {
+:is(.pf-theme-dark) .automated-analysis-grid-item .pf-c-label {
   --pf-c-label--BackgroundColor: var(--pf-global--BackgroundColor--dark-100);
 }
 

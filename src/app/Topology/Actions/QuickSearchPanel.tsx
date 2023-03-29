@@ -196,6 +196,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
           <Sidebar {...props} tabIndex={0} style={{ height: 'max-content' }} hasGutter>
             <SidebarPanel variant="sticky">
               <Tabs
+                className={'topology__quicksearch__tabs'}
                 isVertical
                 unmountOnExit
                 expandable={{ default: 'nonExpandable', md: 'nonExpandable', lg: 'nonExpandable', sm: 'expandable' }}

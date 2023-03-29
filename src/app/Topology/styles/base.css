@@ -55,7 +55,7 @@ Below CSS rules only apply to Topology components
 }
 
 :where(.pf-theme-dark) .sample-node-donut__node-wrapper {
-  background-color: var(--pf-global--BackgroundColor--300);
+  background-color: var(--pf-global--BackgroundColor--dark-300);
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__node-icon {
@@ -96,7 +96,7 @@ Below CSS rules only apply to Topology components
 }
 
 :where(.pf-theme-dark) .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
-  background-color: var(--pf-global--BackgroundColor--300);
+  background-color: var(--pf-global--BackgroundColor--dark-300);
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__status-indicator svg {
@@ -113,6 +113,11 @@ Below CSS rules only apply to Topology components
   box-shadow: 0 0.25rem 0.5rem 0rem rgba(3, 3, 3, 0.16), 0 0 0.25rem 0 rgba(3, 3, 3, 0.06);
   font-weight: 700;
   word-break: break-all;
+  background-color: var(--pf-global--palette--white);
+}
+
+:where(.pf-theme-dark) .sample-node-donut__node-label {
+  background-color: var(--pf-global--BackgroundColor--dark-300);
 }
 
 .sample-node-donut__node-label-badge {
@@ -319,6 +324,10 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-global--palette--white);
 }
 
+:where(.pf-theme-dark) .topology__quicksearch__tab-icon {
+  background-color: var(--pf-global--BackgroundColor--dark-400);
+}
+
 .topology__quicksearch__tab-text {
   font-weight: 700;
 }
@@ -327,8 +336,20 @@ Below CSS rules only apply to Topology components
   margin: 0 !important;
 }
 
+:where(.pf-theme-dark) .topology__quicksearch__tabs {
+    background-color: var(--pf-global--BackgroundColor--dark-300);
+}
+
+:where(.pf-theme-dark) .topology__quicksearch__tabs .pf-c-label {
+  background-color: var(--pf-global--BackgroundColor--dark-200);
+}
+
 .topology__quicksearch__tab.pf-m-current {
   background-color: var(--pf-global--BackgroundColor--200);
+}
+
+:where(.pf-theme-dark) .topology__quicksearch__tab.pf-m-current {
+  background-color: var(--pf-global--BackgroundColor--100);
 }
 
 :where(.pf-theme-dark) .topology__quicksearch__tab-content {

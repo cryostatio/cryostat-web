@@ -77,13 +77,10 @@ describe('<FeatureLevels/>', () => {
 
     await user.selectOptions(ul, testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }));
 
-    await expect(ul).not.toBeInTheDocument(); // Should close menu
+    expect(ul).not.toBeInTheDocument(); // Should close menu
 
-    const betaOption = await screen.findByText(
-      testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }),
-      {},
-      { timeout: 1000 }
-    );
+    const betaOption = screen.getByText(testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }));
+
     expect(betaOption).toBeInTheDocument();
     expect(betaOption).toBeVisible();
 

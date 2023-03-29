@@ -52,15 +52,8 @@ export interface AboutProps {}
 export const About: React.FC<AboutProps> = (_) => {
   const { t } = useTranslation('public');
   const theme = useTheme();
-  const [logo, setLogo] = React.useState(cryostatLogo);
 
-  React.useEffect(() => {
-    if (theme === ThemeType.DARK) {
-      setLogo(cryostatLogoDark);
-    } else {
-      setLogo(cryostatLogo);
-    }
-  }, [setLogo, theme]);
+  const logo = React.useMemo(() => (theme === ThemeType.DARK ? cryostatLogoDark : cryostatLogo), [theme]);
 
   return (
     <BreadcrumbPage pageTitle={t('About.ABOUT')}>

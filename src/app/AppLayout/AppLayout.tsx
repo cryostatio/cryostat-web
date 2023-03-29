@@ -330,7 +330,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const UserInfoToggle = React.useMemo(
     () => (
       <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-        {username || <UserIcon color="var(--pf-global--palette--white)" size="sm" />}
+        {username || <UserIcon color="white" size="sm" />}
       </DropdownToggle>
     ),
     [username, handleUserInfoToggle]
@@ -406,9 +406,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
                 <ToolbarItem>
                   <Button
-                    variant="link"
+                    variant="plain"
                     onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
-                    icon={<PlusCircleIcon color="var(--pf-global--palette--white)" size="sm" />}
+                    icon={<PlusCircleIcon size="sm" />}
                   />
                 </ToolbarItem>
               </FeatureFlag>
@@ -428,8 +428,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <ToolbarItem>
                   <Button
                     onClick={handleSettingsButtonClick}
-                    variant="link"
-                    icon={<CogIcon color="var(--pf-global--palette--white)" size="sm" />}
+                    variant="plain"
+                    icon={<CogIcon size="sm" />}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                   />
