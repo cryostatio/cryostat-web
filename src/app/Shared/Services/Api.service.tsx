@@ -89,23 +89,6 @@ export const isHttpOk = (statusCode: number) => {
   return statusCode >= 200 && statusCode < 300;
 };
 
-export const isAuthEnabledForTarget = (args?: string[]) => {
-  if (!args || !args.length) {
-    // Auth is enabled by default
-    return true;
-  }
-  return args.every((arg) => arg !== '-Dcom.sun.management.jmxremote.authenticate=false');
-};
-
-export const getGraphqlRootCause = (message: string) => {
-  const lastColonIdx = message.lastIndexOf(':');
-  if (lastColonIdx >= 0) {
-    const _mes = message.substring(message.lastIndexOf(':') + 1).trim();
-    return _mes.charAt(_mes.length - 1) !== '.' ? `${_mes}.` : _mes;
-  }
-  return message;
-};
-
 export class ApiService {
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
@@ -777,12 +760,10 @@ export class ApiService {
     query: string,
     variables?: unknown,
     suppressNotifications?: boolean,
-    skipStatusCheck?: boolean,
-    headers?: Headers
+    skipStatusCheck?: boolean
   ): Observable<T> {
-    const _headers = new Headers();
-    _headers.set('Content-Type', 'application/json');
-    headers && headers.forEach((v, k) => _headers.set(k, v));
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
     return this.sendRequest(
       'v2.2',
       'graphql',
@@ -792,7 +773,7 @@ export class ApiService {
           query: query.replace(/[\s]+/g, ' '),
           variables,
         }),
-        headers: _headers,
+        headers,
       },
       undefined,
       suppressNotifications,
