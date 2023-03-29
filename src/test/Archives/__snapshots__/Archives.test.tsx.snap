@@ -5,7 +5,7 @@ exports[`<Archives /> renders correctly 1`] = `
   className="pf-c-page__main-group"
 >
   <section
-    className="pf-c-page__main-breadcrumb"
+    className="pf-c-page__main-section"
   >
     <nav
       aria-label="Breadcrumb"
@@ -28,10 +28,6 @@ exports[`<Archives /> renders correctly 1`] = `
         </li>
       </ol>
     </nav>
-  </section>
-  <section
-    className="pf-c-page__main-section"
-  >
     <div
       className="pf-l-stack pf-m-gutter"
     >

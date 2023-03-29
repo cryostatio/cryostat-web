@@ -106,7 +106,7 @@ There are two tabs within the Recordings page:
 
 [Active Recordings]{{highlight active-recordings-tab}} and [Archived Recordings]{{highlight archived-recordings-tab}}.
 
-Active recordings are recordings that are currently running, and Archived recordings are recordings that have been stopped.
+Active recordings are recordings that only exist only within the target JVM. Archived recordings are recordings that have been saved from the target JVM and copied to Cryostat's storage volume.
 
 We will start a recording while on the Active tab.
 
@@ -129,7 +129,8 @@ After the creation of a recording, the recording will be displayed in the Active
         description: `
 Stopping a recording will cut off the recording at the time that the recording is stopped.
 
-1. Click the [Stop]{{highlight recordings-stop-btn}} button to stop the recording.`,
+1. Click the [checkbox]{{highlight active-recordings-checkbox}} ☐ next to the recording.
+2. Click the [Stop]{{highlight recordings-stop-btn}} button to stop the recording.`,
         review: {
           instructions: '#### Verify that the STATE field of the recording has changed to STOPPED.',
           failedTaskHelp: 'If you do not see the recording, try the **Start a recording** task again.',
@@ -166,7 +167,7 @@ Downloading a recording will save the recording to your local machine as a JFR f
       {
         title: 'Archive a recording',
         description: `
-Archiving a recording will save the recording to [APP]'s archival storage, and will persist even after [APP] is restarted. These recordings will show up in the target JVM's Archived Recordings tab, as well as in the [Archives]{{highlight nav-archives-tab}} view on the [APP] console navigation bar.
+Archiving a recording will save the recording to [APP]'s archival storage, and will persist even after either the target JVM, or [APP], has stopped. These recordings will show up in the target JVM's Archived Recordings tab, as well as in the [Archives]{{highlight nav-archives-tab}} view on the [APP] console navigation bar.
 
 1. Click the [Archive]{{highlight recordings-archive-btn}} button to archive the recording.
 2. Go to the [Archived Recordings]{{highlight archived-recordings-tab}} tab to see the archived recording in [APP]'s storage.

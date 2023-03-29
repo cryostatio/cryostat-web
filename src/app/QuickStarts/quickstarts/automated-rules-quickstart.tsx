@@ -53,7 +53,7 @@ const AutomatedRulesQuickStart: QuickStart = {
     durationMinutes: 10,
     icon: cryostatLogoIcon,
     description: `Learn about automated rules in [APP] and how to create one.`,
-    prerequisites: [''],
+    prerequisites: ['Start a Recording'],
     introduction: `
 # Automated Rules
 Automated Rules are configurations that instruct [APP] to create JDK Flight Recordings on matching target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, and how frequently Cryostat should copy the application recording buffer into Cryostat’s own archived storage.

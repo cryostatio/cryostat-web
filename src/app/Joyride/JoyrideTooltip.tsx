@@ -118,7 +118,7 @@ const JoyrideTooltip: React.FC<TooltipRenderProps> = ({
     >
       <Card>
         <CardTitle style={{ textAlign: 'center' }}>{title}</CardTitle>
-        <CardBody style={{ fontSize: '15px' }}>{content}</CardBody>
+        <CardBody style={{ fontSize: '1em' }}>{content}</CardBody>
         {index !== 1 && <CardFooter>{footer}</CardFooter>}
       </Card>
     </div>

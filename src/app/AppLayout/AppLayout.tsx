@@ -232,10 +232,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const dismissSslErrorModal = React.useCallback(() => setShowSslErrorModal(false), [setShowSslErrorModal]);
 
-  const onNavToggleMobile = React.useCallback(() => {
-    setIsNavOpen((isNavOpenMobile) => !isNavOpenMobile);
-  }, [setIsNavOpen]);
-
   const onNavToggle = React.useCallback(() => {
     setIsNavOpen((isNavOpen) => {
       if (joyState.run === true && joyState.stepIndex === 1 && !isNavOpen) {
@@ -250,9 +246,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     (props: { mobileView: boolean; windowSize: number }) => {
       if (joyState.run === false) {
         setIsMobileView(props.mobileView);
-        if (props.mobileView) {
-          setIsNavOpen(false);
-        }
+        setIsNavOpen(!props.mobileView);
       }
     },
     [joyState, setIsMobileView, setIsNavOpen]

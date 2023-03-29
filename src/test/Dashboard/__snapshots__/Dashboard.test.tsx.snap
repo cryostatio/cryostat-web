@@ -12,7 +12,7 @@ Array [
     className="pf-c-page__main-group"
   >
     <section
-      className="pf-c-page__main-breadcrumb"
+      className="pf-c-page__main-section"
     >
       <nav
         aria-label="Breadcrumb"
@@ -35,10 +35,6 @@ Array [
           </li>
         </ol>
       </nav>
-    </section>
-    <section
-      className="pf-c-page__main-section"
-    >
       <div
         className="pf-l-stack pf-m-gutter"
       >

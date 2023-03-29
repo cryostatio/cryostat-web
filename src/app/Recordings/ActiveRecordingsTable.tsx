@@ -898,6 +898,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             onChange={handleCheck}
             isChecked={checkedIndices.includes(index)}
             id={`active-table-row-${index}-check`}
+            data-quickstart-id="active-recordings-checkbox"
           />
         </Td>
         <Td
