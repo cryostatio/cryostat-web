@@ -512,7 +512,11 @@ input[type=number].datetime-picker__number-input {
 
 .add-credential-modal {
   width: 80% !important;
-  height: 80%;
+  height: 85%;
+}
+
+.add-credential-modal .pf-c-tab-content {
+  height: 90%;
 }
 
 .overflow-auto {

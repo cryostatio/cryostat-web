@@ -595,7 +595,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            JMX Credentials Storage
+                            Credentials Storage
                           </h2>
                         </span>
                       </label>

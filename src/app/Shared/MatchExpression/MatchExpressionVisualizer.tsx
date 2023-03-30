@@ -98,7 +98,7 @@ export const MatchExpressionVisualizer: React.FC<MatchExpressionVisualizerProps>
       <StackItem>
         <LayoutRadioGroup onChange={setIsGraph} />
       </StackItem>
-      <StackItem isFilled>
+      <StackItem isFilled style={{ overflow: 'auto' }}>
         {isGraph ? <GraphView alertOptions={alertOptions} /> : <ListView alertOptions={alertOptions} />}
       </StackItem>
     </Stack>
@@ -146,6 +146,8 @@ const LayoutRadioGroup: React.FC<LayoutRadioGroupProps> = ({ onChange, ...props 
     </Flex>
   );
 };
+
+export const MATCH_EXPRES_VIS_GRAPH_ID = 'cryostat-match-expression-visualizer';
 
 const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
@@ -236,7 +238,7 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
       }),
       edges: _transformedData.edges,
       graph: {
-        id: 'cryostat-match-expression-visualizer',
+        id: MATCH_EXPRES_VIS_GRAPH_ID,
         type: 'graph',
         layout: 'Grid',
         data: {
@@ -340,9 +342,6 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
   const filtered = React.useMemo(
     () =>
       targetNodes.filter(({ target }) => {
-        if (!matchExpression) {
-          return true;
-        }
         try {
           const res = evaluateTargetWithExpr(target, matchExpression);
           if (typeof res === 'boolean') {
@@ -366,7 +365,9 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
               No Targets Matched
             </Title>
             <EmptyStateSecondaryActions>
-              <EmptyStateBody>Clear Match Expression and try again.</EmptyStateBody>
+              <EmptyStateBody>{`${
+                matchExpression === '' ? 'Enter another' : 'Clear'
+              } Match Expression and try again.`}</EmptyStateBody>
             </EmptyStateSecondaryActions>
           </EmptyState>
         </Bullseye>
@@ -410,7 +411,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         </DataListItem>
       );
     });
-  }, [filtered, expanded, toggleExpand, props, alertOptions]);
+  }, [filtered, expanded, matchExpression, toggleExpand, props, alertOptions]);
 
   return (
     <DataList aria-label={'Target List'} style={{ height: '100%' }}>

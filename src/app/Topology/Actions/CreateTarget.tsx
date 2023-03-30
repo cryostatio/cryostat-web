@@ -191,7 +191,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
   const handleSubmit = React.useCallback(() => {
     setLoading(true);
     // Get storage location
-    const locationKey = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
+    const locationKey = getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key);
     addSubscription(
       context.api
         .createTarget(

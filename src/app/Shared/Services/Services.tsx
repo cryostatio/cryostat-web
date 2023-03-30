@@ -38,7 +38,7 @@
 import { NotificationsInstance } from '@app/Notifications/Notifications';
 import * as React from 'react';
 import { ApiService } from './Api.service';
-import { JmxCredentials } from './JmxCredentials.service';
+import { AuthCredentials } from './AuthCredentials.service';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { ReportService } from './Report.service';
@@ -50,7 +50,7 @@ export interface Services {
   target: TargetService;
   targets: TargetsService;
   api: ApiService;
-  jmxCredentials: JmxCredentials;
+  authCredentials: AuthCredentials;
   notificationChannel: NotificationChannel;
   reports: ReportService;
   settings: SettingsService;
@@ -58,8 +58,8 @@ export interface Services {
 }
 
 const settings = new SettingsService();
-const jmxCredentials = new JmxCredentials(() => api);
-const login = new LoginService(TargetInstance, jmxCredentials, settings);
+const authCredentials = new AuthCredentials(() => api);
+const login = new LoginService(TargetInstance, authCredentials, settings);
 const api = new ApiService(TargetInstance, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(login, NotificationsInstance);
@@ -69,7 +69,7 @@ const defaultServices: Services = {
   target: TargetInstance,
   targets,
   api,
-  jmxCredentials,
+  authCredentials,
   notificationChannel,
   reports,
   settings,

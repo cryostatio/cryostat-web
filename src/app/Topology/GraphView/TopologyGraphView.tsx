@@ -73,6 +73,8 @@ export const MAX_NODE_LIMIT = 100;
 export const DEFAULT_SIZEBAR_SIZE = 500;
 export const MIN_SIZEBAR_SIZE = 400;
 
+export const TOPOLOGY_GRAPH_ID = 'cryostat-target-topology-graph';
+
 export type SavedGraphPosition = {
   id?: string;
   type?: string;
@@ -188,7 +190,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
       }),
       edges: _transformData.edges,
       graph: {
-        id: 'cryostat-target-topology-graph',
+        id: TOPOLOGY_GRAPH_ID,
         type: 'graph',
         layout: 'Cola',
         layers: [BOTTOM_LAYER, GROUPS_LAYER, DEFAULT_LAYER, TOP_LAYER],

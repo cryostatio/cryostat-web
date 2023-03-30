@@ -61,11 +61,12 @@ import { useSelector } from 'react-redux';
 import { getStatusTargetNode, isTargetMatched, nodeTypeToAbbr, useSearchExpression } from '../Shared/utils';
 import { TargetNode } from '../typings';
 import { getNodeDecorators } from './NodeDecorator';
+import { TOPOLOGY_GRAPH_ID } from './TopologyGraphView';
 import { RESOURCE_NAME_TRUNCATE_LENGTH } from './UtilsFactory';
 
 export const NODE_ICON_PADDING = 5;
 
-export const renderIcon = (data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {
+export const renderIcon = (_data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {
   const { width, height } = element.getDimensions();
 
   const contentSize = Math.min(width, height) - NODE_ICON_PADDING * 2;
@@ -116,9 +117,12 @@ const CustomNode: React.FC<CustomNodeProps> = ({
   const [nodeStatus] = getStatusTargetNode(data);
 
   const classNames = React.useMemo(() => {
-    const additional = expression === '' || isTargetMatched(data, expression) ? '' : 'search-inactive';
+    const graphId = element.getGraph().getId();
+    const matchExprForSearch = graphId === TOPOLOGY_GRAPH_ID;
+    const additional =
+      (matchExprForSearch && expression === '') || isTargetMatched(data, expression) ? '' : 'search-inactive';
     return css('topology__target-node', additional);
-  }, [data, expression]);
+  }, [data, expression, element]);
 
   const nodeDecorators = React.useMemo(() => (showStatus ? getNodeDecorators(element) : null), [element, showStatus]);
 

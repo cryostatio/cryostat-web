@@ -39,15 +39,31 @@ import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
 
+export interface AuthCredential {
+  username: string;
+  password: string;
+}
+
 export interface CredentialAuthFormProps {
   onDismiss: () => void;
   onSave: (username: string, password: string) => void;
   focus?: boolean;
   loading?: boolean;
+  isDisabled?: boolean;
   children?: React.ReactNode;
+  onCredentialChange?: (credential: AuthCredential) => void;
 }
 
-export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({ onDismiss, onSave, ...props }) => {
+export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({
+  onDismiss,
+  onSave,
+  onCredentialChange,
+  loading,
+  isDisabled,
+  focus,
+  children,
+  ...props
+}) => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
@@ -73,35 +89,49 @@ export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({ onDismis
     () =>
       ({
         spinnerAriaValueText: 'Saving',
-        spinnerAriaLabel: 'saving-jmx-credentials',
-        isLoading: props.loading,
+        spinnerAriaLabel: 'saving-credentials',
+        isLoading: loading,
       } as LoadingPropsType),
-    [props.loading]
+    [loading]
   );
 
   return (
-    <Form>
-      {props.children}
+    <Form {...props}>
+      {children}
       <FormGroup isRequired label="Username" fieldId="username">
         <TextInput
           value={username}
-          isDisabled={props.loading}
+          isDisabled={isDisabled || loading}
           isRequired
           type="text"
           id="username"
-          onChange={setUsername}
+          onChange={(v) => {
+            setUsername(v);
+            onCredentialChange &&
+              onCredentialChange({
+                username: v,
+                password: password,
+              });
+          }}
           onKeyUp={handleKeyUp}
-          autoFocus={props.focus}
+          autoFocus={focus}
         />
       </FormGroup>
       <FormGroup isRequired label="Password" fieldId="password">
         <TextInput
           value={password}
-          isDisabled={props.loading}
+          isDisabled={isDisabled || loading}
           isRequired
           type="password"
           id="password"
-          onChange={setPassword}
+          onChange={(v) => {
+            setPassword(v);
+            onCredentialChange &&
+              onCredentialChange({
+                username: username,
+                password: v,
+              });
+          }}
           onKeyUp={handleKeyUp}
         />
       </FormGroup>
@@ -110,11 +140,11 @@ export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({ onDismis
           variant="primary"
           onClick={handleSave}
           {...saveButtonLoadingProps}
-          isDisabled={props.loading || username === '' || password === ''}
+          isDisabled={isDisabled || loading || username === '' || password === ''}
         >
-          {props.loading ? 'Saving' : 'Save'}
+          {loading ? 'Saving' : 'Save'}
         </Button>
-        <Button variant="secondary" onClick={handleDismiss} isDisabled={props.loading}>
+        <Button variant="secondary" onClick={handleDismiss} isDisabled={isDisabled || loading}>
           Cancel
         </Button>
       </ActionGroup>

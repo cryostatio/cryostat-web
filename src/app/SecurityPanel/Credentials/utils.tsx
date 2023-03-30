@@ -35,47 +35,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Locations } from '@app/Settings/CredentialsStorage';
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { Observable, of } from 'rxjs';
-import { ApiService } from './Api.service';
+import { AuthCredential } from '@app/AppLayout/CredentialAuthForm';
+import { StreamOf } from '@app/utils/utils';
+import * as React from 'react';
+import { debounceTime, Subscription } from 'rxjs';
 
-export interface Credential {
-  username: string;
-  password: string;
+export const CredentialContext = React.createContext(new StreamOf<AuthCredential>({ username: '', password: '' }));
+
+export interface TestRequest {
+  id: string;
+  targetUrl: string;
+  data?: unknown;
 }
 
-export class JmxCredentials {
-  // TODO replace with Redux?
-  private readonly store = new Map<string, Credential>();
+// Each test request registers itself to test pool when initiated. When completed, remove itself from pool.
+// Auth form will poll this pool for a set time to determine if form should is disabled.
+export const TestPoolContext = React.createContext(new Set<TestRequest>());
 
-  constructor(private readonly api: () => ApiService) {}
+export const useAuthCredential = (
+  ignoreEmit?: boolean,
+  debounceMs = 50
+): [AuthCredential, (credential: AuthCredential) => void] => {
+  const [credential$, setCredential$] = React.useState<AuthCredential>({ username: '', password: '' });
+  const authCredentialContext = React.useContext(CredentialContext);
 
-  setCredential(targetId: string, username: string, password: string): Observable<boolean> {
-    const location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
-    switch (location) {
-      case Locations.BACKEND.key:
-        return this.api().postCredentials(`target.connectUrl == "${targetId}"`, username, password);
-      case Locations.BROWSER_SESSION.key:
-        this.store.set(targetId, { username, password });
-        return of(true);
-      default:
-        console.warn('Unknown storage location', location);
-        return of(false);
+  React.useEffect(() => {
+    let sub: Subscription | undefined;
+    if (!ignoreEmit) {
+      sub = authCredentialContext.get().pipe(debounceTime(debounceMs)).subscribe(setCredential$);
     }
-  }
+    return () => sub && sub.unsubscribe();
+  }, [setCredential$, authCredentialContext, debounceMs, ignoreEmit]);
 
-  getCredential(targetId: string): Observable<Credential | undefined> {
-    const location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
-    switch (location) {
-      case Locations.BACKEND.key:
-        // if this is stored on the backend then Cryostat should be using those and not prompting us to request from the user
-        return of(undefined);
-      case Locations.BROWSER_SESSION.key:
-        return of(this.store.get(targetId));
-      default:
-        console.warn('Unknown storage location', location);
-        return of(undefined);
-    }
-  }
-}
+  const setCredential = React.useCallback(
+    (credential: AuthCredential) => {
+      authCredentialContext.set(credential);
+    },
+    [authCredentialContext]
+  );
+
+  return [credential$, setCredential];
+};

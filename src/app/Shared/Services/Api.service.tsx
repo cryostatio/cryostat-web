@@ -41,6 +41,7 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
 import { EnvironmentNode } from '@app/Topology/typings';
 import { createBlobURL } from '@app/utils/utils';
+import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
@@ -1151,6 +1152,60 @@ export class ApiService {
       ),
       catchError((_) => of([])),
       map((recs: Partial<ActiveRecording>[]) => recs.length > 0) // At least one
+    );
+  }
+
+  checkCredentialForTarget(
+    target: Target,
+    credentials: { username: string; password: string }
+  ): Observable<
+    | {
+        error: Error;
+        severeLevel: ValidatedOptions;
+      }
+    | undefined
+  > {
+    const body = new window.FormData();
+    body.append('username', credentials.username);
+    body.append('password', credentials.password);
+
+    return this.sendRequest(
+      'beta',
+      `credentials/${encodeURIComponent(target.connectUrl)}`,
+      { method: 'POST', body },
+      undefined,
+      true,
+      true
+    ).pipe(
+      first(),
+      concatMap((resp) => resp.json()),
+      map((body) => {
+        const result: string | undefined = body?.data?.result;
+        switch (result?.toUpperCase()) {
+          case 'FAILURE':
+            return { error: new Error('Invalid username or password.'), severeLevel: ValidatedOptions.error };
+          case 'NA':
+            return {
+              error: new Error('This target does not have authentication enabled.'),
+              severeLevel: ValidatedOptions.warning,
+            };
+          case 'SUCCESS':
+            return undefined;
+          default:
+            return {
+              error: new Error('Could not determine test results. Try again!'),
+              severeLevel: ValidatedOptions.error,
+            };
+        }
+      }),
+      catchError((err) => {
+        if (isHttpError(err)) {
+          return err.httpResponse
+            .text()
+            .then((detail) => ({ error: new Error(detail), severeLevel: ValidatedOptions.error }));
+        }
+        return of({ error: err, severeLevel: ValidatedOptions.error });
+      })
     );
   }
 

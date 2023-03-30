@@ -35,66 +35,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export enum LocalStorageKey {
-  FEATURE_LEVEL,
-  DASHBOARD_CFG,
-  AUTOMATED_ANALYSIS_FILTERS,
-  TARGET_RECORDING_FILTERS,
-  CREDENTIAL_LOCATION,
-  TARGET,
-  TARGET_FAVORITES,
-  TOPOLOGY_SHOW_BANNER,
-  TOPOLOGY_GRAPH_POSITONS,
-  TOPOLOGY_NODE_POSITIONS,
-  TOPOLOGY_CONFIG,
-  TOPOLOGY_FILTERS,
-  AUTO_REFRESH_ENABLED,
-  AUTO_REFRESH_PERIOD,
-  AUTO_REFRESH_UNITS,
-  AUTOMATED_ANALYSIS_RECORDING_CONFIG,
-  CHART_CONTROLLER_CONFIG,
-  DELETION_DIALOGS_ENABLED,
-  VISIBLE_NOTIFICATIONS_COUNT,
-  NOTIFICATIONS_ENABLED,
-  WEBSOCKET_DEBOUNCE_MS,
-  DATETIME_FORMAT,
-  MATCH_EXPRES_VIS_GRAPH_POSITIONS,
-  MATCH_EXPRES_VIS_NODE_POSITIONS,
+import { Locations } from '@app/Settings/CredentialsStorage';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { Observable, of } from 'rxjs';
+import { ApiService } from './Api.service';
+
+export interface Credential {
+  username: string;
+  password: string;
 }
 
-export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+export class AuthCredentials {
+  // TODO replace with Redux?
+  private readonly store = new Map<string, Credential>();
 
-export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    return defaultValue;
-  }
-};
+  constructor(private readonly api: () => ApiService) {}
 
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, JSON.stringify(value));
+  setCredential(targetId: string, username: string, password: string): Observable<boolean> {
+    const location = getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key);
+    switch (location) {
+      case Locations.BACKEND.key:
+        return this.api().postCredentials(`target.connectUrl == "${targetId}"`, username, password);
+      case Locations.BROWSER_SESSION.key:
+        this.store.set(targetId, { username, password });
+        return of(true);
+      default:
+        console.warn('Unknown storage location', location);
+        return of(false);
     }
-  } catch (err) {
-    console.warn(err);
-    error && error();
   }
-};
 
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(key);
+  getCredential(targetId: string): Observable<Credential | undefined> {
+    const location = getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key);
+    switch (location) {
+      case Locations.BACKEND.key:
+        // if this is stored on the backend then Cryostat should be using those and not prompting us to request from the user
+        return of(undefined);
+      case Locations.BROWSER_SESSION.key:
+        return of(this.store.get(targetId));
+      default:
+        console.warn('Unknown storage location', location);
+        return of(undefined);
     }
-  } catch (err) {
-    console.warn(err);
-    error && error();
   }
-};
+}

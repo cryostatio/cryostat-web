@@ -35,14 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CredentialAuthForm } from '@app/AppLayout/CredentialAuthForm';
+import { AuthCredential, CredentialAuthForm } from '@app/AppLayout/CredentialAuthForm';
 import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpressionHint';
 import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot } from '@app/utils/utils';
+import { evaluateTargetWithExpr, portalRoot, StreamOf } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -53,11 +53,18 @@ import {
   Modal,
   ModalVariant,
   Popover,
+  Tab,
+  Tabs,
+  TabTitleIcon,
+  TabTitleText,
   TextArea,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
+import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { distinctUntilChanged, interval, map } from 'rxjs';
+import { CredentialTestTable } from './CredentialTestTable';
+import { CredentialContext, TestPoolContext, TestRequest, useAuthCredential } from './utils';
 
 export interface CreateCredentialModalProps {
   visible: boolean;
@@ -72,51 +79,61 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
   ...props
 }) => {
   const matchExpreRef = React.useRef(new SearchExprService());
+  const loadingRef = React.useRef(new StreamOf(false));
+  const credentialRef = React.useRef(new StreamOf<AuthCredential>({ username: '', password: '' }));
+  const testPoolRef = React.useRef(new Set<TestRequest>());
+  const addSubscription = useSubscriptions();
+
   const [inProgress, setInProgress] = React.useState(false);
 
-  const alertOptions = React.useMemo(() => ({ hideActions: true }), []);
+  React.useEffect(() => {
+    addSubscription(loadingRef.current.get().subscribe(setInProgress));
+  }, [addSubscription, loadingRef, setInProgress]);
 
   return (
-    <SearchExprServiceContext.Provider value={matchExpreRef.current}>
-      <Modal
-        appendTo={portalRoot}
-        isOpen={visible}
-        tabIndex={0} // enable keyboard-accessible scrolling
-        variant={ModalVariant.large}
-        showClose={!inProgress}
-        className="add-credential-modal"
-        onClose={onDismiss}
-        title="Store Credentials"
-        description="Create stored credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
-      >
-        <Grid hasGutter style={{ height: '100%' }}>
-          <GridItem xl={4}>
-            <Card isFullHeight isFlat>
-              <CardBody className="overflow-auto">
-                <AuthForm
-                  visible={visible}
-                  onDismiss={onDismiss}
-                  onPropsSave={onPropsSave}
-                  progressChange={setInProgress}
-                  {...props}
-                />
-              </CardBody>
-            </Card>
-          </GridItem>
-          <GridItem xl={8}>
-            <Card isFullHeight isFlat>
-              <CardBody className="overflow-auto">
-                <MatchExpressionVisualizer alertOptions={alertOptions} />
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Modal>
-    </SearchExprServiceContext.Provider>
+    <Modal
+      appendTo={portalRoot}
+      isOpen={visible}
+      tabIndex={0} // enable keyboard-accessible scrolling
+      variant={ModalVariant.large}
+      showClose={!inProgress}
+      className="add-credential-modal"
+      onClose={onDismiss}
+      title="Store Credentials"
+      description="Create stored credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
+    >
+      <SearchExprServiceContext.Provider value={matchExpreRef.current}>
+        <CredentialContext.Provider value={credentialRef.current}>
+          <TestPoolContext.Provider value={testPoolRef.current}>
+            <Grid hasGutter style={{ height: '100%' }}>
+              <GridItem xl={4}>
+                <Card isFullHeight isFlat>
+                  <CardBody className="overflow-auto">
+                    <AuthForm
+                      {...props}
+                      onDismiss={onDismiss}
+                      onPropsSave={onPropsSave}
+                      progressChange={setInProgress}
+                    />
+                  </CardBody>
+                </Card>
+              </GridItem>
+              <GridItem xl={8}>
+                <Card isFullHeight isFlat>
+                  <CardBody className="overflow-auto">
+                    <FormHelper />
+                  </CardBody>
+                </Card>
+              </GridItem>
+            </Grid>
+          </TestPoolContext.Provider>
+        </CredentialContext.Provider>
+      </SearchExprServiceContext.Provider>
+    </Modal>
   );
 };
 
-interface AuthFormProps extends CreateCredentialModalProps {
+interface AuthFormProps extends Omit<CreateCredentialModalProps, 'visible'> {
   progressChange?: (inProgress: boolean) => void;
 }
 
@@ -126,28 +143,27 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   const matchExprService = React.useContext(SearchExprServiceContext);
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
-  const [loading, setLoading] = React.useState(false);
+  const [_, setCredential] = useAuthCredential(true);
+  const testPool = React.useContext(TestPoolContext);
+  const [saving, setSaving] = React.useState(false);
+  const [isDisabled, setIsDisabled] = React.useState(false);
 
   const [targets, setTargets] = React.useState<Target[]>([]);
 
   const onSave = React.useCallback(
     (username: string, password: string) => {
-      setLoading(true);
+      setSaving(true);
       addSubscription(
         context.api.postCredentials(matchExpression, username, password).subscribe((ok) => {
-          setLoading(false);
+          setSaving(false);
           if (ok) {
             onPropsSave();
           }
         })
       );
     },
-    [addSubscription, onPropsSave, context.api, matchExpression, setLoading]
+    [addSubscription, onPropsSave, context.api, matchExpression, setSaving]
   );
-
-  React.useEffect(() => {
-    progressChange && progressChange(loading);
-  }, [loading, progressChange]);
 
   React.useEffect(() => {
     addSubscription(context.targets.targets().subscribe(setTargets));
@@ -157,7 +173,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
     let validation: ValidatedOptions = ValidatedOptions.default;
     if (matchExpression !== '' && targets.length > 0) {
       try {
-        const atLeastOne = targets.some((t) => evaluateTargetWithExpr(t, matchExpression));
+        const atLeastOne = targets.some((t) => {
+          const res = evaluateTargetWithExpr(t, matchExpression);
+          if (typeof res === 'boolean') {
+            return res;
+          }
+          throw new Error('Invalid match expression');
+        });
         validation = atLeastOne ? ValidatedOptions.success : ValidatedOptions.warning;
       } catch (err) {
         validation = ValidatedOptions.error;
@@ -166,8 +188,33 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
     setMatchExpressionValid(validation);
   }, [matchExpression, targets, setMatchExpressionValid]);
 
+  React.useEffect(() => {
+    progressChange && progressChange(saving);
+  }, [saving, progressChange]);
+
+  React.useEffect(() => {
+    // Polling test pool
+    // 16ms gap or 60fps is smooth but not too fast.
+    addSubscription(
+      interval(16)
+        .pipe(
+          map(() => testPool.size > 0),
+          distinctUntilChanged()
+        )
+        .subscribe(setIsDisabled)
+    );
+  }, [testPool, setIsDisabled, addSubscription]);
+
   return (
-    <CredentialAuthForm {...props} onSave={onSave} onDismiss={onDismiss} focus={false} loading={loading}>
+    <CredentialAuthForm
+      {...props}
+      onSave={onSave}
+      onDismiss={onDismiss}
+      focus={false}
+      loading={saving}
+      isDisabled={isDisabled}
+      onCredentialChange={setCredential}
+    >
       <FormGroup
         label="Match Expression"
         labelIcon={
@@ -198,16 +245,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             ? `Warning: Match expression matches no targets.`
             : `
         Enter a match expression. This is a Java-like code snippet that is evaluated against each target
-        application to determine whether the rule should be applied. Select a target from the dropdown
-        on the right to view the context object available within the match expression context and test
-        if the expression matches.`
+        application to determine whether the rule should be applied.`
         }
         helperTextInvalid="Invalid Match Expression."
         validated={matchExpressionValid}
       >
         <TextArea
           value={matchExpression}
-          isDisabled={loading}
+          isDisabled={isDisabled}
           isRequired
           type="text"
           id="rule-matchexpr"
@@ -223,5 +268,50 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         />
       </FormGroup>
     </CredentialAuthForm>
+  );
+};
+
+type _SupportedTab = 'visualizer' | 'test';
+
+export const FormHelper: React.FC = ({ ...props }) => {
+  const alertOptions = React.useMemo(() => ({ hideActions: true }), []);
+  const [activeTab, setActiveTab] = React.useState<_SupportedTab>('visualizer');
+
+  const handleTabChange = React.useCallback(
+    (_: React.MouseEvent, key: string | number) => setActiveTab(`${key}` as _SupportedTab),
+    [setActiveTab]
+  );
+
+  return (
+    <Tabs {...props} activeKey={activeTab} onSelect={handleTabChange}>
+      <Tab
+        eventKey={'visualizer'}
+        title={
+          <>
+            <TabTitleIcon>
+              <TopologyIcon />
+            </TabTitleIcon>
+            <TabTitleText>Visualizer</TabTitleText>
+          </>
+        }
+      >
+        <div style={{ marginTop: '1em', height: '100%' }}>
+          <MatchExpressionVisualizer alertOptions={alertOptions} />
+        </div>
+      </Tab>
+      <Tab
+        eventKey={'test'}
+        title={
+          <>
+            <TabTitleIcon>
+              <FlaskIcon />
+            </TabTitleIcon>
+            <TabTitleText>Test</TabTitleText>
+          </>
+        }
+      >
+        <CredentialTestTable />
+      </Tab>
+    </Tabs>
   );
 };
