@@ -80,11 +80,10 @@ export const QuickSearchTabContent: React.FC<{ item?: QuickSearchItem }> = ({ it
   const history = useHistory();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const addSubscription = useSubscriptions();
 
   const handleActionClick = React.useCallback(() => {
-    item?.createAction && item.createAction({ history, services, notifications }, addSubscription);
-  }, [item, history, services, notifications, addSubscription]);
+    item?.createAction && item.createAction({ history, services, notifications });
+  }, [item, history, services, notifications]);
 
   return item ? (
     <Stack {...props} hasGutter>
@@ -310,7 +309,6 @@ export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ is
   const history = useHistory();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const addSubscription = useSubscriptions();
   const activeLevel = useFeatureLevel();
 
   const [hover, hoverRef] = useHover(0, 0);
@@ -330,12 +328,12 @@ export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ is
             <Bullseye>{icon}</Bullseye>
           </div>
         }
-        onClick={() => createAction({ history, services, notifications }, addSubscription)}
+        onClick={() => createAction({ history, services, notifications })}
       >
         {name}
       </MenuItem>
     ));
-  }, [filteredQuicksearches, history, services, notifications, addSubscription]);
+  }, [filteredQuicksearches, history, services, notifications]);
 
   return isShow || hover ? (
     <Menu
