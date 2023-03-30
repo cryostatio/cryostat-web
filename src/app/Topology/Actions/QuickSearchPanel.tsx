@@ -80,11 +80,10 @@ export const QuickSearchTabContent: React.FC<{ item?: QuickSearchItem }> = ({ it
   const history = useHistory();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const addSubscription = useSubscriptions();
 
   const handleActionClick = React.useCallback(() => {
-    item?.createAction && item.createAction({ history, services, notifications }, addSubscription);
-  }, [item, history, services, notifications, addSubscription]);
+    item?.createAction && item.createAction({ history, services, notifications });
+  }, [item, history, services, notifications]);
 
   return item ? (
     <Stack {...props} hasGutter>
@@ -157,30 +156,31 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
     [setSearchText]
   );
 
-  const filteredItems = React.useMemo(() => {
-    if (searchText === '') {
-      return quickSearches;
+  const filteredQuicksearches = React.useMemo(() => {
+    let items = quickSearches.filter((qs) => activeLevel <= qs.featureLevel);
+    if (searchText && searchText !== '') {
+      const regex = new RegExp(searchText, 'i');
+      items = items.filter(({ name, descriptionFull = '', descriptionShort = '', labels = [] }) => {
+        let matchResult = regex.test(name) || regex.test(descriptionFull) || regex.test(descriptionShort);
+
+        matchResult = matchResult || labels.reduce((acc, curr) => acc || regex.test(curr.content), false);
+
+        return matchResult;
+      });
     }
 
-    const regex = new RegExp(searchText, 'i');
-    return quickSearches.filter(({ name, descriptionFull = '', descriptionShort = '', labels = [] }) => {
-      let matchResult = regex.test(name) || regex.test(descriptionFull) || regex.test(descriptionShort);
-
-      matchResult = matchResult || labels.reduce((acc, curr) => acc || regex.test(curr.content), false);
-
-      return matchResult;
-    });
-  }, [searchText]);
+    return items;
+  }, [searchText, activeLevel]);
 
   const matchedItem = React.useMemo(() => {
-    return filteredItems.find((qs) => qs.id === activeTab);
-  }, [filteredItems, activeTab]);
+    return filteredQuicksearches.find((qs) => qs.id === activeTab);
+  }, [filteredQuicksearches, activeTab]);
 
   React.useEffect(() => {
-    if (!matchedItem && filteredItems.length) {
-      setActiveTab(filteredItems[0].id);
+    if (!matchedItem && filteredQuicksearches.length) {
+      setActiveTab(filteredQuicksearches[0].id);
     }
-  }, [filteredItems, matchedItem]);
+  }, [filteredQuicksearches, matchedItem]);
 
   return (
     <Stack hasGutter>
@@ -192,7 +192,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
           onClear={() => handleSearch('')}
         />
       </StackItem>
-      {filteredItems.length ? (
+      {filteredQuicksearches.length ? (
         <StackItem>
           <Sidebar {...props} tabIndex={0} style={{ height: 'max-content' }} hasGutter>
             <SidebarPanel variant="sticky">
@@ -207,17 +207,15 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
                 onSelect={handleTabChange}
                 role={'region'}
               >
-                {filteredItems
-                  .filter((qs) => activeLevel <= qs.featureLevel)
-                  .map((qs, index) => (
-                    <Tab
-                      className={css('topology__quicksearch__tab')}
-                      eventKey={qs.id}
-                      key={index}
-                      isDisabled={qs.disabled}
-                      title={<QuickSearchTabTitle item={qs} />}
-                    />
-                  ))}
+                {filteredQuicksearches.map((qs, index) => (
+                  <Tab
+                    className={css('topology__quicksearch__tab')}
+                    eventKey={qs.id}
+                    key={index}
+                    isDisabled={qs.disabled}
+                    title={<QuickSearchTabTitle item={qs} />}
+                  />
+                ))}
               </Tabs>
             </SidebarPanel>
             <SidebarContent>
@@ -292,7 +290,7 @@ export const QuickSearchContextMenu: React.FC<QuickSearchContextMenuProps> = ({ 
               isFocused
               ref={hoverRef}
               itemId={'Add to View'}
-              flyoutMenu={<QuickSearchFlyoutMenu quicksearches={quickSearches} isShow={hover} />}
+              flyoutMenu={<QuickSearchFlyoutMenu isShow={hover} />}
             >
               Add to View
             </MenuItem>
@@ -305,19 +303,23 @@ export const QuickSearchContextMenu: React.FC<QuickSearchContextMenuProps> = ({ 
 
 export interface QuickSearchFlyoutMenuProps {
   isShow?: boolean;
-  quicksearches: QuickSearchItem[];
 }
 
-export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ isShow, quicksearches, ...props }) => {
+export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ isShow, ...props }) => {
   const history = useHistory();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const addSubscription = useSubscriptions();
+  const activeLevel = useFeatureLevel();
 
   const [hover, hoverRef] = useHover(0, 0);
 
+  const filteredQuicksearches = React.useMemo(
+    () => quickSearches.filter((qs) => activeLevel <= qs.featureLevel),
+    [activeLevel]
+  );
+
   const items = React.useMemo(() => {
-    return quicksearches.map(({ id, icon, name, createAction = () => undefined }) => (
+    return filteredQuicksearches.map(({ id, icon, name, createAction = () => undefined }) => (
       <MenuItem
         key={id}
         itemId={id}
@@ -326,12 +328,12 @@ export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ is
             <Bullseye>{icon}</Bullseye>
           </div>
         }
-        onClick={() => createAction({ history, services, notifications }, addSubscription)}
+        onClick={() => createAction({ history, services, notifications })}
       >
         {name}
       </MenuItem>
     ));
-  }, [quicksearches, history, services, notifications, addSubscription]);
+  }, [filteredQuicksearches, history, services, notifications]);
 
   return isShow || hover ? (
     <Menu

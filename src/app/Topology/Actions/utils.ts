@@ -63,5 +63,5 @@ export interface QuickSearchItem {
   featureLevel: FeatureLevel;
   disabled?: boolean;
   actionText?: React.ReactNode;
-  createAction?: (utils: ActionUtils, track: (sub: Subscription) => void) => void;
+  createAction?: (utils: ActionUtils) => void;
 }
