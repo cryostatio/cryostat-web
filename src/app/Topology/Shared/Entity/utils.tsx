@@ -220,7 +220,7 @@ export const getTargetOwnedResources = (
           );
           return forkJoin(tasks).pipe(
             defaultIfEmpty([[] as StoredCredential[]]),
-            map((rules) => rules.reduce((prev, curr) => prev.concat(curr)))
+            map((credentials) => credentials.reduce((prev, curr) => prev.concat(curr)))
           );
         })
       );
