@@ -202,10 +202,10 @@ export const sortResouces = (
   if (!keyPaths || !keyPaths.length) {
     return resources;
   }
+  const transform = getTransform(index);
   const sorted = resources.sort((a, b) => {
     let aVal = getValue(a, keyPaths);
     let bVal = getValue(b, keyPaths);
-    const transform = getTransform(index);
     if (transform) {
       aVal = transform(aVal, a);
       bVal = transform(bVal, b);
