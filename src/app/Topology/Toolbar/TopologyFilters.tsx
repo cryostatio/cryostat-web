@@ -203,7 +203,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
               flattenedTree
                 .filter((n) => n.nodeType === type)
                 .map((groupNode: EnvironmentNode) => fieldValueToStrings(groupNode[categoryToNodeField(cat)]))
-                .reduce((prev, curr) => prev.concat(curr))
+                .reduce((acc, curr) => acc.concat(curr), [])
                 .filter((val) => {
                   const filters = groupFilters.filters[type] || {};
                   if (filters) {
@@ -278,7 +278,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
               }
               return fieldValueToStrings(value);
             })
-            .reduce((prev, curr) => prev.concat(curr))
+            .reduce((acc, curr) => acc.concat(curr), [])
             .filter((val) => {
               const criteria: string[] = targetFilters.filters[cat];
               return !criteria || !criteria.includes(val);
