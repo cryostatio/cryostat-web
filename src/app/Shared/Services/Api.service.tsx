@@ -1855,4 +1855,4 @@ export const defaultChartControllerConfig: ChartControllerConfig = {
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY = 'uploads';
 
-export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+$/;
+export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;

@@ -72,11 +72,11 @@ import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutUploadModal } from './DashboardLayoutUploadModal';
 import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
-export interface DashboardLayoutConfigProps {
+export interface DashboardLayoutToolbarProps {
   children?: React.ReactNode;
 }
 
-export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfigProps> = (_props) => {
+export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutToolbarProps> = (_props) => {
   const dispatch = useDispatch<StateDispatch>();
   const context = React.useContext(ServiceContext);
   const { t } = useTranslation();
@@ -140,19 +140,19 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     dispatch(dashboardConfigDeleteLayoutIntent(selectDelete));
     dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
     setSelectDelete('');
-  }, [dispatch, selectDelete]);
+  }, [dispatch, setSelectDelete, selectDelete]);
 
   const handleDeleteButton = React.useCallback(
     (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>, layout: string) => {
       if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteDashboardLayout)) {
         handleDeleteWarningModalOpen(ev, layout);
       } else {
-        setSelectDelete(layout);
-        handleDeleteLayout();
+        dispatch(dashboardConfigDeleteLayoutIntent(layout));
+        dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
       }
       if (deleteRef.current) deleteRef.current.blur();
     },
-    [context.settings, handleDeleteWarningModalOpen, setSelectDelete, handleDeleteLayout]
+    [context.settings, dispatch, handleDeleteWarningModalOpen]
   );
 
   const handleRenameLayout = React.useCallback(
@@ -194,6 +194,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
       if (actionId === 'rename') {
         handleRenameLayout(itemId);
       } else if (actionId === 'delete') {
+        console.log(itemId + ' delete');
         handleDeleteButton(ev, itemId);
       } else if (actionId === 'fav') {
         handleFavoriteLayout(itemId);

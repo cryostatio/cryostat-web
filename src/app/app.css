@@ -114,6 +114,20 @@ html, body, #root {
   overflow-y: auto;
 }
 
+.layout-template-picker {
+  padding: 0 1em 1em 1em;
+}
+
+.layout-template-picker .catalog-tile-pf {
+  height: 100%;
+  color: var(--pf-global--Color--100);
+}
+
+#dashboard-layout-menu-content .pf-c-menu__item-action {
+  padding-right: 0.65em;
+  padding-left: 0.65em;
+}
+
 .automated-analysis-grid-item {
   padding: 0.25em;
 }

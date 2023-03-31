@@ -37,6 +37,7 @@
  */
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
+import { LayoutTemplate } from '@app/Dashboard/DashboardUtils';
 import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
@@ -56,6 +57,7 @@ export enum DashboardConfigAction {
   LAYOUT_RENAME = 'layout-config/rename',
   LAYOUT_REPLACE = 'layout-config/replace',
   LAYOUT_FAVORITE = 'layout-config/favorite',
+  TEMPLATE_HISTORY_PUSH = 'template-history/push',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -102,6 +104,10 @@ export interface DashboardReplaceLayoutActionPayload {
 
 export interface DashboardFavoriteLayoutActionPayload {
   name: string;
+}
+
+export interface DashboardHistoryPushTemplateActionPayload {
+  template: LayoutTemplate;
 }
 
 export const dashboardConfigAddCardIntent = createAction(
@@ -190,6 +196,15 @@ export const dashboardConfigFavoriteLayoutIntent = createAction(
   })
 );
 
+export const dashboardConfigHistoryPushTemplateIntent = createAction(
+  DashboardConfigAction.TEMPLATE_HISTORY_PUSH,
+  (template: LayoutTemplate) => ({
+    payload: {
+      template,
+    } as DashboardHistoryPushTemplateActionPayload,
+  })
+);
+
 export interface CardConfig {
   id: string;
   name: string;
@@ -209,6 +224,7 @@ export type SerialDashboardLayout = Omit<DashboardLayout, 'cards'> & { cards: Se
 
 export interface DashboardConfigState {
   layouts: DashboardLayout[];
+  templateHistory: LayoutTemplate[];
   current: number;
   readonly _version: string;
 }
@@ -221,6 +237,7 @@ const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _
       favorite: true,
     },
   ] as DashboardLayout[],
+  templateHistory: [] as LayoutTemplate[],
   current: 0,
 });
 
@@ -288,18 +305,41 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardConfigDeleteLayoutIntent, (state, { payload }) => {
       const idx = state.layouts.findIndex((layout) => layout.name === payload.name);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.name} does not exist.`);
+      }
       state.layouts.splice(idx || 0, 1);
     })
     .addCase(dashboardConfigRenameLayoutIntent, (state, { payload }) => {
       const idx = state.layouts.findIndex((layout) => layout.name === payload.oldName);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.oldName} does not exist.`);
+      }
       state.layouts[idx].name = payload.newName;
     })
     .addCase(dashboardConfigReplaceLayoutIntent, (state, { payload }) => {
-      state.current = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName) || 0;
+      const idx = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.newLayoutName} does not exist.`);
+      }
+      state.current = idx;
     })
     .addCase(dashboardConfigFavoriteLayoutIntent, (state, { payload }) => {
       const idx = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.newLayoutName} does not exist.`);
+      }
       state.layouts[idx].favorite = !state.layouts[idx].favorite;
+    })
+    .addCase(dashboardConfigHistoryPushTemplateIntent, (state, { payload }) => {
+      const template = payload.template;
+      const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
+      if (idx >= 0) {
+        state.templateHistory.splice(idx, 1);
+      } else if (state.templateHistory.length >= 4) {
+        state.templateHistory.pop();
+      }
+      state.templateHistory.unshift(template);
     });
 });
 

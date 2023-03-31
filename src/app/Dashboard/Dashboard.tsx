@@ -65,7 +65,7 @@ import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChar
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { DashboardLayoutConfig } from './DashboardLayoutConfig';
+import { DashboardLayoutToolbar } from './DashboardLayoutToolbar';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 
 export interface Sized<T> {
@@ -330,6 +330,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   );
 
   const currLayout = React.useMemo(() => {
+    console.log('dashboardConfigs.layouts[dashboardConfigs.current]', dashboardConfigs.current);
     return dashboardConfigs.layouts[dashboardConfigs.current];
   }, [dashboardConfigs]);
 
@@ -377,7 +378,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const emptyLayout = React.useMemo(() => !currLayout.cards || !currLayout.cards.length, [currLayout.cards]);
 
   return (
-    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutConfig />}>
+    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutToolbar />}>
       <ChartContext.Provider value={chartContext} data-full-height>
         {emptyLayout ? (
           <AddCard variant="card" />

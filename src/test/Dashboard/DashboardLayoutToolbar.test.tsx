@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { DashboardLayoutConfig } from '@app/Dashboard/DashboardLayoutConfig';
+import { DashboardLayoutToolbar } from '@app/Dashboard/DashboardLayoutToolbar';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
@@ -46,7 +46,7 @@ import '../Common';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 
-describe('<DashboardLayoutConfig />', () => {
+describe('<DashboardLayoutToolbar />', () => {
   it.skip('renders correctly', async () => {
     let tree;
     await act(async () => {
@@ -54,7 +54,7 @@ describe('<DashboardLayoutConfig />', () => {
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
             <Provider store={store}>
-              <DashboardLayoutConfig />
+              <DashboardLayoutToolbar />
             </Provider>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>

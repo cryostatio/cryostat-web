@@ -36,5 +36,52 @@
  * SOFTWARE.
  */
 
+import { DashboardLayout, SerialDashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { nanoid } from '@reduxjs/toolkit';
+
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
+
+export interface LayoutTemplate {
+  name: string;
+  icon: string;
+  description: string;
+  layout: SerialDashboardLayout;
+  vendor?: string;
+}
+
+// export class LayoutTemplateService {
+//     private readonly _state$ = new BehaviorSubject<string>('');
+
+//     layoutTemplate(): Observable<string> {
+//       return this._state$.asObservable();
+//     }
+
+//     setLayoutTemplate(expr: string): void {
+//       this._state$.next(expr);
+//     }
+// }
+
+// export const DashboardLayoutContext: React.Context<LayoutTemplate> = React.createContext<LayoutTemplate>(BlankLayout);
+
+// export const useLayoutTemplate = (): [LayoutTemplate, (layout: LayoutTemplate) => void] => {
+//     const [layoutTemplate, setLayoutTemplate] = React.useState<LayoutTemplate>(BlankLayout);
+
+//     const layoutContext = React.useContext(DashboardLayoutContext);
+
+//     React.useEffect(() => {
+
+// }
+
+export const deserializeLayout = (layout: SerialDashboardLayout, name?: string): DashboardLayout => {
+  return {
+    ...layout,
+    name: name || layout.name,
+    cards: layout.cards.map((card) => {
+      return {
+        ...card,
+        id: `${card.name}-${nanoid()}`,
+      };
+    }),
+  } as DashboardLayout;
+};
