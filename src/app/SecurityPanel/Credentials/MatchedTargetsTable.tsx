@@ -42,7 +42,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResouces } from '@app/utils/utils';
+import { sortResources } from '@app/utils/utils';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
@@ -121,7 +121,7 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
   }, [addSubscription, context, context.notificationChannel, setTargets, matchExpression]);
 
   const targetRows = React.useMemo(() => {
-    return sortResouces(sortBy, targets, mapper, getTransform).map((target, idx) => {
+    return sortResources(sortBy, targets, mapper, getTransform).map((target, idx) => {
       return (
         <Tr key={`target-${idx}`}>
           <Td key={`target-table-row-${idx}_0`}>

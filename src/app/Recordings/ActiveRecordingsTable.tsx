@@ -58,7 +58,7 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResouces } from '@app/utils/utils';
+import { sortResources } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -346,7 +346,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     setFilteredRecordings(
-      sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+      sortResources(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 

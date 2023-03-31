@@ -143,7 +143,7 @@ Credentials are used to authenticate with the target JVMs that Cryostat communic
     <div style="max-width: 350px">
       <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
     </div>
-  <p>For more information about the <strong>Automated Rules</strong> feature, read our guide on the upstream <a href="https://cryostat.io/guides/#create-an-automated-rule" target="_blank">Cryostat documentation</a>.</p>
+  <p>For more information about configuring <strong>Settings</strong> in Cryostat, read our guides on the <a href="${build.homePageUrl}" target="_blank">Cryostat website</a>.</p>
 </div>`,
     type: {
       text: 'Featured',

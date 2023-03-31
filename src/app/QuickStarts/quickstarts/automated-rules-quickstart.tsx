@@ -37,6 +37,7 @@
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 
@@ -44,7 +45,7 @@ import { QuickStart } from '@patternfly/quickstarts';
 const AutomatedRulesQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
-    name: 'automated-rule-quickstart',
+    name: 'automated-rules-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
   },
   spec: {
@@ -113,7 +114,7 @@ The Automated Rule creation form has several fields that you can fill out to cre
 
 **The rest of the fields are optional and not required for this quick start: \`[Description, Maximum Size, Maximum Age, Maximum Age, Archival Period, Initial Delay, and Preserved Archives]\`.**
 
-[Learn more about these other Automated Rule attributes in the upstream [Cryostat documentation](https://cryostat.io/guides/#create-an-automated-rule).]{{admonition tip}}
+[Learn more about these other Automated Rule attributes in the [Cryostat documentation](https://cryostat.io/guides/#create-an-automated-rule).]{{admonition tip}}
 
 When you are finished, click the [Create]{{highlight rule-create-btn}} button.
 
@@ -151,7 +152,7 @@ This recording was created by the rule that we just created and should have a na
     <div style="max-width: 350px">
         <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
     </div>
-    <p>For more information about the <strong>Automated Rules</strong> feature, read our guide on the upstream <a href="https://cryostat.io/guides/#create-an-automated-rule" target="_blank">Cryostat documentation</a>.</p>
+    <p>For more information about the <strong>Automated Rules</strong> feature, read our guide on the <a href="${build.homePageUrl}/guides/#create-an-automated-rule" target="_blank">Cryostat documentation</a>.</p>
 </div>`,
     type: {
       text: 'Featured',

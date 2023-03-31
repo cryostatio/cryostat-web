@@ -194,11 +194,12 @@ export class StreamOf<T> {
   }
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const getValue = (object: any, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
-export const sortResouces = <R>(
+export const sortResources = <R>(
   { index, direction }: ISortBy,
   resources: R[],
   mapper: (index?: number) => string[] | undefined,
@@ -220,3 +221,4 @@ export const sortResouces = <R>(
   });
   return [...(direction === SortByDirection.asc ? sorted : sorted.reverse())];
 };
+/* eslint-enable @typescript-eslint/no-explicit-any */

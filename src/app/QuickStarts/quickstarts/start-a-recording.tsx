@@ -37,6 +37,7 @@
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 
 import { QuickStart } from '@patternfly/quickstarts';
@@ -187,12 +188,13 @@ Archiving a recording will save the recording to [APP]'s archival storage, and w
   <div style="max-width: 350px">
     <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
   </div>
-  <p>To learn more about [APP]'s extensive features and capabilities, read our upstream guides at <a href="https://cryostat.io/guides/" target="_blank">cryostat.io</a>.</p>
+  <p>To learn more about [APP]'s extensive features and capabilities, read our guides at <a href="${build.homePageUrl}/guides/" target="_blank">cryostat.io</a>.</p>
 </div>`,
     type: {
       text: 'Featured',
       color: 'blue',
     },
+    nextQuickStart: ['automated-rules-quickstart'],
   },
 };
 

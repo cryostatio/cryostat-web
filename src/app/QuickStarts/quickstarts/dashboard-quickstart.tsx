@@ -37,6 +37,7 @@
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 
@@ -77,7 +78,7 @@ Each card displays a different set of information about the currently selected t
 - How to move and resize Dashboard Cards
 - How to rename, upload, download, and delete Dashboard Layouts
 
-[Learn more about each Dashboard Card in the upstream [Cryostat documentation](https://cryostat.io/docs/user-guide/dashboard/).]{{admonition tip}}
+[Learn more about each Dashboard Card in the [Cryostat documentation](${build.homePageUrl}/guides/#dashboard/).]{{admonition tip}}
     `,
     tasks: [
       {
@@ -165,7 +166,7 @@ You can rename, upload, download, and delete **Dashboard Layouts**. You may also
     <div style="max-width: 350px">
         <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
     </div>
-    <p>For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guide on the upstream <a href="https://cryostat.io/guides/#create-an-automated-rule" target="_blank">Cryostat documentation</a>.</p>
+    <p>For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guide on the <a href="${build.homePageUrl}/guides/#dashboard" target="_blank">Cryostat documentation</a>.</p>
 </div>`,
     type: {
       text: 'Featured',

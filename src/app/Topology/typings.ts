@@ -64,6 +64,7 @@ export enum NodeType {
 }
 
 export interface NodeLabels {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readonly [key: string]: any;
 }
 

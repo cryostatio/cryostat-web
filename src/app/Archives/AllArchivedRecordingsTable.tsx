@@ -43,7 +43,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResouces } from '@app/utils/utils';
+import { sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -153,7 +153,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           d.connectUrl.toLowerCase().includes(formattedSearchText)
       );
     }
-    return sortResouces(sortBy, updatedSearchedDirectories, mapper, getTransform);
+    return sortResources(sortBy, updatedSearchedDirectories, mapper, getTransform);
   }, [directories, searchText, sortBy]);
 
   React.useEffect(() => {

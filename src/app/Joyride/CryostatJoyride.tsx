@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import build from '@app/build.json';
 import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import JoyrideTooltip from '@app/Joyride/JoyrideTooltip';
 import React from 'react';
@@ -197,12 +198,12 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           content: (
             <p>
               Stay up-to-date with everything Cryostat on our{' '}
-              <a target="_blank" href="https://cryostat.io/blog/" rel="noreferrer">
+              <a target="_blank" href={`${build.homePageUrl}/blog/`} rel="noreferrer">
                 blog
               </a>{' '}
               or continue to learn more in our{' '}
-              <a target="_blank" href="https://cryostat.io/guides/" rel="noreferrer">
-                documentation
+              <a target="_blank" href={`${build.homePageUrl}/guides/`} rel="noreferrer">
+                documentation guides
               </a>
               .
             </p>

@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Put link quickstarts in a separate QuickStartCatalogSection
@@ -54,7 +55,7 @@ const CryostatLinkQuickStart: QuickStart = {
     prerequisites: [''],
     introduction: '### This is a generic quickstart.',
     link: {
-      href: 'https://cryostat.io',
+      href: build.homePageUrl,
       text: 'cryostat.io',
     },
     type: {

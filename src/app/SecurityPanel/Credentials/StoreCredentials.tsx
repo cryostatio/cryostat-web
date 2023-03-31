@@ -44,7 +44,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, sortResouces } from '@app/utils/utils';
+import { evaluateTargetWithExpr, sortResources } from '@app/utils/utils';
 import {
   Badge,
   Button,
@@ -378,7 +378,7 @@ export const StoreCredentials = () => {
   };
 
   const matchExpressionRows = React.useMemo(() => {
-    return sortResouces(sortBy, state.credentials, mapper, getTransform).map((credential, idx) => {
+    return sortResources(sortBy, state.credentials, mapper, getTransform).map((credential, idx) => {
       const isExpanded: boolean = state.expandedCredentials.includes(credential);
       const isChecked: boolean = state.checkedCredentials.includes(credential);
 
