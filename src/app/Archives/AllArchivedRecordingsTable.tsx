@@ -37,10 +37,12 @@
  */
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { sortResouces } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -62,34 +64,56 @@ import * as React from 'react';
 import { of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
 
+const tableColumns = [
+  {
+    title: 'Directory',
+    keyPaths: ['connectUrl'],
+    sortable: true,
+    width: 80,
+  },
+  {
+    title: 'Archives',
+    keyPaths: ['recordings'],
+    transform: (recordings: ArchivedRecording[], _obj: RecordingDirectory) => {
+      return recordings.length;
+    },
+    sortable: true,
+    width: 15,
+  },
+];
+
+const mapper = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
+
+const getTransform = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].transform;
+  }
+  return undefined;
+};
+
 export interface AllArchivedRecordingsTableProps {}
 
 export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
   const [directories, setDirectories] = React.useState([] as RecordingDirectory[]);
-  const [counts, setCounts] = React.useState(new Map<string, number>());
   const [searchText, setSearchText] = React.useState('');
-  const [searchedDirectories, setSearchedDirectories] = React.useState([] as RecordingDirectory[]);
   const [expandedDirectories, setExpandedDirectories] = React.useState([] as RecordingDirectory[]);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
-
-  const tableColumns: string[] = React.useMemo(() => ['Directory', 'Count'], []);
+  const [sortBy, getSortParams] = useSort();
 
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: RecordingDirectory[]) => {
-      const updatedDirectories: RecordingDirectory[] = [];
-      const updatedCounts = new Map<string, number>();
-      for (const dir of directories) {
-        updatedDirectories.push(dir);
-        updatedCounts.set(dir.connectUrl, dir.recordings.length as number);
-      }
-      setDirectories(updatedDirectories);
-      setCounts(updatedCounts);
+      setDirectories([...directories]);
       setIsLoading(false);
     },
-    [setDirectories, setCounts, setIsLoading]
+    [setDirectories, setIsLoading]
   );
 
   const refreshDirectoriesAndCounts = React.useCallback(() => {
@@ -114,7 +138,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     refreshDirectoriesAndCounts();
   }, [refreshDirectoriesAndCounts]);
 
-  React.useEffect(() => {
+  const searchedDirectories = React.useMemo(() => {
     let updatedSearchedDirectories: RecordingDirectory[];
     if (!searchText) {
       updatedSearchedDirectories = directories;
@@ -126,8 +150,8 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           d.connectUrl.toLowerCase().includes(formattedSearchText)
       );
     }
-    setSearchedDirectories(updatedSearchedDirectories);
-  }, [searchText, directories, setSearchedDirectories]);
+    return sortResouces(sortBy, updatedSearchedDirectories, mapper, getTransform);
+  }, [directories, searchText, sortBy]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -187,24 +211,12 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     [expandedDirectories, setExpandedDirectories]
   );
 
-  const isHidden = React.useMemo(() => {
-    return directories.map((dir) => {
-      return !includesDirectory(searchedDirectories, dir) || (counts.get(dir.connectUrl) || 0) === 0;
-    });
-  }, [directories, searchedDirectories, counts]);
-
   const directoryRows = React.useMemo(() => {
-    return directories.map((dir, idx) => {
+    return searchedDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
-      const handleToggle = () => {
-        if ((counts.get(dir.connectUrl) || 0) !== 0 || isExpanded) {
-          toggleExpanded(dir);
-        }
-      };
-
       return (
-        <Tr key={`${idx}_parent`} isHidden={isHidden[idx]}>
+        <Tr key={`${idx}_parent`}>
           <Td
             key={`directory-table-row-${idx}_1`}
             id={`directory-ex-toggle-${idx}`}
@@ -212,10 +224,10 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
             expand={{
               rowIndex: idx,
               isExpanded: isExpanded,
-              onToggle: handleToggle,
+              onToggle: () => toggleExpanded(dir),
             }}
           />
-          <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
+          <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
             <Split hasGutter>
               <SplitItem>
                 <Text>{dir.connectUrl}</Text>
@@ -227,20 +239,20 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
               </SplitItem>
             </Split>
           </Td>
-          <Td key={`directory-table-row-${idx}_3`}>
-            <Badge key={`${idx}_count`}>{counts.get(dir.connectUrl) || 0}</Badge>
+          <Td key={`directory-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
+            <Badge key={`${idx}_count`}>{dir.recordings.length || 0}</Badge>
           </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, directories, expandedDirectories, counts, isHidden, tableColumns]);
+  }, [toggleExpanded, searchedDirectories, expandedDirectories]);
 
   const recordingRows = React.useMemo(() => {
-    return directories.map((dir, idx) => {
+    return searchedDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
       return (
-        <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
+        <Tr key={`${idx}_child`} isExpanded={isExpanded}>
           <Td key={`directory-ex-expand-${idx}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
             {isExpanded ? (
               <ExpandableRowContent>
@@ -257,7 +269,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         </Tr>
       );
     });
-  }, [directories, expandedDirectories, isHidden, tableColumns.length]);
+  }, [searchedDirectories, expandedDirectories]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -268,14 +280,10 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     return rowPairs;
   }, [directoryRows, recordingRows]);
 
-  const noDirectories = React.useMemo(() => {
-    return isHidden.reduce((a, b) => a && b, true);
-  }, [isHidden]);
-
   let view: JSX.Element;
   if (isLoading) {
     view = <LoadingView />;
-  } else if (noDirectories) {
+  } else if (!searchedDirectories.length) {
     view = (
       <>
         <EmptyState>
@@ -293,9 +301,13 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              {tableColumns.map((key) => (
-                <Th key={`table-header-${key}`} width={key === 'Directory' ? 90 : 15}>
-                  {key}
+              {tableColumns.map(({ title, width }, index) => (
+                <Th
+                  key={`table-header-${title}`}
+                  sort={getSortParams(index)}
+                  width={width as React.ComponentProps<typeof Th>['width']}
+                >
+                  {title}
                 </Th>
               ))}
             </Tr>

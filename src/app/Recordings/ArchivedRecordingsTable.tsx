@@ -56,8 +56,9 @@ import { ArchivedRecording, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@ap
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { formatBytes, hashCode } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResouces } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -87,10 +88,34 @@ import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import { RecordingsTable } from './RecordingsTable';
+import { ColumnConfig, RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
-const tableColumns: string[] = ['Name', 'Labels', 'Size'];
+const tableColumns = [
+  {
+    title: 'Name',
+    keyPaths: ['name'],
+    sortable: true,
+  },
+  {
+    title: 'Labels',
+    keyPaths: ['metadata', 'labels'],
+  },
+  {
+    title: 'Size',
+    keyPaths: ['size'],
+    sortable: true,
+  },
+];
+
+const mapper = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
+
+const getTransform = (_index?: number) => undefined;
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
@@ -124,6 +149,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ArchiveActions, boolean>>({ DELETE: false });
+  const [sortBy, getSortParams] = useSort();
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -340,8 +366,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   }, [addSubscription, context, context.notificationChannel, setRecordings, propsTarget]);
 
   React.useEffect(() => {
-    setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
-  }, [recordings, targetRecordingFilters, setFilteredRecordings]);
+    setFilteredRecordings(
+      sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+    );
+  }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -489,6 +517,13 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     return size;
   }, [filteredRecordings]);
 
+  const columnConfig: ColumnConfig = React.useMemo(
+    () => ({
+      columns: tableColumns,
+      onSort: getSortParams,
+    }),
+    [getSortParams]
+  );
   return (
     <Drawer isExpanded={showDetailsPanel} isInline id={'archived-recording-drawer'}>
       <DrawerContent panelContent={LabelsPanel} className="recordings-table-drawer-content">
@@ -496,7 +531,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           <RecordingsTable
             tableTitle="Archived Flight Recordings"
             toolbar={RecordingsToolbar}
-            tableColumns={tableColumns}
+            tableColumns={columnConfig}
             tableFooter={
               filteredRecordings.length > 0 && (
                 <TableComposable borders={false}>
@@ -779,10 +814,10 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             onToggle: handleToggle,
           }}
         />
-        <Td key={`archived-table-row-${index}_2`} dataLabel={tableColumns[0]}>
+        <Td key={`archived-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
           {recording.name}
         </Td>
-        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2]}>
+        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
           <LabelCell
             target={currentSelectedTargetURL}
             clickableOptions={{
@@ -792,7 +827,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             labels={parsedLabels}
           />
         </Td>
-        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1]}>
+        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1].title}>
           {formatBytes(recording.size)}
         </Td>
         {propsDirectory ? (

@@ -39,8 +39,9 @@ import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode } from '@app/utils/utils';
+import { hashCode, sortResouces } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -85,6 +86,38 @@ const getCategoryString = (eventType: EventType): string => {
 
 const includesSubstr = (a: string, b: string) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
 
+const tableColumns = [
+  {
+    title: 'Name',
+    keyPaths: ['name'],
+    sortable: true,
+  },
+  {
+    title: 'Type ID',
+    keyPaths: ['typeId'],
+    sortable: true,
+  },
+  {
+    title: 'Description',
+    keyPaths: ['description'],
+    sortable: true,
+  },
+  {
+    title: 'Categories',
+    keyPaths: ['category'],
+    sortable: true,
+  },
+];
+
+const mapper = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
+
+const getTransform = (_index?: number) => undefined;
+
 export interface EventTypesProps {}
 
 export const EventTypes: React.FC<EventTypesProps> = (_) => {
@@ -99,8 +132,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   const [filterText, setFilterText] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-
-  const tableColumns = React.useMemo(() => ['', 'Name', 'Type ID', 'Description', 'Categories'], []);
+  const [sortBy, getSortParams] = useSort();
 
   const handleTypes = React.useCallback(
     (types) => {
@@ -152,17 +184,14 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   }, [addSubscription, context.target]);
 
   const filterTypesByText = React.useMemo(() => {
-    if (!filterText) {
-      return types;
-    }
-    return types.filter(
-      (t) =>
-        includesSubstr(t.name, filterText) ||
-        includesSubstr(t.typeId, filterText) ||
-        includesSubstr(t.description, filterText) ||
-        includesSubstr(getCategoryString(t), filterText)
-    );
-  }, [types, filterText]);
+    const withFilters = (t: EventType) =>
+      filterText === '' ||
+      includesSubstr(t.name, filterText) ||
+      includesSubstr(t.typeId, filterText) ||
+      includesSubstr(t.description, filterText) ||
+      includesSubstr(getCategoryString(t), filterText);
+    return sortResouces(sortBy, types.filter(withFilters), mapper, getTransform);
+  }, [types, filterText, sortBy]);
 
   const displayedTypeRowData = React.useMemo(() => {
     const offset = (currentPage - 1) * perPage;
@@ -241,7 +270,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
             }}
           />
           {rowData.cellContents.map((content, idx) => (
-            <Td key={`event-type-${tableColumns[idx + 1].toLowerCase()}-${idx}`} dataLabel={tableColumns[idx + 1]}>
+            <Td key={`event-type-${tableColumns[idx].title}-${idx}`} dataLabel={tableColumns[idx].title}>
               {content}
             </Td>
           ))}
@@ -253,7 +282,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         </Tr>
       </Tbody>
     ));
-  }, [displayedTypeRowData, onToggle, tableColumns]);
+  }, [displayedTypeRowData, onToggle]);
 
   if (errorMessage != '') {
     return (
@@ -298,8 +327,11 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
           <TableComposable aria-label="Event Types Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
-                {tableColumns.map((column) => (
-                  <Th key={`event-type-header-${column}`}>{column}</Th>
+                <Th />
+                {tableColumns.map(({ title }, index) => (
+                  <Th key={`event-type-header-${title}`} sort={getSortParams(index)}>
+                    {title}
+                  </Th>
                 ))}
               </Tr>
             </Thead>

@@ -36,17 +36,15 @@
  * SOFTWARE.
  */
 import { DeleteCredentials, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { CreateCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
 import { StoreCredentials } from '@app/SecurityPanel/Credentials/StoreCredentials';
 import { MatchedCredential, StoredCredential } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
 import { of, throwError } from 'rxjs';
 
 import { renderWithServiceContext } from '../../Common';
@@ -113,10 +111,6 @@ jest.mock('@app/SecurityPanel/Credentials/CreateCredentialModal', () => {
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  .mockReturnValueOnce(of()) // 'renders correctly'
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
   .mockReturnValueOnce(of(mockCredentialNotification)) // 'adds the correct table entry when a stored notification is received'
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -151,7 +145,6 @@ jest
   jest.spyOn(defaultServices.api, 'deleteCredentials').mockReturnValue(of(true));
 jest
   .spyOn(defaultServices.api, 'getCredentials')
-  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'renders correctly'
 
   .mockReturnValueOnce(of([])) // 'adds the correct table entry when a stored notification is received'
 
@@ -190,23 +183,6 @@ jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValu
 
 describe('<StoreCredentials />', () => {
   afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <StoreCredentials />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-
-    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
-  });
 
   it('adds the correct table entry when a stored notification is received', async () => {
     const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');

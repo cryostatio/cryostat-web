@@ -39,8 +39,9 @@ import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot } from '@app/utils/utils';
+import { evaluateTargetWithExpr, portalRoot, sortResouces } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -77,12 +78,43 @@ import {
 import * as React from 'react';
 import { TestPoolContext, useAuthCredential } from './utils';
 
+const tableColumns = [
+  {
+    title: 'Target',
+    keyPaths: ['alias'],
+    transform: (_alias: string, target: Target) => {
+      return target.alias === target.connectUrl || !target.alias
+        ? `${target.connectUrl}`
+        : `${target.alias} (${target.connectUrl})`;
+    },
+    sortable: true,
+  },
+  {
+    title: 'Status',
+  },
+];
+
+const mapper = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
+
+const getTransform = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].transform;
+  }
+  return undefined;
+};
+
 export interface CredentialTestTableProps {}
 
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [matchExpression] = useSearchExpression();
+  const [sortBy, getSortParams] = useSort();
 
   const [targets, setTargets] = React.useState<Target[]>([]);
   const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
@@ -108,10 +140,10 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
 
   const rows = React.useMemo(
     () =>
-      matchedTargets.map((t) => (
+      sortResouces(sortBy, matchedTargets, mapper, getTransform).map((t) => (
         <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />
       )),
-    [matchedTargets, filters, searchText]
+    [matchedTargets, filters, searchText, sortBy]
   );
 
   const toolbar = React.useMemo(
@@ -134,7 +166,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         <TableComposable {...props}>
           <Thead>
             <Tr>
-              <Th>Target</Th>
+              <Th sort={getSortParams(0)}>Target</Th>
               <Th textCenter width={20}>
                 Status
               </Th>

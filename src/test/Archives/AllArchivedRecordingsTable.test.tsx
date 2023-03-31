@@ -207,7 +207,7 @@ describe('<AllArchivedRecordingsTable />', () => {
 
     expect(screen.getByLabelText('all-archives-table')).toBeInTheDocument();
     expect(screen.getByText('Directory')).toBeInTheDocument();
-    expect(screen.getByText('Count')).toBeInTheDocument();
+    expect(screen.getByText('Archives')).toBeInTheDocument();
     expect(screen.getByText(`${mockConnectUrl1}`)).toBeInTheDocument();
     expect(screen.getByText('1')).toBeInTheDocument();
   });

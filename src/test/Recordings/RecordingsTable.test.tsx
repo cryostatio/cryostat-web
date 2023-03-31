@@ -59,7 +59,20 @@ const FakeToolbar = () => {
 
 const fakeTableTitle = 'Test Table';
 
-const fakeTableColumns: string[] = ['Column 1', 'Column 2'];
+const fakeColumnConfig = {
+  columns: [
+    {
+      title: 'Column 1',
+      keyPaths: ['col1'],
+      sortable: true,
+    },
+    {
+      title: 'Column 2',
+      keyPaths: ['col2'],
+    },
+  ],
+  onSort: jest.fn(),
+};
 
 const fakeTableRows = (
   <Tbody>
@@ -87,7 +100,7 @@ describe('<RecordingsTable />', () => {
     renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
@@ -107,7 +120,7 @@ describe('<RecordingsTable />', () => {
     renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
@@ -121,8 +134,8 @@ describe('<RecordingsTable />', () => {
     );
 
     expect(screen.getByLabelText('Test Table')).toBeInTheDocument();
-    expect(screen.getByText(fakeTableColumns[0])).toBeInTheDocument();
-    expect(screen.getByText(fakeTableColumns[1])).toBeInTheDocument();
+    expect(screen.getByText(fakeColumnConfig.columns[0].title)).toBeInTheDocument();
+    expect(screen.getByText(fakeColumnConfig.columns[1].title)).toBeInTheDocument();
     expect(screen.getByText('Row 1: Fake Column 1 Data')).toBeInTheDocument();
     expect(screen.getByText('Row 1: Fake Column 2 Data')).toBeInTheDocument();
     expect(screen.getByText('Row 2: Fake Column 1 Data')).toBeInTheDocument();
@@ -133,7 +146,7 @@ describe('<RecordingsTable />', () => {
     const { container } = renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
@@ -156,7 +169,7 @@ describe('<RecordingsTable />', () => {
     renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
@@ -176,7 +189,7 @@ describe('<RecordingsTable />', () => {
     renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={true}
@@ -197,7 +210,7 @@ describe('<RecordingsTable />', () => {
     renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={true}
         isLoading={false}
@@ -217,7 +230,7 @@ describe('<RecordingsTable />', () => {
     const { user } = renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
@@ -240,7 +253,7 @@ describe('<RecordingsTable />', () => {
     renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
-        tableColumns={fakeTableColumns}
+        tableColumns={fakeColumnConfig}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
