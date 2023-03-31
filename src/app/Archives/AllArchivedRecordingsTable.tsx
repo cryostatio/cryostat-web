@@ -40,6 +40,7 @@ import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable
 import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { sortResouces } from '@app/utils/utils';
@@ -61,7 +62,7 @@ import {
 import { HelpIcon, SearchIcon } from '@patternfly/react-icons';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
 
 const tableColumns = [
@@ -74,7 +75,7 @@ const tableColumns = [
   {
     title: 'Archives',
     keyPaths: ['recordings'],
-    transform: (recordings: ArchivedRecording[], _obj: RecordingDirectory) => {
+    transform: (recordings: ArchivedRecording[], _obj: _RecordingDirectory) => {
       return recordings.length;
     },
     sortable: true,
@@ -96,21 +97,23 @@ const getTransform = (index?: number) => {
   return undefined;
 };
 
+type _RecordingDirectory = RecordingDirectory & { targetAsObs: Observable<Target> };
+
 export interface AllArchivedRecordingsTableProps {}
 
 export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
-  const [directories, setDirectories] = React.useState([] as RecordingDirectory[]);
+  const [directories, setDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [searchText, setSearchText] = React.useState('');
-  const [expandedDirectories, setExpandedDirectories] = React.useState([] as RecordingDirectory[]);
+  const [expandedDirectories, setExpandedDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
 
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: RecordingDirectory[]) => {
-      setDirectories([...directories]);
+      setDirectories(directories.map((dir) => ({ ...dir, targetAsObs: of(getTargetFromDirectory(dir)) })));
       setIsLoading(false);
     },
     [setDirectories, setIsLoading]
@@ -139,13 +142,13 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [refreshDirectoriesAndCounts]);
 
   const searchedDirectories = React.useMemo(() => {
-    let updatedSearchedDirectories: RecordingDirectory[];
+    let updatedSearchedDirectories: _RecordingDirectory[];
     if (!searchText) {
       updatedSearchedDirectories = directories;
     } else {
       const formattedSearchText = searchText.trim().toLowerCase();
       updatedSearchedDirectories = directories.filter(
-        (d: RecordingDirectory) =>
+        (d: _RecordingDirectory) =>
           d.jvmId.toLowerCase().includes(formattedSearchText) ||
           d.connectUrl.toLowerCase().includes(formattedSearchText)
       );
@@ -258,7 +261,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
               <ExpandableRowContent>
                 <ArchivedRecordingsTable
                   directory={dir}
-                  target={of(getTargetFromDirectory(dir))}
+                  target={dir.targetAsObs}
                   isUploadsTable={false}
                   isNestedTable={true}
                   directoryRecordings={dir.recordings}

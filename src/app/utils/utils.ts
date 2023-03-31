@@ -192,12 +192,12 @@ export const getValue = (object: any, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
-export const sortResouces = (
+export const sortResouces = <R>(
   { index, direction }: ISortBy,
-  resources: any[],
+  resources: R[],
   mapper: (index?: number) => string[] | undefined,
   getTransform: (index?: number) => ((value: any, resource: any) => any) | undefined
-) => {
+): R[] => {
   const keyPaths = mapper(index);
   if (!keyPaths || !keyPaths.length) {
     return resources;
