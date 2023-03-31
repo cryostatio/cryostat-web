@@ -169,20 +169,12 @@ jest.mock('@app/Shared/Services/Target.service', () => ({
 jest
   .spyOn(defaultServices.api, 'graphql')
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // renders correctly
-
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // has the correct table elements
-
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // hides targets with zero recordings
-
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // correctly handles the search function
-
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // expands targets to show their <ArchivedRecordingsTable />
-
-  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // does not expand targets with zero recordings
-
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // adds a target upon receiving a notification
   .mockReturnValueOnce(of(mockNewTargetCountResponse))
-
   .mockReturnValue(of(mockTargetsAndCountsResponse)); // remaining tests
 
 jest
@@ -208,11 +200,6 @@ jest
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // expands targets to show their <ArchivedRecordingsTable />
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of()) // does not expand targets with zero recordings
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -259,13 +246,14 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
 
     expect(screen.getByLabelText('all-targets-table')).toBeInTheDocument();
     expect(screen.getByText('Target')).toBeInTheDocument();
-    expect(screen.getByText('Count')).toBeInTheDocument();
+    expect(screen.getByText('Archives')).toBeInTheDocument();
     expect(screen.getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeInTheDocument();
     expect(screen.getByText(`${mockCount1}`)).toBeInTheDocument();
     expect(screen.getByText(`${mockAlias2} (${mockConnectUrl2})`)).toBeInTheDocument();
     expect(screen.getByText(`${mockCount2}`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockAlias3} (${mockConnectUrl3})`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockCount3}`)).toBeInTheDocument();
+    // Default to hide target with 0 archives
+    expect(screen.queryByText(`${mockAlias3} (${mockConnectUrl3})`)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockCount3}`)).not.toBeInTheDocument();
   });
 
   it('hides targets with zero recordings', async () => {
@@ -344,29 +332,6 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(2);
-    expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
-  });
-
-  it('does not expand targets with zero recordings', async () => {
-    const { user } = renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
-
-    const checkbox = screen.getByLabelText('all-targets-hide-check');
-    await user.click(checkbox);
-
-    let tableBody = screen.getAllByRole('rowgroup')[1];
-    let rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(3);
-
-    const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockAlias3} (${mockConnectUrl3})`)).toBeTruthy();
-    expect(within(thirdTarget).getByText(`${mockCount3}`)).toBeTruthy();
-
-    const expand = within(thirdTarget).getByLabelText('Details');
-    await user.click(expand);
-
-    tableBody = screen.getAllByRole('rowgroup')[1];
-    rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(3);
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
   });
 

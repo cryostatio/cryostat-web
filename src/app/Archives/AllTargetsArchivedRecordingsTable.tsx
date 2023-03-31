@@ -41,7 +41,9 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { hashCode, sortResouces } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -60,64 +62,96 @@ import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+const tableColumns = [
+  {
+    title: 'Target',
+    keyPaths: ['target'],
+    transform: (target: Target, _obj: ArchivesForTarget) => {
+      return target.alias === target.connectUrl || !target.alias
+        ? `${target.connectUrl}`
+        : `${target.alias} (${target.connectUrl})`;
+    },
+    sortable: true,
+    width: 80,
+  },
+  {
+    title: 'Archives',
+    keyPaths: ['archiveCount'],
+    sortable: true,
+    width: 15,
+  },
+];
+
+const mapper = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
+
+const getTransform = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].transform;
+  }
+  return undefined;
+};
+
+type ArchivesForTarget = {
+  target: Target;
+  targetAsObs: Observable<Target>;
+  archiveCount: number;
+};
+
 export interface AllTargetsArchivedRecordingsTableProps {}
 
 export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
-
-  const [targets, setTargets] = React.useState(
-    [] as {
-      target: Target;
-      targetAsObs: Observable<Target>;
-    }[]
-  );
-  const [counts, setCounts] = React.useState(new Map<string, number>());
   const [searchText, setSearchText] = React.useState('');
-  const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
+  const [archivesForTargets, setArchivesForTargets] = React.useState<ArchivesForTarget[]>([]);
   const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
   const [hideEmptyTargets, setHideEmptyTargets] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
-
-  const tableColumns: string[] = React.useMemo(() => ['Target', 'Count'], []);
+  const [sortBy, getSortParams] = useSort();
 
   const updateCount = React.useCallback(
     (connectUrl: string, delta: number) => {
-      setCounts((old) => {
-        const newMap = new Map<string, number>(old);
-        const curr = newMap.get(connectUrl) || 0;
-        newMap.set(connectUrl, curr + delta);
-        return newMap;
+      setArchivesForTargets((old) => {
+        const idx = old.findIndex(({ target }) => target.connectUrl === connectUrl);
+        if (idx >= 0) {
+          const matched = old[idx];
+          old.splice(idx, 1, { ...matched, archiveCount: matched.archiveCount + delta });
+          return [...old];
+        }
+        return old;
       });
     },
-    [setCounts]
+    [setArchivesForTargets]
   );
 
-  const handleTargetsAndCounts = React.useCallback(
+  const handleArchivesForTargets = React.useCallback(
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    (targetNodes: any) => {
-      const updatedTargets: {
-        target: Target;
-        targetAsObs: Observable<Target>;
-      }[] = [];
-      const updatedCounts = new Map<string, number>();
-      for (const node of targetNodes) {
-        const target: Target = {
-          connectUrl: node.target.serviceUri,
-          alias: node.target.alias,
-        };
-        updatedTargets.push({ target: target, targetAsObs: of(target) });
-        updatedCounts.set(target.connectUrl, node.recordings.archived.aggregate.count as number);
-      }
-      setTargets(updatedTargets);
-      setCounts(updatedCounts);
+    (targetNodes: any[]) => {
       setIsLoading(false);
+      setArchivesForTargets(
+        targetNodes.map((node) => {
+          const target: Target = {
+            connectUrl: node.target.serviceUri,
+            alias: node.target.alias,
+          };
+          return {
+            target,
+            targetAsObs: of(target),
+            archiveCount: node.recordings.archived.aggregate.count,
+          };
+        })
+      );
     },
-    [setTargets, setCounts, setIsLoading]
+    [setArchivesForTargets, setIsLoading]
   );
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  const refreshTargetsAndCounts = React.useCallback(() => {
+  const refreshArchivesForTargets = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
       context.api
@@ -139,10 +173,9 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
              }`
         )
         .pipe(map((v) => v.data.targetNodes))
-        .subscribe(handleTargetsAndCounts)
+        .subscribe(handleArchivesForTargets)
     );
-  }, [addSubscription, context.api, setIsLoading, handleTargetsAndCounts]);
-  /* eslint-enable @typescript-eslint/no-explicit-any */
+  }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets]);
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const getCountForNewTarget = React.useCallback(
@@ -164,32 +197,30 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         }`,
             { connectUrl: target.connectUrl }
           )
-          .subscribe((v) =>
-            setCounts((old) => {
-              const newMap = new Map<string, number>(old);
-              newMap.set(target.connectUrl, v.data.targetNodes[0].recordings.archived.aggregate.count as number);
-              return newMap;
-            })
-          )
+          .subscribe((v) => {
+            setArchivesForTargets((old) => {
+              return [
+                ...old,
+                {
+                  target: target,
+                  targetAsObs: of(target),
+                  archiveCount: v.data.targetNodes[0].recordings.archived.aggregate.count,
+                },
+              ];
+            });
+          })
       );
     },
-    [addSubscription, context.api, setCounts]
+    [addSubscription, context.api]
   );
 
   /* eslint-enable @typescript-eslint/no-explicit-any */
   const handleLostTarget = React.useCallback(
     (target: Target) => {
-      setTargets((old) => {
-        return old.filter(({ target: t }) => !isEqualTarget(t, target));
-      });
+      setArchivesForTargets((old) => old.filter(({ target: t }) => !isEqualTarget(t, target)));
       setExpandedTargets((old) => old.filter((t) => !isEqualTarget(t, target)));
-      setCounts((old) => {
-        const newMap = new Map<string, number>(old);
-        newMap.delete(target.connectUrl);
-        return newMap;
-      });
     },
-    [setTargets, setExpandedTargets, setCounts]
+    [setArchivesForTargets, setExpandedTargets]
   );
 
   const handleTargetNotification = React.useCallback(
@@ -199,20 +230,25 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         alias: evt.serviceRef.alias,
       };
       if (evt.kind === 'FOUND') {
-        setTargets((old) => old.concat({ target: target, targetAsObs: of(target) }));
         getCountForNewTarget(target);
       } else if (evt.kind === 'MODIFIED') {
-        setTargets((old) => {
-          return [...old.filter(({ target: t }) => !isEqualTarget(t, target))].concat({
-            target: target,
-            targetAsObs: of(target),
-          });
+        setArchivesForTargets((old) => {
+          const idx = old.findIndex(({ target: t }) => isEqualTarget(t, target));
+          if (idx >= 0) {
+            const matched = old[idx];
+            if (target.connectUrl === matched.target.connectUrl && target.alias === matched.target.alias) {
+              // If alias and connectUrl are not updated, ignore changes.
+              return old;
+            }
+            return old.splice(idx, 1, { ...matched, target: target, targetAsObs: of(target) });
+          }
+          return old;
         });
       } else if (evt.kind === 'LOST') {
         handleLostTarget(target);
       }
     },
-    [setTargets, getCountForNewTarget, handleLostTarget]
+    [setArchivesForTargets, getCountForNewTarget, handleLostTarget]
   );
 
   const handleSearchInput = React.useCallback(
@@ -227,36 +263,39 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   }, [setSearchText]);
 
   React.useEffect(() => {
-    refreshTargetsAndCounts();
-  }, [refreshTargetsAndCounts]);
+    refreshArchivesForTargets();
+  }, [refreshArchivesForTargets]);
 
-  React.useEffect(() => {
-    let updatedSearchedTargets: Target[];
+  const searchedArchivesForTargets = React.useMemo(() => {
+    let updated: ArchivesForTarget[];
     if (!searchText) {
-      updatedSearchedTargets = targets.map((t) => t.target);
+      updated = archivesForTargets;
     } else {
       const formattedSearchText = searchText.trim().toLowerCase();
-      updatedSearchedTargets = targets
-        .map((t) => t.target)
-        .filter(
-          (t: Target) =>
-            t.alias.toLowerCase().includes(formattedSearchText) ||
-            t.connectUrl.toLowerCase().includes(formattedSearchText)
-        );
+      updated = archivesForTargets.filter(
+        ({ target: t }) =>
+          t.alias.toLowerCase().includes(formattedSearchText) ||
+          t.connectUrl.toLowerCase().includes(formattedSearchText)
+      );
     }
-    setSearchedTargets(updatedSearchedTargets);
-  }, [searchText, targets, setSearchedTargets]);
+    return sortResouces(
+      sortBy,
+      updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
+      mapper,
+      getTransform
+    );
+  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
     const id = window.setInterval(
-      () => refreshTargetsAndCounts(),
+      () => refreshArchivesForTargets(),
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
     );
     return () => window.clearInterval(id);
-  }, [context.target, context.settings, refreshTargetsAndCounts]);
+  }, [context.target, context.settings, refreshArchivesForTargets]);
 
   React.useEffect(() => {
     addSubscription(
@@ -302,26 +341,12 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     [expandedTargets, setExpandedTargets]
   );
 
-  const isHidden = React.useMemo(() => {
-    return targets.map(({ target }) => {
-      return (
-        !includesTarget(searchedTargets, target) || (hideEmptyTargets && (counts.get(target.connectUrl) || 0) === 0)
-      );
-    });
-  }, [targets, searchedTargets, hideEmptyTargets, counts]);
-
   const targetRows = React.useMemo(() => {
-    return targets.map(({ target }, idx) => {
+    return searchedArchivesForTargets.map(({ target, archiveCount }, idx) => {
       const isExpanded: boolean = includesTarget(expandedTargets, target);
 
-      const handleToggle = () => {
-        if ((counts.get(target.connectUrl) || 0) !== 0 || isExpanded) {
-          toggleExpanded(target);
-        }
-      };
-
       return (
-        <Tr key={`${idx}_parent`} isHidden={isHidden[idx]}>
+        <Tr key={`${idx}_parent`}>
           <Td
             key={`target-table-row-${idx}_1`}
             id={`target-ex-toggle-${idx}`}
@@ -329,29 +354,31 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             expand={{
               rowIndex: idx,
               isExpanded: isExpanded,
-              onToggle: handleToggle,
+              onToggle: () => {
+                toggleExpanded(target);
+              },
             }}
           />
-          <Td key={`target-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
+          <Td key={`target-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
             {target.alias == target.connectUrl || !target.alias
               ? `${target.connectUrl}`
               : `${target.alias} (${target.connectUrl})`}
           </Td>
-          <Td key={`target-table-row-${idx}_3`}>
-            <Badge key={`${idx}_count`}>{counts.get(target.connectUrl) || 0}</Badge>
+          <Td key={`target-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
+            <Badge key={`${idx}_count`}>{archiveCount}</Badge>
           </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, targets, expandedTargets, counts, isHidden, tableColumns]);
+  }, [toggleExpanded, searchedArchivesForTargets, expandedTargets]);
 
   const recordingRows = React.useMemo(() => {
-    return targets.map(({ target, targetAsObs }, idx) => {
+    return searchedArchivesForTargets.map(({ target, targetAsObs }) => {
       const isExpanded: boolean = includesTarget(expandedTargets, target);
-
+      const keyBase = hashCode(JSON.stringify(target));
       return (
-        <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
-          <Td key={`target-ex-expand-${idx}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
+        <Tr key={`child-${keyBase}`} isExpanded={isExpanded}>
+          <Td key={`target-ex-expand-${keyBase}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
             {isExpanded ? (
               <ExpandableRowContent>
                 <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={true} />
@@ -361,7 +388,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         </Tr>
       );
     });
-  }, [targets, expandedTargets, isHidden, tableColumns.length]);
+  }, [searchedArchivesForTargets, expandedTargets]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -372,14 +399,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     return rowPairs;
   }, [targetRows, recordingRows]);
 
-  const noTargets = React.useMemo(() => {
-    return isHidden.reduce((a, b) => a && b, true);
-  }, [isHidden]);
-
   let view: JSX.Element;
   if (isLoading) {
     view = <LoadingView />;
-  } else if (noTargets) {
+  } else if (!searchedArchivesForTargets.length) {
     view = (
       <>
         <EmptyState>
@@ -397,9 +420,13 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              {tableColumns.map((key) => (
-                <Th key={`table-header-${key}`} width={key === 'Target' ? 90 : 15}>
-                  {key}
+              {tableColumns.map(({ title, width }, idx) => (
+                <Th
+                  key={`table-header-${title}`}
+                  width={width as React.ComponentProps<typeof Th>['width']}
+                  sort={getSortParams(idx)}
+                >
+                  {title}
                 </Th>
               ))}
             </Tr>

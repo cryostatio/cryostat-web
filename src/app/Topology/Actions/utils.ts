@@ -41,7 +41,6 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { LabelProps } from '@patternfly/react-core';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Subscription } from 'rxjs';
 
 export interface ActionUtils {
   history: ReturnType<typeof useHistory>;
