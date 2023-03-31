@@ -54,7 +54,7 @@ const SettingsQuickStart: QuickStart = {
     displayName: 'Using Settings',
     durationMinutes: 5,
     icon: <CogIcon />,
-    description: `Learn about the settings page in **${build.productName}** and how to use it.`,
+    description: `Learn about the settings page in [APP] and how to use it.`,
     prerequisites: [''],
     introduction: `
   <div style="padding-bottom: 1rem">

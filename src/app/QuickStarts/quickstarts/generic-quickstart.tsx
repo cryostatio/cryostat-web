@@ -162,7 +162,7 @@ world
   <div style="max-width: 350px">
     <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
   </div>
-  <p>To learn more about [APP]'s extensive features and capabilities, read our guides at <a href="${build.homePageUrl}/guides/" target="_blank">cryostat.io</a>.</p>
+  <p>To learn more about [APP]'s extensive features and capabilities, read our guides at <a href="${build.documentationUrl}" target="_blank">cryostat.io</a>.</p>
 </div>`,
     nextQuickStart: ['start-a-recording-quickstart'],
   },

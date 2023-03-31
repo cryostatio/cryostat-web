@@ -188,7 +188,7 @@ Archiving a recording will save the recording to [APP]'s archival storage, and w
   <div style="max-width: 350px">
     <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
   </div>
-  <p>To learn more about [APP]'s extensive features and capabilities, read our guides at <a href="${build.homePageUrl}/guides/" target="_blank">cryostat.io</a>.</p>
+  <p>To learn more about [APP]'s extensive features and capabilities, please visit our website at <a href="${build.documentationUrl}" target="_blank">${build.documentationUrl}</a>.</p>
 </div>`,
     type: {
       text: 'Featured',

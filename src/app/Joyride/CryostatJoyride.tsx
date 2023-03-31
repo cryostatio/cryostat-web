@@ -198,11 +198,11 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           content: (
             <p>
               Stay up-to-date with everything Cryostat on our{' '}
-              <a target="_blank" href={`${build.homePageUrl}/blog/`} rel="noreferrer">
+              <a target="_blank" href={`${build.blogPageUrl}`} rel="noreferrer">
                 blog
               </a>{' '}
               or continue to learn more in our{' '}
-              <a target="_blank" href={`${build.homePageUrl}/guides/`} rel="noreferrer">
+              <a target="_blank" href={`${build.documentationUrl}`} rel="noreferrer">
                 documentation guides
               </a>
               .
