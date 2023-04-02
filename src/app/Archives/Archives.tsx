@@ -76,7 +76,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, Object.values(ArchiveTab), ArchiveTab.ALL_TARGETS);
+    return getActiveTab(search, 'tab', Object.values(ArchiveTab), ArchiveTab.ALL_TARGETS);
   }, [search]);
 
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
@@ -86,8 +86,9 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   }, [context.api, addSubscription, setArchiveEnabled]);
 
   const onTabSelect = React.useCallback(
-    (_: React.MouseEvent, key: string | number) => switchTab(history, pathname, `${key}`),
-    [history, pathname]
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [history, pathname, search]
   );
 
   const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
@@ -113,7 +114,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
         </Title>
       </EmptyState>
     );
-  }, [archiveEnabled, activeTab, uploadTargetAsObs]);
+  }, [archiveEnabled, activeTab, uploadTargetAsObs, onTabSelect]);
 
   return (
     <BreadcrumbPage {...props} pageTitle="Archives">

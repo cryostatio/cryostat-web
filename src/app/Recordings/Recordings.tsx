@@ -59,7 +59,7 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, Object.values(RecordingTab), RecordingTab.ACTIVE_RECORDING);
+    return getActiveTab(search, 'tab', Object.values(RecordingTab), RecordingTab.ACTIVE_RECORDING);
   }, [search]);
 
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
@@ -69,8 +69,9 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
   }, [context.api, addSubscription, setArchiveEnabled]);
 
   const onTabSelect = React.useCallback(
-    (_: React.MouseEvent, key: string | number) => switchTab(history, pathname, `${key}`),
-    [history, pathname]
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [history, pathname, search]
   );
 
   const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);

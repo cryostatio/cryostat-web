@@ -224,13 +224,24 @@ export const sortResources = <R>(
   return [...(direction === SortByDirection.asc ? sorted : sorted.reverse())];
 };
 
-export const switchTab = (history: ReturnType<typeof useHistory>, pathname: string, tab: string) => {
-  const query = new URLSearchParams({ tab: tab });
+export interface TabConfig {
+  tabKey: string;
+  tabValue: string;
+}
+
+export const switchTab = (
+  history: ReturnType<typeof useHistory>,
+  pathname: string,
+  search: string,
+  { tabKey, tabValue }: TabConfig
+) => {
+  const query = new URLSearchParams(search);
+  query.set(tabKey, tabValue);
   history.push(`${pathname}?${query.toString()}`);
 };
 
-export const getActiveTab = <T>(search: string, supportedTabs: T[], defaultTab: T) => {
+export const getActiveTab = <T>(search: string, key: string, supportedTabs: T[], defaultTab: T) => {
   const query = new URLSearchParams(search);
-  const tab = query.get('tab') || defaultTab;
+  const tab = query.get(key) || defaultTab;
   return supportedTabs.includes(tab as T) ? (tab as T) : defaultTab;
 };
