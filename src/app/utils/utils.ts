@@ -229,3 +229,8 @@ export const switchTab = (history: ReturnType<typeof useHistory>, pathname: stri
   history.push(`${pathname}?${query.toString()}`);
 };
 
+export const getActiveTab = <T>(search: string, supportedTabs: T[], defaultTab: T) => {
+  const query = new URLSearchParams(search);
+  const tab = query.get('tab') || defaultTab;
+  return supportedTabs.includes(tab as T) ? (tab as T) : defaultTab;
+};

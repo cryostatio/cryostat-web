@@ -38,7 +38,7 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { switchTab } from '@app/utils/utils';
+import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { useHistory, useLocation } from 'react-router';
@@ -59,9 +59,7 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
 
   const activeTab = React.useMemo(() => {
-    const queries = new URLSearchParams(search);
-    const tab = queries.get('tab');
-    return tab && Object.values(RecordingTab).includes(tab as RecordingTab) ? tab : RecordingTab.ACTIVE_RECORDING;
+    return getActiveTab(search, Object.values(RecordingTab), RecordingTab.ACTIVE_RECORDING);
   }, [search]);
 
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
