@@ -98,8 +98,12 @@ html, body, #root {
   --pf-c-chip__text--MaxWidth: 100ch;
 }
 
-.recording-table-container {
-  height: 32rem;
+.recording-table-outer-container {
+  height: 67.3vh;
+}
+
+.recording-table--inner-container {
+  height: 100%;
 }
 
 #dashboard-layout-dropdown-toggle {

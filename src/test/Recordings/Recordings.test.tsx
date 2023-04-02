@@ -44,7 +44,9 @@ import '@testing-library/jest-dom';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { renderWithServiceContextAndRouter } from '../Common';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
@@ -93,31 +95,33 @@ jest
   .mockReturnValueOnce(of(false)) // handles the case where archiving is disabled
   .mockReturnValue(of(true)); // others
 
+const history = createMemoryHistory({ initialEntries: ['/recordings'] });
+
 describe('<Recordings />', () => {
   afterEach(cleanup);
 
   it('has the correct title in the TargetView', async () => {
-    renderWithServiceContext(<Recordings />);
+    renderWithServiceContextAndRouter(<Recordings />, { history });
 
     expect(screen.getByText('Recordings')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is enabled', async () => {
-    renderWithServiceContext(<Recordings />);
+    renderWithServiceContextAndRouter(<Recordings />, { history });
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is disabled', async () => {
-    renderWithServiceContext(<Recordings />);
+    renderWithServiceContextAndRouter(<Recordings />, { history });
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
   });
 
   it('handles updating the activeTab state', async () => {
-    const { user } = renderWithServiceContext(<Recordings />);
+    const { user } = renderWithServiceContextAndRouter(<Recordings />, { history });
 
     // Assert that the active recordings tab is currently selected (default behaviour)
     let tabsList = screen.getAllByRole('tab');
@@ -150,9 +154,11 @@ describe('<Recordings />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Recordings />
-          </NotificationsContext.Provider>
+          <Router history={history}>
+            <NotificationsContext.Provider value={NotificationsInstance}>
+              <Recordings />
+            </NotificationsContext.Provider>
+          </Router>
         </ServiceContext.Provider>
       );
     });

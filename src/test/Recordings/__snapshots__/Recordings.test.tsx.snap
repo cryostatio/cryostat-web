@@ -27,17 +27,16 @@ exports[`<Recordings /> renders correctly 1`] = `
           role="tablist"
         >
           <li
-            className="pf-c-tabs__item pf-m-current"
+            className="pf-c-tabs__item"
             role="presentation"
           >
             <button
-              aria-controls="pf-tab-section-active-active-recordings"
-              aria-selected={true}
+              aria-selected={false}
               className="pf-c-tabs__link"
               data-ouia-component-type="PF4/TabButton"
               data-ouia-safe={true}
               data-quickstart-id="active-recordings-tab"
-              id="pf-tab-active-active-recordings"
+              id="pf-tab-active-recording-active-recordings"
               onClick={[Function]}
               role="tab"
               type="button"
@@ -50,16 +49,17 @@ exports[`<Recordings /> renders correctly 1`] = `
             </button>
           </li>
           <li
-            className="pf-c-tabs__item"
+            className="pf-c-tabs__item pf-m-current"
             role="presentation"
           >
             <button
-              aria-selected={false}
+              aria-controls="pf-tab-section-archived-recording-archived-recordings"
+              aria-selected={true}
               className="pf-c-tabs__link"
               data-ouia-component-type="PF4/TabButton"
               data-ouia-safe={true}
               data-quickstart-id="archived-recordings-tab"
-              id="pf-tab-archived-archived-recordings"
+              id="pf-tab-archived-recording-archived-recordings"
               onClick={[Function]}
               role="tab"
               type="button"
@@ -74,17 +74,17 @@ exports[`<Recordings /> renders correctly 1`] = `
         </ul>
       </div>
       <section
-        aria-labelledby="pf-tab-active-active-recordings"
+        aria-labelledby="pf-tab-archived-recording-archived-recordings"
         className="pf-c-tab-content"
         data-ouia-component-type="PF4/TabContent"
         data-ouia-safe={true}
         hidden={false}
-        id="pf-tab-section-active-active-recordings"
+        id="pf-tab-section-archived-recording-archived-recordings"
         role="tabpanel"
         tabIndex={0}
       >
         <div>
-          Active Recordings Table
+          Archived Recordings Table
         </div>
       </section>
     </div>

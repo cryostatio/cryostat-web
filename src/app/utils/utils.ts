@@ -38,6 +38,7 @@
 
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
+import { useHistory } from 'react-router-dom';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 const SECOND_MILLIS = 1000;
@@ -199,11 +200,12 @@ export const getValue = (object: any, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
+/* eslint-enable @typescript-eslint/no-explicit-any */
 export const sortResources = <R>(
   { index, direction }: ISortBy,
   resources: R[],
   mapper: (index?: number) => string[] | undefined,
-  getTransform: (index?: number) => ((value: any, resource: any) => any) | undefined
+  getTransform: (index?: number) => ((value: any, resource: R) => any) | undefined
 ): R[] => {
   const keyPaths = mapper(index);
   if (!keyPaths || !keyPaths.length) {
@@ -221,4 +223,9 @@ export const sortResources = <R>(
   });
   return [...(direction === SortByDirection.asc ? sorted : sorted.reverse())];
 };
-/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export const switchTab = (history: ReturnType<typeof useHistory>, pathname: string, tab: string) => {
+  const query = new URLSearchParams({ tab: tab });
+  history.push(`${pathname}?${query.toString()}`);
+};
+

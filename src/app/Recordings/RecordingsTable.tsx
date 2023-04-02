@@ -45,6 +45,7 @@ import {
   EmptyStateBody,
   Button,
   EmptyStateSecondaryActions,
+  Bullseye,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
@@ -121,18 +122,18 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = ({
     view = <LoadingView />;
   } else if (isEmpty) {
     view = (
-      <>
+      <Bullseye>
         <EmptyState>
           <EmptyStateIcon icon={SearchIcon} />
           <Title headingLevel="h4" size="lg">
             No {tableTitle}
           </Title>
         </EmptyState>
-      </>
+      </Bullseye>
     );
   } else if (isEmptyFilterResult) {
     view = (
-      <>
+      <Bullseye>
         <EmptyState>
           <EmptyStateIcon icon={SearchIcon} />
           <Title headingLevel="h4" size="lg">
@@ -147,7 +148,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = ({
             </Button>
           </EmptyStateSecondaryActions>
         </EmptyState>
-      </>
+      </Bullseye>
     );
   } else {
     view = (
@@ -185,9 +186,9 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = ({
 
   return (
     <>
-      <OuterScrollContainer className="recording-table-container">
+      <OuterScrollContainer className="recording-table-outer-container">
         {isError ? null : toolbar}
-        <InnerScrollContainer>{view}</InnerScrollContainer>
+        <InnerScrollContainer className="recording-table--inner-container">{view}</InnerScrollContainer>
         {tableFooter}
       </OuterScrollContainer>
     </>
