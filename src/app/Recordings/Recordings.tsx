@@ -83,7 +83,7 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
           id="active-recordings"
           eventKey={RecordingTab.ACTIVE_RECORDING}
           title={<TabTitleText>Active Recordings</TabTitleText>}
-          data-quickstart-id="active-recordings-tab"       
+          data-quickstart-id="active-recordings-tab"
         >
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
