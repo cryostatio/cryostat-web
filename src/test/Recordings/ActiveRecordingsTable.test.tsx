@@ -38,6 +38,7 @@
 import '@testing-library/jest-dom';
 import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
+import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -180,7 +181,7 @@ describe('<ActiveRecordingsTable />', () => {
     history.go(-history.length);
     preloadedState = {
       dashboardConfigs: {
-        layouts: [],
+        layouts: [] as DashboardLayout[],
       },
       recordingFilters: {
         list: [
@@ -207,7 +208,7 @@ describe('<ActiveRecordingsTable />', () => {
           },
         },
       },
-    } as any;
+    } as RootState;
   });
 
   afterAll(() => {

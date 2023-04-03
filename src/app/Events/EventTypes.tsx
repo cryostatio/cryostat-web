@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, sortResouces } from '@app/utils/utils';
+import { hashCode, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -190,7 +190,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       includesSubstr(t.typeId, filterText) ||
       includesSubstr(t.description, filterText) ||
       includesSubstr(getCategoryString(t), filterText);
-    return sortResouces(sortBy, types.filter(withFilters), mapper, getTransform);
+    return sortResources(sortBy, types.filter(withFilters), mapper, getTransform);
   }, [types, filterText, sortBy]);
 
   const displayedTypeRowData = React.useMemo(() => {

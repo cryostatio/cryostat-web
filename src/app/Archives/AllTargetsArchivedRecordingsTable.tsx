@@ -43,7 +43,7 @@ import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Share
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, sortResouces } from '@app/utils/utils';
+import { hashCode, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -278,7 +278,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           t.connectUrl.toLowerCase().includes(formattedSearchText)
       );
     }
-    return sortResouces(
+    return sortResources(
       sortBy,
       updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
       mapper,

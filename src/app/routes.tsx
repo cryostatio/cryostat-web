@@ -47,7 +47,7 @@ import DashboardSolo from './Dashboard/DashboardSolo';
 import Events from './Events/Events';
 import Login from './Login/Login';
 import NotFound from './NotFound/NotFound';
-import QuickStarts from './QuickStarts/QuickStarts';
+import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
 import CreateRule from './Rules/CreateRule';
 import Rules from './Rules/Rules';
@@ -116,7 +116,6 @@ const routes: IAppRoute[] = [
     path: '/quickstarts',
     title: 'Quick Starts',
     description: 'Get started with Cryostat.',
-    featureLevel: FeatureLevel.BETA,
   },
   {
     component: Topology,

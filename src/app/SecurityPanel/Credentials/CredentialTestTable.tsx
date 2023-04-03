@@ -41,7 +41,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot, sortResouces } from '@app/utils/utils';
+import { evaluateTargetWithExpr, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -140,7 +140,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
 
   const rows = React.useMemo(
     () =>
-      sortResouces(sortBy, matchedTargets, mapper, getTransform).map((t) => (
+      sortResources(sortBy, matchedTargets, mapper, getTransform).map((t) => (
         <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />
       )),
     [matchedTargets, filters, searchText, sortBy]

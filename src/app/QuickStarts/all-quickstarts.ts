@@ -36,9 +36,17 @@
  * SOFTWARE.
  */
 import { QuickStart } from '@patternfly/quickstarts';
-import { AddCardQuickStart } from './quickstarts/add-card-quickstart';
-// import { GenericQuickStart } from './quickstarts/generic-quickstart';
-import { SampleQuickStart } from './quickstarts/my-quickstart';
+import AutomatedRulesQuickStart from './quickstarts/automated-rules-quickstart';
+import DashboardQuickStart from './quickstarts/dashboard-quickstart';
+import GenericQuickStart from './quickstarts/generic-quickstart';
+import SettingsQuickStart from './quickstarts/settings-quickstart';
+import RecordingQuickStart from './quickstarts/start-a-recording';
 
-// Add your quick start here e.g. [GenericQuickStart, SampleQuickStart, AddCardQuickStart]
-export const allQuickStarts: QuickStart[] = [SampleQuickStart, AddCardQuickStart];
+// Add your quick start here e.g. [GenericQuickStart, ...]
+export const allQuickStarts: QuickStart[] = [
+  AutomatedRulesQuickStart,
+  DashboardQuickStart,
+  GenericQuickStart,
+  RecordingQuickStart,
+  SettingsQuickStart,
+];

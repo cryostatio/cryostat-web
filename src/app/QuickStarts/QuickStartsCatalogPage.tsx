@@ -35,8 +35,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { AddCardQuickStart } from '@app/QuickStarts/quickstarts/add-card-quickstart';
-import { SampleQuickStart } from '@app/QuickStarts/quickstarts/my-quickstart';
-import { QuickStart } from '@patternfly/quickstarts';
+import { QuickStartCatalogPage } from '@patternfly/quickstarts';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 
-export const allQuickStarts: QuickStart[] = [SampleQuickStart, AddCardQuickStart];
+export interface QuickStartsCatalogPageProps {}
+
+const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProps> = (_) => {
+  const { t } = useTranslation();
+
+  // TODO: Quick start categories (patternfly/quickstarts supports this through individual components)
+  // e.g. Dashboard Quick Starts, Topology Quick Starts, Recording Quick Starts, etc.
+  return (
+    <QuickStartCatalogPage
+      title={t('QuickStarts.CATALOG_PAGE.TITLE')}
+      hint={t('QuickStarts.CATALOG_PAGE.HINT')}
+      showTitle
+      showFilter
+    />
+  );
+};
+
+export default withRouter(QuickStartsCatalogPage);

@@ -140,11 +140,11 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         menuAppendTo={document.body}
         position="right"
         direction="down"
-        toggle={<KebabToggle id="toggle-kebab" onToggle={setIsOpen} />}
+        toggle={<KebabToggle id="toggle-kebab" onToggle={setIsOpen} data-quickstart-id="recording-kebab" />}
         isPlain
         isOpen={isOpen}
         dropdownItems={actionItems.map((action) => (
-          <DropdownItem key={action.key} onClick={() => onSelect(action)}>
+          <DropdownItem key={action.key} onClick={() => onSelect(action)} data-quickstart-id={action.key}>
             {action.title}
           </DropdownItem>
         ))}

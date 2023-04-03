@@ -472,7 +472,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
   return (
     <>
       <BreadcrumbPage pageTitle="Automated Rules">
-        <Card>
+        <Card data-quickstart-id="about-rules">
           <CardTitle>About Automated Rules</CardTitle>
           <CardBody>
             Automated Rules define a dynamic set of Target JVMs to connect to and start{' '}
@@ -489,7 +489,12 @@ export const Rules: React.FC<RulesProps> = (_) => {
               <ToolbarContent>
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
-                    <Button key="create" variant="primary" onClick={handleCreateRule}>
+                    <Button
+                      key="create"
+                      variant="primary"
+                      onClick={handleCreateRule}
+                      data-quickstart-id="create-rule-btn"
+                    >
                       Create
                     </Button>{' '}
                     <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleUploadRule}>

@@ -38,6 +38,7 @@
 import bkgImg from '@app/assets/about_background.png';
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
+import { portalRoot } from '@app/utils/utils';
 import { AboutModal } from '@patternfly/react-core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -46,18 +47,17 @@ import { AboutDescription } from './AboutDescription';
 export const AboutCryostatModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   return (
-    <>
-      <AboutModal
-        productName={build.productName}
-        brandImageSrc={cryostatLogo}
-        brandImageAlt="Cryostat Logo"
-        isOpen={isOpen}
-        onClose={onClose}
-        trademark={t('CRYOSTAT_TRADEMARK', { ns: 'common' })}
-        backgroundImageSrc={bkgImg}
-      >
-        <AboutDescription />
-      </AboutModal>
-    </>
+    <AboutModal
+      appendTo={portalRoot}
+      productName={build.productName}
+      brandImageSrc={cryostatLogo}
+      brandImageAlt="Cryostat Logo"
+      isOpen={isOpen}
+      onClose={onClose}
+      trademark={t('CRYOSTAT_TRADEMARK', { ns: 'common' })}
+      backgroundImageSrc={bkgImg}
+    >
+      <AboutDescription />
+    </AboutModal>
   );
 };

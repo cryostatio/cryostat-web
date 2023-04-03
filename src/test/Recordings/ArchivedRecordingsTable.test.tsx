@@ -37,6 +37,7 @@
  */
 import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -174,7 +175,7 @@ describe('<ArchivedRecordingsTable />', () => {
     history.go(-history.length);
     preloadedState = {
       dashboardConfigs: {
-        layouts: [],
+        layouts: [] as DashboardLayout[],
       },
       recordingFilters: {
         list: [
@@ -201,7 +202,7 @@ describe('<ArchivedRecordingsTable />', () => {
           },
         },
       },
-    } as any;
+    } as RootState;
   });
 
   afterEach(cleanup);

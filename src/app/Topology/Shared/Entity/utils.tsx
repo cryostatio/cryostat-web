@@ -137,8 +137,8 @@ export const getTargetOwnedResources = (
         true,
         true
       );
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     case 'archivedRecordings':
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       return apiService
         .graphql<any>(
           `
@@ -161,7 +161,6 @@ export const getTargetOwnedResources = (
         )
         .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
     case 'archivedUploadRecordings':
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       return apiService
         .graphql<any>(
           `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
@@ -182,6 +181,7 @@ export const getTargetOwnedResources = (
           true
         )
         .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+    /* eslint-enable @typescript-eslint/no-explicit-any */
     case 'eventTemplates':
       return apiService.doGet<EventTemplate[]>(
         `targets/${encodeURIComponent(target.connectUrl)}/templates`,

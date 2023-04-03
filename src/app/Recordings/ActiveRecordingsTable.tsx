@@ -58,7 +58,7 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResouces } from '@app/utils/utils';
+import { sortResources } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -346,7 +346,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     setFilteredRecordings(
-      sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+      sortResources(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 
@@ -663,7 +663,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
     let arr = [
       {
         default: (
-          <Button variant="primary" onClick={props.handleCreateRecording}>
+          <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
             Create
           </Button>
         ),
@@ -682,6 +682,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
             variant="secondary"
             onClick={props.handleArchiveRecordings}
             isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
+            data-quickstart-id="recordings-archive-btn"
             {...actionLoadingProps['ARCHIVE']}
           >
             {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
@@ -699,7 +700,12 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
       ...arr,
       {
         default: (
-          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
+          <Button
+            variant="secondary"
+            onClick={props.handleEditLabels}
+            isDisabled={!props.checkedIndices.length}
+            data-quickstart-id="recordings-labels-btn"
+          >
             Edit Labels
           </Button>
         ),
@@ -716,6 +722,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
             variant="tertiary"
             onClick={props.handleStopRecordings}
             isDisabled={isStopDisabled}
+            data-quickstart-id="recordings-stop-btn"
             {...actionLoadingProps['STOP']}
           >
             {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
@@ -734,6 +741,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
             variant="danger"
             onClick={handleDeleteButton}
             isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+            data-quickstart-id="recordings-delete-btn"
             {...actionLoadingProps['DELETE']}
           >
             {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
@@ -890,6 +898,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             onChange={handleCheck}
             isChecked={checkedIndices.includes(index)}
             id={`active-table-row-${index}-check`}
+            data-quickstart-id="active-recordings-checkbox"
           />
         </Td>
         <Td

@@ -35,36 +35,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
-import build from '@app/build.json';
-import { QuickStart } from '@patternfly/quickstarts';
+import useSetState from '@app/utils/useSetState';
+import React from 'react';
+import { Step } from 'react-joyride';
 
-// TODO: Add quickstarts based on the following example:
-export const GenericQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
-  metadata: {
-    name: 'generic-quickstart',
-  },
-  spec: {
-    displayName: 'Getting Started with',
-    durationMinutes: 1,
-    icon: cryostatLogo,
-    description: `Get started with ${build.productName}.`,
-    introduction: '### This is a generic quickstart.',
-    tasks: [
-      {
-        title: 'Get started',
-        description: `### We will press the notifications bell icon on the top right.
-1. Press the bell icon.`,
-      },
-    ],
-    conclusion: `You finished **Getting Started with ${build.productName}**!
-    
-Learn more about [${build.productName}](https://cryostat.io) from our website.
-`,
-    type: {
-      text: 'Introduction',
-      color: 'green',
-    },
-  },
+export interface JoyrideState {
+  run: boolean;
+  stepIndex: number;
+  steps: Step[];
+}
+
+const defaultState = {
+  run: false,
+  stepIndex: 0,
+  steps: [] as Step[],
+};
+
+export interface JoyrideContextType {
+  state: JoyrideState;
+  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => void;
+  isNavBarOpen: boolean;
+  setIsNavBarOpen: (isOpen: React.SetStateAction<boolean>) => void;
+}
+
+/* eslint-disable @typescript-eslint/no-empty-function */
+export const JoyrideContext = React.createContext<JoyrideContextType>({
+  state: defaultState,
+  setState: () => undefined,
+  isNavBarOpen: true,
+  setIsNavBarOpen: () => undefined,
+});
+/* eslint-enable @typescript-eslint/no-empty-function */
+
+export const JoyrideProvider: React.FC<{ children }> = (props) => {
+  const [state, setState] = useSetState(defaultState);
+  const [isNavBarOpen, setIsNavBarOpen] = React.useState(true);
+  const value = React.useMemo(
+    () => ({ state, setState, isNavBarOpen, setIsNavBarOpen }),
+    [state, setState, isNavBarOpen, setIsNavBarOpen]
+  );
+  return (
+    <JoyrideContext.Provider value={value} {...props}>
+      {props.children}
+    </JoyrideContext.Provider>
+  );
+};
+
+export const useJoyride = (): JoyrideContextType => {
+  return React.useContext(JoyrideContext);
 };

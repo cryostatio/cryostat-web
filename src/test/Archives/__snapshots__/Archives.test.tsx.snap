@@ -1,172 +1,176 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Archives /> renders correctly 1`] = `
-<section
-  className="pf-c-page__main-section"
+<div
+  className="pf-c-page__main-group"
 >
-  <nav
-    aria-label="Breadcrumb"
-    className="pf-c-breadcrumb"
-    data-ouia-component-id="OUIA-Generated-Breadcrumb-5"
-    data-ouia-component-type="PF4/Breadcrumb"
-    data-ouia-safe={true}
+  <section
+    className="pf-c-page__main-section"
   >
-    <ol
-      className="pf-c-breadcrumb__list"
+    <nav
+      aria-label="Breadcrumb"
+      className="pf-c-breadcrumb"
+      data-ouia-component-id="OUIA-Generated-Breadcrumb-5"
+      data-ouia-component-type="PF4/Breadcrumb"
+      data-ouia-safe={true}
     >
-      <li
-        className="pf-c-breadcrumb__item"
+      <ol
+        className="pf-c-breadcrumb__list"
       >
-        <h1
-          className="pf-c-breadcrumb__heading"
+        <li
+          className="pf-c-breadcrumb__item"
         >
-          Archives
-        </h1>
-      </li>
-    </ol>
-  </nav>
-  <div
-    className="pf-l-stack pf-m-gutter"
-  >
+          <h1
+            className="pf-c-breadcrumb__heading"
+          >
+            Archives
+          </h1>
+        </li>
+      </ol>
+    </nav>
     <div
-      className="pf-l-stack__item"
+      className="pf-l-stack pf-m-gutter"
     >
-      <article
-        className="pf-c-card"
-        data-ouia-component-id="OUIA-Generated-Card-5"
-        data-ouia-component-type="PF4/Card"
-        data-ouia-safe={true}
-        id=""
+      <div
+        className="pf-l-stack__item"
       >
-        <div
-          className="pf-c-card__body"
+        <article
+          className="pf-c-card"
+          data-ouia-component-id="OUIA-Generated-Card-5"
+          data-ouia-component-type="PF4/Card"
+          data-ouia-safe={true}
+          id=""
         >
           <div
-            className="pf-c-tabs"
-            data-ouia-component-id="OUIA-Generated-Tabs-4"
-            data-ouia-component-type="PF4/Tabs"
-            data-ouia-safe={true}
-            id="archives"
-            onSelect={[Function]}
+            className="pf-c-card__body"
           >
-            <ul
-              className="pf-c-tabs__list"
-              onScroll={[Function]}
-              role="tablist"
+            <div
+              className="pf-c-tabs"
+              data-ouia-component-id="OUIA-Generated-Tabs-4"
+              data-ouia-component-type="PF4/Tabs"
+              data-ouia-safe={true}
+              id="archives"
+              onSelect={[Function]}
             >
-              <li
-                className="pf-c-tabs__item pf-m-current"
-                role="presentation"
+              <ul
+                className="pf-c-tabs__list"
+                onScroll={[Function]}
+                role="tablist"
               >
-                <button
-                  aria-controls="pf-tab-section-all-archives-all-targets"
-                  aria-selected={true}
-                  className="pf-c-tabs__link"
-                  data-ouia-component-type="PF4/TabButton"
-                  data-ouia-safe={true}
-                  id="pf-tab-all-archives-all-targets"
-                  onClick={[Function]}
-                  role="tab"
-                  type="button"
+                <li
+                  className="pf-c-tabs__item pf-m-current"
+                  role="presentation"
                 >
-                  <span
-                    className="pf-c-tabs__item-text"
+                  <button
+                    aria-controls="pf-tab-section-all-archives-all-targets"
+                    aria-selected={true}
+                    className="pf-c-tabs__link"
+                    data-ouia-component-type="PF4/TabButton"
+                    data-ouia-safe={true}
+                    id="pf-tab-all-archives-all-targets"
+                    onClick={[Function]}
+                    role="tab"
+                    type="button"
                   >
-                    All Targets
-                  </span>
-                </button>
-              </li>
-              <li
-                className="pf-c-tabs__item"
-                role="presentation"
-              >
-                <button
-                  aria-controls="pf-tab-section-all-targets-all-archives"
-                  aria-selected={false}
-                  className="pf-c-tabs__link"
-                  data-ouia-component-type="PF4/TabButton"
-                  data-ouia-safe={true}
-                  id="pf-tab-all-targets-all-archives"
-                  onClick={[Function]}
-                  role="tab"
-                  type="button"
+                    <span
+                      className="pf-c-tabs__item-text"
+                    >
+                      All Targets
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="pf-c-tabs__item"
+                  role="presentation"
                 >
-                  <span
-                    className="pf-c-tabs__item-text"
+                  <button
+                    aria-controls="pf-tab-section-all-targets-all-archives"
+                    aria-selected={false}
+                    className="pf-c-tabs__link"
+                    data-ouia-component-type="PF4/TabButton"
+                    data-ouia-safe={true}
+                    id="pf-tab-all-targets-all-archives"
+                    onClick={[Function]}
+                    role="tab"
+                    type="button"
                   >
-                    All Archives
-                  </span>
-                </button>
-              </li>
-              <li
-                className="pf-c-tabs__item"
-                role="presentation"
-              >
-                <button
-                  aria-controls="pf-tab-section-uploads-uploads"
-                  aria-selected={false}
-                  className="pf-c-tabs__link"
-                  data-ouia-component-type="PF4/TabButton"
-                  data-ouia-safe={true}
-                  id="pf-tab-uploads-uploads"
-                  onClick={[Function]}
-                  role="tab"
-                  type="button"
+                    <span
+                      className="pf-c-tabs__item-text"
+                    >
+                      All Archives
+                    </span>
+                  </button>
+                </li>
+                <li
+                  className="pf-c-tabs__item"
+                  role="presentation"
                 >
-                  <span
-                    className="pf-c-tabs__item-text"
+                  <button
+                    aria-controls="pf-tab-section-uploads-uploads"
+                    aria-selected={false}
+                    className="pf-c-tabs__link"
+                    data-ouia-component-type="PF4/TabButton"
+                    data-ouia-safe={true}
+                    id="pf-tab-uploads-uploads"
+                    onClick={[Function]}
+                    role="tab"
+                    type="button"
                   >
-                    Uploads
-                  </span>
-                </button>
-              </li>
-            </ul>
+                    <span
+                      className="pf-c-tabs__item-text"
+                    >
+                      Uploads
+                    </span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <section
+              aria-labelledby="pf-tab-all-archives-all-targets"
+              className="pf-c-tab-content"
+              data-ouia-component-type="PF4/TabContent"
+              data-ouia-safe={true}
+              hidden={false}
+              id="pf-tab-section-all-archives-all-targets"
+              role="tabpanel"
+              tabIndex={0}
+            >
+              <div>
+                All Targets Table
+              </div>
+            </section>
+            <section
+              aria-labelledby="pf-tab-all-targets-all-archives"
+              className="pf-c-tab-content"
+              data-ouia-component-type="PF4/TabContent"
+              data-ouia-safe={true}
+              hidden={true}
+              id="pf-tab-section-all-targets-all-archives"
+              role="tabpanel"
+              tabIndex={0}
+            >
+              <div>
+                All Archives Table
+              </div>
+            </section>
+            <section
+              aria-labelledby="pf-tab-uploads-uploads"
+              className="pf-c-tab-content"
+              data-ouia-component-type="PF4/TabContent"
+              data-ouia-safe={true}
+              hidden={true}
+              id="pf-tab-section-uploads-uploads"
+              role="tabpanel"
+              tabIndex={0}
+            >
+              <div>
+                Uploads Table
+              </div>
+            </section>
           </div>
-          <section
-            aria-labelledby="pf-tab-all-archives-all-targets"
-            className="pf-c-tab-content"
-            data-ouia-component-type="PF4/TabContent"
-            data-ouia-safe={true}
-            hidden={false}
-            id="pf-tab-section-all-archives-all-targets"
-            role="tabpanel"
-            tabIndex={0}
-          >
-            <div>
-              All Targets Table
-            </div>
-          </section>
-          <section
-            aria-labelledby="pf-tab-all-targets-all-archives"
-            className="pf-c-tab-content"
-            data-ouia-component-type="PF4/TabContent"
-            data-ouia-safe={true}
-            hidden={true}
-            id="pf-tab-section-all-targets-all-archives"
-            role="tabpanel"
-            tabIndex={0}
-          >
-            <div>
-              All Archives Table
-            </div>
-          </section>
-          <section
-            aria-labelledby="pf-tab-uploads-uploads"
-            className="pf-c-tab-content"
-            data-ouia-component-type="PF4/TabContent"
-            data-ouia-safe={true}
-            hidden={true}
-            id="pf-tab-section-uploads-uploads"
-            role="tabpanel"
-            tabIndex={0}
-          >
-            <div>
-              Uploads Table
-            </div>
-          </section>
-        </div>
-      </article>
+        </article>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 `;

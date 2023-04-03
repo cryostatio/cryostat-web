@@ -24,6 +24,7 @@ exports[`<JFRMetricsChartCard /> renders correctly: with-content 1`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -147,6 +148,7 @@ exports[`<JFRMetricsChartCard /> renders empty state correctly: empty-state 1`] 
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -271,6 +273,7 @@ exports[`<JFRMetricsChartCard /> renders loading state correctly: loading-view 1
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}

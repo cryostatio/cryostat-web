@@ -48,6 +48,7 @@ const DAY_MILLIS = 24 * HOUR_MILLIS;
 // [     0,    1,    2,    3     ] array
 //       0     1     2     3       indexes
 // {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function move(arr: any[], from: number, gapIndex: number) {
   if (gapIndex > from) {
     gapIndex--;
@@ -60,6 +61,7 @@ export function swap(arr: any[], from: number, to: number) {
   arr[from] = arr.splice(to, 1, arr[from])[0];
   return arr;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export const openTabForUrl = (url: string) => {
   const anchor = document.createElement('a') as HTMLAnchorElement;
@@ -172,6 +174,10 @@ export const evaluateTargetWithExpr = (target: unknown, matchExpression: string)
 
 export const portalRoot = document.getElementById('portal-root') || document.body;
 
+export const cleanDataId = (key: string): string => {
+  return key.toLocaleLowerCase().replace(/\s+/g, '');
+};
+
 export class StreamOf<T> {
   private readonly _stream$: BehaviorSubject<T>;
 
@@ -188,11 +194,12 @@ export class StreamOf<T> {
   }
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const getValue = (object: any, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
-export const sortResouces = <R>(
+export const sortResources = <R>(
   { index, direction }: ISortBy,
   resources: R[],
   mapper: (index?: number) => string[] | undefined,
@@ -214,3 +221,4 @@ export const sortResouces = <R>(
   });
   return [...(direction === SortByDirection.asc ? sorted : sorted.reverse())];
 };
+/* eslint-enable @typescript-eslint/no-explicit-any */

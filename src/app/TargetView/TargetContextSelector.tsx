@@ -229,7 +229,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
 
   return (
     <>
-      <div className="target-context-selector__wrapper" {...props}>
+      <div className="target-context-selector__wrapper" {...props} data-quickstart-id={'target-select'}>
         {isLoading ? (
           <LinearDotSpinner className="target-context-selector__linear-dot-spinner" />
         ) : (

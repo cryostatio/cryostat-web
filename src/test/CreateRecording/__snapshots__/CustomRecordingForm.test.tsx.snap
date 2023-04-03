@@ -51,6 +51,7 @@ Array [
           data-ouia-component-id="OUIA-Generated-TextInputBase-1"
           data-ouia-component-type="PF4/TextInput"
           data-ouia-safe={true}
+          data-quickstart-id="crf-name"
           disabled={false}
           id="recording-name"
           onBlur={[Function]}
@@ -96,6 +97,7 @@ Array [
     </div>
     <div
       className="pf-c-form__group"
+      data-quickstart-id="crf-duration"
     >
       <div
         className="pf-c-form__group-label"
@@ -293,6 +295,7 @@ Array [
           data-ouia-component-id="OUIA-Generated-FormSelect-default-2"
           data-ouia-component-type="PF4/FormSelect"
           data-ouia-safe={true}
+          data-quickstart-id="template-selector"
           disabled={false}
           id="recording-template"
           onBlur={[Function]}
@@ -338,6 +341,7 @@ Array [
     </div>
     <div
       className="pf-c-expandable-section"
+      data-quickstart-id="crf-metadata-opt"
     >
       <button
         className="pf-c-expandable-section__toggle"
@@ -494,6 +498,7 @@ Array [
     </div>
     <div
       className="pf-c-expandable-section"
+      data-quickstart-id="crf-advanced-opt"
     >
       <button
         className="pf-c-expandable-section__toggle"
@@ -788,6 +793,7 @@ Array [
             data-ouia-component-id="OUIA-Generated-Button-primary-1"
             data-ouia-component-type="PF4/Button"
             data-ouia-safe={true}
+            data-quickstart-id="crf-create-btn"
             disabled={true}
             onClick={[Function]}
             role={null}

@@ -58,7 +58,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { formatBytes, hashCode, sortResouces } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -367,7 +367,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   React.useEffect(() => {
     setFilteredRecordings(
-      sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+      sortResources(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 

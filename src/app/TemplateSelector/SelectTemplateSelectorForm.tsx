@@ -112,6 +112,7 @@ export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateS
         onChange={handleTemplateSelect}
         aria-label="Event Template Input"
         id="recording-template"
+        data-quickstart-id="template-selector"
       >
         <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder />
         {groups.map((group, index) => (

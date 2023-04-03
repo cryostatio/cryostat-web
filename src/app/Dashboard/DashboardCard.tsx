@@ -94,6 +94,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
                 draggable // draggable is required for drag events to fire
+                data-quickstart-id="card-draggable-grip"
               >
                 {cardHeader}
               </div>

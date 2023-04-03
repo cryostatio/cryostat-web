@@ -19,6 +19,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -646,6 +647,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -1245,6 +1247,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -1872,6 +1875,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -2499,6 +2503,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -3126,6 +3131,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -3336,6 +3342,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -3963,6 +3970,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}
@@ -4173,6 +4181,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
     >
       <div
         className="draggable-ref__grip"
+        data-quickstart-id="card-draggable-grip"
         draggable={true}
         onMouseEnter={[Function]}
         onMouseLeave={[Function]}

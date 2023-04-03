@@ -17,6 +17,15 @@
     "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with all the config.",
     "CARD_TITLE": "All Placeholder"
   },
+  "AppLayout": {
+    "APP_LAUNCHER": {
+      "ABOUT": "About",
+      "DOCUMENTATION": "Documentation",
+      "GUIDED_TOUR": "Guided tour",
+      "HELP": "Help",
+      "QUICKSTARTS": "Quick Starts"
+    }
+  },
   "AutomatedAnalysisCard": {
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues",
     "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",

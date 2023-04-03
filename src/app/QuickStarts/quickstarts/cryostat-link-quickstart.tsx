@@ -35,46 +35,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import {
-  QuickStartCatalogPage,
-  QuickStartContainer,
-  QuickStartContainerProps,
-  useLocalStorage,
-} from '@patternfly/quickstarts';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
-import { allQuickStarts } from './all-quickstarts';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import build from '@app/build.json';
+import { QuickStart } from '@patternfly/quickstarts';
 
-export interface QuickStartsProps {}
-
-const QuickStarts: React.FunctionComponent<QuickStartsProps> = (_) => {
-  const { t, i18n } = useTranslation();
-  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
-  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-
-  const drawerProps: QuickStartContainerProps = {
-    quickStarts: allQuickStarts,
-    activeQuickStartID,
-    allQuickStartStates,
-    setActiveQuickStartID,
-    setAllQuickStartStates,
-    language: i18n.language,
-    alwaysShowTaskReview: true,
-  };
-  return (
-    <React.Suspense fallback={<LoadingView />}>
-      <QuickStartContainer {...drawerProps}>
-        <QuickStartCatalogPage
-          title={t('QuickStarts.CATALOG_PAGE.TITLE')}
-          hint={t('QuickStarts.CATALOG_PAGE.HINT')}
-          showTitle
-          showFilter
-        />
-      </QuickStartContainer>
-    </React.Suspense>
-  );
+// TODO: Put link quickstarts in a separate QuickStartCatalogSection
+const CryostatLinkQuickStart: QuickStart = {
+  apiVersion: 'v2.3.0',
+  metadata: {
+    name: 'cryostat-link-quickstart',
+    instructional: true,
+  },
+  spec: {
+    version: 2.3,
+    displayName: 'Cryostat Upstream Documentation',
+    durationMinutes: 1,
+    icon: cryostatLogo,
+    description: `Link to Cryostat's upstream documentation.`,
+    prerequisites: [''],
+    introduction: '### This is a generic quickstart.',
+    link: {
+      href: build.homePageUrl,
+      text: 'cryostat.io',
+    },
+    type: {
+      text: 'External',
+      color: 'purple',
+    },
+  },
 };
 
-export default withRouter(QuickStarts);
+export default CryostatLinkQuickStart;

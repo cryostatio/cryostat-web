@@ -214,6 +214,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         aria-label={t('DashboardLayoutConfig.NEW.LABEL')}
         onClick={handleCreateModalOpen}
         icon={<PlusCircleIcon />}
+        data-quickstart-id="dashboard-new-btn"
       >
         {t('NEW', { ns: 'common' })}
       </Button>
@@ -230,6 +231,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         aria-label={t('DashboardLayoutConfig.RENAME.LABEL')}
         onClick={() => handleRenameLayout(currLayout.name)}
         icon={<PencilAltIcon />}
+        data-quickstart-id="dashboard-rename-btn"
       />
     ),
     [t, handleRenameLayout, currLayout.name]
@@ -243,6 +245,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         aria-label={t('DashboardLayoutConfig.UPLOAD.LABEL')}
         onClick={handleUploadModalOpen}
         icon={<UploadIcon />}
+        data-quickstart-id="dashboard-upload-btn"
       >
         {t('UPLOAD', { ns: 'common' })}
       </Button>
@@ -258,6 +261,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         aria-label={t('DashboardLayoutConfig.DOWNLOAD.LABEL')}
         onClick={handleDownloadLayout}
         icon={<DownloadIcon />}
+        data-quickstart-id="dashboard-download-btn"
       >
         {t('DOWNLOAD', { ns: 'common' })}
       </Button>
@@ -275,6 +279,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         aria-label={t('DashboardLayoutConfig.DELETE.LABEL')}
         onClick={(ev) => handleDeleteButton(ev, currLayout.name)}
         icon={<TrashIcon />}
+        data-quickstart-id="dashboard-delete-btn"
       >
         {t('DELETE', { ns: 'common' })}
       </Button>
@@ -340,7 +345,12 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         isOpen={isSelectorOpen}
         onOpenChange={onOpenChange}
         toggle={(toggleRef) => (
-          <MenuToggle ref={toggleRef} id="dashboard-layout-dropdown-toggle" onClick={onToggle}>
+          <MenuToggle
+            ref={toggleRef}
+            id="dashboard-layout-dropdown-toggle"
+            onClick={onToggle}
+            data-quickstart-id="dashboard-layout-selector"
+          >
             {currLayout.name}
           </MenuToggle>
         )}
