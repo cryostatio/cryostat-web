@@ -42,7 +42,6 @@ import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-// TODO: Change this when adding dark mode setting to the settings page (General tab)
 const SettingsQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
@@ -66,13 +65,13 @@ const SettingsQuickStart: QuickStart = {
       There are various settings that can be configured:
       </h3>
       <ul style="font-weight: bold;">
+        <li>General</li>
         <li>Connectivity</li>
-        <li>Languages & Region</li>
         <li>Notification & Messages</li>    
         <li>Dashboard</li>
         <li>Advanced</li>
       </ul>
-      We will go over each of these settings in detail.
+      We will go over each of these settings briefly.
     </p>
   </div>
     `,
