@@ -59,137 +59,26 @@ exports[`<Settings/> renders correctly 1`] = `
                   data-ouia-safe={true}
                   onSelect={[Function]}
                 >
-                  <li
-                    className="pf-c-tabs__item pf-m-current"
-                    role="presentation"
+                  <ul
+                    className="pf-c-tabs__list"
+                    onScroll={[Function]}
+                    role="tablist"
                   >
-                    <button
-                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.GENERAL--445403487"
-                      aria-selected={true}
-                      className="pf-c-tabs__link"
-                      data-ouia-component-type="PF4/TabButton"
-                      data-ouia-safe={true}
-                      id="pf-tab-SETTINGS.CATEGORIES.GENERAL--445403487"
-                      onClick={[Function]}
-                      role="tab"
-                      type="button"
+                    <li
+                      className="pf-c-tabs__item pf-m-current"
+                      role="presentation"
                     >
-                      <span
-                        className="pf-c-tabs__item-text"
-                      >
-                        General
-                      </span>
-                    </button>
-                  </li>
-                  <li
-                    className="pf-c-tabs__item"
-                    role="presentation"
-                  >
-                    <button
-                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.CONNECTIVITY--1507428482"
-                      aria-selected={false}
-                      className="pf-c-tabs__link"
-                      data-ouia-component-type="PF4/TabButton"
-                      data-ouia-safe={true}
-                      id="pf-tab-SETTINGS.CATEGORIES.CONNECTIVITY--1507428482"
-                      onClick={[Function]}
-                      role="tab"
-                      type="button"
-                    >
-                      <span
-                        className="pf-c-tabs__item-text"
-                      >
-                        Connectivity
-                      </span>
-                    </button>
-                  </li>
-                  <li
-                    className="pf-c-tabs__item"
-                    role="presentation"
-                  >
-                    <button
-                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE-719517530"
-                      aria-selected={false}
-                      className="pf-c-tabs__link"
-                      data-ouia-component-type="PF4/TabButton"
-                      data-ouia-safe={true}
-                      id="pf-tab-SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE-719517530"
-                      onClick={[Function]}
-                      role="tab"
-                      type="button"
-                    >
-                      <span
-                        className="pf-c-tabs__item-text"
-                      >
-                        Notifications & Messages
-                      </span>
-                    </button>
-                  </li>
-                  <li
-                    className="pf-c-tabs__item"
-                    role="presentation"
-                  >
-                    <button
-                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.DASHBOARD-129171981"
-                      aria-selected={false}
-                      className="pf-c-tabs__link"
-                      data-ouia-component-type="PF4/TabButton"
-                      data-ouia-safe={true}
-                      id="pf-tab-SETTINGS.CATEGORIES.DASHBOARD-129171981"
-                      onClick={[Function]}
-                      role="tab"
-                      type="button"
-                    >
-                      <span
-                        className="pf-c-tabs__item-text"
-                      >
-                        Dashboard
-                      </span>
-                    </button>
-                  </li>
-                  <li
-                    className="pf-c-tabs__item"
-                    role="presentation"
-                  >
-                    <button
-                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.ADVANCED-843151721"
-                      aria-selected={false}
-                      className="pf-c-tabs__link"
-                      data-ouia-component-type="PF4/TabButton"
-                      data-ouia-safe={true}
-                      id="pf-tab-SETTINGS.CATEGORIES.ADVANCED-843151721"
-                      onClick={[Function]}
-                      role="tab"
-                      type="button"
-                    >
-                      <span
-                        className="pf-c-tabs__item-text"
-                      >
-                        Advanced
-                      </span>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div
-              className="pf-c-sidebar__content"
-            >
-              <div
-                className="settings__content active"
-              >
-                <form
-                  className="pf-c-form"
-                  noValidate={true}
-                >
-                  <div
-                    className="pf-c-form__group"
-                  >
-                    <div
-                      className="pf-c-form__group-label"
-                    >
-                      <label
-                        className="pf-c-form__label"
+                      <button
+                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.GENERAL--445403487"
+                        aria-selected={true}
+                        className="pf-c-tabs__link"
+                        data-ouia-component-type="PF4/TabButton"
+                        data-ouia-safe={true}
+                        data-quickstart-id="settings-general-tab"
+                        id="pf-tab-SETTINGS.CATEGORIES.GENERAL--445403487"
+                        onClick={[Function]}
+                        role="tab"
+                        type="button"
                       >
                         <span
                           className="pf-c-tabs__item-text"
@@ -199,12 +88,12 @@ exports[`<Settings/> renders correctly 1`] = `
                       </button>
                     </li>
                     <li
-                      className="pf-c-tabs__item pf-m-current"
+                      className="pf-c-tabs__item"
                       role="presentation"
                     >
                       <button
                         aria-controls="pf-tab-section-SETTINGS.CATEGORIES.CONNECTIVITY--1507428482"
-                        aria-selected={true}
+                        aria-selected={false}
                         className="pf-c-tabs__link"
                         data-ouia-component-type="PF4/TabButton"
                         data-ouia-safe={true}
@@ -294,10 +183,10 @@ exports[`<Settings/> renders correctly 1`] = `
                 </div>
               </div>
               <div
-                className="settings__content"
+                className="pf-c-sidebar__content"
               >
                 <div
-                  className="settings__content"
+                  className="settings__content active"
                 >
                   <form
                     className="pf-c-form"
@@ -408,7 +297,7 @@ exports[`<Settings/> renders correctly 1`] = `
                   </form>
                 </div>
                 <div
-                  className="settings__content active"
+                  className="settings__content"
                 >
                   <form
                     className="pf-c-form"
