@@ -37,41 +37,34 @@
  */
 
 import { DashboardLayout, SerialDashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
+import React from 'react';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
+export const LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT = 100;
+
+export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;
+export const LayoutTemplateDescriptionPattern = /^[a-zA-Z0-9\s\.,\-'";?!@#$%^&*()\[\]_+=:{}]*$/;
 
 export interface LayoutTemplate {
   name: string;
-  icon: string;
   description: string;
   layout: SerialDashboardLayout;
-  vendor?: string;
+  vendor: 'Cryostat' | 'User-supplied';
 }
 
-// export class LayoutTemplateService {
-//     private readonly _state$ = new BehaviorSubject<string>('');
+export type SerialLayoutTemplate = Omit<LayoutTemplate, 'icon'| 'vendor'>;
 
-//     layoutTemplate(): Observable<string> {
-//       return this._state$.asObservable();
-//     }
-
-//     setLayoutTemplate(expr: string): void {
-//       this._state$.next(expr);
-//     }
-// }
-
-// export const DashboardLayoutContext: React.Context<LayoutTemplate> = React.createContext<LayoutTemplate>(BlankLayout);
-
-// export const useLayoutTemplate = (): [LayoutTemplate, (layout: LayoutTemplate) => void] => {
-//     const [layoutTemplate, setLayoutTemplate] = React.useState<LayoutTemplate>(BlankLayout);
-
-//     const layoutContext = React.useContext(DashboardLayoutContext);
-
-//     React.useEffect(() => {
-
-// }
+export const templatize = (layout: DashboardLayout): LayoutTemplate => {
+  return {
+    name: layout.name,
+    description: 'Custom layout',
+    layout: layout,
+    vendor: 'User-supplied',
+  };
+};
 
 export const deserializeLayout = (layout: SerialDashboardLayout, name?: string): DashboardLayout => {
   return {

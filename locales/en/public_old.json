@@ -1,0 +1,37 @@
+{
+  "DashboardLayoutSetAsTemplate": {
+    "DESCRIPTION": "Set the current dashboard layout as a template.",
+    "FORM_GROUP": {
+      "DESCRIPTION": {
+        "HELPER_TEXT": "cryostat_tmp",
+        "LABEL": "cryostat_tmp"
+      },
+      "NAME": {
+        "HELPER_TEXT": "cryostat_tmp",
+        "LABEL": "cryostat_tmp"
+      }
+    },
+    "NAME": {
+      "HELPER_TEXT": "Enter a name for the template.",
+      "LABEL": "Name"
+    },
+    "TITLE": "Custom Layout Template"
+  },
+  "JvmDetailsCard": {
+    "terms": {
+      "ALIAS": "Alias",
+      "AVAILABLE_PROCESSORS": "Available Processors",
+      "CONNECTION_URL": "Connection URL",
+      "CRYOSTAT_ANNOTATIONS": "Cryostat Annotations",
+      "JVM_ID": "JVM Hash ID",
+      "LABELS": "Platform Labels",
+      "OS_ARCH": "Operating System Architecture",
+      "OS_VERSION": "Operating System Version",
+      "PLATFORM_ANNOTATIONS": "Platform Annotations",
+      "START_TIME": "Start Time",
+      "VM_VENDOR": "Vendor",
+      "VM_VERSION": "Version"
+    }
+  },
+  "Set as template": "cryostat_tmp"
+}

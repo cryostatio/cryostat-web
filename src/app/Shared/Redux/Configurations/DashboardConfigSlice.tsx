@@ -57,6 +57,9 @@ export enum DashboardConfigAction {
   LAYOUT_RENAME = 'layout-config/rename',
   LAYOUT_REPLACE = 'layout-config/replace',
   LAYOUT_FAVORITE = 'layout-config/favorite',
+  TEMPLATE_ADD = 'template-config/add',
+  TEMPLATE_REMOVE = 'template-config/remove',
+  TEMPLATE_RENAME = 'template-config/rename',
   TEMPLATE_HISTORY_PUSH = 'template-history/push',
 }
 
@@ -106,6 +109,18 @@ export interface DashboardFavoriteLayoutActionPayload {
   name: string;
 }
 
+export interface DashboardAddTemplateActionPayload {
+  template: LayoutTemplate;
+}
+
+export interface DashboardDeleteTemplateActionPayload {
+  name: string;
+}
+
+export interface DashboardRenameTemplateActionPayload {
+  oldName: string;
+  newName: string;
+}
 export interface DashboardHistoryPushTemplateActionPayload {
   template: LayoutTemplate;
 }
@@ -196,6 +211,34 @@ export const dashboardConfigFavoriteLayoutIntent = createAction(
   })
 );
 
+export const dashboardConfigAddTemplateIntent = createAction(
+  DashboardConfigAction.TEMPLATE_ADD,
+  (template: LayoutTemplate) => ({
+    payload: {
+      template,
+    } as DashboardAddTemplateActionPayload,
+  })
+);
+
+export const dashboardConfigDeleteTemplateIntent = createAction(
+  DashboardConfigAction.TEMPLATE_REMOVE,
+  (name: string) => ({
+    payload: {
+      name,
+    } as DashboardDeleteTemplateActionPayload,
+  })
+);
+
+export const dashboardConfigRenameTemplateIntent = createAction(
+  DashboardConfigAction.TEMPLATE_RENAME,
+  (oldName: string, newName: string) => ({
+    payload: {
+      oldName,
+      newName,
+    } as DashboardRenameTemplateActionPayload,
+  })
+);
+
 export const dashboardConfigHistoryPushTemplateIntent = createAction(
   DashboardConfigAction.TEMPLATE_HISTORY_PUSH,
   (template: LayoutTemplate) => ({
@@ -225,6 +268,7 @@ export type SerialDashboardLayout = Omit<DashboardLayout, 'cards'> & { cards: Se
 export interface DashboardConfigState {
   layouts: DashboardLayout[];
   templateHistory: LayoutTemplate[];
+  customTemplates: LayoutTemplate[];
   current: number;
   readonly _version: string;
 }
@@ -237,13 +281,13 @@ const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _
       favorite: true,
     },
   ] as DashboardLayout[],
+  customTemplates: [] as LayoutTemplate[],
   templateHistory: [] as LayoutTemplate[],
   current: 0,
 });
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
-
     .addCase(dashboardConfigAddCardIntent, (state, { payload }) => {
       state.layouts[state.current].cards.push(payload);
     })
@@ -330,6 +374,28 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
         throw new Error(`Layout with name ${payload.newLayoutName} does not exist.`);
       }
       state.layouts[idx].favorite = !state.layouts[idx].favorite;
+    })
+    .addCase(dashboardConfigAddTemplateIntent, (state, { payload }) => {
+      const template = payload.template;
+      const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);   
+      if (idx >= 0) {
+        throw new Error(`Template with name ${template.name} and vendor ${template.vendor} already exists.`);
+      }
+      state.customTemplates.push(template);
+    })
+    .addCase(dashboardConfigDeleteTemplateIntent, (state, { payload }) => {
+      const idx = state.customTemplates.findIndex((t) => t.name === payload.name);
+      if (idx < 0) {
+        throw new Error(`Template with name ${payload.name} does not exist.`);
+      }
+      state.customTemplates.splice(idx, 1);
+    })
+    .addCase(dashboardConfigRenameTemplateIntent, (state, { payload }) => {
+      const idx = state.customTemplates.findIndex((t) => t.name === payload.oldName);
+      if (idx < 0) {
+        throw new Error(`Template with name ${payload.oldName} does not exist.`);
+      }
+      state.customTemplates[idx].name = payload.newName;
     })
     .addCase(dashboardConfigHistoryPushTemplateIntent, (state, { payload }) => {
       const template = payload.template;

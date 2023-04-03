@@ -70,6 +70,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   const [selectedTemplate, setSelectedTemplate] = React.useState<string>(BlankLayout.name);
 
   const recentTemplates: LayoutTemplate[] = useSelector((state: RootState) => state.dashboardConfigs.templateHistory);
+  const userSubmittedTemplates: LayoutTemplate[] = useSelector((state: RootState) => state.dashboardConfigs.customTemplates);
 
   const handleTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
@@ -93,7 +94,8 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                   featured={selectedTemplate === layout.name}
                   id={layout.name}
                   key={layout.name}
-                  iconImg={cryostatLogo}
+                  icon={typeof layout.icon === 'string' ? undefined : layout.icon}
+                  iconImg={typeof layout.icon === 'string' ? layout.icon : undefined}
                   iconAlt={'Cryostat Logo'}
                   title={layout.name}
                   vendor={layout.vendor}
@@ -129,7 +131,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       <InnerScrollContainer>
         <Stack>
           <StackItem>
-            <LayoutTemplateGroup title="Recent" templates={[BlankLayout, ...recentTemplates]} />
+            <LayoutTemplateGroup title="Suggested" templates={[BlankLayout, ...recentTemplates]} />
           </StackItem>
           <StackItem>
             <Divider />
@@ -141,7 +143,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
             <Divider />
           </StackItem>
           <StackItem>
-            <LayoutTemplateGroup title="User-submitted" templates={[] as LayoutTemplate[]} />
+            <LayoutTemplateGroup title="User-submitted" templates={userSubmittedTemplates} />
           </StackItem>
         </Stack>
       </InnerScrollContainer>

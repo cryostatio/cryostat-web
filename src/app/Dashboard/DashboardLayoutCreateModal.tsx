@@ -35,15 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { dashboardConfigHistoryPushTemplateIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-
 import {
   dashboardConfigAddLayoutIntent,
+  dashboardConfigHistoryPushTemplateIntent,
   dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
-import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
@@ -64,7 +62,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { BlankLayout } from './dashboard-templates';
-import { DEFAULT_DASHBOARD_NAME, deserializeLayout, LayoutTemplate } from './DashboardUtils';
+import { DashboardLayoutNamePattern, DEFAULT_DASHBOARD_NAME, deserializeLayout, LayoutTemplate } from './DashboardUtils';
 import { LayoutTemplatePicker } from './LayoutTemplatePicker';
 
 export interface DashboardLayoutCreateModalProps {
@@ -147,9 +145,9 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   );
 
   const handleKeyUp = React.useCallback(
-    (event: React.KeyboardEvent): void => {
-      event.stopPropagation();
-      if (event.code === 'Enter' && nameValidated === ValidatedOptions.success) {
+    (ev: React.KeyboardEvent): void => {
+      ev.stopPropagation();
+      if (ev.code === 'Enter' && nameValidated === ValidatedOptions.success) {
         handleSubmit();
       }
     },

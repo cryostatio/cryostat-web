@@ -1854,5 +1854,3 @@ export const defaultChartControllerConfig: ChartControllerConfig = {
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY = 'uploads';
-
-export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;

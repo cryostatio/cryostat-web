@@ -43,7 +43,6 @@ import {
   dashboardConfigReplaceLayoutIntent,
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
-import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
@@ -53,6 +52,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
+import { DashboardLayoutNamePattern } from './DashboardUtils';
 
 export interface DashboardLayoutUploadModalProps {
   visible: boolean;
