@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
@@ -48,6 +48,7 @@ const SettingsQuickStart: QuickStart = {
   metadata: {
     name: 'settings-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
+    order: 100,
   },
   spec: {
     version: 2.3,
@@ -82,6 +83,14 @@ const SettingsQuickStart: QuickStart = {
 1. Press the [Settings]{{highlight settings-link}} cog icon.`,
       },
       {
+        title: 'Go to the General settings tab',
+        description: `
+1. Go to the [General]{{highlight settings-general-tab}} tab
+2. Configure the theme.
+3. Configure the date locale and current timezone.
+[Cryostat currently only supports English. We are planning on adding support for other languages in the future.]{{admonition note}}`,
+      },
+      {
         title: 'Go to the Connectivity settings tab',
         description: `
 The Connectivity tab allows you to configure the WebSocket connection the browser forms with the Cryostat backend.
@@ -91,13 +100,6 @@ The Connectivity tab allows you to configure the WebSocket connection the browse
 3. Configure the Auto-Refresh period for content-views.
 [To use the Auto-Refresh feature, you must have the [Auto-Refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox enabled.]{{admonition tip}}
 `,
-      },
-      {
-        title: 'Go to to the Languages & Region settings tab',
-        description: `
-1. Go to the [Languages & Region]{{highlight settings-language&region-tab}} tab
-2. Configure the date locale and current timezone.
-[Cryostat currently only supports English. We are planning on adding support for other languages in the future.]{{admonition note}}`,
       },
       {
         title: 'Go to the Notifications & Messages tab',
@@ -142,6 +144,7 @@ Credentials are used to authenticate with the target JVMs that Cryostat communic
   <p>You completed the <strong>Using Settings</strong> quick start!</p>
     <div style="max-width: 350px">
       <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
+        <p class="cryostat-text">cryostat</p>
     </div>
   <p>For more information about configuring <strong>Settings</strong> in Cryostat, read our guides on the <a href="${build.homePageUrl}" target="_blank">Cryostat website</a>.</p>
 </div>`,

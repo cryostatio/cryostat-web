@@ -107,7 +107,7 @@ describe('<JFRMetricsChartCard />', () => {
         </ServiceContext.Provider>
       );
     });
-    expect(tree.toJSON()).toMatchSnapshot('with-content');
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('renders loading state correctly', async () => {
@@ -127,7 +127,7 @@ describe('<JFRMetricsChartCard />', () => {
         </ServiceContext.Provider>
       );
     });
-    expect(tree.toJSON()).toMatchSnapshot('loading-view');
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('renders empty state correctly', async () => {
@@ -147,7 +147,7 @@ describe('<JFRMetricsChartCard />', () => {
         </ServiceContext.Provider>
       );
     });
-    expect(tree.toJSON()).toMatchSnapshot('empty-state');
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('renders empty state with information and action button', async () => {

@@ -46,6 +46,19 @@ html, body, #root {
   --cryostat-white: #FFFFFF;
 }
 
+.cryostat-text {
+  margin-top: -0.5em !important;
+  font-family: "Montserrat", sans-serif; 
+  font-weight: 900; 
+  text-align: center;
+  font-size: 4.5em;
+  color: var(--cryostat-indigo);
+}
+
+:is(.pf-theme-dark) .cryostat-text {
+  color: var(--cryostat-white);
+}
+
 .pf-c-page__sidebar.pf-m-collapsed {
   overflow: hidden !important;
 }

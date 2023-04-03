@@ -40,7 +40,7 @@ import { EmptyState, EmptyStateBody, EmptyStateIcon, Gallery, GalleryItem, Title
 import { CheckCircleIcon, PficonTemplateIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { BlankLayout } from './dashboard-templates';
-import { iconify, LayoutTemplate, LayoutTemplateIcon } from './DashboardUtils';
+import { iconify, LayoutTemplate } from './DashboardUtils';
 
 export interface LayoutTemplateGroupProps {
   title: string;

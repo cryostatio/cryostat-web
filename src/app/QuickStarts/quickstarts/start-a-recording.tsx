@@ -36,23 +36,27 @@
  * SOFTWARE.
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
-import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-
+import { withTheme } from '@app/utils/withTheme';
 import { QuickStart } from '@patternfly/quickstarts';
+import React from 'react';
+
+const Icon = withTheme(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');
 
 const RecordingQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'start-a-recording-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
+    order: 1,
   },
   spec: {
     version: 2.3,
     displayName: 'Start a Recording',
     durationMinutes: 10,
-    icon: cryostatLogoIcon,
+    icon: <Icon />,
     description: `Learn how to start a recording with Java Flight Recorder (JFR) with [APP].`,
     prerequisites: [''],
     introduction: `
@@ -186,7 +190,8 @@ Archiving a recording will save the recording to [APP]'s archival storage, and w
   <p>You completed the <strong>Start a Recording</strong> quick start!</p>
 
   <div style="max-width: 350px">
-    <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
+    <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogoIcon}" alt="Cryostat Logo" width="100%" height="100%" />
+    <p class="cryostat-text">cryostat</p>
   </div>
   <p>To learn more about [APP]'s extensive features and capabilities, please visit our website at <a href="${build.documentationUrl}" target="_blank">${build.documentationUrl}</a>.</p>
 </div>`,

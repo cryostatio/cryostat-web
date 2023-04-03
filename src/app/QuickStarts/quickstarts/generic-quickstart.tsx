@@ -46,6 +46,7 @@ const GenericQuickStart: QuickStart = {
   metadata: {
     name: 'generic-quickstart',
     featureLevel: FeatureLevel.DEVELOPMENT,
+    order: 0,
     // you can add additional metadata here
   },
   spec: {
@@ -161,6 +162,7 @@ world
 
   <div style="max-width: 350px">
     <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
+    <p class="cryostat-text">cryostat</p>
   </div>
   <p>To learn more about [APP]'s extensive features and capabilities, read our guides at <a href="${build.documentationUrl}" target="_blank">cryostat.io</a>.</p>
 </div>`,

@@ -36,10 +36,14 @@
  * SOFTWARE.
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
-import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { withTheme } from '@app/utils/withTheme';
 import { QuickStart } from '@patternfly/quickstarts';
+import React from 'react';
+
+const Icon = withTheme(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Logo');
 
 // TODO: Add quickstarts based on the following example:
 const DashboardQuickStart: QuickStart = {
@@ -47,12 +51,13 @@ const DashboardQuickStart: QuickStart = {
   metadata: {
     name: 'dashboard-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
+    order: 2,
   },
   spec: {
     version: 2.3,
     displayName: 'Dashboard',
     durationMinutes: 10,
-    icon: cryostatLogoIcon,
+    icon: <Icon />,
     description: `Learn about what you can do with the [APP] Dashboard.`,
     prerequisites: [''],
     introduction: `
@@ -164,8 +169,9 @@ You can rename, upload, download, and delete **Dashboard Layouts**. You may also
 <div>
     <p>You completed the <strong>Dashboard</strong> quick start!</p>
     <div style="max-width: 350px">
-        <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
-    </div>
+        <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogoIcon}" alt="Cryostat Logo" width="100%" height="100%" />
+        <p class="cryostat-text">cryostat</p>
+        </div>
     <p>For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guides on the <a href="${build.dashboardGuideUrl}" target="_blank">Cryostat documentation</a>.</p>
 </div>`,
     type: {

@@ -35,27 +35,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { QuickStartCatalogPage } from '@patternfly/quickstarts';
+import { ThemeType } from '@app/Settings/SettingsUtils';
+import { useTheme } from '@app/utils/useTheme';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
 
-export interface QuickStartsCatalogPageProps {}
-
-const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProps> = (_) => {
-  const { t } = useTranslation();
-
-  // TODO: Quick start categories (patternfly/quickstarts supports this through individual components)
-  // e.g. Dashboard Quick Starts, Topology Quick Starts, Recording Quick Starts, etc.
-  return (
-    <QuickStartCatalogPage
-      title={t('QuickStarts.CATALOG_PAGE.TITLE')}
-      hint={t('QuickStarts.CATALOG_PAGE.HINT')}
-      showTitle
-      showFilter
-      sortFnc={(a, b) => a.metadata.order - b.metadata.order}
-    />
-  );
+export const withTheme = (icon: string, darkIcon: string, alt: string): React.FC => {
+  const WithTheme: React.FC = () => {
+    const theme = useTheme();
+    if (theme === ThemeType.DARK) {
+      return <img src={darkIcon} alt={alt} />;
+    } else {
+      return <img src={icon} alt={alt} />;
+    }
+  };
+  return WithTheme;
 };
-
-export default withRouter(QuickStartsCatalogPage);
