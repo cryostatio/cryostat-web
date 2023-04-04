@@ -52,7 +52,7 @@ const Component = () => {
 
   const handleThemeSelect = React.useCallback(
     (_, v) => {
-      context.settings.setTheme(v as ThemeSetting);
+      context.settings.setThemeSetting(v as ThemeSetting);
       setOpen(false);
     },
     [context.settings, setOpen]

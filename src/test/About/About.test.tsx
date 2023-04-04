@@ -45,7 +45,7 @@ import * as React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderDefault, testT } from '../Common';
+import { mockMediaQueryList, renderDefault, testT } from '../Common';
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
     BreadcrumbPage: jest.fn((props) => {
@@ -59,8 +59,8 @@ jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   };
 });
 
-jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.DARK));
-jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(true));
+jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.DARK));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
 jest.mock('@app/About/AboutDescription', () => {
   return {

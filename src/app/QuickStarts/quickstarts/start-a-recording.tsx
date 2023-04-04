@@ -39,11 +39,11 @@ import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
 import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { withTheme } from '@app/utils/withTheme';
+import { withThemedIcon } from '@app/utils/withThemedIcon';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
 
-const Icon = withTheme(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');
+const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');
 
 const RecordingQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',

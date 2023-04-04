@@ -49,7 +49,7 @@ export function useTheme(): [ThemeType, ThemeSetting] {
   const services = React.useContext(ServiceContext);
 
   React.useEffect(() => {
-    themeRef.current = services.settings.theme().subscribe((theme) => {
+    themeRef.current = services.settings.themeSetting().subscribe((theme) => {
       setSetting(theme);
       if (theme === ThemeSetting.AUTO) {
         setTheme(
@@ -66,12 +66,15 @@ export function useTheme(): [ThemeType, ThemeSetting] {
 
   React.useEffect(() => {
     mediaRef.current = services.settings.media('(prefers-color-scheme: dark)').subscribe((dark) => {
-      if (setting === ThemeSetting.AUTO) {
-        setTheme(dark ? ThemeSetting.DARK : ThemeSetting.LIGHT);
-      }
+      setSetting((setting) => {
+        if (setting === ThemeSetting.AUTO) {
+          setTheme(dark.matches ? ThemeSetting.DARK : ThemeSetting.LIGHT);
+        }
+        return setting;
+      });
     });
     return () => mediaRef.current && mediaRef.current.unsubscribe();
-  }, [services.settings, mediaRef, setting]);
+  }, [services.settings, mediaRef]);
 
   return [theme, setting];
 }

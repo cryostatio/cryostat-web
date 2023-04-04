@@ -39,8 +39,8 @@ import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { useTheme } from '@app/utils/useTheme';
 import React from 'react';
 
-export const withTheme = (icon: string, darkIcon: string, alt: string): React.FC => {
-  const WithTheme: React.FC = () => {
+export const withThemedIcon = (icon: string, darkIcon: string, alt: string): React.FC => {
+  const WithThemedIcon: React.FC = () => {
     const [theme] = useTheme();
     if (theme === ThemeSetting.DARK) {
       return <img src={darkIcon} alt={alt} />;
@@ -48,5 +48,5 @@ export const withTheme = (icon: string, darkIcon: string, alt: string): React.FC
       return <img src={icon} alt={alt} />;
     }
   };
-  return WithTheme;
+  return WithThemedIcon;
 };

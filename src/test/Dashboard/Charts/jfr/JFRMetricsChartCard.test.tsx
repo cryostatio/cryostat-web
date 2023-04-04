@@ -53,7 +53,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithProvidersAndRedux } from '../../../Common';
+import { mockMediaQueryList, renderWithProvidersAndRedux } from '../../../Common';
 
 let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({
@@ -68,8 +68,8 @@ jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDa
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
-jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.LIGHT));
-jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(true));
+jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
 const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,

@@ -240,3 +240,14 @@ export const resize = (width: number, height: number) => {
   Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
   window.dispatchEvent(new Event('resize'));
 };
+
+export const mockMediaQueryList: MediaQueryList = {
+  matches: true,
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  media: '',
+  onchange: null,
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  dispatchEvent: jest.fn(),
+};

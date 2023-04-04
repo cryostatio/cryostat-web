@@ -160,7 +160,6 @@ jest.mock('@app/Settings/Theme', () => ({
 }));
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
-jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.DARK));
 
 const history = createMemoryHistory({ initialEntries: ['/settings'] });
 

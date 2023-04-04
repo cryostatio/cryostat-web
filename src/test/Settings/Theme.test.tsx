@@ -41,18 +41,18 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, act, within } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContext, testT } from '../Common';
+import { mockMediaQueryList, renderWithServiceContext, testT } from '../Common';
 
 jest
-  .spyOn(defaultServices.settings, 'theme')
+  .spyOn(defaultServices.settings, 'themeSetting')
   .mockReturnValueOnce(of(ThemeSetting.LIGHT))
   .mockReturnValueOnce(of(ThemeSetting.DARK));
 
-jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(true));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
 describe('<Theme/>', () => {
   beforeEach(() => {
-    jest.mocked(defaultServices.settings.setTheme).mockClear();
+    jest.mocked(defaultServices.settings.setThemeSetting).mockClear();
   });
 
   afterEach(cleanup);

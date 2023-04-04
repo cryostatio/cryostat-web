@@ -40,7 +40,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
-import { BehaviorSubject, fromEvent, map, Observable, startWith } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, startWith } from 'rxjs';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -101,20 +101,16 @@ export class SettingsService {
     this._theme$.subscribe((theme: ThemeSetting) => saveToLocalStorage('THEME', theme));
   }
 
-  // taken from https://github.com/garygrossgarten/media-query
-  media(query: string): Observable<boolean> {
+  media(query: string): Observable<MediaQueryList> {
     const mediaQuery = window.matchMedia(query);
-    return fromEvent<MediaQueryList>(mediaQuery, 'change').pipe(
-      startWith(mediaQuery),
-      map((list: MediaQueryList) => list.matches)
-    );
+    return fromEvent<MediaQueryList>(mediaQuery, 'change').pipe(startWith(mediaQuery));
   }
 
-  theme(): Observable<ThemeSetting> {
+  themeSetting(): Observable<ThemeSetting> {
     return this._theme$.asObservable();
   }
 
-  setTheme(theme: ThemeSetting): void {
+  setThemeSetting(theme: ThemeSetting): void {
     this._theme$.next(theme);
   }
 
