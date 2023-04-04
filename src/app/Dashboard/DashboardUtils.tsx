@@ -37,9 +37,10 @@
  */
 
 import { DashboardLayout, SerialDashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-import { UserIcon } from '@patternfly/react-icons';
+import { FileIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
 import React from 'react';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
@@ -48,19 +49,40 @@ export const LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT = 100;
 export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;
 export const LayoutTemplateDescriptionPattern = /^[a-zA-Z0-9\s\.,\-'";?!@#$%^&*()\[\]_+=:{}]*$/;
 
+export enum LayoutTemplateIcon {
+  CRYOSTAT = 'cryostat',
+  BLANK = 'blank',
+  USER = 'user',
+}
+
 export interface LayoutTemplate {
   name: string;
+  icon: LayoutTemplateIcon;
   description: string;
   layout: SerialDashboardLayout;
-  vendor: 'Cryostat' | 'User-supplied';
+  vendor?: 'Cryostat' | 'User-supplied';
 }
 
 export type SerialLayoutTemplate = Omit<LayoutTemplate, 'icon'| 'vendor'>;
 
-export const templatize = (layout: DashboardLayout): LayoutTemplate => {
+export const iconify = (icon: LayoutTemplateIcon): React.ReactNode => {
+  switch (icon) {
+    case 'cryostat':
+      return <img src={cryostatLogo} alt="Cryostat Logo" />;
+    case 'blank':
+      return <FileIcon style={{ paddingRight: '0.3rem' }} />;
+    case 'user':
+      return <UserIcon />;
+    default:
+      return <></>;
+  }
+};
+
+export const templatize = (layout: DashboardLayout, name: string, desc?: string): LayoutTemplate => {
   return {
-    name: layout.name,
-    description: 'Custom layout',
+    name: name,
+    icon: LayoutTemplateIcon.USER,
+    description: desc || 'Custom layout.',
     layout: layout,
     vendor: 'User-supplied',
   };

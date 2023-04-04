@@ -45,9 +45,13 @@ import {
   EmptyStateIcon,
   Gallery,
   GalleryItem,
+  SearchInput,
   Stack,
   StackItem,
   Title,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
 } from '@patternfly/react-core';
 import { CheckCircleIcon, PficonTemplateIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
@@ -56,94 +60,44 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import CryostatLayoutTemplates, { BlankLayout } from './dashboard-templates';
 import { LayoutTemplate } from './DashboardUtils';
+import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 
 export interface LayoutTemplatePickerProps {
   onTemplateSelect: (templateName: LayoutTemplate) => void;
 }
 
-export interface LayoutTemplateGroupProps {
-  title: string;
-  templates: LayoutTemplate[];
-}
-
 export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTemplateSelect }) => {
-  const [selectedTemplate, setSelectedTemplate] = React.useState<string>(BlankLayout.name);
 
   const recentTemplates: LayoutTemplate[] = useSelector((state: RootState) => state.dashboardConfigs.templateHistory);
   const userSubmittedTemplates: LayoutTemplate[] = useSelector((state: RootState) => state.dashboardConfigs.customTemplates);
-
-  const handleTemplateSelect = React.useCallback(
-    (template: LayoutTemplate) => {
-      setSelectedTemplate(template.name);
-      onTemplateSelect(template);
-    },
-    [setSelectedTemplate, onTemplateSelect]
-  );
-
-  const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = (props) => {
-    return (
-      <>
-        <Title headingLevel="h2" size="lg" style={{ padding: '1em' }}>
-          {props.title}
-        </Title>
-        <Gallery hasGutter={true} className="layout-template-picker">
-          {props.templates.length !== 0 ? (
-            props.templates.map((layout) => (
-              <GalleryItem key={layout.name}>
-                <CatalogTile
-                  featured={selectedTemplate === layout.name}
-                  id={layout.name}
-                  key={layout.name}
-                  icon={typeof layout.icon === 'string' ? undefined : layout.icon}
-                  iconImg={typeof layout.icon === 'string' ? layout.icon : undefined}
-                  iconAlt={'Cryostat Logo'}
-                  title={layout.name}
-                  vendor={layout.vendor}
-                  onClick={() => handleTemplateSelect(layout)}
-                  badges={[
-                    <CatalogTileBadge title="Selected" key={layout.name}>
-                      {selectedTemplate === layout.name && (
-                        <CheckCircleIcon color={'var(--pf-global--success-color--100)'} />
-                      )}
-                    </CatalogTileBadge>,
-                  ]}
-                >
-                  {layout.description}
-                </CatalogTile>
-              </GalleryItem>
-            ))
-          ) : (
-            <EmptyState>
-              <EmptyStateIcon icon={PficonTemplateIcon} />
-              <Title size="lg" headingLevel="h4">
-                No templates found
-              </Title>
-              <EmptyStateBody>Upload your own templates!</EmptyStateBody>
-            </EmptyState>
-          )}
-        </Gallery>
-      </>
-    );
-  };
 
   return (
     <OuterScrollContainer>
       <InnerScrollContainer>
         <Stack>
           <StackItem>
-            <LayoutTemplateGroup title="Suggested" templates={[BlankLayout, ...recentTemplates]} />
+            <Toolbar isSticky>
+              <ToolbarContent>
+                <ToolbarItem>
+                  <SearchInput placeholder="Search templates" aria-label={"Search templates"} />
+                </ToolbarItem>
+              </ToolbarContent>
+            </Toolbar>
+          </StackItem>
+          <StackItem>
+            <LayoutTemplateGroup title="Suggested" templates={[BlankLayout, ...recentTemplates]} onTemplateSelect={onTemplateSelect} />
           </StackItem>
           <StackItem>
             <Divider />
           </StackItem>
           <StackItem>
-            <LayoutTemplateGroup title="Cryostat" templates={CryostatLayoutTemplates} />
+            <LayoutTemplateGroup title="Cryostat" templates={CryostatLayoutTemplates} onTemplateSelect={onTemplateSelect}  />
           </StackItem>
           <StackItem>
             <Divider />
           </StackItem>
           <StackItem>
-            <LayoutTemplateGroup title="User-submitted" templates={userSubmittedTemplates} />
+            <LayoutTemplateGroup title="User-submitted" templates={userSubmittedTemplates} onTemplateSelect={onTemplateSelect}  />
           </StackItem>
         </Stack>
       </InnerScrollContainer>

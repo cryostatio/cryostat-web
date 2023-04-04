@@ -49,12 +49,14 @@ import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, FormSection, Modal, ModalVariant, Popover, TextArea, TextInput } from '@patternfly/react-core';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import { HelpIcon } from '@patternfly/react-icons';
+import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
 import { DashboardLayoutNamePattern, LayoutTemplateDescriptionPattern, LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT, templatize } from './DashboardUtils';
+import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 
 export interface DashboardLayoutSetAsTemplateModalProps {
   visible: boolean;
@@ -84,16 +86,10 @@ const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs
     [onClose]
   );
 
-  const handleSetAsTemplate = React.useCallback(
-    () => {
-
-    },
-    [dispatch]
-  );
-
   const handleSubmit = React.useCallback((ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    dispatch(dashboardConfigAddTemplateIntent(templatize(currLayout)));
-}, [handleSetAsTemplate]);
+    dispatch(dashboardConfigAddTemplateIntent(templatize(currLayout, name, description)));
+    handleClose(ev);
+}, [dispatch, handleClose, currLayout, name, description]);
 
     const handleNameChange = React.useCallback(
         (value: string) => {
@@ -139,12 +135,19 @@ const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs
     <Modal
       appendTo={portalRoot}
       isOpen={props.visible}
-      variant={ModalVariant.small}
+      variant={ModalVariant.medium}
       showClose={true}
       onClose={handleClose}
       title={t('DashboardLayoutSetAsTemplateModal.TITLE')}
       description={t(`DashboardLayoutSetAsTemplateModal.DESCRIPTION`)}
     >
+      <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
+        <OuterScrollContainer>
+          <InnerScrollContainer>
+            <LayoutTemplateGroup title="User-submitted" templates={templates} onTemplateSelect={() => {}}  />
+          </InnerScrollContainer>
+        </OuterScrollContainer>
+      </div>
       <Form onSubmit={(e) => e.preventDefault()}>
         <FormSection>
             <FormGroup
@@ -192,7 +195,7 @@ const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs
               <Button
                 variant="primary"
                 onClick={handleSubmit}
-                isDisabled={false}
+                isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated !== ValidatedOptions.success}
               >
                 {t('SUBMIT', { ns: 'common' })}
               </Button>

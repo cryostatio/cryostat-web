@@ -81,10 +81,6 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   const [template, setTemplate] = React.useState<LayoutTemplate>(BlankLayout);
 
   React.useEffect(() => {
-    console.log('template changed', template);
-  }, [template]);
-
-  React.useEffect(() => {
     setName(props.oldName || '');
   }, [setName, props.oldName]);
 

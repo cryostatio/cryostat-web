@@ -36,13 +36,12 @@
  * SOFTWARE.
  */
 import { FileIcon } from '@patternfly/react-icons';
-import { LayoutTemplate } from './DashboardUtils';
+import { LayoutTemplate, LayoutTemplateIcon } from './DashboardUtils';
 import React from 'react';
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 
 export const BlankLayout: LayoutTemplate = {
   name: 'Blank',
-  icon: <FileIcon style={{ paddingRight: '0.3rem' }} />,
+  icon: LayoutTemplateIcon.BLANK,
   description: 'A blank layout template for creating your own dashboard.',
   layout: {
     name: 'Blank',
@@ -53,7 +52,7 @@ export const BlankLayout: LayoutTemplate = {
 
 const GeneralLayout: LayoutTemplate = {
   name: 'General',
-  icon: cryostatLogo,
+  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A general layout template for monitoring a JVM's metrics and performance.",
   vendor: 'Cryostat',
   layout: {
@@ -186,7 +185,7 @@ const GeneralLayout: LayoutTemplate = {
 
 const ThreadMonitoringLayout: LayoutTemplate = {
   name: 'Thread Monitoring',
-  icon: cryostatLogo,
+  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A layout template for monitoring a JVM's threads.",
   vendor: 'Cryostat',
   layout: {
@@ -239,7 +238,7 @@ const ThreadMonitoringLayout: LayoutTemplate = {
 
 const MemoryMonitoringLayout: LayoutTemplate = {
   name: 'Memory Monitoring',
-  icon: cryostatLogo,
+  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A layout template for monitoring a JVM's memory.",
   vendor: 'Cryostat',
   layout: {
@@ -322,7 +321,7 @@ const MemoryMonitoringLayout: LayoutTemplate = {
 
 const JFRMonitoringLayout: LayoutTemplate = {
   name: 'JFR Monitoring',
-  icon: cryostatLogo,
+  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A layout template for monitoring a JVM's JFR events using embedded Grafana charts.",
   vendor: 'Cryostat',
   layout: {
