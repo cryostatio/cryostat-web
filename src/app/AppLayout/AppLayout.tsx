@@ -42,7 +42,7 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
-import { selectTab, ThemeType } from '@app/Settings/SettingsUtils';
+import { getDefaultTheme, selectTab, ThemeSetting } from '@app/Settings/SettingsUtils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -137,15 +137,23 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
   const location = useLocation();
-  const theme = useTheme();
+  const [_theme, setting] = useTheme();
 
   React.useEffect(() => {
-    if (theme === ThemeType.DARK) {
+    let t = setting;
+    if (setting === ThemeSetting.AUTO) {
+      if (getDefaultTheme() === ThemeSetting.DARK) {
+        t = ThemeSetting.DARK;
+      } else {
+        t = ThemeSetting.LIGHT;
+      }
+    }
+    if (t === ThemeSetting.DARK) {
       document.documentElement.classList.add('pf-theme-dark');
     } else {
       document.documentElement.classList.remove('pf-theme-dark');
     }
-  }, [theme]);
+  }, [setting]);
 
   React.useEffect(() => {
     addSubscription(

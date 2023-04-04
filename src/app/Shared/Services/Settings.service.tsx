@@ -37,7 +37,7 @@
  */
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -77,14 +77,6 @@ export const automatedAnalysisConfigToRecordingAttributes = (
     },
   } as RecordingAttributes;
 };
-
-const getDefaultTheme = (): ThemeType => {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return ThemeType.DARK;
-  }
-  return ThemeType.LIGHT;
-};
-
 export class SettingsService {
   private readonly _featureLevel$ = new BehaviorSubject<FeatureLevel>(
     getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION)
@@ -98,7 +90,7 @@ export class SettingsService {
     getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat)
   );
 
-  private readonly _theme$ = new BehaviorSubject<ThemeType>(getFromLocalStorage('THEME', getDefaultTheme()));
+  private readonly _theme$ = new BehaviorSubject<ThemeSetting>(getFromLocalStorage('THEME', ThemeSetting.AUTO));
 
   constructor() {
     this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
@@ -106,14 +98,14 @@ export class SettingsService {
       saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
-    this._theme$.subscribe((theme: ThemeType) => saveToLocalStorage('THEME', theme));
+    this._theme$.subscribe((theme: ThemeSetting) => saveToLocalStorage('THEME', theme));
   }
 
-  theme(): Observable<ThemeType> {
+  theme(): Observable<ThemeSetting> {
     return this._theme$.asObservable();
   }
 
-  setTheme(theme: ThemeType): void {
+  setTheme(theme: ThemeSetting): void {
     this._theme$.next(theme);
   }
 

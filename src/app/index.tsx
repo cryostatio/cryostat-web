@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 
-import '@patternfly/patternfly/patternfly-charts.css';
 import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly-charts.css';
 import '@patternfly/quickstarts/dist/quickstarts.css';
 import '@app/app.css';
 import '@app/Topology/styles/base.css';

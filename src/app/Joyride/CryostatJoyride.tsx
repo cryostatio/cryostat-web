@@ -36,9 +36,12 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import cryostatLogoDark from '@app/assets/cryostat_logo_vert_rgb_reverse.svg';
 import build from '@app/build.json';
 import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import JoyrideTooltip from '@app/Joyride/JoyrideTooltip';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
+import { useTheme } from '@app/utils/useTheme';
 import React from 'react';
 import ReactJoyride, { CallBackProps, ACTIONS, EVENTS, STATUS } from 'react-joyride';
 interface CryostatJoyrideProps {
@@ -51,6 +54,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
     state: { run, stepIndex, steps },
     isNavBarOpen,
   } = useJoyride();
+
+  const [theme] = useTheme();
 
   React.useEffect(() => {
     setState({
@@ -72,7 +77,13 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           placement: 'center',
           title: (
             <div style={{ padding: '1em' }}>
-              <img src={cryostatLogo} alt="Cryostat Logo" style={{ paddingBottom: '1em' }} height={300} width={300} />
+              <img
+                src={theme === ThemeSetting.LIGHT ? cryostatLogo : cryostatLogoDark}
+                alt="Cryostat Logo"
+                style={{ paddingBottom: '1em' }}
+                height={300}
+                width={300}
+              />
               <h1>
                 Welcome to <strong>Cryostat</strong>!
               </h1>
@@ -214,7 +225,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
         },
       ],
     });
-  }, [setState]);
+  }, [setState, theme]);
 
   // index 0 -> Get Started
   // index 1 -> Navigation
@@ -268,6 +279,14 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
         disableOverlayClose
         disableCloseOnEsc
         spotlightPadding={0}
+        styles={{
+          options: {
+            arrowColor:
+              theme === ThemeSetting.DARK
+                ? 'var(--pf-global--BackgroundColor--dark-100)'
+                : 'var(--pf-global--BackgroundColor--light-100)',
+          },
+        }}
       />
       {props.children}
     </>

@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { Theme } from '@app/Settings/Theme';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, act, within } from '@testing-library/react';
@@ -45,8 +45,8 @@ import { renderWithServiceContext, testT } from '../Common';
 
 jest
   .spyOn(defaultServices.settings, 'theme')
-  .mockReturnValueOnce(of(ThemeType.LIGHT))
-  .mockReturnValueOnce(of(ThemeType.DARK));
+  .mockReturnValueOnce(of(ThemeSetting.LIGHT))
+  .mockReturnValueOnce(of(ThemeSetting.DARK));
 
 describe('<Theme/>', () => {
   beforeEach(() => {

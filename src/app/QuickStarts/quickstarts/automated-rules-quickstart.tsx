@@ -50,6 +50,7 @@ const AutomatedRulesQuickStart: QuickStart = {
   metadata: {
     name: 'automated-rules-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
+    order: 3,
   },
   spec: {
     version: 2.3,
@@ -159,8 +160,8 @@ This recording was created by the rule that we just created and should have a na
     <p>For more information about the <strong>Automated Rules</strong> feature, read our guides on the <a href="${build.automatedRulesGuideUrl}" target="_blank">Cryostat documentation</a>.</p>
 </div>`,
     type: {
-      text: 'Featured',
-      color: 'blue',
+      text: 'Advanced',
+      color: 'red',
     },
   },
 };

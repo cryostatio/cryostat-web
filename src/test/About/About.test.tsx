@@ -37,7 +37,7 @@
  */
 import i18n from '@app/../i18n/config';
 import { About } from '@app/About/About';
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -59,7 +59,7 @@ jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   };
 });
 
-jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeType.DARK));
+jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.DARK));
 
 jest.mock('@app/About/AboutDescription', () => {
   return {

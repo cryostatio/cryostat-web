@@ -37,7 +37,7 @@
  */
 
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
 import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
@@ -139,7 +139,7 @@ const SimpleChart: React.FC<{
             <ChartLabel
               style={{
                 fill:
-                  cryostatTheme === ThemeType.DARK
+                  cryostatTheme === ThemeSetting.DARK
                     ? 'var(--pf-global--palette--black-200)'
                     : 'var(--pf-chart-global--label--Fill, #151515)',
               }}
@@ -167,7 +167,7 @@ const SimpleChart: React.FC<{
           <ChartLabel
             style={{
               fill:
-                cryostatTheme === ThemeType.DARK
+                cryostatTheme === ThemeSetting.DARK
                   ? 'var(--pf-global--palette--black-200)'
                   : 'var(--pf-chart-global--label--Fill, #151515)',
             }}
@@ -298,7 +298,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
       { name: 'heapMemoryUsage', value: metrics?.memory?.heapMemoryUsagePercent || 0 },
     ],
     singleValue: true,
-    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => {
+    visual: (cryostatTheme: ThemeSetting, themeColor: string, width: number, samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
         value = samples.slice(-1)[0].datapoint.value * 100;
@@ -313,7 +313,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
             <ChartLabel
               style={{
                 fill:
-                  cryostatTheme === ThemeType.DARK
+                  cryostatTheme === ThemeSetting.DARK
                     ? 'var(--pf-global--palette--black-200)'
                     : 'var(--pf-chart-donut--label--title--Fill, #151515)',
                 fontSize: '24px',
@@ -383,7 +383,7 @@ function getChartKindByName(name: string): MBeanMetricsChartKind {
 
 export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (props) => {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const [theme] = useTheme();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
   const addSubscription = useSubscriptions();

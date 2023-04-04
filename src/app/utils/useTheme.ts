@@ -35,20 +35,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import * as React from 'react';
 import { Subscription } from 'rxjs';
 
-export function useTheme() {
-  const [theme, setTheme] = React.useState(ThemeType.LIGHT);
+// setting is the option, but theme is the color scheme what we actually render
+export function useTheme(): [ThemeType, ThemeSetting] {
+  const [setting, setSetting] = React.useState<ThemeSetting>(ThemeSetting.LIGHT);
+  const [theme, setTheme] = React.useState<ThemeType>(ThemeSetting.LIGHT);
   const subRef = React.useRef<Subscription>();
   const services = React.useContext(ServiceContext);
 
   React.useEffect(() => {
-    subRef.current = services.settings.theme().subscribe(setTheme);
+    subRef.current = services.settings.theme().subscribe((theme) => {
+      setSetting(theme);
+      if (theme === ThemeSetting.AUTO) {
+        setTheme(
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? ThemeSetting.DARK
+            : ThemeSetting.LIGHT
+        );
+      } else {
+        setTheme(theme);
+      }
+    });
     return () => subRef.current && subRef.current.unsubscribe();
   }, [subRef, services.settings]);
 
-  return theme;
+  return [theme, setting];
 }

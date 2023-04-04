@@ -35,14 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { useTheme } from '@app/utils/useTheme';
 import React from 'react';
 
 export const withTheme = (icon: string, darkIcon: string, alt: string): React.FC => {
   const WithTheme: React.FC = () => {
-    const theme = useTheme();
-    if (theme === ThemeType.DARK) {
+    const [theme] = useTheme();
+    if (theme === ThemeSetting.DARK) {
       return <img src={darkIcon} alt={alt} />;
     } else {
       return <img src={icon} alt={alt} />;

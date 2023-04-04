@@ -43,7 +43,7 @@ import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/jfr/JFRMetr
 import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
@@ -68,7 +68,7 @@ jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDa
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
-jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeType.LIGHT));
+jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.LIGHT));
 
 const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,

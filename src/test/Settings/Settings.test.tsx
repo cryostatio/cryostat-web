@@ -50,7 +50,7 @@ import { of } from 'rxjs';
 import { renderWithServiceContextAndRouter, testT } from '../Common';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
-import { ThemeType, UserSetting } from '@app/Settings/SettingsUtils';
+import { ThemeSetting, UserSetting } from '@app/Settings/SettingsUtils';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {
@@ -160,7 +160,7 @@ jest.mock('@app/Settings/Theme', () => ({
 }));
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
-jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeType.DARK));
+jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.DARK));
 
 const history = createMemoryHistory({ initialEntries: ['/settings'] });
 

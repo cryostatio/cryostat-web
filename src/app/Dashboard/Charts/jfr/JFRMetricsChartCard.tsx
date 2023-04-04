@@ -110,7 +110,7 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
   const controllerContext = React.useContext(ChartContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
-  const theme = useTheme();
+  const [theme] = useTheme();
   const [controllerState, setControllerState] = React.useState(ControllerState.NO_DATA);
   const [randomKey, setRandomKey] = React.useState(Math.floor(Math.random()));
   const [chartSrc, setChartSrc] = React.useState('');

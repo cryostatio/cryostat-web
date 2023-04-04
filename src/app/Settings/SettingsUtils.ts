@@ -79,7 +79,17 @@ export const selectTab = (tabKey: SettingCategory) => {
   tab && tab.click();
 };
 
-export enum ThemeType {
-  LIGHT = 'light',
+export const getDefaultTheme = (): ThemeSetting => {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return ThemeSetting.DARK;
+  }
+  return ThemeSetting.LIGHT;
+};
+
+export enum ThemeSetting {
+  AUTO = 'auto',
   DARK = 'dark',
+  LIGHT = 'light',
 }
+
+export type ThemeType = Exclude<ThemeSetting, ThemeSetting.AUTO>;

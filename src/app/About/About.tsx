@@ -40,7 +40,7 @@ import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_default.svg';
 import cryostatLogoDark from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import build from '@app/build.json';
-import { ThemeType } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { useTheme } from '@app/utils/useTheme';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
 import React from 'react';
@@ -51,9 +51,9 @@ export interface AboutProps {}
 
 export const About: React.FC<AboutProps> = (_) => {
   const { t } = useTranslation('public');
-  const theme = useTheme();
+  const [theme] = useTheme();
 
-  const logo = React.useMemo(() => (theme === ThemeType.DARK ? cryostatLogoDark : cryostatLogo), [theme]);
+  const logo = React.useMemo(() => (theme === ThemeSetting.DARK ? cryostatLogoDark : cryostatLogo), [theme]);
 
   return (
     <BreadcrumbPage pageTitle={t('About.ABOUT')}>

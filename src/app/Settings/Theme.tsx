@@ -40,19 +40,19 @@ import { useTheme } from '@app/utils/useTheme';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ThemeType, UserSetting } from './SettingsUtils';
+import { ThemeSetting, UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [open, setOpen] = React.useState(false);
-  const theme = useTheme();
+  const [_theme, setting] = useTheme();
 
   const handleThemeToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
 
   const handleThemeSelect = React.useCallback(
     (_, v) => {
-      context.settings.setTheme(v as ThemeType);
+      context.settings.setTheme(v as ThemeSetting);
       setOpen(false);
     },
     [context.settings, setOpen]
@@ -64,10 +64,13 @@ const Component = () => {
       aria-label={t('SETTINGS.THEME.SELECT.LABEL')}
       onToggle={handleThemeToggle}
       onSelect={handleThemeSelect}
-      selections={theme}
+      selections={setting}
       isFlipEnabled
       menuAppendTo="parent"
     >
+      <SelectOption key="auto" value="auto">
+        {t('SETTINGS.THEME.AUTO')}
+      </SelectOption>
       <SelectOption key="light" value="light">
         {t('SETTINGS.THEME.LIGHT')}
       </SelectOption>
