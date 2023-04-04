@@ -173,7 +173,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         </HintBanner>
       </FeatureFlag>
       <BreadcrumbPage pageTitle={'Topology'} {..._props}>
-        <Card isFullHeight id="topology-card" className="topology__main-container">
+        <Card isFullHeight id="topology-card">
           <CardBody style={{ padding: 0 }}>
             <DiscoveryTreeContext.Provider value={discoveryTree}>{content}</DiscoveryTreeContext.Provider>
           </CardBody>

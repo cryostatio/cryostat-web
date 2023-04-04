@@ -297,14 +297,14 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
   return (
     <TopologyView
       {...props}
-      id="topology__visualization-container"
+      id="match-expression__visualization-container"
       className={css('topology__main-container')}
       controlBar={<TopologyControlBar visualization={visualization} noCollapse />}
       sideBar={sidebar}
       sideBarOpen={selectedIds.length > 0}
       sideBarResizable={true}
       minSideBarSize={`200px`}
-      defaultSideBarSize={`400px`}
+      defaultSideBarSize={`425px`}
     >
       <VisualizationProvider controller={visualization}>
         <VisualizationSurface state={{ selectedIds }} />

@@ -104,7 +104,10 @@ export interface EntityDetailsProps {
   actionFilter?: (_: NodeAction) => boolean;
 }
 
-type _supportedTab = 'details' | 'resources';
+enum EntityTab {
+  DETAIL = 'detail',
+  RESOURCE = 'resource',
+}
 
 export const EntityDetails: React.FC<EntityDetailsProps> = ({
   entity,
@@ -114,7 +117,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   alertOptions,
   ...props
 }) => {
-  const [activeTab, setActiveTab] = React.useState<_supportedTab>('details');
+  const [activeTab, setActiveTab] = React.useState(EntityTab.DETAIL);
   const viewContent = React.useMemo(() => {
     if (entity && isRenderable(entity)) {
       const data: EnvironmentNode | TargetNode = entity.getData();
@@ -124,7 +127,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
 
       return (
-        <div {...props} style={{ height: '100%' }}>
+        <>
           <EntityDetailHeader
             titleContent={titleContent}
             alertOptions={alertOptions}
@@ -136,12 +139,8 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             }
           />
           <Divider />
-          <Tabs
-            activeKey={activeTab}
-            onSelect={(_, tab) => setActiveTab(`${tab}` as _supportedTab)}
-            className={css('entity-overview')}
-          >
-            <Tab eventKey={'details'} title={<TabTitleText>Details</TabTitleText>}>
+          <Tabs activeKey={activeTab} onSelect={(_, tab: string) => setActiveTab(tab as EntityTab)}>
+            <Tab eventKey={EntityTab.DETAIL} title={<TabTitleText>Details</TabTitleText>}>
               <div className="entity-overview__wrapper">
                 {isTarget ? (
                   <TargetDetails targetNode={data} columnModifier={columnModifier} />
@@ -150,18 +149,22 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
                 )}
               </div>
             </Tab>
-            <Tab eventKey={'resources'} title={<TabTitleText>{'Resources'}</TabTitleText>}>
+            <Tab eventKey={EntityTab.RESOURCE} title={<TabTitleText>{'Resources'}</TabTitleText>}>
               <div className="entity-overview__wrapper">
                 {isTarget ? <TargetResources targetNode={data} /> : <GroupResources envNode={data} />}
               </div>
             </Tab>
           </Tabs>
-        </div>
+        </>
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, props, columnModifier, actionFilter, alertOptions]);
-  return <div className={css(className)}>{viewContent}</div>;
+  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions]);
+  return (
+    <div {...props} className={css('entity-overview', className)}>
+      {viewContent}
+    </div>
+  );
 };
 
 export const constructHelperDescription = (description: React.ReactNode, kind: string, path: string | string[]) => {
@@ -375,16 +378,7 @@ export const GroupDetails: React.FC<{
 
   return (
     <DescriptionList {...props} columnModifier={columnModifier}>
-      {_transformedData.map((d) => (
-        <DescriptionListGroup key={d.key}>
-          <DescriptionListTermHelpText>
-            <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
-              <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
-            </Popover>
-          </DescriptionListTermHelpText>
-          <DescriptionListDescription>{d.content}</DescriptionListDescription>
-        </DescriptionListGroup>
-      ))}
+      {_transformedData.map(mapSection)}
     </DescriptionList>
   );
 };

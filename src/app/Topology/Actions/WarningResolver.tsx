@@ -38,7 +38,6 @@
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CreateCredentialModal } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -57,7 +56,7 @@ export const WarningResolverAsLink: React.FC<WarningResolverAsLinkProps> = ({ to
 
 export interface WarningResolverAsActionButtonProps extends Omit<ButtonProps, 'onClick'> {
   targetNode: TargetNode;
-  onClick?: (targetNode: TargetNode, actionUtils: ActionUtils, track: ReturnType<typeof useSubscriptions>) => void;
+  onClick?: (targetNode: TargetNode, actionUtils: ActionUtils) => void;
 }
 
 export const WarningResolverAsActionButton: React.FC<WarningResolverAsActionButtonProps> = ({
@@ -69,11 +68,10 @@ export const WarningResolverAsActionButton: React.FC<WarningResolverAsActionButt
   const history = useHistory();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const addSubscription = useSubscriptions();
 
   const handleClick = React.useCallback(() => {
-    onClick && onClick(targetNode, { history, services, notifications }, addSubscription);
-  }, [onClick, targetNode, history, services, notifications, addSubscription]);
+    onClick && onClick(targetNode, { history, services, notifications });
+  }, [onClick, targetNode, history, services, notifications]);
 
   return (
     <Button {...props} onClick={handleClick}>
@@ -81,8 +79,6 @@ export const WarningResolverAsActionButton: React.FC<WarningResolverAsActionButt
     </Button>
   );
 };
-
-export type ModalComponent = typeof CreateCredentialModal;
 
 export interface WarningResolverAsCredModalProps {
   children?: React.ReactNode;

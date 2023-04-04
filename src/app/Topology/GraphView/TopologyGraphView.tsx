@@ -38,6 +38,7 @@
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Divider, Stack, StackItem } from '@patternfly/react-core';
+import { css } from '@patternfly/react-styles';
 import {
   BOTTOM_LAYER,
   DEFAULT_LAYER,
@@ -280,7 +281,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
             <TopologyView
               {...props}
               id="topology__visualization-container"
-              className="topology__visualization-container"
+              className={css('topology__main-container')}
               controlBar={<TopologyControlBar visualization={visualization} />}
               sideBar={sidebar}
               sideBarOpen={selectedIds.length > 0}

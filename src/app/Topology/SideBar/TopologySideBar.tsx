@@ -37,8 +37,6 @@
  */
 
 import { DrawerActions, DrawerCloseButton, DrawerHead, DrawerPanelBody } from '@patternfly/react-core';
-import { css } from '@patternfly/react-styles';
-import { TopologySideBar as PFTopologySideBar } from '@patternfly/react-topology';
 import * as React from 'react';
 
 export interface TopologySideBarProps {
@@ -50,13 +48,15 @@ export interface TopologySideBarProps {
 // Parent will wrap this element in <DrawPaneContent />
 export const TopologySideBar: React.FC<TopologySideBarProps> = ({ children, onClose, className, ...props }) => {
   return (
-    <PFTopologySideBar resizable className={css('topology__sidebar', className)} {...props}>
+    <>
       <DrawerHead hasNoPadding>
         <DrawerActions>
           <DrawerCloseButton className="entity-overview__entity-close-button" onClick={onClose} />
         </DrawerActions>
       </DrawerHead>
-      <DrawerPanelBody hasNoPadding>{children}</DrawerPanelBody>
-    </PFTopologySideBar>
+      <DrawerPanelBody {...props} hasNoPadding>
+        {children}
+      </DrawerPanelBody>
+    </>
   );
 };
