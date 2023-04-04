@@ -40,7 +40,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, fromEvent, map, Observable, startWith } from 'rxjs';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -99,6 +99,15 @@ export class SettingsService {
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
     this._theme$.subscribe((theme: ThemeSetting) => saveToLocalStorage('THEME', theme));
+  }
+
+  // taken from https://github.com/garygrossgarten/media-query
+  media(query: string): Observable<boolean> {
+    const mediaQuery = window.matchMedia(query);
+    return fromEvent<MediaQueryList>(mediaQuery, 'change').pipe(
+      startWith(mediaQuery),
+      map((list: MediaQueryList) => list.matches)
+    );
   }
 
   theme(): Observable<ThemeSetting> {

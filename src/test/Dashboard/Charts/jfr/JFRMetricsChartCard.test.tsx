@@ -69,6 +69,7 @@ const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget'
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.LIGHT));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(true));
 
 const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,

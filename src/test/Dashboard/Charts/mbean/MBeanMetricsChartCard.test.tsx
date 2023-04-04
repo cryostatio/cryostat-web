@@ -58,6 +58,7 @@ import { from, of } from 'rxjs';
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.DARK));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(true));
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));

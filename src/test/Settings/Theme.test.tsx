@@ -48,6 +48,8 @@ jest
   .mockReturnValueOnce(of(ThemeSetting.LIGHT))
   .mockReturnValueOnce(of(ThemeSetting.DARK));
 
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(true));
+
 describe('<Theme/>', () => {
   beforeEach(() => {
     jest.mocked(defaultServices.settings.setTheme).mockClear();

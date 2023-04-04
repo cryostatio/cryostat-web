@@ -44,11 +44,12 @@ import { Subscription } from 'rxjs';
 export function useTheme(): [ThemeType, ThemeSetting] {
   const [setting, setSetting] = React.useState<ThemeSetting>(ThemeSetting.LIGHT);
   const [theme, setTheme] = React.useState<ThemeType>(ThemeSetting.LIGHT);
-  const subRef = React.useRef<Subscription>();
+  const themeRef = React.useRef<Subscription>();
+  const mediaRef = React.useRef<Subscription>();
   const services = React.useContext(ServiceContext);
 
   React.useEffect(() => {
-    subRef.current = services.settings.theme().subscribe((theme) => {
+    themeRef.current = services.settings.theme().subscribe((theme) => {
       setSetting(theme);
       if (theme === ThemeSetting.AUTO) {
         setTheme(
@@ -60,8 +61,17 @@ export function useTheme(): [ThemeType, ThemeSetting] {
         setTheme(theme);
       }
     });
-    return () => subRef.current && subRef.current.unsubscribe();
-  }, [subRef, services.settings]);
+    return () => themeRef.current && themeRef.current.unsubscribe();
+  }, [services.settings, themeRef]);
+
+  React.useEffect(() => {
+    mediaRef.current = services.settings.media('(prefers-color-scheme: dark)').subscribe((dark) => {
+      if (setting === ThemeSetting.AUTO) {
+        setTheme(dark ? ThemeSetting.DARK : ThemeSetting.LIGHT);
+      }
+    });
+    return () => mediaRef.current && mediaRef.current.unsubscribe();
+  }, [services.settings, mediaRef, setting]);
 
   return [theme, setting];
 }

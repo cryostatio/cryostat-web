@@ -60,6 +60,7 @@ jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
 });
 
 jest.spyOn(defaultServices.settings, 'theme').mockReturnValue(of(ThemeSetting.DARK));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(true));
 
 jest.mock('@app/About/AboutDescription', () => {
   return {

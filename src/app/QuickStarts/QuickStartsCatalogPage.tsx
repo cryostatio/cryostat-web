@@ -53,11 +53,7 @@ const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProp
       hint={t('QuickStarts.CATALOG_PAGE.HINT')}
       showTitle
       showFilter
-      sortFnc={(a, b) => {
-        console.log(a.metadata.order, b.metadata.order);
-        console.log(a.spec.displayName, b.spec.displayName);
-        return a.metadata.order - b.metadata.order;
-      }}
+      sortFnc={(a, b) => a.metadata.order - b.metadata.order}
     />
   );
 };
