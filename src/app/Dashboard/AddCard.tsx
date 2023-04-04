@@ -40,6 +40,7 @@ import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/R
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -429,7 +430,15 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
   }, [addSubscription, setOptions, setErrored, control, control.values]);
 
   return (
-    <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={selectedConfig}>
+    <Select
+      onToggle={setSelectOpen}
+      isOpen={selectOpen}
+      onSelect={handleSelect}
+      selections={selectedConfig}
+      menuAppendTo={portalRoot}
+      isFlipEnabled
+      maxHeight={"16em"}
+    >
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
         : [<SelectOption key={0} value={'None'} isPlaceholder />].concat(
