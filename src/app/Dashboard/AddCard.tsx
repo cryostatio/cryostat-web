@@ -182,10 +182,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
               <Title headingLevel="h2" size="md">
                 Add a new card
               </Title>
-              <EmptyStateBody>
-                Cards added to this Dashboard layout present information at a glance about the selected target. The
-                layout is preserved for all targets viewed on this client.
-              </EmptyStateBody>
+              <EmptyStateBody>{t('Dashboard.CARD_CATALOG_DESCRIPTION')}</EmptyStateBody>
               <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
                 Add
               </Button>
@@ -193,7 +190,13 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
           </Bullseye>
         </CardBody>
       </Card>
-      <Modal isOpen={showWizard} variant={ModalVariant.large} hasNoBodyWrapper showClose={false}>
+      <Modal
+        aria-label="Dashboard Card Catalog Modal"
+        isOpen={showWizard}
+        variant={ModalVariant.large}
+        hasNoBodyWrapper
+        showClose={false}
+      >
         <Wizard
           onClose={handleStop}
           onSave={handleAdd}
@@ -201,12 +204,10 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
           height={'30rem'}
           header={
             <WizardHeader
-              title={'Dashboard Card Catalog'}
+              title={t('Dashboard.CARD_CATALOG_TITLE')}
               onClose={() => setShowWizard(false)}
               closeButtonAriaLabel="Close add card form"
-              description={
-                'Cards added to this Dashboard layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.'
-              }
+              description={t('Dashboard.CARD_CATALOG_DESCRIPTION')}
             />
           }
         >
