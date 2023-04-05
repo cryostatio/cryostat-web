@@ -243,10 +243,10 @@ export const resize = (width: number, height: number) => {
 
 export const mockMediaQueryList: MediaQueryList = {
   matches: true,
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
   media: '',
   onchange: null,
+  addListener: jest.fn(), // deprecated
+  removeListener: jest.fn(), // deprecated
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
   dispatchEvent: jest.fn(),

@@ -1,20 +1,6 @@
 // Mock out the services shared across the app in order to help isolate 
 // components from the ServiceContext
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
-
 jest.mock('@app/Shared/Services/Api.service');
 jest.mock('@app/Shared/Services/Login.service');
 jest.mock('@app/Shared/Services/NotificationChannel.service');
