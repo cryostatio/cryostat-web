@@ -351,4 +351,14 @@ export const JFRMetricsChartCardDescriptor: DashboardCardDescriptor = {
     },
   ],
   icon: <TachometerAltIcon />,
+  labels: [
+    {
+      content: 'Beta',
+      color: 'green',
+    },
+    {
+      content: 'Metrics',
+      color: 'blue',
+    },
+  ],
 };

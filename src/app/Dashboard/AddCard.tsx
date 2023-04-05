@@ -37,6 +37,7 @@
  */
 import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { EmptyText } from '@app/Topology/Shared/EmptyText';
 import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
@@ -335,7 +336,7 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     if (!toViewCard) {
       return null;
     }
-    const { title, icon, labels } = toViewCard;
+    const { title, icon, labels, preview } = toViewCard;
     return (
       <DrawerPanelContent isResizable defaultSize="300px">
         <DrawerHead>
@@ -344,15 +345,17 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <Flex direction={{ default: 'column' }}>
-            <Flex spacer={{ default: 'spacerSm' }}>
-              {icon ? <FlexItem>{icon}</FlexItem> : null}
-              <FlexItem>
-                <Title headingLevel={'h3'}>{t(title)}</Title>
-              </FlexItem>
-            </Flex>
-            <FlexItem>
-              {labels ? (
+          <Stack hasGutter>
+            <StackItem>
+              <Flex spacer={{ default: 'spacerSm' }}>
+                {icon ? <FlexItem>{icon}</FlexItem> : null}
+                <FlexItem>
+                  <Title headingLevel={'h3'}>{t(title)}</Title>
+                </FlexItem>
+              </Flex>
+            </StackItem>
+            <StackItem>
+              {labels && labels.length ? (
                 <LabelGroup>
                   {labels.map(({ content, icon, color }) => (
                     <Label key={content} color={color} icon={icon}>
@@ -361,9 +364,18 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
                   ))}
                 </LabelGroup>
               ) : null}
-            </FlexItem>
-            <FlexItem>{getFullDescription(t(toViewCard.title), t)}</FlexItem>
-          </Flex>
+            </StackItem>
+            <StackItem>{getFullDescription(t(toViewCard.title), t)}</StackItem>
+            <StackItem isFilled>
+              {preview ? (
+                preview
+              ) : (
+                <Bullseye>
+                  <EmptyText text={'No preview'} />
+                </Bullseye>
+              )}
+            </StackItem>
+          </Stack>
         </DrawerPanelBody>
       </DrawerPanelContent>
     );

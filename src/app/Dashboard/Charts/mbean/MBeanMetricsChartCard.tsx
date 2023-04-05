@@ -563,4 +563,10 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
     },
   ],
   icon: <TachometerAltIcon />,
+  labels: [
+    {
+      content: 'Metrics',
+      color: 'blue',
+    },
+  ],
 };

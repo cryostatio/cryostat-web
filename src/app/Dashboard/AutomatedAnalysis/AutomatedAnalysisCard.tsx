@@ -963,4 +963,10 @@ export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
   propControls: [],
   advancedConfig: <AutomatedAnalysisConfigForm />,
   icon: <ProcessAutomationIcon />,
+  labels: [
+    {
+      content: 'Evaluation',
+      color: 'blue',
+    },
+  ],
 };

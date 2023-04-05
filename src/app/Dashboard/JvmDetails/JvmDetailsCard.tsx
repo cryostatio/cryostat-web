@@ -125,4 +125,10 @@ export const JvmDetailsCardDescriptor: DashboardCardDescriptor = {
   component: JvmDetailsCard,
   propControls: [],
   icon: <ContainerNodeIcon />,
+  labels: [
+    {
+      content: 'Info',
+      color: 'blue',
+    },
+  ],
 };

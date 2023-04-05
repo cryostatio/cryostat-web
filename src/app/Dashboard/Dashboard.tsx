@@ -87,6 +87,7 @@ export interface DashboardCardDescriptor {
     color?: LabelProps['color'];
     icon?: React.ReactNode;
   }[];
+  preview?: React.ReactNode;
   title: string;
   cardSizes: DashboardCardSizes;
   description: string;
@@ -172,6 +173,12 @@ export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
   description: 'NonePlaceholderCard.CARD_DESCRIPTION',
   descriptionFull: 'NonePlaceholderCard.CARD_DESCRIPTION_FULL',
   component: PlaceholderCard,
+  labels: [
+    {
+      content: 'Dev',
+      color: 'red',
+    },
+  ],
   propControls: [],
 } as DashboardCardDescriptor;
 
@@ -182,6 +189,12 @@ export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
   description: 'AllPlaceholderCard.CARD_DESCRIPTION',
   descriptionFull: 'AllPlaceholderCard.CARD_DESCRIPTION_FULL',
   component: PlaceholderCard,
+  labels: [
+    {
+      content: 'Dev',
+      color: 'red',
+    },
+  ],
   propControls: [
     {
       name: 'string',
