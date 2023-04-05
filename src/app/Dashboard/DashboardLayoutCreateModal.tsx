@@ -90,11 +90,13 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
 
   const handleNameChange = React.useCallback(
     (value: string) => {
-      console.log('name changed', value);
       setName(value);
       if (value.length === 0) {
         setNameValidated(ValidatedOptions.error);
         setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_REQUIRED'));
+      } else if (value.length > 20) {
+        setNameValidated(ValidatedOptions.error);
+        setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_TOO_LONG'));
       } else if (dashboardConfigs.layouts.some((layout) => layout.name === value) || value === DEFAULT_DASHBOARD_NAME) {
         setNameValidated(ValidatedOptions.error);
         setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_TAKEN'));

@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { FileIcon } from '@patternfly/react-icons';
 import { LayoutTemplate, LayoutTemplateIcon } from './DashboardUtils';
-import React from 'react';
+
+const VERSION = '2.3.0';
 
 export const BlankLayout: LayoutTemplate = {
   name: 'Blank',
@@ -48,6 +48,7 @@ export const BlankLayout: LayoutTemplate = {
     cards: [],
     favorite: false,
   },
+  version: VERSION,
 };
 
 const GeneralLayout: LayoutTemplate = {
@@ -181,6 +182,7 @@ const GeneralLayout: LayoutTemplate = {
     ],
     favorite: false,
   },
+  version: VERSION,
 };
 
 const ThreadMonitoringLayout: LayoutTemplate = {
@@ -234,6 +236,7 @@ const ThreadMonitoringLayout: LayoutTemplate = {
     ],
     favorite: false,
   },
+  version: VERSION,
 };
 
 const MemoryMonitoringLayout: LayoutTemplate = {
@@ -317,6 +320,7 @@ const MemoryMonitoringLayout: LayoutTemplate = {
     ],
     favorite: false,
   },
+  version: VERSION,
 };
 
 const JFRMonitoringLayout: LayoutTemplate = {
@@ -490,6 +494,7 @@ const JFRMonitoringLayout: LayoutTemplate = {
     ],
     favorite: false,
   },
+  version: VERSION,
 };
 
 const CryostatLayoutTemplates: LayoutTemplate[] = [

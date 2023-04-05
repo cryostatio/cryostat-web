@@ -37,7 +37,7 @@
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { dashboardConfigAddTemplateIntent, DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigDeleteLayoutIntent,
   dashboardConfigFavoriteLayoutIntent,
@@ -71,7 +71,7 @@ import { AddCard } from './AddCard';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutSetAsTemplateModal } from './DashboardLayoutSetAsTemplateModal';
 import { DashboardLayoutUploadModal } from './DashboardLayoutUploadModal';
-import { DEFAULT_DASHBOARD_NAME, templatize } from './DashboardUtils';
+import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
 export interface DashboardLayoutToolbarProps {
   children?: React.ReactNode;
@@ -348,7 +348,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       </Dropdown>
 
     ),
-    [onKebabSelect, setIsKebabOpen, isKebabOpen, dropdownItems]
+    [t, onKebabSelect, setIsKebabOpen, isKebabOpen, dropdownItems]
   );
 
   const menuGroups = React.useCallback(

@@ -35,26 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { DashboardLayout, SerialCardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
-  dashboardConfigAddLayoutIntent,
   dashboardConfigAddTemplateIntent,
-  dashboardConfigReplaceLayoutIntent,
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import { ActionGroup, Button, Form, FormGroup, FormSection, Modal, ModalVariant, Popover, TextArea, TextInput } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, FormSection, Modal, ModalVariant, TextArea, TextInput } from '@patternfly/react-core';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
-import { HelpIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { forkJoin, from, Observable, of } from 'rxjs';
-import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
 import { DashboardLayoutNamePattern, LayoutTemplateDescriptionPattern, LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT, templatize } from './DashboardUtils';
 import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 
@@ -81,9 +72,15 @@ const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs
   const handleClose = React.useCallback(
     (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         ev && ev.stopPropagation();
+        setName('');
+        setDescription('');
+        setNameValidated(ValidatedOptions.default);
+        setDescriptionValidated(ValidatedOptions.default);
+        setNameErrorMessage('');
+        setDescriptionErrorMessage('');
         onClose();
     },
-    [onClose]
+    [onClose, setName, setDescription, setNameValidated, setDescriptionValidated, setNameErrorMessage, setDescriptionErrorMessage]
   );
 
   const handleSubmit = React.useCallback((ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -144,7 +141,7 @@ const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs
       <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
         <OuterScrollContainer>
           <InnerScrollContainer>
-            <LayoutTemplateGroup title="User-submitted" templates={templates} onTemplateSelect={() => {}}  />
+            <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() => {}}  />
           </InnerScrollContainer>
         </OuterScrollContainer>
       </div>

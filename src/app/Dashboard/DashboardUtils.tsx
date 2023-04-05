@@ -36,18 +36,18 @@
  * SOFTWARE.
  */
 
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import { DashboardLayout, SerialDashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { FileIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
 import React from 'react';
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
 export const LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT = 100;
 
 export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;
-export const LayoutTemplateDescriptionPattern = /^[a-zA-Z0-9\s\.,\-'";?!@#$%^&*()\[\]_+=:{}]*$/;
+export const LayoutTemplateDescriptionPattern = /^[a-zA-Z0-9\s.,\-'";?!@#$%^&*()\[\]_+=:{}]*$/;
 
 export enum LayoutTemplateIcon {
   CRYOSTAT = 'cryostat',
@@ -60,6 +60,8 @@ export interface LayoutTemplate {
   icon: LayoutTemplateIcon;
   description: string;
   layout: SerialDashboardLayout;
+  version: string;
+  createdAt?: string;
   vendor?: 'Cryostat' | 'User-supplied';
 }
 
@@ -84,6 +86,8 @@ export const templatize = (layout: DashboardLayout, name: string, desc?: string)
     icon: LayoutTemplateIcon.USER,
     description: desc || 'Custom layout.',
     layout: layout,
+    version: '2.3.0',
+    createdAt: new Date().toISOString(),
     vendor: 'User-supplied',
   };
 };
