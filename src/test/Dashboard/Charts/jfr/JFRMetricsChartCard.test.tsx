@@ -43,6 +43,7 @@ import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/jfr/JFRMetr
 import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
@@ -52,7 +53,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithProvidersAndRedux } from '../../../Common';
+import { mockMediaQueryList, renderWithProvidersAndRedux } from '../../../Common';
 
 let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({
@@ -66,6 +67,9 @@ jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDa
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+
+jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
 const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,
@@ -97,21 +101,14 @@ describe('<JFRMetricsChartCard />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <ChartContext.Provider value={mockChartContext}>
               <Provider store={store}>
-                <JFRMetricsChartCard
-                  theme={'light'}
-                  chartKind={'CPU Load'}
-                  duration={120}
-                  period={10}
-                  span={6}
-                  dashboardId={0}
-                />
+                <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
               </Provider>
             </ChartContext.Provider>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });
-    expect(tree.toJSON()).toMatchSnapshot('with-content');
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('renders loading state correctly', async () => {
@@ -124,21 +121,14 @@ describe('<JFRMetricsChartCard />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <ChartContext.Provider value={mockChartContext}>
               <Provider store={store}>
-                <JFRMetricsChartCard
-                  theme={'light'}
-                  chartKind={'CPU Load'}
-                  duration={120}
-                  period={10}
-                  span={6}
-                  dashboardId={0}
-                />
+                <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
               </Provider>
             </ChartContext.Provider>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });
-    expect(tree.toJSON()).toMatchSnapshot('loading-view');
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('renders empty state correctly', async () => {
@@ -151,29 +141,20 @@ describe('<JFRMetricsChartCard />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <ChartContext.Provider value={mockChartContext}>
               <Provider store={store}>
-                <JFRMetricsChartCard
-                  theme={'light'}
-                  chartKind={'CPU Load'}
-                  duration={120}
-                  period={10}
-                  span={6}
-                  dashboardId={0}
-                />
+                <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
               </Provider>
             </ChartContext.Provider>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });
-    expect(tree.toJSON()).toMatchSnapshot('empty-state');
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('renders empty state with information and action button', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
-    renderChartCard(
-      <JFRMetricsChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
-    );
+    renderChartCard(<JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />);
 
     expect(screen.getByText('CPU Load')).toBeInTheDocument();
     expect(screen.getByText('No source recording')).toBeInTheDocument();
@@ -187,7 +168,7 @@ describe('<JFRMetricsChartCard />', () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     const { user } = renderChartCard(
-      <JFRMetricsChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
+      <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
     );
 
     expect(history.location.pathname).toBe('/');
@@ -219,14 +200,7 @@ describe('<JFRMetricsChartCard />', () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
     const { container } = renderChartCard(
-      <JFRMetricsChartCard
-        theme={'light'}
-        chartKind={chartKind}
-        duration={duration}
-        period={period}
-        span={6}
-        dashboardId={0}
-      />
+      <JFRMetricsChartCard chartKind={chartKind} duration={duration} period={period} span={6} dashboardId={0} />
     );
 
     const iframe = container.querySelector('iframe');

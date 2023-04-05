@@ -42,7 +42,7 @@ import { locales, Timezone } from '@i18n/datetime';
 import { FormGroup, HelperText, HelperTextItem, Select, SelectOption, Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './Settings';
+import { UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const [t] = useTranslation();
@@ -156,5 +156,5 @@ export const DatetimeControl: UserSetting = {
   titleKey: 'SETTINGS.DATETIME_CONTROL.TITLE',
   descConstruct: 'SETTINGS.DATETIME_CONTROL.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
+  category: 'SETTINGS.CATEGORIES.GENERAL',
 };

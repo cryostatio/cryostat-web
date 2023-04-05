@@ -219,6 +219,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         label="Match Expression"
         labelIcon={
           <Popover
+            appendTo={portalRoot}
             headerContent="Match Expression Hint"
             bodyContent={
               <>

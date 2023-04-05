@@ -37,17 +37,21 @@
  */
 
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
 import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useTheme } from '@app/utils/useTheme';
 import {
   Chart,
   ChartArea,
   ChartAxis,
   ChartDonutUtilization,
   ChartGroup,
+  ChartLabel,
+  ChartLegend,
   ChartLine,
   ChartVoronoiContainer,
   getResizeObserver,
@@ -84,17 +88,18 @@ interface MBeanMetricsChartKind {
   fields: string[];
   mapper: (metrics: MBeanMetrics) => Datapoint[];
   singleValue?: boolean;
-  visual: (themeColor: string, width: number, samples: Sample[]) => React.ReactElement;
+  visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => React.ReactElement;
 }
 
 const SimpleChart: React.FC<{
+  cryostatTheme?: ThemeType;
   themeColor?: string;
   style: 'line' | 'area';
   width: number;
   samples: Sample[];
   units: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
-}> = ({ themeColor, style, width, samples, units, interpolation }) => {
+}> = ({ cryostatTheme, themeColor, style, width, samples, units, interpolation }) => {
   const [dayjs, dateTimeFormat] = useDayjs();
 
   const data = React.useMemo(
@@ -128,6 +133,20 @@ const SimpleChart: React.FC<{
       }
       legendData={keys.length > 1 ? keys.map((k) => ({ name: k.name })) : []}
       legendPosition={'bottom'}
+      legendComponent={
+        <ChartLegend
+          labelComponent={
+            <ChartLabel
+              style={{
+                fill:
+                  cryostatTheme === ThemeSetting.DARK
+                    ? 'var(--pf-global--palette--black-200)'
+                    : 'var(--pf-chart-global--label--Fill, #151515)',
+              }}
+            />
+          }
+        />
+      }
       themeColor={themeColor}
       width={width}
       height={width / 2} // Aspect radio: 2:1
@@ -144,6 +163,16 @@ const SimpleChart: React.FC<{
         dependentAxis
         showGrid
         label={units}
+        axisLabelComponent={
+          <ChartLabel
+            style={{
+              fill:
+                cryostatTheme === ThemeSetting.DARK
+                  ? 'var(--pf-global--palette--black-200)'
+                  : 'var(--pf-chart-global--label--Fill, #151515)',
+            }}
+          />
+        }
       />
       <ChartGroup>
         {keys.map((k) =>
@@ -165,7 +194,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['processCpuLoad'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'processCpuLoad', value: (metrics?.os?.processCpuLoad || 0) * 100 }],
-    visual: (themeColor: string, width: number, samples: Sample[]) => (
+    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => (
       <SimpleChart
         samples={samples}
         width={width}
@@ -173,6 +202,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         interpolation={'monotoneX'}
         style={'line'}
         themeColor={themeColor}
+        cryostatTheme={cryostatTheme}
       />
     ),
   },
@@ -181,7 +211,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['systemLoadAverage'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'systemLoadAverage', value: metrics?.os?.systemLoadAverage || 0 }],
-    visual: (themeColor: string, width: number, samples: Sample[]) => (
+    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => (
       <SimpleChart
         samples={samples}
         width={width}
@@ -189,6 +219,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         interpolation={'monotoneX'}
         style={'line'}
         themeColor={themeColor}
+        cryostatTheme={cryostatTheme}
       />
     ),
   },
@@ -197,8 +228,15 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['systemCpuLoad'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'systemCpuLoad', value: (metrics?.os?.systemCpuLoad || 0) * 100 }],
-    visual: (themeColor: string, width: number, samples: Sample[]) => (
-      <SimpleChart samples={samples} width={width} units={'%'} style={'line'} themeColor={themeColor} />
+    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart
+        samples={samples}
+        width={width}
+        units={'%'}
+        style={'line'}
+        themeColor={themeColor}
+        cryostatTheme={cryostatTheme}
+      />
     ),
   },
   {
@@ -218,7 +256,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: (metrics?.os?.totalPhysicalMemorySize || 0) / Math.pow(1024, 2),
       },
     ],
-    visual: (themeColor: string, width: number, samples: Sample[]) => (
+    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => (
       <SimpleChart
         samples={samples}
         width={width}
@@ -226,6 +264,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         interpolation={'step'}
         style={'area'}
         themeColor={themeColor}
+        cryostatTheme={cryostatTheme}
       />
     ),
   },
@@ -239,7 +278,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: Math.round((metrics?.memory?.heapMemoryUsage?.used || 0) / Math.pow(1024, 2)),
       },
     ],
-    visual: (themeColor: string, width: number, samples: Sample[]) => (
+    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => (
       <SimpleChart
         samples={samples}
         width={width}
@@ -247,6 +286,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         interpolation={'step'}
         style={'area'}
         themeColor={themeColor}
+        cryostatTheme={cryostatTheme}
       />
     ),
   },
@@ -258,7 +298,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
       { name: 'heapMemoryUsage', value: metrics?.memory?.heapMemoryUsagePercent || 0 },
     ],
     singleValue: true,
-    visual: (themeColor: string, width: number, samples: Sample[]) => {
+    visual: (cryostatTheme: ThemeSetting, themeColor: string, width: number, samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
         value = samples.slice(-1)[0].datapoint.value * 100;
@@ -269,6 +309,17 @@ const chartKinds: MBeanMetricsChartKind[] = [
           data={{ x: 'Used heap memory', y: value }}
           title={`${value.toFixed(2)}%`}
           labels={({ datum }) => (datum.x ? `${datum.x}: ${datum.y.toFixed(2)}%` : null)}
+          titleComponent={
+            <ChartLabel
+              style={{
+                fill:
+                  cryostatTheme === ThemeSetting.DARK
+                    ? 'var(--pf-global--palette--black-200)'
+                    : 'var(--pf-chart-donut--label--title--Fill, #151515)',
+                fontSize: '24px',
+              }}
+            />
+          }
           themeColor={themeColor}
           width={width}
           height={width / 2} // Aspect radio: 2:1
@@ -286,7 +337,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: Math.round((metrics?.memory?.nonHeapMemoryUsage?.used || 0) / Math.pow(1024, 2)),
       },
     ],
-    visual: (themeColor: string, width: number, samples: Sample[]) => (
+    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => (
       <SimpleChart
         samples={samples}
         width={width}
@@ -294,6 +345,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         interpolation={'step'}
         style={'area'}
         themeColor={themeColor}
+        cryostatTheme={cryostatTheme}
       />
     ),
   },
@@ -311,7 +363,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: metrics?.thread?.threadCount || 0,
       },
     ],
-    visual: (themeColor: string, width: number, samples: Sample[]) => (
+    visual: (cryostatTheme: ThemeType, themeColor: string, width: number, samples: Sample[]) => (
       <SimpleChart
         samples={samples}
         width={width}
@@ -319,6 +371,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
         interpolation={'step'}
         style={'line'}
         themeColor={themeColor}
+        cryostatTheme={cryostatTheme}
       />
     ),
   },
@@ -329,7 +382,8 @@ function getChartKindByName(name: string): MBeanMetricsChartKind {
 }
 
 export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (props) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
+  const [theme] = useTheme();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
   const addSubscription = useSubscriptions();
@@ -425,10 +479,10 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const visual = React.useMemo(
     () => (
       <div ref={containerRef} style={{ height: props.isFullHeight ? '100%' : '300px' }} className="disabled-pointer">
-        {chartKind.visual(props.themeColor, cardWidth, samples)}
+        {chartKind.visual(theme, props.themeColor, cardWidth, samples)}
       </div>
     ),
-    [containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples]
+    [theme, containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples]
   );
 
   return (

@@ -38,6 +38,7 @@
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { parseLabelsFromFile, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   Button,
   FormHelperText,
@@ -206,6 +207,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       {props.isUploadable && (
         <>
           <Popover
+            appendTo={portalRoot}
             isVisible={!!invalidUploads.length}
             aria-label="uploading warning"
             alertSeverityVariant="danger"

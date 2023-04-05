@@ -73,6 +73,7 @@
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { useDayjs } from '@app/utils/useDayjs';
+import { portalRoot } from '@app/utils/utils';
 import { Timezone } from '@i18n/datetime';
 import {
   Button,
@@ -167,6 +168,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
       <Flex alignSelf={{ default: 'alignSelfFlexStart' }}>
         <FlexItem spacer={{ default: 'spacerNone' }}>
           <Popover
+            appendTo={portalRoot}
             bodyContent={
               <DateTimePicker
                 onSelect={handleDatetimeSelect}

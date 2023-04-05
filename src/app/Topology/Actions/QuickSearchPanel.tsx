@@ -85,7 +85,7 @@ export const QuickSearchTabContent: React.FC<{ item?: QuickSearchItem }> = ({ it
   }, [item, history, services, notifications]);
 
   return item ? (
-    <Stack {...props} hasGutter>
+    <Stack {...props} hasGutter className={css('topology__quicksearch__tab-content')}>
       <StackItem>
         <h2 className={css('topology__quicksearch__tab-content-title')}>{item.name}</h2>
       </StackItem>
@@ -196,6 +196,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
           <Sidebar {...props} tabIndex={0} style={{ height: 'max-content' }} hasGutter>
             <SidebarPanel variant="sticky">
               <Tabs
+                className={'topology__quicksearch__tabs'}
                 isVertical
                 unmountOnExit
                 expandable={{ default: 'nonExpandable', md: 'nonExpandable', lg: 'nonExpandable', sm: 'expandable' }}

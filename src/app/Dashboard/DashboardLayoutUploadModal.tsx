@@ -224,6 +224,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
         <Popover
           headerContent={<div>{t('WHATS_THIS', { ns: 'common' })}</div>}
           bodyContent={<div>{t(`DashboardLayoutUploadModal.HELP.CONTENT`)}</div>}
+          appendTo={portalRoot}
         >
           <Button variant="plain" aria-label={t('HELP', { ns: 'common' })}>
             <HelpIcon />

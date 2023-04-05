@@ -35,36 +35,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE')
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION')
- * t('SETTINGS.CHARTS_CONFIG.TITLE')
- * t('SETTINGS.CHARTS_CONFIG.DESCRIPTION')
- * t('SETTINGS.AUTO_REFRESH.TITLE')
- * t('SETTINGS.AUTO_REFRESH.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION')
- * t('SETTINGS.DATETIME_CONTROL.TITLE')
- * t('SETTINGS.DATETIME_CONTROL.DESCRIPTION')
- * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
- * t('SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION')
- * t('SETTINGS.FEATURE_LEVEL.TITLE')
- * t('SETTINGS.FEATURE_LEVEL.DESCRIPTION')
- * t('SETTINGS.LANGUAGE.TITLE')
- * t('SETTINGS.LANGUAGE.DESCRIPTION')
- * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
- * t('SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION')
- * t('SETTINGS.THEME.TITLE')
- * t('SETTINGS.THEME.DESCRIPTION')
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE')
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION')
- * t('SETTINGS.CATEGORIES.CONNECTIVITY')
- * t('SETTINGS.CATEGORIES.GENERAL')
- * t('SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE')
- * t('SETTINGS.CATEGORIES.DASHBOARD')
- * t('SETTINGS.CATEGORIES.ADVANCED')
- */
+import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import * as React from 'react';
+import { Subscription } from 'rxjs';
+
+// setting is the option, but theme is the color scheme what we actually render
+export function useTheme(): [ThemeType, ThemeSetting] {
+  const [setting, setSetting] = React.useState<ThemeSetting>(ThemeSetting.LIGHT);
+  const [theme, setTheme] = React.useState<ThemeType>(ThemeSetting.LIGHT);
+  const themeRef = React.useRef<Subscription>();
+  const mediaRef = React.useRef<Subscription>();
+  const services = React.useContext(ServiceContext);
+
+  React.useEffect(() => {
+    themeRef.current = services.settings.themeSetting().subscribe((theme) => {
+      setSetting(theme);
+      if (theme === ThemeSetting.AUTO) {
+        setTheme(
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? ThemeSetting.DARK
+            : ThemeSetting.LIGHT
+        );
+      } else {
+        setTheme(theme);
+      }
+    });
+    return () => themeRef.current && themeRef.current.unsubscribe();
+  }, [services.settings, themeRef]);
+
+  React.useEffect(() => {
+    mediaRef.current = services.settings.media('(prefers-color-scheme: dark)').subscribe((dark) => {
+      setSetting((setting) => {
+        if (setting === ThemeSetting.AUTO) {
+          setTheme(dark.matches ? ThemeSetting.DARK : ThemeSetting.LIGHT);
+        }
+        return setting;
+      });
+    });
+    return () => mediaRef.current && mediaRef.current.unsubscribe();
+  }, [services.settings, mediaRef]);
+
+  return [theme, setting];
+}

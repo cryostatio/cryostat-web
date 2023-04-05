@@ -35,19 +35,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-// TODO: Change this when adding dark mode setting to the settings page (General tab)
 const SettingsQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'settings-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
+    order: 100,
   },
   spec: {
     version: 2.3,
@@ -65,13 +65,13 @@ const SettingsQuickStart: QuickStart = {
       There are various settings that can be configured:
       </h3>
       <ul style="font-weight: bold;">
+        <li>General</li>
         <li>Connectivity</li>
-        <li>Languages & Region</li>
         <li>Notification & Messages</li>    
         <li>Dashboard</li>
         <li>Advanced</li>
       </ul>
-      We will go over each of these settings in detail.
+      We will go over each of these settings briefly.
     </p>
   </div>
     `,
@@ -80,6 +80,14 @@ const SettingsQuickStart: QuickStart = {
         title: 'Navigate to the Settings page',
         description: `
 1. Press the [Settings]{{highlight settings-link}} cog icon.`,
+      },
+      {
+        title: 'Go to the General settings tab',
+        description: `
+1. Go to the [General]{{highlight settings-general-tab}} tab
+2. Configure the theme.
+3. Configure the date locale and current timezone.
+[Cryostat currently only supports English. We are planning on adding support for other languages in the future.]{{admonition note}}`,
       },
       {
         title: 'Go to the Connectivity settings tab',
@@ -91,13 +99,6 @@ The Connectivity tab allows you to configure the WebSocket connection the browse
 3. Configure the Auto-Refresh period for content-views.
 [To use the Auto-Refresh feature, you must have the [Auto-Refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox enabled.]{{admonition tip}}
 `,
-      },
-      {
-        title: 'Go to to the Languages & Region settings tab',
-        description: `
-1. Go to the [Languages & Region]{{highlight settings-language&region-tab}} tab
-2. Configure the date locale and current timezone.
-[Cryostat currently only supports English. We are planning on adding support for other languages in the future.]{{admonition note}}`,
       },
       {
         title: 'Go to the Notifications & Messages tab',
@@ -142,6 +143,7 @@ Credentials are used to authenticate with the target JVMs that Cryostat communic
   <p>You completed the <strong>Using Settings</strong> quick start!</p>
     <div style="max-width: 350px">
       <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
+        <p class="cryostat-text">cryostat</p>
     </div>
   <p>For more information about configuring <strong>Settings</strong> in Cryostat, read our guides on the <a href="${build.homePageUrl}" target="_blank">Cryostat website</a>.</p>
 </div>`,

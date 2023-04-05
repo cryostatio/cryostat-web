@@ -187,6 +187,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
                 For example: io-cryostat-Cryostat_profiling_timestamp.jfr
               </Text>
             }
+            appendTo={portalRoot}
           >
             <sup style={{ cursor: 'pointer' }}>
               <b>[?]</b>
@@ -212,7 +213,10 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
             label="Labels"
             fieldId="labels"
             labelIcon={
-              <Tooltip content={<Text>Unique key-value pairs containing information about the recording.</Text>}>
+              <Tooltip
+                content={<Text>Unique key-value pairs containing information about the recording.</Text>}
+                appendTo={portalRoot}
+              >
                 <HelpIcon noVerticalAlign />
               </Tooltip>
             }

@@ -55,12 +55,12 @@ describe('<FeatureLevels/>', () => {
   it('should show PRODUCTION as default', async () => {
     renderWithServiceContext(React.createElement(FeatureLevels.content, null));
 
-    const productionOption = screen.getByText(testT(FeatureLevel[FeatureLevel.PRODUCTION], 'common'));
+    const productionOption = screen.getByText(testT(FeatureLevel[FeatureLevel.PRODUCTION], { ns: 'common' }));
     expect(productionOption).toBeInTheDocument();
     expect(productionOption).toBeVisible();
   });
 
-  it('should set value to local storage when congfigured', async () => {
+  it('should set value to local storage when configured', async () => {
     const { user } = renderWithServiceContext(React.createElement(FeatureLevels.content, null));
 
     const featureLevelSelect = screen.getByLabelText('Options menu');
@@ -75,15 +75,16 @@ describe('<FeatureLevels/>', () => {
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
-    await user.selectOptions(ul, testT(FeatureLevel[FeatureLevel.BETA], 'common'));
+    await user.selectOptions(ul, testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }));
 
     expect(ul).not.toBeInTheDocument(); // Should close menu
 
-    const betaOption = screen.getByText(testT(FeatureLevel[FeatureLevel.BETA], 'common'));
+    const betaOption = screen.getByText(testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }));
+
     expect(betaOption).toBeInTheDocument();
     expect(betaOption).toBeVisible();
 
-    const productionOption = screen.queryByText(testT(FeatureLevel[FeatureLevel.PRODUCTION], 'common'));
+    const productionOption = screen.queryByText(testT(FeatureLevel[FeatureLevel.PRODUCTION], { ns: 'common' }));
     expect(productionOption).not.toBeInTheDocument();
   });
 });

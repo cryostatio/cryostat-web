@@ -37,6 +37,7 @@
  */
 
 import { AutomatedAnalysisScore, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { portalRoot } from '@app/utils/utils';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -112,6 +113,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
           <p>{label.description}</p>
         </div>
       }
+      appendTo={portalRoot}
     >
       <Label
         aria-label={label.name}

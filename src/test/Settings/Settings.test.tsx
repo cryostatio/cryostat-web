@@ -39,7 +39,7 @@
 // Must import before @app/Settings/Settings (circular deps)
 /* eslint import/order: 0*/
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { Settings, UserSetting } from '@app/Settings/Settings';
+import { Settings } from '@app/Settings/Settings';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
@@ -50,6 +50,7 @@ import { of } from 'rxjs';
 import { renderWithServiceContextAndRouter, testT } from '../Common';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
+import { ThemeSetting, UserSetting } from '@app/Settings/SettingsUtils';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {
@@ -131,21 +132,31 @@ jest.mock('@app/Settings/Language', () => ({
   Language: {
     titleKey: 'SETTINGS.LANGUAGE.TITLE',
     descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
-    category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
+    category: 'SETTINGS.CATEGORIES.GENERAL',
     featureLevel: FeatureLevel.BETA,
     orderInGroup: 1,
     content: () => <Text>Language Component</Text>,
-  },
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/DatetimeControl', () => ({
   DatetimeControl: {
     titleKey: 'SETTINGS.DATETIME_CONTROL.TITLE',
     descConstruct: 'SETTINGS.DATETIME_CONTROL.DESCRIPTION',
-    category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
+    category: 'SETTINGS.CATEGORIES.GENERAL',
     featureLevel: FeatureLevel.PRODUCTION,
     content: () => <Text>DatetimeControl Component</Text>,
-  },
+  } as UserSetting,
+}));
+
+jest.mock('@app/Settings/Theme', () => ({
+  Theme: {
+    titleKey: 'SETTINGS.THEME.TITLE',
+    descConstruct: 'SETTINGS.THEME.DESCRIPTION',
+    category: 'SETTINGS.CATEGORIES.GENERAL',
+    featureLevel: FeatureLevel.PRODUCTION,
+    content: () => <Text>Theme Component</Text>,
+  } as UserSetting,
 }));
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
@@ -173,14 +184,14 @@ describe('<Settings/>', () => {
   it.skip('should not show tabs with featureLevel lower than current', async () => {
     renderWithServiceContextAndRouter(<Settings />);
 
-    const hiddenTab = screen.queryByText(testT('SETTINGS.CATEGORIES.LANGUAGE_REGION'));
+    const hiddenTab = screen.queryByText(testT('SETTINGS.CATEGORIES.GENERAL'));
     expect(hiddenTab).not.toBeInTheDocument();
   });
 
-  it('should select Connectivity tab as default', async () => {
+  it('should select General tab as default', async () => {
     renderWithServiceContextAndRouter(<Settings />);
 
-    const generalTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.CONNECTIVITY') });
+    const generalTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.GENERAL') });
     expect(generalTab).toBeInTheDocument();
     expect(generalTab).toBeVisible();
     expect(generalTab.getAttribute('aria-selected')).toBe('true');

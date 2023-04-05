@@ -35,36 +35,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE')
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION')
- * t('SETTINGS.CHARTS_CONFIG.TITLE')
- * t('SETTINGS.CHARTS_CONFIG.DESCRIPTION')
- * t('SETTINGS.AUTO_REFRESH.TITLE')
- * t('SETTINGS.AUTO_REFRESH.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION')
- * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE')
- * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION')
- * t('SETTINGS.DATETIME_CONTROL.TITLE')
- * t('SETTINGS.DATETIME_CONTROL.DESCRIPTION')
- * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
- * t('SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION')
- * t('SETTINGS.FEATURE_LEVEL.TITLE')
- * t('SETTINGS.FEATURE_LEVEL.DESCRIPTION')
- * t('SETTINGS.LANGUAGE.TITLE')
- * t('SETTINGS.LANGUAGE.DESCRIPTION')
- * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
- * t('SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION')
- * t('SETTINGS.THEME.TITLE')
- * t('SETTINGS.THEME.DESCRIPTION')
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE')
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION')
- * t('SETTINGS.CATEGORIES.CONNECTIVITY')
- * t('SETTINGS.CATEGORIES.GENERAL')
- * t('SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE')
- * t('SETTINGS.CATEGORIES.DASHBOARD')
- * t('SETTINGS.CATEGORIES.ADVANCED')
- */
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useTheme } from '@app/utils/useTheme';
+import { Select, SelectOption } from '@patternfly/react-core';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { ThemeSetting, UserSetting } from './SettingsUtils';
+
+const Component = () => {
+  const { t } = useTranslation();
+  const context = React.useContext(ServiceContext);
+  const [open, setOpen] = React.useState(false);
+  const [_theme, setting] = useTheme();
+
+  const handleThemeToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
+
+  const handleThemeSelect = React.useCallback(
+    (_, v) => {
+      context.settings.setThemeSetting(v as ThemeSetting);
+      setOpen(false);
+    },
+    [context.settings, setOpen]
+  );
+
+  return (
+    <Select
+      isOpen={open}
+      aria-label={t('SETTINGS.THEME.SELECT.LABEL')}
+      onToggle={handleThemeToggle}
+      onSelect={handleThemeSelect}
+      selections={setting}
+      isFlipEnabled
+      menuAppendTo="parent"
+    >
+      <SelectOption key="auto" value="auto">
+        {t('SETTINGS.THEME.AUTO')}
+      </SelectOption>
+      <SelectOption key="light" value="light">
+        {t('SETTINGS.THEME.LIGHT')}
+      </SelectOption>
+      <SelectOption key="dark" value="dark">
+        {t('SETTINGS.THEME.DARK')}
+      </SelectOption>
+    </Select>
+  );
+};
+
+export const Theme: UserSetting = {
+  titleKey: 'SETTINGS.THEME.TITLE',
+  descConstruct: 'SETTINGS.THEME.DESCRIPTION',
+  content: Component,
+  category: 'SETTINGS.CATEGORIES.GENERAL',
+  orderInGroup: 2,
+};

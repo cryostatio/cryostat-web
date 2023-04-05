@@ -217,12 +217,11 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                        "fill": "var(--pf-global--palette--black-200)",
+                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "normal",
-                        "padding": 40,
-                        "stroke": "var(--pf-chart-axis--axis-label--stroke--Color, transparent)",
+                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "stroke": "transparent",
                         "textAnchor": "middle",
                       }
                     }
@@ -1445,12 +1444,11 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                        "fill": "var(--pf-global--palette--black-200)",
+                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "normal",
-                        "padding": 40,
-                        "stroke": "var(--pf-chart-axis--axis-label--stroke--Color, transparent)",
+                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "stroke": "transparent",
                         "textAnchor": "middle",
                       }
                     }
@@ -2073,12 +2071,11 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                        "fill": "var(--pf-global--palette--black-200)",
+                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "normal",
-                        "padding": 40,
-                        "stroke": "var(--pf-chart-axis--axis-label--stroke--Color, transparent)",
+                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "stroke": "transparent",
                         "textAnchor": "middle",
                       }
                     }
@@ -2701,12 +2698,11 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                        "fill": "var(--pf-global--palette--black-200)",
+                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "normal",
-                        "padding": 40,
-                        "stroke": "var(--pf-chart-axis--axis-label--stroke--Color, transparent)",
+                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "stroke": "transparent",
                         "textAnchor": "middle",
                       }
                     }
@@ -3271,7 +3267,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
                   dy={0}
                   style={
                     Object {
-                      "fill": "var(--pf-chart-donut--label--title--Fill, #151515)",
+                      "fill": "var(--pf-global--palette--black-200)",
                       "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                       "fontSize": 24,
                       "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
@@ -3540,12 +3536,11 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                        "fill": "var(--pf-global--palette--black-200)",
+                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "normal",
-                        "padding": 40,
-                        "stroke": "var(--pf-chart-axis--axis-label--stroke--Color, transparent)",
+                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "stroke": "transparent",
                         "textAnchor": "middle",
                       }
                     }
@@ -4110,7 +4105,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
                   dy={0}
                   style={
                     Object {
-                      "fill": "var(--pf-chart-donut--label--title--Fill, #151515)",
+                      "fill": "var(--pf-global--palette--black-200)",
                       "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                       "fontSize": 24,
                       "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
@@ -4380,12 +4375,11 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                        "fill": "var(--pf-global--palette--black-200)",
+                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "normal",
-                        "padding": 40,
-                        "stroke": "var(--pf-chart-axis--axis-label--stroke--Color, transparent)",
+                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "stroke": "transparent",
                         "textAnchor": "middle",
                       }
                     }

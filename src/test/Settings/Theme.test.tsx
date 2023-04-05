@@ -35,65 +35,66 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import i18n from '@app/../i18n/config';
-import { About } from '@app/About/About';
 import { ThemeSetting } from '@app/Settings/SettingsUtils';
+import { Theme } from '@app/Settings/Theme';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { cleanup, screen, act, within } from '@testing-library/react';
 import * as React from 'react';
-import { I18nextProvider } from 'react-i18next';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { mockMediaQueryList, renderDefault, testT } from '../Common';
-jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
-  return {
-    BreadcrumbPage: jest.fn((props) => {
-      return (
-        <div>
-          {props.pageTitle}
-          {props.children}
-        </div>
-      );
-    }),
-  };
-});
+import { mockMediaQueryList, renderWithServiceContext, testT } from '../Common';
 
-jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.DARK));
+jest
+  .spyOn(defaultServices.settings, 'themeSetting')
+  .mockReturnValueOnce(of(ThemeSetting.LIGHT))
+  .mockReturnValueOnce(of(ThemeSetting.DARK));
+
 jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
-jest.mock('@app/About/AboutDescription', () => {
-  return {
-    ...jest.requireActual('@app/About/AboutDescription'),
-    AboutDescription: jest.fn(() => {
-      return <div>AboutDescription</div>;
-    }),
-  };
-});
-
-describe('<About />', () => {
-  afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<About />);
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
+describe('<Theme/>', () => {
+  beforeEach(() => {
+    jest.mocked(defaultServices.settings.setThemeSetting).mockClear();
   });
 
-  it('contains the correct information', async () => {
-    renderDefault(
-      <I18nextProvider i18n={i18n}>
-        <About />
-      </I18nextProvider>
-    );
+  afterEach(cleanup);
 
-    expect(screen.getByText('About')).toBeInTheDocument();
-    const logo = screen.getByRole('img');
-    expect(logo).toHaveClass('pf-c-brand cryostat-logo');
-    expect(logo).toHaveAttribute('alt', 'Cryostat');
-    expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', { ns: 'common' }))).toBeInTheDocument();
+  it('should show LIGHT as default', async () => {
+    renderWithServiceContext(React.createElement(Theme.content, null));
+
+    const lightOption = screen.getByText(testT('SETTINGS.THEME.LIGHT'));
+    expect(lightOption).toBeInTheDocument();
+    expect(lightOption).toBeVisible();
+  });
+
+  it('should set value to local storage when configured', async () => {
+    const { user } = renderWithServiceContext(React.createElement(Theme.content, null));
+
+    const themeSelect = screen.getByLabelText('Options menu');
+    expect(themeSelect).toBeInTheDocument();
+    expect(themeSelect).toBeVisible();
+
+    await act(async () => {
+      await user.click(themeSelect);
+    });
+
+    const ul = screen.getByRole('listbox');
+    expect(ul).toBeInTheDocument();
+    expect(ul).toBeVisible();
+
+    const option = within(ul).getByText(testT('SETTINGS.THEME.DARK'));
+    expect(option).toBeInTheDocument();
+    expect(option).toBeVisible();
+
+    await act(async () => {
+      await user.click(option);
+    });
+
+    expect(ul).not.toBeInTheDocument(); // Should close menu
+
+    const darkOption = screen.getByText(testT('SETTINGS.THEME.DARK'));
+    expect(darkOption).toBeInTheDocument();
+    expect(darkOption).toBeVisible();
+
+    const lightOption = screen.queryByText(testT('SETTINGS.THEME.LIGHT'));
+    expect(lightOption).not.toBeInTheDocument();
   });
 });

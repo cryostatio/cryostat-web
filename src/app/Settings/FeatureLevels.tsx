@@ -42,7 +42,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './Settings';
+import { UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const [t] = useTranslation();

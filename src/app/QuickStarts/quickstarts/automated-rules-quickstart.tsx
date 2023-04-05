@@ -36,23 +36,27 @@
  * SOFTWARE.
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
-import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
+import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { withThemedIcon } from '@app/utils/withThemedIcon';
 import { QuickStart } from '@patternfly/quickstarts';
+import React from 'react';
 
-// TODO: Add quickstarts based on the following example:
+const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');
+
 const AutomatedRulesQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'automated-rules-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
+    order: 3,
   },
   spec: {
     version: 2.3,
     displayName: 'Automated Rules',
     durationMinutes: 10,
-    icon: cryostatLogoIcon,
+    icon: <Icon />,
     description: `Learn about automated rules in [APP] and how to create one.`,
     prerequisites: ['Start a Recording'],
     introduction: `
@@ -150,13 +154,14 @@ This recording was created by the rule that we just created and should have a na
 <div>
     <p>You completed the <strong>Automated Rules</strong> quick start!</p>
     <div style="max-width: 350px">
-        <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
-    </div>
+        <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogoIcon}" alt="Cryostat Logo" width="100%" height="100%" />
+        <p class="cryostat-text">cryostat</p>
+        </div>
     <p>For more information about the <strong>Automated Rules</strong> feature, read our guides on the <a href="${build.automatedRulesGuideUrl}" target="_blank">Cryostat documentation</a>.</p>
 </div>`,
     type: {
-      text: 'Featured',
-      color: 'blue',
+      text: 'Advanced',
+      color: 'red',
     },
   },
 };

@@ -42,13 +42,14 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
-import { selectTab } from '@app/Settings/Settings';
+import { selectTab, ThemeSetting } from '@app/Settings/SettingsUtils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useTheme } from '@app/utils/useTheme';
 import { cleanDataId, openTabForUrl, portalRoot } from '@app/utils/utils';
 import {
   Alert,
@@ -136,6 +137,15 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
   const location = useLocation();
+  const [theme] = useTheme();
+
+  React.useEffect(() => {
+    if (theme === ThemeSetting.DARK) {
+      document.documentElement.classList.add('pf-theme-dark');
+    } else {
+      document.documentElement.classList.remove('pf-theme-dark');
+    }
+  }, [theme]);
 
   React.useEffect(() => {
     addSubscription(
@@ -291,9 +301,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handleLanguagePref = React.useCallback(() => {
     if (routerHistory.location.pathname === '/settings') {
-      selectTab('SETTINGS.CATEGORIES.LANGUAGE_REGION');
+      selectTab('SETTINGS.CATEGORIES.GENERAL');
     } else {
-      routerHistory.push('/settings', { preSelectedTab: 'SETTINGS.CATEGORIES.LANGUAGE_REGION' });
+      routerHistory.push('/settings', { preSelectedTab: 'SETTINGS.CATEGORIES.GENERAL' });
     }
   }, [routerHistory]);
 
@@ -396,9 +406,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
                 <ToolbarItem>
                   <Button
-                    variant="link"
+                    variant="plain"
                     onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
-                    icon={<PlusCircleIcon color="white" size="sm" />}
+                    icon={<PlusCircleIcon size="sm" />}
                   />
                 </ToolbarItem>
               </FeatureFlag>
@@ -418,8 +428,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <ToolbarItem>
                   <Button
                     onClick={handleSettingsButtonClick}
-                    variant="link"
-                    icon={<CogIcon color="white" size="sm" />}
+                    variant="plain"
+                    icon={<CogIcon size="sm" />}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                   />

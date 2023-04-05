@@ -38,7 +38,7 @@
 
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { RuleEvaluation } from '@app/Shared/Services/Report.service';
-import { cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import { renderDefault } from '../../Common';
 
@@ -84,7 +84,9 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
 
-    await user.click(screen.getByText(mockRuleEvaluation1.name));
+    await act(async () => {
+      await user.click(screen.getByText(mockRuleEvaluation1.name));
+    });
 
     const closeButton = screen.getByRole('button', {
       name: /close/i,
@@ -112,7 +114,9 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
 
-    await user.click(screen.getByText(mockRuleEvaluation2.name));
+    await act(async () => {
+      await user.click(screen.getByText(mockRuleEvaluation2.name));
+    });
 
     const closeButton = screen.getByRole('button', {
       name: /close/i,
@@ -140,8 +144,9 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
 
-    await user.click(screen.getByText(mockRuleEvaluation3.name));
-
+    await act(async () => {
+      await user.click(screen.getByText(mockRuleEvaluation3.name));
+    });
     const closeButton = screen.getByRole('button', {
       name: /close/i,
     });
@@ -168,8 +173,9 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
 
-    await user.click(screen.getByText(mockNaRuleEvaluation.name));
-
+    await act(async () => {
+      await user.click(screen.getByText(mockNaRuleEvaluation.name));
+    });
     const closeButton = screen.getByRole('button', {
       name: /close/i,
     });

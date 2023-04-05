@@ -61,6 +61,7 @@ export enum LocalStorageKey {
   DATETIME_FORMAT,
   MATCH_EXPRES_VIS_GRAPH_POSITIONS,
   MATCH_EXPRES_VIS_NODE_POSITIONS,
+  THEME,
 }
 
 export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;

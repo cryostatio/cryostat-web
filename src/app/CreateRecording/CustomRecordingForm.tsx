@@ -46,6 +46,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -502,7 +503,10 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             label="Labels"
             fieldId="labels"
             labelIcon={
-              <Tooltip content={<Text>Unique key-value pairs containing information about the recording.</Text>}>
+              <Tooltip
+                content={<Text>Unique key-value pairs containing information about the recording.</Text>}
+                appendTo={portalRoot}
+              >
                 <HelpIcon noVerticalAlign />
               </Tooltip>
             }

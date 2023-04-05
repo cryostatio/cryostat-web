@@ -41,7 +41,7 @@ import { localeReadable } from '@i18n/i18nextUtil';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './Settings';
+import { UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const [t, i18n] = useTranslation();
@@ -86,7 +86,7 @@ export const Language: UserSetting = {
   titleKey: 'SETTINGS.LANGUAGE.TITLE',
   descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
+  category: 'SETTINGS.CATEGORIES.GENERAL',
   orderInGroup: 1,
   featureLevel: FeatureLevel.BETA,
 };

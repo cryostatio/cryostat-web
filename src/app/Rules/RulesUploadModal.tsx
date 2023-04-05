@@ -160,6 +160,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
       help={
         <Popover
+          appendTo={portalRoot}
           headerContent={<div>What&quot;s this?</div>}
           bodyContent={
             <div>

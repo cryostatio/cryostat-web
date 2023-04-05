@@ -44,11 +44,13 @@ import { JFRMetricsChartController } from '@app/Dashboard/Charts/jfr/JFRMetricsC
 import { MBeanMetricsChartCard } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { ThemeSetting } from '@app/Settings/SettingsUtils';
 import { store } from '@app/Shared/Redux/ReduxStore';
 import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import '@i18n/config';
 import { defaultDatetimeFormat } from '@i18n/datetime';
+import { mockMediaQueryList } from '@test/Common';
 import { cleanup } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -56,6 +58,8 @@ import renderer, { act } from 'react-test-renderer';
 import { from, of } from 'rxjs';
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
+jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.DARK));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
