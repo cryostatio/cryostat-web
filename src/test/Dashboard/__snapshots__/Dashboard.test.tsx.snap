@@ -46,7 +46,7 @@ Array [
             id="dashboard-grid"
           >
             <div
-              className="pf-l-grid__item pf-m-4-col pf-m-1-row"
+              className="pf-l-grid__item pf-m-4-col"
               style={
                 Object {
                   "--pf-l-grid--item--Order": "-99999",

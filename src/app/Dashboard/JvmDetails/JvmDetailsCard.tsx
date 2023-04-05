@@ -94,7 +94,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
     >
       <CardBody
         // FIXME: Remove after implementing height resizing
-        style={{ height: '30em' }}
+        style={{ height: '36em' }}
       >
         <EntityDetails entity={wrappedTarget} actionFilter={actionFilter} />
       </CardBody>

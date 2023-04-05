@@ -365,7 +365,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutConfig />}>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
-          <GridItem key={-1} span={4} rowSpan={1} order={{ default: '-99999' }}>
+          <GridItem key={-1} span={4} order={{ default: '-99999' }}>
             <AddCard />
           </GridItem>
           {currLayout.cards

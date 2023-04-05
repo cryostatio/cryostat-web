@@ -75,6 +75,8 @@ import {
   Select,
   SelectOption,
   SelectOptionObject,
+  Stack,
+  StackItem,
   Switch,
   Text,
   TextArea,
@@ -174,7 +176,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
 
   return (
     <>
-      <Card isRounded isCompact isFullHeight>
+      <Card isRounded isCompact>
         <CardBody>
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.large}>
@@ -193,15 +195,15 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
       <Modal
         aria-label="Dashboard Card Catalog Modal"
         isOpen={showWizard}
-        variant={ModalVariant.large}
+        width={'80%'}
         hasNoBodyWrapper
         showClose={false}
       >
         <Wizard
+          id={'card-catalog-wizard'}
           onClose={handleStop}
           onSave={handleAdd}
           nav={customNav}
-          height={'30rem'}
           header={
             <WizardHeader
               title={t('Dashboard.CARD_CATALOG_TITLE')}
@@ -224,12 +226,14 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
                   : 'Next',
             }}
           >
-            <Form>
-              <FormGroup label="Select a card type" isRequired data-quickstart-id="card-type-selector">
+            <Stack>
+              <StackItem>
                 <Text>{t('Dashboard.ADD_CARD_HELPER_TEXT')}</Text>
+              </StackItem>
+              <StackItem isFilled>
                 <CardGallery selection={selection} onSelect={handleSelect} />
-              </FormGroup>
-            </Form>
+              </StackItem>
+            </Stack>
           </WizardStep>
           <WizardStep
             id="card-props-config"

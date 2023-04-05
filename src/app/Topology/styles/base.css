@@ -142,7 +142,6 @@ Below CSS rules only apply to Topology components
 
 .entity-overview .pf-c-tab-content {
   flex: 1 1 0;
-  min-height: 0;
   overflow: auto;
 }
 
