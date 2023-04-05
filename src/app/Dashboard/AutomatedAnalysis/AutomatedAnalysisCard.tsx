@@ -109,6 +109,7 @@ import {
   ExclamationTriangleIcon,
   InfoCircleIcon,
   OutlinedQuestionCircleIcon,
+  ProcessAutomationIcon,
   SearchIcon,
   Spinner2Icon,
   TrashIcon,
@@ -961,4 +962,5 @@ export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
   component: AutomatedAnalysisCard,
   propControls: [],
   advancedConfig: <AutomatedAnalysisConfigForm />,
+  icon: <ProcessAutomationIcon />,
 };

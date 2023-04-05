@@ -37,20 +37,40 @@
  */
 import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
   Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  Drawer,
+  DrawerActions,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerContentBody,
+  DrawerHead,
+  DrawerPanelBody,
+  DrawerPanelContent,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
+  Flex,
+  FlexItem,
   Form,
   FormGroup,
+  Grid,
+  GridItem,
+  Label,
+  LabelGroup,
+  Level,
+  LevelItem,
+  Modal,
+  ModalVariant,
   NumberInput,
   Select,
   SelectOption,
@@ -65,60 +85,40 @@ import {
   CustomWizardNavFunction,
   Wizard,
   WizardControlStep,
+  WizardHeader,
   WizardNav,
   WizardNavItem,
   WizardStep,
 } from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { TFunction } from 'i18next';
 import { nanoid } from 'nanoid';
 import * as React from 'react';
-import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
-import { getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
+import { DashboardCardDescriptor, getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
 
 interface AddCardProps {}
 
 export const AddCard: React.FC<AddCardProps> = (_) => {
-  const addSubscription = useSubscriptions();
-  const settingsContext = useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const { t } = useTranslation();
 
   const [showWizard, setShowWizard] = React.useState(false);
   const [selection, setSelection] = React.useState('');
   const [propsConfig, setPropsConfig] = React.useState({});
-  const [selectOpen, setSelectOpen] = React.useState(false);
-  const [featureLevel, setFeatureLevel] = React.useState(FeatureLevel.PRODUCTION);
-
-  React.useEffect(() => {
-    addSubscription(settingsContext.settings.featureLevel().subscribe(setFeatureLevel));
-  }, [addSubscription, settingsContext.settings, setFeatureLevel]);
-
-  const options = React.useMemo(() => {
-    return [
-      <SelectOption key={0} value={t('NONE', { ns: 'common' })} isPlaceholder />,
-      ...getDashboardCards(featureLevel).map((choice, idx) => (
-        <SelectOption key={idx + 1} value={t(choice.title)} description={t(choice.description)} />
-      )),
-    ];
-  }, [t, featureLevel]);
 
   const handleSelect = React.useCallback(
-    (_, selection, isPlaceholder) => {
-      setSelection(isPlaceholder ? '' : selection);
-      setSelectOpen(false);
-
+    (_: React.MouseEvent, selection: string) => {
+      setSelection(selection);
       const c = {};
       if (selection) {
-        for (const ctrl of getConfigByTitle(selection, t).propControls) {
-          c[ctrl.key] = ctrl.defaultValue;
-        }
+        getConfigByTitle(selection, t).propControls.forEach((ctrl) => (c[ctrl.key] = ctrl.defaultValue));
       }
       setPropsConfig(c);
     },
-    [t, setSelection, setSelectOpen, setPropsConfig]
+    [t, setSelection, setPropsConfig]
   );
 
   const handleAdd = React.useCallback(() => {
@@ -172,77 +172,10 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
     [selection]
   );
 
-  const getFullDescription = React.useCallback(
-    (selection: string) => {
-      const config = getConfigByTitle(selection, t).descriptionFull;
-      if (typeof config === 'string') {
-        return t(config);
-      } else {
-        return config;
-      }
-    },
-    [t]
-  );
-
   return (
     <>
-      <Card isRounded isLarge>
-        {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd} height={'30rem'} nav={customNav}>
-            <WizardStep
-              id="card-type-select"
-              name={t('CARD_TYPE', { ns: 'common' })}
-              footer={{
-                isNextDisabled: !selection,
-                nextButtonText:
-                  selection &&
-                  !getConfigByTitle(selection, t).propControls.length &&
-                  !getConfigByTitle(selection, t).advancedConfig
-                    ? 'Finish'
-                    : 'Next',
-              }}
-            >
-              <Form>
-                <FormGroup label="Select a card type" isRequired isStack data-quickstart-id="card-type-selector">
-                  <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
-                    {options}
-                  </Select>
-                  <Text>
-                    {selection
-                      ? getFullDescription(selection)
-                      : 'Choose a card type to add to your dashboard. Some cards require additional configuration.'}
-                  </Text>
-                </FormGroup>
-              </Form>
-            </WizardStep>
-            <WizardStep
-              id="card-props-config"
-              name="Configuration"
-              footer={{
-                nextButtonText: selection && !getConfigByTitle(selection, t).advancedConfig ? 'Finish' : 'Next',
-              }}
-              isHidden={!selection || !getConfigByTitle(selection, t).propControls.length}
-            >
-              {selection && (
-                <PropsConfigForm
-                  cardTitle={selection}
-                  config={propsConfig}
-                  controls={getConfigByTitle(selection, t).propControls}
-                  onChange={setPropsConfig}
-                />
-              )}
-            </WizardStep>
-            <WizardStep
-              id="card-adv-config"
-              name="Advanced Configuration"
-              footer={{ nextButtonText: 'Finish' }}
-              isHidden={!selection || !getConfigByTitle(selection, t).advancedConfig}
-            >
-              <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
-              {selection && getConfigByTitle(selection, t).advancedConfig}
-            </WizardStep>
-          </Wizard>
-        ) : (
+      <Card isRounded isCompact isFullHeight>
+        <CardBody>
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.large}>
               <EmptyStateIcon icon={PlusCircleIcon} />
@@ -258,9 +191,193 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
               </Button>
             </EmptyState>
           </Bullseye>
-        )}
+        </CardBody>
       </Card>
+      <Modal isOpen={showWizard} variant={ModalVariant.large} hasNoBodyWrapper showClose={false}>
+        <Wizard
+          onClose={handleStop}
+          onSave={handleAdd}
+          nav={customNav}
+          height={'30rem'}
+          header={
+            <WizardHeader
+              title={'Dashboard Card Catalog'}
+              onClose={() => setShowWizard(false)}
+              closeButtonAriaLabel="Close add card form"
+              description={
+                'Cards added to this Dashboard layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.'
+              }
+            />
+          }
+        >
+          <WizardStep
+            id="card-type-select"
+            name={t('CARD_TYPE', { ns: 'common' })}
+            footer={{
+              isNextDisabled: !selection,
+              nextButtonText:
+                selection &&
+                !getConfigByTitle(selection, t).propControls.length &&
+                !getConfigByTitle(selection, t).advancedConfig
+                  ? 'Finish'
+                  : 'Next',
+            }}
+          >
+            <Form>
+              <FormGroup label="Select a card type" isRequired data-quickstart-id="card-type-selector">
+                <Text>{t('Dashboard.ADD_CARD_HELPER_TEXT')}</Text>
+                <CardGallery selection={selection} onSelect={handleSelect} />
+              </FormGroup>
+            </Form>
+          </WizardStep>
+          <WizardStep
+            id="card-props-config"
+            name="Configuration"
+            footer={{
+              nextButtonText: selection && !getConfigByTitle(selection, t).advancedConfig ? 'Finish' : 'Next',
+            }}
+            isHidden={!selection || !getConfigByTitle(selection, t).propControls.length}
+          >
+            {selection && (
+              <PropsConfigForm
+                cardTitle={selection}
+                config={propsConfig}
+                controls={getConfigByTitle(selection, t).propControls}
+                onChange={setPropsConfig}
+              />
+            )}
+          </WizardStep>
+          <WizardStep
+            id="card-adv-config"
+            name="Advanced Configuration"
+            footer={{ nextButtonText: 'Finish' }}
+            isHidden={!selection || !getConfigByTitle(selection, t).advancedConfig}
+          >
+            <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
+            {selection && getConfigByTitle(selection, t).advancedConfig}
+          </WizardStep>
+        </Wizard>
+      </Modal>
     </>
+  );
+};
+
+const getFullDescription = (selection: string, t: TFunction) => {
+  const config = getConfigByTitle(selection, t).descriptionFull;
+  if (typeof config === 'string') {
+    return t(config);
+  } else {
+    return config;
+  }
+};
+
+export interface CardGalleryProps {
+  selection: string; // Translated card title
+  onSelect: (event: React.MouseEvent, selection: string) => void;
+}
+
+export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect }) => {
+  const { t } = useTranslation();
+  const activeLevel = useFeatureLevel();
+  const [toViewCard, setToViewCard] = React.useState<DashboardCardDescriptor>();
+
+  const availableCards = React.useMemo(() => getDashboardCards(activeLevel), [activeLevel]);
+
+  const items = React.useMemo(() => {
+    return availableCards.map((card) => {
+      const { icon, labels, title, description } = card;
+      return (
+        <Card
+          id={title}
+          key={title}
+          hasSelectableInput
+          isSelectableRaised
+          onClick={(event) => onSelect(event, t(title))}
+          isFullHeight
+          isFlat
+          isSelected={selection === t(title)}
+        >
+          <CardHeader>
+            <Level hasGutter>
+              {icon ? <LevelItem>{icon}</LevelItem> : null}
+              <LevelItem>
+                <CardTitle>{t(title)}</CardTitle>
+              </LevelItem>
+              <LevelItem>
+                {labels ? (
+                  <LabelGroup>
+                    {labels.map(({ content, icon, color }) => (
+                      <Label key={content} color={color} icon={icon} isCompact>
+                        {content}
+                      </Label>
+                    ))}
+                  </LabelGroup>
+                ) : null}
+              </LevelItem>
+            </Level>
+          </CardHeader>
+          <CardBody>{t(description)}</CardBody>
+        </Card>
+      );
+    });
+  }, [t, availableCards, selection, onSelect]);
+
+  React.useEffect(() => {
+    setToViewCard(availableCards.find((card) => t(card.title) === selection));
+  }, [selection, availableCards, t]);
+
+  const panelContent = React.useMemo(() => {
+    if (!toViewCard) {
+      return null;
+    }
+    const { title, icon, labels } = toViewCard;
+    return (
+      <DrawerPanelContent isResizable defaultSize="300px">
+        <DrawerHead>
+          <DrawerActions>
+            <DrawerCloseButton onClick={() => setToViewCard(undefined)} />
+          </DrawerActions>
+        </DrawerHead>
+        <DrawerPanelBody>
+          <Flex direction={{ default: 'column' }}>
+            <Flex spacer={{ default: 'spacerSm' }}>
+              {icon ? <FlexItem>{icon}</FlexItem> : null}
+              <FlexItem>
+                <Title headingLevel={'h3'}>{t(title)}</Title>
+              </FlexItem>
+            </Flex>
+            <FlexItem>
+              {labels ? (
+                <LabelGroup>
+                  {labels.map(({ content, icon, color }) => (
+                    <Label key={content} color={color} icon={icon}>
+                      {content}
+                    </Label>
+                  ))}
+                </LabelGroup>
+              ) : null}
+            </FlexItem>
+            <FlexItem>{getFullDescription(t(toViewCard.title), t)}</FlexItem>
+          </Flex>
+        </DrawerPanelBody>
+      </DrawerPanelContent>
+    );
+  }, [t, setToViewCard, toViewCard]);
+
+  return (
+    <Drawer isExpanded={!!toViewCard} isInline>
+      <DrawerContent panelContent={panelContent}>
+        <DrawerContentBody>
+          <Grid hasGutter style={{ alignItems: 'stretch', marginTop: '1em', marginRight: !toViewCard ? 0 : '1em' }}>
+            {items.map((item) => (
+              <GridItem span={4} key={item.key}>
+                {item}
+              </GridItem>
+            ))}
+          </Grid>
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
@@ -437,7 +554,7 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
       selections={selectedConfig}
       menuAppendTo={portalRoot}
       isFlipEnabled
-      maxHeight={"16em"}
+      maxHeight={'16em'}
     >
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]

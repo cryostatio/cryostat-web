@@ -49,7 +49,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, LabelProps, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -81,6 +81,12 @@ export interface DashboardCardSizes {
 
 export interface DashboardCardDescriptor {
   featureLevel: FeatureLevel;
+  icon?: React.ReactNode;
+  labels?: {
+    content: string;
+    color?: LabelProps['color'];
+    icon?: React.ReactNode;
+  }[];
   title: string;
   cardSizes: DashboardCardSizes;
   description: string;
@@ -285,7 +291,7 @@ export function hasConfigByTitle(title: string, t: TFunction): boolean {
 
 export function getConfigByTitle(title: string, t: TFunction): DashboardCardDescriptor {
   for (const choice of getDashboardCards()) {
-    if (t(choice.title) === title) {
+    if (t(choice.title) === t(title)) {
       return choice;
     }
   }
@@ -359,6 +365,9 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutConfig />}>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
+          <GridItem key={-1} span={4} rowSpan={1} order={{ default: '-99999' }}>
+            <AddCard />
+          </GridItem>
           {currLayout.cards
             .filter((cfg) => hasConfigByName(cfg.name))
             .map((cfg, idx) => (
@@ -380,9 +389,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
                 </GridItem>
               </FeatureFlag>
             ))}
-          <GridItem key={currLayout.cards.length} order={{ default: currLayout.cards.length.toString() }}>
-            <AddCard />
-          </GridItem>
         </Grid>
       </ChartContext.Provider>
     </TargetView>

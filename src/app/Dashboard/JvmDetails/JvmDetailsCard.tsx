@@ -48,6 +48,7 @@ import * as React from 'react';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import '@app/Topology/styles/base.css';
+import { ContainerNodeIcon } from '@patternfly/react-icons';
 
 export interface JvmDetailsCardProps extends DashboardCardProps {}
 
@@ -91,7 +92,10 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
       }
       {...props}
     >
-      <CardBody>
+      <CardBody
+        // FIXME: Remove after implementing height resizing
+        style={{ height: '30em' }}
+      >
         <EntityDetails entity={wrappedTarget} actionFilter={actionFilter} />
       </CardBody>
     </DashboardCard>
@@ -120,4 +124,5 @@ export const JvmDetailsCardDescriptor: DashboardCardDescriptor = {
   descriptionFull: `JvmDetailsCard.CARD_DESCRIPTION_FULL`,
   component: JvmDetailsCard,
   propControls: [],
+  icon: <ContainerNodeIcon />,
 };

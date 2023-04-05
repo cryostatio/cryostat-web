@@ -57,7 +57,7 @@ import {
   getResizeObserver,
 } from '@patternfly/react-charts';
 import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
-import { SyncAltIcon } from '@patternfly/react-icons';
+import { SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -562,4 +562,5 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       kind: 'select',
     },
   ],
+  icon: <TachometerAltIcon />,
 };
