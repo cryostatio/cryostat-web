@@ -57,7 +57,7 @@ import {
   Label,
   Title,
 } from '@patternfly/react-core';
-import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon } from '@patternfly/react-icons';
+import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -348,6 +348,17 @@ export const JFRMetricsChartCardDescriptor: DashboardCardDescriptor = {
         min: 5,
         max: 120,
       },
+    },
+  ],
+  icon: <TachometerAltIcon />,
+  labels: [
+    {
+      content: 'Beta',
+      color: 'green',
+    },
+    {
+      content: 'Metrics',
+      color: 'blue',
     },
   ],
 };

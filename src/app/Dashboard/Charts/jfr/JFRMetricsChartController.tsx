@@ -36,13 +36,12 @@
  * SOFTWARE.
  */
 
-import { ApiService } from '@app/Shared/Services/Api.service';
+import { ApiService, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { NO_TARGET, Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
-  catchError,
   concatMap,
   distinctUntilChanged,
   finalize,
@@ -151,50 +150,14 @@ export class JFRMetricsChartController {
     if (target === NO_TARGET) {
       return of(false);
     }
-
-    return this._api
-      .graphql<CountResponse>(
-        `
-          query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
-            targetNodes(filter: { name: $connectUrl }) {
-              recordings {
-                active (filter: {
-                  labels: ["origin=${RECORDING_NAME}"],
-                  state: "RUNNING",
-                }) {
-                aggregate {
-                  count
-                }
-              }
-            }
-            }
-          }`,
-        { connectUrl: target.connectUrl }
-      )
-      .pipe(
-        map((resp) => {
-          const nodes = resp.data.targetNodes;
-          if (nodes.length === 0) {
-            return false;
-          }
-          const count = nodes[0].recordings.active.aggregate.count;
-          return count > 0;
-        }),
-        catchError((_) => of(false))
-      );
+    return this._api.targetHasRecording(target, {
+      state: RecordingState.RUNNING,
+      labels: this._api.stringifyRecordingLabels([
+        {
+          key: 'origin',
+          value: RECORDING_NAME,
+        },
+      ]),
+    });
   }
-}
-
-interface CountResponse {
-  data: {
-    targetNodes: {
-      recordings: {
-        active: {
-          aggregate: {
-            count: number;
-          };
-        };
-      };
-    }[];
-  };
 }

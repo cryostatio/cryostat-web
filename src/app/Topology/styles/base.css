@@ -142,9 +142,13 @@ Below CSS rules only apply to Topology components
 
 .entity-overview .pf-c-tab-content {
   flex: 1 1 0;
-  min-height: 0;
   overflow: auto;
 }
+
+.dashboard-card-preview .entity-overview .pf-c-tab-content {
+  overflow: hidden;
+}
+
 
 .entity-overview__wrapper {
   padding: 1.5em;

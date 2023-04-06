@@ -175,7 +175,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
       >
         <ToolbarContent className="topology__toolbar-main-content" key={'main-content'}>
           <ToolbarItem>
-            <QuickSearchButton onClick={handleQuickSearch} />
+            <QuickSearchButton tooltipContent={'Add to view'} onClick={handleQuickSearch} />
           </ToolbarItem>
           <ToolbarItem>
             <DisplayOptions isGraph={isGraphView} isDisabled={isDisabled} />

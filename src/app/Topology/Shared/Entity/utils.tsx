@@ -41,12 +41,10 @@ import { Rule } from '@app/Rules/Rules';
 import {
   ActiveRecording,
   ApiService,
-  ArchivedRecording,
   EventProbe,
   Recording,
   RecordingState,
   StoredCredential,
-  UPLOADS_SUBDIRECTORY,
 } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -130,74 +128,13 @@ export const getTargetOwnedResources = (
 ): Observable<ResourceTypes[]> => {
   switch (resourceType) {
     case 'activeRecordings':
-      return apiService.doGet<ActiveRecording[]>(
-        `targets/${encodeURIComponent(target.connectUrl)}/recordings`,
-        'v1',
-        undefined,
-        true,
-        true
-      );
-    /* eslint-disable @typescript-eslint/no-explicit-any */
+      return apiService.getTargetActiveRecordings(target);
     case 'archivedRecordings':
-      return apiService
-        .graphql<any>(
-          `
-              query ArchivedRecordingsForTarget($connectUrl: String) {
-                archivedRecordings(filter: { sourceTarget: $connectUrl }) {
-                  data {
-                    name
-                    downloadUrl
-                    reportUrl
-                    metadata {
-                      labels
-                    }
-                    size
-                  }
-                }
-              }`,
-          { connectUrl: target.connectUrl },
-          true,
-          true
-        )
-        .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
-    case 'archivedUploadRecordings':
-      return apiService
-        .graphql<any>(
-          `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
-                  archivedRecordings(filter: $filter) {
-                    data {
-                      name
-                      downloadUrl
-                      reportUrl
-                      metadata {
-                        labels
-                      }
-                      size
-                    }
-                  }
-                }`,
-          { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
-          true,
-          true
-        )
-        .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
-    /* eslint-enable @typescript-eslint/no-explicit-any */
+      return apiService.getTargetArchivedRecordings(target);
     case 'eventTemplates':
-      return apiService.doGet<EventTemplate[]>(
-        `targets/${encodeURIComponent(target.connectUrl)}/templates`,
-        'v1',
-        undefined,
-        true,
-        true
-      );
+      return apiService.getTargetEventTemplates(target);
     case 'eventTypes':
-      return apiService.doGet<EventType[]>(
-        `targets/${encodeURIComponent(target.connectUrl)}/events`,
-        'v1',
-        undefined,
-        true,
-        true
-      );
+      return apiService.getTargetEventTypes(target);
     case 'agentProbes':
       return apiService.getActiveProbesForTarget(target, true, true);
     case 'automatedRules':

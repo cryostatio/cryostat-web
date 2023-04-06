@@ -57,7 +57,7 @@ import {
   getResizeObserver,
 } from '@patternfly/react-charts';
 import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
-import { SyncAltIcon } from '@patternfly/react-icons';
+import { SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -479,7 +479,7 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const visual = React.useMemo(
     () => (
       <div ref={containerRef} style={{ height: props.isFullHeight ? '100%' : '300px' }} className="disabled-pointer">
-        {chartKind.visual(theme, props.themeColor, cardWidth, samples)}
+        {chartKind.visual(theme, props.themeColor.toLowerCase(), cardWidth, samples)}
       </div>
     ),
     [theme, containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples]
@@ -556,10 +556,30 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
     {
       name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
       key: 'themeColor',
-      values: ['blue', 'cyan', 'gold', 'gray', 'green', 'orange', 'purple'],
+      values: ['Blue', 'Cyan', 'Gold', 'Gray', 'Green', 'Orange', 'Purple'],
       defaultValue: 'blue',
       description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
       kind: 'select',
     },
   ],
+  icon: <TachometerAltIcon />,
+  labels: [
+    {
+      content: 'Metrics',
+      color: 'blue',
+    },
+  ],
+  preview: (
+    <MBeanMetricsChartCard
+      themeColor={'blue'}
+      chartKind={chartKinds[0].displayName}
+      duration={60}
+      period={1}
+      span={12}
+      isFullHeight
+      isDraggable={false}
+      isResizable={false}
+      dashboardId={0}
+    />
+  ),
 };

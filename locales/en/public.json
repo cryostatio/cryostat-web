@@ -27,7 +27,7 @@
     }
   },
   "AutomatedAnalysisCard": {
-    "CARD_DESCRIPTION": "Assess common application performance and configuration issues",
+    "CARD_DESCRIPTION": "Assess common application performance and configuration issues.",
     "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
     "CARD_TITLE": "Automated Analysis",
     "CRITICAL_RESULTS_one": "{{count}} Critical Result",
@@ -132,8 +132,8 @@
         "NAME": "Refresh Period"
       },
       "THEME": {
-        "DESCRIPTION": "Select a colour theme",
-        "NAME": "Theme"
+        "DESCRIPTION": "Select a color theme.",
+        "NAME": "Color Theme"
       },
       "THEME_COLOR": {
         "DESCRIPTION": "The color theme to apply to this chart.",
@@ -148,6 +148,9 @@
     }
   },
   "Dashboard": {
+    "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your dashboard. Some cards require additional configuration.",
+    "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
+    "CARD_CATALOG_TITLE": "Dashboard Card Catalog",
     "PAGE_TITLE": "Dashboard"
   },
   "DashboardCardActionMenu": {

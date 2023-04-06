@@ -49,7 +49,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, LabelProps, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -81,6 +81,13 @@ export interface DashboardCardSizes {
 
 export interface DashboardCardDescriptor {
   featureLevel: FeatureLevel;
+  icon?: React.ReactNode;
+  labels?: {
+    content: string;
+    color?: LabelProps['color'];
+    icon?: React.ReactNode;
+  }[];
+  preview?: React.ReactNode;
   title: string;
   cardSizes: DashboardCardSizes;
   description: string;
@@ -166,6 +173,12 @@ export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
   description: 'NonePlaceholderCard.CARD_DESCRIPTION',
   descriptionFull: 'NonePlaceholderCard.CARD_DESCRIPTION_FULL',
   component: PlaceholderCard,
+  labels: [
+    {
+      content: 'Dev',
+      color: 'red',
+    },
+  ],
   propControls: [],
 } as DashboardCardDescriptor;
 
@@ -176,6 +189,12 @@ export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
   description: 'AllPlaceholderCard.CARD_DESCRIPTION',
   descriptionFull: 'AllPlaceholderCard.CARD_DESCRIPTION_FULL',
   component: PlaceholderCard,
+  labels: [
+    {
+      content: 'Dev',
+      color: 'red',
+    },
+  ],
   propControls: [
     {
       name: 'string',
@@ -355,36 +374,40 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch, currLayout]
   );
 
+  const emptyLayout = React.useMemo(() => !currLayout.cards || !currLayout.cards.length, [currLayout.cards]);
+
   return (
     <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutConfig />}>
-      <ChartContext.Provider value={chartContext}>
-        <Grid id={'dashboard-grid'} hasGutter>
-          {currLayout.cards
-            .filter((cfg) => hasConfigByName(cfg.name))
-            .map((cfg, idx) => (
-              <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
-                <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-                  {React.createElement(getConfigByName(cfg.name).component, {
-                    span: cfg.span,
-                    ...cfg.props,
-                    dashboardId: idx,
-                    actions: [
-                      <DashboardCardActionMenu
-                        key={`${cfg.name}-actions`}
-                        onRemove={() => handleRemove(idx)}
-                        onResetSize={() => handleResetSize(idx)}
-                        onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
-                      />,
-                    ],
-                  })}
-                </GridItem>
-              </FeatureFlag>
-            ))}
-          <GridItem key={currLayout.cards.length} order={{ default: currLayout.cards.length.toString() }}>
-            <AddCard />
-          </GridItem>
-        </Grid>
+      <ChartContext.Provider value={chartContext} data-full-height>
+        {emptyLayout ? (
+          <AddCard variant="card" />
+        ) : (
+          <Grid id={'dashboard-grid'} hasGutter>
+            {currLayout.cards
+              .filter((cfg) => hasConfigByName(cfg.name))
+              .map((cfg, idx) => (
+                <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
+                  <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
+                    {React.createElement(getConfigByName(cfg.name).component, {
+                      span: cfg.span,
+                      ...cfg.props,
+                      dashboardId: idx,
+                      actions: [
+                        <DashboardCardActionMenu
+                          key={`${cfg.name}-actions`}
+                          onRemove={() => handleRemove(idx)}
+                          onResetSize={() => handleResetSize(idx)}
+                          onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
+                        />,
+                      ],
+                    })}
+                  </GridItem>
+                </FeatureFlag>
+              ))}
+          </Grid>
+        )}
       </ChartContext.Provider>
+      <></>
     </TargetView>
   );
 };

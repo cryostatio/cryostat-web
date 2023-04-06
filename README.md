@@ -17,7 +17,7 @@ JFR using JDK Mission Control internals.
 for an OpenShift Operator facilitating easy setup of Cryostat in your OpenShift
 cluster as well as exposing the Cryostat API as Kubernetes Custom Resources.
 
-* [cryostat](https://github.com/cryostatio/cryostat-web) for the JFR management service
+* [cryostat](https://github.com/cryostatio/cryostat) for the JFR management service
 
 
 ## REQUIREMENTS

@@ -100,9 +100,9 @@ Each card displays a different set of information about the currently selected t
         description: `
 **Dashboard Layouts** are used to organize the Dashboard Cards that are displayed in the Dashboard. We will start by creating a new Dashboard Layout.
 
-1. Click [New]{{highlight dashboard-new-btn}} on the **Layout Selector** toolbar.
+1. Click the [Layout Selector]{{highlight dashboard-layout-selector}} on the toolbar.
 
-    This will open a modal dialog.
+    This will open a dropdown menu. Click the [Create Layout]{{highlight create-layout-btn}}.
 
 2. Enter a name for the new layout.
 3. Click Create when you are finished.
@@ -118,13 +118,15 @@ Each card displays a different set of information about the currently selected t
         description: `
 To create a card, we will go through a **creation wizard** that will guide us through the process of selecting the card type, and configuring the card, if needed.
 
-1. Click the [Add]{{highlight dashboard-add-btn}} button on the Dashboard.
-2. From the [Card Type selector]{{highlight card-type-selector}}, select the **Target JVM Details** card.
-3. Click Finish.
-4. Repeat steps 1-2 to add the **MBeans Metrics Chart** card to the Dashboard Layout.
-5. This time, click Next to go to the next configuration step of the creation wizard.
+1. Click the [Catalog Icon]{{highlight dashboard-add-btn}} on the toolbar.
+    
+    This will open a modal. From the card catalog, select the **Target JVM Details** card. Full details and available preview will be shown on the drawer panel.
+
+2. Click Finish.
+3. Repeat steps 1-2 to add the **MBeans Metrics Chart** card to the Dashboard Layout.
+4. This time, click Next to go to the next configuration step of the creation wizard.
 [The default metric selected for the card is the \`Process CPU Load\` metric. You can change this by clicking the **Performance Metric** dropdown menu within the **MBeans Chart Card** configuration step and selecting a different metric. Try other metrics and settings!]{{admonition tip}}
-6. Click Finish again to finish creating the second card.
+5. Click Finish again to finish creating the second card.
 `,
         review: {
           instructions: '#### Verify that you see the two new cards in the Dashboard.',

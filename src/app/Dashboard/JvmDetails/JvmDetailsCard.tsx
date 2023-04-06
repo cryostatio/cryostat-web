@@ -44,6 +44,7 @@ import EntityDetails from '@app/Topology/Shared/Entity/EntityDetails';
 import { NodeType } from '@app/Topology/typings';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
+import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
@@ -89,6 +90,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
           <CardActions>{...props.actions || []}</CardActions>
         </CardHeader>
       }
+      style={{ height: '36em' }} // FIXME: Remove after implementing height resizing
       {...props}
     >
       <CardBody>
@@ -120,4 +122,12 @@ export const JvmDetailsCardDescriptor: DashboardCardDescriptor = {
   descriptionFull: `JvmDetailsCard.CARD_DESCRIPTION_FULL`,
   component: JvmDetailsCard,
   propControls: [],
+  icon: <ContainerNodeIcon />,
+  labels: [
+    {
+      content: 'Info',
+      color: 'blue',
+    },
+  ],
+  preview: <JvmDetailsCard span={12} isDraggable={false} isFullHeight={false} isResizable={false} dashboardId={0} />,
 };

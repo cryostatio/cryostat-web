@@ -156,7 +156,7 @@ const isQuickRecordingExist = (group: EnvironmentNode, { services }: ActionUtils
   };
 
   return merge(
-    services.api.groupHasRecording(group, QUICK_RECORDING_NAME),
+    services.api.groupHasRecording(group, { name: QUICK_RECORDING_NAME }),
     services.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated).pipe(
       filter(filterFn),
       map((_) => true)
@@ -164,7 +164,7 @@ const isQuickRecordingExist = (group: EnvironmentNode, { services }: ActionUtils
     services.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted).pipe(
       filter(filterFn),
       debounceTime(500),
-      map((_) => services.api.groupHasRecording(group, QUICK_RECORDING_NAME))
+      map((_) => services.api.groupHasRecording(group, { name: QUICK_RECORDING_NAME }))
     )
   );
 };

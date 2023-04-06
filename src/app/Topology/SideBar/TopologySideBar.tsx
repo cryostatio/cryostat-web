@@ -54,7 +54,7 @@ export const TopologySideBar: React.FC<TopologySideBarProps> = ({ children, onCl
           <DrawerCloseButton className="entity-overview__entity-close-button" onClick={onClose} />
         </DrawerActions>
       </DrawerHead>
-      <DrawerPanelBody {...props} hasNoPadding>
+      <DrawerPanelBody {...props} hasNoPadding className={className}>
         {children}
       </DrawerPanelBody>
     </>
