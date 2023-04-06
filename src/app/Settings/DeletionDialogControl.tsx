@@ -49,7 +49,7 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './SettingsUtils';
+import { SettingTab, UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const [t] = useTranslation();
@@ -129,5 +129,5 @@ export const DeletionDialogControl: UserSetting = {
   titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',
   descConstruct: 'SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
+  category: SettingTab.NOTIFICATION_MESSAGE,
 };

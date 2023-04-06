@@ -42,7 +42,7 @@ import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { UserSetting } from './SettingsUtils';
+import { SettingTab, UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const [target, setTarget] = React.useState(NO_TARGET);
@@ -62,5 +62,5 @@ export const AutomatedAnalysisConfig: UserSetting = {
   titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
   descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.DASHBOARD',
+  category: SettingTab.DASHBOARD,
 };

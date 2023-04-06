@@ -41,7 +41,7 @@ import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { UserSetting } from './SettingsUtils';
+import { SettingTab, UserSetting } from './SettingsUtils';
 
 export interface Location {
   key: string;
@@ -130,5 +130,5 @@ export const CredentialsStorage: UserSetting = {
     parts: [<Link key={0} to="/security" />],
   },
   content: Component,
-  category: 'SETTINGS.CATEGORIES.ADVANCED',
+  category: SettingTab.ADVANCED,
 };

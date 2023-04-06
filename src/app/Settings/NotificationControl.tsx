@@ -50,7 +50,7 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './SettingsUtils';
+import { SettingTab, UserSetting } from './SettingsUtils';
 
 const min = 0;
 const max = 10;
@@ -179,6 +179,6 @@ export const NotificationControl: UserSetting = {
   titleKey: 'SETTINGS.NOTIFICATION_CONTROL.TITLE',
   descConstruct: 'SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
+  category: SettingTab.NOTIFICATION_MESSAGE,
   orderInGroup: 1,
 };

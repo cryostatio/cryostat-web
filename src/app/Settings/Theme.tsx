@@ -40,7 +40,7 @@ import { useTheme } from '@app/utils/useTheme';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ThemeSetting, UserSetting } from './SettingsUtils';
+import { SettingTab, ThemeSetting, UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const { t } = useTranslation();
@@ -85,6 +85,6 @@ export const Theme: UserSetting = {
   titleKey: 'SETTINGS.THEME.TITLE',
   descConstruct: 'SETTINGS.THEME.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.GENERAL',
+  category: SettingTab.GENERAL,
   orderInGroup: 2,
 };
