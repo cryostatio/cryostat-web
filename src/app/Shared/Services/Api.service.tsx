@@ -1120,7 +1120,7 @@ export class ApiService {
     );
   }
 
-  groupHasRecording(group: EnvironmentNode, recordingName: string): Observable<boolean> {
+  groupHasRecording(group: EnvironmentNode, filter: ActiveRecordingFilterInput): Observable<boolean> {
     return this.graphql<any>(
       `
     query GetRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
@@ -1141,7 +1141,7 @@ export class ApiService {
     `,
       {
         groupFilter: { id: group.id },
-        recordingFilter: { name: recordingName },
+        recordingFilter: filter,
       }
     ).pipe(
       first(),
@@ -1156,24 +1156,24 @@ export class ApiService {
     );
   }
 
-  targetHasRecording(target: Target, recordingName: string): Observable<boolean> {
+  targetHasRecording(target: Target, filter: ActiveRecordingFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
-          query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
-            targetNodes(filter: { name: $connectUrl }) {
-              recordings {
-                active (filter: {
-                  labels: ["origin=${recordingName}"],
-                  state: "${RecordingState.RUNNING}",
-                }) {
+        query ActiveRecordingsForJFRMetrics($connectUrl: String, $recordingFilter: ActiveRecordingFilterInput) {
+          targetNodes(filter: { name: $connectUrl }) {
+            recordings {
+              active (filter: $recordingFilter) {
                 aggregate {
                   count
                 }
               }
             }
-            }
-          }`,
-      { connectUrl: target.connectUrl }
+          }
+        }`,
+      {
+        connectUrl: target.connectUrl,
+        recordingFilter: filter,
+      }
     ).pipe(
       map((resp) => {
         const nodes = resp.data.targetNodes;
@@ -1813,6 +1813,18 @@ export interface EventProbe {
 export interface MatchedCredential {
   matchExpression: string;
   targets: Target[];
+}
+
+export interface ActiveRecordingFilterInput {
+  name?: string;
+  state?: string;
+  continuous?: boolean;
+  toDisk?: boolean;
+  durationMsGreaterThanEqual?: number;
+  durationMsLessThanEqual?: number;
+  startTimeMsBeforeEqual?: number;
+  startTimeMsAfterEqual?: number;
+  labels?: RecordingLabel[];
 }
 
 export const automatedAnalysisRecordingName = 'automated-analysis';

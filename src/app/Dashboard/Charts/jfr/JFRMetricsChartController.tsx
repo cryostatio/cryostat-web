@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { ApiService } from '@app/Shared/Services/Api.service';
+import { ApiService, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { NO_TARGET, Target, TargetService } from '@app/Shared/Services/Target.service';
@@ -150,6 +150,14 @@ export class JFRMetricsChartController {
     if (target === NO_TARGET) {
       return of(false);
     }
-    return this._api.targetHasRecording(target, RECORDING_NAME);
+    return this._api.targetHasRecording(target, {
+      state: RecordingState.RUNNING,
+      labels: [
+        {
+          key: 'origin',
+          value: RECORDING_NAME,
+        },
+      ],
+    });
   }
 }

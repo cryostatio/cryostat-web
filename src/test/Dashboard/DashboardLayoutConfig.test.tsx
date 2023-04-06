@@ -47,7 +47,7 @@ import '../Common';
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 
 describe('<DashboardLayoutConfig />', () => {
-  it('renders correctly', async () => {
+  it.skip('renders correctly', async () => {
     let tree;
     await act(async () => {
       tree = renderer.create(

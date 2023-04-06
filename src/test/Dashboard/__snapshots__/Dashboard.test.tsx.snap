@@ -39,26 +39,15 @@ Array [
         className="pf-l-stack pf-m-gutter"
       >
         <div
-          className="pf-l-stack__item"
+          className="pf-l-stack__item pf-m-fill"
         >
-          <div
-            className="pf-l-grid pf-m-gutter"
-            id="dashboard-grid"
-          >
-            <div
-              className="pf-l-grid__item pf-m-4-col"
-              style={
-                Object {
-                  "--pf-l-grid--item--Order": "-99999",
-                }
-              }
-            >
-              <div>
-                Add Card
-              </div>
-            </div>
+          <div>
+            Add Card
           </div>
         </div>
+        <div
+          className="pf-l-stack__item"
+        />
       </div>
     </section>
   </div>,
