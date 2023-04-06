@@ -37,9 +37,10 @@
  */
 import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { EmptyText } from '@app/Topology/Shared/EmptyText';
 import QuickSearchIcon from '@app/Topology/Shared/QuickSearchIcon';
-import { QuickSearchButton } from '@app/Topology/Toolbar/QuickSearchButton';
+import { fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
@@ -211,7 +212,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
       default:
         return null;
     }
-  }, [handleStart, t]);
+  }, [handleStart, t, variant]);
 
   return (
     <>
@@ -219,7 +220,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
       <Modal
         aria-label="Dashboard Card Catalog Modal"
         isOpen={showWizard}
-        width={'80%'}
+        width={'90%'}
         hasNoBodyWrapper
         showClose={false}
       >
@@ -254,7 +255,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
               <StackItem>
                 <Text>{t('Dashboard.ADD_CARD_HELPER_TEXT')}</Text>
               </StackItem>
-              <StackItem isFilled>
+              <StackItem isFilled style={{ overflow: 'auto' }}>
                 <CardGallery selection={selection} onSelect={handleSelect} />
               </StackItem>
             </Stack>
@@ -321,7 +322,13 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
           key={title}
           hasSelectableInput
           isSelectableRaised
-          onClick={(event) => onSelect(event, t(title))}
+          onClick={(event) => {
+            if (selection === t(title)) {
+              setToViewCard(availableCards.find((card) => t(card.title) === selection));
+            } else {
+              onSelect(event, t(title));
+            }
+          }}
           isFullHeight
           isFlat
           isSelected={selection === t(title)}
@@ -361,13 +368,13 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     }
     const { title, icon, labels, preview } = toViewCard;
     return (
-      <DrawerPanelContent isResizable defaultSize="300px">
+      <DrawerPanelContent isResizable defaultSize="50%">
         <DrawerHead>
           <DrawerActions>
             <DrawerCloseButton onClick={() => setToViewCard(undefined)} />
           </DrawerActions>
         </DrawerHead>
-        <DrawerPanelBody>
+        <DrawerPanelBody className="card-catalog__detail-panel-body">
           <Stack hasGutter>
             <StackItem>
               <Flex spacer={{ default: 'spacerSm' }}>
@@ -391,7 +398,16 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
             <StackItem>{getFullDescription(t(toViewCard.title), t)}</StackItem>
             <StackItem isFilled>
               {preview ? (
-                preview
+                <div className="dashboard-card-preview">
+                  <div
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="non-interactive-overlay"
+                  />
+                  <ServiceContext.Provider value={fakeServices}>{preview}</ServiceContext.Provider>
+                </div>
               ) : (
                 <Bullseye>
                   <EmptyText text={'No preview'} />

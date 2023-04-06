@@ -569,4 +569,17 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       color: 'blue',
     },
   ],
+  preview: (
+    <MBeanMetricsChartCard
+      themeColor={'blue'}
+      chartKind={chartKinds[0].displayName}
+      duration={60}
+      period={10}
+      span={12}
+      isFullHeight
+      isDraggable={false}
+      isResizable={false}
+      dashboardId={0}
+    />
+  ),
 };

@@ -62,7 +62,6 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   isDraggable = true,
   isResizable = true,
   cardSizes,
-
   ...props
 }: DashboardCardProps) => {
   const cardRef = React.useRef<HTMLDivElement>(null);

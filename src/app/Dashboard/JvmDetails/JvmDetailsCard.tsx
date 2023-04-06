@@ -90,12 +90,10 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
           <CardActions>{...props.actions || []}</CardActions>
         </CardHeader>
       }
+      style={{ height: '36em' }} // FIXME: Remove after implementing height resizing
       {...props}
     >
-      <CardBody
-        // FIXME: Remove after implementing height resizing
-        style={{ height: '36em' }}
-      >
+      <CardBody>
         <EntityDetails entity={wrappedTarget} actionFilter={actionFilter} />
       </CardBody>
     </DashboardCard>
@@ -131,4 +129,5 @@ export const JvmDetailsCardDescriptor: DashboardCardDescriptor = {
       color: 'blue',
     },
   ],
+  preview: <JvmDetailsCard span={12} isDraggable={false} isFullHeight={false} isResizable={false} dashboardId={0} />,
 };

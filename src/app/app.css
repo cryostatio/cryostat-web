@@ -599,3 +599,26 @@ svg.topology__node-decorator-icon.progress {
 #card-catalog-wizard .pf-c-wizard__main-body {
   height: 100%
 }
+
+.non-interactive-overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 99999;
+}
+
+.dashboard-card-preview {
+  transform: scale(0.9);
+  position: relative;
+  border: solid;
+  border-color: var(--pf-global--BorderColor--light-100);
+  border-width: 1px;
+  border-radius: 3px;
+  overflow: hidden;
+  height: 100%;
+  padding: 0.5em;
+}
+
+.dashboard-card-preview .pf-c-card {
+  box-shadow: none;
+}

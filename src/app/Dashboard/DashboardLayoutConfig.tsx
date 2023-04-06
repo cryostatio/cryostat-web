@@ -63,7 +63,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { Dropdown } from '@patternfly/react-core/dist/js/next';
-import { DownloadIcon, PencilAltIcon, PlusCircleIcon, TrashIcon, UploadIcon } from '@patternfly/react-icons';
+import { DownloadIcon, PencilAltIcon, TrashIcon, UploadIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';

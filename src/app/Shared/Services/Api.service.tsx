@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+import { EventType } from '@app/Events/EventTypes';
 import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
@@ -1155,6 +1156,37 @@ export class ApiService {
     );
   }
 
+  targetHasRecording(target: Target, recordingName: string): Observable<boolean> {
+    return this.graphql<RecordingCountResponse>(
+      `
+          query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
+            targetNodes(filter: { name: $connectUrl }) {
+              recordings {
+                active (filter: {
+                  labels: ["origin=${recordingName}"],
+                  state: "${RecordingState.RUNNING}",
+                }) {
+                aggregate {
+                  count
+                }
+              }
+            }
+            }
+          }`,
+      { connectUrl: target.connectUrl }
+    ).pipe(
+      map((resp) => {
+        const nodes = resp.data.targetNodes;
+        if (nodes.length === 0) {
+          return false;
+        }
+        const count = nodes[0].recordings.active.aggregate.count;
+        return count > 0;
+      }),
+      catchError((_) => of(false))
+    );
+  }
+
   checkCredentialForTarget(
     target: Target,
     credentials: { username: string; password: string }
@@ -1206,6 +1238,82 @@ export class ApiService {
         }
         return of({ error: err, severeLevel: ValidatedOptions.error });
       })
+    );
+  }
+
+  getTargetMBeanMetrics(target: Target, queries: string[]): Observable<MBeanMetrics> {
+    return this.graphql<MBeanMetricsResponse>(
+      `
+        query MBeanMXMetricsForTarget($connectUrl: String) {
+          targetNodes(filter: { name: $connectUrl }) {
+            mbeanMetrics {
+              ${queries.join('\n')}
+            }
+          }
+        }`,
+      { connectUrl: target.connectUrl }
+    ).pipe(
+      map((resp) => {
+        const nodes = resp.data.targetNodes;
+        if (!nodes || nodes.length === 0) {
+          return {};
+        }
+        return nodes[0]?.mbeanMetrics;
+      }),
+      catchError((_) => of({}))
+    );
+  }
+
+  getTargetArchivedRecordings(target: Target): Observable<ArchivedRecording[]> {
+    return this.graphql<any>(
+      `
+          query ArchivedRecordingsForTarget($connectUrl: String) {
+            archivedRecordings(filter: { sourceTarget: $connectUrl }) {
+              data {
+                name
+                downloadUrl
+                reportUrl
+                metadata {
+                  labels
+                }
+                size
+                archivedTime
+              }
+            }
+          }`,
+      { connectUrl: target.connectUrl },
+      true,
+      true
+    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+  }
+
+  getTargetActiveRecordings(target: Target): Observable<ActiveRecording[]> {
+    return this.doGet<ActiveRecording[]>(
+      `targets/${encodeURIComponent(target.connectUrl)}/recordings`,
+      'v1',
+      undefined,
+      true,
+      true
+    );
+  }
+
+  getTargetEventTemplates(target: Target): Observable<EventTemplate[]> {
+    return this.doGet<EventTemplate[]>(
+      `targets/${encodeURIComponent(target.connectUrl)}/templates`,
+      'v1',
+      undefined,
+      true,
+      true
+    );
+  }
+
+  getTargetEventTypes(target: Target): Observable<EventType[]> {
+    return this.doGet<EventType[]>(
+      `targets/${encodeURIComponent(target.connectUrl)}/events`,
+      'v1',
+      undefined,
+      true,
+      true
     );
   }
 
@@ -1491,6 +1599,20 @@ interface DiscoveryResponse extends ApiV2Response {
   };
 }
 
+interface RecordingCountResponse {
+  data: {
+    targetNodes: {
+      recordings: {
+        active: {
+          aggregate: {
+            count: number;
+          };
+        };
+      };
+    }[];
+  };
+}
+
 interface XMLHttpResponse {
   body: any;
   headers: object;
@@ -1616,6 +1738,7 @@ export enum RecordingState {
   RUNNING = 'RUNNING',
   STOPPING = 'STOPPING',
 }
+
 export type Recording = ActiveRecording | ArchivedRecording;
 
 export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecording => {

@@ -36,12 +36,11 @@
  * SOFTWARE.
  */
 
-import { ApiService, MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
+import { ApiService, MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
-  catchError,
   concatMap,
   distinctUntilChanged,
   finalize,
@@ -49,7 +48,6 @@ import {
   map,
   merge,
   Observable,
-  of,
   pairwise,
   ReplaySubject,
   Subject,
@@ -164,27 +162,6 @@ export class MBeanMetricsChartController {
       l += '}';
       q.push(l);
     });
-    return this._api
-      .graphql<MBeanMetricsResponse>(
-        `
-          query MBeanMXMetricsForTarget($connectUrl: String) {
-            targetNodes(filter: { name: $connectUrl }) {
-              mbeanMetrics {
-                ${q.join('\n')}
-              }
-            }
-          }`,
-        { connectUrl: target.connectUrl }
-      )
-      .pipe(
-        map((resp) => {
-          const nodes = resp.data.targetNodes;
-          if (!nodes || nodes.length === 0) {
-            return {};
-          }
-          return nodes[0]?.mbeanMetrics;
-        }),
-        catchError((_) => of({}))
-      );
+    return this._api.getTargetMBeanMetrics(target, q);
   }
 }

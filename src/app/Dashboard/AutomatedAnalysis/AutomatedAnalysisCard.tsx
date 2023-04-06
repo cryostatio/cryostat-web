@@ -969,4 +969,5 @@ export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
       color: 'blue',
     },
   ],
+  preview: <AutomatedAnalysisCard span={12} dashboardId={0} isDraggable={false} isResizable={false} />,
 };

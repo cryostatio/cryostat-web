@@ -36,10 +36,29 @@
  * SOFTWARE.
  */
 
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
-import { Target } from '@app/Shared/Services/Target.service';
+import { EventType } from '@app/Events/EventTypes';
+import { Notifications, NotificationsInstance } from '@app/Notifications/Notifications';
+import { Rule } from '@app/Rules/Rules';
+import {
+  ActiveRecording,
+  ApiService,
+  ArchivedRecording,
+  EventProbe,
+  EventTemplate,
+  MBeanMetrics,
+  Recording,
+  RecordingAttributes,
+  RecordingState,
+  SimpleResponse,
+  StoredCredential,
+} from '@app/Shared/Services/Api.service';
+import { LoginService } from '@app/Shared/Services/Login.service';
+import { CachedReportValue, ReportService, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { defaultServices, Services } from '@app/Shared/Services/Services';
+import { Target, TargetService } from '@app/Shared/Services/Target.service';
+import { from, Observable, of } from 'rxjs';
 
-const fakeTarget: Target = {
+export const fakeTarget: Target = {
   jvmId: 'rpZeYNB9wM_TEnXoJvAFuR0jdcUBXZgvkXiKhjQGFvY=',
   connectUrl: 'service:jmx:rmi:///jndi/rmi://10-128-2-25.my-namespace.pod:9097/jmxrmi',
   alias: 'quarkus-test-77f556586c-25bkv',
@@ -59,7 +78,7 @@ const fakeTarget: Target = {
   },
 };
 
-const fakeAARecording: ActiveRecording = {
+export const fakeAARecording: ActiveRecording = {
   name: 'automated-analysis',
   downloadUrl:
     'https://clustercryostat-sample-default.apps.ci-ln-25fg5f2-76ef8.origin-ci-int-aws.dev.rhcloud.com:443/api/v1/targets/service:jmx:rmi:%2F%2F%2Fjndi%2Frmi:%2F%2F10-128-2-27.my-namespace.pod:9097%2Fjmxrmi/recordings/automated-analysis',
@@ -80,4 +99,154 @@ const fakeAARecording: ActiveRecording = {
   toDisk: false,
   maxSize: 1048576,
   maxAge: 0,
+};
+
+export const fakeEvaluations: RuleEvaluation[] = [
+  {
+    name: 'Passwords in Environment Variables',
+    description: 'The environment variables in the recording may contain passwords.',
+    score: 100,
+    topic: 'environment_variables',
+  },
+  {
+    name: 'Class Leak',
+    description: 'No classes with identical names have been loaded more times than the limit.',
+    score: 0,
+    topic: 'classloading',
+  },
+  {
+    name: 'Class Loading Pressure',
+    description: 'No significant time was spent loading new classes during this recording.',
+    score: 0,
+    topic: 'classloading',
+  },
+];
+
+export const fakeCachedReport: CachedReportValue = {
+  report: fakeEvaluations,
+  timestamp: 1663027200000,
+};
+
+class FakeTargetService extends TargetService {
+  target(): Observable<Target> {
+    return of(fakeTarget);
+  }
+}
+
+class FakeReportService extends ReportService {
+  constructor(notifications: Notifications, login: LoginService) {
+    super(login, notifications);
+  }
+
+  reportJson(_recording: Recording, _connectUrl: string): Observable<RuleEvaluation[]> {
+    return of(fakeEvaluations);
+  }
+
+  getCachedAnalysisReport(_connectUrl: string): CachedReportValue {
+    return fakeCachedReport;
+  }
+}
+
+class FakeApiService extends ApiService {
+  constructor(target: TargetService, notifications: Notifications, login: LoginService) {
+    super(target, notifications, login);
+  }
+
+  // MBean Metrics card
+  getTargetMBeanMetrics(_target: Target, _queries: string[]): Observable<MBeanMetrics> {
+    return from([{ os: { processCpuLoad: 0 } }, { os: { processCpuLoad: 1 } }, { os: { processCpuLoad: 0.5 } }]);
+  }
+
+  // JFR Metrics card
+  targetHasRecording(_target: Target, _recordingName: string): Observable<boolean> {
+    return of(true);
+  }
+
+  uploadActiveRecordingToGrafana(_recordingName: string): Observable<boolean> {
+    return of(true);
+  }
+
+  grafanaDashboardUrl(): Observable<string> {
+    return of('https://grafana-url');
+  }
+
+  // JVM Detail Cards
+  // Note T is expected to array due to its usage in EntityDetail component.
+  getTargetActiveRecordings(_target: Target): Observable<ActiveRecording[]> {
+    return of([fakeAARecording]);
+  }
+
+  getTargetArchivedRecordings(_target: Target): Observable<ArchivedRecording[]> {
+    return of([]);
+  }
+
+  getTargetEventTemplates(_target: Target): Observable<EventTemplate[]> {
+    return of([]);
+  }
+
+  getTargetEventTypes(_target: Target): Observable<EventType[]> {
+    return of([]);
+  }
+
+  getActiveProbesForTarget(
+    _target: Target,
+    _suppressNotifications?: boolean,
+    _skipStatusCheck?: boolean
+  ): Observable<EventProbe[]> {
+    return of([]);
+  }
+
+  getRules(_suppressNotifications?: boolean, _skipStatusCheck?: boolean): Observable<Rule[]> {
+    return of([]);
+  }
+
+  getCredentials(_suppressNotifications?: boolean, _skipStatusCheck?: boolean): Observable<StoredCredential[]> {
+    return of([]);
+  }
+
+  // Automatic Analysis Card
+  // This fakes the fetch for Automatic Analysis recording to return available.
+  // Then subsequent graphql call for archived recording is ignored
+  graphql<T>(
+    _query: string,
+    _variables?: unknown,
+    _suppressNotifications?: boolean | undefined,
+    _skipStatusCheck?: boolean | undefined
+  ): Observable<T> {
+    return of({
+      data: {
+        targetNodes: [
+          {
+            recordings: {
+              active: {
+                data: [fakeAARecording],
+              },
+            },
+          },
+        ],
+      },
+    } as T);
+  }
+
+  createRecording(_recordingAttributes: RecordingAttributes): Observable<SimpleResponse | undefined> {
+    return of({
+      ok: true,
+      status: 200,
+    });
+  }
+
+  deleteRecording(_recordingName: string): Observable<boolean> {
+    return of(true);
+  }
+}
+
+const target = new FakeTargetService();
+const api = new FakeApiService(target, NotificationsInstance, defaultServices.login);
+const reports = new FakeReportService(NotificationsInstance, defaultServices.login);
+
+export const fakeServices: Services = {
+  ...defaultServices,
+  target,
+  api,
+  reports,
 };
