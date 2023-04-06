@@ -36,6 +36,8 @@
  * SOFTWARE.
  */
 
+import { JFRMetricsChartController } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
+import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
 import { EventType } from '@app/Events/EventTypes';
 import { Notifications, NotificationsInstance } from '@app/Notifications/Notifications';
 import { Rule } from '@app/Rules/Rules';
@@ -44,6 +46,7 @@ import {
   ActiveRecordingFilterInput,
   ApiService,
   ArchivedRecording,
+  ChartControllerConfig,
   EventProbe,
   EventTemplate,
   MBeanMetrics,
@@ -56,8 +59,9 @@ import {
 import { LoginService } from '@app/Shared/Services/Login.service';
 import { CachedReportValue, ReportService, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
+import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
-import { from, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 export const fakeTarget: Target = {
   jvmId: 'rpZeYNB9wM_TEnXoJvAFuR0jdcUBXZgvkXiKhjQGFvY=',
@@ -148,6 +152,18 @@ class FakeReportService extends ReportService {
   }
 }
 
+class FakeSetting extends SettingsService {
+  chartControllerConfig(
+    _defaultConfig = {
+      minRefresh: 0.1,
+    }
+  ): ChartControllerConfig {
+    return {
+      minRefresh: 0.1,
+    };
+  }
+}
+
 class FakeApiService extends ApiService {
   constructor(target: TargetService, notifications: Notifications, login: LoginService) {
     super(target, notifications, login);
@@ -155,7 +171,7 @@ class FakeApiService extends ApiService {
 
   // MBean Metrics card
   getTargetMBeanMetrics(_target: Target, _queries: string[]): Observable<MBeanMetrics> {
-    return from([{ os: { processCpuLoad: 0 } }, { os: { processCpuLoad: 1 } }, { os: { processCpuLoad: 0.5 } }]);
+    return of({ os: { processCpuLoad: Math.random() } });
   }
 
   // JFR Metrics card
@@ -244,10 +260,22 @@ class FakeApiService extends ApiService {
 const target = new FakeTargetService();
 const api = new FakeApiService(target, NotificationsInstance, defaultServices.login);
 const reports = new FakeReportService(NotificationsInstance, defaultServices.login);
+const settings = new FakeSetting();
 
 export const fakeServices: Services = {
   ...defaultServices,
   target,
   api,
   reports,
+  settings,
+};
+
+export const fakeChartContext = {
+  jfrController: new JFRMetricsChartController(
+    fakeServices.api,
+    fakeServices.target,
+    fakeServices.notificationChannel,
+    fakeServices.settings
+  ),
+  mbeanController: new MBeanMetricsChartController(fakeServices.api, fakeServices.target, fakeServices.settings),
 };

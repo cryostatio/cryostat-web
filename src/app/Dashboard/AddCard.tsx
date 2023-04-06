@@ -40,7 +40,7 @@ import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/R
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EmptyText } from '@app/Topology/Shared/EmptyText';
 import QuickSearchIcon from '@app/Topology/Shared/QuickSearchIcon';
-import { fakeServices } from '@app/utils/fakeData';
+import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
@@ -103,6 +103,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
+import { ChartContext } from './Charts/ChartContext';
 import { DashboardCardDescriptor, getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
 
 interface AddCardProps {
@@ -204,7 +205,12 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
       case 'icon-button':
         return (
           <Tooltip content={'Add card'}>
-            <Button data-quickstart-id={'dashboard-add-btn'} variant="plain" onClick={handleStart} style={{ padding: 0 }}>
+            <Button
+              data-quickstart-id={'dashboard-add-btn'}
+              variant="plain"
+              onClick={handleStart}
+              style={{ padding: 0 }}
+            >
               <QuickSearchIcon />
             </Button>
           </Tooltip>
@@ -408,7 +414,9 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
                     }}
                     className="non-interactive-overlay"
                   />
-                  <ServiceContext.Provider value={fakeServices}>{preview}</ServiceContext.Provider>
+                  <ServiceContext.Provider value={fakeServices}>
+                    <ChartContext.Provider value={fakeChartContext}>{preview}</ChartContext.Provider>
+                  </ServiceContext.Provider>
                 </div>
               ) : (
                 <Bullseye>

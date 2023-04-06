@@ -574,7 +574,7 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       themeColor={'blue'}
       chartKind={chartKinds[0].displayName}
       duration={60}
-      period={10}
+      period={1}
       span={12}
       isFullHeight
       isDraggable={false}
