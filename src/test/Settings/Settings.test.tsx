@@ -50,7 +50,7 @@ import { of } from 'rxjs';
 import { renderWithServiceContextAndRouter, testT } from '../Common';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
-import { ThemeSetting, UserSetting } from '@app/Settings/SettingsUtils';
+import { UserSetting } from '@app/Settings/SettingsUtils';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {

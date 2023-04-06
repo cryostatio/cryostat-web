@@ -41,12 +41,12 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { createMemoryHistory } from 'history';
 import * as React from 'react';
+import { Router } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
