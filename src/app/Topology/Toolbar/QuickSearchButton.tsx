@@ -40,11 +40,16 @@ import { Button, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import QuickSearchIcon from '../Shared/QuickSearchIcon';
 
-export const QuickSearchButton: React.FC<{ onClick: () => void }> = ({ onClick, ...props }) => {
+export interface QuickSearchButtonProps {
+  onClick: () => void;
+  tooltipContent?: React.ReactNode;
+}
+
+export const QuickSearchButton: React.FC<QuickSearchButtonProps> = ({ onClick, tooltipContent, ...props }) => {
   return (
-    <Tooltip {...props} position="right" content={'Add to view'} appendTo={portalRoot}>
+    <Tooltip {...props} content={tooltipContent} appendTo={portalRoot}>
       <Button variant="plain" onClick={onClick} className={'topology__quick-search-button'}>
-        <QuickSearchIcon className="top" />
+        <QuickSearchIcon />
       </Button>
     </Tooltip>
   );

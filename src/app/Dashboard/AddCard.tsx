@@ -38,6 +38,8 @@
 import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { EmptyText } from '@app/Topology/Shared/EmptyText';
+import QuickSearchIcon from '@app/Topology/Shared/QuickSearchIcon';
+import { QuickSearchButton } from '@app/Topology/Toolbar/QuickSearchButton';
 import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
@@ -71,7 +73,6 @@ import {
   Level,
   LevelItem,
   Modal,
-  ModalVariant,
   NumberInput,
   Select,
   SelectOption,
@@ -83,6 +84,7 @@ import {
   TextArea,
   TextInput,
   Title,
+  Tooltip,
 } from '@patternfly/react-core';
 import {
   CustomWizardNavFunction,
@@ -102,9 +104,11 @@ import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { DashboardCardDescriptor, getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
 
-interface AddCardProps {}
+interface AddCardProps {
+  variant: 'card' | 'icon-button';
+}
 
-export const AddCard: React.FC<AddCardProps> = (_) => {
+export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
   const dispatch = useDispatch<StateDispatch>();
   const { t } = useTranslation();
 
@@ -175,24 +179,43 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
     [selection]
   );
 
+  const content = React.useMemo(() => {
+    switch (variant) {
+      case 'card':
+        return (
+          <Card isRounded isCompact isFullHeight>
+            <CardBody>
+              <Bullseye>
+                <EmptyState variant={EmptyStateVariant.large}>
+                  <EmptyStateIcon icon={PlusCircleIcon} />
+                  <Title headingLevel="h2" size="md">
+                    Add a new card
+                  </Title>
+                  <EmptyStateBody>{t('Dashboard.CARD_CATALOG_DESCRIPTION')}</EmptyStateBody>
+                  <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
+                    Add
+                  </Button>
+                </EmptyState>
+              </Bullseye>
+            </CardBody>
+          </Card>
+        );
+      case 'icon-button':
+        return (
+          <Tooltip content={'Add card'}>
+            <Button variant="plain" onClick={handleStart} style={{ padding: 0 }}>
+              <QuickSearchIcon />
+            </Button>
+          </Tooltip>
+        );
+      default:
+        return null;
+    }
+  }, [handleStart, t]);
+
   return (
     <>
-      <Card isRounded isCompact>
-        <CardBody>
-          <Bullseye>
-            <EmptyState variant={EmptyStateVariant.large}>
-              <EmptyStateIcon icon={PlusCircleIcon} />
-              <Title headingLevel="h2" size="md">
-                Add a new card
-              </Title>
-              <EmptyStateBody>{t('Dashboard.CARD_CATALOG_DESCRIPTION')}</EmptyStateBody>
-              <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
-                Add
-              </Button>
-            </EmptyState>
-          </Bullseye>
-        </CardBody>
-      </Card>
+      {content}
       <Modal
         aria-label="Dashboard Card Catalog Modal"
         isOpen={showWizard}
@@ -208,7 +231,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
           header={
             <WizardHeader
               title={t('Dashboard.CARD_CATALOG_TITLE')}
-              onClose={() => setShowWizard(false)}
+              onClose={handleStop}
               closeButtonAriaLabel="Close add card form"
               description={t('Dashboard.CARD_CATALOG_DESCRIPTION')}
             />

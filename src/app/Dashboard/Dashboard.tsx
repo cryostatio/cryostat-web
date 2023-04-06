@@ -374,36 +374,40 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch, currLayout]
   );
 
+  const emptyLayout = React.useMemo(() => !currLayout.cards || !currLayout.cards.length, [currLayout.cards]);
+
   return (
     <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutConfig />}>
-      <ChartContext.Provider value={chartContext}>
-        <Grid id={'dashboard-grid'} hasGutter>
-          <GridItem key={-1} span={4} order={{ default: '-99999' }}>
-            <AddCard />
-          </GridItem>
-          {currLayout.cards
-            .filter((cfg) => hasConfigByName(cfg.name))
-            .map((cfg, idx) => (
-              <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
-                <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-                  {React.createElement(getConfigByName(cfg.name).component, {
-                    span: cfg.span,
-                    ...cfg.props,
-                    dashboardId: idx,
-                    actions: [
-                      <DashboardCardActionMenu
-                        key={`${cfg.name}-actions`}
-                        onRemove={() => handleRemove(idx)}
-                        onResetSize={() => handleResetSize(idx)}
-                        onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
-                      />,
-                    ],
-                  })}
-                </GridItem>
-              </FeatureFlag>
-            ))}
-        </Grid>
+      <ChartContext.Provider value={chartContext} data-full-height>
+        {emptyLayout ? (
+          <AddCard variant="card" />
+        ) : (
+          <Grid id={'dashboard-grid'} hasGutter>
+            {currLayout.cards
+              .filter((cfg) => hasConfigByName(cfg.name))
+              .map((cfg, idx) => (
+                <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
+                  <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
+                    {React.createElement(getConfigByName(cfg.name).component, {
+                      span: cfg.span,
+                      ...cfg.props,
+                      dashboardId: idx,
+                      actions: [
+                        <DashboardCardActionMenu
+                          key={`${cfg.name}-actions`}
+                          onRemove={() => handleRemove(idx)}
+                          onResetSize={() => handleResetSize(idx)}
+                          onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
+                        />,
+                      ],
+                    })}
+                  </GridItem>
+                </FeatureFlag>
+              ))}
+          </Grid>
+        )}
       </ChartContext.Provider>
+      <></>
     </TargetView>
   );
 };

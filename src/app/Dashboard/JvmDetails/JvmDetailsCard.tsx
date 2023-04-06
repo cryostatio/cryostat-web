@@ -44,11 +44,11 @@ import EntityDetails from '@app/Topology/Shared/Entity/EntityDetails';
 import { NodeType } from '@app/Topology/typings';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
+import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import '@app/Topology/styles/base.css';
-import { ContainerNodeIcon } from '@patternfly/react-icons';
 
 export interface JvmDetailsCardProps extends DashboardCardProps {}
 

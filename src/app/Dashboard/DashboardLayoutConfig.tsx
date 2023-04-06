@@ -51,6 +51,7 @@ import {
   Divider,
   Menu,
   MenuContent,
+  MenuFooter,
   MenuGroup,
   MenuItem,
   MenuItemAction,
@@ -66,6 +67,7 @@ import { DownloadIcon, PencilAltIcon, PlusCircleIcon, TrashIcon, UploadIcon } fr
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { AddCard } from './AddCard';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutUploadModal } from './DashboardLayoutUploadModal';
 import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
@@ -112,8 +114,9 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       setOldName(undefined);
       setIsCreateModalOpen(true);
+      setIsSelectorOpen(false);
     },
-    [setOldName, setIsCreateModalOpen]
+    [setOldName, setIsCreateModalOpen, setIsSelectorOpen]
   );
 
   const handleCreateModalClose = React.useCallback(() => {
@@ -213,10 +216,9 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         variant="primary"
         aria-label={t('DashboardLayoutConfig.NEW.LABEL')}
         onClick={handleCreateModalOpen}
-        icon={<PlusCircleIcon />}
         data-quickstart-id="dashboard-new-btn"
       >
-        {t('NEW', { ns: 'common' })}
+        Create Layout
       </Button>
     ),
     [t, handleCreateModalOpen]
@@ -366,15 +368,29 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
             <Divider />
             {menuGroups(t('DashboardLayoutConfig.MENU.OTHERS'), false)}
           </MenuContent>
+          <Divider />
+          <MenuFooter>{newButton}</MenuFooter>
         </Menu>
       </Dropdown>
     );
-  }, [t, onLayoutSelect, onActionClick, onOpenChange, onToggle, menuGroups, isSelectorOpen, currLayout.name]);
+  }, [
+    t,
+    onLayoutSelect,
+    onActionClick,
+    onOpenChange,
+    onToggle,
+    menuGroups,
+    newButton,
+    isSelectorOpen,
+    currLayout.name,
+  ]);
 
   const toolbarContent = React.useMemo(() => {
     return (
       <ToolbarContent style={{ paddingLeft: '24px' }}>
-        <ToolbarItem>{newButton}</ToolbarItem>
+        <ToolbarItem>
+          <AddCard variant="icon-button" />
+        </ToolbarItem>
         <ToolbarGroup>
           <ToolbarItem spacer={{ default: 'spacerNone' }}>{menuDropdown}</ToolbarItem>
           <ToolbarItem>{renameButton}</ToolbarItem>
@@ -386,7 +402,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         </ToolbarGroup>
       </ToolbarContent>
     );
-  }, [newButton, menuDropdown, renameButton, uploadButton, downloadButton, deleteButton]);
+  }, [menuDropdown, renameButton, uploadButton, downloadButton, deleteButton]);
 
   const deleteWarningModal = React.useMemo(() => {
     return (
