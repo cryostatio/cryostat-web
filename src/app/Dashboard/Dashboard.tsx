@@ -304,7 +304,7 @@ export function hasConfigByTitle(title: string, t: TFunction): boolean {
 
 export function getConfigByTitle(title: string, t: TFunction): DashboardCardDescriptor {
   for (const choice of getDashboardCards()) {
-    if (t(choice.title) === t(title)) {
+    if (t(choice.title) === title) {
       return choice;
     }
   }

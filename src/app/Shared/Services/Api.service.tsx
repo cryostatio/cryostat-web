@@ -1173,7 +1173,9 @@ export class ApiService {
       {
         connectUrl: target.connectUrl,
         recordingFilter: filter,
-      }
+      },
+      true,
+      true
     ).pipe(
       map((resp) => {
         const nodes = resp.data.targetNodes;
@@ -1824,7 +1826,7 @@ export interface ActiveRecordingFilterInput {
   durationMsLessThanEqual?: number;
   startTimeMsBeforeEqual?: number;
   startTimeMsAfterEqual?: number;
-  labels?: RecordingLabel[];
+  labels?: string;
 }
 
 export const automatedAnalysisRecordingName = 'automated-analysis';

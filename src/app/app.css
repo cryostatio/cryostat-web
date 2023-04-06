@@ -622,3 +622,21 @@ svg.topology__node-decorator-icon.progress {
 .dashboard-card-preview .pf-c-card {
   box-shadow: none;
 }
+
+.card-catalog__wizard-modal {
+  height: 90%;
+}
+
+.card-catalog__detail-panel-body {
+  margin-top: -2.5em;
+}
+
+.pfext-spotlight__element-highlight-animate {
+  animation: 0.4s pfext-spotlight-fade-in 0s ease-in-out, 1.2s pfext-spotlight-fade-out 1s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.pfext-spotlight__element-highlight-animate::after {
+  animation: 1.2s pfext-spotlight-expand 0.6s ease-out;
+  animation-fill-mode: forwards;
+}

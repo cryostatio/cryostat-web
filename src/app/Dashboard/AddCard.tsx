@@ -204,7 +204,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
       case 'icon-button':
         return (
           <Tooltip content={'Add card'}>
-            <Button variant="plain" onClick={handleStart} style={{ padding: 0 }}>
+            <Button data-quickstart-id={'dashboard-add-btn'} variant="plain" onClick={handleStart} style={{ padding: 0 }}>
               <QuickSearchIcon />
             </Button>
           </Tooltip>
@@ -221,8 +221,10 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
         aria-label="Dashboard Card Catalog Modal"
         isOpen={showWizard}
         width={'90%'}
+        className="card-catalog__wizard-modal"
         hasNoBodyWrapper
         showClose={false}
+        appendTo={portalRoot}
       >
         <Wizard
           id={'card-catalog-wizard'}
@@ -395,7 +397,7 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
                 </LabelGroup>
               ) : null}
             </StackItem>
-            <StackItem>{getFullDescription(t(toViewCard.title), t)}</StackItem>
+            <StackItem>{getFullDescription(t(title), t)}</StackItem>
             <StackItem isFilled>
               {preview ? (
                 <div className="dashboard-card-preview">

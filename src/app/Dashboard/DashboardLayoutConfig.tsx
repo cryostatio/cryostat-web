@@ -216,7 +216,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         variant="primary"
         aria-label={t('DashboardLayoutConfig.NEW.LABEL')}
         onClick={handleCreateModalOpen}
-        data-quickstart-id="dashboard-new-btn"
+        data-quickstart-id="create-layout-btn"
       >
         Create Layout
       </Button>

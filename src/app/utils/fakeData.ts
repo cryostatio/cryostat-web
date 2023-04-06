@@ -41,6 +41,7 @@ import { Notifications, NotificationsInstance } from '@app/Notifications/Notific
 import { Rule } from '@app/Rules/Rules';
 import {
   ActiveRecording,
+  ActiveRecordingFilterInput,
   ApiService,
   ArchivedRecording,
   EventProbe,
@@ -158,7 +159,7 @@ class FakeApiService extends ApiService {
   }
 
   // JFR Metrics card
-  targetHasRecording(_target: Target, _recordingName: string): Observable<boolean> {
+  targetHasRecording(_target: Target, _filter?: ActiveRecordingFilterInput): Observable<boolean> {
     return of(true);
   }
 
