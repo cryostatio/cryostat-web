@@ -38,8 +38,8 @@
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import useDayjs from '@app/utils/useDayjs';
 import { portalRoot } from '@app/utils/utils';
-import { PropertiesSidePanel, PropertyItem } from '@patternfly/react-catalog-view-extension';
 import {
+  Button,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -52,7 +52,6 @@ import {
   DrawerContentBody,
   DrawerHead,
   DrawerPanelContent,
-  SearchInput,
   Select,
   SelectOption,
   SelectOptionObject,
@@ -66,17 +65,29 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { FilterIcon, GlobeIcon } from '@patternfly/react-icons';
+import {
+  ArrowsAltVIcon,
+  FilterIcon,
+  GlobeIcon,
+  LongArrowAltDownIcon,
+  LongArrowAltUpIcon,
+} from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import React from 'react';
 
 import { useSelector } from 'react-redux';
 import CryostatLayoutTemplates, { BlankLayout } from './dashboard-templates';
-import { LayoutTemplate } from './DashboardUtils';
+import { LayoutTemplate, cardsToString } from './DashboardUtils';
 import { LayoutTemplateGroup } from './LayoutTemplateGroup';
+import { SearchAutocomplete } from './SearchAutocomplete';
 
 export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
 
+export type LayoutTemplateSort = 'Name' | 'Created at' | 'Most Recent' | 'Version' | 'Card Count';
+
+const TemplateSortSelectOption: React.FC<{ sort: LayoutTemplateSort }> = ({ sort }) => {
+  return <SelectOption key={sort} value={sort} />;
+};
 export interface LayoutTemplatePickerProps {
   onTemplateSelect: (templateName: LayoutTemplate) => void;
 }
@@ -84,28 +95,58 @@ export interface LayoutTemplatePickerProps {
 export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTemplateSelect }) => {
   const [searchFilter, setSearchFilter] = React.useState('');
   const [isFilterSelectOpen, setIsFilterSelectOpen] = React.useState(false);
-  const [isDrawerExpanded, setIsDrawerExpanded] = React.useState(false);
   const [selectedFilters, setSelectedFilters] = React.useState<LayoutTemplateFilter[]>([]);
+
+  const [isSortSelectOpen, setIsSortSelectOpen] = React.useState(false);
+  const [selectedSort, setSelectedSort] = React.useState<LayoutTemplateSort | undefined>(undefined);
+  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
+
+  const [isDrawerExpanded, setIsDrawerExpanded] = React.useState(false);
   const [selectedTemplate, setSelectedTemplate] = React.useState<LayoutTemplate | undefined>(undefined);
-  const menuRef = React.useRef<HTMLDivElement>(null);
 
   const [dayjs, timeFormat] = useDayjs();
   const recentTemplates: LayoutTemplate[] = useSelector((state: RootState) => state.dashboardConfigs.templateHistory);
-  const userSubmittedTemplates: LayoutTemplate[] = useSelector((state: RootState) => state.dashboardConfigs.customTemplates);
-
-  const onSearchChange = React.useCallback(
-    (_ev, value) => {
-      setSearchFilter(value);
-    },
-    [setSearchFilter],
+  const userSubmittedTemplates: LayoutTemplate[] = useSelector(
+    (state: RootState) => state.dashboardConfigs.customTemplates
   );
 
-  const onDeleteChip = React.useCallback((_category: string, chip: string) => {
-    setSelectedFilters((prev) => prev.filter((item) => item !== chip));
-  }, [setSelectedFilters]);
+  const allTemplates: LayoutTemplate[] = React.useMemo(() => {
+    return [BlankLayout, ...userSubmittedTemplates, ...CryostatLayoutTemplates].filter(
+      (template, index, arr) => arr.findIndex((t) => t.name === template.name) === index
+    );
+  }, [userSubmittedTemplates]);
+
+  const onInnerTemplateSelect = React.useCallback(
+    (templateName: LayoutTemplate) => {
+      onTemplateSelect(templateName);
+      setSelectedTemplate(templateName);
+      setIsDrawerExpanded(true);
+    },
+    [onTemplateSelect, setSelectedTemplate, setIsDrawerExpanded]
+  );
+
+  const onSearchChange = React.useCallback(
+    (value: string) => {
+      console.log('search change: ', value);
+      
+      setSearchFilter(value);
+    },
+    [setSearchFilter]
+  );
+
+  const onDeleteChip = React.useCallback(
+    (_category: string, chip: string) => {
+      setSelectedFilters((prev) => prev.filter((item) => item !== chip));
+    },
+    [setSelectedFilters]
+  );
 
   const onFilterSelect = React.useCallback(
-    (_ev: React.MouseEvent | React.ChangeEvent, selection: string | SelectOptionObject, isPlaceholder: boolean | undefined) => {
+    (
+      _ev: React.MouseEvent | React.ChangeEvent,
+      selection: string | SelectOptionObject,
+      isPlaceholder: boolean | undefined
+    ) => {
       const selected = selection as LayoutTemplateFilter;
       setSelectedFilters((prev) => {
         if (isPlaceholder) {
@@ -117,35 +158,65 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         return [...prev, selected];
       });
     },
-    [setSelectedFilters],
+    [setSelectedFilters]
   );
 
-  const onInnerTemplateSelect = React.useCallback(
-    (templateName: LayoutTemplate) => {
-      onTemplateSelect(templateName);
-      setSelectedTemplate(templateName);
-      setIsDrawerExpanded(true);
+  const onFilterSelectToggle = React.useCallback(
+    (isExpanded: boolean) => {
+      setIsFilterSelectOpen(isExpanded);
     },
-    [onTemplateSelect, setSelectedTemplate, setIsDrawerExpanded],
+    [setIsFilterSelectOpen]
   );
-
-  const onFilterSelectToggle = React.useCallback((isExpanded: boolean) => {
-    setIsFilterSelectOpen(isExpanded);
-  }, [setIsFilterSelectOpen]);
 
   const onClearAllFilters = React.useCallback(() => {
     setSelectedFilters([]);
-    setSearchFilter('');
-  }, [setSelectedFilters, setSearchFilter]);
+  }, [setSelectedFilters]);
+
+  const onSortSelectToggle = React.useCallback(
+    (isExpanded: boolean) => {
+      setIsSortSelectOpen(isExpanded);
+    },
+    [setIsSortSelectOpen]
+  );
+
+  const onSortSelect = React.useCallback(
+    (
+      _ev: React.MouseEvent | React.ChangeEvent,
+      selection: string | SelectOptionObject,
+      isPlaceholder: boolean | undefined
+    ) => {
+      const selected = selection as LayoutTemplateSort;
+      setSelectedSort((prev) => {
+        if (isPlaceholder) {
+          return undefined;
+        }
+        return selected;
+      });
+      setIsSortSelectOpen(false);
+    },
+    [setSelectedSort, setIsSortSelectOpen]
+  );
+
+  const sortArrowIcon = React.useMemo(() => {
+    if (!selectedSort) {
+      return <ArrowsAltVIcon />;
+    }
+    return sortDirection === 'asc' ? <LongArrowAltUpIcon /> : <LongArrowAltDownIcon />;
+  }, [selectedSort, sortDirection]);
+
+  const onSortDirectionChange = React.useCallback(() => {
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  }, [setSortDirection]);
 
   const onDrawerCloseClick = React.useCallback(() => {
     setIsDrawerExpanded(false);
   }, [setIsDrawerExpanded]);
 
   const panelContent = React.useMemo(() => {
-    return (
-      <DrawerPanelContent>
-        <DrawerHead>
+    if (selectedTemplate) {
+      return (
+        <DrawerPanelContent>
+          <DrawerHead>
             <DescriptionList>
               <DescriptionListGroup>
                 <DescriptionListTerm>Name</DescriptionListTerm>
@@ -156,50 +227,73 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 <DescriptionListDescription>{selectedTemplate?.description}</DescriptionListDescription>
               </DescriptionListGroup>
               <DescriptionListGroup>
-                <DescriptionListTerm>Vendor</DescriptionListTerm>
-                <DescriptionListDescription>{selectedTemplate?.vendor}</DescriptionListDescription>
-              </DescriptionListGroup>
-              <DescriptionListGroup>
                 <DescriptionListTerm>Card List</DescriptionListTerm>
-                <DescriptionListDescription>{selectedTemplate?.layout.cards.toString()}</DescriptionListDescription>
+                <DescriptionListDescription>{cardsToString(selectedTemplate.layout.cards)}</DescriptionListDescription>
               </DescriptionListGroup>
-              <DescriptionListGroup>
-                <DescriptionListTerm>Version</DescriptionListTerm>
-                <DescriptionListDescription>{selectedTemplate?.version}</DescriptionListDescription>
-              </DescriptionListGroup>
-              {
-              selectedTemplate?.createdAt &&
+              {selectedTemplate?.vendor && (
                 <DescriptionListGroup>
-                <DescriptionListTerm>Created At</DescriptionListTerm>
-                <DescriptionListDescription>{dayjs(selectedTemplate.createdAt).tz(timeFormat.timeZone.full).format('LL')}</DescriptionListDescription>
-              </DescriptionListGroup>}
+                  <DescriptionListTerm>Vendor</DescriptionListTerm>
+                  <DescriptionListDescription>{selectedTemplate.vendor}</DescriptionListDescription>
+                </DescriptionListGroup>
+              )}
+              {selectedTemplate?.version && (
+                <DescriptionListGroup>
+                  <DescriptionListTerm>Version</DescriptionListTerm>
+                  <DescriptionListDescription>{selectedTemplate.version}</DescriptionListDescription>
+                </DescriptionListGroup>
+              )}
+              {selectedTemplate?.createdAt && (
+                <DescriptionListGroup>
+                  <DescriptionListTerm>Created At</DescriptionListTerm>
+                  <DescriptionListDescription>
+                    {dayjs(selectedTemplate.createdAt).tz(timeFormat.timeZone.full).format('LL')}
+                  </DescriptionListDescription>
+                </DescriptionListGroup>
+              )}
             </DescriptionList>
-          <DrawerActions>
-            <DrawerCloseButton onClick={onDrawerCloseClick} />
-          </DrawerActions>
-        </DrawerHead>
-      </DrawerPanelContent>
-    );
-  }, [dayjs, onDrawerCloseClick, selectedTemplate]);
-  
+            <DrawerActions>
+              <DrawerCloseButton onClick={onDrawerCloseClick} />
+            </DrawerActions>
+          </DrawerHead>
+        </DrawerPanelContent>
+      );
+    } else {
+      return (
+        <DrawerPanelContent>
+          <DrawerHead>
+            <DrawerActions>
+              <DrawerCloseButton onClick={onDrawerCloseClick} />
+            </DrawerActions>
+          </DrawerHead>
+        </DrawerPanelContent>
+      );
+    }
+  }, [dayjs, timeFormat.timeZone.full, onDrawerCloseClick, selectedTemplate]);
+
+  const searchFilteredTemplates = React.useCallback(
+    (templates: LayoutTemplate[]): LayoutTemplate[] => {
+      if (!searchFilter) {
+        return templates;
+      }
+      return templates.filter((t) => t.name.includes(searchFilter.toLowerCase()));
+    },
+    [searchFilter]
+  );
+
   return (
-        <Drawer isExpanded={isDrawerExpanded} isInline position="right">
-          <DrawerContent panelContent={panelContent}>
-            <DrawerContentBody>
-            <OuterScrollContainer>
+    <Drawer isExpanded={isDrawerExpanded} isInline position="right">
+      <DrawerContent panelContent={panelContent}>
+        <DrawerContentBody>
+          <OuterScrollContainer>
             <InnerScrollContainer>
               <Toolbar isSticky clearAllFilters={onClearAllFilters}>
                 <ToolbarContent>
-                  <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={"md"}>
-                    <ToolbarItem variant="search-filter">
-                      <SearchInput placeholder="Search templates" aria-label={"Search templates"} value={searchFilter} onChange={onSearchChange} />
-                    </ToolbarItem>
+                  <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={'md'}>
                     <ToolbarGroup variant="filter-group">
-                      <ToolbarFilter
-                        chips={selectedFilters}
-                        deleteChip={onDeleteChip}
-                        categoryName="Category"
-                      >
+                      <ToolbarItem variant="search-filter">
+                        <SearchAutocomplete values={allTemplates.map((t) => t.name)} onChange={onSearchChange} />
+                      </ToolbarItem>
+                      <ToolbarFilter chips={selectedFilters} deleteChip={onDeleteChip} categoryName="Category">
                         <Select
                           menuAppendTo={portalRoot}
                           variant={SelectVariant.checkbox}
@@ -210,50 +304,89 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                           isOpen={isFilterSelectOpen}
                           placeholderText="Template Type"
                         >
-                            <SelectOption key="suggested" value="Suggested" />
-                            <SelectOption key="cryostat" value="Cryostat" />
-                            <SelectOption key="user-submitted" value="User-submitted" />
+                          <SelectOption key="suggested" value="Suggested" />
+                          <SelectOption key="cryostat" value="Cryostat" />
+                          <SelectOption key="user-submitted" value="User-submitted" />
                         </Select>
                       </ToolbarFilter>
                     </ToolbarGroup>
                   </ToolbarToggleGroup>
+                  <ToolbarGroup variant="icon-button-group">
+                    <ToolbarItem>
+                      <Button
+                        variant="control"
+                        aria-label="Sort"
+                        onClick={onSortDirectionChange}
+                        isAriaDisabled={!selectedSort}
+                      >
+                        {sortArrowIcon}
+                      </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                      <Select
+                        menuAppendTo={portalRoot}
+                        toggleIcon={<GlobeIcon />}
+                        variant={SelectVariant.single}
+                        aria-label="Select sorting category"
+                        onToggle={onSortSelectToggle}
+                        onSelect={onSortSelect}
+                        selections={selectedSort}
+                        isOpen={isSortSelectOpen}
+                        placeholderText="Sort"
+                      >
+                        <TemplateSortSelectOption sort={'Name'} />
+                        <TemplateSortSelectOption sort={'Created at'} />
+                        <TemplateSortSelectOption sort={'Most Recent'} />
+                        <TemplateSortSelectOption sort={'Card Count'} />
+                        <TemplateSortSelectOption sort={'Version'} />
+                      </Select>
+                    </ToolbarItem>
+                  </ToolbarGroup>
                 </ToolbarContent>
               </Toolbar>
               <Stack>
-                {
-                  (selectedFilters.includes('Suggested') || selectedFilters.length === 0) &&
+                {(selectedFilters.includes('Suggested') || selectedFilters.length === 0) && (!searchFilter) && (
                   <>
-                    <StackItem >
-                      <LayoutTemplateGroup title="Suggested" templates={[BlankLayout, ...recentTemplates]} onTemplateSelect={onInnerTemplateSelect} />
+                    <StackItem>
+                      <LayoutTemplateGroup
+                        title="Suggested"
+                        templates={searchFilteredTemplates([BlankLayout, ...recentTemplates])}
+                        onTemplateSelect={onInnerTemplateSelect}
+                      />
                     </StackItem>
                     <StackItem>
                       <Divider />
                     </StackItem>
                   </>
-                }
-                {
-                  (selectedFilters.includes('Cryostat') || selectedFilters.length === 0) &&
+                )}
+                {(selectedFilters.includes('Cryostat') || selectedFilters.length === 0) && (
                   <>
                     <StackItem>
-                      <LayoutTemplateGroup title="Cryostat" templates={CryostatLayoutTemplates} onTemplateSelect={onInnerTemplateSelect}  />
+                      <LayoutTemplateGroup
+                        title="Cryostat"
+                        templates={searchFilteredTemplates(CryostatLayoutTemplates)}
+                        onTemplateSelect={onInnerTemplateSelect}
+                      />
                     </StackItem>
                     <StackItem>
                       <Divider />
                     </StackItem>
                   </>
-                }
-                {
-                  (selectedFilters.includes('User-submitted') || selectedFilters.length === 0) &&
+                )}
+                {(selectedFilters.includes('User-submitted') || selectedFilters.length === 0) && (
                   <StackItem>
-                    <LayoutTemplateGroup title="User-submitted" templates={userSubmittedTemplates} onTemplateSelect={onInnerTemplateSelect}  />
+                    <LayoutTemplateGroup
+                      title="User-submitted"
+                      templates={searchFilteredTemplates(userSubmittedTemplates)}
+                      onTemplateSelect={onInnerTemplateSelect}
+                    />
                   </StackItem>
-                }
+                )}
               </Stack>
-              </InnerScrollContainer>
-    </OuterScrollContainer>
-            </DrawerContentBody>
-          </DrawerContent>
-        </Drawer>
-  
+            </InnerScrollContainer>
+          </OuterScrollContainer>
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   );
 };

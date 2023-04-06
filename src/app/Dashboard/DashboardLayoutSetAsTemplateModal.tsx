@@ -35,18 +35,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  dashboardConfigAddTemplateIntent,
-  RootState,
-} from '@app/Shared/Redux/ReduxStore';
+import { dashboardConfigAddTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { portalRoot } from '@app/utils/utils';
-import { ActionGroup, Button, Form, FormGroup, FormSection, Modal, ModalVariant, TextArea, TextInput } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  Form,
+  FormGroup,
+  FormSection,
+  Modal,
+  ModalVariant,
+  TextArea,
+  TextInput,
+} from '@patternfly/react-core';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { DashboardLayoutNamePattern, LayoutTemplateDescriptionPattern, LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT, templatize } from './DashboardUtils';
+import {
+  DashboardLayoutNamePattern,
+  LayoutTemplateDescriptionPattern,
+  LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
+  templatize,
+} from './DashboardUtils';
 import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 
 export interface DashboardLayoutSetAsTemplateModalProps {
@@ -54,7 +66,10 @@ export interface DashboardLayoutSetAsTemplateModalProps {
   onClose: () => void;
 }
 
-export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTemplateModalProps> = ({ onClose, ...props }) => {
+export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTemplateModalProps> = ({
+  onClose,
+  ...props
+}) => {
   const dispatch = useDispatch();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
   const templates = dashboardConfigs.customTemplates;
@@ -62,71 +77,84 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
 
-const [nameValidated, setNameValidated] = React.useState<ValidatedOptions>(ValidatedOptions.default);
-const [descriptionValidated, setDescriptionValidated] = React.useState<ValidatedOptions>(ValidatedOptions.default);
-const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-const [descriptionErrorMessage, setDescriptionErrorMessage] = React.useState('');
+  const [nameValidated, setNameValidated] = React.useState<ValidatedOptions>(ValidatedOptions.default);
+  const [descriptionValidated, setDescriptionValidated] = React.useState<ValidatedOptions>(ValidatedOptions.default);
+  const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const [descriptionErrorMessage, setDescriptionErrorMessage] = React.useState('');
 
-const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
+  const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
   const handleClose = React.useCallback(
     (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        ev && ev.stopPropagation();
-        setName('');
-        setDescription('');
-        setNameValidated(ValidatedOptions.default);
-        setDescriptionValidated(ValidatedOptions.default);
-        setNameErrorMessage('');
-        setDescriptionErrorMessage('');
-        onClose();
+      ev && ev.stopPropagation();
+      setName('');
+      setDescription('');
+      setNameValidated(ValidatedOptions.default);
+      setDescriptionValidated(ValidatedOptions.default);
+      setNameErrorMessage('');
+      setDescriptionErrorMessage('');
+      onClose();
     },
-    [onClose, setName, setDescription, setNameValidated, setDescriptionValidated, setNameErrorMessage, setDescriptionErrorMessage]
+    [
+      onClose,
+      setName,
+      setDescription,
+      setNameValidated,
+      setDescriptionValidated,
+      setNameErrorMessage,
+      setDescriptionErrorMessage,
+    ]
   );
 
-  const handleSubmit = React.useCallback((ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    dispatch(dashboardConfigAddTemplateIntent(templatize(currLayout, name, description)));
-    handleClose(ev);
-}, [dispatch, handleClose, currLayout, name, description]);
+  const handleSubmit = React.useCallback(
+    (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      dispatch(dashboardConfigAddTemplateIntent(templatize(currLayout, name, description)));
+      handleClose(ev);
+    },
+    [dispatch, handleClose, currLayout, name, description]
+  );
 
-    const handleNameChange = React.useCallback(
-        (value: string) => {
-          setName(value);
-          if (value.length === 0) {
-            setNameValidated(ValidatedOptions.error);
-            setNameErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_REQUIRED'));
-          } else if (templates.some((layout) => layout.name === value)) {
-            setNameValidated(ValidatedOptions.error);
-            setNameErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_TAKEN'));
-          } else {
-            if (DashboardLayoutNamePattern.test(value)) {
-              setNameValidated(ValidatedOptions.success);
-              setNameErrorMessage('');
-            } else {
-              setNameValidated(ValidatedOptions.error);
-              setNameErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_INVALID'));
-            }
-          }
-        },
-        [t, setName, setNameValidated, setNameErrorMessage, templates]
-      );
+  const handleNameChange = React.useCallback(
+    (value: string) => {
+      setName(value);
+      if (value.length === 0) {
+        setNameValidated(ValidatedOptions.error);
+        setNameErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_REQUIRED'));
+      } else if (templates.some((layout) => layout.name === value)) {
+        setNameValidated(ValidatedOptions.error);
+        setNameErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_TAKEN'));
+      } else {
+        if (DashboardLayoutNamePattern.test(value)) {
+          setNameValidated(ValidatedOptions.success);
+          setNameErrorMessage('');
+        } else {
+          setNameValidated(ValidatedOptions.error);
+          setNameErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_INVALID'));
+        }
+      }
+    },
+    [t, setName, setNameValidated, setNameErrorMessage, templates]
+  );
 
-      const handleDescriptionChange = React.useCallback(
-        (value: string) => {
-            setDescription(value);
-            if (value.length === 0) {
-                setDescriptionValidated(ValidatedOptions.default);
-                setDescriptionErrorMessage('');
-            } else if (value.length > LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT) {                
-                setDescriptionValidated(ValidatedOptions.error);
-                setDescriptionErrorMessage(t('DashboardLayoutSetAsTemplateModal.ERROR.DESCRIPTION_TOO_LONG'));
-            } else if (LayoutTemplateDescriptionPattern.test(value)) {                
-                setDescriptionValidated(ValidatedOptions.success);
-                setDescriptionErrorMessage('');
-            } else {
-                setDescriptionValidated(ValidatedOptions.error);
-                setDescriptionErrorMessage(t('DashboardLayoutSetAsTemplateModal.ERROR.DESCRIPTION_INVALID'));
-            }
-        }, [t, setDescription, setDescriptionValidated, setDescriptionErrorMessage]);
+  const handleDescriptionChange = React.useCallback(
+    (value: string) => {
+      setDescription(value);
+      if (value.length === 0) {
+        setDescriptionValidated(ValidatedOptions.default);
+        setDescriptionErrorMessage('');
+      } else if (value.length > LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT) {
+        setDescriptionValidated(ValidatedOptions.error);
+        setDescriptionErrorMessage(t('DashboardLayoutSetAsTemplateModal.ERROR.DESCRIPTION_TOO_LONG'));
+      } else if (LayoutTemplateDescriptionPattern.test(value)) {
+        setDescriptionValidated(ValidatedOptions.success);
+        setDescriptionErrorMessage('');
+      } else {
+        setDescriptionValidated(ValidatedOptions.error);
+        setDescriptionErrorMessage(t('DashboardLayoutSetAsTemplateModal.ERROR.DESCRIPTION_INVALID'));
+      }
+    },
+    [t, setDescription, setDescriptionValidated, setDescriptionErrorMessage]
+  );
 
   return (
     <Modal
@@ -141,64 +169,64 @@ const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs
       <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
         <OuterScrollContainer>
           <InnerScrollContainer>
-            <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() => {}}  />
+            <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() => {}} />
           </InnerScrollContainer>
         </OuterScrollContainer>
       </div>
       <Form onSubmit={(e) => e.preventDefault()}>
         <FormSection>
-            <FormGroup
-                label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')}
-                fieldId="name"
-                helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
-                helperTextInvalid={nameErrorMessage}
-                isRequired
-                validated={nameValidated}
-            >
-                <TextInput
-                    isRequired
-                    type="text"
-                    id="name"
-                    name="name"
-                    aria-describedby={'name-helper'}
-                    value={name}
-                    onChange={handleNameChange}
-                    autoFocus={true}
-                    autoComplete="on"
-                    validated={nameValidated}
-                    placeholder={currLayout.name}
-                />
-            </FormGroup>
-            <FormGroup
-                label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')}
-                fieldId="description"
-                helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
-                helperTextInvalid={descriptionErrorMessage}
-                validated={descriptionValidated}
-            >
-                <TextArea
-                    type="text"
-                    id="description"
-                    name="description"
-                    aria-describedby={'description-helper'}
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    validated={descriptionValidated}
-                    placeholder={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.PLACEHOLDER')}
-                />
-            </FormGroup>
+          <FormGroup
+            label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')}
+            fieldId="name"
+            helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
+            helperTextInvalid={nameErrorMessage}
+            isRequired
+            validated={nameValidated}
+          >
+            <TextInput
+              isRequired
+              type="text"
+              id="name"
+              name="name"
+              aria-describedby={'name-helper'}
+              value={name}
+              onChange={handleNameChange}
+              autoFocus={true}
+              autoComplete="on"
+              validated={nameValidated}
+              placeholder={currLayout.name}
+            />
+          </FormGroup>
+          <FormGroup
+            label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')}
+            fieldId="description"
+            helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
+            helperTextInvalid={descriptionErrorMessage}
+            validated={descriptionValidated}
+          >
+            <TextArea
+              type="text"
+              id="description"
+              name="description"
+              aria-describedby={'description-helper'}
+              value={description}
+              onChange={handleDescriptionChange}
+              validated={descriptionValidated}
+              placeholder={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.PLACEHOLDER')}
+            />
+          </FormGroup>
         </FormSection>
         <ActionGroup>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated !== ValidatedOptions.success}
-              >
-                {t('SUBMIT', { ns: 'common' })}
-              </Button>
-              <Button variant="link" onClick={handleClose}>
-                {t('CANCEL', { ns: 'common' })}
-              </Button>
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated !== ValidatedOptions.success}
+          >
+            {t('SUBMIT', { ns: 'common' })}
+          </Button>
+          <Button variant="link" onClick={handleClose}>
+            {t('CANCEL', { ns: 'common' })}
+          </Button>
         </ActionGroup>
       </Form>
     </Modal>

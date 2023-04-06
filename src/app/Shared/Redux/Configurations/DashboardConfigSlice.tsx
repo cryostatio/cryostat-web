@@ -377,7 +377,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardConfigAddTemplateIntent, (state, { payload }) => {
       const template = payload.template;
-      const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);   
+      const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
       if (idx >= 0) {
         throw new Error(`Template with name ${template.name} and vendor ${template.vendor} already exists.`);
       }

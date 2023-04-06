@@ -62,7 +62,12 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { BlankLayout } from './dashboard-templates';
-import { DashboardLayoutNamePattern, DEFAULT_DASHBOARD_NAME, deserializeLayout, LayoutTemplate } from './DashboardUtils';
+import {
+  DashboardLayoutNamePattern,
+  DEFAULT_DASHBOARD_NAME,
+  deserializeLayout,
+  LayoutTemplate,
+} from './DashboardUtils';
 import { LayoutTemplatePicker } from './LayoutTemplatePicker';
 
 export interface DashboardLayoutCreateModalProps {
@@ -154,10 +159,9 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
 
   const onTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
-      handleNameChange(template.name);
       setTemplate(template);
     },
-    [handleNameChange, setTemplate]
+    [setTemplate]
   );
 
   const formGroup = React.useMemo(() => {

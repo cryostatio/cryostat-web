@@ -37,7 +37,11 @@
  */
 
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
-import { DashboardLayout, SerialDashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import {
+  DashboardLayout,
+  SerialCardConfig,
+  SerialDashboardLayout,
+} from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { FileIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
 import React from 'react';
@@ -47,7 +51,7 @@ export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
 export const LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT = 100;
 
 export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;
-export const LayoutTemplateDescriptionPattern = /^[a-zA-Z0-9\s.,\-'";?!@#$%^&*()\[\]_+=:{}]*$/;
+export const LayoutTemplateDescriptionPattern = /^[a-zA-Z0-9\s.,\-'";?!@#$%^&*()[\]_+=:{}]*$/;
 
 export enum LayoutTemplateIcon {
   CRYOSTAT = 'cryostat',
@@ -65,7 +69,7 @@ export interface LayoutTemplate {
   vendor?: 'Cryostat' | 'User-supplied';
 }
 
-export type SerialLayoutTemplate = Omit<LayoutTemplate, 'icon'| 'vendor'>;
+export type SerialLayoutTemplate = Omit<LayoutTemplate, 'icon' | 'vendor'>;
 
 export const iconify = (icon: LayoutTemplateIcon): React.ReactNode => {
   switch (icon) {
@@ -90,6 +94,23 @@ export const templatize = (layout: DashboardLayout, name: string, desc?: string)
     createdAt: new Date().toISOString(),
     vendor: 'User-supplied',
   };
+};
+
+// replace with mock data preview
+export const cardsToString = (config: SerialCardConfig[]): string => {
+  if (config.length === 0) {
+    return 'None';
+  }
+  return config
+    .map((card) => {
+      // map in chartKind if it exists
+      let stringified = card.name;
+      if (card.props.hasOwnProperty('chartKind')) {
+        stringified += `(${card.props['chartKind']})`;
+      }
+      return stringified;
+    })
+    .join(', ');
 };
 
 export const deserializeLayout = (layout: SerialDashboardLayout, name?: string): DashboardLayout => {

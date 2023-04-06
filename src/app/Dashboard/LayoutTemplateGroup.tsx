@@ -37,7 +37,17 @@
  */
 import { dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redux/ReduxStore';
 import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
-import { Dropdown, DropdownItem, EmptyState, EmptyStateBody, EmptyStateIcon, Gallery, GalleryItem, KebabToggle, Title } from '@patternfly/react-core';
+import {
+  Dropdown,
+  DropdownItem,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  Gallery,
+  GalleryItem,
+  KebabToggle,
+  Title,
+} from '@patternfly/react-core';
 import { CheckCircleIcon, PficonTemplateIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useDispatch } from 'react-redux';
@@ -62,7 +72,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
     [setSelectedTemplate, onTemplateSelect]
   );
 
-  const KebabCatalogTileBadge: React.FC<{template: LayoutTemplate}> = ({template}) => {
+  const KebabCatalogTileBadge: React.FC<{ template: LayoutTemplate }> = ({ template }) => {
     const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
     const onSelect = React.useCallback(
@@ -80,11 +90,12 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
       [setIsOpen]
     );
 
-    const handleTemplateDelete = React.useCallback((e: React.MouseEvent) => {
+    const handleTemplateDelete = React.useCallback(
+      (e: React.MouseEvent) => {
         e.stopPropagation();
         dispatch(dashboardConfigDeleteTemplateIntent(template.name));
       },
-      [dispatch, template.name]
+      [template.name]
     );
 
     const dropdownItems = React.useMemo(() => {
@@ -96,16 +107,15 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
     }, [template, handleTemplateDelete]);
 
     return (
-        <Dropdown
-          onSelect={onSelect}
-          toggle={<KebabToggle isDisabled={template.vendor !== 'User-supplied'} onToggle={openKebab} />}
-          isOpen={isOpen}
-          isPlain
-          dropdownItems={dropdownItems}
-        />
+      <Dropdown
+        onSelect={onSelect}
+        toggle={<KebabToggle isDisabled={template.vendor !== 'User-supplied'} onToggle={openKebab} />}
+        isOpen={isOpen}
+        isPlain
+        dropdownItems={dropdownItems}
+      />
     );
-  };  
-
+  };
 
   return (
     <>
@@ -125,10 +135,12 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
                 vendor={template.vendor}
                 onClick={() => handleTemplateSelect(template)}
                 badges={[
-                  selectedTemplate === template.name && (<CatalogTileBadge title="Selected" key={template.name}>
-                  <CheckCircleIcon color={'var(--pf-global--success-color--100)'} />
-                </CatalogTileBadge>),
-                <KebabCatalogTileBadge template={template} key={template.name + '-kebab'} />
+                  selectedTemplate === template.name && (
+                    <CatalogTileBadge title="Selected" key={template.name}>
+                      <CheckCircleIcon color={'var(--pf-global--success-color--100)'} />
+                    </CatalogTileBadge>
+                  ),
+                  <KebabCatalogTileBadge template={template} key={template.name + '-kebab'} />,
                 ]}
               >
                 {template.description}

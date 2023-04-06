@@ -63,7 +63,14 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { Dropdown, DropdownItem, DropdownList } from '@patternfly/react-core/dist/js/next';
-import { DownloadIcon, EllipsisVIcon, PencilAltIcon, PlusCircleIcon, TrashIcon, UploadIcon } from '@patternfly/react-icons';
+import {
+  DownloadIcon,
+  EllipsisVIcon,
+  PencilAltIcon,
+  PlusCircleIcon,
+  TrashIcon,
+  UploadIcon,
+} from '@patternfly/react-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -127,9 +134,8 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
   }, [setIsCreateModalOpen]);
 
   const handleTemplateModalOpen = React.useCallback(() => {
-      setIsTemplateModalOpen(true);
-    }, [setIsTemplateModalOpen]
-  );
+    setIsTemplateModalOpen(true);
+  }, [setIsTemplateModalOpen]);
 
   const handleTemplateModalClose = React.useCallback(() => {
     setIsTemplateModalOpen(false);
@@ -302,51 +308,51 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
     [t, handleDeleteButton, currLayout.name]
   );
 
+  const dropdownItems = React.useMemo(() => {
+    return (
+      <DropdownList>
+        <DropdownItem key="template" itemId={0}>
+          {t('DashboardLayoutToolbar.SET_AS_TEMPLATE')}
+        </DropdownItem>
+      </DropdownList>
+    );
+  }, [t]);
 
-  const dropdownItems = React.useMemo(
-    () => {
-      return (
-        <DropdownList>
-          <DropdownItem key="template" itemId={0}>
-            {t('DashboardLayoutToolbar.SET_AS_TEMPLATE')}
-          </DropdownItem>
-        </DropdownList>
-      );
-    }, [t]);
-
-  const onKebabSelect = React.useCallback((_event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: string | number | undefined) => {
-    switch(itemId) {
-      case 0:
-        handleTemplateModalOpen();
-        break;
-      default:
-        console.error('unknown item id ' + itemId);
-    }
-    setIsKebabOpen(false);
-  }, [handleTemplateModalOpen, setIsKebabOpen]);
+  const onKebabSelect = React.useCallback(
+    (_event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: string | number | undefined) => {
+      switch (itemId) {
+        case 0:
+          handleTemplateModalOpen();
+          break;
+        default:
+          console.error('unknown item id ' + itemId);
+      }
+      setIsKebabOpen(false);
+    },
+    [handleTemplateModalOpen, setIsKebabOpen]
+  );
 
   const kebabDropdown = React.useMemo(
     () => (
       <Dropdown
         isOpen={isKebabOpen}
         onSelect={onKebabSelect}
-        onOpenChange={isOpen => setIsKebabOpen(isOpen)}
+        onOpenChange={(isOpen) => setIsKebabOpen(isOpen)}
         minWidth="10em"
-        toggle={toggleRef => (
+        toggle={(toggleRef) => (
           <MenuToggle
             ref={toggleRef}
             aria-label={t('DashboardLayoutToolbar.MENU.LABEL')}
             variant="plain"
             onClick={() => setIsKebabOpen(!isKebabOpen)}
             isExpanded={isKebabOpen}
-            >
+          >
             <EllipsisVIcon />
           </MenuToggle>
-      )}
+        )}
       >
         {dropdownItems}
       </Dropdown>
-
     ),
     [t, onKebabSelect, setIsKebabOpen, isKebabOpen, dropdownItems]
   );
