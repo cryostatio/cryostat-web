@@ -42,7 +42,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './SettingsUtils';
+import { SettingTab, UserSetting } from './SettingsUtils';
 
 const Component = () => {
   const [t] = useTranslation();
@@ -112,5 +112,5 @@ export const FeatureLevels: UserSetting = {
   titleKey: 'SETTINGS.FEATURE_LEVEL.TITLE',
   descConstruct: 'SETTINGS.FEATURE_LEVEL.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.ADVANCED',
+  category: SettingTab.ADVANCED,
 };

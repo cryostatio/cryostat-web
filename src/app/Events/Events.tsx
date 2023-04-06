@@ -41,33 +41,93 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { portalRoot } from '@app/utils/utils';
+import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
-import { StaticContext } from 'react-router';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { concatMap, filter } from 'rxjs';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
 
-export type SupportedEventTab = 'templates' | 'types';
+export interface EventsProps {}
 
-export type SupportedAgentTab = 'templates' | 'probes';
+export const Events: React.FC<EventsProps> = ({ ...props }) => {
+  return (
+    <TargetView {...props} pageTitle="Events">
+      <Stack hasGutter>
+        <StackItem>
+          <Card>
+            <CardBody>
+              <EventTabs />
+            </CardBody>
+          </Card>
+        </StackItem>
+        <StackItem>
+          <Card>
+            <CardBody>
+              <AgentTabs />
+            </CardBody>
+          </Card>
+        </StackItem>
+      </Stack>
+    </TargetView>
+  );
+};
 
-export interface EventsProps {
-  eventTab?: SupportedEventTab;
-  agentTab?: SupportedAgentTab;
+enum EventTab {
+  EVENT_TEMPLATE = 'event-template',
+  EVENT_TYPE = 'event-type',
 }
 
-export const Events: React.FC<RouteComponentProps<Record<string, never>, StaticContext, EventsProps>> = ({
-  location,
-  ..._props
-}) => {
+export const EventTabs: React.FC = () => {
+  const { search, pathname } = useLocation();
+  const history = useHistory();
+
+  const activeTab = React.useMemo(() => {
+    return getActiveTab(search, 'eventTab', Object.values(EventTab), EventTab.EVENT_TEMPLATE);
+  }, [search]);
+
+  const onTabSelect = React.useCallback(
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(history, pathname, search, { tabKey: 'eventTab', tabValue: `${key}` }),
+    [history, pathname, search]
+  );
+
+  return (
+    <Tabs activeKey={activeTab} onSelect={onTabSelect}>
+      <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
+        <EventTemplates />
+      </Tab>
+      <Tab eventKey={EventTab.EVENT_TYPE} title="Event Types">
+        <EventTypes />
+      </Tab>
+    </Tabs>
+  );
+};
+
+enum AgentTab {
+  AGENT_TEMPLATE = 'agent-template',
+  AGENT_PROBE = 'agent-probe',
+}
+
+export const AgentTabs: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [eventActiveTab, setEventActiveTab] = React.useState(location?.state?.eventTab || 'templates');
-  const [probeActiveTab, setProbeActiveTab] = React.useState(location?.state?.agentTab || 'templates');
+
+  const { search, pathname } = useLocation();
+  const history = useHistory();
+
+  const activeTab = React.useMemo(() => {
+    return getActiveTab(search, 'agentTab', Object.values(AgentTab), AgentTab.AGENT_TEMPLATE);
+  }, [search]);
+
   const [agentDetected, setAgentDetected] = React.useState(false);
+
+  const onTabSelect = React.useCallback(
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(history, pathname, search, { tabKey: 'agentTab', tabValue: `${key}` }),
+    [history, pathname, search]
+  );
 
   React.useEffect(() => {
     addSubscription(
@@ -81,64 +141,24 @@ export const Events: React.FC<RouteComponentProps<Record<string, never>, StaticC
     );
   }, [addSubscription, context.target, context.api, setAgentDetected]);
 
-  const handleEventTabSelect = React.useCallback(
-    (evt, key: string | number) => setEventActiveTab(`${key}` as SupportedEventTab),
-    [setEventActiveTab]
-  );
-
-  const handleProbeTabSelect = React.useCallback(
-    (evt, key: string | number) => setProbeActiveTab(`${key}` as SupportedAgentTab),
-    [setProbeActiveTab]
-  );
-
   return (
-    <>
-      <TargetView pageTitle="Events">
-        <Stack hasGutter>
-          <StackItem>
-            <Card>
-              <CardBody>
-                <Tabs activeKey={eventActiveTab} onSelect={handleEventTabSelect}>
-                  <Tab eventKey={'templates'} title="Event Templates">
-                    <EventTemplates />
-                  </Tab>
-                  <Tab eventKey={'types'} title="Event Types">
-                    <EventTypes />
-                  </Tab>
-                </Tabs>
-              </CardBody>
-            </Card>
-          </StackItem>
-          <StackItem>
-            <Card>
-              <CardBody>
-                <Tabs activeKey={probeActiveTab} onSelect={handleProbeTabSelect}>
-                  <Tab eventKey={'templates'} title="Probe Templates">
-                    <AgentProbeTemplates agentDetected={agentDetected} />
-                  </Tab>
-                  <Tab
-                    eventKey={'probes'}
-                    title="Live Configuration"
-                    isAriaDisabled={!agentDetected}
-                    tooltip={
-                      agentDetected ? undefined : (
-                        <Tooltip
-                          content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM"
-                          appendTo={portalRoot}
-                        />
-                      )
-                    }
-                  >
-                    <AgentLiveProbes />
-                  </Tab>
-                </Tabs>
-              </CardBody>
-            </Card>
-          </StackItem>
-        </Stack>
-      </TargetView>
-    </>
+    <Tabs activeKey={activeTab} onSelect={onTabSelect}>
+      <Tab eventKey={AgentTab.AGENT_TEMPLATE} title="Probe Templates">
+        <AgentProbeTemplates agentDetected={agentDetected} />
+      </Tab>
+      <Tab
+        eventKey={AgentTab.AGENT_PROBE}
+        title="Live Configuration"
+        isAriaDisabled={!agentDetected}
+        tooltip={
+          agentDetected ? undefined : (
+            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
+          )
+        }
+      >
+        <AgentLiveProbes />
+      </Tab>
+    </Tabs>
   );
 };
-
-export default withRouter(Events);
+export default Events;

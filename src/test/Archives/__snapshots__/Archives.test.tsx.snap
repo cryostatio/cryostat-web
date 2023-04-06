@@ -58,16 +58,15 @@ exports[`<Archives /> renders correctly 1`] = `
                 role="tablist"
               >
                 <li
-                  className="pf-c-tabs__item pf-m-current"
+                  className="pf-c-tabs__item"
                   role="presentation"
                 >
                   <button
-                    aria-controls="pf-tab-section-all-archives-all-targets"
-                    aria-selected={true}
+                    aria-selected={false}
                     className="pf-c-tabs__link"
                     data-ouia-component-type="PF4/TabButton"
                     data-ouia-safe={true}
-                    id="pf-tab-all-archives-all-targets"
+                    id="pf-tab-all-targets-all-targets"
                     onClick={[Function]}
                     role="tab"
                     type="button"
@@ -84,12 +83,11 @@ exports[`<Archives /> renders correctly 1`] = `
                   role="presentation"
                 >
                   <button
-                    aria-controls="pf-tab-section-all-targets-all-archives"
                     aria-selected={false}
                     className="pf-c-tabs__link"
                     data-ouia-component-type="PF4/TabButton"
                     data-ouia-safe={true}
-                    id="pf-tab-all-targets-all-archives"
+                    id="pf-tab-all-archives-all-archives"
                     onClick={[Function]}
                     role="tab"
                     type="button"
@@ -102,12 +100,12 @@ exports[`<Archives /> renders correctly 1`] = `
                   </button>
                 </li>
                 <li
-                  className="pf-c-tabs__item"
+                  className="pf-c-tabs__item pf-m-current"
                   role="presentation"
                 >
                   <button
                     aria-controls="pf-tab-section-uploads-uploads"
-                    aria-selected={false}
+                    aria-selected={true}
                     className="pf-c-tabs__link"
                     data-ouia-component-type="PF4/TabButton"
                     data-ouia-safe={true}
@@ -126,39 +124,11 @@ exports[`<Archives /> renders correctly 1`] = `
               </ul>
             </div>
             <section
-              aria-labelledby="pf-tab-all-archives-all-targets"
-              className="pf-c-tab-content"
-              data-ouia-component-type="PF4/TabContent"
-              data-ouia-safe={true}
-              hidden={false}
-              id="pf-tab-section-all-archives-all-targets"
-              role="tabpanel"
-              tabIndex={0}
-            >
-              <div>
-                All Targets Table
-              </div>
-            </section>
-            <section
-              aria-labelledby="pf-tab-all-targets-all-archives"
-              className="pf-c-tab-content"
-              data-ouia-component-type="PF4/TabContent"
-              data-ouia-safe={true}
-              hidden={true}
-              id="pf-tab-section-all-targets-all-archives"
-              role="tabpanel"
-              tabIndex={0}
-            >
-              <div>
-                All Archives Table
-              </div>
-            </section>
-            <section
               aria-labelledby="pf-tab-uploads-uploads"
               className="pf-c-tab-content"
               data-ouia-component-type="PF4/TabContent"
               data-ouia-safe={true}
-              hidden={true}
+              hidden={false}
               id="pf-tab-section-uploads-uploads"
               role="tabpanel"
               tabIndex={0}

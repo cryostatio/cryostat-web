@@ -366,17 +366,17 @@ export const getLinkPropsForTargetResource = (
 ): React.ComponentProps<Link> => {
   switch (resourceType) {
     case 'activeRecordings':
-      return { to: { pathname: '/recordings', state: { tab: 'active' } } };
+      return { to: { pathname: '/recordings', search: '?tab=active-recording' } };
     case 'archivedRecordings':
-      return { to: { pathname: '/recordings', state: { tab: 'archived' } } };
+      return { to: { pathname: '/recordings', search: '?tab=archived-recording' } };
     case 'archivedUploadRecordings':
-      return { to: { pathname: '/archives', state: { tab: 'uploads' } } };
+      return { to: { pathname: '/archives', search: '?tab=uploads' } };
     case 'eventTemplates':
-      return { to: { pathname: '/events', state: { eventTab: 'templates' } } };
+      return { to: { pathname: '/events', search: '?eventTab=event-template' } };
     case 'eventTypes':
-      return { to: { pathname: '/events', state: { eventTab: 'types' } } };
+      return { to: { pathname: '/events', search: '?eventTab=event-type' } };
     case 'agentProbes':
-      return { to: { pathname: '/events', state: { agentTab: 'probes' } } };
+      return { to: { pathname: '/events', search: '?agentTab=agent-probe' } };
     case 'automatedRules':
       return { to: { pathname: '/rules' } };
     case 'credentials':

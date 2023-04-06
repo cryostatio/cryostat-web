@@ -39,7 +39,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { cleanDataId, hashCode } from '@app/utils/utils';
+import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils';
 import {
   Card,
   Form,
@@ -59,7 +59,7 @@ import {
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
 import { ChartCardsConfig } from './ChartCardsConfig';
@@ -69,12 +69,12 @@ import { DeletionDialogControl } from './DeletionDialogControl';
 import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
-import { SettingCategory, _SettingCategoryKeys, _TransformedUserSetting } from './SettingsUtils';
+import { paramAsTab, SettingTab, tabAsParam, _TransformedUserSetting } from './SettingsUtils';
 import { Theme } from './Theme';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
 interface SettingGroup {
-  groupLabel: SettingCategory;
+  groupLabel: SettingTab;
   groupKey: string;
   featureLevel: FeatureLevel;
   disabled?: boolean;
@@ -129,19 +129,28 @@ export const Settings: React.FC<SettingsProps> = (_) => {
     [t]
   );
 
-  const location = useLocation();
-  const [activeTab, setActiveTab] = React.useState<SettingCategory>(
-    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'SETTINGS.CATEGORIES.GENERAL'
-  );
+  const history = useHistory();
+  const { search, pathname } = useLocation();
+
+  const activeTab = React.useMemo(() => {
+    return paramAsTab(
+      getActiveTab(
+        search,
+        'tab',
+        Object.values(SettingTab).map((v) => tabAsParam(v)),
+        tabAsParam(SettingTab.GENERAL)
+      )
+    );
+  }, [search]);
 
   const onTabSelect = React.useCallback(
-    (_: React.MouseEvent<HTMLElement, MouseEvent>, eventKey: string | number) =>
-      setActiveTab(eventKey as SettingCategory),
-    [setActiveTab]
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${tabAsParam(key as SettingTab)}` }),
+    [history, pathname, search]
   );
 
   const settingGroups = React.useMemo(() => {
-    return _SettingCategoryKeys.map((cat) => {
+    return Object.values(SettingTab).map((cat) => {
       const panels = settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup);
       return {
         groupLabel: t(cat),
@@ -166,7 +175,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                 onSelect={onTabSelect}
               >
                 {settingGroups.map((grp) => (
-                  <SettingTab
+                  <WrappedTab
                     key={`${grp.groupLabel}-tab`}
                     eventKey={grp.groupKey}
                     title={<TabTitleText>{grp.groupLabel}</TabTitleText>}
@@ -240,7 +249,7 @@ interface SettingTabProps extends TabProps {
 }
 
 // Workaround to the Tabs component requiring children to be React.FC<TabProps>
-const SettingTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, title, children }) => {
+const WrappedTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, title, children }) => {
   const { t } = useTranslation();
 
   return (

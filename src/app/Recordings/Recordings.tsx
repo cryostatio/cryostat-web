@@ -38,35 +38,40 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
-import { StaticContext } from 'react-router';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 
-export type SupportedTab = 'active' | 'archived';
-
-export interface RecordingsProps {
-  tab?: SupportedTab;
+enum RecordingTab {
+  ACTIVE_RECORDING = 'active-recording',
+  ARCHIVED_RECORDING = 'archived-recording',
 }
 
-export const Recordings: React.FC<RouteComponentProps<Record<string, never>, StaticContext, RecordingsProps>> = ({
-  location,
-  ..._props
-}) => {
+export interface RecordingsProps {}
+
+export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
+  const { search, pathname } = useLocation();
+  const history = useHistory();
   const context = React.useContext(ServiceContext);
-  const [activeTab, setActiveTab] = React.useState(location?.state?.tab || 'active');
-  const [archiveEnabled, setArchiveEnabled] = React.useState(false);
   const addSubscription = useSubscriptions();
+
+  const activeTab = React.useMemo(() => {
+    return getActiveTab(search, 'tab', Object.values(RecordingTab), RecordingTab.ACTIVE_RECORDING);
+  }, [search]);
+
+  const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
   }, [context.api, addSubscription, setArchiveEnabled]);
 
   const onTabSelect = React.useCallback(
-    (_, key: string | number) => setActiveTab(`${key}` as SupportedTab),
-    [setActiveTab]
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [history, pathname, search]
   );
 
   const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
@@ -76,7 +81,7 @@ export const Recordings: React.FC<RouteComponentProps<Record<string, never>, Sta
       <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
         <Tab
           id="active-recordings"
-          eventKey={'active'}
+          eventKey={RecordingTab.ACTIVE_RECORDING}
           title={<TabTitleText>Active Recordings</TabTitleText>}
           data-quickstart-id="active-recordings-tab"
         >
@@ -84,7 +89,7 @@ export const Recordings: React.FC<RouteComponentProps<Record<string, never>, Sta
         </Tab>
         <Tab
           id="archived-recordings"
-          eventKey={'archived'}
+          eventKey={RecordingTab.ARCHIVED_RECORDING}
           title={<TabTitleText>Archived Recordings</TabTitleText>}
           data-quickstart-id="archived-recordings-tab"
         >
@@ -100,7 +105,7 @@ export const Recordings: React.FC<RouteComponentProps<Record<string, never>, Sta
   }, [archiveEnabled, activeTab, onTabSelect, targetAsObs]);
 
   return (
-    <TargetView pageTitle="Recordings">
+    <TargetView {...props} pageTitle="Recordings">
       <Card>
         <CardBody>{cardBody}</CardBody>
       </Card>
@@ -108,4 +113,4 @@ export const Recordings: React.FC<RouteComponentProps<Record<string, never>, Sta
   );
 };
 
-export default withRouter(Recordings);
+export default Recordings;

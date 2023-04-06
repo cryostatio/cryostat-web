@@ -39,7 +39,7 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NumberInput } from '@patternfly/react-core';
 import * as React from 'react';
-import { UserSetting } from './SettingsUtils';
+import { SettingTab, UserSetting } from './SettingsUtils';
 
 const defaultPreferences = {
   webSocketDebounceMs: 100,
@@ -119,5 +119,5 @@ export const WebSocketDebounce: UserSetting = {
   titleKey: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE',
   descConstruct: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
+  category: SettingTab.CONNECTIVITY,
 };

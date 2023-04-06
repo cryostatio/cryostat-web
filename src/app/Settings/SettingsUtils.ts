@@ -46,16 +46,22 @@ export interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   featureLevel: FeatureLevel;
 }
 
-export const _SettingCategoryKeys = [
-  'SETTINGS.CATEGORIES.GENERAL',
-  'SETTINGS.CATEGORIES.CONNECTIVITY',
-  'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
-  'SETTINGS.CATEGORIES.DASHBOARD',
-  'SETTINGS.CATEGORIES.ADVANCED',
-] as const;
+export enum SettingTab {
+  GENERAL = 'SETTINGS.CATEGORIES.GENERAL',
+  CONNECTIVITY = 'SETTINGS.CATEGORIES.CONNECTIVITY',
+  NOTIFICATION_MESSAGE = 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
+  DASHBOARD = 'SETTINGS.CATEGORIES.DASHBOARD',
+  ADVANCED = 'SETTINGS.CATEGORIES.ADVANCED',
+}
 
-// Use translation keys for internal categorization
-export type SettingCategory = (typeof _SettingCategoryKeys)[number];
+export const tabAsParam = (key: SettingTab) => {
+  const parts = key.split('.');
+  return parts[parts.length - 1].toLowerCase().replace(/[_]/g, '-');
+};
+
+export const paramAsTab = (param: string) => {
+  return `SETTINGS.CATEGORIES.${param.toUpperCase().replace(/[-]/g, '_')}`;
+};
 
 export interface UserSetting {
   titleKey: string;
@@ -69,12 +75,12 @@ export interface UserSetting {
         parts: React.ReactNode[];
       };
   content: React.FunctionComponent;
-  category: SettingCategory;
+  category: SettingTab;
   orderInGroup?: number; // default -1
   featureLevel?: FeatureLevel; // default PRODUCTION
 }
 
-export const selectTab = (tabKey: SettingCategory) => {
+export const selectTab = (tabKey: SettingTab) => {
   const tab = document.getElementById(`pf-tab-${tabKey}-${hashCode(tabKey)}`);
   tab && tab.click();
 };

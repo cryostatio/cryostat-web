@@ -40,7 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FormGroup, HelperText, HelperTextItem, NumberInput, Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserSetting } from './SettingsUtils';
+import { SettingTab, UserSetting } from './SettingsUtils';
 
 const min = 1;
 
@@ -99,5 +99,5 @@ export const ChartCardsConfig: UserSetting = {
   titleKey: 'SETTINGS.CHARTS_CONFIG.TITLE',
   descConstruct: 'SETTINGS.CHARTS_CONFIG.DESCRIPTION',
   content: Component,
-  category: 'SETTINGS.CATEGORIES.DASHBOARD',
+  category: SettingTab.DASHBOARD,
 };

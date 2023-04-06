@@ -42,7 +42,7 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
-import { selectTab, ThemeSetting } from '@app/Settings/SettingsUtils';
+import { selectTab, SettingTab, tabAsParam, ThemeSetting } from '@app/Settings/SettingsUtils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -301,9 +301,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handleLanguagePref = React.useCallback(() => {
     if (routerHistory.location.pathname === '/settings') {
-      selectTab('SETTINGS.CATEGORIES.GENERAL');
+      selectTab(SettingTab.GENERAL);
     } else {
-      routerHistory.push('/settings', { preSelectedTab: 'SETTINGS.CATEGORIES.GENERAL' });
+      const query = new URLSearchParams({ tab: tabAsParam(SettingTab.GENERAL) });
+      routerHistory.push(`/settings?${query}`);
     }
   }, [routerHistory]);
 

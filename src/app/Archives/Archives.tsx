@@ -41,11 +41,11 @@ import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, TabTitleText, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { StaticContext } from 'react-router';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { of } from 'rxjs';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
@@ -61,37 +61,48 @@ export const uploadAsTarget: Target = {
   alias: '',
 };
 
-export type SupportedTab = 'all-archives' | 'all-targets' | 'uploads';
-
-export interface ArchivesProps {
-  tab?: SupportedTab;
+enum ArchiveTab {
+  ALL_ARCHIVES = 'all-archives',
+  ALL_TARGETS = 'all-targets',
+  UPLOADS = 'uploads',
 }
 
-export const Archives: React.FC<RouteComponentProps<Record<string, never>, StaticContext, ArchivesProps>> = ({
-  location,
-  ..._props
-}) => {
+export interface ArchivesProps {}
+
+export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
+  const { search, pathname } = useLocation();
+  const history = useHistory();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [activeTab, setActiveTab] = React.useState(location?.state?.tab || 'all-archives');
+
+  const activeTab = React.useMemo(() => {
+    return getActiveTab(search, 'tab', Object.values(ArchiveTab), ArchiveTab.ALL_TARGETS);
+  }, [search]);
+
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
   }, [context.api, addSubscription, setArchiveEnabled]);
 
+  const onTabSelect = React.useCallback(
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [history, pathname, search]
+  );
+
   const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id="archives" activeKey={activeTab} onSelect={(evt, key) => setActiveTab(`${key}` as SupportedTab)}>
-        <Tab id="all-targets" eventKey={'all-archives'} title={<TabTitleText>All Targets</TabTitleText>}>
+      <Tabs id="archives" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
+        <Tab id="all-targets" eventKey={ArchiveTab.ALL_TARGETS} title={<TabTitleText>All Targets</TabTitleText>}>
           <AllTargetsArchivedRecordingsTable />
         </Tab>
-        <Tab id="all-archives" eventKey={'all-targets'} title={<TabTitleText>All Archives</TabTitleText>}>
+        <Tab id="all-archives" eventKey={ArchiveTab.ALL_ARCHIVES} title={<TabTitleText>All Archives</TabTitleText>}>
           <AllArchivedRecordingsTable />
         </Tab>
-        <Tab id="uploads" eventKey={'uploads'} title={<TabTitleText>Uploads</TabTitleText>}>
+        <Tab id="uploads" eventKey={ArchiveTab.UPLOADS} title={<TabTitleText>Uploads</TabTitleText>}>
           <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>
@@ -103,10 +114,10 @@ export const Archives: React.FC<RouteComponentProps<Record<string, never>, Stati
         </Title>
       </EmptyState>
     );
-  }, [archiveEnabled, activeTab, uploadTargetAsObs]);
+  }, [archiveEnabled, activeTab, uploadTargetAsObs, onTabSelect]);
 
   return (
-    <BreadcrumbPage pageTitle="Archives">
+    <BreadcrumbPage {...props} pageTitle="Archives">
       <Card>
         <CardBody>{cardBody}</CardBody>
       </Card>
@@ -114,4 +125,4 @@ export const Archives: React.FC<RouteComponentProps<Record<string, never>, Stati
   );
 };
 
-export default withRouter(Archives);
+export default Archives;
