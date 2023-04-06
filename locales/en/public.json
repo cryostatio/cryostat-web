@@ -132,8 +132,8 @@
         "NAME": "Refresh Period"
       },
       "THEME": {
-        "DESCRIPTION": "Select a colour theme",
-        "NAME": "Theme"
+        "DESCRIPTION": "Select a color theme.",
+        "NAME": "Color Theme"
       },
       "THEME_COLOR": {
         "DESCRIPTION": "The color theme to apply to this chart.",
