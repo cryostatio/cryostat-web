@@ -39,6 +39,7 @@
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import {
   DashboardLayout,
+  LayoutTemplateRecord,
   SerialCardConfig,
   SerialDashboardLayout,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
@@ -58,15 +59,14 @@ export enum LayoutTemplateIcon {
   BLANK = 'blank',
   USER = 'user',
 }
-
 export interface LayoutTemplate {
   name: string;
   icon: LayoutTemplateIcon;
   description: string;
   layout: SerialDashboardLayout;
-  version: string;
-  createdAt?: string;
   vendor?: 'Cryostat' | 'User-supplied';
+  version: string;
+  mostRecentlyUsed?: number;
 }
 
 export type SerialLayoutTemplate = Omit<LayoutTemplate, 'icon' | 'vendor'>;
@@ -90,10 +90,16 @@ export const templatize = (layout: DashboardLayout, name: string, desc?: string)
     icon: LayoutTemplateIcon.USER,
     description: desc || 'Custom layout.',
     layout: layout,
-    version: '2.3.0',
-    createdAt: new Date().toISOString(),
     vendor: 'User-supplied',
+    version: '2.3.0',
   };
+};
+
+export const recordToLayoutTemplate = (
+  record: LayoutTemplateRecord,
+  allTemplates: LayoutTemplate[]
+): LayoutTemplate | undefined => {
+  return allTemplates.find((template) => template.name === record.name && template.vendor === record.vendor);
 };
 
 // replace with mock data preview

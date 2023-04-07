@@ -59,7 +59,8 @@ export const {
   dashboardConfigAddTemplateIntent,
   dashboardConfigDeleteTemplateIntent,
   dashboardConfigRenameTemplateIntent,
-  dashboardConfigHistoryPushTemplateIntent,
+  dashboardConfigTemplateHistoryPushIntent,
+  dashboardConfigTemplateHistoryClearIntent,
 } = dashboardConfigSlice;
 export const {
   recordingAddFilterIntent,

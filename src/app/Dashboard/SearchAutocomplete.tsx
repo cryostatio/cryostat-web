@@ -69,7 +69,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
       ) {
         // When the value of the search input changes, build a list of no more than 10 autocomplete options.
         let options = props.values
-          .filter((option) => option.startsWith(newValue.toLowerCase()))
+          .filter((option) => option.toLowerCase().startsWith(newValue.toLowerCase()))
           .map((option) => (
             <MenuItem itemId={option} key={option}>
               {option}
@@ -79,7 +79,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
           options = options.slice(0, 10);
         }
         // The hint is set whenever there is only one autocomplete option left.
-        setHint(options.length === 1 ? newValue + (options[0].props.itemId).substring(newValue.length) : '');
+        setHint(options.length === 1 ? newValue + options[0].props.itemId.substring(newValue.length) : '');
         // The menu is hidden if there are no options
         setIsAutocompleteOpen(options.length > 0);
         setAutocompleteOptions(options);

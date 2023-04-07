@@ -35,9 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redux/ReduxStore';
+import {
+  dashboardConfigDeleteTemplateIntent,
+  dashboardConfigTemplateHistoryClearIntent,
+} from '@app/Shared/Redux/ReduxStore';
 import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
+  Button,
   Dropdown,
   DropdownItem,
   EmptyState,
@@ -46,6 +50,8 @@ import {
   Gallery,
   GalleryItem,
   KebabToggle,
+  Split,
+  SplitItem,
   Title,
 } from '@patternfly/react-core';
 import { CheckCircleIcon, PficonTemplateIcon } from '@patternfly/react-icons';
@@ -117,11 +123,29 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
     );
   };
 
+  const handleClearRecent = React.useCallback(() => {
+    dispatch(dashboardConfigTemplateHistoryClearIntent());
+  }, [dispatch]);
+
   return (
     <>
-      <Title headingLevel="h2" size="lg" style={{ padding: '1em' }}>
-        {props.title}
-      </Title>
+      <Split>
+        <SplitItem>
+          <Title headingLevel="h2" size="lg" style={{ padding: '1em' }}>
+            {props.title}
+          </Title>
+        </SplitItem>
+        {props.title === 'Suggested' && props.templates.length !== 1 && (
+          <>
+            <SplitItem isFilled></SplitItem>
+            <SplitItem>
+              <Button variant="link" onClick={handleClearRecent}>
+                Clear recent
+              </Button>
+            </SplitItem>
+          </>
+        )}
+      </Split>
       <Gallery className="layout-template-picker">
         {props.templates.length !== 0 ? (
           props.templates.map((template) => (

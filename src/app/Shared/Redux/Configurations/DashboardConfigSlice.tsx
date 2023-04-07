@@ -61,6 +61,7 @@ export enum DashboardConfigAction {
   TEMPLATE_REMOVE = 'template-config/remove',
   TEMPLATE_RENAME = 'template-config/rename',
   TEMPLATE_HISTORY_PUSH = 'template-history/push',
+  TEMPLATE_HISTORY_CLEAR = 'template-history/clear',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -124,6 +125,8 @@ export interface DashboardRenameTemplateActionPayload {
 export interface DashboardHistoryPushTemplateActionPayload {
   template: LayoutTemplate;
 }
+
+export interface DashboardHistoryClearTemplateActionPayload {}
 
 export const dashboardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
@@ -239,12 +242,19 @@ export const dashboardConfigRenameTemplateIntent = createAction(
   })
 );
 
-export const dashboardConfigHistoryPushTemplateIntent = createAction(
+export const dashboardConfigTemplateHistoryPushIntent = createAction(
   DashboardConfigAction.TEMPLATE_HISTORY_PUSH,
   (template: LayoutTemplate) => ({
     payload: {
       template,
     } as DashboardHistoryPushTemplateActionPayload,
+  })
+);
+
+export const dashboardConfigTemplateHistoryClearIntent = createAction(
+  DashboardConfigAction.TEMPLATE_HISTORY_CLEAR,
+  () => ({
+    payload: {} as DashboardHistoryClearTemplateActionPayload,
   })
 );
 
@@ -265,13 +275,17 @@ export interface DashboardLayout {
 
 export type SerialDashboardLayout = Omit<DashboardLayout, 'cards'> & { cards: SerialCardConfig[] };
 
+// only name and vendor are needed to identify a template
+export type LayoutTemplateRecord = Pick<LayoutTemplate, 'name' | 'vendor'>;
 export interface DashboardConfigState {
   layouts: DashboardLayout[];
-  templateHistory: LayoutTemplate[];
   customTemplates: LayoutTemplate[];
+  templateHistory: LayoutTemplateRecord[];
   current: number;
   readonly _version: string;
 }
+
+export const TEMPLATE_HISTORY_LIMIT = 4;
 
 const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _dashboardConfigVersion, {
   layouts: [
@@ -282,9 +296,14 @@ const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _
     },
   ] as DashboardLayout[],
   customTemplates: [] as LayoutTemplate[],
-  templateHistory: [] as LayoutTemplate[],
+  templateHistory: [] as LayoutTemplateRecord[],
   current: 0,
 });
+
+const getTemplateHistoryIndexForMutation = (state: DashboardConfigState, templateName: string) => {
+  const idx = state.templateHistory.findIndex((t) => t.name === templateName && t.vendor === 'User-supplied');
+  return idx;
+};
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
@@ -377,18 +396,23 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardConfigAddTemplateIntent, (state, { payload }) => {
       const template = payload.template;
-      const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
+      const idx = state.customTemplates.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
       if (idx >= 0) {
         throw new Error(`Template with name ${template.name} and vendor ${template.vendor} already exists.`);
       }
       state.customTemplates.push(template);
     })
+    // template mutations (delete, rename, etc.) should never be called on non-custom templates
     .addCase(dashboardConfigDeleteTemplateIntent, (state, { payload }) => {
       const idx = state.customTemplates.findIndex((t) => t.name === payload.name);
       if (idx < 0) {
         throw new Error(`Template with name ${payload.name} does not exist.`);
       }
       state.customTemplates.splice(idx, 1);
+      const historyIdx = getTemplateHistoryIndexForMutation(state, payload.name);
+      if (historyIdx >= 0) {
+        state.templateHistory.splice(historyIdx, 1);
+      }
     })
     .addCase(dashboardConfigRenameTemplateIntent, (state, { payload }) => {
       const idx = state.customTemplates.findIndex((t) => t.name === payload.oldName);
@@ -396,16 +420,28 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
         throw new Error(`Template with name ${payload.oldName} does not exist.`);
       }
       state.customTemplates[idx].name = payload.newName;
+      state.customTemplates.splice(idx, 1);
+      const historyIdx = getTemplateHistoryIndexForMutation(state, payload.oldName);
+      if (historyIdx >= 0) {
+        state.templateHistory[historyIdx].name = payload.newName;
+      }
     })
-    .addCase(dashboardConfigHistoryPushTemplateIntent, (state, { payload }) => {
+    .addCase(dashboardConfigTemplateHistoryPushIntent, (state, { payload }) => {
+      // We only push the template name and vendor to the history
       const template = payload.template;
       const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
       if (idx >= 0) {
         state.templateHistory.splice(idx, 1);
-      } else if (state.templateHistory.length >= 4) {
+      } else if (state.templateHistory.length >= TEMPLATE_HISTORY_LIMIT) {
         state.templateHistory.pop();
       }
-      state.templateHistory.unshift(template);
+      state.templateHistory.unshift({
+        name: template.name,
+        vendor: template.vendor,
+      } as LayoutTemplateRecord);
+    })
+    .addCase(dashboardConfigTemplateHistoryClearIntent, (state) => {
+      state.templateHistory = [];
     });
 });
 

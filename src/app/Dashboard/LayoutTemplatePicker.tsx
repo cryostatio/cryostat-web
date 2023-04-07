@@ -52,12 +52,16 @@ import {
   DrawerContentBody,
   DrawerHead,
   DrawerPanelContent,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
   Select,
   SelectOption,
   SelectOptionObject,
   SelectVariant,
   Stack,
   StackItem,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarFilter,
@@ -71,15 +75,17 @@ import {
   GlobeIcon,
   LongArrowAltDownIcon,
   LongArrowAltUpIcon,
+  PficonTemplateIcon,
 } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import React from 'react';
 
 import { useSelector } from 'react-redux';
 import CryostatLayoutTemplates, { BlankLayout } from './dashboard-templates';
-import { LayoutTemplate, cardsToString } from './DashboardUtils';
+import { LayoutTemplate, cardsToString, recordToLayoutTemplate } from './DashboardUtils';
 import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 import { SearchAutocomplete } from './SearchAutocomplete';
+import { LayoutTemplateRecord } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 
 export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
 
@@ -105,16 +111,32 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   const [selectedTemplate, setSelectedTemplate] = React.useState<LayoutTemplate | undefined>(undefined);
 
   const [dayjs, timeFormat] = useDayjs();
-  const recentTemplates: LayoutTemplate[] = useSelector((state: RootState) => state.dashboardConfigs.templateHistory);
+  const recentTemplateRecords: LayoutTemplateRecord[] = useSelector(
+    (state: RootState) => state.dashboardConfigs.templateHistory
+  );
   const userSubmittedTemplates: LayoutTemplate[] = useSelector(
     (state: RootState) => state.dashboardConfigs.customTemplates
   );
 
+  const searchFilteredTemplates = React.useCallback(
+    (templates: LayoutTemplate[]): LayoutTemplate[] => {
+      if (!searchFilter) {
+        return templates;
+      }
+      return templates.filter((t) => t.name.toLowerCase().includes(searchFilter.toLowerCase()));
+    },
+    [searchFilter]
+  );
+
   const allTemplates: LayoutTemplate[] = React.useMemo(() => {
-    return [BlankLayout, ...userSubmittedTemplates, ...CryostatLayoutTemplates].filter(
-      (template, index, arr) => arr.findIndex((t) => t.name === template.name) === index
-    );
-  }, [userSubmittedTemplates]);
+    return [BlankLayout, ...userSubmittedTemplates, ...CryostatLayoutTemplates];
+  }, []);
+
+  const allSearchableTemplateNames: string[] = React.useMemo(() => {
+    return searchFilteredTemplates(
+      allTemplates.filter((template, index, arr) => arr.findIndex((t) => t.name === template.name) === index)
+    ).map((t) => t.name);
+  }, [searchFilteredTemplates, userSubmittedTemplates]);
 
   const onInnerTemplateSelect = React.useCallback(
     (templateName: LayoutTemplate) => {
@@ -127,8 +149,6 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const onSearchChange = React.useCallback(
     (value: string) => {
-      console.log('search change: ', value);
-      
       setSearchFilter(value);
     },
     [setSearchFilter]
@@ -213,10 +233,10 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [setIsDrawerExpanded]);
 
   const panelContent = React.useMemo(() => {
-    if (selectedTemplate) {
-      return (
-        <DrawerPanelContent>
-          <DrawerHead>
+    return (
+      <DrawerPanelContent>
+        <DrawerHead>
+          {selectedTemplate ? (
             <DescriptionList>
               <DescriptionListGroup>
                 <DescriptionListTerm>Name</DescriptionListTerm>
@@ -238,47 +258,83 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               )}
               {selectedTemplate?.version && (
                 <DescriptionListGroup>
-                  <DescriptionListTerm>Version</DescriptionListTerm>
+                  <DescriptionListTerm>Vendor</DescriptionListTerm>
                   <DescriptionListDescription>{selectedTemplate.version}</DescriptionListDescription>
                 </DescriptionListGroup>
               )}
-              {selectedTemplate?.createdAt && (
-                <DescriptionListGroup>
-                  <DescriptionListTerm>Created At</DescriptionListTerm>
-                  <DescriptionListDescription>
-                    {dayjs(selectedTemplate.createdAt).tz(timeFormat.timeZone.full).format('LL')}
-                  </DescriptionListDescription>
-                </DescriptionListGroup>
-              )}
             </DescriptionList>
-            <DrawerActions>
-              <DrawerCloseButton onClick={onDrawerCloseClick} />
-            </DrawerActions>
-          </DrawerHead>
-        </DrawerPanelContent>
-      );
-    } else {
-      return (
-        <DrawerPanelContent>
-          <DrawerHead>
-            <DrawerActions>
-              <DrawerCloseButton onClick={onDrawerCloseClick} />
-            </DrawerActions>
-          </DrawerHead>
-        </DrawerPanelContent>
-      );
-    }
+          ) : (
+            <>No template selected</>
+          )}
+
+          <DrawerActions>
+            <DrawerCloseButton onClick={onDrawerCloseClick} />
+          </DrawerActions>
+        </DrawerHead>
+      </DrawerPanelContent>
+    );
   }, [dayjs, timeFormat.timeZone.full, onDrawerCloseClick, selectedTemplate]);
 
-  const searchFilteredTemplates = React.useCallback(
-    (templates: LayoutTemplate[]): LayoutTemplate[] => {
-      if (!searchFilter) {
-        return templates;
-      }
-      return templates.filter((t) => t.name.includes(searchFilter.toLowerCase()));
+  const sortedFilteredTemplateLayoutGroup = React.useCallback(
+    (title: LayoutTemplateFilter, templates: LayoutTemplate[]) => {
+      const sortedSearchFilteredTemplates = searchFilteredTemplates([...templates]).sort((a, b) => {
+        switch (selectedSort) {
+          case 'Name':
+            if (sortDirection === 'asc') {
+              return a.name.localeCompare(b.name);
+            }
+            return b.name.localeCompare(a.name);
+          case 'Most Recent':
+            return 0;
+          case 'Version':
+            if (sortDirection === 'asc') {
+              return a.version.localeCompare(b.version);
+            }
+            return b.version.localeCompare(a.version);
+          case 'Card Count':
+            if (sortDirection === 'asc') {
+              return a.layout.cards.length - b.layout.cards.length;
+            }
+            return b.layout.cards.length - a.layout.cards.length;
+          default:
+            return 0;
+        }
+      });
+
+      return sortedSearchFilteredTemplates.length !== 0 &&
+        (selectedFilters.includes(title) || selectedFilters.length === 0) ? (
+        <>
+          <StackItem>
+            <LayoutTemplateGroup
+              title={title}
+              templates={searchFilteredTemplates(sortedSearchFilteredTemplates)}
+              onTemplateSelect={onInnerTemplateSelect}
+            />
+          </StackItem>
+          <StackItem>
+            <Divider />
+          </StackItem>
+        </>
+      ) : (
+        <></>
+      );
     },
-    [searchFilter]
+    [searchFilteredTemplates, selectedFilters, selectedSort, sortDirection, onInnerTemplateSelect, dayjs]
   );
+
+  const RecentTemplates = React.useMemo(() => {
+    return recentTemplateRecords
+      .map((r) => {
+        const template = recordToLayoutTemplate(r, allTemplates);
+        if (template) {
+          return template;
+        } else {
+          console.error(`Could not find template for record ${r.name} with vendor ${r.vendor}`);
+          return undefined;
+        }
+      })
+      .filter((t) => t !== undefined) as LayoutTemplate[];
+  }, [recentTemplateRecords, allTemplates, recordToLayoutTemplate]);
 
   return (
     <Drawer isExpanded={isDrawerExpanded} isInline position="right">
@@ -345,41 +401,21 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 </ToolbarContent>
               </Toolbar>
               <Stack>
-                {(selectedFilters.includes('Suggested') || selectedFilters.length === 0) && (!searchFilter) && (
+                {allSearchableTemplateNames.length !== 0 ? (
                   <>
-                    <StackItem>
-                      <LayoutTemplateGroup
-                        title="Suggested"
-                        templates={searchFilteredTemplates([BlankLayout, ...recentTemplates])}
-                        onTemplateSelect={onInnerTemplateSelect}
-                      />
-                    </StackItem>
-                    <StackItem>
-                      <Divider />
-                    </StackItem>
+                    {sortedFilteredTemplateLayoutGroup('Suggested', [BlankLayout, ...RecentTemplates])}
+                    {sortedFilteredTemplateLayoutGroup('Cryostat', CryostatLayoutTemplates)}
+                    {sortedFilteredTemplateLayoutGroup('User-submitted', userSubmittedTemplates)}
                   </>
-                )}
-                {(selectedFilters.includes('Cryostat') || selectedFilters.length === 0) && (
-                  <>
-                    <StackItem>
-                      <LayoutTemplateGroup
-                        title="Cryostat"
-                        templates={searchFilteredTemplates(CryostatLayoutTemplates)}
-                        onTemplateSelect={onInnerTemplateSelect}
-                      />
-                    </StackItem>
-                    <StackItem>
-                      <Divider />
-                    </StackItem>
-                  </>
-                )}
-                {(selectedFilters.includes('User-submitted') || selectedFilters.length === 0) && (
+                ) : (
                   <StackItem>
-                    <LayoutTemplateGroup
-                      title="User-submitted"
-                      templates={searchFilteredTemplates(userSubmittedTemplates)}
-                      onTemplateSelect={onInnerTemplateSelect}
-                    />
+                    <EmptyState>
+                      <EmptyStateIcon icon={PficonTemplateIcon} />
+                      <Title size="lg" headingLevel="h4">
+                        No templates found
+                      </Title>
+                      <EmptyStateBody>Upload your own templates!</EmptyStateBody>
+                    </EmptyState>
                   </StackItem>
                 )}
               </Stack>

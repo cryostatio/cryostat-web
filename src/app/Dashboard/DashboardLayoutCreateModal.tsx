@@ -37,9 +37,9 @@
  */
 import {
   dashboardConfigAddLayoutIntent,
-  dashboardConfigHistoryPushTemplateIntent,
   dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
+  dashboardConfigTemplateHistoryPushIntent,
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
 import { portalRoot } from '@app/utils/utils';
@@ -134,7 +134,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         const newLayout = deserializeLayout(template.layout, name);
         if (isCreateModal) {
           dispatch(dashboardConfigAddLayoutIntent(newLayout));
-          dispatch(dashboardConfigHistoryPushTemplateIntent(template));
+          dispatch(dashboardConfigTemplateHistoryPushIntent(template));
         } else {
           if (props.oldName !== undefined) {
             dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
