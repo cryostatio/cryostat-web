@@ -64,9 +64,10 @@ export interface LayoutTemplateGroupProps {
   title: string;
   templates: LayoutTemplate[];
   onTemplateSelect: (templateName: LayoutTemplate) => void;
+  onTemplateDelete: (templateName: string) => void;
 }
 
-export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemplateSelect, ...props }) => {
+export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemplateSelect, onTemplateDelete, ...props }) => {
   const dispatch = useDispatch();
   const [selectedTemplate, setSelectedTemplate] = React.useState<string>(BlankLayout.name);
 
@@ -100,6 +101,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
       (e: React.MouseEvent) => {
         e.stopPropagation();
         dispatch(dashboardConfigDeleteTemplateIntent(template.name));
+        onTemplateDelete(template.name);
       },
       [template.name]
     );

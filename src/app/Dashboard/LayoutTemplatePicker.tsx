@@ -139,12 +139,24 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [searchFilteredTemplates, userSubmittedTemplates]);
 
   const onInnerTemplateSelect = React.useCallback(
-    (templateName: LayoutTemplate) => {
-      onTemplateSelect(templateName);
-      setSelectedTemplate(templateName);
+    (template: LayoutTemplate) => {
+      onTemplateSelect(template);
+      setSelectedTemplate(template);
       setIsDrawerExpanded(true);
     },
     [onTemplateSelect, setSelectedTemplate, setIsDrawerExpanded]
+  );
+
+  const onInnerTemplateDelete = React.useCallback(
+    (templateName: string) => {
+      setSelectedTemplate((prev) => {
+        if (prev?.name === templateName) {
+          return undefined;
+        }
+        return prev;
+      });
+    },
+    [setSelectedTemplate]
   );
 
   const onSearchChange = React.useCallback(
@@ -234,7 +246,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const panelContent = React.useMemo(() => {
     return (
-      <DrawerPanelContent>
+      <DrawerPanelContent isResizable defaultSize="50%">
         <DrawerHead>
           {selectedTemplate ? (
             <DescriptionList>
@@ -309,6 +321,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               title={title}
               templates={searchFilteredTemplates(sortedSearchFilteredTemplates)}
               onTemplateSelect={onInnerTemplateSelect}
+              onTemplateDelete={onInnerTemplateDelete}
             />
           </StackItem>
           <StackItem>

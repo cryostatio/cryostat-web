@@ -212,7 +212,6 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       if (actionId === 'rename') {
         handleRenameLayout(itemId);
       } else if (actionId === 'delete') {
-        console.log(itemId + ' delete');
         handleDeleteButton(ev, itemId);
       } else if (actionId === 'fav') {
         handleFavoriteLayout(itemId);

@@ -169,7 +169,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
       <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
         <OuterScrollContainer>
           <InnerScrollContainer>
-            <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() => {}} />
+            <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() =>{}} onTemplateDelete={() => {}} />
           </InnerScrollContainer>
         </OuterScrollContainer>
       </div>
@@ -220,7 +220,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
           <Button
             variant="primary"
             onClick={handleSubmit}
-            isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated !== ValidatedOptions.success}
+            isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated === ValidatedOptions.error}
           >
             {t('SUBMIT', { ns: 'common' })}
           </Button>
