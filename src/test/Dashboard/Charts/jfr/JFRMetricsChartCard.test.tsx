@@ -156,7 +156,7 @@ describe('<JFRMetricsChartCard />', () => {
 
     renderChartCard(<JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />);
 
-    expect(screen.getByText('CPU Load')).toBeInTheDocument();
+    expect(screen.getByText('CPU Load (last 120s, every 10s)')).toBeInTheDocument();
     expect(screen.getByText('No source recording')).toBeInTheDocument();
     expect(
       screen.getByText((s) => s.includes('Metrics cards display data taken from running flight recordings'))

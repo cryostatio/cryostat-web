@@ -210,25 +210,15 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
   }, [props.actions, resyncButton, popoutButton]);
 
   const header = React.useMemo(() => {
-    const isWide = props.span > 4;
-    const style = {
-      marginBottom: isWide ? '-2em' : '',
-    };
-    if (controllerState === ControllerState.READY) {
-      return (
-        <CardHeader style={style}>
-          <CardActions>{actions}</CardActions>
-        </CardHeader>
-      );
-    } else {
-      return (
-        <CardHeader style={style}>
-          <CardTitle>{props.chartKind}</CardTitle>
-          <CardActions>{props.actions}</CardActions>
-        </CardHeader>
-      );
-    }
-  }, [props.actions, props.span, props.chartKind, controllerState, actions]);
+    return (
+      <CardHeader>
+        <CardTitle>
+          {t('CHART_CARD.TITLE', { chartKind: props.chartKind, duration: props.duration, period: props.period })}
+        </CardTitle>
+        <CardActions>{controllerState === ControllerState.READY ? actions : props.actions}</CardActions>
+      </CardHeader>
+    );
+  }, [props.actions, props.chartKind, props.duration, props.period, t, controllerState, actions]);
 
   const handleCreateRecording = React.useCallback(() => {
     history.push({
@@ -256,6 +246,7 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
       isCompact
       style={cardStyle}
       cardHeader={header}
+      title={props.chartKind}
       isDraggable={props.isDraggable}
       isResizable={props.isResizable}
       isFullHeight={props.isFullHeight}
@@ -264,12 +255,9 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
         {controllerState === ControllerState.UNKNOWN ? (
           <LoadingView />
         ) : controllerState === ControllerState.READY ? (
-          <iframe
-            className="disabled-pointer"
-            key={controllerState + randomKey}
-            style={{ height: '100%', width: '100%' }}
-            src={chartSrc}
-          />
+          <div className="grafana-iframe-wrapper">
+            <iframe className="disabled-pointer" key={controllerState + randomKey} src={chartSrc} />
+          </div>
         ) : (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.large}>

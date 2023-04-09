@@ -640,3 +640,21 @@ svg.topology__node-decorator-icon.progress {
   animation: 1.2s pfext-spotlight-expand 0.6s ease-out;
   animation-fill-mode: forwards;
 }
+
+.disabled-pointer {
+  pointer-events: none !important;
+}
+
+.grafana-iframe-wrapper {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow-y: hidden;
+}
+
+.grafana-iframe-wrapper iframe {
+  position: absolute;
+  height: calc(100% + 2em);
+  width: 100%;
+  top: -2em;
+}
