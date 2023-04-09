@@ -1826,7 +1826,7 @@ export interface ActiveRecordingFilterInput {
   durationMsLessThanEqual?: number;
   startTimeMsBeforeEqual?: number;
   startTimeMsAfterEqual?: number;
-  labels?: string;
+  labels?: string[] | string;
 }
 
 export const automatedAnalysisRecordingName = 'automated-analysis';

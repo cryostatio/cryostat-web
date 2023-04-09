@@ -152,12 +152,7 @@ export class JFRMetricsChartController {
     }
     return this._api.targetHasRecording(target, {
       state: RecordingState.RUNNING,
-      labels: this._api.stringifyRecordingLabels([
-        {
-          key: 'origin',
-          value: RECORDING_NAME,
-        },
-      ]),
+      labels: [`origin=${RECORDING_NAME}`],
     });
   }
 }
