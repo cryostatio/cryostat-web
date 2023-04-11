@@ -330,7 +330,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   );
 
   const currLayout = React.useMemo(() => {
-    console.log('dashboardConfigs.layouts[dashboardConfigs.current]', dashboardConfigs.current);
     return dashboardConfigs.layouts[dashboardConfigs.current];
   }, [dashboardConfigs]);
 

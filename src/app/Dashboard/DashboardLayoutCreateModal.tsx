@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import {
-  dashboardConfigAddLayoutIntent,
+  dashboardConfigCreateLayoutIntent,
   dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
   dashboardConfigTemplateHistoryPushIntent,
@@ -62,12 +62,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { BlankLayout } from './dashboard-templates';
-import {
-  DashboardLayoutNamePattern,
-  DEFAULT_DASHBOARD_NAME,
-  deserializeLayout,
-  LayoutTemplate,
-} from './DashboardUtils';
+import { DashboardLayoutNamePattern, DEFAULT_DASHBOARD_NAME, layoutize, LayoutTemplate } from './DashboardUtils';
 import { LayoutTemplatePicker } from './LayoutTemplatePicker';
 
 export interface DashboardLayoutCreateModalProps {
@@ -131,9 +126,9 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     (ev?: React.MouseEvent) => {
       ev && ev.stopPropagation();
       if (nameValidated === ValidatedOptions.success) {
-        const newLayout = deserializeLayout(template.layout, name);
+        const newLayout = layoutize(template, name);
         if (isCreateModal) {
-          dispatch(dashboardConfigAddLayoutIntent(newLayout));
+          dispatch(dashboardConfigCreateLayoutIntent(newLayout));
           dispatch(dashboardConfigTemplateHistoryPushIntent(template));
         } else {
           if (props.oldName !== undefined) {
@@ -229,7 +224,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     <Modal
       width={'90em'}
       appendTo={portalRoot}
-      isOpen={props.visible} //change back to props.visible
+      isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}

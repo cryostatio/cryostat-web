@@ -37,12 +37,7 @@
  */
 
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
-import {
-  DashboardLayout,
-  LayoutTemplateRecord,
-  SerialCardConfig,
-  SerialDashboardLayout,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { gridSpans } from '@patternfly/react-core';
 import { FileIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
 import React from 'react';
@@ -54,30 +49,80 @@ export const LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT = 100;
 export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;
 export const LayoutTemplateDescriptionPattern = /^[a-zA-Z0-9\s.,\-'";?!@#$%^&*()[\]_+=:{}]*$/;
 
-export enum LayoutTemplateIcon {
-  CRYOSTAT = 'cryostat',
-  BLANK = 'blank',
-  USER = 'user',
+export interface CardConfig {
+  id: string;
+  name: string;
+  span: gridSpans;
+  props: object;
 }
+
+export type SerialCardConfig = Omit<CardConfig, 'id'>;
+
+export const mockSerialCardConfig: SerialCardConfig = {
+  name: 'Default',
+  span: 12,
+  props: {},
+};
+export interface DashboardLayout {
+  name: string;
+  cards: CardConfig[];
+  favorite: boolean;
+}
+
+export type SerialDashboardLayout = Omit<DashboardLayout, 'name' | 'cards'> & { cards: SerialCardConfig[] };
+
+// only name and vendor are needed to identify a template
+export type LayoutTemplateRecord = Pick<LayoutTemplate, 'name' | 'vendor'>;
+
+export enum LayoutTemplateVersion {
+  'v2.3' = 'v2.3',
+}
+
+export enum LayoutTemplateVendor {
+  BLANK = 'Blank',
+  CRYOSTAT = 'Cryostat',
+  USER = 'User-supplied',
+}
+
 export interface LayoutTemplate {
   name: string;
-  icon: LayoutTemplateIcon;
   description: string;
-  layout: SerialDashboardLayout;
-  vendor?: 'Cryostat' | 'User-supplied';
-  version: string;
-  mostRecentlyUsed?: number;
+  cards: SerialCardConfig[];
+  version: LayoutTemplateVersion;
+  vendor: LayoutTemplateVendor;
 }
 
-export type SerialLayoutTemplate = Omit<LayoutTemplate, 'icon' | 'vendor'>;
+export type SerialLayoutTemplate = Omit<LayoutTemplate, 'vendor'>;
 
-export const iconify = (icon: LayoutTemplateIcon): React.ReactNode => {
-  switch (icon) {
-    case 'cryostat':
+export const mockSerialLayoutTemplate: SerialLayoutTemplate = {
+  name: 'Default',
+  description: 'Default.',
+  cards: [] as SerialCardConfig[],
+  version: LayoutTemplateVersion['v2.3'],
+};
+
+export interface LayoutTemplateProviderProps {
+  selectedTemplate: LayoutTemplate | undefined;
+  setSelectedTemplate: (template: React.SetStateAction<LayoutTemplate | undefined>) => void;
+  isUploadModalOpen: boolean;
+  setIsUploadModalOpen: (isOpen: React.SetStateAction<boolean>) => void;
+}
+
+// use a provider
+export const LayoutTemplateContext = React.createContext<LayoutTemplateProviderProps>({
+  selectedTemplate: undefined,
+  setSelectedTemplate: () => undefined,
+  isUploadModalOpen: false,
+  setIsUploadModalOpen: () => undefined,
+});
+
+export const iconify = (vendor: LayoutTemplateVendor): React.ReactNode => {
+  switch (vendor) {
+    case LayoutTemplateVendor.CRYOSTAT:
       return <img src={cryostatLogo} alt="Cryostat Logo" />;
-    case 'blank':
+    case LayoutTemplateVendor.BLANK:
       return <FileIcon style={{ paddingRight: '0.3rem' }} />;
-    case 'user':
+    case LayoutTemplateVendor.USER:
       return <UserIcon />;
     default:
       return <></>;
@@ -87,12 +132,24 @@ export const iconify = (icon: LayoutTemplateIcon): React.ReactNode => {
 export const templatize = (layout: DashboardLayout, name: string, desc?: string): LayoutTemplate => {
   return {
     name: name,
-    icon: LayoutTemplateIcon.USER,
-    description: desc || 'Custom layout.',
-    layout: layout,
-    vendor: 'User-supplied',
-    version: '2.3.0',
-  };
+    description: desc || `Custom layout template.`,
+    cards: layout.cards,
+    vendor: LayoutTemplateVendor.USER,
+    version: LayoutTemplateVersion['v2.3'],
+  } as LayoutTemplate;
+};
+
+export const layoutize = (template: LayoutTemplate, name: string): DashboardLayout => {
+  return {
+    name: name,
+    cards: template.cards.map((card) => {
+      return {
+        ...card,
+        id: `${card.name}-${nanoid()}`,
+      };
+    }),
+    favorite: false,
+  } as DashboardLayout;
 };
 
 export const recordToLayoutTemplate = (
@@ -117,17 +174,4 @@ export const cardsToString = (config: SerialCardConfig[]): string => {
       return stringified;
     })
     .join(', ');
-};
-
-export const deserializeLayout = (layout: SerialDashboardLayout, name?: string): DashboardLayout => {
-  return {
-    ...layout,
-    name: name || layout.name,
-    cards: layout.cards.map((card) => {
-      return {
-        ...card,
-        id: `${card.name}-${nanoid()}`,
-      };
-    }),
-  } as DashboardLayout;
 };

@@ -39,10 +39,6 @@ html, body, #root {
   height: 100%;
 }
 
-.pfext-spotlight.pfext-spotlight__element-highlight-animate {
-  animation: 0.4s ocs-spotlight-fade-in 0s ease-in-out, 5s ocs-spotlight-fade-out 3s ease-in-out;
-}
-
 :root {
   --cryostat-indigo: #1B4965;
   --cryostat-picton-blue: #5FA8D3;
@@ -125,6 +121,13 @@ html, body, #root {
 .layout-template-picker .catalog-tile-pf {
   height: 100%;
   color: var(--pf-global--Color--100);
+  border-top: 1.5px solid var(--pf-global--palette--black-300);
+}
+
+.layout-template-picker .catalog-tile-pf.featured {
+  border-top: 2px solid var(--pf-global--active-color--100);
+  transform: translateY(-0.4em);
+  transition: transform 0.5s;
 }
 
 #dashboard-layout-menu-content .pf-c-menu__item-action {

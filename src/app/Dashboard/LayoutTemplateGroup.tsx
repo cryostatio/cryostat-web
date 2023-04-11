@@ -39,7 +39,7 @@ import {
   dashboardConfigDeleteTemplateIntent,
   dashboardConfigTemplateHistoryClearIntent,
 } from '@app/Shared/Redux/ReduxStore';
-import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
+import { CatalogTile, CatalogTileBadge, CatalogTileProps } from '@patternfly/react-catalog-view-extension';
 import {
   Button,
   Dropdown,
@@ -55,10 +55,11 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { CheckCircleIcon, PficonTemplateIcon } from '@patternfly/react-icons';
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { BlankLayout } from './dashboard-templates';
-import { iconify, LayoutTemplate } from './DashboardUtils';
+import { iconify, LayoutTemplate, LayoutTemplateContext, LayoutTemplateVendor } from './DashboardUtils';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface LayoutTemplateGroupProps {
   title: string;
@@ -67,13 +68,22 @@ export interface LayoutTemplateGroupProps {
   onTemplateDelete: (templateName: string) => void;
 }
 
-export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemplateSelect, onTemplateDelete, ...props }) => {
+export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
+  onTemplateSelect,
+  onTemplateDelete,
+  ...props
+}) => {
   const dispatch = useDispatch();
-  const [selectedTemplate, setSelectedTemplate] = React.useState<string>(BlankLayout.name);
+  const serviceContext = React.useContext(ServiceContext);
+  const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const handleTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
-      setSelectedTemplate(template.name);
+      if (scrollRef.current) {
+        scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      setSelectedTemplate(template);
       onTemplateSelect(template);
     },
     [setSelectedTemplate, onTemplateSelect]
@@ -97,6 +107,14 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
       [setIsOpen]
     );
 
+    const handleTemplateDownload = React.useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation();
+        serviceContext.api.downloadLayoutTemplate(template);
+      },
+      [serviceContext.api, template]
+    );
+
     const handleTemplateDelete = React.useCallback(
       (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -108,16 +126,19 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
 
     const dropdownItems = React.useMemo(() => {
       return [
-        <DropdownItem key={template.name} onClick={handleTemplateDelete}>
+        <DropdownItem key={'download'} onClick={handleTemplateDownload}>
+          Download
+        </DropdownItem>,
+        <DropdownItem key={'delete'} onClick={handleTemplateDelete}>
           Delete
         </DropdownItem>,
       ];
-    }, [template, handleTemplateDelete]);
+    }, [handleTemplateDownload, handleTemplateDelete]);
 
     return (
       <Dropdown
         onSelect={onSelect}
-        toggle={<KebabToggle isDisabled={template.vendor !== 'User-supplied'} onToggle={openKebab} />}
+        toggle={<KebabToggle isDisabled={template.vendor !== LayoutTemplateVendor.USER} onToggle={openKebab} />}
         isOpen={isOpen}
         isPlain
         dropdownItems={dropdownItems}
@@ -153,23 +174,16 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({ onTemp
           props.templates.map((template) => (
             <GalleryItem key={template.name}>
               <CatalogTile
-                featured={selectedTemplate === template.name}
+                featured={selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor}
                 id={template.name}
                 key={template.name}
-                icon={iconify(template.icon)}
+                icon={iconify(template.vendor)}
                 title={template.name}
                 vendor={template.vendor}
                 onClick={() => handleTemplateSelect(template)}
-                badges={[
-                  selectedTemplate === template.name && (
-                    <CatalogTileBadge title="Selected" key={template.name}>
-                      <CheckCircleIcon color={'var(--pf-global--success-color--100)'} />
-                    </CatalogTileBadge>
-                  ),
-                  <KebabCatalogTileBadge template={template} key={template.name + '-kebab'} />,
-                ]}
+                badges={[<KebabCatalogTileBadge template={template} key={template.name + '-kebab'} />]}
               >
-                {template.description}
+                <div ref={scrollRef}>{template.description}</div>
               </CatalogTile>
             </GalleryItem>
           ))

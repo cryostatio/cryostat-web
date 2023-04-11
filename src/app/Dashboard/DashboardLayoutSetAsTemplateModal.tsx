@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { dashboardConfigAddTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
@@ -49,7 +49,6 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
-import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -59,7 +58,6 @@ import {
   LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
   templatize,
 } from './DashboardUtils';
-import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 
 export interface DashboardLayoutSetAsTemplateModalProps {
   visible: boolean;
@@ -108,7 +106,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
 
   const handleSubmit = React.useCallback(
     (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      dispatch(dashboardConfigAddTemplateIntent(templatize(currLayout, name, description)));
+      dispatch(dashboardConfigCreateTemplateIntent(templatize(currLayout, name, description)));
       handleClose(ev);
     },
     [dispatch, handleClose, currLayout, name, description]
@@ -166,13 +164,13 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
       title={t('DashboardLayoutSetAsTemplateModal.TITLE')}
       description={t(`DashboardLayoutSetAsTemplateModal.DESCRIPTION`)}
     >
-      <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
+      {/* <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
         <OuterScrollContainer>
           <InnerScrollContainer>
             <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() =>{}} onTemplateDelete={() => {}} />
           </InnerScrollContainer>
         </OuterScrollContainer>
-      </div>
+      </div> */}
       <Form onSubmit={(e) => e.preventDefault()}>
         <FormSection>
           <FormGroup

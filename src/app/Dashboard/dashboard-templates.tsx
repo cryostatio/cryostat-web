@@ -35,466 +35,442 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { LayoutTemplate, LayoutTemplateIcon } from './DashboardUtils';
+import { LayoutTemplate, LayoutTemplateVendor, LayoutTemplateVersion } from './DashboardUtils';
 
-const VERSION = '2.3.0';
+const CURR_VERSION: LayoutTemplateVersion = LayoutTemplateVersion['v2.3'];
 
 export const BlankLayout: LayoutTemplate = {
   name: 'Blank',
-  icon: LayoutTemplateIcon.BLANK,
   description: 'A blank layout template for creating your own dashboard.',
-  layout: {
-    name: 'Blank',
-    cards: [],
-    favorite: false,
-  },
-  version: VERSION,
+  cards: [],
+  version: CURR_VERSION,
+  vendor: LayoutTemplateVendor.BLANK,
 };
 
 const GeneralLayout: LayoutTemplate = {
   name: 'General',
-  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A general layout template for monitoring a JVM's metrics and performance.",
-  vendor: 'Cryostat',
-  layout: {
-    name: 'JVM-Monitoring',
-    cards: [
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 3,
-        props: {
-          chartKind: 'Heap Usage Percentage',
-          duration: 60,
-          period: 10,
-          themeColor: 'cyan',
-        },
+  vendor: LayoutTemplateVendor.CRYOSTAT,
+  cards: [
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 3,
+      props: {
+        chartKind: 'Heap Usage Percentage',
+        duration: 60,
+        period: 10,
+        themeColor: 'cyan',
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 3,
-        props: {
-          chartKind: 'System CPU Load',
-          duration: 60,
-          period: 10,
-          themeColor: 'gold',
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 3,
+      props: {
+        chartKind: 'System CPU Load',
+        duration: 60,
+        period: 10,
+        themeColor: 'gold',
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 3,
-        props: {
-          themeColor: 'blue',
-          chartKind: 'Process CPU Load',
-          duration: 60,
-          period: 10,
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 3,
+      props: {
+        themeColor: 'blue',
+        chartKind: 'Process CPU Load',
+        duration: 60,
+        period: 10,
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 3,
-        props: {
-          chartKind: 'Physical Memory',
-          duration: 60,
-          period: 10,
-          themeColor: 'orange',
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 3,
+      props: {
+        chartKind: 'Physical Memory',
+        duration: 60,
+        period: 10,
+        themeColor: 'orange',
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 3,
-        props: {
-          themeColor: 'purple',
-          chartKind: 'Heap Memory Usage',
-          duration: 60,
-          period: 10,
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 3,
+      props: {
+        themeColor: 'purple',
+        chartKind: 'Heap Memory Usage',
+        duration: 60,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Thread Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Thread Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Compiler Total Time',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Compiler Total Time',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Classloading Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Classloading Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Network Utilization',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Network Utilization',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Exception Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Exception Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'File I/O',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'File I/O',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Recording Duration',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Recording Duration',
+        duration: 120,
+        period: 10,
       },
-    ],
-    favorite: false,
-  },
-  version: VERSION,
+    },
+  ],
+  version: CURR_VERSION,
 };
 
 const ThreadMonitoringLayout: LayoutTemplate = {
   name: 'Thread Monitoring',
-  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A layout template for monitoring a JVM's threads.",
-  vendor: 'Cryostat',
-  layout: {
-    name: 'Thread-Monitoring',
-    cards: [
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Thread Count',
-          duration: 120,
-          period: 10,
-        },
+  vendor: LayoutTemplateVendor.CRYOSTAT,
+  cards: [
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Thread Count',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Thread Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Thread Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Thread Context Switch Rate',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Thread Context Switch Rate',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Core Count',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Core Count',
+        duration: 120,
+        period: 10,
       },
-    ],
-    favorite: false,
-  },
-  version: VERSION,
+    },
+  ],
+  version: CURR_VERSION,
 };
 
 const MemoryMonitoringLayout: LayoutTemplate = {
   name: 'Memory Monitoring',
-  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A layout template for monitoring a JVM's memory.",
-  vendor: 'Cryostat',
-  layout: {
-    name: 'Memory',
-    cards: [
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Memory Usage',
-          duration: 120,
-          period: 10,
-        },
+  vendor: LayoutTemplateVendor.CRYOSTAT,
+  cards: [
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Memory Usage',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Total Memory',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Total Memory',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 3,
-        props: {
-          chartKind: 'Heap Usage Percentage',
-          duration: 60,
-          period: 10,
-          themeColor: 'gold',
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 3,
+      props: {
+        chartKind: 'Heap Usage Percentage',
+        duration: 60,
+        period: 10,
+        themeColor: 'gold',
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Heap Usage',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Heap Usage',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 4,
-        props: {
-          chartKind: 'Physical Memory',
-          duration: 60,
-          period: 10,
-          themeColor: 'blue',
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Physical Memory',
+        duration: 60,
+        period: 10,
+        themeColor: 'blue',
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 4,
-        props: {
-          chartKind: 'Heap Memory Usage',
-          duration: 60,
-          period: 10,
-          themeColor: 'cyan',
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Heap Memory Usage',
+        duration: 60,
+        period: 10,
+        themeColor: 'cyan',
       },
-      {
-        name: 'MBeanMetricsChartCard',
-        span: 4,
-        props: {
-          chartKind: 'Non-Heap Memory Usage',
-          duration: 60,
-          period: 10,
-          themeColor: 'purple',
-        },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Non-Heap Memory Usage',
+        duration: 60,
+        period: 10,
+        themeColor: 'purple',
       },
-    ],
-    favorite: false,
-  },
-  version: VERSION,
+    },
+  ],
+  version: CURR_VERSION,
 };
 
 const JFRMonitoringLayout: LayoutTemplate = {
   name: 'JFR Monitoring',
-  icon: LayoutTemplateIcon.CRYOSTAT,
   description: "A layout template for monitoring a JVM's JFR events using embedded Grafana charts.",
-  vendor: 'Cryostat',
-  layout: {
-    name: 'JFR Monitoring',
-    cards: [
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Recording Start Time',
-          duration: 120,
-          period: 10,
-        },
+  vendor: LayoutTemplateVendor.CRYOSTAT,
+  cards: [
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Recording Start Time',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'CPU Load',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'CPU Load',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Heap Usage',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Heap Usage',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Memory Usage',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Memory Usage',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Classloading Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Classloading Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Thread Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Thread Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Network Utilization',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Network Utilization',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Exception Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Exception Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Thread Context Switch Rate',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Thread Context Switch Rate',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Compiler Statistics',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Compiler Statistics',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Compiler Total Time',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Compiler Total Time',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Safepoint Duration',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Safepoint Duration',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'File I/O',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'File I/O',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Compiler Total Time',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Compiler Total Time',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Compiler Peak Time',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Compiler Peak Time',
+        duration: 120,
+        period: 10,
       },
-      {
-        name: 'JFRMetricsChartCard',
-        span: 3,
-        props: {
-          theme: 'light',
-          chartKind: 'Object Allocation Sample',
-          duration: 120,
-          period: 10,
-        },
+    },
+    {
+      name: 'JFRMetricsChartCard',
+      span: 3,
+      props: {
+        theme: 'light',
+        chartKind: 'Object Allocation Sample',
+        duration: 120,
+        period: 10,
       },
-    ],
-    favorite: false,
-  },
-  version: VERSION,
+    },
+  ],
+  version: CURR_VERSION,
 };
 
 const CryostatLayoutTemplates: LayoutTemplate[] = [

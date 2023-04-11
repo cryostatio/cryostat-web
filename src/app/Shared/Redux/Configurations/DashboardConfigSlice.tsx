@@ -37,7 +37,7 @@
  */
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
-import { LayoutTemplate } from '@app/Dashboard/DashboardUtils';
+import { DashboardLayout, LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/DashboardUtils';
 import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
@@ -171,7 +171,7 @@ export const dashboardConfigFirstRunIntent = createAction(DashboardConfigAction.
   payload: {} as DashboardFirstRunActionPayload,
 }));
 
-export const dashboardConfigAddLayoutIntent = createAction(
+export const dashboardConfigCreateLayoutIntent = createAction(
   DashboardConfigAction.LAYOUT_ADD,
   (layout: DashboardLayout) => ({
     payload: {
@@ -214,7 +214,7 @@ export const dashboardConfigFavoriteLayoutIntent = createAction(
   })
 );
 
-export const dashboardConfigAddTemplateIntent = createAction(
+export const dashboardConfigCreateTemplateIntent = createAction(
   DashboardConfigAction.TEMPLATE_ADD,
   (template: LayoutTemplate) => ({
     payload: {
@@ -258,25 +258,6 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
   })
 );
 
-export interface CardConfig {
-  id: string;
-  name: string;
-  span: gridSpans;
-  props: object;
-}
-
-export type SerialCardConfig = Omit<CardConfig, 'id'>;
-
-export interface DashboardLayout {
-  name: string;
-  cards: CardConfig[];
-  favorite: boolean;
-}
-
-export type SerialDashboardLayout = Omit<DashboardLayout, 'cards'> & { cards: SerialCardConfig[] };
-
-// only name and vendor are needed to identify a template
-export type LayoutTemplateRecord = Pick<LayoutTemplate, 'name' | 'vendor'>;
 export interface DashboardConfigState {
   layouts: DashboardLayout[];
   customTemplates: LayoutTemplate[];
@@ -360,7 +341,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
         },
       ];
     })
-    .addCase(dashboardConfigAddLayoutIntent, (state, { payload }) => {
+    .addCase(dashboardConfigCreateLayoutIntent, (state, { payload }) => {
       if (state.layouts.find((layout) => layout.name === payload.layout.name)) {
         throw new Error(`Layout with name ${payload.layout.name} already exists.`);
       }
@@ -394,7 +375,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       }
       state.layouts[idx].favorite = !state.layouts[idx].favorite;
     })
-    .addCase(dashboardConfigAddTemplateIntent, (state, { payload }) => {
+    .addCase(dashboardConfigCreateTemplateIntent, (state, { payload }) => {
       const template = payload.template;
       const idx = state.customTemplates.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
       if (idx >= 0) {
@@ -402,7 +383,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       }
       state.customTemplates.push(template);
     })
-    // template mutations (delete, rename, etc.) should never be called on non-custom templates
+    // template mutations (delete, rename, etc.) should never be called on non-custom templates (vendor !== 'User-supplied')
     .addCase(dashboardConfigDeleteTemplateIntent, (state, { payload }) => {
       const idx = state.customTemplates.findIndex((t) => t.name === payload.name);
       if (idx < 0) {
@@ -426,9 +407,13 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
         state.templateHistory[historyIdx].name = payload.newName;
       }
     })
+    // any template type except for the 'Blank' template can be pushed to history
     .addCase(dashboardConfigTemplateHistoryPushIntent, (state, { payload }) => {
       // We only push the template name and vendor to the history
       const template = payload.template;
+      if (template.name === 'Blank' && template.vendor === undefined) {
+        return;
+      }
       const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
       if (idx >= 0) {
         state.templateHistory.splice(idx, 1);

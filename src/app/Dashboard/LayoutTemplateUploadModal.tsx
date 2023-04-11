@@ -37,12 +37,7 @@
  */
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { DashboardLayout, SerialCardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-import {
-  dashboardConfigAddLayoutIntent,
-  dashboardConfigReplaceLayoutIntent,
-  RootState,
-} from '@app/Shared/Redux/ReduxStore';
+import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
@@ -52,17 +47,27 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
-import { DashboardLayoutNamePattern } from './DashboardUtils';
+import {
+  DashboardLayoutNamePattern,
+  LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
+  LayoutTemplate,
+  LayoutTemplateDescriptionPattern,
+  LayoutTemplateVendor,
+  LayoutTemplateVersion,
+  SerialLayoutTemplate,
+  mockSerialCardConfig,
+  mockSerialLayoutTemplate,
+} from './DashboardUtils';
 
-export interface DashboardLayoutUploadModalProps {
+export interface LayoutTemplateUploadModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
-export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProps> = ({ onClose, ...props }) => {
+export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch();
-  const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
+  const customTemplates = useSelector((state: RootState) => state.dashboardConfigs.customTemplates);
   const { t } = useTranslation();
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
@@ -71,53 +76,63 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
   const [allOks, setAllOks] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
 
-  React.useEffect(() => {
-    if (allOks && numOfFiles) {
-      const latest = dashboardConfigs.layouts[dashboardConfigs.layouts.length - 1];
-      dispatch(dashboardConfigReplaceLayoutIntent(latest.name));
-    }
-  }, [dispatch, dashboardConfigs, allOks, numOfFiles]);
-
-  const parseDashboardLayoutFile = React.useCallback(
-    (file: File): Observable<DashboardLayout> => {
+  const validateParseTemplate = React.useCallback(
+    (file: File): Observable<LayoutTemplate> => {
       return from(
         file.text().then((content) => {
-          let layout: DashboardLayout;
+          let template: SerialLayoutTemplate;
           try {
-            layout = JSON.parse(content) as DashboardLayout;
+            template = JSON.parse(content);
           } catch (err) {
-            throw new Error(t('DashboardLayoutUploadModal.ERROR.PARSE'));
+            throw new Error(t('LayoutTemplateUploadModal.ERROR.PARSE'));
           }
-          if (!layout.name) {
-            throw new Error(t('DashboardLayoutUploadModal.ERROR.NAME_INVALID.1', { name: layout.name }));
+          if (
+            !('name' in template && 'description' in template && 'cards' in template && 'version' in template) ||
+            Object.keys(template).length !== Object.keys(mockSerialLayoutTemplate).length
+          ) {
+            throw new Error(t('LayoutTemplateUploadModal.ERROR.TEMPLATE_INVALID'));
           }
-          if (!DashboardLayoutNamePattern.test(layout.name)) {
-            throw new Error(t('DashboardLayoutUploadModal.ERROR.NAME_INVALID.2'));
+          if (!template.name || !DashboardLayoutNamePattern.test(template.name)) {
+            throw new Error(t('LayoutTemplateUploadModal.ERROR.NAME_INVALID'));
           }
-          if (dashboardConfigs.layouts.some((l) => l.name === layout.name)) {
-            throw new Error(t('DashboardLayoutUploadModal.ERROR.NAME_TAKEN', { name: layout.name }));
+          if (
+            !template.description ||
+            !LayoutTemplateDescriptionPattern.test(template.description) ||
+            template.description.length > LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT
+          ) {
+            throw new Error(t('LayoutTemplateUploadModal.ERROR.DESCRIPTION_INVALID'));
           }
-          if (!Array.isArray(layout.cards)) {
-            throw new Error(t('DashboardLayoutUploadModal.ERROR.CONFIG_INVALID'));
+          if (customTemplates.some((v) => v.name === template.name)) {
+            throw new Error(t('LayoutTemplateUploadModal.ERROR.NAME_TAKEN', { name: template.name }));
           }
-          for (const cardConfig of layout.cards as SerialCardConfig[]) {
+          if (!Array.isArray(template.cards) || template.cards.length === 0) {
+            throw new Error(t('LayoutTemplateUploadModal.ERROR.CONFIG_INVALID'));
+          }
+          for (const cardConfig of template.cards) {
             if (
-              Object.keys(cardConfig).length !== 3 ||
+              Object.keys(cardConfig).length !== Object.keys(mockSerialCardConfig).length ||
               cardConfig.name === undefined ||
               cardConfig.span === undefined ||
               cardConfig.props === undefined
             ) {
-              throw new Error(t('DashboardLayoutUploadModal.ERROR.CONFIG_INVALID'));
+              throw new Error(t('LayoutTemplateUploadModal.ERROR.CONFIG_INVALID'));
             }
           }
-          if (layout.favorite === undefined) {
-            layout.favorite = false;
+          if (!(template.version in LayoutTemplateVersion)) {
+            throw new Error(t('LayoutTemplateUploadModal.ERROR.VERSION_INVALID'));
           }
-          return layout;
+          // all uploaded templates are user-supplied
+          return {
+            name: template.name,
+            description: template.description,
+            version: template.version,
+            cards: template.cards,
+            vendor: LayoutTemplateVendor.USER,
+          } as LayoutTemplate;
         })
       );
     },
-    [t, dashboardConfigs.layouts]
+    [t, customTemplates]
   );
 
   const reset = React.useCallback(() => {
@@ -145,22 +160,22 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
     ) => {
       setUploading(true);
 
-      const tasks: Observable<DashboardLayout | null>[] = [];
+      const tasks: Observable<SerialLayoutTemplate | null>[] = [];
 
       fileUploads.forEach((fileUpload) => {
         tasks.push(
-          parseDashboardLayoutFile(fileUpload.file).pipe(
+          validateParseTemplate(fileUpload.file).pipe(
             first(),
-            concatMap((layout) => {
+            concatMap((template) => {
               try {
-                dispatch(dashboardConfigAddLayoutIntent(layout));
+                dispatch(dashboardConfigCreateTemplateIntent(template));
                 onSingleSuccess(fileUpload.file.name);
-                return of(layout);
+                return of(template);
               } catch (err) {
-                // layout name already taken from previous layout upload
+                // template name already taken from previous upload
                 onSingleFailure(
                   fileUpload.file.name,
-                  new Error(t('DashboardLayoutUploadModal.ERROR.DUPLICATE_UPLOAD', { name: layout.name }))
+                  new Error(t('LayoutTemplateUploadModal.ERROR.DUPLICATE_UPLOAD', { name: template.name }))
                 );
                 return of(null);
               }
@@ -179,14 +194,10 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           .subscribe((oks) => {
             setUploading(false);
             setAllOks(oks.every((o) => o !== null));
-            const validLayouts = oks.filter((o) => o !== null) as DashboardLayout[];
-            if (validLayouts.length > 0) {
-              dispatch(dashboardConfigReplaceLayoutIntent(validLayouts[validLayouts.length - 1].name));
-            }
           })
       );
     },
-    [addSubscription, dispatch, t, parseDashboardLayoutFile, setUploading, setAllOks]
+    [addSubscription, dispatch, t, validateParseTemplate, setUploading, setAllOks]
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -205,7 +216,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
     () =>
       ({
         spinnerAriaValueText: t('SUBMITTING', { ns: 'common' }),
-        spinnerAriaLabel: 'submitting-dashboard-layouts',
+        spinnerAriaLabel: 'submitting-layout-templates',
         isLoading: uploading,
       } as LoadingPropsType),
     [t, uploading]
@@ -218,12 +229,12 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title={t('DashboardLayoutUploadModal.TITLE')}
-      description={t(`DashboardLayoutUploadModal.DESCRIPTION`)}
+      title={t('LayoutTemplateUploadModal.TITLE')}
+      description={t(`LayoutTemplateUploadModal.DESCRIPTION`)}
       help={
         <Popover
           headerContent={<div>{t('WHATS_THIS', { ns: 'common' })}</div>}
-          bodyContent={<div>{t(`DashboardLayoutUploadModal.HELP.CONTENT`)}</div>}
+          bodyContent={<div>{t(`LayoutTemplateUploadModal.HELP.CONTENT`)}</div>}
           appendTo={portalRoot}
         >
           <Button variant="plain" aria-label={t('HELP', { ns: 'common' })}>

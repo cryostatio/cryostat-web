@@ -161,7 +161,8 @@
     "ERROR": {
       "NAME_INVALID": "Name must be alphanumeric and may contain underscores, dashes, and periods.",
       "NAME_REQUIRED": "Name is required.",
-      "NAME_TAKEN": "Name is already in use."
+      "NAME_TAKEN": "Name is already in use.",
+      "NAME_TOO_LONG": "Name must be 20 characters or less."
     },
     "NAME": {
       "HELPER_TEXT": "Enter a name for the dashboard layout.",
@@ -192,16 +193,10 @@
     "DELETE": {
       "LABEL": "Delete layout"
     },
-    "DOWNLOAD": {
-      "LABEL": "Download layout"
-    },
     "MENU": {
       "FAVORITES": "Favorites",
       "LABEL": "Layout menu",
       "OTHERS": "Layouts"
-    },
-    "NEW": {
-      "LABEL": "New layout"
     },
     "RENAME": {
       "LABEL": "Rename layout"
@@ -210,23 +205,6 @@
     "UPLOAD": {
       "LABEL": "Upload layout"
     }
-  },
-  "DashboardLayoutUploadModal": {
-    "DESCRIPTION": "Select Dashboard Layout configuration file(s) to upload. File(s) must be in valid JSON format.",
-    "ERROR": {
-      "CONFIG_INVALID": "Card configurations are invalid.",
-      "DUPLICATE_UPLOAD": "A previously uploaded file has the same name as the current file: \"{{name}}\".",
-      "NAME_INVALID": {
-        "1": "Dashboard name \"{{name}}\" is invalid.",
-        "2": "Dashboard name must be alphanumeric and may contain underscores, dashes, and periods."
-      },
-      "NAME_TAKEN": "Dashboard layout with name \"{{name}}\" already exists.",
-      "PARSE": "JSON parse error."
-    },
-    "HELP": {
-      "CONTENT": "Dashboard Layout configuration files are JSON files that contain a list of dashboard card configurations and a name for the dashboard layout. The dashboard layout name must be unique and may contain alphanumeric characters, underscores, dashes, and periods."
-    },
-    "TITLE": "Upload Dashboard Layout"
   },
   "DatetimeFilter": {
     "ARIA_LABELS": {
@@ -247,6 +225,22 @@
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
     "CARD_TITLE": "Target JVM Details"
+  },
+  "LayoutTemplateUploadModal": {
+    "DESCRIPTION": "Select Dashboard Layout Template configuration file(s) to upload. File(s) must be in valid JSON format.",
+    "ERROR": {
+      "CONFIG_INVALID": "Card configurations are invalid.",
+      "DESCRIPTION_INVALID": "Template description is invalid.",
+      "DUPLICATE_UPLOAD": "A previously uploaded file has the same template name as the current file: \"{{name}}\".",
+      "NAME_INVALID": "Template name is invalid.",
+      "NAME_TAKEN": "Template with name \"{{name}}\" already exists.",
+      "PARSE": "JSON parse error.",
+      "VERSION_INVALID": "Template version is invalid."
+    },
+    "HELP": {
+      "CONTENT": "Dashboard Layout Templates are pre-configured dashboard designs that can be used as a starting point for new dashboard layouts. Each template is defined in a JSON file that contains a list of dashboard cards and their configurations, as well as a unique name for the template. The name must be alphanumeric and can include underscores, dashes, and periods."
+    },
+    "TITLE": "Upload Dashboard Layout Template"
   },
   "MeridiemPicker": {
     "ARIA_LABELS": {

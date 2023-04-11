@@ -55,6 +55,7 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  ExpandableSection,
   Select,
   SelectOption,
   SelectOptionObject,
@@ -76,20 +77,27 @@ import {
   LongArrowAltDownIcon,
   LongArrowAltUpIcon,
   PficonTemplateIcon,
+  UploadIcon,
 } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import React from 'react';
 
 import { useSelector } from 'react-redux';
 import CryostatLayoutTemplates, { BlankLayout } from './dashboard-templates';
-import { LayoutTemplate, cardsToString, recordToLayoutTemplate } from './DashboardUtils';
+import {
+  LayoutTemplate,
+  LayoutTemplateContext,
+  LayoutTemplateRecord,
+  cardsToString,
+  recordToLayoutTemplate,
+} from './DashboardUtils';
 import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 import { SearchAutocomplete } from './SearchAutocomplete';
-import { LayoutTemplateRecord } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { useTranslation } from 'react-i18next';
 
 export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
 
-export type LayoutTemplateSort = 'Name' | 'Created at' | 'Most Recent' | 'Version' | 'Card Count';
+export type LayoutTemplateSort = 'Name' | 'Card Count'; // TODO: add 'Version' after more version are released
 
 const TemplateSortSelectOption: React.FC<{ sort: LayoutTemplateSort }> = ({ sort }) => {
   return <SelectOption key={sort} value={sort} />;
@@ -99,6 +107,9 @@ export interface LayoutTemplatePickerProps {
 }
 
 export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTemplateSelect }) => {
+  const { selectedTemplate, setSelectedTemplate, isUploadModalOpen, setIsUploadModalOpen } =
+    React.useContext(LayoutTemplateContext);
+
   const [searchFilter, setSearchFilter] = React.useState('');
   const [isFilterSelectOpen, setIsFilterSelectOpen] = React.useState(false);
   const [selectedFilters, setSelectedFilters] = React.useState<LayoutTemplateFilter[]>([]);
@@ -108,9 +119,9 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState(false);
-  const [selectedTemplate, setSelectedTemplate] = React.useState<LayoutTemplate | undefined>(undefined);
 
   const [dayjs, timeFormat] = useDayjs();
+  const { t } = useTranslation();
   const recentTemplateRecords: LayoutTemplateRecord[] = useSelector(
     (state: RootState) => state.dashboardConfigs.templateHistory
   );
@@ -130,13 +141,13 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const allTemplates: LayoutTemplate[] = React.useMemo(() => {
     return [BlankLayout, ...userSubmittedTemplates, ...CryostatLayoutTemplates];
-  }, []);
+  }, [userSubmittedTemplates]);
 
   const allSearchableTemplateNames: string[] = React.useMemo(() => {
     return searchFilteredTemplates(
       allTemplates.filter((template, index, arr) => arr.findIndex((t) => t.name === template.name) === index)
     ).map((t) => t.name);
-  }, [searchFilteredTemplates, userSubmittedTemplates]);
+  }, [searchFilteredTemplates, allTemplates]);
 
   const onInnerTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
@@ -158,6 +169,42 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     },
     [setSelectedTemplate]
   );
+
+  const handleUploadButton = React.useCallback(() => {
+    setIsUploadModalOpen(true);
+  }, [setIsUploadModalOpen]);
+
+  const uploadButton = React.useMemo(
+    () => (
+      <Button
+        key="upload"
+        variant="secondary"
+        aria-label={t('DashboardLayoutToolbar.UPLOAD.LABEL')}
+        onClick={handleUploadButton}
+        icon={<UploadIcon />}
+        data-quickstart-id="dashboard-upload-btn"
+      >
+        {t('UPLOAD', { ns: 'common' })}
+      </Button>
+    ),
+    [t, handleUploadButton]
+  );
+
+  // const downloadButton = React.useMemo(
+  //   () => (
+  //     <Button
+  //       key="download"
+  //       variant="secondary"
+  //       aria-label={t('DashboardLayoutToolbar.DOWNLOAD.LABEL')}
+  //       onClick={handleDownloadLayout}
+  //       icon={<DownloadIcon />}
+  //       data-quickstart-id="dashboard-download-btn"
+  //     >
+  //       {t('DOWNLOAD', { ns: 'common' })}
+  //     </Button>
+  //   ),
+  //   [t, handleDownloadLayout]
+  // );
 
   const onSearchChange = React.useCallback(
     (value: string) => {
@@ -218,7 +265,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       isPlaceholder: boolean | undefined
     ) => {
       const selected = selection as LayoutTemplateSort;
-      setSelectedSort((prev) => {
+      setSelectedSort((_prev) => {
         if (isPlaceholder) {
           return undefined;
         }
@@ -246,7 +293,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const panelContent = React.useMemo(() => {
     return (
-      <DrawerPanelContent isResizable defaultSize="50%">
+      <DrawerPanelContent isResizable defaultSize="25%">
         <DrawerHead>
           {selectedTemplate ? (
             <DescriptionList>
@@ -260,7 +307,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               </DescriptionListGroup>
               <DescriptionListGroup>
                 <DescriptionListTerm>Card List</DescriptionListTerm>
-                <DescriptionListDescription>{cardsToString(selectedTemplate.layout.cards)}</DescriptionListDescription>
+                <DescriptionListDescription>{cardsToString(selectedTemplate.cards)}</DescriptionListDescription>
               </DescriptionListGroup>
               {selectedTemplate?.vendor && (
                 <DescriptionListGroup>
@@ -270,7 +317,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               )}
               {selectedTemplate?.version && (
                 <DescriptionListGroup>
-                  <DescriptionListTerm>Vendor</DescriptionListTerm>
+                  <DescriptionListTerm>Version</DescriptionListTerm>
                   <DescriptionListDescription>{selectedTemplate.version}</DescriptionListDescription>
                 </DescriptionListGroup>
               )}
@@ -278,7 +325,6 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
           ) : (
             <>No template selected</>
           )}
-
           <DrawerActions>
             <DrawerCloseButton onClick={onDrawerCloseClick} />
           </DrawerActions>
@@ -296,18 +342,17 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               return a.name.localeCompare(b.name);
             }
             return b.name.localeCompare(a.name);
-          case 'Most Recent':
-            return 0;
-          case 'Version':
-            if (sortDirection === 'asc') {
-              return a.version.localeCompare(b.version);
-            }
-            return b.version.localeCompare(a.version);
+          // TODO: uncomment version after more versions are added
+          // case 'Version':
+          //   if (sortDirection === 'asc') {
+          //     return a.version.localeCompare(b.version);
+          //   }
+          //   return b.version.localeCompare(a.version);
           case 'Card Count':
             if (sortDirection === 'asc') {
-              return a.layout.cards.length - b.layout.cards.length;
+              return a.cards.length - b.cards.length;
             }
-            return b.layout.cards.length - a.layout.cards.length;
+            return b.cards.length - a.cards.length;
           default:
             return 0;
         }
@@ -332,7 +377,15 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         <></>
       );
     },
-    [searchFilteredTemplates, selectedFilters, selectedSort, sortDirection, onInnerTemplateSelect, dayjs]
+    [
+      searchFilteredTemplates,
+      selectedFilters,
+      selectedSort,
+      sortDirection,
+      onInnerTemplateSelect,
+      onInnerTemplateDelete,
+      dayjs,
+    ]
   );
 
   const RecentTemplates = React.useMemo(() => {
@@ -347,10 +400,10 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         }
       })
       .filter((t) => t !== undefined) as LayoutTemplate[];
-  }, [recentTemplateRecords, allTemplates, recordToLayoutTemplate]);
+  }, [recentTemplateRecords, allTemplates]);
 
   return (
-    <Drawer isExpanded={isDrawerExpanded} isInline position="right">
+    <Drawer isExpanded={isDrawerExpanded} isInline>
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>
           <OuterScrollContainer>
@@ -404,12 +457,13 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                         placeholderText="Sort"
                       >
                         <TemplateSortSelectOption sort={'Name'} />
-                        <TemplateSortSelectOption sort={'Created at'} />
-                        <TemplateSortSelectOption sort={'Most Recent'} />
                         <TemplateSortSelectOption sort={'Card Count'} />
-                        <TemplateSortSelectOption sort={'Version'} />
+                        {/* <TemplateSortSelectOption sort={'Version'} /> */}
                       </Select>
                     </ToolbarItem>
+                  </ToolbarGroup>
+                  <ToolbarGroup>
+                    <ToolbarItem>{uploadButton}</ToolbarItem>
                   </ToolbarGroup>
                 </ToolbarContent>
               </Toolbar>

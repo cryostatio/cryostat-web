@@ -37,8 +37,8 @@
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
+  dashboardConfigCreateLayoutIntent,
   dashboardConfigDeleteLayoutIntent,
   dashboardConfigFavoriteLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
@@ -49,6 +49,10 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Button,
   Divider,
+  Dropdown as PF4Dropdown,
+  DropdownItem as PF4DropdownItem,
+  DropdownToggle,
+  DropdownToggleAction,
   Menu,
   MenuContent,
   MenuFooter,
@@ -64,10 +68,12 @@ import {
 } from '@patternfly/react-core';
 import { Dropdown, DropdownItem, DropdownList } from '@patternfly/react-core/dist/js/next';
 import {
-  DownloadIcon,
   EllipsisVIcon,
+  FileIcon,
   PencilAltIcon,
+  PficonTemplateIcon,
   PlusCircleIcon,
+  PlusIcon,
   TrashIcon,
   UploadIcon,
 } from '@patternfly/react-icons';
@@ -77,8 +83,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AddCard } from './AddCard';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutSetAsTemplateModal } from './DashboardLayoutSetAsTemplateModal';
-import { DashboardLayoutUploadModal } from './DashboardLayoutUploadModal';
-import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
+import { DashboardLayout, DEFAULT_DASHBOARD_NAME, LayoutTemplate, LayoutTemplateContext } from './DashboardUtils';
+import { LayoutTemplateUploadModal } from './LayoutTemplateUploadModal';
 
 export interface DashboardLayoutToolbarProps {
   children?: React.ReactNode;
@@ -89,14 +95,28 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
   const context = React.useContext(ServiceContext);
   const { t } = useTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
+
+  const [selectedTemplate, setSelectedTemplate] = React.useState<LayoutTemplate | undefined>(undefined);
+
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
-  const [isTemplateModalOpen, setIsTemplateModalOpen] = React.useState(false);
-  const [isDeleteWarningModalOpen, setIsDeleteWarningModalOpen] = React.useState(false);
+
+  // layout selector
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
+
+  // create new / rename layout modal
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [oldName, setOldName] = React.useState<string | undefined>(undefined);
+
+  // create new layout dropdown
+  const [isCreateDropdownOpen, setIsCreateDropdownOpen] = React.useState(false);
+
+  // delete layout
+  const [isDeleteWarningModalOpen, setIsDeleteWarningModalOpen] = React.useState(false);
   const [selectDelete, setSelectDelete] = React.useState<string>('');
+
+  // toolbar kebab
   const [isKebabOpen, setIsKebabOpen] = React.useState(false);
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = React.useState(false);
 
   const deleteRef = React.useRef<HTMLButtonElement>(null);
 
@@ -112,13 +132,6 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
   const handleUploadModalClose = React.useCallback(() => {
     setIsUploadModalOpen(false);
   }, [setIsUploadModalOpen]);
-
-  const handleDownloadLayout = React.useCallback(
-    (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      context.api.downloadDashboardLayout(currLayout);
-    },
-    [context.api, currLayout]
-  );
 
   const handleCreateModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -227,19 +240,93 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
     [setIsSelectorOpen]
   );
 
-  const newButton = React.useMemo(
+  // const newSplitButtonItems = React.useMemo(
+
+  const onCreateDropdownSelect = React.useCallback(() => {
+    setIsCreateDropdownOpen(false);
+  }, [setIsCreateDropdownOpen]);
+
+  const createBlankLayout = React.useCallback(() => {
+    let i = 1;
+    let name: string;
+
+    do {
+      name = `Custom${i}`;
+      i++;
+    } while (dashboardConfigs.layouts.some((layout) => layout.name === name));
+
+    const template: DashboardLayout = {
+      name,
+      cards: [],
+      favorite: false,
+    };
+    dispatch(dashboardConfigCreateLayoutIntent(template));
+    dispatch(dashboardConfigReplaceLayoutIntent(name));
+    setIsCreateDropdownOpen(false);
+  }, [dispatch, dashboardConfigs, setIsCreateDropdownOpen]);
+
+  const createTemplateDropdownItems = React.useMemo(
+    () => [
+      <PF4DropdownItem key="action" onClick={createBlankLayout} autoFocus icon={<FileIcon />}>
+        Blank Layout
+      </PF4DropdownItem>,
+      <PF4DropdownItem key="template" onClick={handleCreateModalOpen} icon={<PficonTemplateIcon />}>
+        Choose Template
+      </PF4DropdownItem>,
+      <PF4DropdownItem key="upload" onClick={handleUploadModalOpen} icon={<UploadIcon />}>
+        Upload Template
+      </PF4DropdownItem>,
+    ],
+    [createBlankLayout, handleCreateModalOpen, handleUploadModalOpen]
+  );
+
+  const createTemplateButton = React.useMemo(
     () => (
-      <Button
-        key="new"
-        variant="primary"
-        aria-label={t('DashboardLayoutToolbar.NEW.LABEL')}
-        onClick={handleCreateModalOpen}
-        data-quickstart-id="create-layout-btn"
-      >
-        Create Layout
-      </Button>
+      <PF4Dropdown
+        onSelect={onCreateDropdownSelect}
+        toggle={
+          <DropdownToggle
+            id="dashboard-layout-create-dropdown-toggle"
+            splitButtonItems={[
+              <DropdownToggleAction
+                key="action"
+                onClick={(_e) => {
+                  createBlankLayout();
+                  setIsSelectorOpen(false);
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  <PlusCircleIcon style={{ marginRight: 'var(--pf-global--spacer--sm)' }} />
+                  Create New Layout
+                </span>
+              </DropdownToggleAction>,
+            ]}
+            toggleVariant="primary"
+            splitButtonVariant="action"
+            onToggle={(open) => setIsCreateDropdownOpen(open)}
+          />
+        }
+        isOpen={isCreateDropdownOpen}
+        dropdownItems={createTemplateDropdownItems}
+      />
+      // <Button
+      //   key="new"
+      //   variant="primary"
+      //   aria-label={t('DashboardLayoutToolbar.NEW.LABEL')}
+      //   onClick={handleCreateModalOpen}
+      //   data-quickstart-id="create-layout-btn"
+      // >
+      //   Create Layout
+      // </Button>
     ),
-    [t, handleCreateModalOpen]
+    [
+      createBlankLayout,
+      setIsSelectorOpen,
+      onCreateDropdownSelect,
+      setIsCreateDropdownOpen,
+      isCreateDropdownOpen,
+      createTemplateDropdownItems,
+    ]
   );
 
   const renameButton = React.useMemo(
@@ -255,38 +342,6 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       />
     ),
     [t, handleRenameLayout, currLayout.name]
-  );
-
-  const uploadButton = React.useMemo(
-    () => (
-      <Button
-        key="upload"
-        variant="secondary"
-        aria-label={t('DashboardLayoutToolbar.UPLOAD.LABEL')}
-        onClick={handleUploadModalOpen}
-        icon={<UploadIcon />}
-        data-quickstart-id="dashboard-upload-btn"
-      >
-        {t('UPLOAD', { ns: 'common' })}
-      </Button>
-    ),
-    [t, handleUploadModalOpen]
-  );
-
-  const downloadButton = React.useMemo(
-    () => (
-      <Button
-        key="download"
-        variant="secondary"
-        aria-label={t('DashboardLayoutToolbar.DOWNLOAD.LABEL')}
-        onClick={handleDownloadLayout}
-        icon={<DownloadIcon />}
-        data-quickstart-id="dashboard-download-btn"
-      >
-        {t('DOWNLOAD', { ns: 'common' })}
-      </Button>
-    ),
-    [t, handleDownloadLayout]
   );
 
   const deleteButton = React.useMemo(
@@ -336,8 +391,8 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       <Dropdown
         isOpen={isKebabOpen}
         onSelect={onKebabSelect}
-        onOpenChange={(isOpen) => setIsKebabOpen(isOpen)}
         minWidth="10em"
+        onOpenChange={(isOpen) => setIsKebabOpen(isOpen)}
         toggle={(toggleRef) => (
           <MenuToggle
             ref={toggleRef}
@@ -436,7 +491,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
             {menuGroups(t('DashboardLayoutToolbar.MENU.OTHERS'), false)}
           </MenuContent>
           <Divider />
-          <MenuFooter>{newButton}</MenuFooter>
+          <MenuFooter>{createTemplateButton}</MenuFooter>
         </Menu>
       </Dropdown>
     );
@@ -447,7 +502,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
     onOpenChange,
     onToggle,
     menuGroups,
-    newButton,
+    createTemplateButton,
     isSelectorOpen,
     currLayout.name,
   ]);
@@ -463,14 +518,12 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
           <ToolbarItem>{renameButton}</ToolbarItem>
         </ToolbarGroup>
         <ToolbarGroup variant="button-group">
-          <ToolbarItem>{uploadButton}</ToolbarItem>
-          <ToolbarItem>{downloadButton}</ToolbarItem>
           <ToolbarItem>{deleteButton}</ToolbarItem>
           <ToolbarItem>{kebabDropdown}</ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>
     );
-  }, [newButton, menuDropdown, renameButton, uploadButton, downloadButton, deleteButton, kebabDropdown]);
+  }, [menuDropdown, renameButton, deleteButton, kebabDropdown]);
 
   const deleteWarningModal = React.useMemo(() => {
     return (
@@ -484,12 +537,21 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
   }, [isDeleteWarningModalOpen, handleDeleteWarningModalClose, handleDeleteLayout]);
 
   return (
-    <Toolbar>
-      {toolbarContent}
-      <DashboardLayoutUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />
-      <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
-      <DashboardLayoutSetAsTemplateModal visible={isTemplateModalOpen} onClose={handleTemplateModalClose} />
-      {deleteWarningModal}
-    </Toolbar>
+    <LayoutTemplateContext.Provider
+      value={{
+        selectedTemplate: selectedTemplate,
+        setSelectedTemplate: setSelectedTemplate,
+        isUploadModalOpen: isUploadModalOpen,
+        setIsUploadModalOpen: setIsUploadModalOpen,
+      }}
+    >
+      <Toolbar>
+        {toolbarContent}
+        <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
+        <LayoutTemplateUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />
+        <DashboardLayoutSetAsTemplateModal visible={isTemplateModalOpen} onClose={handleTemplateModalClose} />
+        {deleteWarningModal}
+      </Toolbar>
+    </LayoutTemplateContext.Provider>
   );
 };
