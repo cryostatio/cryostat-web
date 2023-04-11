@@ -90,10 +90,9 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
     [setNumOfOptions, timezones]
   );
 
-  const options = React.useMemo(() => {
-    return timezones
-      .slice(0, numOfOptions)
-      .map((timezone) => (
+  const mapToSelection = React.useCallback(
+    (timezone: Timezone, isCompact?: boolean) => {
+      return (
         <SelectOption
           key={timezone.full}
           value={{
@@ -105,7 +104,15 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
         >
           {isCompact ? timezone.short : `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
         </SelectOption>
-      ))
+      );
+    },
+    [dayjs]
+  );
+
+  const options = React.useMemo(() => {
+    return timezones
+      .slice(0, numOfOptions)
+      .map((timezone) => mapToSelection(timezone, isCompact))
       .concat(
         numOfOptions < timezones.length
           ? [
@@ -117,17 +124,19 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
             ]
           : []
       );
-  }, [isCompact, timezones, dayjs, numOfOptions, t, handleViewMore]);
+  }, [isCompact, timezones, numOfOptions, t, handleViewMore, mapToSelection]);
 
   const onFilter = React.useCallback(
-    (_, value: string) => {
+    (_: React.ChangeEvent<HTMLInputElement> | null, value: string) => {
       if (!value) {
         return options;
       }
       const matchExp = new RegExp(value.replace(/([+])/gi, `\\$1`), 'i');
-      return options.filter((op) => matchExp.test(op.props.value.full) || matchExp.test(op.props.description));
+      return timezones
+        .filter((op) => matchExp.test(op.full) || matchExp.test(op.short))
+        .map((t) => mapToSelection(t, isCompact));
     },
-    [options]
+    [timezones, options, isCompact, mapToSelection]
   );
 
   return (
