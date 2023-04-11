@@ -60,6 +60,7 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
+  EmptyStateVariant,
   Grid,
   GridItem,
   Select,
@@ -80,6 +81,7 @@ import {
   ArrowsAltVIcon,
   FilterIcon,
   GlobeIcon,
+  InfoCircleIcon,
   LongArrowAltDownIcon,
   LongArrowAltUpIcon,
   PficonTemplateIcon,
@@ -148,8 +150,9 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     [searchFilter]
   );
 
+  // array order is needed for template selection to fallback, if current is deleted
   const allTemplates: LayoutTemplate[] = React.useMemo(() => {
-    return [BlankLayout, ...userSubmittedTemplates, ...CryostatLayoutTemplates];
+    return [BlankLayout, ...CryostatLayoutTemplates, ...userSubmittedTemplates];
   }, [userSubmittedTemplates]);
 
   const allSearchableTemplateNames: string[] = React.useMemo(() => {
@@ -169,15 +172,20 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const handleTemplateDelete = React.useCallback(
     (name) => {
+      const curIndex = allTemplates.findIndex((t) => t.name === name && t.vendor === 'Cryostat');
       dispatch(dashboardConfigDeleteTemplateIntent(name));
       setSelectedTemplate((prev) => {
         if (prev.name === name) {
-          return BlankLayout;
+          // curIndex should never be 0, since BlankLayout cannot be deleted and is always first
+          if (curIndex === 0) {
+            throw new Error("Deleted template was the current template, but it's index was 0");
+          }
+          return allTemplates[curIndex - 1];
         }
         return prev;
       });
     },
-    [dispatch, setSelectedTemplate]
+    [dispatch, setSelectedTemplate, allTemplates]
   );
 
   const onInnerTemplateDelete = React.useCallback(
@@ -383,7 +391,12 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               </DescriptionListGroup>
             </DescriptionList>
           ) : (
-            <>No template selected</>
+            <EmptyState variant={EmptyStateVariant.full}>
+              <EmptyStateIcon icon={InfoCircleIcon} />
+              <Title headingLevel="h5" size="lg">
+                No template selected
+              </Title>
+            </EmptyState>
           )}
           <DrawerActions>
             <DrawerCloseButton onClick={onDrawerCloseClick} />

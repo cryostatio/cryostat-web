@@ -39,20 +39,7 @@ import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/Red
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  Gallery,
-  KebabToggle,
-  Split,
-  SplitItem,
-  Title,
-} from '@patternfly/react-core';
-import { PficonTemplateIcon } from '@patternfly/react-icons';
+import { Button, Dropdown, DropdownItem, Gallery, KebabToggle, Split, SplitItem, Title } from '@patternfly/react-core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -164,41 +151,31 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
           </>
         )}
       </Split>
-      <Gallery className="layout-template-picker">
-        {props.templates.length !== 0 ? (
-          props.templates.map((template) => (
-            <div
+      <Gallery hasGutter className="layout-template-picker">
+        {props.templates.map((template) => (
+          <div
+            key={template.name}
+            ref={scrollRef}
+            className={
+              selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor
+                ? 'layout-template-card__featured'
+                : undefined
+            }
+          >
+            <CatalogTile
+              featured={selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor}
+              id={template.name}
               key={template.name}
-              ref={scrollRef}
-              className={
-                selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor
-                  ? 'layout-template-card__featured'
-                  : undefined
-              }
+              icon={iconify(template.vendor)}
+              title={template.name}
+              vendor={template.vendor}
+              onClick={() => handleTemplateSelect(template)}
+              badges={[<KebabCatalogTileBadge template={template} key={template.name + '-kebab'} />]}
             >
-              <CatalogTile
-                featured={selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor}
-                id={template.name}
-                key={template.name}
-                icon={iconify(template.vendor)}
-                title={template.name}
-                vendor={template.vendor}
-                onClick={() => handleTemplateSelect(template)}
-                badges={[<KebabCatalogTileBadge template={template} key={template.name + '-kebab'} />]}
-              >
-                {template.description}
-              </CatalogTile>
-            </div>
-          ))
-        ) : (
-          <EmptyState>
-            <EmptyStateIcon icon={PficonTemplateIcon} />
-            <Title size="lg" headingLevel="h4">
-              No templates found
-            </Title>
-            <EmptyStateBody>Upload your own templates!</EmptyStateBody>
-          </EmptyState>
-        )}
+              {template.description}
+            </CatalogTile>
+          </div>
+        ))}
       </Gallery>
     </>
   );

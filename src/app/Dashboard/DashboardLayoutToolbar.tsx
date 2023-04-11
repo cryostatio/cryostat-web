@@ -387,9 +387,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
         onSelect={onKebabSelect}
         minWidth="10em"
         onOpenChange={(isOpen) => {
-          console.log('onOpenChange');
           setIsKebabOpen(isOpen);
-          console.log(isOpen);
         }}
         toggle={(toggleRef) => (
           <MenuToggle

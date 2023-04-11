@@ -207,14 +207,14 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     return (
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit} isAriaDisabled={nameValidated !== 'success'}>
-          {t('CREATE', { ns: 'common' })}
+          {isCreateModal ? t('CREATE', { ns: 'common' }) : t('RENAME', { ns: 'common' })}
         </Button>
         <Button variant="link" onClick={handleClose}>
           {t('CANCEL', { ns: 'common' })}
         </Button>
       </ActionGroup>
     );
-  }, [t, handleSubmit, nameValidated, handleClose]);
+  }, [t, handleSubmit, handleClose, nameValidated, isCreateModal]);
 
   const header = (
     <React.Fragment>
