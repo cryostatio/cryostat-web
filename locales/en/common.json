@@ -35,7 +35,6 @@
   "MINUTE_other": "Minutes",
   "N/A": "N/A",
   "NAME": "Name",
-  "NEW": "New",
   "OK": "OK",
   "PRODUCTION": "PRODUCTION",
   "REMOVE": "Remove",
@@ -55,6 +54,7 @@
   "TIME": "Time",
   "UPLOAD": "Upload",
   "VIEW": "View",
+  "VIEW_MORE": "View more",
   "WARNING": "WARNING",
   "WHATS_THIS": "What's this?"
 }

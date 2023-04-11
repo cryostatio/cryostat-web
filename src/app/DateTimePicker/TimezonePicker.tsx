@@ -38,10 +38,15 @@
 
 import { useDayjs } from '@app/utils/useDayjs';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Button, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
+import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+
+export const DEFAULT_NUM_OPTIONS = 10;
+
+export const OPTION_INCREMENT = 15;
 
 export interface TimezonePickerProps {
   isFlipEnabled?: boolean;
@@ -60,10 +65,14 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
 }) => {
   const [t] = useTranslation();
   const [dayjs, _] = useDayjs();
+  const [numOfOptions, setNumOfOptions] = React.useState(DEFAULT_NUM_OPTIONS);
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
 
   const onSelect = React.useCallback(
-    (_, timezone, __) => {
+    (_, timezone, isPlaceholder) => {
+      if (isPlaceholder) {
+        return;
+      }
       setIsTimezoneOpen(false);
       onTimezoneChange({
         full: timezone.full,
@@ -73,31 +82,62 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
     [onTimezoneChange, setIsTimezoneOpen]
   );
 
+  const timezones = React.useMemo(() => supportedTimezones(), []);
+
+  const handleViewMore = React.useCallback(
+    (e: React.MouseEvent) => {
+      setNumOfOptions((old) => Math.min(old + OPTION_INCREMENT, timezones.length));
+    },
+    [setNumOfOptions, timezones]
+  );
+
+  const mapToSelection = React.useCallback(
+    (timezone: Timezone, isCompact?: boolean) => {
+      return (
+        <SelectOption
+          key={timezone.full}
+          value={{
+            ...timezone,
+            toString: () => timezone.full,
+            compareTo: (val) => timezone.full === val.full,
+          }}
+          description={isCompact ? timezone.full : timezone.short}
+        >
+          {isCompact ? timezone.short : `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
+        </SelectOption>
+      );
+    },
+    [dayjs]
+  );
+
   const options = React.useMemo(() => {
-    return supportedTimezones().map((timezone) => (
-      <SelectOption
-        key={timezone.full}
-        value={{
-          ...timezone,
-          toString: () => timezone.full,
-          compareTo: (val) => timezone.full === val.full,
-        }}
-        description={isCompact ? timezone.full : timezone.short}
-      >
-        {isCompact ? timezone.short : `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
-      </SelectOption>
-    ));
-  }, [isCompact, dayjs]);
+    return timezones
+      .slice(0, numOfOptions)
+      .map((timezone) => mapToSelection(timezone, isCompact))
+      .concat(
+        numOfOptions < timezones.length
+          ? [
+              <SelectOption key="view-more" isPlaceholder onClick={handleViewMore}>
+                <span className={css('pf-c-button', 'pf-m-link', 'pf-m-inline')}>
+                  {t('VIEW_MORE', { ns: 'common' })}
+                </span>
+              </SelectOption>,
+            ]
+          : []
+      );
+  }, [isCompact, timezones, numOfOptions, t, handleViewMore, mapToSelection]);
 
   const onFilter = React.useCallback(
-    (_, value: string) => {
+    (_: React.ChangeEvent<HTMLInputElement> | null, value: string) => {
       if (!value) {
         return options;
       }
       const matchExp = new RegExp(value.replace(/([+])/gi, `\\$1`), 'i');
-      return options.filter((op) => matchExp.test(op.props.value.full) || matchExp.test(op.props.description));
+      return timezones
+        .filter((op) => matchExp.test(op.full) || matchExp.test(op.short))
+        .map((t) => mapToSelection(t, isCompact));
     },
-    [options]
+    [timezones, options, isCompact, mapToSelection]
   );
 
   return (
