@@ -40,6 +40,7 @@ import { useDayjs } from '@app/utils/useDayjs';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
 import { Button, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
+import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -117,9 +118,9 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
         numOfOptions < timezones.length
           ? [
               <SelectOption key="view-more" isPlaceholder onClick={handleViewMore}>
-                <Button variant="link" isInline>
+                <span className={css('pf-c-button', 'pf-m-link', 'pf-m-inline')}>
                   {t('VIEW_MORE', { ns: 'common' })}
-                </Button>
+                </span>
               </SelectOption>,
             ]
           : []
