@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { LayoutTemplate, LayoutTemplateVendor, LayoutTemplateVersion } from './DashboardUtils';
+import { LayoutTemplate, LayoutTemplateVendor, LayoutTemplateVersion } from './dashboard-utils';
 
 const CURR_VERSION: LayoutTemplateVersion = LayoutTemplateVersion['v2.3'];
 
@@ -473,11 +473,9 @@ const JFRMonitoringLayout: LayoutTemplate = {
   version: CURR_VERSION,
 };
 
-const CryostatLayoutTemplates: LayoutTemplate[] = [
+export const CryostatLayoutTemplates: LayoutTemplate[] = [
   GeneralLayout,
   JFRMonitoringLayout,
   MemoryMonitoringLayout,
   ThreadMonitoringLayout,
 ];
-
-export default CryostatLayoutTemplates;

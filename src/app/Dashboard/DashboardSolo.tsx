@@ -43,7 +43,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation, withRouter } from 'react-router-dom';
 import { getConfigByName } from './Dashboard';
-import { CardConfig } from './DashboardUtils';
+import { CardConfig } from './dashboard-utils';
 
 export interface DashboardSoloProps {}
 

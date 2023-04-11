@@ -6,7 +6,7 @@ Array [
     Target Context Selector
   </div>,
   <div>
-    Dashboard Layout Config
+    Dashboard Layout Toolbar
   </div>,
   <div
     className="pf-c-page__main-group"

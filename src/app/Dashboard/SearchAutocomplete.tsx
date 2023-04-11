@@ -152,7 +152,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
         searchInputRef.current && searchInputRef.current.focus();
       }
     },
-    [hint, isAutocompleteOpen, searchInputRef.current, autocompleteRef.current]
+    [hint, isAutocompleteOpen]
   );
 
   // The autocomplete menu should close if the user clicks outside the menu.
@@ -167,7 +167,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
         setIsAutocompleteOpen(false);
       }
     },
-    [isAutocompleteOpen, autocompleteRef.current]
+    [isAutocompleteOpen]
   );
 
   React.useEffect(() => {
@@ -175,9 +175,9 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
     window.addEventListener('click', handleClickOutside);
     return () => {
       window.removeEventListener('keydown', handleMenuKeys);
-      window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('click', handleMenuKeys);
     };
-  }, [isAutocompleteOpen, hint, searchInputRef.current]);
+  }, [isAutocompleteOpen, hint, handleMenuKeys, handleClickOutside]);
 
   const searchInput = React.useMemo(
     () => (

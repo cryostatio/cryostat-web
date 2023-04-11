@@ -51,13 +51,14 @@ import {
   DashboardLayoutNamePattern,
   LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
   LayoutTemplate,
+  LayoutTemplateContext,
   LayoutTemplateDescriptionPattern,
   LayoutTemplateVendor,
   LayoutTemplateVersion,
   SerialLayoutTemplate,
   mockSerialCardConfig,
   mockSerialLayoutTemplate,
-} from './DashboardUtils';
+} from './dashboard-utils';
 
 export interface LayoutTemplateUploadModalProps {
   visible: boolean;
@@ -67,6 +68,7 @@ export interface LayoutTemplateUploadModalProps {
 export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch();
+  const { setSelectedTemplate } = React.useContext(LayoutTemplateContext);
   const customTemplates = useSelector((state: RootState) => state.dashboardConfigs.customTemplates);
   const { t } = useTranslation();
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -194,10 +196,14 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
           .subscribe((oks) => {
             setUploading(false);
             setAllOks(oks.every((o) => o !== null));
+            const validLayouts = oks.filter((o) => o !== null) as LayoutTemplate[];
+            if (validLayouts.length > 0) {
+              setSelectedTemplate(validLayouts[0]);
+            }
           })
       );
     },
-    [addSubscription, dispatch, t, validateParseTemplate, setUploading, setAllOks]
+    [addSubscription, dispatch, t, validateParseTemplate, setUploading, setSelectedTemplate, setAllOks]
   );
 
   const handleSubmit = React.useCallback(() => {

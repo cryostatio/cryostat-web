@@ -198,6 +198,7 @@
       "LABEL": "Layout menu",
       "OTHERS": "Layouts"
     },
+    "NEW_LAYOUT": "New Layout",
     "RENAME": {
       "LABEL": "Rename layout"
     },
@@ -235,6 +236,7 @@
       "NAME_INVALID": "Template name is invalid.",
       "NAME_TAKEN": "Template with name \"{{name}}\" already exists.",
       "PARSE": "JSON parse error.",
+      "TEMPLATE_INVALID": "Template has an invalid configuration.",
       "VERSION_INVALID": "Template version is invalid."
     },
     "HELP": {

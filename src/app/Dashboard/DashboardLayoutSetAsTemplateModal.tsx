@@ -57,7 +57,7 @@ import {
   LayoutTemplateDescriptionPattern,
   LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
   templatize,
-} from './DashboardUtils';
+} from './dashboard-utils';
 
 export interface DashboardLayoutSetAsTemplateModalProps {
   visible: boolean;

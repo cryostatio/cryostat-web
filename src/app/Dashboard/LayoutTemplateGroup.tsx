@@ -35,11 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  dashboardConfigDeleteTemplateIntent,
-  dashboardConfigTemplateHistoryClearIntent,
-} from '@app/Shared/Redux/ReduxStore';
+import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { portalRoot } from '@app/utils/utils';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
 import {
   Button,
@@ -49,7 +47,6 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   Gallery,
-  GalleryItem,
   KebabToggle,
   Split,
   SplitItem,
@@ -57,8 +54,9 @@ import {
 } from '@patternfly/react-core';
 import { PficonTemplateIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { iconify, LayoutTemplate, LayoutTemplateContext, LayoutTemplateVendor } from './DashboardUtils';
+import { iconify, LayoutTemplate, LayoutTemplateContext, LayoutTemplateVendor } from './dashboard-utils';
 
 export interface LayoutTemplateGroupProps {
   title: string;
@@ -72,6 +70,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
   onTemplateDelete,
   ...props
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const serviceContext = React.useContext(ServiceContext);
   const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
@@ -79,9 +78,6 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
 
   const handleTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
       setSelectedTemplate(template);
       onTemplateSelect(template);
     },
@@ -117,7 +113,6 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
     const handleTemplateDelete = React.useCallback(
       (e: React.MouseEvent) => {
         e.stopPropagation();
-        dispatch(dashboardConfigDeleteTemplateIntent(template.name));
         onTemplateDelete(template.name);
       },
       [template.name]
@@ -126,16 +121,17 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
     const dropdownItems = React.useMemo(() => {
       return [
         <DropdownItem key={'download'} onClick={handleTemplateDownload}>
-          Download
+          {t('DOWNLOAD', { ns: 'common' })}
         </DropdownItem>,
         <DropdownItem key={'delete'} onClick={handleTemplateDelete}>
-          Delete
+          {t('DELETE', { ns: 'common' })}
         </DropdownItem>,
       ];
     }, [handleTemplateDownload, handleTemplateDelete]);
 
     return (
       <Dropdown
+        menuAppendTo={portalRoot}
         onSelect={onSelect}
         toggle={<KebabToggle isDisabled={template.vendor !== LayoutTemplateVendor.USER} onToggle={openKebab} />}
         isOpen={isOpen}
@@ -157,12 +153,12 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
             {props.title}
           </Title>
         </SplitItem>
-        {props.title === 'Suggested' && props.templates.length !== 1 && (
+        {props.title === t('SUGGESTED', { ns: 'common' }) && props.templates.length !== 1 && (
           <>
             <SplitItem isFilled></SplitItem>
             <SplitItem>
               <Button variant="link" onClick={handleClearRecent}>
-                Clear recent
+                {t('CLEAR_RECENT', { ns: 'common' })}
               </Button>
             </SplitItem>
           </>
@@ -171,7 +167,15 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
       <Gallery className="layout-template-picker">
         {props.templates.length !== 0 ? (
           props.templates.map((template) => (
-            <GalleryItem key={template.name}>
+            <div
+              key={template.name}
+              ref={scrollRef}
+              className={
+                selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor
+                  ? 'layout-template-card__featured'
+                  : undefined
+              }
+            >
               <CatalogTile
                 featured={selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor}
                 id={template.name}
@@ -182,9 +186,9 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
                 onClick={() => handleTemplateSelect(template)}
                 badges={[<KebabCatalogTileBadge template={template} key={template.name + '-kebab'} />]}
               >
-                <div ref={scrollRef}>{template.description}</div>
+                {template.description}
               </CatalogTile>
-            </GalleryItem>
+            </div>
           ))
         ) : (
           <EmptyState>

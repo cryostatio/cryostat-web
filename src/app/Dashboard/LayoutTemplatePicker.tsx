@@ -35,8 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { RootState, dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { portalRoot } from '@app/utils/utils';
@@ -87,17 +89,12 @@ import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-ta
 import React from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ChartContext } from './Charts/ChartContext';
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
+import { CryostatLayoutTemplates, BlankLayout } from './cryostat-dashboard-templates';
 import { getConfigByName, hasConfigByName } from './Dashboard';
-import CryostatLayoutTemplates, { BlankLayout } from './dashboard-templates';
-import {
-  LayoutTemplate,
-  LayoutTemplateContext,
-  LayoutTemplateRecord,
-  recordToLayoutTemplate,
-} from './DashboardUtils';
+import { LayoutTemplate, LayoutTemplateContext, LayoutTemplateRecord, recordToLayoutTemplate } from './dashboard-utils';
 import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 import { SearchAutocomplete } from './SearchAutocomplete';
 
@@ -108,12 +105,17 @@ export type LayoutTemplateSort = 'Name' | 'Card Count'; // TODO: add 'Version' a
 const TemplateSortSelectOption: React.FC<{ sort: LayoutTemplateSort }> = ({ sort }) => {
   return <SelectOption key={sort} value={sort} />;
 };
+
+const CARD_PREVIEW_LIMIT = 16;
+
 export interface LayoutTemplatePickerProps {
   onTemplateSelect: (templateName: LayoutTemplate) => void;
 }
 
 export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTemplateSelect }) => {
   const { selectedTemplate, setSelectedTemplate, setIsUploadModalOpen } = React.useContext(LayoutTemplateContext);
+  const serviceContext = React.useContext(ServiceContext);
+  const dispatch = useDispatch();
 
   const [searchFilter, setSearchFilter] = React.useState('');
   const [isFilterSelectOpen, setIsFilterSelectOpen] = React.useState(false);
@@ -124,6 +126,9 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState(false);
+
+  const [isDeleteWarningModalOpen, setIsDeleteWarningModalOpen] = React.useState(false);
+  const [toDelete, setToDelete] = React.useState<string>('');
 
   const { t } = useTranslation();
   const recentTemplateRecords: LayoutTemplateRecord[] = useSelector(
@@ -162,17 +167,46 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     [onTemplateSelect, setSelectedTemplate, setIsDrawerExpanded]
   );
 
-  const onInnerTemplateDelete = React.useCallback(
-    (templateName: string) => {
+  const handleTemplateDelete = React.useCallback(
+    (name) => {
+      dispatch(dashboardConfigDeleteTemplateIntent(name));
       setSelectedTemplate((prev) => {
-        if (prev?.name === templateName) {
-          return undefined;
+        if (prev.name === name) {
+          return BlankLayout;
         }
         return prev;
       });
     },
-    [setSelectedTemplate]
+    [dispatch, setSelectedTemplate]
   );
+
+  const onInnerTemplateDelete = React.useCallback(
+    (templateName: string) => {
+      if (serviceContext.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteLayoutTemplate)) {
+        setIsDeleteWarningModalOpen(true);
+        setToDelete(templateName);
+      } else {
+        handleTemplateDelete(templateName);
+      }
+    },
+    [serviceContext.settings, setIsDeleteWarningModalOpen, setToDelete, handleTemplateDelete]
+  );
+
+  const handleDeleteWarningModalClose = React.useCallback(() => {
+    setIsDeleteWarningModalOpen(false);
+    setToDelete('');
+  }, [setIsDeleteWarningModalOpen, setToDelete]);
+
+  const deleteWarningModal = React.useMemo(() => {
+    return (
+      <DeleteWarningModal
+        warningType={DeleteOrDisableWarningType.DeleteLayoutTemplate}
+        visible={isDeleteWarningModalOpen}
+        onClose={handleDeleteWarningModalClose}
+        onAccept={() => handleTemplateDelete(toDelete)}
+      />
+    );
+  }, [isDeleteWarningModalOpen, toDelete, handleDeleteWarningModalClose, handleTemplateDelete]);
 
   const handleUploadButton = React.useCallback(() => {
     setIsUploadModalOpen(true);
@@ -193,22 +227,6 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     ),
     [t, handleUploadButton]
   );
-
-  // const downloadButton = React.useMemo(
-  //   () => (
-  //     <Button
-  //       key="download"
-  //       variant="secondary"
-  //       aria-label={t('DashboardLayoutToolbar.DOWNLOAD.LABEL')}
-  //       onClick={handleDownloadLayout}
-  //       icon={<DownloadIcon />}
-  //       data-quickstart-id="dashboard-download-btn"
-  //     >
-  //       {t('DOWNLOAD', { ns: 'common' })}
-  //     </Button>
-  //   ),
-  //   [t, handleDownloadLayout]
-  // );
 
   const onSearchChange = React.useCallback(
     (value: string) => {
@@ -297,7 +315,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const panelContent = React.useMemo(() => {
     return (
-      <DrawerPanelContent isResizable defaultSize="25%">
+      <DrawerPanelContent isResizable defaultSize="35%">
         <DrawerHead>
           {selectedTemplate ? (
             <DescriptionList isFillColumns>
@@ -322,7 +340,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 </DescriptionListGroup>
               )}
               <DescriptionListGroup>
-                <DescriptionListTerm>Card List</DescriptionListTerm>
+                <DescriptionListTerm>Preview</DescriptionListTerm>
                 {
                   <div className="dashboard-layout-preview">
                     <ServiceContext.Provider value={fakeServices}>
@@ -336,6 +354,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                           }}
                         >
                           {selectedTemplate.cards
+                            .slice(0, CARD_PREVIEW_LIMIT)
                             .filter((cfg) => hasConfigByName(cfg.name))
                             .map((cfg, idx) => (
                               <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${idx}-wrapper`}>
@@ -442,6 +461,14 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       .filter((t) => t !== undefined) as LayoutTemplate[];
   }, [recentTemplateRecords, allTemplates]);
 
+  React.useLayoutEffect(() => {
+    if (selectedTemplate) {
+      document
+        .querySelector('.layout-template-picker .catalog-tile-pf.featured')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [selectedTemplate]);
+
   return (
     <Drawer isExpanded={isDrawerExpanded} isInline>
       <DrawerContent panelContent={panelContent}>
@@ -466,40 +493,39 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                           isOpen={isFilterSelectOpen}
                           placeholderText="Template Type"
                         >
-                          <SelectOption key="suggested" value="Suggested" />
+                          <SelectOption key="suggested" value={t('SUGGESTED', { ns: 'common' })} />
                           <SelectOption key="cryostat" value="Cryostat" />
-                          <SelectOption key="user-submitted" value="User-submitted" />
+                          <SelectOption key="user-submitted" value={t('USER_SUBMITTED', { ns: 'common' })} />
                         </Select>
                       </ToolbarFilter>
                     </ToolbarGroup>
                   </ToolbarToggleGroup>
                   <ToolbarGroup variant="icon-button-group">
                     <ToolbarItem>
+                      <Select
+                        menuAppendTo={portalRoot}
+                        toggleIcon={<GlobeIcon />}
+                        aria-label="Select sorting category"
+                        onToggle={onSortSelectToggle}
+                        onSelect={onSortSelect}
+                        selections={selectedSort}
+                        isOpen={isSortSelectOpen}
+                        placeholderText={t('SORT', { ns: 'common' })}
+                      >
+                        <TemplateSortSelectOption sort={'Name'} />
+                        <TemplateSortSelectOption sort={'Card Count'} />
+                        {/* <TemplateSortSelectOption sort={'Version'} /> */}
+                      </Select>
+                    </ToolbarItem>
+                    <ToolbarItem>
                       <Button
-                        variant="control"
+                        variant="plain"
                         aria-label="Sort"
                         onClick={onSortDirectionChange}
                         isAriaDisabled={!selectedSort}
                       >
                         {sortArrowIcon}
                       </Button>
-                    </ToolbarItem>
-                    <ToolbarItem>
-                      <Select
-                        menuAppendTo={portalRoot}
-                        toggleIcon={<GlobeIcon />}
-                        variant={SelectVariant.single}
-                        aria-label="Select sorting category"
-                        onToggle={onSortSelectToggle}
-                        onSelect={onSortSelect}
-                        selections={selectedSort}
-                        isOpen={isSortSelectOpen}
-                        placeholderText="Sort"
-                      >
-                        <TemplateSortSelectOption sort={'Name'} />
-                        <TemplateSortSelectOption sort={'Card Count'} />
-                        {/* <TemplateSortSelectOption sort={'Version'} /> */}
-                      </Select>
                     </ToolbarItem>
                   </ToolbarGroup>
                   <ToolbarGroup>
@@ -510,9 +536,12 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               <Stack>
                 {allSearchableTemplateNames.length !== 0 ? (
                   <>
-                    {sortedFilteredTemplateLayoutGroup('Suggested', [BlankLayout, ...RecentTemplates])}
+                    {sortedFilteredTemplateLayoutGroup(t('SUGGESTED', { ns: 'common' }), [
+                      BlankLayout,
+                      ...RecentTemplates,
+                    ])}
                     {sortedFilteredTemplateLayoutGroup('Cryostat', CryostatLayoutTemplates)}
-                    {sortedFilteredTemplateLayoutGroup('User-submitted', userSubmittedTemplates)}
+                    {sortedFilteredTemplateLayoutGroup(t('USER_SUBMITTED', { ns: 'common' }), userSubmittedTemplates)}
                   </>
                 ) : (
                   <StackItem>
@@ -530,6 +559,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
           </OuterScrollContainer>
         </DrawerContentBody>
       </DrawerContent>
+      {deleteWarningModal}
     </Drawer>
   );
 };

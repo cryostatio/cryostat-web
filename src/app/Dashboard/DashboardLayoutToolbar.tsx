@@ -80,9 +80,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddCard } from './AddCard';
+import { BlankLayout } from './cryostat-dashboard-templates';
+import {
+  DashboardLayout,
+  DEFAULT_DASHBOARD_NAME,
+  getUniqueIncrementingName,
+  LayoutTemplate,
+  LayoutTemplateContext,
+} from './dashboard-utils';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutSetAsTemplateModal } from './DashboardLayoutSetAsTemplateModal';
-import { DashboardLayout, DEFAULT_DASHBOARD_NAME, LayoutTemplate, LayoutTemplateContext } from './DashboardUtils';
 import { LayoutTemplateUploadModal } from './LayoutTemplateUploadModal';
 
 export interface DashboardLayoutToolbarProps {
@@ -95,7 +102,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
   const { t } = useTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
 
-  const [selectedTemplate, setSelectedTemplate] = React.useState<LayoutTemplate | undefined>(undefined);
+  const [selectedTemplate, setSelectedTemplate] = React.useState<LayoutTemplate>(BlankLayout);
 
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
 
@@ -143,7 +150,8 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
 
   const handleCreateModalClose = React.useCallback(() => {
     setIsCreateModalOpen(false);
-  }, [setIsCreateModalOpen]);
+    setSelectedTemplate(BlankLayout);
+  }, [setIsCreateModalOpen, setSelectedTemplate]);
 
   const handleTemplateModalOpen = React.useCallback(() => {
     setIsTemplateModalOpen(true);
@@ -239,20 +247,15 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
     [setIsSelectorOpen]
   );
 
-  // const newSplitButtonItems = React.useMemo(
-
   const onCreateDropdownSelect = React.useCallback(() => {
     setIsCreateDropdownOpen(false);
   }, [setIsCreateDropdownOpen]);
 
   const createBlankLayout = React.useCallback(() => {
-    let i = 1;
-    let name: string;
-
-    do {
-      name = `Custom${i}`;
-      i++;
-    } while (dashboardConfigs.layouts.some((layout) => layout.name === name));
+    const name = getUniqueIncrementingName(
+      'Custom',
+      dashboardConfigs.layouts.map((l) => l.name)
+    );
 
     const template: DashboardLayout = {
       name,
@@ -296,7 +299,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
               >
                 <span style={{ display: 'flex', alignItems: 'center' }}>
                   <PlusCircleIcon style={{ marginRight: 'var(--pf-global--spacer--sm)' }} />
-                  Create New Layout
+                  {t('DashboardLayoutToolbar.NEW_LAYOUT')}
                 </span>
               </DropdownToggleAction>,
             ]}
@@ -308,17 +311,9 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
         isOpen={isCreateDropdownOpen}
         dropdownItems={createTemplateDropdownItems}
       />
-      // <Button
-      //   key="new"
-      //   variant="primary"
-      //   aria-label={t('DashboardLayoutToolbar.NEW.LABEL')}
-      //   onClick={handleCreateModalOpen}
-      //   data-quickstart-id="create-layout-btn"
-      // >
-      //   Create Layout
-      // </Button>
     ),
     [
+      t,
       createBlankLayout,
       setIsSelectorOpen,
       onCreateDropdownSelect,

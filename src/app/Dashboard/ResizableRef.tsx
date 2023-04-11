@@ -41,8 +41,8 @@ import _ from 'lodash';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DashboardCardSizes } from './Dashboard';
+import { CardConfig } from './dashboard-utils';
 import { DashboardCardContext } from './DashboardCard';
-import { CardConfig } from './DashboardUtils';
 
 export interface ResizableRefProps {
   cardId: number;

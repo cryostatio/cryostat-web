@@ -103,7 +103,7 @@ export const mockSerialLayoutTemplate: SerialLayoutTemplate = {
 
 export interface LayoutTemplateProviderProps {
   selectedTemplate: LayoutTemplate | undefined;
-  setSelectedTemplate: (template: React.SetStateAction<LayoutTemplate | undefined>) => void;
+  setSelectedTemplate: (template: React.SetStateAction<LayoutTemplate>) => void;
   isUploadModalOpen: boolean;
   setIsUploadModalOpen: (isOpen: React.SetStateAction<boolean>) => void;
 }
@@ -159,19 +159,12 @@ export const recordToLayoutTemplate = (
   return allTemplates.find((template) => template.name === record.name && template.vendor === record.vendor);
 };
 
-// replace with mock data preview
-export const cardsToString = (config: SerialCardConfig[]): string => {
-  if (config.length === 0) {
-    return 'None';
-  }
-  return config
-    .map((card) => {
-      // map in chartKind if it exists
-      let stringified = card.name;
-      if (card.props.hasOwnProperty('chartKind')) {
-        stringified += `(${card.props['chartKind']})`;
-      }
-      return stringified;
-    })
-    .join(', ');
+export const getUniqueIncrementingName = (init = 'Custom', names: string[]): string => {
+  let name;
+  let i = 1;
+  do {
+    name = `${init}${i}`;
+    i++;
+  } while (names.includes(name));
+  return name;
 };

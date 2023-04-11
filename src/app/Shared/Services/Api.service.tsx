@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/DashboardUtils';
+import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/dashboard-utils';
 import { EventType } from '@app/Events/EventTypes';
 import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';

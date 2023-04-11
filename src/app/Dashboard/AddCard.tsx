@@ -104,7 +104,7 @@ import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { ChartContext } from './Charts/ChartContext';
 import { DashboardCardDescriptor, getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
-import { CardConfig } from './DashboardUtils';
+import { CardConfig } from './dashboard-utils';
 
 interface AddCardProps {
   variant: 'card' | 'icon-button';

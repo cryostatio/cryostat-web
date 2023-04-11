@@ -61,8 +61,14 @@ import {
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { BlankLayout } from './dashboard-templates';
-import { DashboardLayoutNamePattern, DEFAULT_DASHBOARD_NAME, layoutize, LayoutTemplate } from './DashboardUtils';
+import { BlankLayout } from './cryostat-dashboard-templates';
+import {
+  DashboardLayoutNamePattern,
+  DEFAULT_DASHBOARD_NAME,
+  layoutize,
+  LayoutTemplate,
+  LayoutTemplateContext,
+} from './dashboard-utils';
 import { LayoutTemplatePicker } from './LayoutTemplatePicker';
 
 export interface DashboardLayoutCreateModalProps {
@@ -78,7 +84,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   const [nameValidated, setNameValidated] = React.useState<ValidatedOptions>(ValidatedOptions.default);
   const [errorMessage, setErrorMessage] = React.useState<string>('');
   const [name, setName] = React.useState<string>('');
-  const [template, setTemplate] = React.useState<LayoutTemplate>(BlankLayout);
+  const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
 
   React.useEffect(() => {
     setName(props.oldName || '');
@@ -125,21 +131,23 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   const handleSubmit = React.useCallback(
     (ev?: React.MouseEvent) => {
       ev && ev.stopPropagation();
-      if (nameValidated === ValidatedOptions.success) {
-        const newLayout = layoutize(template, name);
+      if (nameValidated === ValidatedOptions.success && selectedTemplate) {
         if (isCreateModal) {
+          const newLayout = layoutize(selectedTemplate, name);
           dispatch(dashboardConfigCreateLayoutIntent(newLayout));
-          dispatch(dashboardConfigTemplateHistoryPushIntent(template));
+          if (selectedTemplate !== BlankLayout) {
+            dispatch(dashboardConfigTemplateHistoryPushIntent(selectedTemplate));
+          }
+          dispatch(dashboardConfigReplaceLayoutIntent(newLayout.name));
         } else {
           if (props.oldName !== undefined) {
             dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
           }
         }
-        dispatch(dashboardConfigReplaceLayoutIntent(newLayout.name));
       }
       handleClose();
     },
-    [dispatch, handleClose, template, name, nameValidated, isCreateModal, props.oldName]
+    [dispatch, handleClose, selectedTemplate, name, nameValidated, isCreateModal, props.oldName]
   );
 
   const handleKeyUp = React.useCallback(
@@ -154,19 +162,21 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
 
   const onTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
-      setTemplate(template);
+      setSelectedTemplate(template);
     },
-    [setTemplate]
+    [setSelectedTemplate]
   );
 
   const formGroup = React.useMemo(() => {
     return (
       <FormSection>
-        <FormGroup label={'Template'} fieldId="template" isRequired height="35em" validated={nameValidated}>
-          <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '33em' }}>
-            <LayoutTemplatePicker onTemplateSelect={onTemplateSelect} />
-          </div>
-        </FormGroup>
+        {isCreateModal && (
+          <FormGroup label={'Template'} fieldId="template" isRequired height="35em" validated={nameValidated}>
+            <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '33em' }}>
+              <LayoutTemplatePicker onTemplateSelect={onTemplateSelect} />
+            </div>
+          </FormGroup>
+        )}
         <FormGroup
           label={t('DashboardLayoutCreateModal.NAME.LABEL')}
           fieldId="name"
@@ -191,7 +201,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         </FormGroup>
       </FormSection>
     );
-  }, [t, nameValidated, errorMessage, name, onTemplateSelect, handleNameChange, handleKeyUp]);
+  }, [t, isCreateModal, nameValidated, errorMessage, name, onTemplateSelect, handleNameChange, handleKeyUp]);
 
   const actionGroup = React.useMemo(() => {
     return (
@@ -222,8 +232,8 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
 
   return (
     <Modal
-      aria-label="Create a new dashboard layout"
-      width={'90em'}
+      aria-label="Create a new dashboard layout" // FIXME: i18n
+      width={isCreateModal ? '110em' : '40%'}
       appendTo={portalRoot}
       isOpen={props.visible}
       variant={ModalVariant.large}

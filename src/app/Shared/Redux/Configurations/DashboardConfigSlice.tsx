@@ -37,7 +37,7 @@
  */
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
-import { DashboardLayout, LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/DashboardUtils';
+import { DashboardLayout, LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/dashboard-utils';
 import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';

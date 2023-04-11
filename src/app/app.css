@@ -128,6 +128,11 @@ html, body, #root {
   border-top: 2px solid var(--pf-global--active-color--100);
   transform: translateY(-0.4em);
   transition: transform 0.5s;
+  transform-origin: bottom;
+}
+
+.layout-template-card__featured {
+  z-index: 1;
 }
 
 #dashboard-layout-menu-content .pf-c-menu__item-action {
