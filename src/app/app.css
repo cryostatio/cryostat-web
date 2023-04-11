@@ -638,8 +638,6 @@ svg.topology__node-decorator-icon.progress {
   position: absolute;
   scale: 0.5;
   transform-origin: top left;
-  /* max-width: 200%;
-  max-height: 100%; */
 }
 
 .non-interactive-overlay {

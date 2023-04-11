@@ -45,7 +45,7 @@ import { DeleteOrDisableWarningType, getFromWarningMap } from './DeleteWarningUt
 export interface DeleteWarningProps {
   warningType: DeleteOrDisableWarningType;
   visible: boolean;
-  onAccept: (value?: any) => void;
+  onAccept: () => void;
   onClose: () => void;
 }
 

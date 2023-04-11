@@ -164,13 +164,16 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
       title={t('DashboardLayoutSetAsTemplateModal.TITLE')}
       description={t(`DashboardLayoutSetAsTemplateModal.DESCRIPTION`)}
     >
-      {/* <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
+      {
+        // Should a list of existing templates be shown here?
+        /* <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
         <OuterScrollContainer>
           <InnerScrollContainer>
             <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() =>{}} onTemplateDelete={() => {}} />
           </InnerScrollContainer>
         </OuterScrollContainer>
-      </div> */}
+      </div> */
+      }
       <Form onSubmit={(e) => e.preventDefault()}>
         <FormSection>
           <FormGroup
