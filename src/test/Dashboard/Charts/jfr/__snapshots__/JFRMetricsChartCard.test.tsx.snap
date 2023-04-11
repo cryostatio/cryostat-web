@@ -21,6 +21,7 @@ exports[`<JFRMetricsChartCard /> renders correctly 1`] = `
           "height": "380px",
         }
       }
+      title="CPU Load"
     >
       <div
         className="draggable-ref__grip"
@@ -31,12 +32,13 @@ exports[`<JFRMetricsChartCard /> renders correctly 1`] = `
       >
         <div
           className="pf-c-card__header"
-          style={
-            Object {
-              "marginBottom": "-2em",
-            }
-          }
         >
+          <div
+            className="pf-c-card__title"
+            id="CPU Load-chart-card-title"
+          >
+            CPU Load (last 120s, every 10s)
+          </div>
           <div
             className="pf-c-card__actions"
           >
@@ -108,16 +110,14 @@ exports[`<JFRMetricsChartCard /> renders correctly 1`] = `
       <div
         className="pf-c-card__body"
       >
-        <iframe
-          className="disabled-pointer"
-          src="http://localhost:3000/d-solo/main?theme=light&panelId=3&to=now&from=now-120s&refresh=10s"
-          style={
-            Object {
-              "height": "100%",
-              "width": "100%",
-            }
-          }
-        />
+        <div
+          className="grafana-iframe-wrapper"
+        >
+          <iframe
+            className="disabled-pointer"
+            src="http://localhost:3000/d-solo/main?theme=light&panelId=3&to=now&from=now-120s&refresh=10s"
+          />
+        </div>
       </div>
     </article>
     <div
@@ -145,6 +145,7 @@ exports[`<JFRMetricsChartCard /> renders empty state correctly 1`] = `
       data-ouia-safe={true}
       id="CPU Load-chart-card"
       style={Object {}}
+      title="CPU Load"
     >
       <div
         className="draggable-ref__grip"
@@ -155,17 +156,12 @@ exports[`<JFRMetricsChartCard /> renders empty state correctly 1`] = `
       >
         <div
           className="pf-c-card__header"
-          style={
-            Object {
-              "marginBottom": "-2em",
-            }
-          }
         >
           <div
             className="pf-c-card__title"
             id="CPU Load-chart-card-title"
           >
-            CPU Load
+            CPU Load (last 120s, every 10s)
           </div>
           <div
             className="pf-c-card__actions"
@@ -270,6 +266,7 @@ exports[`<JFRMetricsChartCard /> renders loading state correctly 1`] = `
       data-ouia-safe={true}
       id="CPU Load-chart-card"
       style={Object {}}
+      title="CPU Load"
     >
       <div
         className="draggable-ref__grip"
@@ -280,17 +277,12 @@ exports[`<JFRMetricsChartCard /> renders loading state correctly 1`] = `
       >
         <div
           className="pf-c-card__header"
-          style={
-            Object {
-              "marginBottom": "-2em",
-            }
-          }
         >
           <div
             className="pf-c-card__title"
             id="CPU Load-chart-card-title"
           >
-            CPU Load
+            CPU Load (last 120s, every 10s)
           </div>
           <div
             className="pf-c-card__actions"
