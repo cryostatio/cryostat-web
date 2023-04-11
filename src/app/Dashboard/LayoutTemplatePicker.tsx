@@ -35,11 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import useDayjs from '@app/utils/useDayjs';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { portalRoot } from '@app/utils/utils';
 import {
   Button,
+  Card,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -55,7 +58,8 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  ExpandableSection,
+  Grid,
+  GridItem,
   Select,
   SelectOption,
   SelectOptionObject,
@@ -82,18 +86,20 @@ import {
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { ChartContext } from './Charts/ChartContext';
+import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
+import { getConfigByName, hasConfigByName } from './Dashboard';
 import CryostatLayoutTemplates, { BlankLayout } from './dashboard-templates';
 import {
   LayoutTemplate,
   LayoutTemplateContext,
   LayoutTemplateRecord,
-  cardsToString,
   recordToLayoutTemplate,
 } from './DashboardUtils';
 import { LayoutTemplateGroup } from './LayoutTemplateGroup';
 import { SearchAutocomplete } from './SearchAutocomplete';
-import { useTranslation } from 'react-i18next';
 
 export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
 
@@ -107,8 +113,7 @@ export interface LayoutTemplatePickerProps {
 }
 
 export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTemplateSelect }) => {
-  const { selectedTemplate, setSelectedTemplate, isUploadModalOpen, setIsUploadModalOpen } =
-    React.useContext(LayoutTemplateContext);
+  const { selectedTemplate, setSelectedTemplate, setIsUploadModalOpen } = React.useContext(LayoutTemplateContext);
 
   const [searchFilter, setSearchFilter] = React.useState('');
   const [isFilterSelectOpen, setIsFilterSelectOpen] = React.useState(false);
@@ -120,7 +125,6 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const [isDrawerExpanded, setIsDrawerExpanded] = React.useState(false);
 
-  const [dayjs, timeFormat] = useDayjs();
   const { t } = useTranslation();
   const recentTemplateRecords: LayoutTemplateRecord[] = useSelector(
     (state: RootState) => state.dashboardConfigs.templateHistory
@@ -296,7 +300,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       <DrawerPanelContent isResizable defaultSize="25%">
         <DrawerHead>
           {selectedTemplate ? (
-            <DescriptionList>
+            <DescriptionList isFillColumns>
               <DescriptionListGroup>
                 <DescriptionListTerm>Name</DescriptionListTerm>
                 <DescriptionListDescription>{selectedTemplate?.name}</DescriptionListDescription>
@@ -304,10 +308,6 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               <DescriptionListGroup>
                 <DescriptionListTerm>Description</DescriptionListTerm>
                 <DescriptionListDescription>{selectedTemplate?.description}</DescriptionListDescription>
-              </DescriptionListGroup>
-              <DescriptionListGroup>
-                <DescriptionListTerm>Card List</DescriptionListTerm>
-                <DescriptionListDescription>{cardsToString(selectedTemplate.cards)}</DescriptionListDescription>
               </DescriptionListGroup>
               {selectedTemplate?.vendor && (
                 <DescriptionListGroup>
@@ -321,6 +321,47 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                   <DescriptionListDescription>{selectedTemplate.version}</DescriptionListDescription>
                 </DescriptionListGroup>
               )}
+              <DescriptionListGroup>
+                <DescriptionListTerm>Card List</DescriptionListTerm>
+                {
+                  <div className="dashboard-layout-preview">
+                    <ServiceContext.Provider value={fakeServices}>
+                      <ChartContext.Provider value={fakeChartContext}>
+                        <Grid
+                          id={'dashboard-layout-preview-grid'}
+                          hasGutter
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          {selectedTemplate.cards
+                            .filter((cfg) => hasConfigByName(cfg.name))
+                            .map((cfg, idx) => (
+                              <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${idx}-wrapper`}>
+                                <GridItem span={cfg.span} key={idx} order={{ default: idx.toString() }}>
+                                  {/* TODO: remove this once we have a preview for JFRMetricsChartCard */}
+                                  {cfg.name === JFRMetricsChartCardDescriptor.component.name ? (
+                                    <Card isFullHeight isCompact>
+                                      Empty preview
+                                    </Card>
+                                  ) : (
+                                    React.createElement(getConfigByName(cfg.name).component, {
+                                      span: cfg.span,
+                                      ...cfg.props,
+                                      dashboardId: idx,
+                                      actions: [],
+                                    })
+                                  )}
+                                </GridItem>
+                              </FeatureFlag>
+                            ))}
+                        </Grid>
+                      </ChartContext.Provider>
+                    </ServiceContext.Provider>
+                  </div>
+                }
+              </DescriptionListGroup>
             </DescriptionList>
           ) : (
             <>No template selected</>
@@ -331,7 +372,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         </DrawerHead>
       </DrawerPanelContent>
     );
-  }, [dayjs, timeFormat.timeZone.full, onDrawerCloseClick, selectedTemplate]);
+  }, [onDrawerCloseClick, selectedTemplate]);
 
   const sortedFilteredTemplateLayoutGroup = React.useCallback(
     (title: LayoutTemplateFilter, templates: LayoutTemplate[]) => {
@@ -384,7 +425,6 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       sortDirection,
       onInnerTemplateSelect,
       onInnerTemplateDelete,
-      dayjs,
     ]
   );
 

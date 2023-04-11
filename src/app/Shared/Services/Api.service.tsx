@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/DashboardUtils';
 import { EventType } from '@app/Events/EventTypes';
 import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
@@ -50,7 +51,6 @@ import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/o
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
-import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/DashboardUtils';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 

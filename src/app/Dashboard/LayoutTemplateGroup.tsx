@@ -39,7 +39,8 @@ import {
   dashboardConfigDeleteTemplateIntent,
   dashboardConfigTemplateHistoryClearIntent,
 } from '@app/Shared/Redux/ReduxStore';
-import { CatalogTile, CatalogTileBadge, CatalogTileProps } from '@patternfly/react-catalog-view-extension';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { CatalogTile } from '@patternfly/react-catalog-view-extension';
 import {
   Button,
   Dropdown,
@@ -54,12 +55,10 @@ import {
   SplitItem,
   Title,
 } from '@patternfly/react-core';
-import { CheckCircleIcon, PficonTemplateIcon } from '@patternfly/react-icons';
-import React, { forwardRef } from 'react';
+import { PficonTemplateIcon } from '@patternfly/react-icons';
+import React from 'react';
 import { useDispatch } from 'react-redux';
-import { BlankLayout } from './dashboard-templates';
 import { iconify, LayoutTemplate, LayoutTemplateContext, LayoutTemplateVendor } from './DashboardUtils';
-import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface LayoutTemplateGroupProps {
   title: string;
@@ -112,7 +111,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
         e.stopPropagation();
         serviceContext.api.downloadLayoutTemplate(template);
       },
-      [serviceContext.api, template]
+      [template]
     );
 
     const handleTemplateDelete = React.useCallback(

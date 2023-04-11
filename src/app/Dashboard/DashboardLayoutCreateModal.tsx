@@ -222,6 +222,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
 
   return (
     <Modal
+      aria-label="Create a new dashboard layout"
       width={'90em'}
       appendTo={portalRoot}
       isOpen={props.visible}

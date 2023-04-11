@@ -73,7 +73,6 @@ import {
   PencilAltIcon,
   PficonTemplateIcon,
   PlusCircleIcon,
-  PlusIcon,
   TrashIcon,
   UploadIcon,
 } from '@patternfly/react-icons';
@@ -392,7 +391,11 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
         isOpen={isKebabOpen}
         onSelect={onKebabSelect}
         minWidth="10em"
-        onOpenChange={(isOpen) => setIsKebabOpen(isOpen)}
+        onOpenChange={(isOpen) => {
+          console.log('onOpenChange');
+          setIsKebabOpen(isOpen);
+          console.log(isOpen);
+        }}
         toggle={(toggleRef) => (
           <MenuToggle
             ref={toggleRef}
