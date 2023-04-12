@@ -61,12 +61,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
 
   const onSearchChange = React.useCallback(
     (newValue) => {
-      if (
-        newValue !== '' &&
-        searchInputRef &&
-        searchInputRef.current &&
-        searchInputRef.current.contains(document.activeElement)
-      ) {
+      if (newValue !== '' && searchInputRef.current && searchInputRef.current.contains(document.activeElement)) {
         // When the value of the search input changes, build a list of no more than 10 autocomplete options.
         let options = props.values
           .filter((option) => option.toLowerCase().startsWith(newValue.toLowerCase()))
@@ -158,12 +153,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
   // The autocomplete menu should close if the user clicks outside the menu.
   const handleClickOutside = React.useCallback(
     (event) => {
-      if (
-        isAutocompleteOpen &&
-        autocompleteRef &&
-        autocompleteRef.current &&
-        !autocompleteRef.current.contains(event.target)
-      ) {
+      if (isAutocompleteOpen && autocompleteRef.current && !autocompleteRef.current.contains(event.target)) {
         setIsAutocompleteOpen(false);
       }
     },
@@ -177,7 +167,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
       window.removeEventListener('keydown', handleMenuKeys);
       window.removeEventListener('click', handleMenuKeys);
     };
-  }, [isAutocompleteOpen, hint, handleMenuKeys, handleClickOutside]);
+  }, [handleMenuKeys, handleClickOutside]);
 
   const searchInput = React.useMemo(
     () => (

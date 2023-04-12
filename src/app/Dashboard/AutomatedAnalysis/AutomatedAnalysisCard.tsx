@@ -119,7 +119,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
+import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '../dashboard-utils';
 import { DashboardCard } from '../DashboardCard';
 import { AutomatedAnalysisCardList } from './AutomatedAnalysisCardList';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
@@ -133,7 +133,7 @@ import {
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
-export interface AutomatedAnalysisCardProps extends DashboardCardProps {}
+export interface AutomatedAnalysisCardProps extends DashboardCardTypeProps {}
 
 export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);

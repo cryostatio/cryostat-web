@@ -50,9 +50,6 @@ import {
   FormGroup,
   FormSection,
   Modal,
-  ModalVariant,
-  Split,
-  SplitItem,
   TextInput,
   Title,
   TitleSizes,
@@ -217,26 +214,18 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   }, [t, handleSubmit, handleClose, nameValidated, isCreateModal]);
 
   const header = (
-    <React.Fragment>
-      <Split hasGutter>
-        <SplitItem isFilled>
-          <Title id="modal-custom-header-label" headingLevel="h1" size={TitleSizes['2xl']}>
-            {isCreateModal
-              ? t('DashboardLayoutCreateModal.CREATE_LAYOUT')
-              : t('DashboardLayoutCreateModal.RENAME_LAYOUT')}
-          </Title>
-        </SplitItem>
-      </Split>
-    </React.Fragment>
+    <Title id="modal-custom-header-label" headingLevel="h1" size={TitleSizes['2xl']}>
+      {isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')}
+    </Title>
   );
 
   return (
     <Modal
-      aria-label="Create a new dashboard layout" // FIXME: i18n
+      aria-label={t('DashboardLayoutCreateModal.LABEL')}
       width={isCreateModal ? '110em' : '40%'}
+      height={isCreateModal ? '90%' : 'auto'}
       appendTo={portalRoot}
       isOpen={props.visible}
-      variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
       header={header}

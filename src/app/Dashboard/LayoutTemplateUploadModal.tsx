@@ -47,6 +47,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
+import { getDashboardCards } from './Dashboard';
 import {
   DashboardLayoutNamePattern,
   LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
@@ -114,6 +115,9 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
             if (
               Object.keys(cardConfig).length !== Object.keys(mockSerialCardConfig).length ||
               cardConfig.name === undefined ||
+              !getDashboardCards()
+                .map((c) => c.component.name)
+                .includes(cardConfig.name) ||
               cardConfig.span === undefined ||
               cardConfig.props === undefined
             ) {
@@ -123,7 +127,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
           if (!(template.version in LayoutTemplateVersion)) {
             throw new Error(t('LayoutTemplateUploadModal.ERROR.VERSION_INVALID'));
           }
-          // all uploaded templates are user-supplied
+          // all uploaded templates are user-submitted
           return {
             name: template.name,
             description: template.description,

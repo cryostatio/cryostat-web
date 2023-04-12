@@ -164,6 +164,7 @@
       "NAME_TAKEN": "Name is already in use.",
       "NAME_TOO_LONG": "Name must be 20 characters or less."
     },
+    "LABEL": "Create a new dashboard layout",
     "NAME": {
       "HELPER_TEXT": "Enter a name for the dashboard layout.",
       "LABEL": "Name"
@@ -171,7 +172,10 @@
     "RENAME_LAYOUT": "Rename Dashboard Layout"
   },
   "DashboardLayoutSetAsTemplateModal": {
-    "DESCRIPTION": "Set the current dashboard layout as a template.",
+    "DOWNLOAD": {
+      "DESCRIPTION": "Download the current dashboard layout as a template.",
+      "TITLE": "Download Custom Layout Template"
+    },
     "ERROR": {
       "DESCRIPTION_INVALID": "The description can only include letters, numbers, spaces, and some special characters.",
       "DESCRIPTION_TOO_LONG": "The description must be 100 characters or less."
@@ -187,12 +191,16 @@
         "LABEL": "Name"
       }
     },
-    "TITLE": "Custom Layout Template"
+    "SET_TEMPLATE": {
+      "DESCRIPTION": "Set the current dashboard layout as a template.",
+      "TITLE": "Set Custom Layout Template"
+    }
   },
   "DashboardLayoutToolbar": {
     "DELETE": {
       "LABEL": "Delete layout"
     },
+    "DOWNLOAD_AS_TEMPLATE": "Download as template",
     "MENU": {
       "FAVORITES": "Favorites",
       "LABEL": "Layout menu",
@@ -226,6 +234,13 @@
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
     "CARD_TITLE": "Target JVM Details"
+  },
+  "LayoutTemplatePicker": {
+    "SORT_BY": {
+      "CARD_COUNT": "Sort by: Card Count",
+      "NAME": "Sort by: Name",
+      "PLACEHOLDER": "Sort by..."
+    }
   },
   "LayoutTemplateUploadModal": {
     "DESCRIPTION": "Select Dashboard Layout Template configuration file(s) to upload. File(s) must be in valid JSON format.",

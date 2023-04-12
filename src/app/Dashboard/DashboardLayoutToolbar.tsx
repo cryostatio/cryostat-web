@@ -123,6 +123,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
   // toolbar kebab
   const [isKebabOpen, setIsKebabOpen] = React.useState(false);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = React.useState(false);
+  const [isDownloadModal, setIsDownloadModal] = React.useState(false);
 
   const deleteRef = React.useRef<HTMLButtonElement>(null);
 
@@ -152,14 +153,6 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
     setIsCreateModalOpen(false);
     setSelectedTemplate(BlankLayout);
   }, [setIsCreateModalOpen, setSelectedTemplate]);
-
-  const handleTemplateModalOpen = React.useCallback(() => {
-    setIsTemplateModalOpen(true);
-  }, [setIsTemplateModalOpen]);
-
-  const handleTemplateModalClose = React.useCallback(() => {
-    setIsTemplateModalOpen(false);
-  }, [setIsTemplateModalOpen]);
 
   const handleDeleteWarningModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>, layout: string) => {
@@ -359,25 +352,45 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
   const dropdownItems = React.useMemo(() => {
     return (
       <DropdownList>
-        <DropdownItem key="template" itemId={0}>
+        <DropdownItem key="template" itemId={'template'}>
           {t('DashboardLayoutToolbar.SET_AS_TEMPLATE')}
+        </DropdownItem>
+        <DropdownItem key="download" itemId={'download'}>
+          {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
       </DropdownList>
     );
   }, [t]);
 
+  const handleDownloadTemplateModalOpen = React.useCallback(() => {
+    setIsDownloadModal(true);
+    setIsTemplateModalOpen(true);
+  }, [setIsDownloadModal, setIsTemplateModalOpen]);
+
+  const handleSetAsTemplateModalOpen = React.useCallback(() => {
+    setIsDownloadModal(false);
+    setIsTemplateModalOpen(true);
+  }, [setIsTemplateModalOpen]);
+
+  const handleTemplateModalClose = React.useCallback(() => {
+    setIsTemplateModalOpen(false);
+  }, [setIsTemplateModalOpen]);
+
   const onKebabSelect = React.useCallback(
     (_event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: string | number | undefined) => {
       switch (itemId) {
-        case 0:
-          handleTemplateModalOpen();
+        case 'template':
+          handleSetAsTemplateModalOpen();
+          break;
+        case 'download':
+          handleDownloadTemplateModalOpen();
           break;
         default:
           console.error('unknown item id ' + itemId);
       }
       setIsKebabOpen(false);
     },
-    [handleTemplateModalOpen, setIsKebabOpen]
+    [handleSetAsTemplateModalOpen, handleDownloadTemplateModalOpen, setIsKebabOpen]
   );
 
   const kebabDropdown = React.useMemo(
@@ -385,7 +398,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       <Dropdown
         isOpen={isKebabOpen}
         onSelect={onKebabSelect}
-        minWidth="10em"
+        minWidth="12em"
         onOpenChange={(isOpen) => {
           setIsKebabOpen(isOpen);
         }}
@@ -545,7 +558,11 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
         {toolbarContent}
         <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
         <LayoutTemplateUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />
-        <DashboardLayoutSetAsTemplateModal visible={isTemplateModalOpen} onClose={handleTemplateModalClose} />
+        <DashboardLayoutSetAsTemplateModal
+          visible={isTemplateModalOpen}
+          onClose={handleTemplateModalClose}
+          downloadModal={isDownloadModal}
+        />
         {deleteWarningModal}
       </Toolbar>
     </LayoutTemplateContext.Provider>

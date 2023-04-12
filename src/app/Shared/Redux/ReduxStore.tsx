@@ -58,7 +58,6 @@ export const {
   dashboardConfigFavoriteLayoutIntent,
   dashboardConfigCreateTemplateIntent,
   dashboardConfigDeleteTemplateIntent,
-  dashboardConfigRenameTemplateIntent,
   dashboardConfigTemplateHistoryPushIntent,
   dashboardConfigTemplateHistoryClearIntent,
 } = dashboardConfigSlice;

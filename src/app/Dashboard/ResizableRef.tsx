@@ -40,8 +40,7 @@ import { gridSpans } from '@patternfly/react-core';
 import _ from 'lodash';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DashboardCardSizes } from './Dashboard';
-import { CardConfig } from './dashboard-utils';
+import { CardConfig, DashboardCardSizes } from './dashboard-utils';
 import { DashboardCardContext } from './DashboardCard';
 
 export interface ResizableRefProps {

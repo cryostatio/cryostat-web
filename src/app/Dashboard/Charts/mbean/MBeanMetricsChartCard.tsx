@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '@app/Dashboard/dashboard-utils';
 import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
 import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -65,7 +65,7 @@ import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from './../ChartContext';
 
-export interface MBeanMetricsChartCardProps extends DashboardCardProps {
+export interface MBeanMetricsChartCardProps extends DashboardCardTypeProps {
   themeColor: string;
   chartKind: string;
   duration: number;
@@ -149,7 +149,6 @@ const SimpleChart: React.FC<{
       }
       themeColor={themeColor}
       width={width}
-      height={width / 2} // Aspect radio: 2:1
       padding={{
         left: 54,
         right: 30,

@@ -37,14 +37,16 @@
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { RootState, dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { portalRoot } from '@app/utils/utils';
 import {
+  Bullseye,
   Button,
   Card,
+  CardBody,
+  CardHeader,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -56,6 +58,7 @@ import {
   DrawerContent,
   DrawerContentBody,
   DrawerHead,
+  DrawerPanelBody,
   DrawerPanelContent,
   EmptyState,
   EmptyStateBody,
@@ -80,11 +83,10 @@ import {
 import {
   ArrowsAltVIcon,
   FilterIcon,
-  GlobeIcon,
   InfoCircleIcon,
-  LongArrowAltDownIcon,
-  LongArrowAltUpIcon,
   PficonTemplateIcon,
+  SortAmountDownAltIcon,
+  SortAmountUpAltIcon,
   UploadIcon,
 } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
@@ -93,7 +95,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChartContext } from './Charts/ChartContext';
-import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { CryostatLayoutTemplates, BlankLayout } from './cryostat-dashboard-templates';
 import { getConfigByName, hasConfigByName } from './Dashboard';
 import { LayoutTemplate, LayoutTemplateContext, LayoutTemplateRecord, recordToLayoutTemplate } from './dashboard-utils';
@@ -102,11 +103,11 @@ import { SearchAutocomplete } from './SearchAutocomplete';
 
 export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
 
-export type LayoutTemplateSort = 'Name' | 'Card Count'; // TODO: add 'Version' after more version are released
-
-const TemplateSortSelectOption: React.FC<{ sort: LayoutTemplateSort }> = ({ sort }) => {
-  return <SelectOption key={sort} value={sort} />;
-};
+export enum LayoutTemplateSort {
+  NAME = 'Name',
+  CARD_COUNT = 'Card Count',
+  // TODO: add 'Version' after more version are released
+}
 
 const CARD_PREVIEW_LIMIT = 16;
 
@@ -172,20 +173,15 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const handleTemplateDelete = React.useCallback(
     (name) => {
-      const curIndex = allTemplates.findIndex((t) => t.name === name && t.vendor === 'Cryostat');
       dispatch(dashboardConfigDeleteTemplateIntent(name));
       setSelectedTemplate((prev) => {
-        if (prev.name === name) {
-          // curIndex should never be 0, since BlankLayout cannot be deleted and is always first
-          if (curIndex === 0) {
-            throw new Error("Deleted template was the current template, but it's index was 0");
-          }
-          return allTemplates[curIndex - 1];
+        if (prev?.name === name) {
+          return undefined;
         }
         return prev;
       });
     },
-    [dispatch, setSelectedTemplate, allTemplates]
+    [dispatch, setSelectedTemplate]
   );
 
   const onInnerTemplateDelete = React.useCallback(
@@ -294,7 +290,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       selection: string | SelectOptionObject,
       isPlaceholder: boolean | undefined
     ) => {
-      const selected = selection as LayoutTemplateSort;
+      const selected = selection.valueOf() as LayoutTemplateSort;
       setSelectedSort((_prev) => {
         if (isPlaceholder) {
           return undefined;
@@ -310,7 +306,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     if (!selectedSort) {
       return <ArrowsAltVIcon />;
     }
-    return sortDirection === 'asc' ? <LongArrowAltUpIcon /> : <LongArrowAltDownIcon />;
+    return sortDirection === 'asc' ? <SortAmountDownAltIcon /> : <SortAmountUpAltIcon />;
   }, [selectedSort, sortDirection]);
 
   const onSortDirectionChange = React.useCallback(() => {
@@ -323,8 +319,13 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const panelContent = React.useMemo(() => {
     return (
-      <DrawerPanelContent isResizable defaultSize="35%">
+      <DrawerPanelContent isResizable defaultSize="37%">
         <DrawerHead>
+          <DrawerActions>
+            <DrawerCloseButton onClick={onDrawerCloseClick} />
+          </DrawerActions>
+        </DrawerHead>
+        <DrawerPanelBody style={{ marginTop: '-3.5em' }}>
           {selectedTemplate ? (
             <DescriptionList isFillColumns>
               <DescriptionListGroup>
@@ -365,23 +366,30 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                             .slice(0, CARD_PREVIEW_LIMIT)
                             .filter((cfg) => hasConfigByName(cfg.name))
                             .map((cfg, idx) => (
-                              <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${idx}-wrapper`}>
-                                <GridItem span={cfg.span} key={idx} order={{ default: idx.toString() }}>
-                                  {/* TODO: remove this once we have a preview for JFRMetricsChartCard */}
-                                  {cfg.name === JFRMetricsChartCardDescriptor.component.name ? (
-                                    <Card isFullHeight isCompact>
-                                      Empty preview
-                                    </Card>
-                                  ) : (
-                                    React.createElement(getConfigByName(cfg.name).component, {
-                                      span: cfg.span,
-                                      ...cfg.props,
-                                      dashboardId: idx,
-                                      actions: [],
-                                    })
-                                  )}
-                                </GridItem>
-                              </FeatureFlag>
+                              <GridItem span={cfg.span} key={idx} order={{ default: idx.toString() }}>
+                                {/* TODO: remove this once we have a preview for JFRMetricsChartCard */}
+                                {cfg.name === 'JFRMetricsChartCard' ? (
+                                  <Card isFullHeight isCompact>
+                                    <CardHeader>
+                                      <Title headingLevel={'h4'}>{cfg.props['chartKind']}</Title>
+                                    </CardHeader>
+                                    <CardBody>
+                                      <Bullseye>
+                                        <EmptyState>
+                                          <EmptyStateBody>Empty preview</EmptyStateBody>
+                                        </EmptyState>
+                                      </Bullseye>
+                                    </CardBody>
+                                  </Card>
+                                ) : (
+                                  React.createElement(getConfigByName(cfg.name).component, {
+                                    span: cfg.span,
+                                    ...cfg.props,
+                                    dashboardId: idx,
+                                    actions: [],
+                                  })
+                                )}
+                              </GridItem>
                             ))}
                         </Grid>
                       </ChartContext.Provider>
@@ -391,17 +399,16 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               </DescriptionListGroup>
             </DescriptionList>
           ) : (
-            <EmptyState variant={EmptyStateVariant.full}>
-              <EmptyStateIcon icon={InfoCircleIcon} />
-              <Title headingLevel="h5" size="lg">
-                No template selected
-              </Title>
-            </EmptyState>
+            <Bullseye>
+              <EmptyState variant={EmptyStateVariant.full}>
+                <EmptyStateIcon icon={InfoCircleIcon} />
+                <Title headingLevel="h5" size="lg">
+                  No template selected
+                </Title>
+              </EmptyState>
+            </Bullseye>
           )}
-          <DrawerActions>
-            <DrawerCloseButton onClick={onDrawerCloseClick} />
-          </DrawerActions>
-        </DrawerHead>
+        </DrawerPanelBody>
       </DrawerPanelContent>
     );
   }, [onDrawerCloseClick, selectedTemplate]);
@@ -437,7 +444,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
           <StackItem>
             <LayoutTemplateGroup
               title={title}
-              templates={searchFilteredTemplates(sortedSearchFilteredTemplates)}
+              templates={sortedSearchFilteredTemplates}
               onTemplateSelect={onInnerTemplateSelect}
               onTemplateDelete={onInnerTemplateDelete}
             />
@@ -517,17 +524,31 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                     <ToolbarItem>
                       <Select
                         menuAppendTo={portalRoot}
-                        toggleIcon={<GlobeIcon />}
                         aria-label="Select sorting category"
                         onToggle={onSortSelectToggle}
                         onSelect={onSortSelect}
                         selections={selectedSort}
                         isOpen={isSortSelectOpen}
-                        placeholderText={t('SORT', { ns: 'common' })}
+                        placeholderText={t('LayoutTemplatePicker.SORT_BY.PLACEHOLDER') as string}
                       >
-                        <TemplateSortSelectOption sort={'Name'} />
-                        <TemplateSortSelectOption sort={'Card Count'} />
-                        {/* <TemplateSortSelectOption sort={'Version'} /> */}
+                        <SelectOption
+                          key={LayoutTemplateSort.NAME}
+                          value={
+                            {
+                              toString: () => `${t('LayoutTemplatePicker.SORT_BY.NAME')}`,
+                              valueOf: () => LayoutTemplateSort.NAME,
+                            } as SelectOptionObject
+                          }
+                        />
+                        <SelectOption
+                          key={LayoutTemplateSort.CARD_COUNT}
+                          value={
+                            {
+                              toString: () => `${t('LayoutTemplatePicker.SORT_BY.CARD_COUNT')}`,
+                              valueOf: () => LayoutTemplateSort.CARD_COUNT,
+                            } as SelectOptionObject
+                          }
+                        />
                       </Select>
                     </ToolbarItem>
                     <ToolbarItem>
@@ -563,7 +584,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                       <Title size="lg" headingLevel="h4">
                         No templates found
                       </Title>
-                      <EmptyStateBody>Upload your own templates!</EmptyStateBody>
+                      <EmptyStateBody>Upload a template and try again.</EmptyStateBody>
                     </EmptyState>
                   </StackItem>
                 )}

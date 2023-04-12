@@ -37,7 +37,12 @@
  */
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
-import { DashboardLayout, LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/dashboard-utils';
+import {
+  DashboardLayout,
+  LayoutTemplate,
+  LayoutTemplateRecord,
+  LayoutTemplateVendor,
+} from '@app/Dashboard/dashboard-utils';
 import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
@@ -232,16 +237,6 @@ export const dashboardConfigDeleteTemplateIntent = createAction(
   })
 );
 
-export const dashboardConfigRenameTemplateIntent = createAction(
-  DashboardConfigAction.TEMPLATE_RENAME,
-  (oldName: string, newName: string) => ({
-    payload: {
-      oldName,
-      newName,
-    } as DashboardRenameTemplateActionPayload,
-  })
-);
-
 export const dashboardConfigTemplateHistoryPushIntent = createAction(
   DashboardConfigAction.TEMPLATE_HISTORY_PUSH,
   (template: LayoutTemplate) => ({
@@ -282,7 +277,7 @@ const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _
 });
 
 const getTemplateHistoryIndexForMutation = (state: DashboardConfigState, templateName: string) => {
-  const idx = state.templateHistory.findIndex((t) => t.name === templateName && t.vendor === 'User-supplied');
+  const idx = state.templateHistory.findIndex((t) => t.name === templateName && t.vendor === LayoutTemplateVendor.USER);
   return idx;
 };
 
@@ -383,7 +378,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       }
       state.customTemplates.push(template);
     })
-    // template mutations (delete, rename, etc.) should never be called on non-custom templates (vendor !== 'User-supplied')
+    // template mutations (delete, rename, etc.) should never be called on non-custom templates (vendor !== LayoutTemplateVendor.USER)
     .addCase(dashboardConfigDeleteTemplateIntent, (state, { payload }) => {
       const idx = state.customTemplates.findIndex((t) => t.name === payload.name);
       if (idx < 0) {
@@ -393,18 +388,6 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       const historyIdx = getTemplateHistoryIndexForMutation(state, payload.name);
       if (historyIdx >= 0) {
         state.templateHistory.splice(historyIdx, 1);
-      }
-    })
-    .addCase(dashboardConfigRenameTemplateIntent, (state, { payload }) => {
-      const idx = state.customTemplates.findIndex((t) => t.name === payload.oldName);
-      if (idx < 0) {
-        throw new Error(`Template with name ${payload.oldName} does not exist.`);
-      }
-      state.customTemplates[idx].name = payload.newName;
-      state.customTemplates.splice(idx, 1);
-      const historyIdx = getTemplateHistoryIndexForMutation(state, payload.oldName);
-      if (historyIdx >= 0) {
-        state.templateHistory[historyIdx].name = payload.newName;
       }
     })
     // any template type except for the 'Blank' template can be pushed to history

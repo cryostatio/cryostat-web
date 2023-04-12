@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { DashboardConfigState } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
@@ -49,7 +48,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, LabelProps, Text } from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, Grid, GridItem, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -63,60 +62,11 @@ import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard'
 import { JFRMetricsChartController } from './Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
+import { DashboardCardDescriptor, DashboardCardTypeProps, DashboardCardSizes } from './dashboard-utils';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { DashboardLayoutToolbar } from './DashboardLayoutToolbar';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
-
-export interface Sized<T> {
-  minimum: T;
-  default: T;
-  maximum: T;
-}
-
-export interface DashboardCardSizes {
-  span: Sized<gridSpans>;
-  height: Sized<number>;
-}
-
-export interface DashboardCardDescriptor {
-  featureLevel: FeatureLevel;
-  icon?: React.ReactNode;
-  labels?: {
-    content: string;
-    color?: LabelProps['color'];
-    icon?: React.ReactNode;
-  }[];
-  preview?: React.ReactNode;
-  title: string;
-  cardSizes: DashboardCardSizes;
-  description: string;
-  descriptionFull: JSX.Element | string;
-  component: React.FC<any>;
-  propControls: PropControl[];
-  advancedConfig?: JSX.Element;
-}
-
-export interface PropControl {
-  name: string;
-  key: string;
-  description: string;
-  kind: 'boolean' | 'number' | 'string' | 'text' | 'select';
-  values?: any[] | Observable<any>;
-  defaultValue: any;
-  extras?: any;
-}
-
-export interface DashboardProps {}
-
-export interface DashboardCardProps {
-  span: number;
-  dashboardId: number;
-  isDraggable?: boolean;
-  isResizable?: boolean;
-  isFullHeight?: boolean;
-  actions?: JSX.Element[];
-}
 
 // TODO remove this
 const PLACEHOLDER_CARD_SIZE = {
@@ -141,7 +91,7 @@ const PlaceholderCard: React.FunctionComponent<
     menu: string;
     asyncmenu: string;
     asyncmenu2: string;
-  } & DashboardCardProps
+  } & DashboardCardTypeProps
 > = (props) => {
   return (
     <DashboardCard
@@ -261,20 +211,6 @@ export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
   advancedConfig: <Text>This is an advanced configuration component</Text>,
 } as DashboardCardDescriptor;
 
-export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
-  featureLevel = FeatureLevel.DEVELOPMENT
-) => {
-  const cards = [
-    JvmDetailsCardDescriptor,
-    AutomatedAnalysisCardDescriptor,
-    JFRMetricsChartCardDescriptor,
-    MBeanMetricsChartCardDescriptor,
-    NonePlaceholderCardDescriptor,
-    AllPlaceholderCardDescriptor,
-  ];
-  return cards.filter((card) => card.featureLevel >= featureLevel);
-};
-
 export function hasConfigByName(name: string): boolean {
   for (const choice of getDashboardCards()) {
     if (choice.component.name === name) {
@@ -311,7 +247,23 @@ export function getConfigByTitle(title: string, t: TFunction): DashboardCardDesc
   throw new Error(`Unknown card type selection: ${title}`);
 }
 
-export const Dashboard: React.FC<DashboardProps> = (_) => {
+export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
+  featureLevel = FeatureLevel.DEVELOPMENT
+) => {
+  const cards = [
+    JvmDetailsCardDescriptor,
+    AutomatedAnalysisCardDescriptor,
+    JFRMetricsChartCardDescriptor,
+    MBeanMetricsChartCardDescriptor,
+    NonePlaceholderCardDescriptor,
+    AllPlaceholderCardDescriptor,
+  ];
+  return cards.filter((card) => card.featureLevel >= featureLevel);
+};
+
+export interface DashboardComponentProps {}
+
+export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
   const history = useHistory();
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();

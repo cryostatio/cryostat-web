@@ -35,19 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { NotificationsContext } from '@app/Notifications/Notifications';
 import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
-import {
-  ActionGroup,
-  Button,
-  Form,
-  FormGroup,
-  FormSection,
-  Modal,
-  ModalVariant,
-  TextArea,
-  TextInput,
-} from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextArea, TextInput } from '@patternfly/react-core';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -61,16 +54,20 @@ import {
 
 export interface DashboardLayoutSetAsTemplateModalProps {
   visible: boolean;
+  downloadModal?: boolean;
   onClose: () => void;
 }
 
 export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTemplateModalProps> = ({
   onClose,
+  downloadModal = false,
   ...props
 }) => {
   const dispatch = useDispatch();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
   const templates = dashboardConfigs.customTemplates;
+  const serviceContext = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
   const { t } = useTranslation();
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
@@ -106,10 +103,19 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
 
   const handleSubmit = React.useCallback(
     (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      dispatch(dashboardConfigCreateTemplateIntent(templatize(currLayout, name, description)));
+      if (downloadModal) {
+        serviceContext.api.downloadLayoutTemplate(templatize(currLayout, name, description));
+      } else {
+        dispatch(dashboardConfigCreateTemplateIntent(templatize(currLayout, name, description)));
+        notifications.success(
+          'Layout Template Created',
+          `${name} was created as a layout template`,
+          NotificationCategory.LayoutTemplateCreated
+        );
+      }
       handleClose(ev);
     },
-    [dispatch, handleClose, currLayout, name, description]
+    [dispatch, handleClose, serviceContext.api, downloadModal, currLayout, name, description, notifications]
   );
 
   const handleNameChange = React.useCallback(
@@ -161,69 +167,65 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
       variant={ModalVariant.medium}
       showClose={true}
       onClose={handleClose}
-      title={t('DashboardLayoutSetAsTemplateModal.TITLE')}
-      description={t(`DashboardLayoutSetAsTemplateModal.DESCRIPTION`)}
-    >
-      {
-        // Should a list of existing templates be shown here?
-        /* <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '28em' }}>
-        <OuterScrollContainer>
-          <InnerScrollContainer>
-            <LayoutTemplateGroup title="Existing Custom Templates" templates={templates} onTemplateSelect={() =>{}} onTemplateDelete={() => {}} />
-          </InnerScrollContainer>
-        </OuterScrollContainer>
-      </div> */
+      title={
+        downloadModal
+          ? t('DashboardLayoutSetAsTemplateModal.DOWNLOAD.TITLE')
+          : t('DashboardLayoutSetAsTemplateModal.SET_TEMPLATE.TITLE')
       }
+      description={
+        downloadModal
+          ? t(`DashboardLayoutSetAsTemplateModal.DOWNLOAD.DESCRIPTION`)
+          : t(`DashboardLayoutSetAsTemplateModal.SET_TEMPLATE.DESCRIPTION`)
+      }
+    >
       <Form onSubmit={(e) => e.preventDefault()}>
-        <FormSection>
-          <FormGroup
-            label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')}
-            fieldId="name"
-            helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
-            helperTextInvalid={nameErrorMessage}
+        <FormGroup
+          label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')}
+          fieldId="name"
+          helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
+          helperTextInvalid={nameErrorMessage}
+          isRequired
+          validated={nameValidated}
+        >
+          <TextInput
             isRequired
+            type="text"
+            id="name"
+            name="name"
+            aria-describedby={'name-helper'}
+            value={name}
+            onChange={handleNameChange}
+            autoFocus={true}
+            autoComplete="on"
             validated={nameValidated}
-          >
-            <TextInput
-              isRequired
-              type="text"
-              id="name"
-              name="name"
-              aria-describedby={'name-helper'}
-              value={name}
-              onChange={handleNameChange}
-              autoFocus={true}
-              autoComplete="on"
-              validated={nameValidated}
-              placeholder={currLayout.name}
-            />
-          </FormGroup>
-          <FormGroup
-            label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')}
-            fieldId="description"
-            helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
-            helperTextInvalid={descriptionErrorMessage}
+            placeholder={currLayout.name}
+          />
+        </FormGroup>
+        <FormGroup
+          label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')}
+          fieldId="description"
+          helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
+          helperTextInvalid={descriptionErrorMessage}
+          validated={descriptionValidated}
+        >
+          <TextArea
+            type="text"
+            id="description"
+            name="description"
+            aria-describedby={'description-helper'}
+            value={description}
+            onChange={handleDescriptionChange}
             validated={descriptionValidated}
-          >
-            <TextArea
-              type="text"
-              id="description"
-              name="description"
-              aria-describedby={'description-helper'}
-              value={description}
-              onChange={handleDescriptionChange}
-              validated={descriptionValidated}
-              placeholder={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.PLACEHOLDER')}
-            />
-          </FormGroup>
-        </FormSection>
+            placeholder={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.PLACEHOLDER')}
+          />
+        </FormGroup>
         <ActionGroup>
           <Button
             variant="primary"
             onClick={handleSubmit}
             isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated === ValidatedOptions.error}
           >
-            {t('SUBMIT', { ns: 'common' })}
+            {downloadModal ? t('DOWNLOAD', { ns: 'common' }) : t('SUBMIT', { ns: 'common' })}
           </Button>
           <Button variant="link" onClick={handleClose}>
             {t('CANCEL', { ns: 'common' })}

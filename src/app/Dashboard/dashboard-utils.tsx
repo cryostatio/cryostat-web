@@ -37,10 +37,14 @@
  */
 
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
-import { gridSpans } from '@patternfly/react-core';
-import { FileIcon, UserIcon } from '@patternfly/react-icons';
+import cryostatLogoDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { withThemedIcon } from '@app/utils/withThemedIcon';
+import { LabelProps, gridSpans } from '@patternfly/react-core';
+import { FileIcon, UnknownIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
 import React from 'react';
+import { Observable } from 'rxjs';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
@@ -81,7 +85,7 @@ export enum LayoutTemplateVersion {
 export enum LayoutTemplateVendor {
   BLANK = 'Blank',
   CRYOSTAT = 'Cryostat',
-  USER = 'User-supplied',
+  USER = 'User-submitted',
 }
 
 export interface LayoutTemplate {
@@ -101,15 +105,15 @@ export const mockSerialLayoutTemplate: SerialLayoutTemplate = {
   version: LayoutTemplateVersion['v2.3'],
 };
 
-export interface LayoutTemplateProviderProps {
+export interface LayoutTemplateController {
   selectedTemplate: LayoutTemplate | undefined;
-  setSelectedTemplate: (template: React.SetStateAction<LayoutTemplate>) => void;
+  setSelectedTemplate: (template: React.SetStateAction<LayoutTemplate | undefined>) => void;
   isUploadModalOpen: boolean;
   setIsUploadModalOpen: (isOpen: React.SetStateAction<boolean>) => void;
 }
 
 // use a provider
-export const LayoutTemplateContext = React.createContext<LayoutTemplateProviderProps>({
+export const LayoutTemplateContext = React.createContext<LayoutTemplateController>({
   selectedTemplate: undefined,
   setSelectedTemplate: () => undefined,
   isUploadModalOpen: false,
@@ -119,21 +123,26 @@ export const LayoutTemplateContext = React.createContext<LayoutTemplateProviderP
 export const iconify = (vendor: LayoutTemplateVendor): React.ReactNode => {
   switch (vendor) {
     case LayoutTemplateVendor.CRYOSTAT:
-      return <img src={cryostatLogo} alt="Cryostat Logo" />;
+      return <ThemedCryostatLogo />;
     case LayoutTemplateVendor.BLANK:
       return <FileIcon style={{ paddingRight: '0.3rem' }} />;
     case LayoutTemplateVendor.USER:
       return <UserIcon />;
     default:
-      return <></>;
+      return <UnknownIcon />;
   }
 };
+
+export const ThemedCryostatLogo = withThemedIcon(cryostatLogo, cryostatLogoDark, 'Cryostat Logo');
 
 export const templatize = (layout: DashboardLayout, name: string, desc?: string): LayoutTemplate => {
   return {
     name: name,
     description: desc || `Custom layout template.`,
-    cards: layout.cards,
+    cards: layout.cards.map((card) => {
+      const { id: _id, ...cardWithoutId } = card;
+      return { ...cardWithoutId };
+    }) as SerialCardConfig[],
     vendor: LayoutTemplateVendor.USER,
     version: LayoutTemplateVersion['v2.3'],
   } as LayoutTemplate;
@@ -168,3 +177,54 @@ export const getUniqueIncrementingName = (init = 'Custom', names: string[]): str
   } while (names.includes(name));
   return name;
 };
+
+/* CARD SECTION */
+export interface Sized<T> {
+  minimum: T;
+  default: T;
+  maximum: T;
+}
+
+export interface DashboardCardSizes {
+  span: Sized<gridSpans>;
+  height: Sized<number>;
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export interface DashboardCardDescriptor {
+  featureLevel: FeatureLevel;
+  icon?: React.ReactNode;
+  labels?: {
+    content: string;
+    color?: LabelProps['color'];
+    icon?: React.ReactNode;
+  }[];
+  preview?: React.ReactNode;
+  title: string;
+  cardSizes: DashboardCardSizes;
+  description: string;
+  descriptionFull: JSX.Element | string;
+  component: React.FC<any>;
+  propControls: PropControl[];
+  advancedConfig?: JSX.Element;
+}
+
+export interface PropControl {
+  name: string;
+  key: string;
+  description: string;
+  kind: 'boolean' | 'number' | 'string' | 'text' | 'select';
+  values?: any[] | Observable<any>;
+  defaultValue: any;
+  extras?: any;
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export interface DashboardCardTypeProps {
+  span: number;
+  dashboardId: number;
+  isDraggable?: boolean;
+  isResizable?: boolean;
+  isFullHeight?: boolean;
+  actions?: JSX.Element[];
+}

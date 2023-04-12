@@ -39,8 +39,7 @@
 import { Card, CardProps } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { DashboardCardSizes } from './Dashboard';
-import { DRAGGABLE_REF_KLAZZ } from './dashboard-utils';
+import { DRAGGABLE_REF_KLAZZ, DashboardCardSizes } from './dashboard-utils';
 import { DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
 
