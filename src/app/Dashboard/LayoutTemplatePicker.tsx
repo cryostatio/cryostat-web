@@ -151,7 +151,6 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     [searchFilter]
   );
 
-  // array order is needed for template selection to fallback, if current is deleted
   const allTemplates: LayoutTemplate[] = React.useMemo(() => {
     return [BlankLayout, ...CryostatLayoutTemplates, ...userSubmittedTemplates];
   }, [userSubmittedTemplates]);
