@@ -75,7 +75,7 @@ export interface LayoutTemplateGroupProps {
 export const smallestFeatureLevel = (cards: SerialCardConfig[]): FeatureLevel => {
   return cards.reduce((minFeatureLevel: FeatureLevel, card: CardConfig) => {
     const featureLevel = getConfigByName(card.name).featureLevel;
-    return featureLevel < minFeatureLevel ? featureLevel : minFeatureLevel;
+    return Math.min(minFeatureLevel, featureLevel);
   }, FeatureLevel.PRODUCTION);
 };
 

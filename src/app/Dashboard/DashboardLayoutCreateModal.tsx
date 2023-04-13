@@ -213,11 +213,14 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     );
   }, [t, handleSubmit, handleClose, nameValidated, isCreateModal]);
 
-  const header = React.useMemo(() => (
-    <Title id="modal-custom-header-label" headingLevel="h1" size={TitleSizes['2xl']}>
-      {isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')}
-    </Title>
-  ), [t, isCreateModal]);
+  const header = React.useMemo(
+    () => (
+      <Title id="modal-custom-header-label" headingLevel="h1" size={TitleSizes['2xl']}>
+        {isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')}
+      </Title>
+    ),
+    [t, isCreateModal]
+  );
 
   return (
     <Modal
