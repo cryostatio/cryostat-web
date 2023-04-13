@@ -108,7 +108,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
           if (customTemplates.some((v) => v.name === template.name)) {
             throw new Error(t('LayoutTemplateUploadModal.ERROR.NAME_TAKEN', { name: template.name }));
           }
-          if (!Array.isArray(template.cards) || template.cards.length === 0) {
+          if (!Array.isArray(template.cards)) {
             throw new Error(t('LayoutTemplateUploadModal.ERROR.CONFIG_INVALID'));
           }
           for (const cardConfig of template.cards) {

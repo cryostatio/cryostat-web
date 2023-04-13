@@ -235,6 +235,10 @@
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
     "CARD_TITLE": "Target JVM Details"
   },
+  "LayoutTemplateGroup": {
+    "ITEMS_one": "{{count}} item",
+    "ITEMS_other": "{{count}} items"
+  },
   "LayoutTemplatePicker": {
     "SORT_BY": {
       "CARD_COUNT": "Sort by: Card Count",

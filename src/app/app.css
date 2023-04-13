@@ -639,7 +639,12 @@ svg.topology__node-decorator-icon.progress {
 }
 
 #dashboard-layout-preview-grid .pf-c-card__title {
-  --pf-c-card__title--FontSize: 0.6em;
+  --pf-c-card__title--FontSize: 0.7em;
+}
+
+#dashboard-layout-preview-grid .pf-c-title {
+  font-size: 0.7em;
+  font-weight: 700;
 }
 
 .preview-card {

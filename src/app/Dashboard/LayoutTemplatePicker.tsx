@@ -66,6 +66,9 @@ import {
   EmptyStateVariant,
   Grid,
   GridItem,
+  List,
+  ListItem,
+  ListVariant,
   Select,
   SelectOption,
   SelectOptionObject,
@@ -406,20 +409,22 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                                 order={{ default: CARD_PREVIEW_LIMIT.toString() }}
                               >
                                 <Card isFullHeight isCompact>
+                                  <CardHeader>
+                                    <Title headingLevel={'h4'}>Remaining cards ({numCards - CARD_PREVIEW_LIMIT})</Title>
+                                  </CardHeader>
                                   <CardBody>
-                                    <DescriptionList>
-                                      <DescriptionListGroup>
-                                        <DescriptionListTerm>
-                                          Remaining cards ({numCards - CARD_PREVIEW_LIMIT})
-                                        </DescriptionListTerm>
-                                        <DescriptionListDescription>
-                                          {selectedTemplate.cards
-                                            .slice(CARD_PREVIEW_LIMIT)
-                                            .map((cfg) => cfg.name)
-                                            .join(', ')}
-                                        </DescriptionListDescription>
-                                      </DescriptionListGroup>
-                                    </DescriptionList>
+                                    <List variant={ListVariant.inline} isBordered isPlain>
+                                      {selectedTemplate.cards
+                                        .slice(CARD_PREVIEW_LIMIT)
+                                        .filter((cfg) => hasConfigByName(cfg.name))
+                                        .map((cfg, idx) => {
+                                          return (
+                                            <ListItem key={idx} icon={getConfigByName(cfg.name).icon}>
+                                              {cfg.props['chartKind'] || t(getConfigByName(cfg.name).title)}
+                                            </ListItem>
+                                          );
+                                        })}
+                                    </List>
                                   </CardBody>
                                 </Card>
                               </GridItem>
@@ -445,7 +450,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
-  }, [onDrawerCloseClick, selectedTemplate]);
+  }, [t, onDrawerCloseClick, selectedTemplate]);
 
   const sortedFilteredTemplateLayoutGroup = React.useCallback(
     (title: LayoutTemplateFilter, templates: LayoutTemplate[]) => {

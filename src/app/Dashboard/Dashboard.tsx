@@ -49,6 +49,7 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { CardActions, CardBody, CardHeader, Grid, GridItem, Text } from '@patternfly/react-core';
+import { ResourcesAlmostEmptyIcon, ResourcesFullIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -130,6 +131,7 @@ export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
     },
   ],
   propControls: [],
+  icon: <ResourcesAlmostEmptyIcon />,
 } as DashboardCardDescriptor;
 
 export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
@@ -209,6 +211,7 @@ export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
     },
   ],
   advancedConfig: <Text>This is an advanced configuration component</Text>,
+  icon: <ResourcesFullIcon />,
 } as DashboardCardDescriptor;
 
 export function hasConfigByName(name: string): boolean {
