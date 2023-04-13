@@ -157,9 +157,8 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [userSubmittedTemplates]);
 
   const allSearchableTemplateNames: string[] = React.useMemo(() => {
-    return searchFilteredTemplates(
-      allTemplates.filter((template, index, arr) => arr.findIndex((t) => t.name === template.name) === index)
-    ).map((t) => t.name);
+    const uniqueTemplateNames = Array.from(new Set(allTemplates.map((template) => template.name)));
+    return searchFilteredTemplates(allTemplates.filter((template) => uniqueTemplateNames.includes(template.name))).map((t) => t.name);
   }, [searchFilteredTemplates, allTemplates]);
 
   const onInnerTemplateSelect = React.useCallback(
@@ -318,8 +317,9 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [setIsDrawerExpanded]);
 
   const panelContent = React.useMemo(() => {
+    const numCards = selectedTemplate?.cards.length ?? 0;
     return (
-      <DrawerPanelContent isResizable defaultSize="37%">
+      <DrawerPanelContent isResizable defaultSize="50%">
         <DrawerHead>
           <DrawerActions>
             <DrawerCloseButton onClick={onDrawerCloseClick} />
@@ -349,52 +349,88 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 </DescriptionListGroup>
               )}
               <DescriptionListGroup>
-                <DescriptionListTerm>Preview</DescriptionListTerm>
+                <DescriptionListTerm>Preview ({numCards} Cards)</DescriptionListTerm>
                 {
-                  <div className="dashboard-layout-preview">
-                    <ServiceContext.Provider value={fakeServices}>
-                      <ChartContext.Provider value={fakeChartContext}>
-                        <Grid
-                          id={'dashboard-layout-preview-grid'}
-                          hasGutter
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                        >
-                          {selectedTemplate.cards
-                            .slice(0, CARD_PREVIEW_LIMIT)
-                            .filter((cfg) => hasConfigByName(cfg.name))
-                            .map((cfg, idx) => (
-                              <GridItem span={cfg.span} key={idx} order={{ default: idx.toString() }}>
-                                {/* TODO: remove this once we have a preview for JFRMetricsChartCard */}
-                                {cfg.name === 'JFRMetricsChartCard' ? (
-                                  <Card isFullHeight isCompact>
-                                    <CardHeader>
-                                      <Title headingLevel={'h4'}>{cfg.props['chartKind']}</Title>
-                                    </CardHeader>
-                                    <CardBody>
-                                      <Bullseye>
-                                        <EmptyState>
-                                          <EmptyStateBody>Empty preview</EmptyStateBody>
-                                        </EmptyState>
-                                      </Bullseye>
-                                    </CardBody>
-                                  </Card>
-                                ) : (
-                                  React.createElement(getConfigByName(cfg.name).component, {
-                                    span: cfg.span,
-                                    ...cfg.props,
-                                    dashboardId: idx,
-                                    actions: [],
-                                  })
-                                )}
+                  <ServiceContext.Provider value={fakeServices}>
+                    <ChartContext.Provider value={fakeChartContext}>
+                      <Grid
+                        id={'dashboard-layout-preview-grid'}
+                        hasGutter
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        {numCards === 0 ? (
+                          <EmptyState>
+                            <EmptyStateBody>Empty preview</EmptyStateBody>
+                          </EmptyState>
+                        ) : (
+                          <>
+                            {selectedTemplate.cards
+                              .slice(0, CARD_PREVIEW_LIMIT)
+                              .filter((cfg) => hasConfigByName(cfg.name))
+                              .map((cfg, idx) => (
+                                <GridItem span={numCards === 1 ? 12 : 6} key={idx} order={{ default: idx.toString() }}>
+                                  {/* TODO: remove this once we have a preview for JFRMetricsChartCard */}
+                                  {cfg.name === 'JFRMetricsChartCard' ? (
+                                    <Card isFullHeight isCompact>
+                                      <CardHeader>
+                                        <Title headingLevel={'h4'}>{cfg.props['chartKind']}</Title>
+                                      </CardHeader>
+                                      <CardBody>
+                                        <Bullseye>
+                                          <EmptyState>
+                                            <EmptyStateBody>Empty preview</EmptyStateBody>
+                                          </EmptyState>
+                                        </Bullseye>
+                                      </CardBody>
+                                    </Card>
+                                  ) : (
+                                    <div className="preview-card">
+                                      {React.createElement(getConfigByName(cfg.name).component, {
+                                        span: cfg.span,
+                                        ...cfg.props,
+                                        dashboardId: idx,
+                                        actions: [],
+                                        isDraggable: false,
+                                        isResizable: false,
+                                        isFullHeight: false,
+                                      })}
+                                    </div>
+                                  )}
+                                </GridItem>
+                              ))}
+                            {numCards > CARD_PREVIEW_LIMIT && (
+                              <GridItem
+                                span={12}
+                                key={CARD_PREVIEW_LIMIT}
+                                order={{ default: CARD_PREVIEW_LIMIT.toString() }}
+                              >
+                                <Card isFullHeight isCompact>
+                                  <CardBody>
+                                    <DescriptionList>
+                                      <DescriptionListGroup>
+                                        <DescriptionListTerm>
+                                          Remaining cards ({numCards - CARD_PREVIEW_LIMIT})
+                                        </DescriptionListTerm>
+                                        <DescriptionListDescription>
+                                          {selectedTemplate.cards
+                                            .slice(CARD_PREVIEW_LIMIT)
+                                            .map((cfg) => cfg.name)
+                                            .join(', ')}
+                                        </DescriptionListDescription>
+                                      </DescriptionListGroup>
+                                    </DescriptionList>
+                                  </CardBody>
+                                </Card>
                               </GridItem>
-                            ))}
-                        </Grid>
-                      </ChartContext.Provider>
-                    </ServiceContext.Provider>
-                  </div>
+                            )}
+                          </>
+                        )}
+                      </Grid>
+                    </ChartContext.Provider>
+                  </ServiceContext.Provider>
                 }
               </DescriptionListGroup>
             </DescriptionList>

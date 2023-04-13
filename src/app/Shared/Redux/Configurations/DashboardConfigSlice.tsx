@@ -261,7 +261,7 @@ export interface DashboardConfigState {
   readonly _version: string;
 }
 
-export const TEMPLATE_HISTORY_LIMIT = 4;
+export const TEMPLATE_HISTORY_LIMIT = 5;
 
 const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _dashboardConfigVersion, {
   layouts: [

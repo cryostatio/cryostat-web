@@ -626,18 +626,26 @@ svg.topology__node-decorator-icon.progress {
   height: 100%
 }
 
-.dashboard-layout-preview {
-  position: relative;
-  width: 30em;
-  height: 100%;
+:is(.pf-theme-dark) #dashboard-layout-preview-grid {
+  background-color: var(--pf-global--palette--black-700);
 }
 
 #dashboard-layout-preview-grid {
+  margin-top: 0.5em;
   pointer-events: none;
-  width: 70em;
-  position: absolute;
-  scale: 0.5;
-  transform-origin: top left;
+  width: 100%;
+  background-color: var(--pf-global--palette--black-200);
+  padding: 1em;
+}
+
+#dashboard-layout-preview-grid .pf-c-card__title {
+  --pf-c-card__title--FontSize: 0.6em;
+}
+
+.preview-card {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 
 .non-interactive-overlay {

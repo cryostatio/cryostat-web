@@ -321,7 +321,6 @@ const chartKinds: MBeanMetricsChartKind[] = [
           }
           themeColor={themeColor}
           width={width}
-          height={width / 2} // Aspect radio: 2:1
         />
       );
     },
