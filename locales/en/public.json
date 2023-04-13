@@ -230,6 +230,10 @@
     },
     "SELECTED_DATETIME": "Selected DateTime"
   },
+  "ERROR_BOUNDARY": {
+    "ERROR_MESSAGE": "Reason: {{message}}",
+    "RESOLVE_MESSAGE": "Reload the page and try again. If the error still persists, checkout out <issue>{{knownIssue}}</issue> or <report>{{fileReport}}</report>."
+  },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
