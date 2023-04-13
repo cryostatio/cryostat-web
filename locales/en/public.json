@@ -151,6 +151,7 @@
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your dashboard. Some cards require additional configuration.",
     "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
     "CARD_CATALOG_TITLE": "Dashboard Card Catalog",
+    "INVALID_CARD_CONFIGURATIONS": "Invalid Card Configurations",
     "PAGE_TITLE": "Dashboard"
   },
   "DashboardCardActionMenu": {

@@ -42,8 +42,7 @@ import { MonitoringIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation, withRouter } from 'react-router-dom';
-import { getConfigByName } from './Dashboard';
-import { CardConfig } from './dashboard-utils';
+import { CardConfig, getCardDescriptorByName } from './dashboard-utils';
 
 export interface DashboardSoloProps {}
 
@@ -79,8 +78,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
               Dashboard card not found
             </Title>
             <EmptyStateBody>
-              Provide valid <code style={{ color: '#000' }}>layout</code> and{' '}
-              <code style={{ color: '#000' }}>cardId</code> query parameters and try again.
+              Provide valid <code>layout</code> and <code>cardId</code> query parameters and try again.
             </EmptyStateBody>
             <Button variant="primary" onClick={() => history.push('/')}>
               Back to Dashboard
@@ -94,7 +92,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
         // Use default chart controller
         <TargetView pageTitle={cardConfig.id} breadcrumbs={[{ path: '/', title: 'Dashboard' }]}>
           <div data-full-height style={{ height: '100%' }}>
-            {React.createElement(getConfigByName(name).component, {
+            {React.createElement(getCardDescriptorByName(name).component, {
               span: span,
               ...props,
               isDraggable: false,

@@ -103,8 +103,13 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { ChartContext } from './Charts/ChartContext';
-import { getConfigByTitle, getDashboardCards } from './Dashboard';
-import { CardConfig, DashboardCardDescriptor, PropControl } from './dashboard-utils';
+import {
+  getCardDescriptorByTitle,
+  getDashboardCards,
+  CardConfig,
+  DashboardCardDescriptor,
+  PropControl,
+} from './dashboard-utils';
 
 interface AddCardProps {
   variant: 'card' | 'icon-button';
@@ -123,7 +128,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
       setSelection(selection);
       const c = {};
       if (selection) {
-        getConfigByTitle(selection, t).propControls.forEach((ctrl) => (c[ctrl.key] = ctrl.defaultValue));
+        getCardDescriptorByTitle(selection, t).propControls.forEach((ctrl) => (c[ctrl.key] = ctrl.defaultValue));
       }
       setPropsConfig(c);
     },
@@ -132,7 +137,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
 
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
-    const config = getConfigByTitle(selection, t);
+    const config = getCardDescriptorByTitle(selection, t);
     const cardConfig: CardConfig = {
       id: `${config.component.name}-${nanoid()}`,
       name: config.component.name,
@@ -253,8 +258,8 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
               isNextDisabled: !selection,
               nextButtonText:
                 selection &&
-                !getConfigByTitle(selection, t).propControls.length &&
-                !getConfigByTitle(selection, t).advancedConfig
+                !getCardDescriptorByTitle(selection, t).propControls.length &&
+                !getCardDescriptorByTitle(selection, t).advancedConfig
                   ? 'Finish'
                   : 'Next',
             }}
@@ -272,15 +277,15 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
             id="card-props-config"
             name="Configuration"
             footer={{
-              nextButtonText: selection && !getConfigByTitle(selection, t).advancedConfig ? 'Finish' : 'Next',
+              nextButtonText: selection && !getCardDescriptorByTitle(selection, t).advancedConfig ? 'Finish' : 'Next',
             }}
-            isHidden={!selection || !getConfigByTitle(selection, t).propControls.length}
+            isHidden={!selection || !getCardDescriptorByTitle(selection, t).propControls.length}
           >
             {selection && (
               <PropsConfigForm
                 cardTitle={selection}
                 config={propsConfig}
-                controls={getConfigByTitle(selection, t).propControls}
+                controls={getCardDescriptorByTitle(selection, t).propControls}
                 onChange={setPropsConfig}
               />
             )}
@@ -289,10 +294,10 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
             id="card-adv-config"
             name="Advanced Configuration"
             footer={{ nextButtonText: 'Finish' }}
-            isHidden={!selection || !getConfigByTitle(selection, t).advancedConfig}
+            isHidden={!selection || !getCardDescriptorByTitle(selection, t).advancedConfig}
           >
             <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
-            {selection && getConfigByTitle(selection, t).advancedConfig}
+            {selection && getCardDescriptorByTitle(selection, t).advancedConfig}
           </WizardStep>
         </Wizard>
       </Modal>
@@ -301,7 +306,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
 };
 
 const getFullDescription = (selection: string, t: TFunction) => {
-  const config = getConfigByTitle(selection, t).descriptionFull;
+  const config = getCardDescriptorByTitle(selection, t).descriptionFull;
   if (typeof config === 'string') {
     return t(config);
   } else {

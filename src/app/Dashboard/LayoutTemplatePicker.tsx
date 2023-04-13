@@ -95,13 +95,18 @@ import {
 } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
 import React from 'react';
-
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChartContext } from './Charts/ChartContext';
 import { CryostatLayoutTemplates, BlankLayout } from './cryostat-dashboard-templates';
-import { getConfigByName, hasConfigByName } from './Dashboard';
-import { LayoutTemplate, LayoutTemplateContext, LayoutTemplateRecord, recordToLayoutTemplate } from './dashboard-utils';
+import {
+  getCardDescriptorByName,
+  hasCardDescriptorByName,
+  LayoutTemplate,
+  LayoutTemplateContext,
+  LayoutTemplateRecord,
+  recordToLayoutTemplate,
+} from './dashboard-utils';
 import { LayoutTemplateGroup, smallestFeatureLevel } from './LayoutTemplateGroup';
 import { SearchAutocomplete } from './SearchAutocomplete';
 
@@ -372,7 +377,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                           <>
                             {selectedTemplate.cards
                               .slice(0, CARD_PREVIEW_LIMIT)
-                              .filter((cfg) => hasConfigByName(cfg.name))
+                              .filter((cfg) => hasCardDescriptorByName(cfg.name))
                               .map((cfg, idx) => (
                                 <GridItem
                                   span={
@@ -401,7 +406,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                                     </Card>
                                   ) : (
                                     <div className="preview-card">
-                                      {React.createElement(getConfigByName(cfg.name).component, {
+                                      {React.createElement(getCardDescriptorByName(cfg.name).component, {
                                         span: cfg.span,
                                         ...cfg.props,
                                         dashboardId: idx,
@@ -428,11 +433,11 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                                     <List variant={ListVariant.inline} isPlain>
                                       {selectedTemplate.cards
                                         .slice(CARD_PREVIEW_LIMIT)
-                                        .filter((cfg) => hasConfigByName(cfg.name))
+                                        .filter((cfg) => hasCardDescriptorByName(cfg.name))
                                         .map((cfg, idx) => {
                                           return (
-                                            <ListItem key={idx} icon={getConfigByName(cfg.name).icon}>
-                                              {cfg.props['chartKind'] || t(getConfigByName(cfg.name).title)}
+                                            <ListItem key={idx} icon={getCardDescriptorByName(cfg.name).icon}>
+                                              {cfg.props['chartKind'] || t(getCardDescriptorByName(cfg.name).title)}
                                             </ListItem>
                                           );
                                         })}
