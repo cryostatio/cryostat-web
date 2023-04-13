@@ -409,6 +409,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
             variant="plain"
             onClick={() => setIsKebabOpen(!isKebabOpen)}
             isExpanded={isKebabOpen}
+            data-quickstart-id="layout-toolbar-kebab-btn"
           >
             <EllipsisVIcon />
           </MenuToggle>

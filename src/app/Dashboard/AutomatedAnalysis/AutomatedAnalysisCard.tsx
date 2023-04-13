@@ -818,7 +818,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       <LabelGroup>
         {reportSource}
         {errors.length > 0 && <AutomatedAnalysisHeaderLabel type={'critical'} count={errors.length} />}
-        {warnings.length > 0 && <AutomatedAnalysisHeaderLabel type={'warning'} count={errors.length} />}
+        {warnings.length > 0 && <AutomatedAnalysisHeaderLabel type={'warning'} count={warnings.length} />}
       </LabelGroup>
     );
   }, [isLoading, errorMessage, evaluations, reportSource]);

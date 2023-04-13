@@ -196,7 +196,7 @@ Archiving a recording will save the recording to [APP]'s archival storage, and w
   <p>To learn more about [APP]'s extensive features and capabilities, please visit our website at <a href="${build.documentationUrl}" target="_blank">${build.documentationUrl}</a>.</p>
 </div>`,
     type: {
-      text: 'Featured',
+      text: 'Introduction',
       color: 'blue',
     },
     nextQuickStart: ['automated-rules-quickstart'],
