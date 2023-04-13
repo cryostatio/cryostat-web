@@ -88,7 +88,10 @@ Each card displays a different set of information about the currently selected t
     tasks: [
       {
         title: 'Go to the Dashboard page',
-        description: `1. Click the [Dashboard]{{highlight nav-dashboard-tab}} tab in the [APP] console navigation bar.`,
+        description: `
+1. Click the [Dashboard]{{highlight nav-dashboard-tab}} tab in the [APP] console navigation bar.
+2. Select a target JVM from the [Target Selector]{{highlight target-select}} on the toolbar.
+`,
         review: {
           instructions: '#### Verify that you see the Dashboard page.',
           failedTaskHelp:
