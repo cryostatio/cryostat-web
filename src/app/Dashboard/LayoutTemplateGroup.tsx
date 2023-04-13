@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
@@ -143,18 +142,17 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
                 onClick={() => handleTemplateSelect(template)}
                 badges={[
                   level !== FeatureLevel.PRODUCTION && (
-                    <FeatureFlag key={template.name + '-feature-flag'} level={level}>
-                      <Label
-                        isCompact
-                        style={{
-                          textTransform: 'capitalize',
-                          marginTop: '1.1ch',
-                        }}
-                        color={level === FeatureLevel.BETA ? 'green' : 'red'}
-                      >
-                        {FeatureLevel[level].toLowerCase()}
-                      </Label>
-                    </FeatureFlag>
+                    <Label
+                      key={template.name}
+                      isCompact
+                      style={{
+                        textTransform: 'capitalize',
+                        marginTop: '1.1ch',
+                      }}
+                      color={level === FeatureLevel.BETA ? 'green' : 'red'}
+                    >
+                      {FeatureLevel[level].toLowerCase()}
+                    </Label>
                   ),
                   <KebabCatalogTileBadge
                     template={template}
