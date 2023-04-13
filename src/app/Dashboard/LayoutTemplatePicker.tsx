@@ -157,10 +157,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [userSubmittedTemplates]);
 
   const allSearchableTemplateNames: string[] = React.useMemo(() => {
-    const uniqueTemplateNames = Array.from(new Set(allTemplates.map((template) => template.name)));
-    return searchFilteredTemplates(allTemplates.filter((template) => uniqueTemplateNames.includes(template.name))).map(
-      (t) => t.name
-    );
+    return Array.from(new Set(searchFilteredTemplates(allTemplates).map((t) => t.name)));
   }, [searchFilteredTemplates, allTemplates]);
 
   const onInnerTemplateSelect = React.useCallback(
