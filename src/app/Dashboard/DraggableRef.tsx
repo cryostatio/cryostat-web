@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { dashboardConfigReorderCardIntent } from '@app/Shared/Redux/ReduxStore';
+import { clickOutside } from '@app/utils/utils';
 import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
@@ -346,6 +347,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   const onDragStart = React.useCallback(
     (ev: React.DragEvent<HTMLDivElement>) => {
       ev.preventDefault();
+      clickOutside();
       if (isDragging) {
         return;
       }

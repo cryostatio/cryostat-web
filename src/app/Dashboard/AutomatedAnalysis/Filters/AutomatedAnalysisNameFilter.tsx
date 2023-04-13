@@ -37,6 +37,7 @@
  */
 
 import { CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
+import { portalRoot } from '@app/utils/utils';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import React from 'react';
 
@@ -82,6 +83,7 @@ export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterPr
       placeholderText="Filter by name..."
       aria-label="Filter by name"
       maxHeight="16em"
+      menuAppendTo={() => document.getElementById('dashboard-grid') || portalRoot}
     >
       {nameOptions}
     </Select>
