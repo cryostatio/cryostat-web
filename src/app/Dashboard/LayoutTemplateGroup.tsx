@@ -124,49 +124,48 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
         {props.templates.map((template) => {
           const level = smallestFeatureLevel(template.cards);
           return (
-            <FeatureFlag key={template.name} level={level}>
-              <div
-                ref={scrollRef}
-                className={
-                  selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor
-                    ? 'layout-template-card__featured'
-                    : undefined
-                }
+            <div
+              key={template.name}
+              ref={scrollRef}
+              className={
+                selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor
+                  ? 'layout-template-card__featured'
+                  : undefined
+              }
+            >
+              <CatalogTile
+                featured={selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor}
+                id={template.name}
+                key={template.name}
+                icon={iconify(template.vendor)}
+                title={template.name}
+                vendor={template.vendor}
+                onClick={() => handleTemplateSelect(template)}
+                badges={[
+                  level !== FeatureLevel.PRODUCTION && (
+                    <FeatureFlag key={template.name + '-feature-flag'} level={level}>
+                      <Label
+                        isCompact
+                        style={{
+                          textTransform: 'capitalize',
+                          marginTop: '1.1ch',
+                        }}
+                        color={level === FeatureLevel.BETA ? 'green' : 'red'}
+                      >
+                        {FeatureLevel[level].toLowerCase()}
+                      </Label>
+                    </FeatureFlag>
+                  ),
+                  <KebabCatalogTileBadge
+                    template={template}
+                    onTemplateDelete={onTemplateDelete}
+                    key={template.name + '-kebab'}
+                  />,
+                ]}
               >
-                <CatalogTile
-                  featured={selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor}
-                  id={template.name}
-                  key={template.name}
-                  icon={iconify(template.vendor)}
-                  title={template.name}
-                  vendor={template.vendor}
-                  onClick={() => handleTemplateSelect(template)}
-                  badges={[
-                    level !== FeatureLevel.PRODUCTION && (
-                      <FeatureFlag key={template.name + '-feature-flag'} level={level}>
-                        <Label
-                          isCompact
-                          style={{
-                            textTransform: 'capitalize',
-                            marginTop: '1.1ch',
-                          }}
-                          color={level === FeatureLevel.BETA ? 'green' : 'red'}
-                        >
-                          {FeatureLevel[level].toLowerCase()}
-                        </Label>
-                      </FeatureFlag>
-                    ),
-                    <KebabCatalogTileBadge
-                      template={template}
-                      onTemplateDelete={onTemplateDelete}
-                      key={template.name + '-kebab'}
-                    />,
-                  ]}
-                >
-                  {template.description}
-                </CatalogTile>
-              </div>
-            </FeatureFlag>
+                {template.description}
+              </CatalogTile>
+            </div>
           );
         })}
       </Gallery>

@@ -40,6 +40,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RootState, dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
+import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
@@ -101,7 +102,7 @@ import { ChartContext } from './Charts/ChartContext';
 import { CryostatLayoutTemplates, BlankLayout } from './cryostat-dashboard-templates';
 import { getConfigByName, hasConfigByName } from './Dashboard';
 import { LayoutTemplate, LayoutTemplateContext, LayoutTemplateRecord, recordToLayoutTemplate } from './dashboard-utils';
-import { LayoutTemplateGroup } from './LayoutTemplateGroup';
+import { LayoutTemplateGroup, smallestFeatureLevel } from './LayoutTemplateGroup';
 import { SearchAutocomplete } from './SearchAutocomplete';
 
 export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
@@ -122,6 +123,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   const { selectedTemplate, setSelectedTemplate, setIsUploadModalOpen } = React.useContext(LayoutTemplateContext);
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch();
+  const activeLevel = useFeatureLevel();
 
   const [searchFilter, setSearchFilter] = React.useState('');
   const [isFilterSelectOpen, setIsFilterSelectOpen] = React.useState(false);
@@ -462,9 +464,10 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     );
   }, [t, onDrawerCloseClick, selectedTemplate]);
 
-  const sortedFilteredTemplateLayoutGroup = React.useCallback(
+  const sortedFilteredFeatureLeveledTemplateLayoutGroup = React.useCallback(
     (title: LayoutTemplateFilter, templates: LayoutTemplate[]) => {
-      const sortedSearchFilteredTemplates = searchFilteredTemplates([...templates]).sort((a, b) => {
+      const featuredLevelled = templates.filter((t) => smallestFeatureLevel(t.cards) >= activeLevel);
+      const sortedSearchFilteredTemplates = searchFilteredTemplates(featuredLevelled).sort((a, b) => {
         switch (selectedSort) {
           case 'Name':
             if (sortDirection === 'asc') {
@@ -507,6 +510,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       );
     },
     [
+      activeLevel,
       searchFilteredTemplates,
       selectedFilters,
       selectedSort,
@@ -619,12 +623,15 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               <Stack>
                 {allSearchableTemplateNames.length !== 0 ? (
                   <>
-                    {sortedFilteredTemplateLayoutGroup(t('SUGGESTED', { ns: 'common' }), [
+                    {sortedFilteredFeatureLeveledTemplateLayoutGroup(t('SUGGESTED', { ns: 'common' }), [
                       BlankLayout,
                       ...RecentTemplates,
                     ])}
-                    {sortedFilteredTemplateLayoutGroup('Cryostat', CryostatLayoutTemplates)}
-                    {sortedFilteredTemplateLayoutGroup(t('USER_SUBMITTED', { ns: 'common' }), userSubmittedTemplates)}
+                    {sortedFilteredFeatureLeveledTemplateLayoutGroup('Cryostat', CryostatLayoutTemplates)}
+                    {sortedFilteredFeatureLeveledTemplateLayoutGroup(
+                      t('USER_SUBMITTED', { ns: 'common' }),
+                      userSubmittedTemplates
+                    )}
                   </>
                 ) : (
                   <StackItem>
