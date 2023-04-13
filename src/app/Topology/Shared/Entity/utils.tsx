@@ -105,7 +105,6 @@ export type ResourceTypes = Recording | EventTemplate | EventType | EventProbe |
 export const TargetOwnedResourceTypeAsArray = [
   'activeRecordings',
   'archivedRecordings',
-  'archivedUploadRecordings',
   'eventTemplates',
   'eventTypes',
   'agentProbes',
@@ -176,8 +175,6 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
       ];
     case 'archivedRecordings':
       return [NotificationCategory.ArchivedRecordingCreated, NotificationCategory.ActiveRecordingSaved];
-    case 'archivedUploadRecordings':
-      return [NotificationCategory.ArchivedRecordingCreated];
     case 'eventTemplates':
       return [NotificationCategory.TemplateUploaded];
     case 'eventTypes':
@@ -198,8 +195,6 @@ export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType |
     case 'activeRecordings':
       return [NotificationCategory.ActiveRecordingDeleted, NotificationCategory.SnapshotDeleted];
     case 'archivedRecordings':
-      return [NotificationCategory.ArchivedRecordingDeleted];
-    case 'archivedUploadRecordings':
       return [NotificationCategory.ArchivedRecordingDeleted];
     case 'eventTemplates':
       return [NotificationCategory.TemplateDeleted];
@@ -230,15 +225,6 @@ export const getResourceListPatchFn = (
   switch (resourceType) {
     case 'activeRecordings':
     case 'archivedRecordings':
-    case 'archivedUploadRecordings':
-      return (arr: Recording[], eventData: NotificationMessage, removed?: boolean) => {
-        const recording: Recording = eventData.message.recording;
-        let newArr = arr.filter((r) => r.name !== recording.name);
-        if (!removed) {
-          newArr = newArr.concat([recording]);
-        }
-        return of(newArr);
-      };
     case 'eventTemplates':
       return (arr: EventTemplate[], eventData: NotificationMessage, removed?: boolean) => {
         const template: EventTemplate = eventData.message.template;
@@ -306,8 +292,6 @@ export const getLinkPropsForTargetResource = (
       return { to: { pathname: '/recordings', search: '?tab=active-recording' } };
     case 'archivedRecordings':
       return { to: { pathname: '/recordings', search: '?tab=archived-recording' } };
-    case 'archivedUploadRecordings':
-      return { to: { pathname: '/archives', search: '?tab=uploads' } };
     case 'eventTemplates':
       return { to: { pathname: '/events', search: '?eventTab=event-template' } };
     case 'eventTypes':
