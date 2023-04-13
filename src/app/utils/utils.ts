@@ -245,3 +245,5 @@ export const getActiveTab = <T>(search: string, key: string, supportedTabs: T[],
   const tab = query.get(key) || defaultTab;
   return supportedTabs.includes(tab as T) ? (tab as T) : defaultTab;
 };
+
+export const clickOutside = () => document.body.click();

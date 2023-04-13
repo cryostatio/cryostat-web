@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { portalRoot } from '@app/utils/utils';
 import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -68,7 +69,7 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
         {...props}
         isPlain
         isFlipEnabled
-        menuAppendTo={'parent'}
+        menuAppendTo={() => document.getElementById('dashboard-grid') || portalRoot}
         position={'right'}
         isOpen={isOpen}
         toggle={<KebabToggle onToggle={setOpen} />}

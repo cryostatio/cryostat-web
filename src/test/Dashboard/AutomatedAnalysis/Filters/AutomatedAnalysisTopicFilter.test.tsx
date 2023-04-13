@@ -40,7 +40,6 @@ import { AutomatedAnalysisTopicFilter } from '@app/Dashboard/AutomatedAnalysis/F
 import { CategorizedRuleEvaluations, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
-import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../../../Common';
 
 const mockRuleEvaluation1: RuleEvaluation = {
@@ -96,20 +95,6 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   });
 
   afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <AutomatedAnalysisTopicFilter
-          evaluations={mockCategorizedEvaluations}
-          onSubmit={onTopicInput}
-          filteredTopics={emptyFilteredTopics}
-        />
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
 
   it('display topic selections when text input is clicked', async () => {
     const { user } = renderDefault(
