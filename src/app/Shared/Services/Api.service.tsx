@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/dashboard-utils';
 import { EventType } from '@app/Events/EventTypes';
 import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
@@ -47,7 +48,6 @@ import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { DashboardLayout, SerialCardConfig, SerialDashboardLayout } from '../Redux/Configurations/DashboardConfigSlice';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
@@ -1319,28 +1319,20 @@ export class ApiService {
     );
   }
 
-  downloadDashboardLayout(layout: DashboardLayout): void {
-    const serializedLayout = this.getSerializedDashboardLayout(layout);
-    const filename = `cryostat-dashboard-${layout.name}.json`;
-    const resourceUrl = createBlobURL(serializedLayout, 'application/json');
+  downloadLayoutTemplate(template: LayoutTemplate): void {
+    const stringifiedSerializedLayout = this.stringifyLayoutTemplate(template);
+    const filename = `cryostat-dashboard-${template.name}.json`;
+    const resourceUrl = createBlobURL(stringifiedSerializedLayout, 'application/json');
     this.downloadFile(resourceUrl, filename);
   }
 
-  private getSerializedDashboardLayout(layout: DashboardLayout): string {
-    const serialCards: SerialCardConfig[] = layout.cards.map((card) => {
-      return {
-        // ignore id
-        name: card.name,
-        span: card.span,
-        props: card.props,
-      };
-    });
-
-    const download: SerialDashboardLayout = {
-      name: layout.name,
-      cards: serialCards,
-      favorite: layout.favorite,
-    };
+  private stringifyLayoutTemplate(template: LayoutTemplate): string {
+    const download = {
+      name: template.name,
+      description: template.description,
+      cards: template.cards,
+      version: template.version,
+    } as SerialLayoutTemplate;
     return JSON.stringify(download);
   }
 
@@ -1854,5 +1846,3 @@ export const defaultChartControllerConfig: ChartControllerConfig = {
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY = 'uploads';
-
-export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+$/;

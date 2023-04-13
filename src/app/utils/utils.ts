@@ -200,7 +200,6 @@ export const getValue = (object: any, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
-/* eslint-enable @typescript-eslint/no-explicit-any */
 export const sortResources = <R>(
   { index, direction }: ISortBy,
   resources: R[],
@@ -224,6 +223,7 @@ export const sortResources = <R>(
   return [...(direction === SortByDirection.asc ? sorted : sorted.reverse())];
 };
 
+/* eslint-enable @typescript-eslint/no-explicit-any */
 export interface TabConfig {
   tabKey: string;
   tabValue: string;

@@ -59,7 +59,7 @@
       },
       "SWITCH": {
         "LIST_VIEW": {
-          "LABEL": "Toggle list view"
+          "LABEL": "List view"
         }
       }
     },
@@ -156,57 +156,64 @@
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
   },
-  "DashboardLayoutConfig": {
-    "DELETE": {
-      "LABEL": "Delete layout"
-    },
-    "DOWNLOAD": {
-      "LABEL": "Download layout"
-    },
-    "MENU": {
-      "FAVORITES": "Favorites",
-      "LABEL": "Layout menu",
-      "OTHERS": "Layouts"
-    },
-    "NEW": {
-      "LABEL": "New layout"
-    },
-    "RENAME": {
-      "LABEL": "Rename layout"
-    },
-    "UPLOAD": {
-      "LABEL": "Upload layout"
-    }
-  },
   "DashboardLayoutCreateModal": {
     "CREATE_LAYOUT": "Create Dashboard Layout",
     "ERROR": {
       "NAME_INVALID": "Name must be alphanumeric and may contain underscores, dashes, and periods.",
       "NAME_REQUIRED": "Name is required.",
-      "NAME_TAKEN": "Name is already in use."
+      "NAME_TAKEN": "Name is already in use.",
+      "NAME_TOO_LONG": "Name must be 20 characters or less."
     },
+    "LABEL": "Create a new dashboard layout",
     "NAME": {
       "HELPER_TEXT": "Enter a name for the dashboard layout.",
       "LABEL": "Name"
     },
     "RENAME_LAYOUT": "Rename Dashboard Layout"
   },
-  "DashboardLayoutUploadModal": {
-    "DESCRIPTION": "Select Dashboard Layout configuration file(s) to upload. File(s) must be in valid JSON format.",
+  "DashboardLayoutSetAsTemplateModal": {
+    "DOWNLOAD": {
+      "DESCRIPTION": "Download the current dashboard layout as a template.",
+      "TITLE": "Download Custom Layout Template"
+    },
     "ERROR": {
-      "CONFIG_INVALID": "Card configurations are invalid.",
-      "DUPLICATE_UPLOAD": "A previously uploaded file has the same name as the current file: \"{{name}}\".",
-      "NAME_INVALID": {
-        "1": "Dashboard name \"{{name}}\" is invalid.",
-        "2": "Dashboard name must be alphanumeric and may contain underscores, dashes, and periods."
+      "DESCRIPTION_INVALID": "The description can only include letters, numbers, spaces, and some special characters.",
+      "DESCRIPTION_TOO_LONG": "The description must be 100 characters or less."
+    },
+    "FORM_GROUP": {
+      "DESCRIPTION": {
+        "HELPER_TEXT": "Enter a description for the template.",
+        "LABEL": "Description",
+        "PLACEHOLDER": "A layout template for..."
       },
-      "NAME_TAKEN": "Dashboard layout with name \"{{name}}\" already exists.",
-      "PARSE": "JSON parse error."
+      "NAME": {
+        "HELPER_TEXT": "Enter a name for the template.",
+        "LABEL": "Name"
+      }
     },
-    "HELP": {
-      "CONTENT": "Dashboard Layout configuration files are JSON files that contain a list of dashboard card configurations and a name for the dashboard layout. The dashboard layout name must be unique and may contain alphanumeric characters, underscores, dashes, and periods."
+    "SET_TEMPLATE": {
+      "DESCRIPTION": "Set the current dashboard layout as a template.",
+      "TITLE": "Set Custom Layout Template"
+    }
+  },
+  "DashboardLayoutToolbar": {
+    "DELETE": {
+      "LABEL": "Delete layout"
     },
-    "TITLE": "Upload Dashboard Layout"
+    "DOWNLOAD_AS_TEMPLATE": "Download as template",
+    "MENU": {
+      "FAVORITES": "Favorites",
+      "LABEL": "Layout menu",
+      "OTHERS": "Layouts"
+    },
+    "NEW_LAYOUT": "New Layout",
+    "RENAME": {
+      "LABEL": "Rename layout"
+    },
+    "SET_AS_TEMPLATE": "Set as template",
+    "UPLOAD": {
+      "LABEL": "Upload layout"
+    }
   },
   "DatetimeFilter": {
     "ARIA_LABELS": {
@@ -227,6 +234,34 @@
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
     "CARD_TITLE": "Target JVM Details"
+  },
+  "LayoutTemplateGroup": {
+    "ITEMS_one": "{{count}} item",
+    "ITEMS_other": "{{count}} items"
+  },
+  "LayoutTemplatePicker": {
+    "SORT_BY": {
+      "CARD_COUNT": "Sort by: Card Count",
+      "NAME": "Sort by: Name",
+      "PLACEHOLDER": "Sort by..."
+    }
+  },
+  "LayoutTemplateUploadModal": {
+    "DESCRIPTION": "Select Dashboard Layout Template configuration file(s) to upload. File(s) must be in valid JSON format.",
+    "ERROR": {
+      "CONFIG_INVALID": "Card configurations are invalid.",
+      "DESCRIPTION_INVALID": "Template description is invalid.",
+      "DUPLICATE_UPLOAD": "A previously uploaded file has the same template name as the current file: \"{{name}}\".",
+      "NAME_INVALID": "Template name is invalid.",
+      "NAME_TAKEN": "Template with name \"{{name}}\" already exists.",
+      "PARSE": "JSON parse error.",
+      "TEMPLATE_INVALID": "Template has an invalid configuration.",
+      "VERSION_INVALID": "Template version is invalid."
+    },
+    "HELP": {
+      "CONTENT": "Dashboard Layout Templates are pre-configured dashboard designs that can be used as a starting point for new dashboard layouts. Each template is defined in a JSON file that contains a list of dashboard cards and their configurations, as well as a unique name for the template. The name must be alphanumeric and can include underscores, dashes, and periods."
+    },
+    "TITLE": "Upload Dashboard Layout Template"
   },
   "MeridiemPicker": {
     "ARIA_LABELS": {

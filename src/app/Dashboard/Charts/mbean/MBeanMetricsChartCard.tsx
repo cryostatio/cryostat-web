@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '@app/Dashboard/dashboard-utils';
 import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
 import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -57,7 +57,7 @@ import {
   getResizeObserver,
 } from '@patternfly/react-charts';
 import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
-import { SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
+import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +65,7 @@ import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from './../ChartContext';
 
-export interface MBeanMetricsChartCardProps extends DashboardCardProps {
+export interface MBeanMetricsChartCardProps extends DashboardCardTypeProps {
   themeColor: string;
   chartKind: string;
   duration: number;
@@ -149,7 +149,6 @@ const SimpleChart: React.FC<{
       }
       themeColor={themeColor}
       width={width}
-      height={width / 2} // Aspect radio: 2:1
       padding={{
         left: 54,
         right: 30,
@@ -322,7 +321,6 @@ const chartKinds: MBeanMetricsChartKind[] = [
           }
           themeColor={themeColor}
           width={width}
-          height={width / 2} // Aspect radio: 2:1
         />
       );
     },
@@ -562,7 +560,7 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       kind: 'select',
     },
   ],
-  icon: <TachometerAltIcon />,
+  icon: <MonitoringIcon />,
   labels: [
     {
       content: 'Metrics',

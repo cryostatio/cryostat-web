@@ -40,7 +40,7 @@ import { clickOutside } from '@app/utils/utils';
 import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { DRAGGABLE_REF_KLAZZ } from './DashboardUtils';
+import { DRAGGABLE_REF_KLAZZ } from './dashboard-utils';
 import { handleDisabledElements } from './ResizableRef';
 
 const getOverlapScales = (dragIndex: number, hoverIndex: number): [number, number] => {

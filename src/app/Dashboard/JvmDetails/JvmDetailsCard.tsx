@@ -46,11 +46,11 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
+import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '../dashboard-utils';
 import { DashboardCard } from '../DashboardCard';
 import '@app/Topology/styles/base.css';
 
-export interface JvmDetailsCardProps extends DashboardCardProps {}
+export interface JvmDetailsCardProps extends DashboardCardTypeProps {}
 
 export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -90,7 +90,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
           <CardActions>{...props.actions || []}</CardActions>
         </CardHeader>
       }
-      style={{ height: '36em' }} // FIXME: Remove after implementing height resizing
+      style={props.isFullHeight ? {} : { height: '36em' }} // FIXME: Remove after implementing height resizing
       {...props}
     >
       <CardBody>

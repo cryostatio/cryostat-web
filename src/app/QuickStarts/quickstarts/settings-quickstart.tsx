@@ -148,7 +148,7 @@ Credentials are used to authenticate with the target JVMs that Cryostat communic
   <p>For more information about configuring <strong>Settings</strong> in Cryostat, read our guides on the <a href="${build.homePageUrl}" target="_blank">Cryostat website</a>.</p>
 </div>`,
     type: {
-      text: 'Featured',
+      text: 'Introduction',
       color: 'blue',
     },
   },

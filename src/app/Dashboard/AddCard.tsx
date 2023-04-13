@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EmptyText } from '@app/Topology/Shared/EmptyText';
@@ -104,7 +103,8 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { ChartContext } from './Charts/ChartContext';
-import { DashboardCardDescriptor, getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
+import { getConfigByTitle, getDashboardCards } from './Dashboard';
+import { CardConfig, DashboardCardDescriptor, PropControl } from './dashboard-utils';
 
 interface AddCardProps {
   variant: 'card' | 'icon-button';

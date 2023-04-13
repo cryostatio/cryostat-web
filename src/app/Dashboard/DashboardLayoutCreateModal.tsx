@@ -35,20 +35,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
-  dashboardConfigAddLayoutIntent,
+  dashboardConfigCreateLayoutIntent,
   dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
+  dashboardConfigTemplateHistoryPushIntent,
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
-import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { portalRoot } from '@app/utils/utils';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  Form,
+  FormGroup,
+  FormSection,
+  Modal,
+  TextInput,
+  Title,
+  TitleSizes,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
+import { BlankLayout } from './cryostat-dashboard-templates';
+import {
+  DashboardLayoutNamePattern,
+  DEFAULT_DASHBOARD_NAME,
+  layoutize,
+  LayoutTemplate,
+  LayoutTemplateContext,
+} from './dashboard-utils';
+import { LayoutTemplatePicker } from './LayoutTemplatePicker';
 
 export interface DashboardLayoutCreateModalProps {
   oldName?: string;
@@ -60,9 +78,10 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
-  const [validated, setValidated] = React.useState<'default' | 'success' | 'warning' | 'error' | undefined>('default');
+  const [nameValidated, setNameValidated] = React.useState<ValidatedOptions>(ValidatedOptions.default);
   const [errorMessage, setErrorMessage] = React.useState<string>('');
   const [name, setName] = React.useState<string>('');
+  const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
 
   React.useEffect(() => {
     setName(props.oldName || '');
@@ -76,114 +95,143 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     (value: string) => {
       setName(value);
       if (value.length === 0) {
-        setValidated('error');
+        setNameValidated(ValidatedOptions.error);
         setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_REQUIRED'));
+      } else if (value.length > 20) {
+        setNameValidated(ValidatedOptions.error);
+        setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_TOO_LONG'));
       } else if (dashboardConfigs.layouts.some((layout) => layout.name === value) || value === DEFAULT_DASHBOARD_NAME) {
-        setValidated('error');
+        setNameValidated(ValidatedOptions.error);
         setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_TAKEN'));
       } else {
         if (DashboardLayoutNamePattern.test(value)) {
-          setValidated('success');
+          setNameValidated(ValidatedOptions.success);
         } else {
-          setValidated('error');
+          setNameValidated(ValidatedOptions.error);
           setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_INVALID'));
         }
       }
     },
-    [t, setName, setValidated, setErrorMessage, dashboardConfigs]
+    [t, setName, setNameValidated, setErrorMessage, dashboardConfigs]
   );
 
   const handleClose = React.useCallback(
     (ev?: React.MouseEvent) => {
       ev && ev.stopPropagation();
       setName(props.oldName || '');
-      setValidated('default');
+      setNameValidated(ValidatedOptions.default);
       onClose();
     },
-    [setName, setValidated, onClose, props.oldName]
+    [setName, setNameValidated, onClose, props.oldName]
   );
 
   const handleSubmit = React.useCallback(
     (ev?: React.MouseEvent) => {
       ev && ev.stopPropagation();
-      const newLayout: DashboardLayout = {
-        name: name,
-        cards: [],
-        favorite: false,
-      };
-      if (isCreateModal) {
-        dispatch(dashboardConfigAddLayoutIntent(newLayout));
-      } else {
-        if (props.oldName !== undefined) {
-          dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
+      if (nameValidated === ValidatedOptions.success && selectedTemplate) {
+        if (isCreateModal) {
+          const newLayout = layoutize(selectedTemplate, name);
+          dispatch(dashboardConfigCreateLayoutIntent(newLayout));
+          if (selectedTemplate !== BlankLayout) {
+            dispatch(dashboardConfigTemplateHistoryPushIntent(selectedTemplate));
+          }
+          dispatch(dashboardConfigReplaceLayoutIntent(newLayout.name));
+        } else {
+          if (props.oldName !== undefined) {
+            dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
+          }
         }
       }
-      dispatch(dashboardConfigReplaceLayoutIntent(name));
-      setName('');
-      onClose();
+      handleClose();
     },
-    [dispatch, setName, onClose, name, isCreateModal, props.oldName]
+    [dispatch, handleClose, selectedTemplate, name, nameValidated, isCreateModal, props.oldName]
   );
 
   const handleKeyUp = React.useCallback(
-    (event: React.KeyboardEvent): void => {
-      event.stopPropagation();
-      if (event.code === 'Enter' && validated === 'success') {
+    (ev: React.KeyboardEvent): void => {
+      ev.stopPropagation();
+      if (ev.code === 'Enter' && nameValidated === ValidatedOptions.success) {
         handleSubmit();
       }
     },
-    [handleSubmit, validated]
+    [handleSubmit, nameValidated]
+  );
+
+  const onTemplateSelect = React.useCallback(
+    (template: LayoutTemplate) => {
+      setSelectedTemplate(template);
+    },
+    [setSelectedTemplate]
   );
 
   const formGroup = React.useMemo(() => {
     return (
-      <FormGroup
-        label={t('DashboardLayoutCreateModal.NAME.LABEL')}
-        fieldId="name"
-        helperText={t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
-        helperTextInvalid={errorMessage}
-        isRequired
-        validated={validated}
-      >
-        <TextInput
+      <FormSection>
+        {isCreateModal && (
+          <FormGroup label={'Template'} fieldId="template" isRequired height="35em" validated={nameValidated}>
+            <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '33em' }}>
+              <LayoutTemplatePicker onTemplateSelect={onTemplateSelect} />
+            </div>
+          </FormGroup>
+        )}
+        <FormGroup
+          label={t('DashboardLayoutCreateModal.NAME.LABEL')}
+          fieldId="name"
+          helperText={t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
+          helperTextInvalid={errorMessage}
           isRequired
-          type="text"
-          id="name"
-          name="name"
-          aria-describedby={'name-helper'}
-          value={name}
-          onChange={handleNameChange}
-          onKeyUp={handleKeyUp}
-          autoFocus={true}
-          autoComplete="on"
-        />
-      </FormGroup>
+          validated={nameValidated}
+        >
+          <TextInput
+            isRequired
+            type="text"
+            id="name"
+            name="name"
+            aria-describedby={'name-helper'}
+            value={name}
+            onChange={handleNameChange}
+            onKeyUp={handleKeyUp}
+            autoFocus={true}
+            autoComplete="on"
+            validated={nameValidated}
+          />
+        </FormGroup>
+      </FormSection>
     );
-  }, [t, validated, errorMessage, name, handleNameChange, handleKeyUp]);
+  }, [t, isCreateModal, nameValidated, errorMessage, name, onTemplateSelect, handleNameChange, handleKeyUp]);
 
   const actionGroup = React.useMemo(() => {
     return (
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit} isAriaDisabled={validated !== 'success'}>
-          {t('CREATE', { ns: 'common' })}
+        <Button variant="primary" onClick={handleSubmit} isAriaDisabled={nameValidated !== 'success'}>
+          {isCreateModal ? t('CREATE', { ns: 'common' }) : t('RENAME', { ns: 'common' })}
         </Button>
         <Button variant="link" onClick={handleClose}>
           {t('CANCEL', { ns: 'common' })}
         </Button>
       </ActionGroup>
     );
-  }, [t, handleSubmit, validated, handleClose]);
+  }, [t, handleSubmit, handleClose, nameValidated, isCreateModal]);
+
+  const header = React.useMemo(
+    () => (
+      <Title id="modal-custom-header-label" headingLevel="h1" size={TitleSizes['2xl']}>
+        {isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')}
+      </Title>
+    ),
+    [t, isCreateModal]
+  );
 
   return (
     <Modal
+      aria-label={t('DashboardLayoutCreateModal.LABEL')}
+      width={isCreateModal ? '110em' : '40%'}
+      height={isCreateModal ? '90%' : 'auto'}
       appendTo={portalRoot}
       isOpen={props.visible}
-      variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title={
-        isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')
-      }
+      header={header}
     >
       <Form onSubmit={(e) => e.preventDefault()}>
         {formGroup}

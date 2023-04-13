@@ -38,7 +38,7 @@
 
 import { useDayjs } from '@app/utils/useDayjs';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
-import { Button, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
@@ -85,7 +85,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
   const timezones = React.useMemo(() => supportedTimezones(), []);
 
   const handleViewMore = React.useCallback(
-    (e: React.MouseEvent) => {
+    (_e: React.MouseEvent) => {
       setNumOfOptions((old) => Math.min(old + OPTION_INCREMENT, timezones.length));
     },
     [setNumOfOptions, timezones]

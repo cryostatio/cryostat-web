@@ -114,6 +114,32 @@ html, body, #root {
   overflow-y: auto;
 }
 
+.layout-template-picker {
+  padding: 0 1em 1em 1em;
+}
+
+.layout-template-picker .catalog-tile-pf {
+  height: 100%;
+  color: var(--pf-global--Color--100);
+  border-top: 1.5px solid var(--pf-global--palette--black-300);
+}
+
+.layout-template-picker .catalog-tile-pf.featured {
+  border-top: 2px solid var(--pf-global--active-color--100);
+  transform: translateY(-0.4em);
+  transition: transform 0.5s;
+  transform-origin: bottom;
+}
+
+.layout-template-card__featured {
+  z-index: 1;
+}
+
+#dashboard-layout-menu-content .pf-c-menu__item-action {
+  padding-right: 0.65em;
+  padding-left: 0.65em;
+}
+
 .automated-analysis-grid-item {
   padding: 0.25em;
 }
@@ -598,6 +624,33 @@ svg.topology__node-decorator-icon.progress {
 
 #card-catalog-wizard .pf-c-wizard__main-body {
   height: 100%
+}
+
+:is(.pf-theme-dark) #dashboard-layout-preview-grid {
+  background-color: var(--pf-global--palette--black-700);
+}
+
+#dashboard-layout-preview-grid {
+  margin-top: 0.5em;
+  pointer-events: none;
+  width: 100%;
+  background-color: var(--pf-global--palette--black-200);
+  padding: 1em;
+}
+
+#dashboard-layout-preview-grid .pf-c-card__title {
+  --pf-c-card__title--FontSize: 0.7em;
+}
+
+#dashboard-layout-preview-grid .pf-c-title {
+  font-size: 0.7em;
+  font-weight: 700;
+}
+
+.preview-card {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 
 .non-interactive-overlay {

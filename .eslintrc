@@ -57,6 +57,9 @@
         "caseInsensitive": true
       }
     }],
+    "no-console": ["error", {
+      "allow": ["warn", "error"]
+    }],
     "prettier/prettier": "off",
     "react/prop-types": "off",
     "react/jsx-uses-react": "warn",

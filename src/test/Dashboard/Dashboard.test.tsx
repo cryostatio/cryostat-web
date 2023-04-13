@@ -65,8 +65,8 @@ jest.mock('@app/Dashboard/AddCard', () => ({
   AddCard: (_) => <div>Add Card</div>,
 }));
 
-jest.mock('@app/Dashboard/DashboardLayoutConfig', () => ({
-  DashboardLayoutConfig: (_) => <div>Dashboard Layout Config</div>,
+jest.mock('@app/Dashboard/DashboardLayoutToolbar', () => ({
+  DashboardLayoutToolbar: (_) => <div>Dashboard Layout Toolbar</div>,
 }));
 
 // Mock the local storage such that the first run config is not shown

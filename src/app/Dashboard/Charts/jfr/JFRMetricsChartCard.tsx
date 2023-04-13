@@ -37,7 +37,7 @@
  */
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '@app/Dashboard/dashboard-utils';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
@@ -66,7 +66,7 @@ import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from './../ChartContext';
 import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';
 
-export interface JFRMetricsChartCardProps extends DashboardCardProps {
+export interface JFRMetricsChartCardProps extends DashboardCardTypeProps {
   chartKind: string;
   duration: number;
   period: number;

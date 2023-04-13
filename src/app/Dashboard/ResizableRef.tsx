@@ -35,13 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { dashboardConfigResizeCardIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { gridSpans } from '@patternfly/react-core';
 import _ from 'lodash';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DashboardCardSizes } from './Dashboard';
+import { CardConfig, DashboardCardSizes } from './dashboard-utils';
 import { DashboardCardContext } from './DashboardCard';
 
 export interface ResizableRefProps {

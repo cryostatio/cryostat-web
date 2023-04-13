@@ -46,6 +46,7 @@ export enum DeleteOrDisableWarningType {
   DeleteCredentials = 'DeleteCredentials',
   DeleteCustomTargets = 'DeleteCustomTargets',
   DeleteDashboardLayout = 'DeleteDashboardLayout',
+  DeleteLayoutTemplate = 'DeleteLayoutTemplate',
 }
 
 export interface DeleteOrDisableWarning {
@@ -136,6 +137,14 @@ export const DeleteDashboardLayout: DeleteOrDisableWarning = {
   ariaLabel: 'Dashboard Layout delete warning',
 };
 
+export const DeleteLayoutTemplate: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteLayoutTemplate,
+  title: 'Permanently delete Layout Template?',
+  label: 'Delete Layout Template',
+  description: `Layout template configuration data will be lost.`,
+  ariaLabel: 'Layout Template delete warning',
+};
+
 export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteActiveRecordings,
   DeleteArchivedRecordings,
@@ -147,6 +156,7 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteCredentials,
   DeleteCustomTargets,
   DeleteDashboardLayout,
+  DeleteLayoutTemplate,
 ];
 
 export const getFromWarningMap = (warning: DeleteOrDisableWarningType): DeleteOrDisableWarning | undefined => {

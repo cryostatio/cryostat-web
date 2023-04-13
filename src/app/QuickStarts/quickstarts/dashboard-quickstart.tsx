@@ -72,7 +72,7 @@ Currently, the following Dashboard Cards are available:
 
 - **Target JVM Details**
 - **Automated Analysis**
-- **JFR Metrics Chart**
+- **JFR Metrics Chart (BETA)**
 - **MBean Metrics Chart**
 
 Each card displays a different set of information about the currently selected target JVM, such as the heap usage, thread statistics, JVM vendor, and more.
@@ -88,7 +88,10 @@ Each card displays a different set of information about the currently selected t
     tasks: [
       {
         title: 'Go to the Dashboard page',
-        description: `1. Click the [Dashboard]{{highlight nav-dashboard-tab}} tab in the [APP] console navigation bar.`,
+        description: `
+1. Click the [Dashboard]{{highlight nav-dashboard-tab}} tab in the [APP] console navigation bar.
+2. Select a target JVM from the [Target Selector]{{highlight target-select}} on the toolbar.
+`,
         review: {
           instructions: '#### Verify that you see the Dashboard page.',
           failedTaskHelp:
@@ -102,15 +105,17 @@ Each card displays a different set of information about the currently selected t
 
 1. Click the [Layout Selector]{{highlight dashboard-layout-selector}} on the toolbar.
 
-    This will open a dropdown menu. Click the [Create Layout]{{highlight create-layout-btn}}.
+    This will open a dropdown menu. Click **New Layout**.
 
-2. Enter a name for the new layout.
-3. Click Create when you are finished.
+We have now created a new Dashboard Layout. The new layout is automatically selected and should be named **Custom1**, if you have not created any other layouts yet.
+
+[You can also rename the layout with the pencil icon next to the name.]{{admonition tip}}
 `,
         review: {
-          instructions: '#### Verify that the new layout is created and selected with the name you entered.',
+          instructions:
+            '#### Verify that the new layout is created and selected. Make sure that the the new layout is named Custom with some number appended to it.',
           failedTaskHelp:
-            'Make sure that the name you entered is unique, and contains only alphanumeric characters, underscores, dashes, and periods.',
+            'After opening the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown, click the blue button labeled **New Layout**.',
         },
       },
       {
@@ -149,21 +154,36 @@ To create a card, we will go through a **creation wizard** that will guide us th
       {
         title: 'Modify Dashboard Layouts',
         description: `
-You can rename, upload, download, and delete **Dashboard Layouts**. You may also quickly switch between them for different sets of information about the target JVMs. Customize these layouts to suit your needs!
+You can rename, delete and quickly switch between **Dashboard Layouts** for different sets of information about the target JVMs. Customize these layouts to suit your needs!
 1. Rename the current Dashboard Layout by clicking the [Pencil icon]{{highlight dashboard-rename-btn}} on the **Layout Selector** toolbar.
-2. Download the current Dashboard Layout by clicking [Download]{{highlight dashboard-download-btn}} on the **Layout Selector** toolbar.
+2. To switch between Dashboard Layouts, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and select the \`Default\` layout.
 3. Delete the current Dashboard Layout by clicking [Delete]{{highlight dashboard-delete-btn}} on the **Layout Selector** toolbar.
-4. Upload the Dashboard Layout that you downloaded in the previous step by clicking [Upload]{{highlight dashboard-upload-btn}} on the **Layout Selector** toolbar.
-   
-   This will open a modal dialog, where you can select the file you downloaded in the previous step. Press Submit and Close when you are finished with the modal.
-5. To switch between Dashboard Layouts, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and select the \`Default\` layout.
+
+   Note that you cannot delete the \`Default\` layout. Try deleting the \`Custom1\` layout that you created earlier.
 [You can also favorite Dashboard Layouts by clicking on the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown and clicking the Star Icon \`★\` next to the layout you want to favorite. Renaming and deletion can also be done in a similar fashion.]{{admonition tip}}
 `,
         review: {
-          instructions:
-            '#### Verify that you are able to rename, upload, download, delete, and switch between Dashboard Layouts.',
+          instructions: '#### Verify that you are able to rename, delete, and switch between Dashboard Layouts.',
+          failedTaskHelp: 'Make sure you are clicking the correct actions and buttons.',
+        },
+      },
+      {
+        title: 'Layout Templates',
+        description: `
+**Layout Templates** are pre-configured Dashboard Layouts that can be used to quickly create new Dashboard Layouts. You can also download and upload your own Dashboard Layouts as templates. [APP] provides a few templates that you can use to get started.
+1. To create a new Dashboard Layout from a template, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and select the split button dropdown next to the **New Layout** button.
+   
+   This will open a dropdown menu. Select **Choose Template**.
+
+2. From the **Create Dashboard Layout** modal, there is a Template Picker that allows you to select a template to use. There are two template categories: **Suggested** and **Cryostat**.
+3. From the **Cryostat** category, select the **Automated Analysis** template. This will open a drawer from the right of the modal that shows details about the currently selected template. 
+4. Enter a name for the new Dashboard Layout in the **Name** field.
+5. Click **Create** to finish creating the new Dashboard Layout.
+`,
+        review: {
+          instructions: '#### Verify that you are able to create a dashboard layout from template.',
           failedTaskHelp:
-            'Make sure you are clicking the correct actions and buttons. If you are having trouble uploading a Dashboard Layout, make sure that the file you are uploading is a valid Dashboard Layout file.',
+            'If you are having trouble creating a dashboard layout from a template, make sure that you have selected a template from the Template Picker and entered a name for the new layout.',
         },
       },
     ],
@@ -177,7 +197,7 @@ You can rename, upload, download, and delete **Dashboard Layouts**. You may also
     <p>For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guides on the <a href="${build.dashboardGuideUrl}" target="_blank">Cryostat documentation</a>.</p>
 </div>`,
     type: {
-      text: 'Featured',
+      text: 'Introduction',
       color: 'blue',
     },
   },

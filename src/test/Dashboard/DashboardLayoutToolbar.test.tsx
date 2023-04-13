@@ -35,6 +35,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { DashboardLayoutToolbar } from '@app/Dashboard/DashboardLayoutToolbar';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { store } from '@app/Shared/Redux/ReduxStore';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import React from 'react';
+import { Provider } from 'react-redux';
+import renderer, { act } from 'react-test-renderer';
+import '../Common';
 
-export const DEFAULT_DASHBOARD_NAME = 'Default';
-export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
+
+describe('<DashboardLayoutToolbar />', () => {
+  it.skip('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Provider store={store}>
+              <DashboardLayoutToolbar />
+            </Provider>
+          </NotificationsContext.Provider>
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+});

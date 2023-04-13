@@ -37,6 +37,12 @@
  */
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
+import {
+  DashboardLayout,
+  LayoutTemplate,
+  LayoutTemplateRecord,
+  LayoutTemplateVendor,
+} from '@app/Dashboard/dashboard-utils';
 import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
@@ -56,6 +62,11 @@ export enum DashboardConfigAction {
   LAYOUT_RENAME = 'layout-config/rename',
   LAYOUT_REPLACE = 'layout-config/replace',
   LAYOUT_FAVORITE = 'layout-config/favorite',
+  TEMPLATE_ADD = 'template-config/add',
+  TEMPLATE_REMOVE = 'template-config/remove',
+  TEMPLATE_RENAME = 'template-config/rename',
+  TEMPLATE_HISTORY_PUSH = 'template-history/push',
+  TEMPLATE_HISTORY_CLEAR = 'template-history/clear',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -104,6 +115,24 @@ export interface DashboardFavoriteLayoutActionPayload {
   name: string;
 }
 
+export interface DashboardAddTemplateActionPayload {
+  template: LayoutTemplate;
+}
+
+export interface DashboardDeleteTemplateActionPayload {
+  name: string;
+}
+
+export interface DashboardRenameTemplateActionPayload {
+  oldName: string;
+  newName: string;
+}
+export interface DashboardHistoryPushTemplateActionPayload {
+  template: LayoutTemplate;
+}
+
+export interface DashboardHistoryClearTemplateActionPayload {}
+
 export const dashboardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
   (id: string, name: string, span: gridSpans, props: object) => ({
@@ -147,7 +176,7 @@ export const dashboardConfigFirstRunIntent = createAction(DashboardConfigAction.
   payload: {} as DashboardFirstRunActionPayload,
 }));
 
-export const dashboardConfigAddLayoutIntent = createAction(
+export const dashboardConfigCreateLayoutIntent = createAction(
   DashboardConfigAction.LAYOUT_ADD,
   (layout: DashboardLayout) => ({
     payload: {
@@ -190,28 +219,49 @@ export const dashboardConfigFavoriteLayoutIntent = createAction(
   })
 );
 
-export interface CardConfig {
-  id: string;
-  name: string;
-  span: gridSpans;
-  props: object;
-}
+export const dashboardConfigCreateTemplateIntent = createAction(
+  DashboardConfigAction.TEMPLATE_ADD,
+  (template: LayoutTemplate) => ({
+    payload: {
+      template,
+    } as DashboardAddTemplateActionPayload,
+  })
+);
 
-export type SerialCardConfig = Omit<CardConfig, 'id'>;
+export const dashboardConfigDeleteTemplateIntent = createAction(
+  DashboardConfigAction.TEMPLATE_REMOVE,
+  (name: string) => ({
+    payload: {
+      name,
+    } as DashboardDeleteTemplateActionPayload,
+  })
+);
 
-export interface DashboardLayout {
-  name: string;
-  cards: CardConfig[];
-  favorite: boolean;
-}
+export const dashboardConfigTemplateHistoryPushIntent = createAction(
+  DashboardConfigAction.TEMPLATE_HISTORY_PUSH,
+  (template: LayoutTemplate) => ({
+    payload: {
+      template,
+    } as DashboardHistoryPushTemplateActionPayload,
+  })
+);
 
-export type SerialDashboardLayout = Omit<DashboardLayout, 'cards'> & { cards: SerialCardConfig[] };
+export const dashboardConfigTemplateHistoryClearIntent = createAction(
+  DashboardConfigAction.TEMPLATE_HISTORY_CLEAR,
+  () => ({
+    payload: {} as DashboardHistoryClearTemplateActionPayload,
+  })
+);
 
 export interface DashboardConfigState {
   layouts: DashboardLayout[];
+  customTemplates: LayoutTemplate[];
+  templateHistory: LayoutTemplateRecord[];
   current: number;
   readonly _version: string;
 }
+
+export const TEMPLATE_HISTORY_LIMIT = 5;
 
 const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _dashboardConfigVersion, {
   layouts: [
@@ -221,12 +271,18 @@ const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _
       favorite: true,
     },
   ] as DashboardLayout[],
+  customTemplates: [] as LayoutTemplate[],
+  templateHistory: [] as LayoutTemplateRecord[],
   current: 0,
 });
 
+const getTemplateHistoryIndexForMutation = (state: DashboardConfigState, templateName: string) => {
+  const idx = state.templateHistory.findIndex((t) => t.name === templateName && t.vendor === LayoutTemplateVendor.USER);
+  return idx;
+};
+
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
-
     .addCase(dashboardConfigAddCardIntent, (state, { payload }) => {
       state.layouts[state.current].cards.push(payload);
     })
@@ -280,7 +336,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
         },
       ];
     })
-    .addCase(dashboardConfigAddLayoutIntent, (state, { payload }) => {
+    .addCase(dashboardConfigCreateLayoutIntent, (state, { payload }) => {
       if (state.layouts.find((layout) => layout.name === payload.layout.name)) {
         throw new Error(`Layout with name ${payload.layout.name} already exists.`);
       }
@@ -288,18 +344,72 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardConfigDeleteLayoutIntent, (state, { payload }) => {
       const idx = state.layouts.findIndex((layout) => layout.name === payload.name);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.name} does not exist.`);
+      }
       state.layouts.splice(idx || 0, 1);
     })
     .addCase(dashboardConfigRenameLayoutIntent, (state, { payload }) => {
       const idx = state.layouts.findIndex((layout) => layout.name === payload.oldName);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.oldName} does not exist.`);
+      }
       state.layouts[idx].name = payload.newName;
     })
     .addCase(dashboardConfigReplaceLayoutIntent, (state, { payload }) => {
-      state.current = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName) || 0;
+      const idx = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.newLayoutName} does not exist.`);
+      }
+      state.current = idx;
     })
     .addCase(dashboardConfigFavoriteLayoutIntent, (state, { payload }) => {
       const idx = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName);
+      if (idx < 0) {
+        throw new Error(`Layout with name ${payload.newLayoutName} does not exist.`);
+      }
       state.layouts[idx].favorite = !state.layouts[idx].favorite;
+    })
+    .addCase(dashboardConfigCreateTemplateIntent, (state, { payload }) => {
+      const template = payload.template;
+      const idx = state.customTemplates.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
+      if (idx >= 0) {
+        throw new Error(`Template with name ${template.name} and vendor ${template.vendor} already exists.`);
+      }
+      state.customTemplates.push(template);
+    })
+    // template mutations (delete, rename, etc.) should never be called on non-custom templates (vendor !== LayoutTemplateVendor.USER)
+    .addCase(dashboardConfigDeleteTemplateIntent, (state, { payload }) => {
+      const idx = state.customTemplates.findIndex((t) => t.name === payload.name);
+      if (idx < 0) {
+        throw new Error(`Template with name ${payload.name} does not exist.`);
+      }
+      state.customTemplates.splice(idx, 1);
+      const historyIdx = getTemplateHistoryIndexForMutation(state, payload.name);
+      if (historyIdx >= 0) {
+        state.templateHistory.splice(historyIdx, 1);
+      }
+    })
+    // any template type except for the 'Blank' template can be pushed to history
+    .addCase(dashboardConfigTemplateHistoryPushIntent, (state, { payload }) => {
+      // We only push the template name and vendor to the history
+      const template = payload.template;
+      if (template.name === 'Blank' && template.vendor === undefined) {
+        return;
+      }
+      const idx = state.templateHistory.findIndex((t) => t.name === template.name && t.vendor === template.vendor);
+      if (idx >= 0) {
+        state.templateHistory.splice(idx, 1);
+      } else if (state.templateHistory.length >= TEMPLATE_HISTORY_LIMIT) {
+        state.templateHistory.pop();
+      }
+      state.templateHistory.unshift({
+        name: template.name,
+        vendor: template.vendor,
+      } as LayoutTemplateRecord);
+    })
+    .addCase(dashboardConfigTemplateHistoryClearIntent, (state) => {
+      state.templateHistory = [];
     });
 });
 

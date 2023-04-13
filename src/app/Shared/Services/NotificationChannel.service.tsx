@@ -68,6 +68,7 @@ export enum NotificationCategory {
   RuleDeleted = 'RuleDeleted',
   RecordingMetadataUpdated = 'RecordingMetadataUpdated',
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
+  LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
   CredentialsStored = 'CredentialsStored',
@@ -94,6 +95,12 @@ export const messageKeys = new Map([
     NotificationCategory.GrafanaConfiguration,
     {
       title: 'Grafana Configuration',
+    },
+  ],
+  [
+    NotificationCategory.LayoutTemplateCreated,
+    {
+      title: 'Layout Template Created',
     },
   ],
   [

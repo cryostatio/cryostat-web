@@ -51,11 +51,15 @@ export const {
   dashboardConfigReorderCardIntent,
   dashboardConfigResizeCardIntent,
   dashboardConfigFirstRunIntent,
-  dashboardConfigAddLayoutIntent,
+  dashboardConfigCreateLayoutIntent,
   dashboardConfigDeleteLayoutIntent,
   dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
   dashboardConfigFavoriteLayoutIntent,
+  dashboardConfigCreateTemplateIntent,
+  dashboardConfigDeleteTemplateIntent,
+  dashboardConfigTemplateHistoryPushIntent,
+  dashboardConfigTemplateHistoryClearIntent,
 } = dashboardConfigSlice;
 export const {
   recordingAddFilterIntent,

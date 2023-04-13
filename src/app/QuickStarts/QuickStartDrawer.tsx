@@ -120,13 +120,7 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
   return (
     <React.Suspense fallback={<LoadingView />}>
       <QuickStartContext.Provider value={valuesForQuickStartContext}>
-        <QuickStartDrawer
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          {children}
-        </QuickStartDrawer>
+        <QuickStartDrawer>{children}</QuickStartDrawer>
       </QuickStartContext.Provider>
     </React.Suspense>
   );
