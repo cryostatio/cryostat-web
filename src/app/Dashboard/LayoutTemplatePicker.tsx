@@ -372,7 +372,17 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                               .slice(0, CARD_PREVIEW_LIMIT)
                               .filter((cfg) => hasConfigByName(cfg.name))
                               .map((cfg, idx) => (
-                                <GridItem span={numCards === 1 ? 12 : 6} key={idx} order={{ default: idx.toString() }}>
+                                <GridItem
+                                  span={
+                                    numCards === 1 ||
+                                    cfg.name === 'AutomatedAnalysisCard' ||
+                                    cfg.name === 'JvmDetailsCard'
+                                      ? 12
+                                      : 6
+                                  }
+                                  key={idx}
+                                  order={{ default: idx.toString() }}
+                                >
                                   {/* TODO: remove this once we have a preview for JFRMetricsChartCard */}
                                   {cfg.name === 'JFRMetricsChartCard' ? (
                                     <Card isFullHeight isCompact>
@@ -413,7 +423,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                                     <Title headingLevel={'h4'}>Remaining cards ({numCards - CARD_PREVIEW_LIMIT})</Title>
                                   </CardHeader>
                                   <CardBody>
-                                    <List variant={ListVariant.inline} isBordered isPlain>
+                                    <List variant={ListVariant.inline} isPlain>
                                       {selectedTemplate.cards
                                         .slice(CARD_PREVIEW_LIMIT)
                                         .filter((cfg) => hasConfigByName(cfg.name))

@@ -304,6 +304,115 @@ const MemoryMonitoringLayout: LayoutTemplate = {
   version: CURR_VERSION,
 };
 
+const AutomatedAnalysisLayout: LayoutTemplate = {
+  name: 'Automated Analysis',
+  description: 'A layout template for identifying and calculating risk scores for common performance issues in a JVM.',
+  vendor: LayoutTemplateVendor.CRYOSTAT,
+  cards: [
+    {
+      name: 'AutomatedAnalysisCard',
+      span: 7,
+      props: {},
+    },
+    {
+      name: 'JvmDetailsCard',
+      span: 5,
+      props: {},
+    },
+  ],
+  version: CURR_VERSION,
+};
+
+const MBeanMetricsLayout: LayoutTemplate = {
+  name: 'MBean Metrics',
+  description: "A layout template for monitoring some of a JVM's MBean metrics.",
+  vendor: LayoutTemplateVendor.CRYOSTAT,
+  cards: [
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Process CPU Load',
+        duration: 60,
+        period: 10,
+        themeColor: 'Blue',
+      },
+    },
+
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'System Load Average',
+        duration: 60,
+        period: 10,
+        themeColor: 'Cyan',
+      },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'System CPU Load',
+        duration: 60,
+        period: 10,
+        themeColor: 'Gold',
+      },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Heap Usage Percentage',
+        duration: 60,
+        period: 10,
+        themeColor: 'Orange',
+      },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Heap Memory Usage',
+        duration: 60,
+        period: 10,
+        themeColor: 'Gray',
+      },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Non-Heap Memory Usage',
+        duration: 60,
+        period: 10,
+        themeColor: 'Purple',
+      },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Threads',
+        duration: 60,
+        period: 10,
+        themeColor: 'Green',
+      },
+    },
+    {
+      name: 'MBeanMetricsChartCard',
+      span: 4,
+      props: {
+        chartKind: 'Physical Memory',
+        duration: 60,
+        period: 10,
+        themeColor: 'Gold',
+      },
+    },
+  ],
+  version: CURR_VERSION,
+};
+
 const JFRMonitoringLayout: LayoutTemplate = {
   name: 'JFR Monitoring',
   description: "A layout template for monitoring a JVM's JFR events using embedded Grafana charts.",
@@ -475,6 +584,8 @@ const JFRMonitoringLayout: LayoutTemplate = {
 
 export const CryostatLayoutTemplates: LayoutTemplate[] = [
   GeneralLayout,
+  AutomatedAnalysisLayout,
+  MBeanMetricsLayout,
   JFRMonitoringLayout,
   MemoryMonitoringLayout,
   ThreadMonitoringLayout,

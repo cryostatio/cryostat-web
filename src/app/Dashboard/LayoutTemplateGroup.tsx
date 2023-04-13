@@ -147,10 +147,8 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
                         <Label
                           isCompact
                           style={{
-                            marginLeft: '2ch',
                             textTransform: 'capitalize',
-                            paddingTop: '0.125ch',
-                            paddingBottom: '0.125ch',
+                            marginTop: '1.1ch',
                           }}
                           color={level === FeatureLevel.BETA ? 'green' : 'red'}
                         >
