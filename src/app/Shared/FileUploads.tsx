@@ -210,7 +210,7 @@ export const MultiFileUpload: React.FunctionComponent<MultiFileUploadProps> = ({
   );
 
   const onSingleSuccess = React.useCallback(
-    (filename: string, message?: string) => {
+    (filename: string, message?: React.ReactNode) => {
       setFileUploads((old) => {
         const match = old.find((f) => f.file.name === filename);
         if (match) {
