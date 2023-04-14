@@ -261,7 +261,8 @@ export enum AutomatedAnalysisScore {
   RED_SCORE_THRESHOLD = 75,
 }
 
-export const FAILED_REPORT_MESSAGE = 'Failed to load report from snapshot. Request entity too large.';
-export const NO_RECORDINGS_MESSAGE = 'No active or archived recordings available.';
+export const FAILED_REPORT_MESSAGE = 'Failed to load report from recording. Request entity too large.';
+export const NO_RECORDINGS_MESSAGE =
+  'No active or archived recordings available. Please create a recording for analysis.';
 export const RECORDING_FAILURE_MESSAGE = 'Failed to start recording for analysis.';
 export const TEMPLATE_UNSUPPORTED_MESSAGE = 'Template type unsupported on this JVM.';

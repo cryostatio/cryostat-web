@@ -63,7 +63,6 @@ import {
   DashboardLayoutNamePattern,
   DEFAULT_DASHBOARD_NAME,
   layoutize,
-  LayoutTemplate,
   LayoutTemplateContext,
   SelectedLayoutTemplate,
 } from './dashboard-utils';

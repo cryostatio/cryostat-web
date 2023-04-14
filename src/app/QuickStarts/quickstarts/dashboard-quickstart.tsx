@@ -162,7 +162,8 @@ You can rename, delete and quickly switch between **Dashboard Layouts** for diff
 [You can also favorite Dashboard Layouts by clicking on the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown and clicking the Star Icon \`★\` next to the layout you want to favorite. Renaming and deletion can also be done in a similar fashion.]{{admonition tip}}
 `,
         review: {
-          instructions: '#### Verify that you are able to rename, and switch between Dashboard Layouts. Deletion is optional.',
+          instructions:
+            '#### Verify that you are able to rename, and switch between Dashboard Layouts. Deletion is optional.',
           failedTaskHelp: 'Make sure you are clicking the correct actions and buttons.',
         },
       },

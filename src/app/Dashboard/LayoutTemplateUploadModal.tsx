@@ -38,6 +38,7 @@
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover, Text } from '@patternfly/react-core';
@@ -61,7 +62,6 @@ import {
   getDashboardCards,
 } from './dashboard-utils';
 import { smallestFeatureLevel } from './LayoutTemplateGroup';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 
 export interface LayoutTemplateUploadModalProps {
   visible: boolean;
