@@ -270,7 +270,6 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
     <>
       <ReactJoyride
         tooltipComponent={JoyrideTooltip}
-        debug={true}
         callback={callback}
         continuous
         run={run}

@@ -65,6 +65,7 @@ import {
   layoutize,
   LayoutTemplate,
   LayoutTemplateContext,
+  SelectedLayoutTemplate,
 } from './dashboard-utils';
 import { LayoutTemplatePicker } from './LayoutTemplatePicker';
 
@@ -130,10 +131,10 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       ev && ev.stopPropagation();
       if (nameValidated === ValidatedOptions.success && selectedTemplate) {
         if (isCreateModal) {
-          const newLayout = layoutize(selectedTemplate, name);
+          const newLayout = layoutize(selectedTemplate.template, name);
           dispatch(dashboardConfigCreateLayoutIntent(newLayout));
-          if (selectedTemplate !== BlankLayout) {
-            dispatch(dashboardConfigTemplateHistoryPushIntent(selectedTemplate));
+          if (selectedTemplate.template !== BlankLayout) {
+            dispatch(dashboardConfigTemplateHistoryPushIntent(selectedTemplate.template));
           }
           dispatch(dashboardConfigReplaceLayoutIntent(newLayout.name));
         } else {
@@ -158,7 +159,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   );
 
   const onTemplateSelect = React.useCallback(
-    (template: LayoutTemplate) => {
+    (template: SelectedLayoutTemplate) => {
       setSelectedTemplate(template);
     },
     [setSelectedTemplate]

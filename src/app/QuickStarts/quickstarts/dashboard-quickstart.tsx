@@ -157,13 +157,12 @@ To create a card, we will go through a **creation wizard** that will guide us th
 You can rename, delete and quickly switch between **Dashboard Layouts** for different sets of information about the target JVMs. Customize these layouts to suit your needs!
 1. Rename the current Dashboard Layout by clicking the [Pencil icon]{{highlight dashboard-rename-btn}} on the **Layout Selector** toolbar.
 2. To switch between Dashboard Layouts, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and select the \`Default\` layout.
-3. Delete the current Dashboard Layout by clicking [Delete]{{highlight dashboard-delete-btn}} on the **Layout Selector** toolbar.
+3. Note that you are also able to delete Dashboard layouts by clicking the [Trash icon]{{highlight dashboard-delete-btn}} on the **Layout Selector** toolbar. You cannot delete the \`Default\` layout.
 
-   Note that you cannot delete the \`Default\` layout. Try deleting the \`Custom1\` layout that you created earlier.
 [You can also favorite Dashboard Layouts by clicking on the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown and clicking the Star Icon \`★\` next to the layout you want to favorite. Renaming and deletion can also be done in a similar fashion.]{{admonition tip}}
 `,
         review: {
-          instructions: '#### Verify that you are able to rename, delete, and switch between Dashboard Layouts.',
+          instructions: '#### Verify that you are able to rename, and switch between Dashboard Layouts. Deletion is optional.',
           failedTaskHelp: 'Make sure you are clicking the correct actions and buttons.',
         },
       },

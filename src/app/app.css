@@ -626,6 +626,11 @@ svg.topology__node-decorator-icon.progress {
   height: 100%
 }
 
+.pf-c-drawer__panel.pf-m-resizable.layout-template-picker-drawer__panel {
+  transition-duration: 0s;
+  transition-property: none;
+}
+
 :is(.pf-theme-dark) #dashboard-layout-preview-grid {
   background-color: var(--pf-global--palette--black-700);
 }

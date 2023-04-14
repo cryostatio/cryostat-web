@@ -40,7 +40,7 @@ import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover, Text } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +60,8 @@ import {
   mockSerialLayoutTemplate,
   getDashboardCards,
 } from './dashboard-utils';
+import { smallestFeatureLevel } from './LayoutTemplateGroup';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 
 export interface LayoutTemplateUploadModalProps {
   visible: boolean;
@@ -175,7 +177,18 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
             concatMap((template) => {
               try {
                 dispatch(dashboardConfigCreateTemplateIntent(template));
-                onSingleSuccess(fileUpload.file.name);
+                const cardLevel = smallestFeatureLevel(template.cards);
+                if (cardLevel <= FeatureLevel.BETA) {
+                  onSingleSuccess(
+                    fileUpload.file.name,
+                    <Text component="p" style={{ color: 'var(--pf-global--warning-color--200)' }}>
+                      Warning: To see this template in the template picker, make sure the Cryostat Feature Level is set
+                      to BETA.
+                    </Text>
+                  );
+                } else {
+                  onSingleSuccess(fileUpload.file.name);
+                }
                 return of(template);
               } catch (err) {
                 // template name already taken from previous upload
@@ -202,7 +215,10 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
             setAllOks(oks.every((o) => o !== null));
             const validLayouts = oks.filter((o) => o !== null) as LayoutTemplate[];
             if (validLayouts.length > 0) {
-              setSelectedTemplate(validLayouts[0]);
+              setSelectedTemplate({
+                template: validLayouts[0],
+                category: 'User-submitted',
+              });
             }
           })
       );
