@@ -43,7 +43,7 @@ import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelField
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { RecordingOptions, RecordingAttributes, TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { isTargetAgentHttp, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
@@ -71,7 +71,7 @@ import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
-import { concatMap, first, filter } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {
@@ -303,38 +303,33 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
     handleCreateRecording,
   ]);
 
-  const refreshFormOptions = React.useCallback(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => target !== NO_TARGET),
-          first(),
-          concatMap((target) =>
-            forkJoin({
-              templates: context.api.doGet<EventTemplate[]>(
-                `targets/${encodeURIComponent(target.connectUrl)}/templates`
-              ),
-              recordingOptions: context.api.doGet<RecordingOptions>(
-                `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`
-              ),
-            })
-          )
-        )
-        .subscribe({
+  const refreshFormOptions = React.useCallback(
+    (target: Target) => {
+      if (target === NO_TARGET) {
+        return;
+      }
+      addSubscription(
+        forkJoin({
+          templates: context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
+          recordingOptions: context.api.doGet<RecordingOptions>(
+            `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`
+          ),
+        }).subscribe({
           next: (formOptions) => {
             setErrorMessage('');
             setTemplates(formOptions.templates);
             setRecordingOptions(formOptions.recordingOptions);
           },
           error: (error) => {
-            setErrorMessage(error.message); // If both throw, first error will be shown
+            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create Recordings' : error.message); // If both throw, first error will be shown
             setTemplates([]);
             setRecordingOptions({});
           },
         })
-    );
-  }, [addSubscription, context.target, context.api, setTemplates, setRecordingOptions, setErrorMessage]);
+      );
+    },
+    [addSubscription, context.api, setTemplates, setRecordingOptions, setErrorMessage]
+  );
 
   React.useEffect(() => {
     addSubscription(
