@@ -12,11 +12,6 @@
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
   },
-  "AllPlaceholderCard": {
-    "CARD_DESCRIPTION": "All placeholder",
-    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with all the config.",
-    "CARD_TITLE": "All Placeholder"
-  },
   "AppLayout": {
     "APP_LAUNCHER": {
       "ABOUT": "About",
@@ -151,6 +146,7 @@
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your dashboard. Some cards require additional configuration.",
     "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
     "CARD_CATALOG_TITLE": "Dashboard Card Catalog",
+    "INVALID_CARD_CONFIGURATIONS": "Invalid Card Configurations",
     "PAGE_TITLE": "Dashboard"
   },
   "DashboardCardActionMenu": {
@@ -271,11 +267,6 @@
     "ARIA_LABELS": {
       "LISTBOX": "Select AM or PM"
     }
-  },
-  "NonePlaceholderCard": {
-    "CARD_DESCRIPTION": "None placeholder",
-    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config.",
-    "CARD_TITLE": "None Placeholder"
   },
   "QuickStarts": {
     "CATALOG_PAGE": {

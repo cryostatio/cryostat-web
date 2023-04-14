@@ -38,13 +38,21 @@
 
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import cryostatLogoDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
+import { dashboardConfigDeleteCardIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { withThemedIcon } from '@app/utils/withThemedIcon';
-import { LabelProps, gridSpans } from '@patternfly/react-core';
+import { LabelProps, gridSpans, Button, ButtonVariant } from '@patternfly/react-core';
 import { FileIcon, UnknownIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
+import { TFunction } from 'i18next';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { Observable } from 'rxjs';
+import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
+import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
+import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
@@ -169,13 +177,182 @@ export const recordToLayoutTemplate = (
 };
 
 export const getUniqueIncrementingName = (init = 'Custom', names: string[]): string => {
-  let name;
+  let name: string;
   let i = 1;
   do {
     name = `${init}${i}`;
     i++;
   } while (names.includes(name));
   return name;
+};
+
+export function hasCardDescriptorByName(name: string): boolean {
+  for (const choice of getDashboardCards()) {
+    if (choice.component.name === name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function getCardDescriptorByName(name: string): DashboardCardDescriptor {
+  for (const choice of getDashboardCards()) {
+    if (choice.component.name === name) {
+      return choice;
+    }
+  }
+  throw new Error(`Unknown card type selection: ${name}`);
+}
+
+export function hasCardDescriptorByTitle(title: string, t: TFunction): boolean {
+  for (const choice of getDashboardCards()) {
+    if (t(choice.title) === title) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function getCardDescriptorByTitle(title: string, t: TFunction): DashboardCardDescriptor {
+  for (const choice of getDashboardCards()) {
+    if (t(choice.title) === title) {
+      return choice;
+    }
+  }
+  throw new Error(`Unknown card type selection: ${title}`);
+}
+
+export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
+  featureLevel = FeatureLevel.DEVELOPMENT
+) => {
+  const cards = [
+    JvmDetailsCardDescriptor,
+    AutomatedAnalysisCardDescriptor,
+    JFRMetricsChartCardDescriptor,
+    MBeanMetricsChartCardDescriptor,
+  ];
+  return cards.filter((card) => card.featureLevel >= featureLevel);
+};
+
+interface ValidationError {
+  message: React.ReactNode;
+}
+
+export interface CardValidationResult {
+  errors: ValidationError[];
+  callForAction?: React.ReactNode;
+}
+
+export const RemoveCardAction: React.FC<{ cardIndex: number }> = ({ cardIndex }) => {
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+
+  const handleClick = React.useCallback(() => {
+    dispatch(dashboardConfigDeleteCardIntent(cardIndex));
+  }, [dispatch, cardIndex]);
+
+  return (
+    <Button onClick={handleClick} variant={ButtonVariant.danger}>
+      {t('REMOVE', { ns: 'common' })}
+    </Button>
+  );
+};
+
+export const validateCardConfig = ({ name, props }: CardConfig, cardIndex: number): CardValidationResult => {
+  // Unsupported card type
+  if (!hasCardDescriptorByName(name)) {
+    return {
+      errors: [
+        {
+          message: (
+            <>
+              Unknown card type: <code>{name}</code>.
+            </>
+          ),
+        },
+      ],
+      callForAction: <RemoveCardAction cardIndex={cardIndex} />,
+    };
+  }
+
+  const errs: ValidationError[] = [];
+
+  const { propControls } = getCardDescriptorByName(name);
+  const configPropKeys = Object.entries(props);
+
+  // Missing props
+  propControls
+    .map((ctrl) => ctrl.key)
+    .forEach((propKey) => {
+      const matched = configPropKeys.find(([key, _]) => key === propKey);
+      if (!matched) {
+        errs.push({
+          message: (
+            <>
+              Missing card property: <code>{propKey}</code>.
+            </>
+          ),
+        });
+      }
+    });
+
+  // Invalid prop valies
+  configPropKeys.forEach(([propKey, propValue]) => {
+    const matched = propControls.find((crtl) => crtl.key === propKey);
+    if (matched) {
+      const { values, extras } = matched;
+      // FIXME: Check dynamic values
+      let err: ValidationError | undefined;
+      if (propValue === undefined || propValue === null) {
+        err = {
+          message: (
+            <>
+              Undefined value for card property: <code>{propKey}</code>
+            </>
+          ),
+        };
+      } else if (values && Array.isArray(values) && !values.some((v) => v === propValue)) {
+        err = {
+          message: (
+            <>
+              Invalid value <code>{propValue}</code> for card property: <code>{propKey}</code>.
+            </>
+          ),
+        };
+      } else if (extras) {
+        const valAsNum = Number(propValue);
+        if (isNaN(valAsNum)) {
+          err = {
+            message: (
+              <>
+                Numeric value expected but <code>{typeof propValue}</code> was given for: <>{propKey}</>.
+              </>
+            ),
+          };
+        } else {
+          if (
+            (extras.min !== undefined && valAsNum < extras.min) ||
+            (extras.max !== undefined && valAsNum > extras.max)
+          ) {
+            err = {
+              message: (
+                <>
+                  Value exceeding limit for card property: <code>{propKey}</code>.
+                </>
+              ),
+            };
+          }
+        }
+      }
+      err && errs.push(err);
+    }
+    // Unknown props are ignored
+  });
+
+  return {
+    errors: errs,
+    callForAction: errs.length ? <RemoveCardAction cardIndex={cardIndex} /> : undefined,
+  };
 };
 
 /* CARD SECTION */
@@ -209,6 +386,13 @@ export interface DashboardCardDescriptor {
   advancedConfig?: JSX.Element;
 }
 
+export interface PropControlExtra {
+  min?: number;
+  max?: number;
+  [key: string]: any;
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export interface PropControl {
   name: string;
   key: string;
@@ -216,9 +400,8 @@ export interface PropControl {
   kind: 'boolean' | 'number' | 'string' | 'text' | 'select';
   values?: any[] | Observable<any>;
   defaultValue: any;
-  extras?: any;
+  extras?: PropControlExtra;
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface DashboardCardTypeProps {
   span: number;

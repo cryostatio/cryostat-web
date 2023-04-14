@@ -48,221 +48,19 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { CardActions, CardBody, CardHeader, Grid, GridItem, Text } from '@patternfly/react-core';
-import { ResourcesAlmostEmptyIcon, ResourcesFullIcon } from '@patternfly/react-icons';
-import { TFunction } from 'i18next';
+import { Grid, GridItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
-import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { ChartContext } from './Charts/ChartContext';
-import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { JFRMetricsChartController } from './Charts/jfr/JFRMetricsChartController';
-import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
-import { DashboardCardDescriptor, DashboardCardTypeProps, DashboardCardSizes } from './dashboard-utils';
-import { DashboardCard } from './DashboardCard';
+import { getCardDescriptorByName, validateCardConfig } from './dashboard-utils';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { DashboardLayoutToolbar } from './DashboardLayoutToolbar';
-import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
-
-// TODO remove this
-const PLACEHOLDER_CARD_SIZE = {
-  span: {
-    minimum: 1,
-    default: 3,
-    maximum: 6,
-  },
-  height: {
-    minimum: Number.NaN,
-    default: Number.NaN,
-    maximum: Number.NaN,
-  },
-} as DashboardCardSizes;
-
-const PlaceholderCard: React.FunctionComponent<
-  {
-    title: string;
-    message: string;
-    count: number;
-    toggleswitch: boolean;
-    menu: string;
-    asyncmenu: string;
-    asyncmenu2: string;
-  } & DashboardCardTypeProps
-> = (props) => {
-  return (
-    <DashboardCard
-      dashboardId={props.dashboardId}
-      cardSizes={PLACEHOLDER_CARD_SIZE}
-      cardHeader={
-        <CardHeader>
-          <CardActions>{...props.actions || []}</CardActions>
-        </CardHeader>
-      }
-    >
-      <CardBody>
-        <Text>title: {props.title}</Text>
-        <Text>message: {props.message}</Text>
-        <Text>count: {props.count}</Text>
-        <Text>toggle: {String(props.toggleswitch)}</Text>
-        <Text>menu: {props.menu}</Text>
-        <Text>asyncmenu: {props.asyncmenu}</Text>
-        <Text>asyncmenus: {props.asyncmenu2}</Text>
-      </CardBody>
-    </DashboardCard>
-  );
-};
-
-export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.DEVELOPMENT,
-  title: 'NonePlaceholderCard.CARD_TITLE',
-  cardSizes: PLACEHOLDER_CARD_SIZE,
-  description: 'NonePlaceholderCard.CARD_DESCRIPTION',
-  descriptionFull: 'NonePlaceholderCard.CARD_DESCRIPTION_FULL',
-  component: PlaceholderCard,
-  labels: [
-    {
-      content: 'Dev',
-      color: 'red',
-    },
-  ],
-  propControls: [],
-  icon: <ResourcesAlmostEmptyIcon />,
-} as DashboardCardDescriptor;
-
-export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.DEVELOPMENT,
-  title: 'AllPlaceholderCard.CARD_TITLE',
-  cardSizes: PLACEHOLDER_CARD_SIZE,
-  description: 'AllPlaceholderCard.CARD_DESCRIPTION',
-  descriptionFull: 'AllPlaceholderCard.CARD_DESCRIPTION_FULL',
-  component: PlaceholderCard,
-  labels: [
-    {
-      content: 'Dev',
-      color: 'red',
-    },
-  ],
-  propControls: [
-    {
-      name: 'string',
-      key: 'title',
-      defaultValue: 'a short text',
-      description: 'a string input',
-      kind: 'string',
-    },
-    {
-      name: 'text',
-      key: 'message',
-      defaultValue: 'a long text',
-      description: 'a text input',
-      kind: 'text',
-    },
-    {
-      name: 'menu select',
-      key: 'menu',
-      values: ['choices', 'options'],
-      defaultValue: '',
-      description: 'a selection menu',
-      kind: 'select',
-    },
-    {
-      name: 'menu select 2',
-      key: 'asyncmenu',
-      values: new Observable((subscriber) => {
-        let count = 0;
-        const id = setInterval(() => {
-          if (count > 2) {
-            clearInterval(id);
-            setTimeout(() => subscriber.error('Timed Out'), 5000);
-          }
-          subscriber.next(`async ${count++}`);
-        }, 1000);
-      }),
-      defaultValue: '',
-      description: 'an async stream selection menu',
-      kind: 'select',
-    },
-    {
-      name: 'menu select 3',
-      key: 'asyncmenu2',
-      values: of(['arr1', 'arr2', 'arr3']),
-      defaultValue: '',
-      description: 'an async array selection menu',
-      kind: 'select',
-    },
-    {
-      name: 'a switch',
-      key: 'toggleswitch',
-      defaultValue: false,
-      description: 'a boolean input',
-      kind: 'boolean',
-    },
-    {
-      name: 'numeric spinner input',
-      key: 'count',
-      defaultValue: 5,
-      description: 'a number input',
-      kind: 'number',
-    },
-  ],
-  advancedConfig: <Text>This is an advanced configuration component</Text>,
-  icon: <ResourcesFullIcon />,
-} as DashboardCardDescriptor;
-
-export function hasConfigByName(name: string): boolean {
-  for (const choice of getDashboardCards()) {
-    if (choice.component.name === name) {
-      return true;
-    }
-  }
-  return false;
-}
-
-export function getConfigByName(name: string): DashboardCardDescriptor {
-  for (const choice of getDashboardCards()) {
-    if (choice.component.name === name) {
-      return choice;
-    }
-  }
-  throw new Error(`Unknown card type selection: ${name}`);
-}
-
-export function hasConfigByTitle(title: string, t: TFunction): boolean {
-  for (const choice of getDashboardCards()) {
-    if (t(choice.title) === title) {
-      return true;
-    }
-  }
-  return false;
-}
-
-export function getConfigByTitle(title: string, t: TFunction): DashboardCardDescriptor {
-  for (const choice of getDashboardCards()) {
-    if (t(choice.title) === title) {
-      return choice;
-    }
-  }
-  throw new Error(`Unknown card type selection: ${title}`);
-}
-
-export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
-  featureLevel = FeatureLevel.DEVELOPMENT
-) => {
-  const cards = [
-    JvmDetailsCardDescriptor,
-    AutomatedAnalysisCardDescriptor,
-    JFRMetricsChartCardDescriptor,
-    MBeanMetricsChartCardDescriptor,
-    NonePlaceholderCardDescriptor,
-    AllPlaceholderCardDescriptor,
-  ];
-  return cards.filter((card) => card.featureLevel >= featureLevel);
-};
+import { ErrorCard } from './ErrorCard';
 
 export interface DashboardComponentProps {}
 
@@ -320,7 +118,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
 
   const handleResetSize = React.useCallback(
     (idx: number) => {
-      const defaultSpan = getConfigByName(currLayout.cards[idx].name).cardSizes.span.default;
+      const defaultSpan = getCardDescriptorByName(currLayout.cards[idx].name).cardSizes.span.default;
       if (defaultSpan === currLayout.cards[idx].span) {
         return;
       }
@@ -338,27 +136,39 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
           <AddCard variant="card" />
         ) : (
           <Grid id={'dashboard-grid'} hasGutter>
-            {currLayout.cards
-              .filter((cfg) => hasConfigByName(cfg.name))
-              .map((cfg, idx) => (
-                <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
+            {currLayout.cards.map((cfg, idx) => {
+              const result = validateCardConfig(cfg, idx);
+              const invalid = result.errors && result.errors.length;
+
+              const content = invalid ? (
+                <ErrorCard validationResult={result} cardConfig={cfg} dashboardId={idx} actions={[]} span={cfg.span} />
+              ) : (
+                React.createElement(getCardDescriptorByName(cfg.name).component, {
+                  span: cfg.span,
+                  ...cfg.props,
+                  dashboardId: idx,
+                  actions: [
+                    <DashboardCardActionMenu
+                      key={`${cfg.name}-actions`}
+                      onRemove={() => handleRemove(idx)}
+                      onResetSize={() => handleResetSize(idx)}
+                      onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
+                    />,
+                  ],
+                })
+              );
+
+              // Always show invalid cards
+              const featureLevel = invalid ? FeatureLevel.PRODUCTION : getCardDescriptorByName(cfg.name).featureLevel;
+
+              return (
+                <FeatureFlag level={featureLevel} key={`${cfg.id}-wrapper`}>
                   <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-                    {React.createElement(getConfigByName(cfg.name).component, {
-                      span: cfg.span,
-                      ...cfg.props,
-                      dashboardId: idx,
-                      actions: [
-                        <DashboardCardActionMenu
-                          key={`${cfg.name}-actions`}
-                          onRemove={() => handleRemove(idx)}
-                          onResetSize={() => handleResetSize(idx)}
-                          onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
-                        />,
-                      ],
-                    })}
+                    {content}
                   </GridItem>
                 </FeatureFlag>
-              ))}
+              );
+            })}
           </Grid>
         )}
       </ChartContext.Provider>

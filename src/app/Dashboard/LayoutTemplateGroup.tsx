@@ -54,7 +54,6 @@ import {
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { getConfigByName } from './Dashboard';
 import {
   CardConfig,
   iconify,
@@ -62,6 +61,7 @@ import {
   LayoutTemplateContext,
   LayoutTemplateVendor,
   SerialCardConfig,
+  getCardDescriptorByName,
 } from './dashboard-utils';
 
 export interface LayoutTemplateGroupProps {
@@ -73,7 +73,7 @@ export interface LayoutTemplateGroupProps {
 
 export const smallestFeatureLevel = (cards: SerialCardConfig[]): FeatureLevel => {
   return cards.reduce((minFeatureLevel: FeatureLevel, card: CardConfig) => {
-    const featureLevel = getConfigByName(card.name).featureLevel;
+    const featureLevel = getCardDescriptorByName(card.name).featureLevel;
     return Math.min(minFeatureLevel, featureLevel);
   }, FeatureLevel.PRODUCTION);
 };

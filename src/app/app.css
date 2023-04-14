@@ -711,3 +711,13 @@ svg.topology__node-decorator-icon.progress {
   width: 100%;
   top: -2em;
 }
+
+.configuration-error-list code {
+  background-color: var(--pf-global--palette--black-300);
+  padding: 0.2em;
+  border-radius: 4px;
+}
+
+:is(.pf-theme-dark) .configuration-error-list code {
+  background-color: var(--pf-global--palette--black-600);
+}

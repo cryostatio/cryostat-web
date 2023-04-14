@@ -47,7 +47,6 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
-import { getDashboardCards } from './Dashboard';
 import {
   DashboardLayoutNamePattern,
   LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
@@ -59,6 +58,7 @@ import {
   SerialLayoutTemplate,
   mockSerialCardConfig,
   mockSerialLayoutTemplate,
+  getDashboardCards,
 } from './dashboard-utils';
 
 export interface LayoutTemplateUploadModalProps {
