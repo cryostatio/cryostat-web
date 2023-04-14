@@ -104,6 +104,11 @@ export interface LayoutTemplate {
   vendor: LayoutTemplateVendor;
 }
 
+export interface SelectedLayoutTemplate {
+  template: LayoutTemplate;
+  category: LayoutTemplateFilter;
+}
+
 export type SerialLayoutTemplate = Omit<LayoutTemplate, 'vendor'>;
 
 export const mockSerialLayoutTemplate: SerialLayoutTemplate = {
@@ -113,9 +118,11 @@ export const mockSerialLayoutTemplate: SerialLayoutTemplate = {
   version: LayoutTemplateVersion['v2.3'],
 };
 
+export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
+
 export interface LayoutTemplateController {
-  selectedTemplate: LayoutTemplate | undefined;
-  setSelectedTemplate: (template: React.SetStateAction<LayoutTemplate | undefined>) => void;
+  selectedTemplate: SelectedLayoutTemplate | undefined;
+  setSelectedTemplate: (template: React.SetStateAction<SelectedLayoutTemplate | undefined>) => void;
   isUploadModalOpen: boolean;
   setIsUploadModalOpen: (isOpen: React.SetStateAction<boolean>) => void;
 }

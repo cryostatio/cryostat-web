@@ -59,15 +59,17 @@ import {
   iconify,
   LayoutTemplate,
   LayoutTemplateContext,
+  LayoutTemplateFilter,
   LayoutTemplateVendor,
+  SelectedLayoutTemplate,
   SerialCardConfig,
   getCardDescriptorByName,
 } from './dashboard-utils';
 
 export interface LayoutTemplateGroupProps {
-  title: string;
+  title: LayoutTemplateFilter;
   templates: LayoutTemplate[];
-  onTemplateSelect: (templateName: LayoutTemplate) => void;
+  onTemplateSelect: (template: SelectedLayoutTemplate) => void;
   onTemplateDelete: (templateName: string) => void;
 }
 
@@ -86,14 +88,17 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
-  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const handleTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
-      setSelectedTemplate(template);
-      onTemplateSelect(template);
+      const selected = {
+        template: template,
+        category: props.title,
+      } as SelectedLayoutTemplate;
+      setSelectedTemplate(selected);
+      onTemplateSelect(selected);
     },
-    [setSelectedTemplate, onTemplateSelect]
+    [setSelectedTemplate, onTemplateSelect, props.title]
   );
 
   const handleClearRecent = React.useCallback(() => {
@@ -125,15 +130,23 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
           return (
             <div
               key={template.name}
-              ref={scrollRef}
               className={
-                selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor
+                // make sure the selected template that is **clicked** is highlighted and not any copies that may be in other categories (i.e. suggested)
+                selectedTemplate &&
+                selectedTemplate.template.name === template.name &&
+                selectedTemplate.template.vendor == template.vendor &&
+                selectedTemplate.category == props.title
                   ? 'layout-template-card__featured'
                   : undefined
               }
             >
               <CatalogTile
-                featured={selectedTemplate?.name === template.name && selectedTemplate.vendor == template.vendor}
+                featured={
+                  selectedTemplate &&
+                  selectedTemplate.template.name === template.name &&
+                  selectedTemplate.template.vendor == template.vendor &&
+                  selectedTemplate.category == props.title
+                }
                 id={template.name}
                 key={template.name}
                 icon={iconify(template.vendor)}
@@ -154,11 +167,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
                       {FeatureLevel[level].toLowerCase()}
                     </Label>
                   ),
-                  <KebabCatalogTileBadge
-                    template={template}
-                    onTemplateDelete={onTemplateDelete}
-                    key={template.name + '-kebab'}
-                  />,
+                  <KebabCatalogTileBadge template={template} onTemplateDelete={onTemplateDelete} key={template.name} />,
                 ]}
               >
                 {template.description}

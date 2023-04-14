@@ -85,8 +85,8 @@ import {
   DashboardLayout,
   DEFAULT_DASHBOARD_NAME,
   getUniqueIncrementingName,
-  LayoutTemplate,
   LayoutTemplateContext,
+  SelectedLayoutTemplate,
 } from './dashboard-utils';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutSetAsTemplateModal } from './DashboardLayoutSetAsTemplateModal';
@@ -96,13 +96,21 @@ export interface DashboardLayoutToolbarProps {
   children?: React.ReactNode;
 }
 
+const DefaultSelectedTemplate: SelectedLayoutTemplate = {
+  template: BlankLayout,
+  category: 'Suggested',
+};
+
 export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutToolbarProps> = (_props) => {
   const dispatch = useDispatch<StateDispatch>();
   const context = React.useContext(ServiceContext);
   const { t } = useTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
 
-  const [selectedTemplate, setSelectedTemplate] = React.useState<LayoutTemplate>(BlankLayout);
+  const [selectedTemplate, setSelectedTemplate] = React.useState<SelectedLayoutTemplate>({
+    template: BlankLayout,
+    category: 'Suggested',
+  });
 
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
 
@@ -145,13 +153,14 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       setOldName(undefined);
       setIsCreateModalOpen(true);
       setIsSelectorOpen(false);
+      setSelectedTemplate(DefaultSelectedTemplate);
     },
     [setOldName, setIsCreateModalOpen, setIsSelectorOpen]
   );
 
   const handleCreateModalClose = React.useCallback(() => {
     setIsCreateModalOpen(false);
-    setSelectedTemplate(BlankLayout);
+    setSelectedTemplate(DefaultSelectedTemplate);
   }, [setIsCreateModalOpen, setSelectedTemplate]);
 
   const handleDeleteWarningModalOpen = React.useCallback(
@@ -214,9 +223,10 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       } else {
         console.error('layout not found ' + itemId);
       }
+      setIsSelectorOpen(false);
       onFocus();
     },
-    [dispatch, onFocus, dashboardConfigs]
+    [dispatch, setIsSelectorOpen, onFocus, dashboardConfigs]
   );
 
   const onActionClick = React.useCallback(
@@ -468,7 +478,7 @@ export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutTool
       if (isDeleteWarningModalOpen || isCreateModalOpen || isUploadModalOpen) {
         return;
       }
-      setIsSelectorOpen(false);
+      setIsSelectorOpen(_isOpen);
     },
     [setIsSelectorOpen, isDeleteWarningModalOpen, isCreateModalOpen, isUploadModalOpen]
   );

@@ -629,9 +629,7 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
     >
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
-        : [<SelectOption key={0} value={'None'} isPlaceholder />].concat(
-            options.map((choice, idx) => <SelectOption key={idx + 1} value={choice} />)
-          )}
+        : options.map((choice, idx) => <SelectOption key={idx + 1} value={choice} />)}
     </Select>
   );
 };

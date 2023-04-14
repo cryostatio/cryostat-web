@@ -58,13 +58,13 @@ export interface FUpload {
     progressValue: number;
     progressVariant: ProgressVariant;
   };
-  helperText?: string;
+  helperText?: React.ReactNode;
   error?: Error; // error.message take precedence over helperText
 }
 
 export interface UploadCallbacks {
   getProgressUpdateCallback: (filename: string) => (progress: number | string) => void;
-  onSingleSuccess: (filename: string) => void;
+  onSingleSuccess: (filename: string, message?: React.ReactNode) => void;
   onSingleFailure: (filename: string, error: Error) => void;
 }
 
@@ -210,7 +210,7 @@ export const MultiFileUpload: React.FunctionComponent<MultiFileUploadProps> = ({
   );
 
   const onSingleSuccess = React.useCallback(
-    (filename: string) => {
+    (filename: string, message?: React.ReactNode) => {
       setFileUploads((old) => {
         const match = old.find((f) => f.file.name === filename);
         if (match) {
@@ -222,6 +222,7 @@ export const MultiFileUpload: React.FunctionComponent<MultiFileUploadProps> = ({
                 progressValue: 100,
                 progressVariant: 'success',
               },
+              helperText: message,
             } as FUpload,
           ];
         }

@@ -104,13 +104,13 @@ import {
   hasCardDescriptorByName,
   LayoutTemplate,
   LayoutTemplateContext,
+  LayoutTemplateFilter,
   LayoutTemplateRecord,
+  SelectedLayoutTemplate,
   recordToLayoutTemplate,
 } from './dashboard-utils';
 import { LayoutTemplateGroup, smallestFeatureLevel } from './LayoutTemplateGroup';
 import { SearchAutocomplete } from './SearchAutocomplete';
-
-export type LayoutTemplateFilter = 'Suggested' | 'Cryostat' | 'User-submitted';
 
 export enum LayoutTemplateSort {
   NAME = 'Name',
@@ -121,7 +121,7 @@ export enum LayoutTemplateSort {
 const CARD_PREVIEW_LIMIT = 16;
 
 export interface LayoutTemplatePickerProps {
-  onTemplateSelect: (templateName: LayoutTemplate) => void;
+  onTemplateSelect: (selectedTemplate: SelectedLayoutTemplate) => void;
 }
 
 export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTemplateSelect }) => {
@@ -170,7 +170,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [searchFilteredTemplates, allTemplates]);
 
   const onInnerTemplateSelect = React.useCallback(
-    (template: LayoutTemplate) => {
+    (template: SelectedLayoutTemplate) => {
       onTemplateSelect(template);
       setSelectedTemplate(template);
       setIsDrawerExpanded(true);
@@ -182,7 +182,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     (name) => {
       dispatch(dashboardConfigDeleteTemplateIntent(name));
       setSelectedTemplate((prev) => {
-        if (prev?.name === name) {
+        if (prev?.template.name === name) {
           return undefined;
         }
         return prev;
@@ -325,35 +325,36 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [setIsDrawerExpanded]);
 
   const panelContent = React.useMemo(() => {
-    const numCards = selectedTemplate?.cards.length ?? 0;
+    const template = selectedTemplate?.template;
+    const numCards = template?.cards.length ?? 0;
     return (
-      <DrawerPanelContent isResizable defaultSize="50%">
+      <DrawerPanelContent isResizable defaultSize="50%" className={'layout-template-picker-drawer__panel'}>
         <DrawerHead>
           <DrawerActions>
             <DrawerCloseButton onClick={onDrawerCloseClick} />
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody style={{ marginTop: '-3.5em' }}>
-          {selectedTemplate ? (
+          {template ? (
             <DescriptionList isFillColumns>
               <DescriptionListGroup>
                 <DescriptionListTerm>Name</DescriptionListTerm>
-                <DescriptionListDescription>{selectedTemplate?.name}</DescriptionListDescription>
+                <DescriptionListDescription>{template.name}</DescriptionListDescription>
               </DescriptionListGroup>
               <DescriptionListGroup>
                 <DescriptionListTerm>Description</DescriptionListTerm>
-                <DescriptionListDescription>{selectedTemplate?.description}</DescriptionListDescription>
+                <DescriptionListDescription>{template.description}</DescriptionListDescription>
               </DescriptionListGroup>
-              {selectedTemplate?.vendor && (
+              {template.vendor && (
                 <DescriptionListGroup>
                   <DescriptionListTerm>Vendor</DescriptionListTerm>
-                  <DescriptionListDescription>{selectedTemplate.vendor}</DescriptionListDescription>
+                  <DescriptionListDescription>{template.vendor}</DescriptionListDescription>
                 </DescriptionListGroup>
               )}
-              {selectedTemplate?.version && (
+              {template?.version && (
                 <DescriptionListGroup>
                   <DescriptionListTerm>Version</DescriptionListTerm>
-                  <DescriptionListDescription>{selectedTemplate.version}</DescriptionListDescription>
+                  <DescriptionListDescription>{template.version}</DescriptionListDescription>
                 </DescriptionListGroup>
               )}
               <DescriptionListGroup>
@@ -375,7 +376,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                           </EmptyState>
                         ) : (
                           <>
-                            {selectedTemplate.cards
+                            {template.cards
                               .slice(0, CARD_PREVIEW_LIMIT)
                               .filter((cfg) => hasCardDescriptorByName(cfg.name))
                               .map((cfg, idx) => (
@@ -431,7 +432,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                                   </CardHeader>
                                   <CardBody>
                                     <List variant={ListVariant.inline} isPlain>
-                                      {selectedTemplate.cards
+                                      {template.cards
                                         .slice(CARD_PREVIEW_LIMIT)
                                         .filter((cfg) => hasCardDescriptorByName(cfg.name))
                                         .map((cfg, idx) => {
