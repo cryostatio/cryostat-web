@@ -53,7 +53,6 @@ import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAn
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
-import { NonePlaceholderCardDescriptor, AllPlaceholderCardDescriptor } from './PlaceHolderCard';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
@@ -231,8 +230,6 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     AutomatedAnalysisCardDescriptor,
     JFRMetricsChartCardDescriptor,
     MBeanMetricsChartCardDescriptor,
-    NonePlaceholderCardDescriptor,
-    AllPlaceholderCardDescriptor,
   ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };

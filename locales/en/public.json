@@ -12,11 +12,6 @@
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
   },
-  "AllPlaceholderCard": {
-    "CARD_DESCRIPTION": "All placeholder",
-    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with all the config.",
-    "CARD_TITLE": "All Placeholder"
-  },
   "AppLayout": {
     "APP_LAUNCHER": {
       "ABOUT": "About",
@@ -272,11 +267,6 @@
     "ARIA_LABELS": {
       "LISTBOX": "Select AM or PM"
     }
-  },
-  "NonePlaceholderCard": {
-    "CARD_DESCRIPTION": "None placeholder",
-    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config.",
-    "CARD_TITLE": "None Placeholder"
   },
   "QuickStarts": {
     "CATALOG_PAGE": {
