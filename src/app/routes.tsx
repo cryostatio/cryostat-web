@@ -53,6 +53,7 @@ import CreateRule from './Rules/CreateRule';
 import Rules from './Rules/Rules';
 import SecurityPanel from './SecurityPanel/SecurityPanel';
 import Settings from './Settings/Settings';
+import { DefaultFallBack, ErrorBoundary } from './Shared/ErrorBoundary';
 import { SessionState } from './Shared/Services/Login.service';
 import { ServiceContext } from './Shared/Services/Services';
 import { FeatureLevel } from './Shared/Services/Settings.service';
@@ -245,8 +246,16 @@ const RouteWithTitleUpdates = ({ component: Component, isAsync = false, path, ti
   useA11yRouteChange(isAsync);
   useDocumentTitle(title);
 
+  const renderFallback = React.useCallback((error: Error) => {
+    return <DefaultFallBack error={error} />;
+  }, []);
+
   function routeWithTitle(routeProps: RouteComponentProps) {
-    return <Component {...rest} {...routeProps} />;
+    return (
+      <ErrorBoundary renderFallback={renderFallback}>
+        <Component {...rest} {...routeProps} />
+      </ErrorBoundary>
+    );
   }
 
   return <Route render={routeWithTitle} path={path} />;
