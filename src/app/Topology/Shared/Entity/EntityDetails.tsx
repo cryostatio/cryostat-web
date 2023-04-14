@@ -84,6 +84,7 @@ import {
   getExpandedResourceDetails,
   getLinkPropsForTargetResource,
   mapSection,
+  Nothing,
   TargetOwnedResourceType,
   TargetOwnedResourceTypeAsArray,
   TargetRelatedResourceType,
@@ -461,7 +462,12 @@ export const TargetResourceItem: React.FC<{
     [targetNode.target, services.target]
   );
 
-  const ExpandedComponent = React.useMemo(() => getExpandedResourceDetails(resourceType), [resourceType]);
+  const ExpandedComponent = React.useMemo(() => {
+    if (error || loading) {
+      return Nothing;
+    }
+    return getExpandedResourceDetails(resourceType);
+  }, [resourceType, error, loading]);
 
   return (
     <Tbody isExpanded={ExpandedComponent !== null && expanded}>

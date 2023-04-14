@@ -66,6 +66,7 @@ import { BanIcon, RunningIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
+  catchError,
   combineLatest,
   concatMap,
   defaultIfEmpty,
@@ -225,6 +226,14 @@ export const getResourceListPatchFn = (
   switch (resourceType) {
     case 'activeRecordings':
     case 'archivedRecordings':
+      return (arr: Recording[], eventData: NotificationMessage, removed?: boolean) => {
+        const recording: Recording = eventData.message.recording;
+        let newArr = arr.filter((r) => r.name !== recording.name);
+        if (!removed) {
+          newArr = newArr.concat([recording]);
+        }
+        return of(newArr);
+      };
     case 'eventTemplates':
       return (arr: EventTemplate[], eventData: NotificationMessage, removed?: boolean) => {
         const template: EventTemplate = eventData.message.template;
@@ -307,7 +316,7 @@ export const getLinkPropsForTargetResource = (
   }
 };
 
-const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ resources, ...props }) => {
+export const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ resources, ...props }) => {
   const stateGroupConfigs = React.useMemo(
     () => [
       {
@@ -351,7 +360,7 @@ const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ resources
   );
 };
 
-const Nothing: React.FC<{ resources: ResourceTypes[] }> = () => {
+export const Nothing: React.FC<{ resources: ResourceTypes[] }> = () => {
   return (
     <Bullseye>
       <EmptyText text={'Nothing to show.'} />
@@ -390,17 +399,28 @@ export const useResources = <R = ResourceTypes,>(
 
   React.useEffect(() => {
     addSubscription(
-      targetSubject.pipe(switchMap((tn) => getTargetOwnedResources(resourceType, tn, api))).subscribe({
-        next: (rs) => {
-          setLoading(false);
-          setError(undefined);
-          setResources(rs);
-        },
-        error: (error) => {
+      targetSubject
+        .pipe(
+          switchMap((tn) => {
+            return getTargetOwnedResources(resourceType, tn, api).pipe(
+              map((rs: ResourceTypes[]) => ({
+                resources: rs,
+                error: undefined,
+              })),
+              catchError((err: Error) =>
+                of({
+                  resources: [],
+                  error: err,
+                })
+              )
+            );
+          })
+        )
+        .subscribe(({ resources, error }) => {
           setLoading(false);
           setError(error);
-        },
-      })
+          setResources(resources);
+        })
     );
   }, [addSubscription, setLoading, setError, setResources, api, targetSubject, resourceType]);
 
