@@ -150,6 +150,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
         { title: 'Description' },
         {
           title: 'Match Expression',
+          sortable: true,
           tooltip:
             'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
         },
@@ -361,23 +362,25 @@ export const Rules: React.FC<RulesProps> = (_) => {
   const ruleRows = React.useMemo(() => {
     const { index, direction } = sortBy;
     let sorted = [...rules];
-    if (typeof index === 'number') {
-      const keys = [
-        'enabled',
-        'name',
-        'description',
-        'matchExpression',
-        'eventSpecifier',
-        'archivalPeriodSeconds',
-        'initialDelaySeconds',
-        'preservedArchives',
-        'maxAgeSeconds',
-        'maxSizeBytes',
-      ];
-      const key = keys[index];
-      sorted = rules.sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-      sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
+
+    const sortKey = index ?? 1; // default to name
+
+    const sortableKeys = [
+      'enabled',
+      'name',
+      'description',
+      'matchExpression',
+      'eventSpecifier',
+      'archivalPeriodSeconds',
+      'initialDelaySeconds',
+      'preservedArchives',
+      'maxAgeSeconds',
+      'maxSizeBytes',
+    ];
+    const key = sortableKeys[sortKey];
+    sorted = rules.sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+    sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
+
     return sorted.map((r: Rule, index) => (
       <Tr key={`automatic-rule-${index}`}>
         <Td key={`automatic-rule-enabled-${index}`} dataLabel={tableColumns[0].title}>
