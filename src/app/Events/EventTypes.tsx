@@ -55,7 +55,17 @@ import {
   Text,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { ExpandableRowContent, TableComposable, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  ExpandableRowContent,
+  SortByDirection,
+  TableComposable,
+  TableVariant,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
 import * as React from 'react';
 import { concatMap, filter, first } from 'rxjs/operators';
 
@@ -190,7 +200,15 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       includesSubstr(t.typeId, filterText) ||
       includesSubstr(t.description, filterText) ||
       includesSubstr(getCategoryString(t), filterText);
-    return sortResources(sortBy, types.filter(withFilters), mapper, getTransform);
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      types.filter(withFilters),
+      mapper,
+      getTransform
+    );
   }, [types, filterText, sortBy]);
 
   const displayedTypeRowData = React.useMemo(() => {

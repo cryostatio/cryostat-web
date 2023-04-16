@@ -81,7 +81,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, Tbody, Td, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -346,7 +346,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     setFilteredRecordings(
-      sortResources(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filterRecordings(recordings, targetRecordingFilters),
+        mapper,
+        getTransform
+      )
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 

@@ -241,13 +241,11 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
           t.methodName.toLowerCase().includes(ft)
       );
     }
-    const { index, direction } = sortBy;
-    if (typeof index === 'number') {
-      const keys = ['id', 'name', 'description', 'clazz', 'methodName'];
-      const key = keys[index];
-      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
+    const { index = 0, direction = SortByDirection.asc } = sortBy;
+    const keys = ['id', 'name', 'description', 'clazz', 'methodName'];
+    const key = keys[index];
+    const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+    filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
     setFilteredProbes([...filtered]);
   }, [filterText, probes, sortBy, setFilteredProbes]);
 

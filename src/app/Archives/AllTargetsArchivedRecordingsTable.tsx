@@ -57,7 +57,16 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import {
+  TableComposable,
+  Th,
+  Thead,
+  Tbody,
+  Tr,
+  Td,
+  ExpandableRowContent,
+  SortByDirection,
+} from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -279,7 +288,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       );
     }
     return sortResources(
-      sortBy,
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
       updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
       mapper,
       getTransform

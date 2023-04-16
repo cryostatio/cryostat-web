@@ -235,9 +235,10 @@ export const Rules: React.FC<RulesProps> = (_) => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RuleUpdated).subscribe((msg) => {
         setRules((old) => {
-          const match = old.find((r) => r.name === msg.message.name);
-          if (match) {
-            return [...old.filter((r) => r.name !== msg.message.name), { ...match, enabled: msg.message.enabled }];
+          const matchIndex = old.findIndex((r) => r.name === msg.message.name);
+          if (matchIndex >= 0) {
+            old.splice(matchIndex, 1, { ...old[matchIndex], enabled: msg.message.enabled });
+            return [...old];
           }
           return old;
         });
@@ -360,10 +361,8 @@ export const Rules: React.FC<RulesProps> = (_) => {
   }, [setIsUploadModalOpen]);
 
   const ruleRows = React.useMemo(() => {
-    const { index, direction } = sortBy;
+    const { index = 1, direction = SortByDirection.asc } = sortBy;
     let sorted = [...rules];
-
-    const sortKey = index ?? 1; // default to name
 
     const sortableKeys = [
       'enabled',
@@ -377,7 +376,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
       'maxAgeSeconds',
       'maxSizeBytes',
     ];
-    const key = sortableKeys[sortKey];
+    const key = sortableKeys[index];
     sorted = rules.sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
     sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
 

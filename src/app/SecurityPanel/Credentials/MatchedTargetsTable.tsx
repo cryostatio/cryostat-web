@@ -45,7 +45,16 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { sortResources } from '@app/utils/utils';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { InnerScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  InnerScrollContainer,
+  SortByDirection,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 
@@ -121,7 +130,15 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
   }, [addSubscription, context, context.notificationChannel, setTargets, matchExpression]);
 
   const targetRows = React.useMemo(() => {
-    return sortResources(sortBy, targets, mapper, getTransform).map((target, idx) => {
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      targets,
+      mapper,
+      getTransform
+    ).map((target, idx) => {
       return (
         <Tr key={`target-${idx}`}>
           <Td key={`target-table-row-${idx}_0`}>

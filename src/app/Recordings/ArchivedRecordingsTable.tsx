@@ -79,7 +79,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { UploadIcon } from '@patternfly/react-icons';
-import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent, TableComposable, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
@@ -367,7 +367,15 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   React.useEffect(() => {
     setFilteredRecordings(
-      sortResources(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filterRecordings(recordings, targetRecordingFilters),
+        mapper,
+        getTransform
+      )
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 

@@ -68,6 +68,7 @@ import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@pattern
 import {
   InnerScrollContainer,
   OuterScrollContainer,
+  SortByDirection,
   TableComposable,
   Tbody,
   Td,
@@ -140,9 +141,15 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
 
   const rows = React.useMemo(
     () =>
-      sortResources(sortBy, matchedTargets, mapper, getTransform).map((t) => (
-        <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />
-      )),
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        matchedTargets,
+        mapper,
+        getTransform
+      ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />),
     [matchedTargets, filters, searchText, sortBy]
   );
 

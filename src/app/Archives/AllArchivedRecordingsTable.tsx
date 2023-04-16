@@ -60,7 +60,16 @@ import {
   SplitItem,
 } from '@patternfly/react-core';
 import { HelpIcon, SearchIcon } from '@patternfly/react-icons';
-import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import {
+  TableComposable,
+  Th,
+  Thead,
+  Tbody,
+  Tr,
+  Td,
+  ExpandableRowContent,
+  SortByDirection,
+} from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
@@ -153,7 +162,15 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           d.connectUrl.toLowerCase().includes(formattedSearchText)
       );
     }
-    return sortResources(sortBy, updatedSearchedDirectories, mapper, getTransform);
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      updatedSearchedDirectories,
+      mapper,
+      getTransform
+    );
   }, [directories, searchText, sortBy]);
 
   React.useEffect(() => {
