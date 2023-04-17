@@ -73,8 +73,37 @@ import {
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
 import { AboutAgentCard } from './AboutAgentCard';
+import { sortResources, TableColumn } from '@app/utils/utils';
 
 export type LiveProbeActions = 'REMOVE';
+
+const tableColumns: TableColumn[] = [
+  {
+    title: 'ID',
+    keyPaths: ['id'],
+    sortable: true,
+  },
+  {
+    title: 'Name',
+    keyPaths: ['name'],
+    sortable: true,
+  },
+  {
+    title: 'Class',
+    keyPaths: ['clazz'],
+    sortable: true,
+  },
+  {
+    title: 'Description',
+    keyPaths: ['description'],
+    sortable: true,
+  },
+  {
+    title: 'Method',
+    keyPaths: ['methodName'],
+    sortable: true,
+  },
+];
 
 export interface AgentLiveProbesProps {}
 
@@ -90,8 +119,6 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionLoadings, setActionLoadings] = React.useState<Record<LiveProbeActions, boolean>>({ REMOVE: false });
-
-  const tableColumns = React.useMemo(() => ['ID', 'Name', 'Class', 'Description', 'Method'], []);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -241,31 +268,36 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
           t.methodName.toLowerCase().includes(ft)
       );
     }
-    const { index = 0, direction = SortByDirection.asc } = sortBy;
-    const keys = ['id', 'name', 'description', 'clazz', 'methodName'];
-    const key = keys[index];
-    const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-    filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    setFilteredProbes([...filtered]);
+
+    setFilteredProbes(
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filtered,
+        tableColumns
+      )
+    );
   }, [filterText, probes, sortBy, setFilteredProbes]);
 
   const probeRows = React.useMemo(
     () =>
       filteredProbes.map((t: EventProbe, index) => (
         <Tr key={`active-probe-${index}`}>
-          <Td key={`active-probe-id-${index}`} dataLabel={tableColumns[0]}>
+          <Td key={`active-probe-id-${index}`} dataLabel={tableColumns[0].title}>
             {t.id}
           </Td>
-          <Td key={`active-probe-name-${index}`} dataLabel={tableColumns[1]}>
+          <Td key={`active-probe-name-${index}`} dataLabel={tableColumns[1].title}>
             {t.name}
           </Td>
-          <Td key={`active-probe-clazz-${index}`} dataLabel={tableColumns[2]}>
+          <Td key={`active-probe-clazz-${index}`} dataLabel={tableColumns[2].title}>
             {t.clazz}
           </Td>
-          <Td key={`active-probe-description-${index}`} dataLabel={tableColumns[3]}>
+          <Td key={`active-probe-description-${index}`} dataLabel={tableColumns[3].title}>
             {t.description}
           </Td>
-          <Td key={`active-probe-methodname-${index}`} dataLabel={tableColumns[4]}>
+          <Td key={`active-probe-methodname-${index}`} dataLabel={tableColumns[4].title}>
             {t.methodName}
           </Td>
         </Tr>
@@ -341,9 +373,9 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
               <TableComposable aria-label="Active Probe Table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
-                    {tableColumns.map((column, index) => (
-                      <Th key={`active-probe-header-${column}`} sort={getSortParams(index)}>
-                        {column}
+                    {tableColumns.map(({ title, sortable }, index) => (
+                      <Th key={`active-probe-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                        {title}
                       </Th>
                     ))}
                   </Tr>

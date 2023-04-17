@@ -76,6 +76,7 @@ import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
+import { TableColumn, sortResources } from '@app/utils/utils';
 
 export interface Rule {
   name: string;
@@ -88,12 +89,6 @@ export interface Rule {
   preservedArchives: number;
   maxAgeSeconds: number;
   maxSizeBytes: number;
-}
-
-export interface RuleTableHeader {
-  title?: string;
-  sortable?: boolean;
-  tooltip?: React.ReactNode;
 }
 
 export const ruleObjKeys = [
@@ -118,6 +113,63 @@ export const isRule = (obj: object): boolean => {
   return true;
 };
 
+const tableColumns: TableColumn[] = [
+  {
+    title: 'Enabled',
+    keyPaths: ['enabled'],
+  },
+  {
+    title: 'Name',
+    keyPaths: ['name'],
+    sortable: true,
+  },
+  {
+    title: 'Description',
+    keyPaths: ['description'],
+  },
+  {
+    title: 'Match Expression',
+    keyPaths: ['matchExpression'],
+    sortable: true,
+    tooltip:
+      'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
+  },
+  {
+    title: 'Event Specifier',
+    keyPaths: ['eventSpecifier'],
+    tooltip: 'The name and location of the Event Template applied by this rule.',
+  },
+  {
+    title: 'Archival Period',
+    keyPaths: ['archivalPeriodSeconds'],
+    tooltip:
+      'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
+  },
+  {
+    title: 'Initial Delay',
+    keyPaths: ['initialDelaySeconds'],
+    tooltip:
+      'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
+  },
+  {
+    title: 'Preserved Archives',
+    keyPaths: ['preservedArchives'],
+    tooltip:
+      'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
+  },
+  {
+    title: 'Maximum Age',
+    keyPaths: ['maxAgeSeconds'],
+    tooltip:
+      'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
+  },
+  {
+    title: 'Maximum Size',
+    keyPaths: ['maxSizeBytes'],
+    tooltip: 'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
+  },
+];
+
 export interface RuleToDeleteOrDisable {
   rule: Rule;
   type: 'DELETE' | 'DISABLE';
@@ -138,54 +190,6 @@ export const Rules: React.FC<RulesProps> = (_) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
-
-  const tableColumns = React.useMemo(
-    () =>
-      [
-        { title: 'Enabled' },
-        {
-          title: 'Name',
-          sortable: true,
-        },
-        { title: 'Description' },
-        {
-          title: 'Match Expression',
-          sortable: true,
-          tooltip:
-            'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
-        },
-        {
-          title: 'Event Specifier',
-          tooltip: 'The name and location of the Event Template applied by this rule.',
-        },
-        {
-          title: 'Archival Period',
-          tooltip:
-            'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
-        },
-        {
-          title: 'Initial Delay',
-          tooltip:
-            'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
-        },
-        {
-          title: 'Preserved Archives',
-          tooltip:
-            'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
-        },
-        {
-          title: 'Maximum Age',
-          tooltip:
-            'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
-        },
-        {
-          title: 'Maximum Size',
-          tooltip:
-            'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
-        },
-      ] as RuleTableHeader[],
-    []
-  );
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -362,24 +366,14 @@ export const Rules: React.FC<RulesProps> = (_) => {
   }, [setIsUploadModalOpen]);
 
   const ruleRows = React.useMemo(() => {
-    const { index = 1, direction = SortByDirection.asc } = sortBy;
-    let sorted = [...rules];
-
-    const sortableKeys = [
-      'enabled',
-      'name',
-      'description',
-      'matchExpression',
-      'eventSpecifier',
-      'archivalPeriodSeconds',
-      'initialDelaySeconds',
-      'preservedArchives',
-      'maxAgeSeconds',
-      'maxSizeBytes',
-    ];
-    const key = sortableKeys[index];
-    sorted = rules.sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-    sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    let sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      rules,
+      tableColumns
+    );
 
     return sorted.map((r: Rule, index) => (
       <Tr key={`automatic-rule-${index}`}>
@@ -448,19 +442,19 @@ export const Rules: React.FC<RulesProps> = (_) => {
           <TableComposable aria-label="Automated Rules Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
-                {tableColumns.map((col, index) => (
+                {tableColumns.map(({ title, tooltip, sortable }, index) => (
                   <Th
-                    key={`automatic-rule-header-${col.title}`}
-                    sort={col.sortable ? getSortParams(index) : undefined}
+                    key={`automatic-rule-header-${title}`}
+                    sort={sortable ? getSortParams(index) : undefined}
                     info={
-                      col.tooltip
+                      tooltip
                         ? {
-                            tooltip: col.tooltip,
+                            tooltip: tooltip,
                           }
                         : undefined
                     }
                   >
-                    {col.title}
+                    {title}
                   </Th>
                 ))}
               </Tr>

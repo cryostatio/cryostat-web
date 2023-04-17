@@ -197,6 +197,7 @@ export class StreamOf<T> {
 
 export interface TableColumn {
   title: string;
+  tooltip?: string;
   keyPaths?: string[];
   transform?: (value: unknown, _rec: unknown) => unknown;
   sortable?: boolean;
@@ -222,13 +223,14 @@ export const getValue = (object: any, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
+// Returned a newly sorted array)
 export const sortResources = <R>({ index, direction }: ISortBy, resources: R[], tableColumns: TableColumn[]): R[] => {
   const keyPaths = mapper(tableColumns, index);
   if (!keyPaths || !keyPaths.length) {
-    return resources;
+    return [...resources];
   }
   const transform = getTransform(tableColumns, index);
-  const sorted = resources.sort((a, b) => {
+  const sorted = [...resources].sort((a, b) => {
     let aVal = getValue(a, keyPaths);
     let bVal = getValue(b, keyPaths);
     if (transform) {
@@ -237,7 +239,7 @@ export const sortResources = <R>({ index, direction }: ISortBy, resources: R[], 
     }
     return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
   });
-  return [...(direction === SortByDirection.asc ? sorted : sorted.reverse())];
+  return direction === SortByDirection.asc ? sorted : sorted.reverse();
 };
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

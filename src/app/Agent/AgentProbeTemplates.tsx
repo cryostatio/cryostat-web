@@ -45,7 +45,7 @@ import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { portalRoot } from '@app/utils/utils';
+import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -86,6 +86,19 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, defaultIfEmpty, first, tap } from 'rxjs/operators';
 import { AboutAgentCard } from './AboutAgentCard';
 
+const tableColumns: TableColumn[] = [
+  {
+    title: 'Name',
+    keyPaths: ['name'],
+    sortable: true,
+  },
+  {
+    title: 'XML',
+    keyPaths: ['xml'],
+    sortable: true,
+  },
+];
+
 export interface AgentProbeTemplatesProps {
   agentDetected: boolean;
 }
@@ -103,8 +116,6 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
   const [errorMessage, setErrorMessage] = React.useState('');
   const [templateToDelete, setTemplateToDelete] = React.useState(undefined as ProbeTemplate | undefined);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-
-  const tableColumns: string[] = React.useMemo(() => ['Name', 'XML'], []);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -226,12 +237,17 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
         (t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft)
       );
     }
-    const { index = 0, direction = SortByDirection.asc } = sortBy;
-    const keys = ['name', 'xml'];
-    const key = keys[index];
-    const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-    filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    setFilteredTemplates([...filtered]);
+
+    setFilteredTemplates(
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filtered,
+        tableColumns
+      )
+    );
   }, [filterText, templates, sortBy, setFilteredTemplates]);
 
   const handleDeleteAction = React.useCallback(
@@ -263,10 +279,10 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
       filteredTemplates.map((t: ProbeTemplate, index) => {
         return (
           <Tr key={`probe-template-${index}`}>
-            <Td key={`probe-template-name-${index}`} dataLabel={tableColumns[0]}>
+            <Td key={`probe-template-name-${index}`} dataLabel={tableColumns[0].title}>
               {t.name}
             </Td>
-            <Td key={`probe-template-xml-${index}`} dataLabel={tableColumns[1]}>
+            <Td key={`probe-template-xml-${index}`} dataLabel={tableColumns[1].title}>
               {t.xml}
             </Td>
             <Td key={`probe-template-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
@@ -333,9 +349,9 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
               <TableComposable aria-label="Probe Templates Table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
-                    {tableColumns.map((column, index) => (
-                      <Th key={`probe-template-header-${column}`} sort={getSortParams(index)}>
-                        {column}
+                    {tableColumns.map(({ title, sortable }, index) => (
+                      <Th key={`probe-template-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                        {title}
                       </Th>
                     ))}
                   </Tr>
