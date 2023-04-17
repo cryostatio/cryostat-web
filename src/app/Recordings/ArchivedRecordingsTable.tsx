@@ -58,7 +58,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { formatBytes, hashCode, sortResources } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -79,7 +79,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { UploadIcon } from '@patternfly/react-icons';
-import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent, TableComposable, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
@@ -91,11 +91,14 @@ import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Name',
     keyPaths: ['name'],
     sortable: true,
+    transform: (name: string, _recording: ArchivedRecording) => {
+      return name.replace(/\.[^/.]+$/, '');
+    },
   },
   {
     title: 'Labels',
@@ -107,15 +110,6 @@ const tableColumns = [
     sortable: true,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (_index?: number) => undefined;
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
@@ -367,7 +361,14 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   React.useEffect(() => {
     setFilteredRecordings(
-      sortResources(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filterRecordings(recordings, targetRecordingFilters),
+        tableColumns
+      )
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 

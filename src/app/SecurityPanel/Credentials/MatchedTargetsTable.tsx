@@ -42,10 +42,19 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResources } from '@app/utils/utils';
+import { TableColumn, sortResources } from '@app/utils/utils';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { InnerScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  InnerScrollContainer,
+  SortByDirection,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 
@@ -54,7 +63,7 @@ export interface MatchedTargetsTableProps {
   matchExpression: string;
 }
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Target',
     keyPaths: ['alias'],
@@ -66,20 +75,6 @@ const tableColumns = [
     sortable: true,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
   const context = React.useContext(ServiceContext);
@@ -121,7 +116,14 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
   }, [addSubscription, context, context.notificationChannel, setTargets, matchExpression]);
 
   const targetRows = React.useMemo(() => {
-    return sortResources(sortBy, targets, mapper, getTransform).map((target, idx) => {
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      targets,
+      tableColumns
+    ).map((target, idx) => {
       return (
         <Tr key={`target-${idx}`}>
           <Td key={`target-table-row-${idx}_0`}>

@@ -43,7 +43,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -60,12 +60,21 @@ import {
   SplitItem,
 } from '@patternfly/react-core';
 import { HelpIcon, SearchIcon } from '@patternfly/react-icons';
-import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import {
+  TableComposable,
+  Th,
+  Thead,
+  Tbody,
+  Tr,
+  Td,
+  ExpandableRowContent,
+  SortByDirection,
+} from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Directory',
     keyPaths: ['connectUrl'],
@@ -82,20 +91,6 @@ const tableColumns = [
     width: 15,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 type _RecordingDirectory = RecordingDirectory & { targetAsObs: Observable<Target> };
 
@@ -153,7 +148,14 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           d.connectUrl.toLowerCase().includes(formattedSearchText)
       );
     }
-    return sortResources(sortBy, updatedSearchedDirectories, mapper, getTransform);
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      updatedSearchedDirectories,
+      tableColumns
+    );
   }, [directories, searchText, sortBy]);
 
   React.useEffect(() => {

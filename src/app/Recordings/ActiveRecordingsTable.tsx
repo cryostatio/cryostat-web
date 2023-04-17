@@ -58,7 +58,7 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResources } from '@app/utils/utils';
+import { sortResources, TableColumn } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -81,7 +81,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, Tbody, Td, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -99,7 +99,7 @@ export enum PanelContent {
   LABELS,
 }
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Name',
     keyPaths: ['name'],
@@ -131,20 +131,6 @@ const tableColumns = [
     keyPaths: ['metadata', 'labels'],
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
@@ -346,7 +332,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     setFilteredRecordings(
-      sortResources(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper, getTransform)
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filterRecordings(recordings, targetRecordingFilters),
+        tableColumns
+      )
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 

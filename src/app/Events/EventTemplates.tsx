@@ -47,7 +47,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { portalRoot } from '@app/utils/utils';
+import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -84,6 +84,29 @@ import { useHistory } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
 
+const tableColumns: TableColumn[] = [
+  {
+    title: 'Name',
+    keyPaths: ['name'],
+    sortable: true,
+  },
+  {
+    title: 'Description',
+    keyPaths: ['description'],
+    sortable: true,
+  },
+  {
+    title: 'Provider',
+    keyPaths: ['provider'],
+    sortable: true,
+  },
+  {
+    title: 'Type',
+    keyPaths: ['type'],
+    sortable: true,
+  },
+];
+
 export interface EventTemplatesProps {}
 
 export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
@@ -101,8 +124,6 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
   const [templateToDelete, setTemplateToDelete] = React.useState<EventTemplate | undefined>(undefined);
   const addSubscription = useSubscriptions();
 
-  const tableColumns = React.useMemo(() => ['Name', 'Description', 'Provider', 'Type'], []);
-
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
       sortBy: sortBy,
@@ -118,7 +139,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
   );
 
   React.useEffect(() => {
-    let filtered;
+    let filtered: EventTemplate[];
     if (!filterText) {
       filtered = templates;
     } else {
@@ -130,14 +151,17 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           t.provider.toLowerCase().includes(ft)
       );
     }
-    const { index, direction } = sortBy;
-    if (typeof index === 'number') {
-      const keys = ['name', 'description', 'provider', 'type'];
-      const key = keys[index];
-      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
-    setFilteredTemplates([...filtered]);
+
+    setFilteredTemplates(
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filtered,
+        tableColumns
+      )
+    );
   }, [filterText, templates, sortBy]);
 
   const handleTemplates = React.useCallback(
@@ -297,16 +321,16 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     () =>
       filteredTemplates.map((t: EventTemplate, index) => (
         <Tr key={`event-template-${index}`}>
-          <Td key={`event-template-name-${index}`} dataLabel={tableColumns[0]}>
+          <Td key={`event-template-name-${index}`} dataLabel={tableColumns[0].title}>
             {t.name}
           </Td>
-          <Td key={`event-template-description-${index}`} dataLabel={tableColumns[1]}>
+          <Td key={`event-template-description-${index}`} dataLabel={tableColumns[1].title}>
             {t.description}
           </Td>
-          <Td key={`event-template-provider-${index}`} dataLabel={tableColumns[2]}>
+          <Td key={`event-template-provider-${index}`} dataLabel={tableColumns[2].title}>
             {t.provider}
           </Td>
-          <Td key={`event-template-type-${index}`} dataLabel={tableColumns[3]}>
+          <Td key={`event-template-type-${index}`} dataLabel={tableColumns[3].title}>
             {t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()}
           </Td>
           <Td key={`event-template-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
@@ -314,7 +338,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           </Td>
         </Tr>
       )),
-    [actionsResolver, tableColumns, filteredTemplates]
+    [actionsResolver, filteredTemplates]
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
@@ -387,9 +411,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           <TableComposable aria-label="Event Templates Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
-                {tableColumns.map((column, index) => (
-                  <Th key={`event-template-header-${column}`} sort={getSortParams(index)}>
-                    {column}
+                {tableColumns.map(({ title, sortable }, index) => (
+                  <Th key={`event-template-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
                   </Th>
                 ))}
               </Tr>
