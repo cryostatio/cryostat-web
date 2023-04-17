@@ -119,6 +119,17 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
     _refreshDiscoveryTree(() => (firstFetchRef.current = true));
   }, [_refreshDiscoveryTree, firstFetchRef]);
 
+  React.useEffect(() => {
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(
+      () => _refreshDiscoveryTree(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
+    return () => window.clearInterval(id);
+  }, [context.settings, _refreshDiscoveryTree]);
+
   const content = React.useMemo(() => {
     if (error) {
       return (
