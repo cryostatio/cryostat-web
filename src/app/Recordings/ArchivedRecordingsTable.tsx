@@ -58,7 +58,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { formatBytes, hashCode, sortResources } from '@app/utils/utils';
+import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -91,7 +91,7 @@ import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Name',
     keyPaths: ['name'],
@@ -110,20 +110,6 @@ const tableColumns = [
     sortable: true,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
@@ -381,8 +367,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         filterRecordings(recordings, targetRecordingFilters),
-        mapper,
-        getTransform
+        tableColumns
       )
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);

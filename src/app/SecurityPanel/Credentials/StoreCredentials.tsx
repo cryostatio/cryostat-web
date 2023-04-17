@@ -44,7 +44,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, sortResources } from '@app/utils/utils';
+import { TableColumn, evaluateTargetWithExpr, sortResources } from '@app/utils/utils';
 import {
   Badge,
   Button,
@@ -202,7 +202,7 @@ const reducer = (state: State, action) => {
   }
 };
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Match Expression',
     keyPaths: ['matchExpression'],
@@ -214,15 +214,6 @@ const tableColumns = [
     sortable: true,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (_index?: number) => undefined;
 
 const tableTitle = 'Stored Credentials';
 
@@ -378,7 +369,7 @@ export const StoreCredentials = () => {
   };
 
   const matchExpressionRows = React.useMemo(() => {
-    return sortResources(sortBy, state.credentials, mapper, getTransform).map((credential, idx) => {
+    return sortResources(sortBy, state.credentials, tableColumns).map((credential, idx) => {
       const isExpanded: boolean = state.expandedCredentials.includes(credential);
       const isChecked: boolean = state.checkedCredentials.includes(credential);
 

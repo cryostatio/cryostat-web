@@ -42,7 +42,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResources } from '@app/utils/utils';
+import { TableColumn, sortResources } from '@app/utils/utils';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
@@ -63,7 +63,7 @@ export interface MatchedTargetsTableProps {
   matchExpression: string;
 }
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Target',
     keyPaths: ['alias'],
@@ -75,20 +75,6 @@ const tableColumns = [
     sortable: true,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
   const context = React.useContext(ServiceContext);
@@ -136,8 +122,7 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       targets,
-      mapper,
-      getTransform
+      tableColumns
     ).map((target, idx) => {
       return (
         <Tr key={`target-${idx}`}>

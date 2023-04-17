@@ -195,22 +195,39 @@ export class StreamOf<T> {
   }
 }
 
+export interface TableColumn {
+  title: string;
+  keyPaths?: string[];
+  transform?: (value: unknown, _rec: unknown) => unknown;
+  sortable?: boolean;
+  width?: number;
+}
+
+const mapper = (tableColumns: TableColumn[], index?: number) => {
+  if (index === undefined) {
+    return undefined;
+  }
+  return tableColumns[index]?.keyPaths;
+};
+
+const getTransform = (tableColumns: TableColumn[], index?: number) => {
+  if (index === undefined) {
+    return undefined;
+  }
+  return tableColumns[index]?.transform;
+};
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const getValue = (object: any, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
-export const sortResources = <R>(
-  { index, direction }: ISortBy,
-  resources: R[],
-  mapper: (index?: number) => string[] | undefined,
-  getTransform: (index?: number) => ((value: any, resource: R) => any) | undefined
-): R[] => {
-  const keyPaths = mapper(index);
+export const sortResources = <R>({ index, direction }: ISortBy, resources: R[], tableColumns: TableColumn[]): R[] => {
+  const keyPaths = mapper(tableColumns, index);
   if (!keyPaths || !keyPaths.length) {
     return resources;
   }
-  const transform = getTransform(index);
+  const transform = getTransform(tableColumns, index);
   const sorted = resources.sort((a, b) => {
     let aVal = getValue(a, keyPaths);
     let bVal = getValue(b, keyPaths);

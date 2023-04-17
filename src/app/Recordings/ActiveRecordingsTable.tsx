@@ -58,7 +58,7 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResources } from '@app/utils/utils';
+import { sortResources, TableColumn } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -99,7 +99,7 @@ export enum PanelContent {
   LABELS,
 }
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Name',
     keyPaths: ['name'],
@@ -131,20 +131,6 @@ const tableColumns = [
     keyPaths: ['metadata', 'labels'],
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
@@ -352,8 +338,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         filterRecordings(recordings, targetRecordingFilters),
-        mapper,
-        getTransform
+        tableColumns
       )
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);

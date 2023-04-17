@@ -43,7 +43,7 @@ import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Share
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, sortResources } from '@app/utils/utils';
+import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -71,7 +71,7 @@ import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Target',
     keyPaths: ['target'],
@@ -90,20 +90,6 @@ const tableColumns = [
     width: 15,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 type ArchivesForTarget = {
   target: Target;
@@ -293,8 +279,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
-      mapper,
-      getTransform
+      tableColumns
     );
   }, [searchText, archivesForTargets, sortBy, hideEmptyTargets]);
 

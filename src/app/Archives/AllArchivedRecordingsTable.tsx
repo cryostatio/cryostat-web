@@ -43,7 +43,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -74,7 +74,7 @@ import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Directory',
     keyPaths: ['connectUrl'],
@@ -91,20 +91,6 @@ const tableColumns = [
     width: 15,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 type _RecordingDirectory = RecordingDirectory & { targetAsObs: Observable<Target> };
 
@@ -168,8 +154,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       updatedSearchedDirectories,
-      mapper,
-      getTransform
+      tableColumns
     );
   }, [directories, searchText, sortBy]);
 

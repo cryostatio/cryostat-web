@@ -41,7 +41,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, evaluateTargetWithExpr, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -79,7 +79,7 @@ import {
 import * as React from 'react';
 import { TestPoolContext, useAuthCredential } from './utils';
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Target',
     keyPaths: ['alias'],
@@ -94,20 +94,6 @@ const tableColumns = [
     title: 'Status',
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].transform;
-  }
-  return undefined;
-};
 
 export interface CredentialTestTableProps {}
 
@@ -147,8 +133,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         matchedTargets,
-        mapper,
-        getTransform
+        tableColumns
       ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />),
     [matchedTargets, filters, searchText, sortBy]
   );

@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, sortResources } from '@app/utils/utils';
+import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -96,7 +96,7 @@ const getCategoryString = (eventType: EventType): string => {
 
 const includesSubstr = (a: string, b: string) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
 
-const tableColumns = [
+const tableColumns: TableColumn[] = [
   {
     title: 'Name',
     keyPaths: ['name'],
@@ -118,15 +118,6 @@ const tableColumns = [
     sortable: true,
   },
 ];
-
-const mapper = (index?: number) => {
-  if (index !== undefined) {
-    return tableColumns[index].keyPaths;
-  }
-  return undefined;
-};
-
-const getTransform = (_index?: number) => undefined;
 
 export interface EventTypesProps {}
 
@@ -206,8 +197,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       types.filter(withFilters),
-      mapper,
-      getTransform
+      tableColumns
     );
   }, [types, filterText, sortBy]);
 
