@@ -96,6 +96,9 @@ const tableColumns = [
     title: 'Name',
     keyPaths: ['name'],
     sortable: true,
+    transform: (name: string, _recording: ArchivedRecording) => {
+      return name.replace(/\.[^/.]+$/, '');
+    },
   },
   {
     title: 'Labels',
@@ -115,7 +118,12 @@ const mapper = (index?: number) => {
   return undefined;
 };
 
-const getTransform = (_index?: number) => undefined;
+const getTransform = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].transform;
+  }
+  return undefined;
+};
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
