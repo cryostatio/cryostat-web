@@ -338,7 +338,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           </Td>
         </Tr>
       )),
-    [actionsResolver, tableColumns, filteredTemplates]
+    [actionsResolver, filteredTemplates]
   );
 
   const handleWarningModalAccept = React.useCallback(() => {

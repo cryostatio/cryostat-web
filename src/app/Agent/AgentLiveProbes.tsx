@@ -44,6 +44,7 @@ import { EventProbe } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { sortResources, TableColumn } from '@app/utils/utils';
 import {
   Button,
   Toolbar,
@@ -73,7 +74,6 @@ import {
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
 import { AboutAgentCard } from './AboutAgentCard';
-import { sortResources, TableColumn } from '@app/utils/utils';
 
 export type LiveProbeActions = 'REMOVE';
 
@@ -302,7 +302,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
           </Td>
         </Tr>
       )),
-    [filteredProbes, tableColumns]
+    [filteredProbes]
   );
 
   const actionLoadingProps = React.useMemo<Record<LiveProbeActions, LoadingPropsType>>(

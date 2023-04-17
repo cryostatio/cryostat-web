@@ -41,6 +41,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { TableColumn, sortResources } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -76,7 +77,6 @@ import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
-import { TableColumn, sortResources } from '@app/utils/utils';
 
 export interface Rule {
   name: string;
@@ -366,7 +366,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
   }, [setIsUploadModalOpen]);
 
   const ruleRows = React.useMemo(() => {
-    let sorted = sortResources(
+    const sorted = sortResources(
       {
         index: sortBy.index ?? 1,
         direction: sortBy.direction ?? SortByDirection.asc,
@@ -420,7 +420,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
         </Td>
       </Tr>
     ));
-  }, [rules, sortBy, tableColumns, handleToggle, actionResolver]);
+  }, [rules, sortBy, handleToggle, actionResolver]);
 
   const viewContent = React.useMemo(() => {
     if (isLoading) {
@@ -464,7 +464,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
         </InnerScrollContainer>
       );
     }
-  }, [getSortParams, isLoading, rules, ruleRows, tableColumns]);
+  }, [getSortParams, isLoading, rules, ruleRows]);
 
   return (
     <>

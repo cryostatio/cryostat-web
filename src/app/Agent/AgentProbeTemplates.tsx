@@ -295,7 +295,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
           </Tr>
         );
       }),
-    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction, tableColumns]
+    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction]
   );
 
   if (errorMessage != '') {
