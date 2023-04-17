@@ -71,6 +71,7 @@ import {
   concatMap,
   defaultIfEmpty,
   forkJoin,
+  interval,
   map,
   merge,
   Observable,
@@ -387,7 +388,7 @@ export const useResources = <R = ResourceTypes,>(
   targetNode: TargetNode,
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType
 ): { resources: R[]; error?: Error; loading?: boolean } => {
-  const { api, notificationChannel } = React.useContext(ServiceContext);
+  const { api, notificationChannel, settings } = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
   const [resources, setResources] = React.useState<ResourceTypes[]>([]);
@@ -402,7 +403,7 @@ export const useResources = <R = ResourceTypes,>(
       targetSubject
         .pipe(
           switchMap((tn) => {
-            return getTargetOwnedResources(resourceType, tn, api).pipe(
+            const resourceObs = getTargetOwnedResources(resourceType, tn, api).pipe(
               map((rs: ResourceTypes[]) => ({
                 resources: rs,
                 error: undefined,
@@ -414,6 +415,13 @@ export const useResources = <R = ResourceTypes,>(
                 })
               )
             );
+            if (!settings.autoRefreshEnabled()) {
+              return resourceObs;
+            }
+            return merge(
+              resourceObs,
+              interval(settings.autoRefreshPeriod() * settings.autoRefreshUnits()).pipe(concatMap(() => resourceObs))
+            );
           })
         )
         .subscribe(({ resources, error }) => {
@@ -422,7 +430,7 @@ export const useResources = <R = ResourceTypes,>(
           setResources(resources);
         })
     );
-  }, [addSubscription, setLoading, setError, setResources, api, targetSubject, resourceType]);
+  }, [addSubscription, setLoading, setError, setResources, api, settings, targetSubject, resourceType]);
 
   React.useEffect(() => {
     const patchEventConfig = [
