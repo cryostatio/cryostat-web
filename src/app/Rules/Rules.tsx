@@ -237,8 +237,9 @@ export const Rules: React.FC<RulesProps> = (_) => {
         setRules((old) => {
           const matchIndex = old.findIndex((r) => r.name === msg.message.name);
           if (matchIndex >= 0) {
-            old.splice(matchIndex, 1, { ...old[matchIndex], enabled: msg.message.enabled });
-            return [...old];
+            const newArray = [...old];
+            newArray.splice(matchIndex, 1, { ...old[matchIndex], enabled: msg.message.enabled });
+            return newArray;
           }
           return old;
         });

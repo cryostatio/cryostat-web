@@ -65,8 +65,8 @@ const mockRule: Rule = {
   maxAgeSeconds: 0,
   maxSizeBytes: 0,
 };
-const mockRuleListResponse = [mockRule] as Rule[];
-const mockRuleListEmptyResponse = [] as Rule[];
+const mockRuleListResponse: Rule[] = [mockRule];
+const mockRuleListEmptyResponse: Rule[] = [];
 
 const mockFileUpload = new File([JSON.stringify(mockRule)], `${mockRule.name}.json`, { type: 'application/json' });
 mockFileUpload.text = jest.fn(() => Promise.resolve(JSON.stringify(mockRule)));
@@ -125,14 +125,11 @@ jest
   .mockReturnValueOnce(of(mockDeleteNotification))
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // update a rule when receiving notification
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of(mockUpdateNotification))
-
   .mockReturnValue(of()); // other tests
 
 describe('<Rules />', () => {
   beforeEach(() => {
+    [updateSpy, uploadSpy, downloadSpy].forEach((spy) => jest.mocked(spy).mockClear());
     history.go(-history.length);
   });
 
