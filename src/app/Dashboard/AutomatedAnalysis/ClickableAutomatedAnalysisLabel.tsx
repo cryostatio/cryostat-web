@@ -39,7 +39,7 @@
 import { AutomatedAnalysisScore, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { portalRoot } from '@app/utils/utils';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
-import { InfoCircleIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import React from 'react';
@@ -92,6 +92,18 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
       : 'danger';
   }, [label.score]);
 
+  const icon = React.useMemo(() => {
+    return label.score == AutomatedAnalysisScore.NA_SCORE ? (
+      <InfoCircleIcon />
+    ) : label.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD ? (
+      <CheckCircleIcon />
+    ) : label.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD ? (
+      <WarningTriangleIcon />
+    ) : (
+      <ExclamationCircleIcon />
+    );
+  }, [label.score]);
+
   return (
     <Popover
       aria-label={t('ClickableAutomatedAnalysisLabel.ARIA_LABELS.POPOVER')}
@@ -117,7 +129,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     >
       <Label
         aria-label={label.name}
-        icon={<InfoCircleIcon />}
+        icon={icon}
         color={colorScheme}
         className={isHoveredOrFocused ? `clickable-label-hovered` : ''}
         onMouseEnter={handleHoveredOrFocused}
