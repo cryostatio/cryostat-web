@@ -1701,7 +1701,6 @@ export interface MBeanMetricsResponse {
 }
 
 export interface RecordingDirectory {
-  directoryName: string;
   connectUrl: string;
   jvmId: string;
   recordings: ArchivedRecording[];
