@@ -116,7 +116,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             </button>
           </th>
           <th
-            className="pf-m-wrap"
+            className="pf-m-truncate"
             onMouseEnter={[Function]}
             scope="col"
           >
@@ -136,7 +136,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
           hidden={false}
         >
           <td
-            className="pf-m-width-20"
+            className="pf-m-width-10"
             data-label="Name"
             onMouseEnter={[Function]}
           >
@@ -184,11 +184,17 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             </div>
           </td>
           <td
-            className=""
+            className="pf-m-break-word"
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            rule1 description
+            <p>
+              <strong>
+                Summary:
+              </strong>
+               
+              rule1 description
+            </p>
           </td>
         </tr>
         <tr
@@ -199,7 +205,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
           hidden={false}
         >
           <td
-            className="pf-m-width-20"
+            className="pf-m-width-10"
             data-label="Name"
             onMouseEnter={[Function]}
           >
@@ -247,11 +253,17 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             </div>
           </td>
           <td
-            className=""
+            className="pf-m-break-word"
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            rule3 description
+            <p>
+              <strong>
+                Summary:
+              </strong>
+               
+              rule3 description
+            </p>
           </td>
         </tr>
         <tr
@@ -262,7 +274,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
           hidden={false}
         >
           <td
-            className="pf-m-width-20"
+            className="pf-m-width-10"
             data-label="Name"
             onMouseEnter={[Function]}
           >
@@ -310,11 +322,17 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             </div>
           </td>
           <td
-            className=""
+            className="pf-m-break-word"
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            rule2 description
+            <p>
+              <strong>
+                Summary:
+              </strong>
+               
+              rule2 description
+            </p>
           </td>
         </tr>
         <tr
@@ -325,7 +343,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
           hidden={false}
         >
           <td
-            className="pf-m-width-20"
+            className="pf-m-width-10"
             data-label="Name"
             onMouseEnter={[Function]}
           >
@@ -373,11 +391,17 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             </div>
           </td>
           <td
-            className=""
+            className="pf-m-break-word"
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            N/A description
+            <p>
+              <strong>
+                Summary:
+              </strong>
+               
+              N/A description
+            </p>
           </td>
         </tr>
       </tbody>
