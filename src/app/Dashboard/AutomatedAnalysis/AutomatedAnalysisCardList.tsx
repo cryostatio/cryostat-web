@@ -163,9 +163,11 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
                     </Flex>
                   </Td>
                   <Td modifier="breakWord" dataLabel={t('DESCRIPTION', { ns: 'common' })}>
-                    <p>
-                      <strong>Summary:</strong> {summary.replace('Summary:', '')}
-                    </p>
+                    {summary && (
+                      <p>
+                        <strong>Summary:</strong> {summary.replace('Summary:', '')}
+                      </p>
+                    )}
                     {explanation && (
                       <p
                         style={{
