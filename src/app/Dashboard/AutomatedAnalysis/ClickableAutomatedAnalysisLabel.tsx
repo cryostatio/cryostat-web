@@ -44,6 +44,7 @@ import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { transformAADescription } from '../dashboard-utils';
 
 export interface ClickableAutomatedAnalysisLabelProps {
   label: RuleEvaluation;
@@ -104,8 +105,6 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     );
   }, [label.score]);
 
-  const [summary, explanation] = label.description.split('Explanation:');
-
   return (
     <Popover
       aria-label={t('ClickableAutomatedAnalysisLabel.ARIA_LABELS.POPOVER')}
@@ -124,20 +123,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
           <p className={css(alertStyle[alertPopoverVariant], `${clickableAutomatedAnalysisKey}-popover-body-score`)}>
             {label.score == AutomatedAnalysisScore.NA_SCORE ? 'N/A' : label.score.toFixed(1)}
           </p>
-          {summary && (
-            <p>
-              <strong>Summary:</strong> {summary.replace('Summary:', '')}
-            </p>
-          )}
-          {explanation && (
-            <p
-              style={{
-                paddingTop: '0.5rem',
-              }}
-            >
-              <strong>Explanation:</strong> {explanation}
-            </p>
-          )}
+          {transformAADescription(label.description)}
         </div>
       }
       appendTo={portalRoot}

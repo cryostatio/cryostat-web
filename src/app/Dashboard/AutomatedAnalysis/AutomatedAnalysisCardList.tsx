@@ -59,6 +59,7 @@ import {
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { transformAADescription } from '../dashboard-utils';
 
 export interface AutomatedAnalysisCardListProps {
   evaluations: CategorizedRuleEvaluations[];
@@ -146,7 +147,6 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
           </Thead>
           <Tbody>
             {flatFiltered.map((evaluation) => {
-              const [summary, explanation] = evaluation.description.split('Explanation:');
               return (
                 <Tr key={evaluation.name}>
                   <Td dataLabel={t('NAME', { ns: 'common' })} width={10}>
@@ -163,20 +163,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
                     </Flex>
                   </Td>
                   <Td modifier="breakWord" dataLabel={t('DESCRIPTION', { ns: 'common' })}>
-                    {summary && (
-                      <p>
-                        <strong>Summary:</strong> {summary.replace('Summary:', '')}
-                      </p>
-                    )}
-                    {explanation && (
-                      <p
-                        style={{
-                          paddingTop: '0.5rem',
-                        }}
-                      >
-                        <strong>Explanation:</strong> {explanation}
-                      </p>
-                    )}
+                    {transformAADescription(evaluation.description)}
                   </Td>
                 </Tr>
               );
