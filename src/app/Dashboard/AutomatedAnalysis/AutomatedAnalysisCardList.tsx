@@ -141,14 +141,15 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
               <Th modifier="wrap" sort={getSortParams(1)}>
                 {t('SCORE', { ns: 'common' })}
               </Th>
-              <Th modifier="wrap">{t('DESCRIPTION', { ns: 'common' })}</Th>
+              <Th modifier="truncate">{t('DESCRIPTION', { ns: 'common' })}</Th>
             </Tr>
           </Thead>
           <Tbody>
             {flatFiltered.map((evaluation) => {
+              const [summary, explanation] = evaluation.description.split('Explanation:');
               return (
                 <Tr key={evaluation.name}>
-                  <Td dataLabel={t('NAME', { ns: 'common' })} width={20}>
+                  <Td dataLabel={t('NAME', { ns: 'common' })} width={10}>
                     {evaluation.name}
                   </Td>
                   <Td dataLabel={t('SCORE', { ns: 'common' })} modifier="wrap">
@@ -161,7 +162,20 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
                       <FlexItem>{icon(evaluation.score)}</FlexItem>
                     </Flex>
                   </Td>
-                  <Td dataLabel={t('DESCRIPTION', { ns: 'common' })}>{evaluation.description}</Td>
+                  <Td modifier="breakWord" dataLabel={t('DESCRIPTION', { ns: 'common' })}>
+                    <p>
+                      <strong>Summary:</strong> {summary.replace('Summary:', '')}
+                    </p>
+                    {explanation && (
+                      <p
+                        style={{
+                          paddingTop: '0.5rem',
+                        }}
+                      >
+                        <strong>Explanation:</strong> {explanation}
+                      </p>
+                    )}
+                  </Td>
                 </Tr>
               );
             })}

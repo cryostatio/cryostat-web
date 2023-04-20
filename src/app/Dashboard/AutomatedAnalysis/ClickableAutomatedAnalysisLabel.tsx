@@ -104,6 +104,8 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     );
   }, [label.score]);
 
+  const [summary, explanation] = label.description.split('Explanation:');
+
   return (
     <Popover
       aria-label={t('ClickableAutomatedAnalysisLabel.ARIA_LABELS.POPOVER')}
@@ -122,7 +124,18 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
           <p className={css(alertStyle[alertPopoverVariant], `${clickableAutomatedAnalysisKey}-popover-body-score`)}>
             {label.score == AutomatedAnalysisScore.NA_SCORE ? 'N/A' : label.score.toFixed(1)}
           </p>
-          <p>{label.description}</p>
+          <p>
+            <strong>Summary:</strong> {summary.replace('Summary:', '')}
+          </p>
+          {explanation && (
+            <p
+              style={{
+                paddingTop: '0.5rem',
+              }}
+            >
+              <strong>Explanation:</strong> {explanation}
+            </p>
+          )}
         </div>
       }
       appendTo={portalRoot}
