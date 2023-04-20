@@ -37,6 +37,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export enum LocalStorageKey {
+  ASSET_VERSION,
   FEATURE_LEVEL,
   DASHBOARD_CFG,
   AUTOMATED_ANALYSIS_FILTERS,

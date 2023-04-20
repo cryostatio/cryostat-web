@@ -40,6 +40,7 @@ import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { getFromLocalStorage } from './LocalStorage';
 
 const SECOND_MILLIS = 1000;
 const MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -266,3 +267,45 @@ export const getActiveTab = <T>(search: string, key: string, supportedTabs: T[],
 };
 
 export const clickOutside = () => document.body.click();
+
+export interface SemVer {
+  major: number;
+  minor: number;
+  patch: number;
+}
+
+// https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+export const semverRegex =
+  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+
+export const getSemVer = (str: string): SemVer | undefined => {
+  const matched = str.match(semverRegex);
+  if (matched) {
+    const [_, major, minor, patch] = matched;
+    return {
+      major: Number(major),
+      minor: Number(minor),
+      patch: Number(patch),
+    };
+  }
+  return undefined;
+};
+
+const convert = (ver: SemVer) => ver.major * 100 + ver.minor * 10 + ver.patch;
+
+export const compareSemVer = (ver1: SemVer, ver2: SemVer): number => {
+  const _ver1 = convert(ver1);
+  const _ver2 = convert(ver2);
+  return _ver1 > _ver2 ? 1 : _ver1 < _ver2 ? -1 : 0;
+};
+
+export const isAssetNew = (currVerStr: string) => {
+  const oldVer = getSemVer(getFromLocalStorage('ASSET_VERSION', '0.0.0'));
+  const currVer = getSemVer(currVerStr);
+
+  if (!currVer) {
+    throw new Error(`Invalid asset version: ${currVer}`);
+  }
+  // Invalid (old) version is ignored.
+  return !oldVer || compareSemVer(currVer, oldVer) > 0;
+};
