@@ -188,11 +188,10 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
-              <strong>
-                Summary:
-              </strong>
-               
+            <p
+              style={Object {}}
+            >
+              
               rule1 description
             </p>
           </td>
@@ -257,11 +256,10 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
-              <strong>
-                Summary:
-              </strong>
-               
+            <p
+              style={Object {}}
+            >
+              
               rule3 description
             </p>
           </td>
@@ -326,11 +324,10 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
-              <strong>
-                Summary:
-              </strong>
-               
+            <p
+              style={Object {}}
+            >
+              
               rule2 description
             </p>
           </td>
@@ -395,11 +392,10 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
-              <strong>
-                Summary:
-              </strong>
-               
+            <p
+              style={Object {}}
+            >
+              
               N/A description
             </p>
           </td>

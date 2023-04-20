@@ -398,7 +398,6 @@ export interface PropControlExtra {
   max?: number;
   [key: string]: any;
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface PropControl {
   name: string;
@@ -409,6 +408,7 @@ export interface PropControl {
   defaultValue: any;
   extras?: PropControlExtra;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface DashboardCardTypeProps {
   span: number;
