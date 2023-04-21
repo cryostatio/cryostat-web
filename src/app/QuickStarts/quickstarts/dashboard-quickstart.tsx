@@ -46,6 +46,8 @@ import { conclusion } from '../quickstart-utils';
 
 const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Logo');
 
+const displayName = 'Get started with the Dashboard';
+
 // TODO: Split quick start into multiple quick starts under Dashboard category
 // e.g. dashboard cards, layouts/templates, automated analysis, etc.
 const DashboardQuickStart: QuickStart = {
@@ -57,7 +59,7 @@ const DashboardQuickStart: QuickStart = {
   },
   spec: {
     version: 2.3,
-    displayName: 'Get started with the Dashboard',
+    displayName: displayName,
     durationMinutes: 10,
     icon: <Icon />,
     description: `Learn about what you can do with the **[APP]** Dashboard.`,
@@ -188,6 +190,7 @@ You can rename, delete and quickly switch between **Dashboard Layouts** for diff
       },
     ],
     conclusion: conclusion(
+      displayName,
       'Dashboard',
       `For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guides on the <a href="${build.dashboardGuideUrl}" target="_blank">Cryostat documentation</a>.`
     ),
