@@ -59,6 +59,7 @@ import {
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { transformAADescription } from '../dashboard-utils';
 
 export interface AutomatedAnalysisCardListProps {
   evaluations: CategorizedRuleEvaluations[];
@@ -141,14 +142,14 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
               <Th modifier="wrap" sort={getSortParams(1)}>
                 {t('SCORE', { ns: 'common' })}
               </Th>
-              <Th modifier="wrap">{t('DESCRIPTION', { ns: 'common' })}</Th>
+              <Th modifier="truncate">{t('DESCRIPTION', { ns: 'common' })}</Th>
             </Tr>
           </Thead>
           <Tbody>
             {flatFiltered.map((evaluation) => {
               return (
                 <Tr key={evaluation.name}>
-                  <Td dataLabel={t('NAME', { ns: 'common' })} width={20}>
+                  <Td dataLabel={t('NAME', { ns: 'common' })} width={10}>
                     {evaluation.name}
                   </Td>
                   <Td dataLabel={t('SCORE', { ns: 'common' })} modifier="wrap">
@@ -161,7 +162,9 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
                       <FlexItem>{icon(evaluation.score)}</FlexItem>
                     </Flex>
                   </Td>
-                  <Td dataLabel={t('DESCRIPTION', { ns: 'common' })}>{evaluation.description}</Td>
+                  <Td modifier="breakWord" dataLabel={t('DESCRIPTION', { ns: 'common' })}>
+                    {transformAADescription(evaluation.description)}
+                  </Td>
                 </Tr>
               );
             })}
