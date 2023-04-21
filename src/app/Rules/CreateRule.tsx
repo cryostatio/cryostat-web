@@ -379,6 +379,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
               aria-label="More info for match expression field"
               onClick={(e) => e.preventDefault()}
               className="pf-c-form__group-label-help"
+              data-quickstart-id="rule-matchexpr-help"
             >
               <HelpIcon />
             </Button>
