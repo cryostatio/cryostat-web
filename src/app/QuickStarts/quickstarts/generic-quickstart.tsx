@@ -43,9 +43,8 @@ import { conclusion } from '../quickstart-utils';
 import { PficonTemplateIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-// Use this as an icon that is responsive to other themes
-
-const displayName = 'Placeholder';
+// Quick start name (currently cannot use [APP], there is a bug with how the title gets rendered in the quick start panel)
+const displayName = 'Getting started with quick starts in Cryostat';
 
 // Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 const GenericQuickStart: QuickStart = {
@@ -61,7 +60,7 @@ const GenericQuickStart: QuickStart = {
     displayName: displayName,
     durationMinutes: 10,
     type: {
-      text: 'Type',
+      text: 'Placeholder',
       // 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
       color: 'grey',
     },
