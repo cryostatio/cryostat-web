@@ -398,7 +398,6 @@ export interface PropControlExtra {
   max?: number;
   [key: string]: any;
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface PropControl {
   name: string;
@@ -409,6 +408,7 @@ export interface PropControl {
   defaultValue: any;
   extras?: PropControlExtra;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface DashboardCardTypeProps {
   span: number;
@@ -418,3 +418,27 @@ export interface DashboardCardTypeProps {
   isFullHeight?: boolean;
   actions?: JSX.Element[];
 }
+
+/* CARD COMPONENTS */
+
+export const transformAADescription = (description: string): JSX.Element => {
+  const splitDesc = description.split('\n\n');
+  const boldRegex = /^([^:]+:\s?)/; // match text up to and including the first colon
+
+  return (
+    <>
+      {splitDesc.map((item, index) => {
+        const boldMatch = item.match(boldRegex);
+        const boldText = boldMatch ? boldMatch[0] : '';
+        const restOfText = boldMatch ? item.replace(boldRegex, '') : item;
+        const style = index > 0 ? { paddingTop: '0.7rem' } : {};
+        return (
+          <p key={index} style={style}>
+            {boldText && <strong>{boldText}</strong>}
+            {restOfText}
+          </p>
+        );
+      })}
+    </>
+  );
+};
