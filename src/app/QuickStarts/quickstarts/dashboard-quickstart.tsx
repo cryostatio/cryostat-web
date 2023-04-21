@@ -42,6 +42,7 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { withThemedIcon } from '@app/utils/withThemedIcon';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
+import { conclusion } from '../quickstart-utils';
 
 const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Logo');
 
@@ -56,7 +57,7 @@ const DashboardQuickStart: QuickStart = {
   },
   spec: {
     version: 2.3,
-    displayName: 'Dashboard',
+    displayName: 'Get started with the Dashboard',
     durationMinutes: 10,
     icon: <Icon />,
     description: `Learn about what you can do with the **[APP]** Dashboard.`,
@@ -103,7 +104,7 @@ The new layout is automatically selected and should be named **Custom1**, assumi
         review: {
           instructions: '#### Verify that the new layout is created and selected.',
           failedTaskHelp:
-            'Try the steps again. Make sure that the the new layout is named Custom with some number appended to it.',
+            'Try the steps again. Make sure that the the new layout is named Custom with a numeric suffix.',
         },
       },
       {
@@ -120,17 +121,17 @@ Each card displays a different set of information about the currently selected t
 
 [Learn more about each Dashboard Card in the [Cryostat documentation](${build.dashboardGuideUrl}).]{{admonition tip}}
 
-To create a card, you will go through a **creation wizard** that guides through the process of selecting and configuring the desired card.
+To create a card, go through a creation wizard that guides the process of selecting and configuring the desired card.
 
 1. Click the [Catalog Icon]{{highlight dashboard-add-btn}}.
     
     This will open a modal. From the card catalog, select the **Target JVM Details** card. Full details and any available preview will be shown on the drawer panel.
 
-2. Click Finish.
+2. Click **Finish**.
 3. Repeat steps 1-2 to add the **MBeans Metrics Chart** card to the current layout.
-4. This time, click Next to go to the next configuration step of the creation wizard.
+4. This time, click **Next** to go to the next configuration step of the creation wizard.
 [The default metric selected for the card is the \`Process CPU Load\` metric. You can change this by clicking the **Performance Metric** dropdown menu within the **MBeans Chart Card** configuration step and selecting a different metric. Try other metrics and settings!]{{admonition tip}}
-5. Click Finish once more.
+5. Click **Finish** once more.
 `,
         review: {
           instructions: '#### Verify that you see the two new cards in the Dashboard.',
@@ -154,7 +155,7 @@ To create a card, you will go through a **creation wizard** that guides through 
         title: 'Modify a Dashboard Layout',
         description: `
 You can rename, delete and quickly switch between **Dashboard Layouts** for different sets of information about the target JVMs. Customize these layouts to suit your needs!
-1. Rename the current Dashboard Layout by clicking the [Pencil icon]{{highlight dashboard-rename-btn}} on the **Layout Selector** toolbar.
+1. Rename the current Dashboard Layout by clicking the [Pencil icon]{{highlight dashboard-rename-btn}} on the **Layout Selector** toolbar. You cannot rename the \`Default\` layout.
 2. To switch between Dashboard Layouts, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and select the \`Default\` layout.
 3. You are able to delete Dashboard Layouts by clicking the [Trash icon]{{highlight dashboard-delete-btn}} on the **Layout Selector** toolbar. You cannot delete the \`Default\` layout.
 
@@ -162,14 +163,15 @@ You can rename, delete and quickly switch between **Dashboard Layouts** for diff
 `,
         review: {
           instructions: '#### Verify that you are able to rename, and switch between Dashboard Layouts.',
-          failedTaskHelp: 'Make sure you are clicking the correct actions and buttons.',
+          failedTaskHelp:
+            'Make sure you are clicking the correct actions and buttons. Note that you cannot rename or delete the `Default` layout.',
         },
       },
       {
         title: 'Use Layout Templates',
         description: `
 **Layout Templates** are pre-configured Dashboard Layouts that are used to quickly create new Dashboard Layouts. You can also download and upload your own Dashboard Layouts as templates. [APP] provides a few templates that you can use to get started.
-1. To create a new Dashboard Layout from a template, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and select the split button dropdown next to the **New Layout** button.
+1. To create a new Dashboard Layout from a template, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and click the caret icon next to the **New Layout** button.
    
    This will open a dropdown menu. 
 2. Select **Choose Template**.
@@ -185,15 +187,10 @@ You can rename, delete and quickly switch between **Dashboard Layouts** for diff
         },
       },
     ],
-    conclusion: `
-<div>
-    <p>You completed the <strong>Dashboard</strong> quick start!</p>
-    <div style="max-width: 22rem">
-        <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogoIcon}" alt="Cryostat Logo" width="100%" height="100%" />
-        <p class="cryostat-text">cryostat</p>
-        </div>
-    <p>For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guides on the <a href="${build.dashboardGuideUrl}" target="_blank">Cryostat documentation</a>.</p>
-</div>`,
+    conclusion: conclusion(
+      'Dashboard',
+      `For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guides on the <a href="${build.dashboardGuideUrl}" target="_blank">Cryostat documentation</a>.`
+    ),
     type: {
       text: 'Introduction',
       color: 'blue',

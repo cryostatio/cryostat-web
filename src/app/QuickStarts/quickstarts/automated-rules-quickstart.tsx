@@ -42,8 +42,11 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { withThemedIcon } from '@app/utils/withThemedIcon';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
+import { conclusion } from '../quickstart-utils';
 
 const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');
+
+const displayName = 'Get started with Automated Rules';
 
 const AutomatedRulesQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
@@ -54,7 +57,7 @@ const AutomatedRulesQuickStart: QuickStart = {
   },
   spec: {
     version: 2.3,
-    displayName: 'Automated Rules',
+    displayName: displayName,
     durationMinutes: 5,
     icon: <Icon />,
     description: `Learn about automated rules in **[APP]** and how to create one.`,
@@ -92,20 +95,19 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
         description: `
 To create a new rule, you'll use the Automated Rule creation form which has multiple fields with helpful text to guide you. Each field is labeled to explain its purpose and help you fill out the form correctly.
 
-**The most important field is the [Match Expression]{{highlight rule-matchexpr}} field.** This field is used to match one or more target JVMs. The match expression is a Java-like code snippet that is matched against each target JVM.
+The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the match expression: \`true\`{{copy}}. You can also match targets more specifically with a match expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
 
-[Use the [Match Expression Visualizer]{{highlight match-expr-card}} to test your match expression against the target JVMs currently discovered by [APP]. Any matched targets will appear unfaded in the Graph view and will be listed in the List view.]{{admonition tip}}
 
 **To create a new rule, you must fill out the following required fields:**
 1. Enter a name for the rule in the [Name]{{highlight rule-name}} field.
-2. Enter a [Match Expression]{{highlight rule-matchexpr}}. Try the [match hint]{{highlight rule-matchexpr-help}} to help you create a match expression or use the expression \`true\`{{copy}}.
+2. Enter an expression in the [Match Expression]{{highlight rule-matchexpr}} field. To see an example match expression, click the [match hint]{{highlight rule-matchexpr-help}}.
+[Use the [Match Expression Visualizer]{{highlight match-expr-card}} to test your match expression against the target JVMs currently discovered by [APP]. Any matched targets will appear unfaded in the Graph view and will be listed in the List view.]{{admonition tip}}
+
 3. Select an [Event Template]{{highlight rule-evt-template}}.
 
-The rest of the fields are optional and not required for this quick start: \`Description, Maximum Size, Maximum Age, Maximum Age, Archival Period, Initial Delay, Preserved Archives\`.
+[There may be no available templates if there are no targets currently matched, or if there is a failure to connect to all matched targets.]{{admonition warning}}
 
-[Learn more about these other Automated Rule attributes in the [[APP] documentation](${build.automatedRulesGuideUrl}).]{{admonition tip}}
-
-When you are finished, click [Create]{{highlight rule-create-btn}}.
+4. Click [Create]{{highlight rule-create-btn}}.
 
 `,
         review: {
@@ -119,7 +121,7 @@ When you are finished, click [Create]{{highlight rule-create-btn}}.
         description: `
 The rule that was created will have started a new recording on any matched target JVMs.
 1. In the [APP] console navigation bar, click [Recordings]{{highlight nav-recordings-tab}}.
-2. Click the [Target Selector]{{highlight target-select}} dropdown menu and select the target JVM that you used to create the rule, if not already selected.
+2. Click the [Target Selector]{{highlight target-select}} dropdown menu and select a target JVM that was matched from the created automated rule, if not already selected.
 
 There should now be a new recording in the list of active recordings on the selected target JVM. 
 
@@ -131,19 +133,11 @@ The recording should be named according to the rule-name format, such as \`auto_
           instructions:
             '#### Verify that you see the new recording with the correct Automated Rule recording naming scheme in the list of recordings.',
           failedTaskHelp:
-            'If you do not see the new recording, go back to the Rule Creation form, and try verifying that your rule match expression correctly matches the target JVM that you selected in this task.',
+            'If you do not see the new recording, go back to the Rule Creation form, and try verifying that your rule match expression correctly matches the intended target JVMs in this task.',
         },
       },
     ],
-    conclusion: `
-<div>
-    <p>You completed the <strong>Automated Rules</strong> quick start!</p>
-    <div style="max-width: 22rem">
-        <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogoIcon}" alt="Cryostat Logo" width="100%" height="100%" />
-        <p class="cryostat-text">cryostat</p>
-        </div>
-    <p>For more information about the <strong>Automated Rules</strong> feature, read our guides on the <a href="${build.automatedRulesGuideUrl}" target="_blank">[APP] documentation</a>.</p>
-</div>`,
+    conclusion: conclusion(displayName, 'Automated Rules'),
     type: {
       text: 'Advanced',
       color: 'red',

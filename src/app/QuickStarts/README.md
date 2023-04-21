@@ -42,9 +42,7 @@ SOFTWARE.
 TODO: Fix this section when quick starts are categorized 
 -->
 
-* To add a new quick start, create a new tsx/ts file under `src/app/QuickStarts/quickstarts` with your quick start name, like `my-quickstart.tsx`.
-
-* For guidelines on writing a quick start, the fine folks at OpenShift have created [this guide](https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html)
+* For guidelines on writing a quick start, please follow [this tutorial](https://docs.openshift.com/container-platform/4.12/web_console/creating-quick-start-tutorials.html).
 
 * Take note of the quick start [content guidelines](https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html#quick-start-content-guidelines_creating-quick-start-tutorials) and follow them as closely as possible.
 
@@ -87,13 +85,13 @@ TODO: Fix this section when quick starts are categorized
 
 ## Highlighting elements
 
-You can highlight an element on the page from within a quick start. The element that should be highlightable needs a data-quickstart-id attribute. Example:
-```
+You can highlight an element on the page from within a quick start. The element that should be highlighted needs a `data-quickstart-id` attribute. Example:
+```html
 <button data-quickstart-id="special-btn">Click me</button>
 ```
 
 In the quick start task description, you can add this type of markdown to target this element:
-```
+```markdown
 Highlight [special button]{{highlight special-btn}}
 ```
 
@@ -102,12 +100,12 @@ Highlight [special button]{{highlight special-btn}}
 You can have inline or block copyable text.
 
 #### Inline copyable text example
-```
+```markdown
 `echo "Donec id est ante"`{{copy}}
 ```
 
 #### Multiline copyable text example
-```
+```markdown
     ```
       First line of text.
       Second line of text.
@@ -116,7 +114,7 @@ You can have inline or block copyable text.
 
 ## Markdown extensions
 If your source material content is defined in markdown (yaml + markdown / json + markdown), then you can add your own markdown extensions, example:
-```
+```tsx
 const drawerProps: QuickStartContainerProps = {
   markdown: {
     extensions: [
