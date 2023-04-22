@@ -49,7 +49,7 @@ export const AboutCryostatModal = ({ isOpen, onClose }) => {
   return (
     <AboutModal
       appendTo={portalRoot}
-      productName={build.productName}
+      productName={`${build.productName} ${build.version}`}
       brandImageSrc={cryostatLogo}
       brandImageAlt="Cryostat Logo"
       isOpen={isOpen}

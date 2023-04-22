@@ -85,7 +85,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
                 width={300}
               />
               <h1>
-                Welcome to <strong>Cryostat</strong>!
+                Welcome to <strong>Cryostat {build.version}</strong>!
               </h1>
             </div>
           ),
