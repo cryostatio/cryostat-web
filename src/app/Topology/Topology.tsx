@@ -38,22 +38,18 @@
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { ViewMode } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Bullseye, Card, CardBody } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
-import { HintBanner } from './Shared/HintBanner';
 import { DiscoveryTreeContext, SearchExprService, SearchExprServiceContext } from './Shared/utils';
 import { DEFAULT_EMPTY_UNIVERSE } from './typings';
 
@@ -75,18 +71,12 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
 
   const [discoveryTree, setDiscoveryTree] = React.useState(DEFAULT_EMPTY_UNIVERSE);
 
-  const [shouldShowBanner, setShouldShowBanner] = React.useState(getFromLocalStorage('TOPOLOGY_SHOW_BANNER', true));
   const isGraphView = useSelector((state: RootState) => {
     const _currentMode: ViewMode = state.topologyConfigs.viewMode;
     return _currentMode === 'graph';
   });
 
   const [error, setError] = React.useState<Error>();
-
-  const closeBanner = React.useCallback(() => {
-    setShouldShowBanner(false);
-    saveToLocalStorage('TOPOLOGY_SHOW_BANNER', false);
-  }, [setShouldShowBanner]);
 
   const _refreshDiscoveryTree = React.useCallback(
     (onSuccess?: () => void) => {
@@ -178,11 +168,6 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
 
   return (
     <>
-      <FeatureFlag level={FeatureLevel.BETA}>
-        <HintBanner onClose={closeBanner} show={shouldShowBanner}>
-          For topology guides, see <Link to={'/quickstarts'}>Quickstarts</Link>.
-        </HintBanner>
-      </FeatureFlag>
       <BreadcrumbPage pageTitle={'Topology'} {..._props}>
         <Card isFullHeight id="topology-card">
           <CardBody style={{ padding: 0 }}>

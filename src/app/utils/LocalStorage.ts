@@ -37,6 +37,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export enum LocalStorageKey {
+  ASSET_VERSION,
   FEATURE_LEVEL,
   DASHBOARD_CFG,
   AUTOMATED_ANALYSIS_FILTERS,
@@ -44,7 +45,6 @@ export enum LocalStorageKey {
   CREDENTIAL_LOCATION,
   TARGET,
   TARGET_FAVORITES,
-  TOPOLOGY_SHOW_BANNER,
   TOPOLOGY_GRAPH_POSITONS,
   TOPOLOGY_NODE_POSITIONS,
   TOPOLOGY_CONFIG,
