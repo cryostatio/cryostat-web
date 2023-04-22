@@ -48,9 +48,10 @@ import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { useTheme } from '@app/utils/useTheme';
-import { cleanDataId, openTabForUrl, portalRoot } from '@app/utils/utils';
+import { cleanDataId, isAssetNew, openTabForUrl, portalRoot } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -585,6 +586,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     () => <NotificationCenter onClose={handleCloseNotificationCenter} />,
     [handleCloseNotificationCenter]
   );
+
+  React.useEffect(() => {
+    if (showUserIcon && isAssetNew(build.version)) {
+      handleOpenGuidedTour();
+      saveToLocalStorage('ASSET_VERSION', build.version);
+    }
+  }, [handleOpenGuidedTour, showUserIcon]);
 
   return (
     <GlobalQuickStartDrawer>

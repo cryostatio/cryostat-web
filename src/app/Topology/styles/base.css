@@ -250,31 +250,6 @@ Below CSS rules only apply to Topology components
   font-weight: 700;
 }
 
-.topology__hint-banner {
-  position: relative;
-  box-sizing: border-box;
-  text-align: center;
-  padding: 0.2em 0 0.2em 0;
-  background-color: var(--pf-global--palette--blue-400);
-  color: var(--pf-global--palette--white);
-  font-size: 0.9em;
-  margin-bottom: -1em;
-}
-
-.topology__hint-banner a {
-  color: var(--pf-global--palette--white);
-  text-decoration: solid underline var(--pf-global--palette--white) 1px;
-}
-
-.topology__hint-banner .close-icon {
-  position: relative;
-  float: right;
-  font-size: 1em;
-  margin-right: 1em;
-  transform: translateY(calc(50% - 0.25em));
-  cursor: pointer;
-}
-
 #topology__visualization-container.topology__main-container  {
   padding: 1em;
 }
