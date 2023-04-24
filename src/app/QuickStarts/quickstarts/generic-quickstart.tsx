@@ -39,10 +39,15 @@ import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
+import { conclusion } from '../quickstart-utils';
+import { PficonTemplateIcon } from '@patternfly/react-icons';
+import React from 'react';
+
+// Quick start name (currently cannot use [APP], there is a bug with how the title gets rendered in the quick start panel)
+const displayName = 'Getting started with quick starts in Cryostat';
 
 // Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 const GenericQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
   metadata: {
     name: 'generic-quickstart',
     featureLevel: FeatureLevel.DEVELOPMENT,
@@ -51,10 +56,10 @@ const GenericQuickStart: QuickStart = {
   },
   spec: {
     version: 2.3, // versioning for each release of the quick start
-    displayName: 'Getting started with quick starts',
+    displayName: displayName,
     durationMinutes: 10,
     type: {
-      text: 'Type',
+      text: 'Placeholder',
       // 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
       color: 'grey',
     },
@@ -65,8 +70,8 @@ const GenericQuickStart: QuickStart = {
     # - If empty string (icon: ''), will use a default rocket icon
     # - If set to null (icon: ~) will not show an icon
     */
-    icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMzA4LjY0NyAyOTEuNjc5NyI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOnVybCgjbGluZWFyLWdyYWRpZW50KTt9PC9zdHlsZT48bGluZWFyR3JhZGllbnQgaWQ9ImxpbmVhci1ncmFkaWVudCIgeDE9IjE1NC4zMjM1IiB5MT0iOS4xNjQ4NyIgeDI9IjE1NC4zMjM1IiB5Mj0iMjkyLjY2MzgzIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTRlZWZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMWM3NWJjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHRpdGxlPkFzc2V0IDE8L3RpdGxlPjxnIGlkPSJMYXllcl8yIiBkYXRhLW5hbWU9IkxheWVyIDIiPjxnIGlkPSJMYXllcl8xLTIiIGRhdGEtbmFtZT0iTGF5ZXIgMSI+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTU0LjY3NDMuNTgxNmwuMDI4OC0uMjY3Ni0uMTMxMy4xNjQxLS4wNTMyLS4wNTA4TDE1NC41NjQ5LDBsLS4yNDA3LjIzNDlMMTU0LjA4MTUsMGwuMDQ1LjQyNzMtLjA1MDguMDUwOEwxNTMuOTQzOC4zMTRsLjAyODQuMjY3NkwwLDE1MS4wOTA5bDYwLjk3OSw4Ni4zODUyLDQ3LjEwMy0xMC44MTU5LDQ2LjI0MjIsNjUuMDE5NSw0Ni4yNDI3LTY1LjAxOTUsNDcuMTAzLDEwLjgxNTksMzcuNzcyLTUzLjUwOTcsMjMuMjA1MS0zMi44NzU1Wm0tNS4wMjY0LDE3LjY2OTlMMTI4LjYxNTIsMjE1LjMzNyw4Ny41MTY2LDE1OS4yODA4Wk04NS41MDA1LDE1Ni41MzM3LDU5LjYzNDgsMTIxLjI1NDRsODkuNzktMTA5LjgyMTdabTQyLjIyNzUsNjIuNTg2LTE4LjM4NDcsNC4yMTk3TDc4LjQzOSwxNzkuODg4N2w3LjcwMzEtMTcuNDg1M1pNMTUzLjgzODQsOC43MzkzbC40ODU4LTEuMTAyMS40ODQ0LDEuMDk2NywyMS43NDc1LDIxMS44OTUtLjA2NjgtLjA0NDktMjEuMzA2MiwzMS40ODc4LTIzLjA1NTctMzEuNTMyMi0uMDI4My4wMjA1Wm0yNi4xOTMzLDIwNi41OTk2TDE1OC45OTk1LDE4LjI0NTZsNjIuMTMwOSwxNDEuMDM1MlptNDIuNDc1MS01Mi45MzU1LDcuNzAzNiwxNy40ODUzLTMwLjkwNDcsNDMuNDUwNy0xOC4zODUzLTQuMjE5N1pNMTU5LjIyMzYsMTEuNDM3MWw4OS43ODg2LDEwOS44MTczLTI1Ljg2MzMsMzUuMjc5M1pNNjIuMjUsMjM0LjE1MzksMy44NjQ3LDE1MS40NDQ0LDEzOS43MTk3LDE4LjY0MTYsNTUuOTAxNCwxMjEuMTU2OGwyOC4yMjYsMzguNDk0Nkw3NS4wNjE1LDE4MC4yMzNsMzEuMTY2NSw0My44MjMyWm05Mi4wNzQyLDUyLjQzMjYtNDMuMTMwNC02MC42NDIxLDE4LjQzNTEtNC4yMzI5LjMxMi40MjU3LS4xOTgyLjE0NDYsMjUuNTMxMiwzNC45MTg0LDIzLjY2MTItMzQuOTU5OS0uMjAyNy0uMTM2Ny4yODcxLS4zOTIxLDE4LjQzNDEsNC4yMzI5Wk0yODMuMDMwOCwxODIuMjY0MmwtMzYuNjMyOSw1MS44ODk3LTQzLjk3NjUtMTAuMDk3NywzMS4xNjU1LTQzLjgyMzItOS4wNjU0LTIwLjU4MTYsMjguMjI2NS0zOC40OTQ2TDE2OC45Mjk3LDE4LjY0NDEsMzA0Ljc4MjIsMTUxLjQ0NDRaIi8+PC9nPjwvZz48L3N2Zz4=',
-    // icon: 'cryostatLogo', <- typically use this
+    icon: <PficonTemplateIcon />,
+    // icon: 'cryostatLogo' || '<Icon />',
     prerequisites: [
       'You can optionally list prerequisites',
       'Another prerequisite',
@@ -91,7 +96,7 @@ const GenericQuickStart: QuickStart = {
   1. A <small>limited set</small> of <strong>HTML tags</strong> [are also supported](https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html#supported-tags-for-quick-starts_creating-quick-start-tutorials)
   
 ## Images
-  HTML img tag: <img alt="Cryostat logo" src="${cryostatLogo}" width="30" height="30" />
+  HTML img tag: <img alt="[APP] logo" src="${cryostatLogo}" width="30" height="30" />
 
   > Markdown would work as well but cannot add height/width style
 
@@ -156,16 +161,11 @@ world
         },
       },
     ],
-    conclusion: `
-<div>
-  <p>You completed the <strong>Getting started with quick starts</strong> quick start!</p>
-
-  <div style="max-width: 350px">
-    <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
-    <p class="cryostat-text">cryostat</p>
-  </div>
-  <p>To learn more about [APP]'s extensive features and capabilities, read our guides at <a href="${build.documentationUrl}" target="_blank">cryostat.io</a>.</p>
-</div>`,
+    conclusion: conclusion(
+      displayName,
+      '[APP]',
+      `To learn more about [APP]'s extensive features and capabilities, please visit our website at <a href="${build.documentationUrl}" target="_blank">${build.documentationUrl}</a>.`
+    ),
     nextQuickStart: ['start-a-recording-quickstart'],
   },
 };

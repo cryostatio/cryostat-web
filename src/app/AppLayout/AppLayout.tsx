@@ -75,7 +75,6 @@ import {
   Nav,
   NavGroup,
   NavItem,
-  NavList,
   NotificationBadge,
   Page,
   PageSidebar,
@@ -432,6 +431,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     onClick={handleSettingsButtonClick}
                     variant="plain"
                     icon={<CogIcon size="sm" />}
+                    aria-label="Settings"
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                   />
@@ -533,40 +533,38 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const Navigation = React.useMemo(
     () => (
-      <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect}>
-        <NavList id="nav-list-simple">
-          {navGroups.map((title) => {
-            return (
-              <NavGroup title={title} key={title}>
-                {routes
-                  .filter((route) => route.navGroup === title)
-                  .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
-                  .map((route, idx) => {
-                    return (
-                      route.label && (
-                        <NavItem
-                          key={`${route.label}-${idx}`}
-                          id={`${route.label}-${idx}`}
-                          isActive={isActiveRoute(route)}
+      <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect} aria-label="Global nav">
+        {navGroups.map((title) => {
+          return (
+            <NavGroup title={title} key={title}>
+              {routes
+                .filter((route) => route.navGroup === title)
+                .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
+                .map((route, idx) => {
+                  return (
+                    route.label && (
+                      <NavItem
+                        key={`${route.label}-${idx}`}
+                        id={`${route.label}-${idx}`}
+                        isActive={isActiveRoute(route)}
+                      >
+                        <NavLink
+                          exact
+                          to={route.path}
+                          activeClassName="pf-m-current"
+                          data-quickstart-id={`nav-${cleanDataId(route.label)}-tab`}
+                          data-tour-id={`${cleanDataId(route.label)}`}
                         >
-                          <NavLink
-                            exact
-                            to={route.path}
-                            activeClassName="pf-m-current"
-                            data-quickstart-id={`nav-${cleanDataId(route.label)}-tab`}
-                            data-tour-id={`${cleanDataId(route.label)}`}
-                          >
-                            {route.label}
-                            {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
-                          </NavLink>
-                        </NavItem>
-                      )
-                    );
-                  })}
-              </NavGroup>
-            );
-          })}
-        </NavList>
+                          {route.label}
+                          {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
+                        </NavLink>
+                      </NavItem>
+                    )
+                  );
+                })}
+            </NavGroup>
+          );
+        })}
       </Nav>
     ),
     [mobileOnSelect, isActiveRoute, levelBadge, activeLevel]

@@ -90,37 +90,3 @@ The extraction tool is [`i18next-parser`](https://www.npmjs.com/package/i18next-
 ).
 
 To workaround this, specify static values in `i18n.ts` file under any top-level directory below `src/app`. For example, `src/app/Settings/i18n.ts`.
-
-## ADDING QUICKSTARTS
-
-To add a new quickstart, create a new tsx/ts file under `src/app/QuickStarts` with your Quick Start name, like `my-quickstart.tsx`. 
-
-### Highlighting elements
-
-You can highlight an element on the page from within a quick start. The element that should be highlightable needs a data-quickstart-id attribute. Example:
-```
-<button data-quickstart-id="special-btn">Click me</button>
-```
-
-In the quick start task description, you can add this type of markdown to target this element:
-```
-Highlight [special button]{{highlight special-btn}}
-```
-
-### Copyable text
-
-You can have inline or block copyable text.
-
-#### Inline copyable text example
-```
-`echo "Donec id est ante"`{{copy}}
-```
-
-#### Multiline copyable text example
-```
-    ```
-      First line of text.
-      Second line of text.
-    ```{{copy}}
-```
-

@@ -35,15 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { conclusion } from '../quickstart-utils';
+
+const displayName = 'Using Settings';
 
 const SettingsQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
   metadata: {
     name: 'settings-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
@@ -51,102 +52,90 @@ const SettingsQuickStart: QuickStart = {
   },
   spec: {
     version: 2.3,
-    displayName: 'Using Settings',
+    displayName: displayName,
     durationMinutes: 5,
     icon: <CogIcon />,
-    description: `Learn about the settings page in [APP] and how to use it.`,
+    description: `Learn about the settings page in **[APP]** and how to use it.`,
     prerequisites: [''],
     introduction: `
-  <div style="padding-bottom: 1rem">
-    <p>
-    <h1>Using Settings</h1>
-      Cryostat has a settings page that allows you to configure the application. This quick start will show you how to use the settings page.
-      <h3>
-      There are various settings that can be configured:
-      </h3>
-      <ul style="font-weight: bold;">
-        <li>General</li>
-        <li>Connectivity</li>
-        <li>Notification & Messages</li>    
-        <li>Dashboard</li>
-        <li>Advanced</li>
-      </ul>
-      We will go over each of these settings briefly.
-    </p>
-  </div>
+## Using Settings
+      
+[APP] provides a settings page that lets you configure various aspects of the application. This quick start will show you how to use the settings page.
+
+### What you'll learn
+  - How to navigate to the settings page
+  - How to configure settings in [APP]
     `,
     tasks: [
       {
         title: 'Navigate to the Settings page',
         description: `
-1. Press the [Settings]{{highlight settings-link}} cog icon.`,
+1. On the masthead, click the [Settings]{{highlight settings-link}} cog.`,
       },
       {
-        title: 'Go to the General settings tab',
+        title: 'Go to the **General** tab',
         description: `
-1. Go to the [General]{{highlight settings-general-tab}} tab
+The **General** settings tab is where you can adjust various general settings to tailor your experience with the application. You can select a preferred theme, the date locale, and the current timezone.
+
+1. Click [General]{{highlight settings-general-tab}}.
 2. Configure the theme.
 3. Configure the date locale and current timezone.
-[Cryostat currently only supports English. We are planning on adding support for other languages in the future.]{{admonition note}}`,
+[[APP] currently only supports English. We are planning on adding support for other languages in the future.]{{admonition note}}`,
       },
       {
-        title: 'Go to the Connectivity settings tab',
+        title: 'Go to the **Connectivity** tab',
         description: `
-The Connectivity tab allows you to configure the WebSocket connection the browser forms with the Cryostat backend.
+The **Connectivity** tab enables you to configure the WebSocket connection between the browser and the [APP] backend.
 
-1. Go to the [Connectivity]{{highlight settings-connectivity-tab}} tab.
-2. Configure the WebSocket Connection Debounce time.
-3. Configure the Auto-Refresh period for content-views.
-[To use the Auto-Refresh feature, you must have the [Auto-Refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox enabled.]{{admonition tip}}
+1. Click [Connectivity]{{highlight settings-connectivity-tab}}.
+2. Configure the **WebSocket Connection Debounce** time.
+3. Configure the **Auto-Refresh** period for content-views.
+[To use the **Auto-Refresh** feature, make sure to enable the [Auto-Refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox.]{{admonition tip}}
 `,
       },
       {
-        title: 'Go to the Notifications & Messages tab',
+        title: 'Go to the **Notifications & Messages** tab',
         description: `
-The Notifications & Messages tab allows you to configure the notifications and deletion warnings that are displayed in the Cryostat UI.
+The **Notifications & Messages** tab allows you to configure the notifications and deletion warnings.
 
-1. Go to the [Notifications & Messages]{{highlight settings-notifications&messages-tab}} tab.
-2. Enable or disable notifications from various categories if you choose to.
-3. Enable or disable deletion dialog warnings for various destructive actions.
-[You can also control the maximum number of notifications that can be displayed at once.]{{admonition tip}}
+1. Click [Notifications & Messages]{{highlight settings-notifications&messages-tab}}.
+2. You can enable or disable notifications from various categories. Click \`Show more\` for the full list of notifications.
+  To control the maximum number of notifications, configure the input control.
+3. You are also able to enable or disable deletion dialog warnings for various destructive actions. Click \`Show more\` for the full list of deletion warnings.
 `,
       },
       {
-        title: 'Go to the Dashboard tab',
+        title: 'Go to the **Dashboard** tab',
         description: `
-The Dashboard tab allows you to configure settings for the various Dashboard Cards that you can add to the Dashboard.
+The **Dashboard** tab allows you to configure settings for the various Dashboard Cards that you can add to the Dashboard.
 
-New to [APP] 2.3 is the Automated Analysis Recording Configuration card. This card starts a recording and then automatically starts an analysis on the recording. You can configure the recording that is started by this card.
+The **Automated Analysis** dashboard card allows you to automatically start an analysis on the recording with a click of a button. You can configure the recording that is started by this card.
 
-1. Go to the [Dashboard]{{highlight settings-dashboard-tab}} tab.
-2. Configure the Automated Analysis Recording Configuration settings.
-3. Configure the Dashboard Metrics Configuration settings.
+1. From the list of settings tabs, click [Dashboard]{{highlight settings-dashboard-tab}}.
+2. Configure the **Automated Analysis Recording Configuration** settings.
+3. Configure the **Dashboard Metrics Configuration** settings.
 
-[When using the Automated Analysis Card, make sure the event template is able to be used with the target JVM.]{{admonition warning}}
-[Setting both an infinite maximum size and age may result in an out of memory error during report generation.]{{admonition caution}}
+[When using the **Automated Analysis Card**, make sure the **Event Template** is compatible with the target JVM.]{{admonition warning}}
+[Setting both an infinite maximum size and age may result in an **Out Of Memory** error during report generation.]{{admonition caution}}
 `,
       },
       {
-        title: 'Go to the Advanced tab',
+        title: 'Go to the **Advanced** tab',
         description: `
-Cryostat has a few advanced settings that can be configured. These settings are not recommended for most users.
-1. Go to the [Advanced]{{highlight settings-advanced-tab}} tab.
+[APP] has a few advanced settings that can be configured.
 
-Credentials are used to authenticate with the target JVMs that Cryostat communicates with. If you don't want these credentials to be stored in the Cryostat backend, you can choose to store them in a local session storage instead.
+1. Click [Advanced]{{highlight settings-advanced-tab}}.
+2. Configure the **Credentials Storage** settings.
+  
+  Credentials are necessary to authenticate with the target JVMs that [APP] communicates with, if JMX auth is enabled or if a [APP] agent authenticated connection is required. If you prefer not to store these credentials in the [APP] backend, you can opt to store them in local session storage instead.
+3. Configure the **Feature Level** settings.
+  
+  The **Feature Level** setting enables you to enable or disable beta features.
 
-2. Configure the Credentials Storage settings.
 `,
       },
     ],
-    conclusion: `
-<div>
-  <p>You completed the <strong>Using Settings</strong> quick start!</p>
-    <div style="max-width: 350px">
-      <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
-        <p class="cryostat-text">cryostat</p>
-    </div>
-  <p>For more information about configuring <strong>Settings</strong> in Cryostat, read our guides on the <a href="${build.homePageUrl}" target="_blank">Cryostat website</a>.</p>
-</div>`,
+    conclusion: conclusion(displayName, 'Settings'),
     type: {
       text: 'Introduction',
       color: 'blue',

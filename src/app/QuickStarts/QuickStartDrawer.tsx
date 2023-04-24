@@ -104,11 +104,11 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
             },
           },
           {
-            // replace [APP] with bolded productName like <strong>Cryostat</strong>
+            // replace [APP] with productName like Cryostat
             type: 'output',
             regex: new RegExp(`\\[APP\\]`, 'g'),
             replace: (_text: string): string => {
-              return `<strong>${build.productName}</strong>`;
+              return `${build.productName}`;
             },
           },
         ],

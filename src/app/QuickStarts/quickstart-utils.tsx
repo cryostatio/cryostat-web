@@ -35,33 +35,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
-import { QuickStart } from '@patternfly/quickstarts';
 
-// TODO: Put link quickstarts in a separate QuickStartCatalogSection
-const CryostatLinkQuickStart: QuickStart = {
-  metadata: {
-    name: 'cryostat-link-quickstart',
-    instructional: true,
-  },
-  spec: {
-    version: 2.3,
-    displayName: 'Cryostat Upstream Documentation',
-    durationMinutes: 1,
-    icon: cryostatLogo,
-    description: `Link to Cryostat's upstream documentation.`,
-    prerequisites: [''],
-    introduction: '### This is a generic quickstart.',
-    link: {
-      href: build.homePageUrl,
-      text: 'cryostat.io',
-    },
-    type: {
-      text: 'External',
-      color: 'purple',
-    },
-  },
-};
-
-export default CryostatLinkQuickStart;
+export const conclusion = (quickstartName: string, feature: string, closingMessage?: string) => `
+<div>
+    <p>You completed the <strong>${quickstartName}</strong> quick start!</p>
+    <div style="max-width: 22rem">
+        <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogoIcon}" alt="Cryostat Logo" width="100%" height="100%" />
+        <p class="cryostat-text">cryostat</p>
+        </div>
+    ${
+      closingMessage
+        ? `<p>${closingMessage}</p>`
+        : `<p>If you would like to learn more about the <strong>${feature}</strong> feature, check out the <a href="${build.documentationUrl}" target="_blank">[APP] documentation</a> for detailed guides and information.</p>`
+    }
+</div>`;

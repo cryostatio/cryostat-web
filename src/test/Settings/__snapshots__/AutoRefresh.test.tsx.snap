@@ -77,6 +77,7 @@ Array [
       data-ouia-component-id="OUIA-Generated-Checkbox-1"
       data-ouia-component-type="PF4/Checkbox"
       data-ouia-safe={true}
+      data-quickstart-id="settings-connectivity-tab-auto-refresh"
       disabled={false}
       id="auto-refresh-enabled"
       onChange={[Function]}
