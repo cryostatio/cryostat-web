@@ -115,7 +115,7 @@ There are two tabs within the Recordings page:
 Start an active recording:
 
 1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**. 
-[If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including the \`Create\` button."]{{admonition note}}
+[If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including \`Create\`."]{{admonition note}}
 2. Enter a name for the recording in the [Name]{{highlight crf-name}} field.
 3. Select the [Duration]{{highlight crf-duration}} for the recording. You can select \`CONTINUOUS\` to record until the recording is stopped.
 4. Select an [Event Template]{{highlight template-selector}} to use for the recording.

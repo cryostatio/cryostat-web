@@ -109,7 +109,7 @@ The **Notifications & Messages** tab allows you to configure the notifications a
         description: `
 The **Dashboard** tab allows you to configure settings for the various Dashboard Cards that you can add to the Dashboard.
 
-New to [APP] 2.3 is the **Automated Analysis** card. This card starts allows you click a button to start a recording and then automatically starts an analysis on the recording. You can configure the recording that is started by this card.
+New to [APP] 2.3 is the **Automated Analysis** card. This card allows you to automatically start an analysis on the recording with a click of a button. You can configure the recording that is started by this card.
 
 1. From the list of settings tabs, click [Dashboard]{{highlight settings-dashboard-tab}}.
 2. Configure the **Automated Analysis Recording Configuration** settings.

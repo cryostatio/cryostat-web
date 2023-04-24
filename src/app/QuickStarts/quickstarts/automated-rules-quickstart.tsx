@@ -93,7 +93,7 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
       {
         title: 'Fill out the Automated Rule form',
         description: `
-To create a new rule, you'll use the Automated Rule creation form which has multiple fields with helpful text to guide you. Each field is labeled to explain its purpose and help you fill out the form correctly.
+To create a new rule, use the Automated Rule creation form to fill in the required fields.
 
 The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the match expression: \`true\`{{copy}}. You can also match targets more specifically with a match expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
 

@@ -99,14 +99,14 @@ Dashboard Cards are displayed in **Dashboard Layouts**, which can be customized 
 
     This will open a dropdown menu. Click **New Layout**.
 
-The new layout is automatically selected and should be named **Custom1**, assuming you have not created any other layouts.
+The new layout is automatically selected and should be named \`Custom1\`, assuming you have not created any other layouts.
 
 [You can also rename the layout with the pencil icon next to the name.]{{admonition tip}}
 `,
         review: {
           instructions: '#### Verify that the new layout is created and selected.',
           failedTaskHelp:
-            'Try the steps again. Make sure that the the new layout is named Custom with a numeric suffix.',
+            'Try the steps again. Make sure that the the new layout is named `Custom` with a numeric suffix.',
         },
       },
       {
