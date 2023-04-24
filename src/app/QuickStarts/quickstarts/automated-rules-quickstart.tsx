@@ -35,15 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
-import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { withThemedIcon } from '@app/utils/withThemedIcon';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
-import { conclusion } from '../quickstart-utils';
-
-const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');
+import { CryostatIcon, conclusion } from '../quickstart-utils';
 
 const displayName = 'Get started with Automated Rules';
 
@@ -57,7 +52,7 @@ const AutomatedRulesQuickStart: QuickStart = {
     version: 2.3,
     displayName: displayName,
     durationMinutes: 5,
-    icon: <Icon />,
+    icon: <CryostatIcon />,
     description: `Learn about automated rules in **[APP]** and how to create one.`,
     prerequisites: ['Start a Recording'],
     introduction: `
@@ -96,7 +91,7 @@ To create a new rule, use the Automated Rule creation form to fill in the requir
 The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the match expression: \`true\`{{copy}}. You can also match targets more specifically with a match expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
 
 
-**To create a new rule, you must fill out the following required fields:**
+To create a new rule, you must fill out the following required fields:
 1. Enter a name for the rule in the [Name]{{highlight rule-name}} field.
 2. Enter an expression in the [Match Expression]{{highlight rule-matchexpr}} field. To see an example match expression, click the [match hint]{{highlight rule-matchexpr-help}}.
 [Use the [Match Expression Visualizer]{{highlight match-expr-card}} to test your match expression against the target JVMs currently discovered by [APP]. Any matched targets will appear unfaded in the Graph view and will be listed in the List view.]{{admonition tip}}
@@ -121,7 +116,7 @@ The rule that was created will have started a new recording on any matched targe
 1. In the [APP] console navigation bar, click [Recordings]{{highlight nav-recordings-tab}}.
 2. Click the [Target Selector]{{highlight target-select}} dropdown menu and select a target JVM that was matched from the created automated rule, if not already selected.
 
-There should now be a new recording in the list of active recordings on the selected target JVM. 
+There should now be a new recording in the list of active recordings on the selected target JVM.
 
 The recording should be named according to the rule-name format, such as \`auto_<rule-name>\`.
 
