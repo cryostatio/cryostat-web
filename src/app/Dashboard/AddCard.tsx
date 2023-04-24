@@ -211,6 +211,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
         return (
           <Tooltip content={'Add card'}>
             <Button
+              aria-label="Add card"
               data-quickstart-id={'dashboard-add-btn'}
               variant="plain"
               onClick={handleStart}
