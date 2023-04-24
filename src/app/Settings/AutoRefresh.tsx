@@ -100,6 +100,7 @@ const Component = () => {
         label={t('SETTINGS.AUTO_REFRESH.CHECKBOX_LABEL')}
         isChecked={state.autoRefreshEnabled}
         onChange={handleAutoRefreshEnabledChange}
+        data-quickstart-id="settings-connectivity-tab-auto-refresh"
       />
     </>
   );
