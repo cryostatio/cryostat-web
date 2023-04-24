@@ -51,13 +51,13 @@ const displayName = 'Get started with the Dashboard';
 // TODO: Split quick start into multiple quick starts under Dashboard category
 // e.g. dashboard cards, layouts/templates, automated analysis, etc.
 const DashboardQuickStart: QuickStart = {
-  apiVersion: build.version,
   metadata: {
     name: 'dashboard-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
     order: 2,
   },
   spec: {
+    version: 2.3,
     displayName: displayName,
     durationMinutes: 10,
     icon: <Icon />,
@@ -111,7 +111,7 @@ The new layout is automatically selected and should be named \`Custom1\`, assumi
       {
         title: 'Add Dashboard Cards to the layout',
         description: `
-As of [APP] 2.3, the following Dashboard Cards are available:
+The following Dashboard Cards are available:
 
 - **Target JVM Details**
 - **Automated Analysis**
