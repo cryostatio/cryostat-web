@@ -49,14 +49,13 @@ const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Ic
 const displayName = 'Start a Recording';
 
 const RecordingQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
+  apiVersion: build.version,
   metadata: {
     name: 'start-a-recording-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
     order: 1,
   },
   spec: {
-    version: 2.3,
     displayName: displayName,
     durationMinutes: 10,
     icon: <Icon />,

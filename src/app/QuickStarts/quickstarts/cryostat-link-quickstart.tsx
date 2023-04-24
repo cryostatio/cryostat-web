@@ -41,13 +41,12 @@ import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Put link quickstarts in a separate QuickStartCatalogSection
 const CryostatLinkQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
+  apiVersion: build.version,
   metadata: {
     name: 'cryostat-link-quickstart',
     instructional: true,
   },
   spec: {
-    version: 2.3,
     displayName: 'Cryostat Upstream Documentation',
     durationMinutes: 1,
     icon: cryostatLogo,

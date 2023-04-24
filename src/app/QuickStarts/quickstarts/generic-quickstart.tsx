@@ -48,7 +48,7 @@ const displayName = 'Getting started with quick starts in Cryostat';
 
 // Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 const GenericQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
+  apiVersion: build.version, // versioning for each release of the quick start
   metadata: {
     name: 'generic-quickstart',
     featureLevel: FeatureLevel.DEVELOPMENT,
@@ -56,7 +56,6 @@ const GenericQuickStart: QuickStart = {
     // you can add additional metadata here
   },
   spec: {
-    version: 2.3, // versioning for each release of the quick start
     displayName: displayName,
     durationMinutes: 10,
     type: {

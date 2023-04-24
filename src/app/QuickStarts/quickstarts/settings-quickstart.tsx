@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
@@ -44,14 +45,13 @@ import { conclusion } from '../quickstart-utils';
 const displayName = 'Using Settings';
 
 const SettingsQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
+  apiVersion: build.version,
   metadata: {
     name: 'settings-quickstart',
     featureLevel: FeatureLevel.PRODUCTION,
     order: 100,
   },
   spec: {
-    version: 2.3,
     displayName: displayName,
     durationMinutes: 5,
     icon: <CogIcon />,
@@ -109,7 +109,7 @@ The **Notifications & Messages** tab allows you to configure the notifications a
         description: `
 The **Dashboard** tab allows you to configure settings for the various Dashboard Cards that you can add to the Dashboard.
 
-New to [APP] 2.3 is the **Automated Analysis** card. This card allows you to automatically start an analysis on the recording with a click of a button. You can configure the recording that is started by this card.
+New to [APP] ${build.version} is the **Automated Analysis** card. This card allows you to automatically start an analysis on the recording with a click of a button. You can configure the recording that is started by this card.
 
 1. From the list of settings tabs, click [Dashboard]{{highlight settings-dashboard-tab}}.
 2. Configure the **Automated Analysis Recording Configuration** settings.
