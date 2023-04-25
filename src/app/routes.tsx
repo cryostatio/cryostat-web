@@ -92,6 +92,7 @@ const routes: IAppRoute[] = [
     title: 'About',
     description: 'Get information, help, or support for Cryostat.',
     navGroup: OVERVIEW,
+    anonymous: true,
   },
   {
     component: Dashboard,
