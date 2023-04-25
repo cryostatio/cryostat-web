@@ -66,12 +66,12 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
 
   const steps = [
     { value: 0, label: '0' },
-    { value: 25, label: t('OK', { ns: 'common' }) }, // some hacks that work with css to get bolded and coloured labels above slider
+    { value: 12.5, label: t('OK', { ns: 'common' }) }, // some hacks that work with css to get bolded and coloured labels above slider
     {
       value: AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD,
       label: String(AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD),
     },
-    { value: 62.5, label: t('WARNING', { ns: 'common' }) },
+    { value: 50, label: t('WARNING', { ns: 'common' }) },
     { value: AutomatedAnalysisScore.RED_SCORE_THRESHOLD, label: String(AutomatedAnalysisScore.RED_SCORE_THRESHOLD) },
     { value: 87.5, label: t('CRITICAL', { ns: 'common' }) },
     { value: 100, label: '100' },
@@ -106,9 +106,9 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
   );
 
   const className = React.useMemo(() => {
-    if (currentScore >= 75) {
+    if (currentScore >= AutomatedAnalysisScore.RED_SCORE_THRESHOLD) {
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-critical';
-    } else if (currentScore >= 50) {
+    } else if (currentScore >= AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD) {
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-warning';
     } else {
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok';
