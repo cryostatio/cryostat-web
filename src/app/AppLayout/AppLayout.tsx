@@ -95,7 +95,7 @@ import {
   QuestionCircleIcon,
   UserIcon,
 } from '@patternfly/react-icons';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
@@ -104,6 +104,7 @@ import CryostatJoyride from '../Joyride/CryostatJoyride';
 import { GlobalQuickStartDrawer } from '../QuickStarts/QuickStartDrawer';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
+import { useLogin } from '@app/utils/useLogin';
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -127,7 +128,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
-  const [showUserIcon, setShowUserIcon] = React.useState(false);
+  const showUserIcon = useLogin();
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = React.useState(false);
   const [username, setUsername] = React.useState('');
@@ -286,14 +287,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const handleOpenNotificationCenter = React.useCallback(() => {
     notificationsContext.setDrawerState(true);
   }, [notificationsContext]);
-
-  React.useEffect(() => {
-    addSubscription(
-      serviceContext.login.getSessionState().subscribe((sessionState) => {
-        setShowUserIcon(sessionState === SessionState.USER_SESSION);
-      })
-    );
-  }, [serviceContext.login, serviceContext.login.getSessionState, setShowUserIcon, addSubscription]);
 
   const handleLogout = React.useCallback(() => {
     addSubscription(serviceContext.login.setLoggedOut().subscribe());

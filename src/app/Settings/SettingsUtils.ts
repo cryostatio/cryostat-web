@@ -78,6 +78,7 @@ export interface UserSetting {
   category: SettingTab;
   orderInGroup?: number; // default -1
   featureLevel?: FeatureLevel; // default PRODUCTION
+  authenticated?: boolean;
 }
 
 export const selectTab = (tabKey: SettingTab) => {

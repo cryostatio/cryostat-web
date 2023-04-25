@@ -39,6 +39,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useLogin } from '@app/utils/useLogin';
 import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils';
 import {
   Card,
@@ -60,8 +61,9 @@ import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
+import { paramAsTab, SettingTab, tabAsParam, _TransformedUserSetting } from './SettingsUtils';
 import { AutoRefresh } from './AutoRefresh';
+import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { ChartCardsConfig } from './ChartCardsConfig';
 import { CredentialsStorage } from './CredentialsStorage';
 import { DatetimeControl } from './DatetimeControl';
@@ -69,9 +71,22 @@ import { DeletionDialogControl } from './DeletionDialogControl';
 import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
-import { paramAsTab, SettingTab, tabAsParam, _TransformedUserSetting } from './SettingsUtils';
 import { Theme } from './Theme';
 import { WebSocketDebounce } from './WebSocketDebounce';
+
+export const allSettings = [
+  NotificationControl,
+  AutomatedAnalysisConfig,
+  ChartCardsConfig,
+  CredentialsStorage,
+  DeletionDialogControl,
+  WebSocketDebounce,
+  AutoRefresh,
+  FeatureLevels,
+  Language,
+  DatetimeControl,
+  Theme,
+];
 
 interface SettingGroup {
   groupLabel: SettingTab;
@@ -92,41 +107,32 @@ export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
   const [t] = useTranslation();
+  const loggedIn = useLogin();
 
   const settings = React.useMemo(
     () =>
-      [
-        NotificationControl,
-        AutomatedAnalysisConfig,
-        ChartCardsConfig,
-        CredentialsStorage,
-        DeletionDialogControl,
-        WebSocketDebounce,
-        AutoRefresh,
-        FeatureLevels,
-        Language,
-        DatetimeControl,
-        Theme,
-      ].map(
-        (c) =>
-          ({
-            title: t(c.titleKey) || '',
-            description:
-              typeof c.descConstruct === 'string' ? (
-                t(c.descConstruct)
-              ) : (
-                // Use children prop to avoid i18n parses body as key
-                /* eslint react/no-children-prop: 0 */
-                <Trans i18nKey={c.descConstruct.key} children={c.descConstruct.parts} />
-              ),
-            element: React.createElement(c.content, null),
-            category: c.category,
-            disabled: c.disabled,
-            orderInGroup: c.orderInGroup || -1,
-            featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
-          } as _TransformedUserSetting)
-      ),
-    [t]
+      allSettings
+        .filter((s) => !s.authenticated || loggedIn)
+        .map(
+          (c) =>
+            ({
+              title: t(c.titleKey) || '',
+              description:
+                typeof c.descConstruct === 'string' ? (
+                  t(c.descConstruct)
+                ) : (
+                  // Use children prop to avoid i18n parses body as key
+                  /* eslint react/no-children-prop: 0 */
+                  <Trans i18nKey={c.descConstruct.key} children={c.descConstruct.parts} />
+                ),
+              element: React.createElement(c.content, null),
+              category: c.category,
+              disabled: c.disabled,
+              orderInGroup: c.orderInGroup || -1,
+              featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
+            } as _TransformedUserSetting)
+        ),
+    [t, loggedIn]
   );
 
   const history = useHistory();
