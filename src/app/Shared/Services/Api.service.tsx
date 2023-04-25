@@ -42,7 +42,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
 import { EnvironmentNode } from '@app/Topology/typings';
-import { createBlobURL } from '@app/utils/utils';
+import { createBlobURL, jvmIdToSubdirectoryName } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
@@ -513,7 +513,8 @@ export class ApiService {
   }
 
   // from file system path functions
-  uploadArchivedRecordingToGrafanaFromPath(subdirectoryName: string, recordingName: string): Observable<boolean> {
+  uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<boolean> {
+    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
     return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/upload`, {
       method: 'POST',
     }).pipe(
@@ -521,7 +522,8 @@ export class ApiService {
       first()
     );
   }
-  deleteArchivedRecordingFromPath(subdirectoryName: string, recordingName: string): Observable<boolean> {
+  deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
+    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
     return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE',
     }).pipe(
@@ -538,11 +540,8 @@ export class ApiService {
     return JSON.stringify(rawLabels);
   }
 
-  postRecordingMetadataFromPath(
-    subdirectoryName: string,
-    recordingName: string,
-    labels: RecordingLabel[]
-  ): Observable<boolean> {
+  postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
+    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
     return this.sendRequest(
       'beta',
       `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/metadata/labels`,
