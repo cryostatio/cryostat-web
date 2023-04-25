@@ -367,6 +367,7 @@ Below CSS rules only apply to Topology components
 .topology__list-view__entity-details {
   background-color: var(--pf-global--palette--white);
   padding: 1em;
+  height: 25em !important;
 }
 
 :where(.pf-theme-dark) .topology__list-view__entity-details {
