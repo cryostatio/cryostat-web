@@ -44,11 +44,11 @@ import { Notification, NotificationsContext } from '@app/Notifications/Notificat
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { selectTab, SettingTab, tabAsParam, ThemeSetting } from '@app/Settings/SettingsUtils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
+import { useLogin } from '@app/utils/useLogin';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { useTheme } from '@app/utils/useTheme';
 import { cleanDataId, isAssetNew, openTabForUrl, portalRoot } from '@app/utils/utils';
@@ -104,7 +104,6 @@ import CryostatJoyride from '../Joyride/CryostatJoyride';
 import { GlobalQuickStartDrawer } from '../QuickStarts/QuickStartDrawer';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-import { useLogin } from '@app/utils/useLogin';
 interface AppLayoutProps {
   children: React.ReactNode;
 }

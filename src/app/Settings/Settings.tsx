@@ -61,9 +61,8 @@ import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { paramAsTab, SettingTab, tabAsParam, _TransformedUserSetting } from './SettingsUtils';
-import { AutoRefresh } from './AutoRefresh';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
+import { AutoRefresh } from './AutoRefresh';
 import { ChartCardsConfig } from './ChartCardsConfig';
 import { CredentialsStorage } from './CredentialsStorage';
 import { DatetimeControl } from './DatetimeControl';
@@ -71,6 +70,7 @@ import { DeletionDialogControl } from './DeletionDialogControl';
 import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
+import { paramAsTab, SettingTab, tabAsParam, _TransformedUserSetting } from './SettingsUtils';
 import { Theme } from './Theme';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
