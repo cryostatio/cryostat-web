@@ -35,33 +35,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { Stack, StackItem } from '@patternfly/react-core';
+import { SessionState } from '@app/Shared/Services/Login.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import * as React from 'react';
-import { of } from 'rxjs';
-import { SettingTab, UserSetting } from './SettingsUtils';
 
-const Component = () => {
-  const [target, setTarget] = React.useState(NO_TARGET);
-  const _targetAsObs = React.useMemo(() => of(target), [target]);
+export const useLogin = () => {
+  const context = React.useContext(ServiceContext);
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
-  return (
-    <Stack hasGutter>
-      <StackItem>
-        <TargetSelect simple onSelect={setTarget} />
-      </StackItem>
-      <AutomatedAnalysisConfigForm targetObs={_targetAsObs} />
-    </Stack>
-  );
-};
+  React.useEffect(() => {
+    const sub = context.login
+      .getSessionState()
+      .subscribe((sessionState) => setLoggedIn(sessionState === SessionState.USER_SESSION));
 
-export const AutomatedAnalysisConfig: UserSetting = {
-  titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
-  descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
-  content: Component,
-  category: SettingTab.DASHBOARD,
-  authenticated: true,
+    return () => sub.unsubscribe();
+  }, [context.login, setLoggedIn]);
+
+  return loggedIn;
 };

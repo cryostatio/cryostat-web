@@ -51,6 +51,7 @@ import { renderWithServiceContextAndRouter, testT } from '../Common';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 import { UserSetting } from '@app/Settings/SettingsUtils';
+import { SessionState } from '@app/Shared/Services/Login.service';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {
@@ -68,6 +69,7 @@ jest.mock('@app/Settings/AutomatedAnalysisConfig', () => ({
     descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.DASHBOARD',
     content: () => <Text>Automated Analysis Config Component</Text>,
+    authenticated: true,
   } as UserSetting,
 }));
 
@@ -160,6 +162,11 @@ jest.mock('@app/Settings/Theme', () => ({
 }));
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
+jest
+  .spyOn(defaultServices.login, 'getSessionState')
+  .mockReturnValueOnce(of(SessionState.NO_USER_SESSION)) // render correctly
+  .mockReturnValueOnce(of(SessionState.NO_USER_SESSION)) // should not show settings that require authentication when the user is logged out
+  .mockReturnValue(of(SessionState.USER_SESSION));
 
 const history = createMemoryHistory({ initialEntries: ['/settings'] });
 
@@ -178,6 +185,22 @@ describe('<Settings/>', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('should not show setting that requires authentication when the user is logged out', async () => {
+    const { user } = renderWithServiceContextAndRouter(<Settings />);
+
+    const dashboardTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.DASHBOARD') });
+    expect(dashboardTab).toBeInTheDocument();
+    expect(dashboardTab).toBeVisible();
+    expect(dashboardTab.getAttribute('aria-selected')).toBe('false');
+
+    await user.click(dashboardTab);
+
+    expect(dashboardTab.getAttribute('aria-selected')).toBe('true');
+
+    const dashboardSettings = screen.queryByText('Automated Analysis Config Component');
+    expect(dashboardSettings).not.toBeInTheDocument();
   });
 
   // Currently, no tab is lower than PRODUCTION

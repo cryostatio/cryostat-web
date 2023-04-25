@@ -45,7 +45,7 @@ export function useFeatureLevel() {
   const subRef = React.useRef<Subscription>();
   const services = React.useContext(ServiceContext);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     subRef.current = services.settings.featureLevel().subscribe(setFeatureLevel);
     return () => subRef.current && subRef.current.unsubscribe();
   }, [subRef, services.settings]);

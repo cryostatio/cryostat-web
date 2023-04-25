@@ -54,13 +54,12 @@ import Rules from './Rules/Rules';
 import SecurityPanel from './SecurityPanel/SecurityPanel';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/ErrorBoundary';
-import { SessionState } from './Shared/Services/Login.service';
-import { ServiceContext } from './Shared/Services/Services';
 import { FeatureLevel } from './Shared/Services/Settings.service';
 import CreateTarget from './Topology/Actions/CreateTarget';
 import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/useDocumentTitle';
-import { useSubscriptions } from './utils/useSubscriptions';
+import { useFeatureLevel } from './utils/useFeatureLevel';
+import { useLogin } from './utils/useLogin';
 import { accessibleRouteChangeHandler } from './utils/utils';
 
 let routeFocusTimer: number;
@@ -270,22 +269,8 @@ const PageNotFound = ({ title }: { title: string }) => {
 export interface AppRoutesProps {}
 
 const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const [loggedIn, setLoggedIn] = React.useState(false);
-  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.login
-        .getSessionState()
-        .subscribe((sessionState) => setLoggedIn(sessionState === SessionState.USER_SESSION))
-    );
-  }, [addSubscription, context.login, setLoggedIn]);
-
-  React.useLayoutEffect(() => {
-    addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
-  }, [addSubscription, context.settings, setActiveLevel]);
+  const loggedIn = useLogin();
+  const activeLevel = useFeatureLevel();
 
   return (
     <LastLocationProvider>
