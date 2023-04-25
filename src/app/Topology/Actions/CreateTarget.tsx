@@ -422,13 +422,13 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
                 </FormGroup>
               </GridItem>
               <GridItem {...responsiveSpans[1]} order={{ default: '1', lg: '1', xl: '1', md: '1' }}>
-                <SampleNodeDonut target={target} validation={validation} testing={loading} onClick={testTarget} />
+                <SampleNodeDonut target={target} validation={validation} testing={testing} onClick={testTarget} />
               </GridItem>
             </Grid>
             <ActionGroup>
               <Button
                 variant="primary"
-                isDisabled={!connectUrl || validConnectUrl !== ValidatedOptions.success || loading}
+                isDisabled={!connectUrl || validConnectUrl !== ValidatedOptions.success || loading || testing}
                 onClick={handleSubmit}
                 {...createButtonLoadingProps}
                 data-quickstart-id="ct-create-btn"
