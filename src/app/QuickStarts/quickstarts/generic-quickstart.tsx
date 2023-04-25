@@ -71,7 +71,6 @@ const GenericQuickStart: QuickStart = {
     # - If set to null (icon: ~) will not show an icon
     */
     icon: <PficonTemplateIcon />,
-    // icon: 'cryostatLogo' || '<Icon />',
     prerequisites: [
       'You can optionally list prerequisites',
       'Another prerequisite',

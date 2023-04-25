@@ -35,16 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
-import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { withThemedIcon } from '@app/utils/withThemedIcon';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
-import { conclusion } from '../quickstart-utils';
-
-const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');
+import { CryostatIcon, conclusion } from '../quickstart-utils';
 
 const displayName = 'Start a Recording';
 
@@ -58,7 +53,7 @@ const RecordingQuickStart: QuickStart = {
     version: 2.3,
     displayName: displayName,
     durationMinutes: 10,
-    icon: <Icon />,
+    icon: <CryostatIcon />,
     description: `Learn how to start a recording with Java Flight Recorder (JFR) with **[APP]**.`,
     prerequisites: [''],
     introduction: `
@@ -79,7 +74,7 @@ const RecordingQuickStart: QuickStart = {
 `,
     tasks: [
       {
-        title: 'Go to the Recordings tab',
+        title: 'Go to the Recordings page',
         description: '1. In the [APP] console navigation bar, click [Recordings]{{highlight nav-recordings-tab}}.',
         review: {
           instructions: '#### Verify that you see the Recordings page.',
@@ -111,7 +106,7 @@ There are two tabs within the Recordings page:
 
 **Active recordings** are recordings that only exist only within the target JVM. **Archived recordings** are recordings that have been saved from the target JVM and copied to [APP]'s storage volume.
 
-Start an active recording:
+To start an active recording:
 
 1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**. 
 [If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including \`Create\`."]{{admonition note}}
