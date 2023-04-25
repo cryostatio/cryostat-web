@@ -36,7 +36,9 @@
  * SOFTWARE.
  */
 import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
+import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
+import { withThemedIcon } from '@app/utils/withThemedIcon';
 
 export const conclusion = (quickstartName: string, feature: string, closingMessage?: string) => `
 <div>
@@ -51,3 +53,5 @@ export const conclusion = (quickstartName: string, feature: string, closingMessa
         : `<p>If you would like to learn more about the <strong>${feature}</strong> feature, check out the <a href="${build.documentationUrl}" target="_blank">[APP] documentation</a> for detailed guides and information.</p>`
     }
 </div>`;
+
+export const CryostatIcon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Icon');

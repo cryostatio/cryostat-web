@@ -35,16 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
-import cryostatLogoIconDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { withThemedIcon } from '@app/utils/withThemedIcon';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
-import { conclusion } from '../quickstart-utils';
-
-const Icon = withThemedIcon(cryostatLogoIcon, cryostatLogoIconDark, 'Cryostat Logo');
+import { CryostatIcon, conclusion } from '../quickstart-utils';
 
 const displayName = 'Get started with the Dashboard';
 
@@ -60,7 +55,7 @@ const DashboardQuickStart: QuickStart = {
     version: 2.3,
     displayName: displayName,
     durationMinutes: 10,
-    icon: <Icon />,
+    icon: <CryostatIcon />,
     description: `Learn about what you can do with the **[APP]** Dashboard.`,
     prerequisites: [''],
     introduction: `

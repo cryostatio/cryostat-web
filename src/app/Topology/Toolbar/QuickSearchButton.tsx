@@ -48,7 +48,12 @@ export interface QuickSearchButtonProps {
 export const QuickSearchButton: React.FC<QuickSearchButtonProps> = ({ onClick, tooltipContent, ...props }) => {
   return (
     <Tooltip {...props} content={tooltipContent} appendTo={portalRoot}>
-      <Button variant="plain" onClick={onClick} className={'topology__quick-search-button'}>
+      <Button
+        variant="plain"
+        onClick={onClick}
+        className={'topology__quick-search-button'}
+        data-quickstart-id={'topology-catalog-btn'}
+      >
         <QuickSearchIcon />
       </Button>
     </Tooltip>
