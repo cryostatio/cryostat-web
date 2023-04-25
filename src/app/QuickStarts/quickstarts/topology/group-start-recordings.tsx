@@ -55,7 +55,7 @@ const GroupStartRecordingQuickStart: QuickStart = {
     description: 'Learn how to start recordings on multiple targets at once.',
     introduction: `
 ## Topology View
-The **Cryostat Topology** provides a visual presentation of all targets discovered by **Cryostat**, using various mechanisms (e.g. **Kubernetes API**, **JDP**) that represent **Realms**.
+The **Cryostat Topology** provides a visual presentation of all targets discovered by **Cryostat**, using various mechanisms (e.g. **Kubernetes API**, **JDP**) that are represented by **Realms**.
 
 With **Topology** view, you can perform actions (i.e. start recording) on an individual target or a group of targets, using either **Graph View** or **List View**.
 
@@ -70,7 +70,7 @@ With **Topology** view, you can perform actions (i.e. start recording) on an ind
     tasks: [
       {
         title: 'Go to the Topology page',
-        description: `1. In the [APP] console navigation bar, click the [Topology]{{highlight nav-topology-tab}}.`,
+        description: `1. In the [APP] console navigation bar, click [Topology]{{highlight nav-topology-tab}}.`,
         review: {
           instructions: '#### Verify that you see the Topology page.',
           failedTaskHelp:
@@ -97,10 +97,10 @@ In *List View*, to reveal nested groups, click on list rows.`,
       {
         title: 'Start recording for a group of targets.',
         description: `
-To start recording for targets under the selected group, select \`Start recording\` option.
+To start a recording for targets under the selected group, select the \`Start recording\` option.
 
-On each descendant target, **Cryostat** will create an active recording, named \`cryostat_topology_action\` with a label
-\`cryostat.io.topology-group=<group_name>\` that represents the group the action is invoked on.
+On each descendant target, **Cryostat** will create an active recording named \`cryostat_topology_action\` with the label
+\`cryostat.io.topology-group=<group_name>\` which represents the group the action is invoked on.
 
 [In some cases (e.g. missing JMX Credentials), **Cryostat** will fail to start recording on some targets.]{{admonition warning}}
 `,
@@ -119,7 +119,7 @@ To check the started recordings in the previous step:
 3. Select a target that belong to the selected group.
 4. The recording will be displayed with name \`cryostat_topology_action\` and a label \`cryostat.io.topology-group=<group_name>\`
 
-[In **Topology Graph View**, targets (i.e. nodes) that have any \`RUNNING\` active recordings, will have an decorator on its top-right corner to indicate so.]{{admonition tip}}
+[In the **Topology Graph View**, targets (i.e. nodes) that have any \`RUNNING\` active recordings will have a decorator on their top-right corner to indicate so.]{{admonition tip}}
 `,
         review: {
           instructions: '#### Verify that you can start recording on a group of targets.',
