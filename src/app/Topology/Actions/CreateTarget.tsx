@@ -343,6 +343,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
                     onChange={handleConnectUrlChange}
                     isDisabled={loading || testing}
                     validated={validConnectUrl}
+                    data-quickstart-id="ct-connecturl-input"
                   />
                 </FormGroup>
                 <FormGroup
@@ -360,10 +361,11 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
                     id="alias"
                     onChange={handleAliasChange}
                     isDisabled={loading || testing}
+                    data-quickstart-id="ct-alias-input"
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Accordion asDefinitionList={false}>
+                  <Accordion asDefinitionList={false} data-quickstart-id="ct-credential-expand">
                     <AccordionItem>
                       <AccordionToggle
                         className="expandable-form__accordion-toggle-block"
@@ -395,6 +397,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
                             id="username"
                             onChange={handleUsernameChange}
                             isDisabled={loading || testing}
+                            data-quickstart-id="ct-username-input"
                           />
                         </FormGroup>
                         <FormGroup
@@ -410,6 +413,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
                             type="password"
                             id="password"
                             onChange={handlePasswordChange}
+                            data-quickstart-id="ct-password-input"
                           />
                         </FormGroup>
                       </AccordionContent>
@@ -427,6 +431,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
                 isDisabled={!connectUrl || validConnectUrl !== ValidatedOptions.success || loading}
                 onClick={handleSubmit}
                 {...createButtonLoadingProps}
+                data-quickstart-id="ct-create-btn"
               >
                 {loading ? t('CREATING', { ns: 'common' }) : t('CREATE', { ns: 'common' })}
               </Button>
@@ -494,39 +499,46 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
         </FormAlert>
       )}
       <Flex className={css(className)} direction={{ default: 'column' }}>
-        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-          <Tooltip
-            appendTo={portalRoot}
-            content={
-              _actionEnabled
-                ? `Click to test${validation.option !== ValidatedOptions.default ? ' again' : ''}.`
-                : 'Please provide a valid Connection URL.'
-            }
-          >
-            <div
-              className={css('sample-node-donut__node-wrapper', `${_actionEnabled ? 'active' : ''}`)}
-              onClick={_actionEnabled ? onClick : undefined}
+        <Flex
+          alignSelf={{ default: 'alignSelfCenter' }}
+          direction={{ default: 'column' }}
+          data-quickstart-id="ct-sample-testnode"
+        >
+          <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+            <Tooltip
+              appendTo={portalRoot}
+              content={
+                _actionEnabled
+                  ? `Click to test${validation.option !== ValidatedOptions.default ? ' again' : ''}.`
+                  : 'Please provide a valid Connection URL.'
+              }
             >
               <div
-                className={css(
-                  'sample-node-donut__node-icon',
-                  validation.option !== ValidatedOptions.default ? validation.option : ''
-                )}
+                className={css('sample-node-donut__node-wrapper', `${_actionEnabled ? 'active' : ''}`)}
+                onClick={_actionEnabled ? onClick : undefined}
+                data-quickstart-id="ct-sample-testnode-icon"
               >
-                <Bullseye>{testing ? <LinearDotSpinner /> : <img src={openjdkSvg} alt="Cryostat Logo" />}</Bullseye>
+                <div
+                  className={css(
+                    'sample-node-donut__node-icon',
+                    validation.option !== ValidatedOptions.default ? validation.option : ''
+                  )}
+                >
+                  <Bullseye>{testing ? <LinearDotSpinner /> : <img src={openjdkSvg} alt="Cryostat Logo" />}</Bullseye>
+                </div>
+                <div className={'sample-node-donut__status-indicator'}>{statusIcon.icon}</div>
               </div>
-              <div className={'sample-node-donut__status-indicator'}>{statusIcon.icon}</div>
-            </div>
-          </Tooltip>
-        </FlexItem>
-        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-          <div className={css('sample-node-donut__node-label')}>
-            <Tooltip content={'Custom Target'} appendTo={portalRoot}>
-              <span className="sample-node-donut__node-label-badge">{'CT'}</span>
             </Tooltip>
-            {_transformedTarget.alias || '<Name>'}
-          </div>
-        </FlexItem>
+          </FlexItem>
+          <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
+            <div className={css('sample-node-donut__node-label')}>
+              <Tooltip content={'Custom Target'} appendTo={portalRoot}>
+                <span className="sample-node-donut__node-label-badge">{'CT'}</span>
+              </Tooltip>
+              {_transformedTarget.alias || '<Name>'}
+            </div>
+          </FlexItem>
+        </Flex>
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <HelperText>
             <HelperTextItem>Click on the sample node above to test custom target definition.</HelperTextItem>

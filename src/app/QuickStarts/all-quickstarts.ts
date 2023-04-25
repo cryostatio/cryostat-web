@@ -41,6 +41,8 @@ import DashboardQuickStart from './quickstarts/dashboard-quickstart';
 import GenericQuickStart from './quickstarts/generic-quickstart';
 import SettingsQuickStart from './quickstarts/settings-quickstart';
 import RecordingQuickStart from './quickstarts/start-a-recording';
+import CustomTargetQuickstart from './quickstarts/topology/custom-target-quickstart';
+import GroupStartRecordingQuickStart from './quickstarts/topology/group-start-recordings';
 
 // Add your quick start here e.g. [GenericQuickStart, ...]
 export const allQuickStarts: QuickStart[] = [
@@ -49,4 +51,6 @@ export const allQuickStarts: QuickStart[] = [
   GenericQuickStart,
   RecordingQuickStart,
   SettingsQuickStart,
+  GroupStartRecordingQuickStart,
+  CustomTargetQuickstart,
 ];
