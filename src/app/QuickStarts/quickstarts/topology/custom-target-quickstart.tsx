@@ -55,7 +55,7 @@ const CustomTargetQuickstart: QuickStart = {
     introduction: `
 ## Custom Targets
 By default, target JVMs are automatically discovered over remote Java Management Extensions (JMX) by **Cryostat**, using various mechanisms (e.g. **Kubernetes API**, **JDP**).
-However, in some cases (e.g. JMX port is not <code>9091</code> and port name is not <code>jfr-jmx</code>), Cryostat might not see your applications. Fortunately, you can tell Cryostat about them by specifying **Custom Targets**.
+However, in some cases (e.g. for **Kubernetes API**, JMX port is not <code>9091</code> and port name is not <code>jfr-jmx</code>), Cryostat might not see your applications. Fortunately, you can tell Cryostat about them by specifying **Custom Targets**.
 
 ### What you'll learn
 - How to test and create a Custom Target definition
@@ -68,7 +68,7 @@ However, in some cases (e.g. JMX port is not <code>9091</code> and port name is 
     tasks: [
       {
         title: 'Go to the Topology page',
-        description: `1. In the [APP] console navigation bar, click the [Topology]{{highlight nav-topology-tab}}.`,
+        description: `1. In the [APP] console navigation bar, click [Topology]{{highlight nav-topology-tab}}.`,
         review: {
           instructions: '#### Verify that you see the Topology page.',
           failedTaskHelp:
@@ -82,10 +82,10 @@ However, in some cases (e.g. JMX port is not <code>9091</code> and port name is 
 1. From the toolbar, click on the [catalog icon]{{highlight topology-catalog-btn}}.
 
       This will open a modal containing the **Topology Entity Catalog**.
-    
-[Alternatively, press <kbd>Ctrl</kbd> + <kbd>Space</kbd> or righ click the topology view (this will open a mini catalog for quick access).]{{admonition tip}}
 
-2. Find and select the **Custom Target** option. To aid you search, use the search bar.
+[Alternatively, press <kbd>Ctrl</kbd> + <kbd>Space</kbd> or right click the topology view. This will open a mini catalog for quick access.]{{admonition tip}}
+
+2. Find and select the **Custom Target** option. To aid your search, use the search bar.
 3. Click on the **Create** button to open the **Custom Target Creation Form**.
 `,
         review: {
@@ -96,7 +96,7 @@ However, in some cases (e.g. JMX port is not <code>9091</code> and port name is 
       {
         title: 'Fill out the Custom Target form',
         description: `
-1. Enter the **Connection URL** for the target into the [Connection URL]{{highlight ct-connecturl-input}} field.
+1. Enter the JMX **Connection URL** for the target into the [Connection URL]{{highlight ct-connecturl-input}} field.
 2. Optionally assign an **Alias** to the target by using the [Alias]{{highlight ct-alias-input}} field.
 3. If the target has **JMX authentication** enabled, click the [JMX Credential Option]{{highlight ct-credential-expand}} to expand the form.
 4. Use the [Username]{{highlight ct-username-input}} and [Password]{{highlight ct-password-input}} fields to enter the username and password.
