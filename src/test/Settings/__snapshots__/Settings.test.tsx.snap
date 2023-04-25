@@ -543,57 +543,6 @@ exports[`<Settings/> renders correctly 1`] = `
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
-                              Automated Analysis Recording Configuration
-                            </h2>
-                          </span>
-                        </label>
-                         
-                      </div>
-                      <div
-                        className="pf-c-form__group-control"
-                      >
-                        <div
-                          className="pf-c-helper-text"
-                        >
-                          <div
-                            className="pf-c-helper-text__item"
-                          >
-                            <span
-                              className="pf-c-helper-text__item-text"
-                            >
-                              Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.
-                            </span>
-                          </div>
-                        </div>
-                        <p
-                          className=""
-                          data-ouia-component-id="OUIA-Generated-Text-7"
-                          data-ouia-component-type="PF4/Text"
-                          data-ouia-safe={true}
-                          data-pf-content={true}
-                        >
-                          Automated Analysis Config Component
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="pf-c-form__group"
-                    >
-                      <div
-                        className="pf-c-form__group-label"
-                      >
-                        <label
-                          className="pf-c-form__label"
-                        >
-                          <span
-                            className="pf-c-form__label-text"
-                          >
-                            <h2
-                              className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-8"
-                              data-ouia-component-type="PF4/Title"
-                              data-ouia-safe={true}
-                            >
                               Dashboard Metrics Configuration
                             </h2>
                           </span>
@@ -618,7 +567,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-8"
+                          data-ouia-component-id="OUIA-Generated-Text-7"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -650,7 +599,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-9"
+                              data-ouia-component-id="OUIA-Generated-Title-8"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -680,7 +629,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-9"
+                          data-ouia-component-id="OUIA-Generated-Text-8"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
@@ -703,7 +652,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           >
                             <h2
                               className="pf-c-title pf-m-lg"
-                              data-ouia-component-id="OUIA-Generated-Title-10"
+                              data-ouia-component-id="OUIA-Generated-Title-9"
                               data-ouia-component-type="PF4/Title"
                               data-ouia-safe={true}
                             >
@@ -731,7 +680,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         </div>
                         <p
                           className=""
-                          data-ouia-component-id="OUIA-Generated-Text-10"
+                          data-ouia-component-id="OUIA-Generated-Text-9"
                           data-ouia-component-type="PF4/Text"
                           data-ouia-safe={true}
                           data-pf-content={true}
