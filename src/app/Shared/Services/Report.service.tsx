@@ -257,7 +257,7 @@ export interface RuleEvaluation {
 
 export enum AutomatedAnalysisScore {
   NA_SCORE = -1,
-  ORANGE_SCORE_THRESHOLD = 50,
+  ORANGE_SCORE_THRESHOLD = 25,
   RED_SCORE_THRESHOLD = 75,
 }
 

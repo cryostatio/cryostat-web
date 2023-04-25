@@ -39,9 +39,9 @@ import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
-import { conclusion } from '../quickstart-utils';
 import { PficonTemplateIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { conclusion } from '../quickstart-utils';
 
 // Quick start name (currently cannot use [APP], there is a bug with how the title gets rendered in the quick start panel)
 const displayName = 'Getting started with quick starts in Cryostat';
