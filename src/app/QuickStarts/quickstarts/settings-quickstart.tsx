@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
