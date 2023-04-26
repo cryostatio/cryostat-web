@@ -55,6 +55,7 @@ import {
 } from '@patternfly/react-core';
 import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
 
 export interface RecordingLabelFieldsProps {
@@ -82,6 +83,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
 }) => {
   const inputRef = React.useRef<HTMLInputElement>(null); // Use ref to refer to child component
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
 
   const [loading, setLoading] = React.useState(false);
   const [invalidUploads, setInvalidUploads] = React.useState<string[]>([]);
@@ -217,9 +219,9 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
             headerIcon={<ExclamationCircleIcon />}
             bodyContent={
               <>
-                <Text component="h4">{`The following file${
-                  invalidUploads.length > 1 ? 's' : ''
-                } did not contain valid recording metadata:`}</Text>
+                <Text component="h4">
+                  {t('RecordingLabelFields.INVALID_UPLOADS', { count: invalidUploads.length })}
+                </Text>
                 <List>
                   {invalidUploads.map((uploadName) => (
                     <ListItem key={uploadName} icon={<FileIcon />}>
