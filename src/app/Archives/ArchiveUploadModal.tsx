@@ -167,7 +167,6 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
 
   return (
     <Modal
-      appendTo={portalRoot}
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}

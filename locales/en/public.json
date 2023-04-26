@@ -274,6 +274,10 @@
       "TITLE": "Quick Starts"
     }
   },
+  "RecordingLabelFields": {
+    "INVALID_UPLOADS_one": "The following file did not contain valid recording metadata:",
+    "INVALID_UPLOADS_other": "The following files did not contain valid recording metadata:"
+  },
   "SETTINGS": {
     "AUTO_REFRESH": {
       "CHECKBOX_LABEL": "Enabled",
