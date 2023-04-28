@@ -405,6 +405,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
                 entity={{ getData: () => tn }}
                 columnModifier={{ default: '3Col' }}
                 alertOptions={alertOptions}
+                className="topology__list-view__entity-details"
               />
             </DataListContent>
           ) : null}
