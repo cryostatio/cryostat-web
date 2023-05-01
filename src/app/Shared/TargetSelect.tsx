@@ -213,7 +213,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
               selections={selected.alias || selected.connectUrl}
               isFlipEnabled={true}
               menuAppendTo="parent"
-              maxHeight="16em"
+              maxHeight="20em"
               isOpen={isDropdownOpen}
               aria-label="Select Target"
             >

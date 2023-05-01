@@ -193,12 +193,10 @@ export const Settings: React.FC<SettingsProps> = (_) => {
               </Tabs>
             </SidebarPanel>
             <SidebarContent>
-              {settingGroups.map((grp) => (
-                <div
-                  key={`${grp.groupKey}-setting`}
-                  className={css('settings__content', grp.groupKey === activeTab ? 'active' : '')}
-                >
-                  <Form>
+              {settingGroups
+                .filter((grp) => grp.groupKey === activeTab)
+                .map((grp) => (
+                  <Form key={`${grp.groupKey}-setting`} className="settings__content">
                     {grp.settings.map((s, index) => (
                       <FeatureFlag level={s.featureLevel} key={`${grp.groupLabel}-${s.title}-${index}-flag`}>
                         <FormGroup
@@ -232,8 +230,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                       </FeatureFlag>
                     ))}
                   </Form>
-                </div>
-              ))}
+                ))}
             </SidebarContent>
           </Sidebar>
         </Card>
