@@ -335,7 +335,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'Process CPU Load',
         duration: 60,
         period: 10,
-        themeColor: 'Blue',
+        themeColor: 'blue',
       },
     },
 
@@ -346,7 +346,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'System Load Average',
         duration: 60,
         period: 10,
-        themeColor: 'Cyan',
+        themeColor: 'cyan',
       },
     },
     {
@@ -356,7 +356,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'System CPU Load',
         duration: 60,
         period: 10,
-        themeColor: 'Gold',
+        themeColor: 'gold',
       },
     },
     {
@@ -366,7 +366,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'Heap Usage Percentage',
         duration: 60,
         period: 10,
-        themeColor: 'Orange',
+        themeColor: 'orange',
       },
     },
     {
@@ -376,7 +376,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'Heap Memory Usage',
         duration: 60,
         period: 10,
-        themeColor: 'Gray',
+        themeColor: 'gray',
       },
     },
     {
@@ -386,7 +386,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'Non-Heap Memory Usage',
         duration: 60,
         period: 10,
-        themeColor: 'Purple',
+        themeColor: 'purple',
       },
     },
     {
@@ -396,7 +396,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'Threads',
         duration: 60,
         period: 10,
-        themeColor: 'Green',
+        themeColor: 'green',
       },
     },
     {
@@ -406,7 +406,7 @@ const MBeanMetricsLayout: LayoutTemplate = {
         chartKind: 'Physical Memory',
         duration: 60,
         period: 10,
-        themeColor: 'Gold',
+        themeColor: 'gold',
       },
     },
   ],
