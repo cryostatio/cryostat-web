@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { portalRoot } from '@app/utils/utils';
+
 import { Button, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import QuickSearchIcon from '../Shared/QuickSearchIcon';
@@ -46,16 +46,29 @@ export interface QuickSearchButtonProps {
 }
 
 export const QuickSearchButton: React.FC<QuickSearchButtonProps> = ({ onClick, tooltipContent, ...props }) => {
+  const catalogRef = React.useRef<HTMLDivElement>(null);
+  const handleClick = React.useCallback(() => {
+    onClick();
+    catalogRef.current?.blur(); // Remove focus on the catalog button
+  }, [onClick]);
+
   return (
-    <Tooltip {...props} content={tooltipContent} appendTo={portalRoot}>
-      <Button
-        variant="plain"
-        onClick={onClick}
-        className={'topology__quick-search-button'}
-        data-quickstart-id={'topology-catalog-btn'}
+    <div id="topology-quicksearch-btn-wrapper">
+      <Tooltip
+        {...props}
+        content={tooltipContent}
+        appendTo={() => document.getElementById('topology-quicksearch-btn-wrapper') || document.body}
       >
-        <QuickSearchIcon />
-      </Button>
-    </Tooltip>
+        <Button
+          variant="plain"
+          onClick={handleClick}
+          style={{ padding: 0 }}
+          data-quickstart-id={'topology-catalog-btn'}
+          ref={catalogRef}
+        >
+          <QuickSearchIcon />
+        </Button>
+      </Tooltip>
+    </div>
   );
 };
