@@ -396,7 +396,7 @@ export interface DashboardCardDescriptor {
 }
 
 export interface PropControlExtra {
-  displayMapper?: (value: string) => string;
+  displayMapper?: (value: string) => string /* only has effect with 'select' PropControl kind */;
   min?: number;
   max?: number;
   [key: string]: any;
@@ -421,8 +421,6 @@ export interface DashboardCardTypeProps {
   isFullHeight?: boolean;
   actions?: JSX.Element[];
 }
-
-/* CARD COMPONENTS */
 
 export const transformAADescription = (description: string): JSX.Element => {
   const splitDesc = description.split('\n\n');

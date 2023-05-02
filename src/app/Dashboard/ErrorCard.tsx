@@ -64,7 +64,7 @@ export interface ErrorCardProps extends DashboardCardTypeProps {
 // TODO: Fix title + design body
 export const ErrorCard: React.FC<ErrorCardProps> = ({
   validationResult,
-  cardConfig,
+  cardConfig: _cardConfig,
   dashboardId,
   actions,
   ...props

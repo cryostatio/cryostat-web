@@ -559,7 +559,7 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
       kind: 'select',
       extras: {
-        displayMapper: (v) => _.startCase(v),
+        displayMapper: _.startCase,
       },
     },
   ],
