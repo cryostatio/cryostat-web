@@ -38,6 +38,7 @@
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { LoadingView } from '@app/LoadingView/LoadingView';
+import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorForm';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -45,7 +46,6 @@ import {
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Form,
@@ -64,7 +64,7 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { concatMap, filter, first, Observable } from 'rxjs';
+import { concatMap, filter, first, Observable, take } from 'rxjs';
 
 interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
@@ -79,25 +79,29 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const addSubscription = useSubscriptions();
   const { t } = useTranslation();
 
-  const parseEventString = React.useMemo((): [string | undefined, TemplateType | undefined] => {
+  const parseEventString = React.useMemo((): Pick<Partial<EventTemplate>, 'name' | 'type'> => {
     const eventString = context.settings.automatedAnalysisRecordingConfig().template;
     if (!eventString) {
-      return [undefined, undefined];
+      return {};
     }
     const templateName = eventString.split(',')[0].split('=')[1];
     const templateType = eventString.split(',')[1].split('=')[1];
     if (!(templateType === 'TARGET' || templateType === 'CUSTOM')) {
       console.error(`Invalid template type ${templateType}`);
-      return [undefined, undefined];
+      return {};
     }
-    return [templateName, templateType];
+    return {
+      name: templateName,
+      type: templateType,
+    };
   }, [context.settings]);
+
   const [recordingConfig, setRecordingConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
     context.settings.automatedAnalysisRecordingConfig()
   );
-  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [templateName, setTemplateName] = React.useState<string | undefined>(parseEventString[0]);
-  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(parseEventString[1]);
+
+  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
+  const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>(parseEventString);
   const [maxAge, setMaxAge] = React.useState(recordingConfig.maxAge);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(recordingConfig.maxSize);
@@ -111,7 +115,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       (targetObs ? targetObs : context.target.target())
         .pipe(
           filter((target) => target !== NO_TARGET),
-          first(),
+          take(1), // first() will throw EmptyError
           concatMap((target) =>
             context.api
               .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
@@ -122,14 +126,28 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           next: (templates) => {
             setErrorMessage('');
             setTemplates(templates);
+            setTemplate((old) => {
+              const matched = templates.find((t) => t.name === old.name && t.type === t.type);
+              return matched ? { name: matched.name, type: matched.type } : {};
+            });
           },
           error: (err) => {
             setErrorMessage(err.message);
             setTemplates([]);
+            setTemplate({});
           },
         })
     );
-  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates, setIsLoading, targetObs]);
+  }, [
+    addSubscription,
+    context.target,
+    context.api,
+    setErrorMessage,
+    setTemplates,
+    setTemplate,
+    setIsLoading,
+    targetObs,
+  ]);
 
   React.useEffect(() => {
     addSubscription(
@@ -203,17 +221,16 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
   const handleTemplateChange = React.useCallback(
     (templateName?: string, templateType?: TemplateType) => {
-      setTemplateName(templateName);
-      setTemplateType(templateType);
-      if (!templateName || !templateType) {
-        return;
-      }
+      setTemplate({
+        name: templateName,
+        type: templateType,
+      });
       setAAConfig({
         ...recordingConfig,
         template: getEventString(templateName || '', templateType || ''),
       });
     },
-    [recordingConfig, setTemplateName, setTemplateType, setAAConfig, getEventString]
+    [setTemplate, recordingConfig, getEventString, setAAConfig]
   );
 
   const authRetry = React.useCallback(() => {
@@ -221,11 +238,12 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   }, [context.target]);
 
   const selectedSpecifier = React.useMemo(() => {
-    if (templateName && templateType) {
-      return `${templateName},${templateType}`;
+    const { name, type } = template;
+    if (name && type) {
+      return `${name},${type}`;
     }
     return '';
-  }, [templateName, templateType]);
+  }, [template]);
 
   const formContent = React.useMemo(
     () => (
@@ -234,13 +252,13 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           label={t(`TEMPLATE`, { ns: 'common' })}
           isRequired
           fieldId="recording-template"
-          validated={!templateName ? ValidatedOptions.error : ValidatedOptions.success}
+          validated={!template.name ? ValidatedOptions.error : ValidatedOptions.success}
           helperText={t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}
           helperTextInvalid={t('TEMPLATE_HELPER_TEXT_INVALID', { ns: 'common' })}
         >
           <SelectTemplateSelectorForm
             templates={templates}
-            validated={!templateName ? ValidatedOptions.error : ValidatedOptions.success}
+            validated={!template.name ? ValidatedOptions.error : ValidatedOptions.success}
             onSelect={handleTemplateChange}
             selected={selectedSpecifier}
           />
@@ -305,7 +323,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             </SplitItem>
           </Split>
         </FormGroup>
-        {templateType == 'TARGET' && (
+        {template.type == 'TARGET' && (
           <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
             <HelperTextItem variant="warning">
               <Text component={TextVariants.p}>{t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}</Text>
@@ -316,8 +334,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     ),
     [
       t,
-      templateName,
-      templateType,
+      template,
       templates,
       selectedSpecifier,
       maxSize,
