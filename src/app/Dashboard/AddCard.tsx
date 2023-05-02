@@ -209,7 +209,10 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
         );
       case 'icon-button':
         return (
-          <Tooltip content={'Add card'}>
+          <Tooltip
+            content={'Add card'}
+            appendTo={() => document.getElementById('dashboard-catalog-btn') || document.body}
+          >
             <Button
               aria-label="Add card"
               data-quickstart-id={'dashboard-add-btn'}
@@ -228,7 +231,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
 
   return (
     <>
-      {content}
+      <div id="dashboard-catalog-btn">{content}</div>
       <Modal
         aria-label="Dashboard Card Catalog Modal"
         isOpen={showWizard}
