@@ -579,7 +579,7 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([] as string[]);
+  const [options, setOptions] = React.useState<string[]>([]);
   const [errored, setErrored] = React.useState(false);
 
   const handleSelect = React.useCallback(
@@ -605,14 +605,14 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
           setErrored(false);
           setOptions((old) => {
             if (Array.isArray(v)) {
-              return v;
+              return v.map((s) => String(s));
             }
-            return [...old, v];
+            return [...old, String(v)];
           });
         },
         error: (err) => {
           setErrored(true);
-          setOptions([err]);
+          setOptions([`${err}`]);
         },
       })
     );
