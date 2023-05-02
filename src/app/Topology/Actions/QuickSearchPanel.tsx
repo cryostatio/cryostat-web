@@ -266,6 +266,7 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({
       titleIconVariant={QuickSearchIcon}
       title={'Topology Entity Catalog'}
       className={'topology__quick-search-modal'}
+      id={'topology-quick-search-modal'}
       description={<div>Select an entity to add to view. {guide}</div>}
     >
       <QuickSearchPanel />

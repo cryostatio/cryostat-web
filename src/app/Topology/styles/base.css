@@ -360,10 +360,6 @@ Below CSS rules only apply to Topology components
   font-size: 1.1em !important;
 }
 
-.topology__quick-search-button {
-  padding: 0;
-}
-
 .topology__list-view__entity-details {
   background-color: var(--pf-global--palette--white);
   padding: 1em;
