@@ -477,7 +477,7 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const visual = React.useMemo(
     () => (
       <div ref={containerRef} style={{ height: props.isFullHeight ? '100%' : '300px' }} className="disabled-pointer">
-        {chartKind.visual(theme, props.themeColor.toLowerCase(), cardWidth, samples)}
+        {chartKind.visual(theme, props.themeColor, cardWidth, samples)}
       </div>
     ),
     [theme, containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples]
@@ -554,10 +554,13 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
     {
       name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
       key: 'themeColor',
-      values: ['Blue', 'Cyan', 'Gold', 'Gray', 'Green', 'Orange', 'Purple'],
+      values: ['blue', 'cyan', 'gold', 'gray', 'green', 'orange', 'purple'],
       defaultValue: 'Blue',
       description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
       kind: 'select',
+      extras: {
+        displayMapper: (v) => _.startCase(v),
+      },
     },
   ],
   icon: <MonitoringIcon />,

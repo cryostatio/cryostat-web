@@ -630,7 +630,12 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
     >
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
-        : options.map((choice, idx) => <SelectOption key={idx + 1} value={choice} />)}
+        : options.map((choice, idx) => {
+            if (control.extras && control.extras.displayMapper) {
+              choice = control.extras.displayMapper(choice);
+            }
+            return <SelectOption key={idx + 1} value={choice} />;
+          })}
     </Select>
   );
 };

@@ -307,7 +307,7 @@ export const validateCardConfig = ({ name, props }: CardConfig, cardIndex: numbe
   configPropKeys.forEach(([propKey, propValue]) => {
     const matched = propControls.find((crtl) => crtl.key === propKey);
     if (matched) {
-      const { values, extras } = matched;
+      const { values, extras, kind } = matched;
       // FIXME: Check dynamic values
       let err: ValidationError | undefined;
       if (propValue === undefined || propValue === null) {
@@ -327,27 +327,29 @@ export const validateCardConfig = ({ name, props }: CardConfig, cardIndex: numbe
           ),
         };
       } else if (extras) {
-        const valAsNum = Number(propValue);
-        if (isNaN(valAsNum)) {
-          err = {
-            message: (
-              <>
-                Numeric value expected but <code>{typeof propValue}</code> was given for: <>{propKey}</>.
-              </>
-            ),
-          };
-        } else {
-          if (
-            (extras.min !== undefined && valAsNum < extras.min) ||
-            (extras.max !== undefined && valAsNum > extras.max)
-          ) {
+        if (kind === 'number') {
+          const valAsNum = Number(propValue);
+          if (isNaN(valAsNum)) {
             err = {
               message: (
                 <>
-                  Value exceeding limit for card property: <code>{propKey}</code>.
+                  Numeric value expected but <code>{typeof propValue}</code> was given for: <>{propKey}</>.
                 </>
               ),
             };
+          } else {
+            if (
+              (extras.min !== undefined && valAsNum < extras.min) ||
+              (extras.max !== undefined && valAsNum > extras.max)
+            ) {
+              err = {
+                message: (
+                  <>
+                    Value exceeding limit for card property: <code>{propKey}</code>.
+                  </>
+                ),
+              };
+            }
           }
         }
       }
@@ -394,6 +396,7 @@ export interface DashboardCardDescriptor {
 }
 
 export interface PropControlExtra {
+  displayMapper?: (value: string) => string;
   min?: number;
   max?: number;
   [key: string]: any;
