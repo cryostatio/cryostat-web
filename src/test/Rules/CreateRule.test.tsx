@@ -105,6 +105,28 @@ describe('<CreateRule />', () => {
 
   afterEach(cleanup);
 
+  it('should update selection when template list updates ', async () => {
+    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
+
+    const matchExpressionInput = screen.getByLabelText('Match Expression *');
+    expect(matchExpressionInput).toBeInTheDocument();
+    expect(matchExpressionInput).toBeVisible();
+
+    await user.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
+
+    const oldSelection = await screen.findByText(mockEventTemplate.name);
+    expect(oldSelection).toBeInTheDocument();
+    expect(oldSelection).toBeVisible();
+
+    await user.type(matchExpressionInput, 'false');
+
+    await waitFor(() => expect(oldSelection).not.toBeInTheDocument());
+
+    const placeHolder = screen.getByText('Select a Template');
+    expect(placeHolder).toBeInTheDocument();
+    expect(placeHolder).toBeVisible();
+  });
+
   it('should submit form if form input is valid', async () => {
     const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
 
