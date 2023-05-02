@@ -523,11 +523,6 @@ input[type=number].datetime-picker__number-input {
 
 .settings__content {
   padding: 2ch;
-  display: none; /* only show when active */
-}
-
-.settings__content.active {
-  display: block;
 }
 
 .expandable-form__accordion-toggle-block {
