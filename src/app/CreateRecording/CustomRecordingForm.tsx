@@ -111,7 +111,10 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
-  const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>({});
+  const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>({
+    name: prefilled?.templateName,
+    type: prefilled?.templateType,
+  });
   const [maxAge, setMaxAge] = React.useState(prefilled?.maxAge || 0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(prefilled?.maxSize || 0);
