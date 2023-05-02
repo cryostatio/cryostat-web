@@ -214,7 +214,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
         return (
           <Tooltip
             content={'Add card'}
-            appendTo={() => document.getElementById('dashboard-catalog-btn') || document.body}
+            appendTo={() => document.getElementById('dashboard-catalog-btn-wrapper') || document.body}
           >
             <Button
               aria-label="Add card"
@@ -235,7 +235,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
 
   return (
     <>
-      <div id="dashboard-catalog-btn">{content}</div>
+      <div id="dashboard-catalog-btn-wrapper">{content}</div>
       <Modal
         aria-label="Dashboard Card Catalog Modal"
         isOpen={showWizard}
