@@ -38,7 +38,6 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { portalRoot } from '@app/utils/utils';
 import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -81,7 +80,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
 
   return (
     <Modal
-      appendTo={portalRoot}
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={!loading}

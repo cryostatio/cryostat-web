@@ -306,7 +306,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
           name: MBeanMetricsChartCardDescriptor.component.name,
           span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
           props: {
-            themeColor: 'Blue',
+            themeColor: 'blue',
             chartKind: 'Process CPU Load',
             duration: 60,
             period: 10,
@@ -317,7 +317,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
           name: MBeanMetricsChartCardDescriptor.component.name,
           span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
           props: {
-            themeColor: 'Purple',
+            themeColor: 'purple',
             chartKind: 'Heap Memory Usage',
             duration: 60,
             period: 10,
@@ -328,7 +328,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
           name: MBeanMetricsChartCardDescriptor.component.name,
           span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
           props: {
-            themeColor: 'Green',
+            themeColor: 'green',
             chartKind: 'Threads',
             duration: 60,
             period: 10,

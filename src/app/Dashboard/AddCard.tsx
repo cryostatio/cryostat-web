@@ -123,6 +123,8 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
   const [selection, setSelection] = React.useState('');
   const [propsConfig, setPropsConfig] = React.useState({});
 
+  const catalogRef = React.useRef<HTMLDivElement>(null);
+
   const handleSelect = React.useCallback(
     (_: React.MouseEvent, selection: string) => {
       setSelection(selection);
@@ -149,6 +151,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);
+    catalogRef.current?.blur();
   }, [setShowWizard]);
 
   const handleStop = React.useCallback(() => {
@@ -209,13 +212,17 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
         );
       case 'icon-button':
         return (
-          <Tooltip content={'Add card'}>
+          <Tooltip
+            content={'Add card'}
+            appendTo={() => document.getElementById('dashboard-catalog-btn-wrapper') || document.body}
+          >
             <Button
               aria-label="Add card"
               data-quickstart-id={'dashboard-add-btn'}
               variant="plain"
               onClick={handleStart}
               style={{ padding: 0 }}
+              ref={catalogRef}
             >
               <QuickSearchIcon />
             </Button>
@@ -228,7 +235,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
 
   return (
     <>
-      {content}
+      <div id="dashboard-catalog-btn-wrapper">{content}</div>
       <Modal
         aria-label="Dashboard Card Catalog Modal"
         isOpen={showWizard}
@@ -579,7 +586,7 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([] as string[]);
+  const [options, setOptions] = React.useState<string[]>([]);
   const [errored, setErrored] = React.useState(false);
 
   const handleSelect = React.useCallback(
@@ -605,14 +612,14 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
           setErrored(false);
           setOptions((old) => {
             if (Array.isArray(v)) {
-              return v;
+              return v.map((s) => String(s));
             }
-            return [...old, v];
+            return [...old, String(v)];
           });
         },
         error: (err) => {
           setErrored(true);
-          setOptions([err]);
+          setOptions([`${err}`]);
         },
       })
     );
@@ -630,7 +637,12 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
     >
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
-        : options.map((choice, idx) => <SelectOption key={idx + 1} value={choice} />)}
+        : options.map((choice, idx) => {
+            if (control.extras && control.extras.displayMapper) {
+              choice = control.extras.displayMapper(choice);
+            }
+            return <SelectOption key={idx + 1} value={choice} />;
+          })}
     </Select>
   );
 };
