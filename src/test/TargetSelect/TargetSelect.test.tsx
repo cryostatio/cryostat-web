@@ -37,7 +37,7 @@
  */
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { TargetSelect } from '@app/Shared/TargetSelect';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';

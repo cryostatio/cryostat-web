@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import { defaultAutomatedAnalysisRecordingConfig, EventTemplate } from '@app/Shared/Services/Api.service';
+import { AutomatedAnalysisRecordingConfig, EventTemplate } from '@app/Shared/Services/Api.service';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
@@ -53,31 +53,32 @@ const mockTemplate1: EventTemplate = {
   type: 'TARGET',
 };
 
-const mockTemplates: EventTemplate[] = [
-  mockTemplate1,
-  {
-    name: 'template2',
-    description: 'template2 description',
-    provider: 'Cryostat',
-    type: 'TARGET',
-  },
-];
+const mockTemplate2: EventTemplate = {
+  name: 'template2',
+  description: 'template2 description',
+  provider: 'Cryostat',
+  type: 'TARGET',
+};
+
+const mockAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
+  template: 'template=template1,type=TARGET',
+  maxSize: 1048576,
+  maxAge: 0,
+};
 
 jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of());
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockTemplates));
+jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockTemplate1, mockTemplate2]));
 
 jest
   .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')
-  .mockReturnValue(defaultAutomatedAnalysisRecordingConfig);
+  .mockReturnValue(mockAutomatedAnalysisRecordingConfig);
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 
 describe('<AutomatedAnalysisConfigForm />', () => {
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
   it('renders default view correctly', async () => {
     renderWithServiceContext(<AutomatedAnalysisConfigForm useTitle />);
@@ -95,7 +96,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   });
 
   it('renders settings view correctly', async () => {
-    renderWithServiceContext(<AutomatedAnalysisConfigForm />);
+    renderWithServiceContext(<AutomatedAnalysisConfigForm targetObs={of(mockTarget)} />);
 
     expect(screen.queryByText(/profiling recording configuration/i)).not.toBeInTheDocument(); // Form title
 
@@ -125,11 +126,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
       name: /maximum age value/i,
     });
 
-    expect(templateSelect).toHaveDisplayValue(['Select a Template']);
-    expect(maxAgeInput).toHaveValue(defaultAutomatedAnalysisRecordingConfig.maxAge);
-    expect(maxSizeInput).toHaveValue(defaultAutomatedAnalysisRecordingConfig.maxSize);
+    expect(templateSelect).toHaveDisplayValue(['template1']);
+    expect(maxAgeInput).toHaveValue(mockAutomatedAnalysisRecordingConfig.maxAge);
+    expect(maxSizeInput).toHaveValue(mockAutomatedAnalysisRecordingConfig.maxSize);
 
-    await user.selectOptions(templateSelect, ['template1']);
+    await user.selectOptions(templateSelect, ['template2']);
     expect(setConfigRequestSpy).toHaveBeenCalledTimes(1);
 
     await user.clear(maxSizeInput);
@@ -145,11 +146,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     expect(setConfigRequestSpy).toHaveBeenCalledTimes(9); // settings are saved on every change
 
     const config = {
-      template: `template=${mockTemplate1.name},type=${mockTemplate1.type}`,
+      template: `template=${mockTemplate2.name},type=${mockTemplate2.type}`,
       maxSize: 100,
       maxAge: 100,
     };
 
-    expect(setConfigRequestSpy).toHaveBeenCalledWith(config);
+    expect(setConfigRequestSpy).toHaveBeenLastCalledWith(config);
   });
 });

@@ -41,10 +41,10 @@ import { NotificationsContext } from '@app/Notifications/Notifications';
 import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpressionHint';
 import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorForm';
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { evaluateTargetWithExpr, portalRoot } from '@app/utils/utils';
@@ -96,9 +96,8 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   const [description, setDescription] = React.useState('');
   const [enabled, setEnabled] = React.useState(true);
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
-  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
-  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
+  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
+  const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>({});
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -124,21 +123,24 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
 
   const eventSpecifierString = React.useMemo(() => {
     let str = '';
-    if (templateName) {
-      str += `template=${templateName}`;
+    const { name, type } = template;
+    if (name) {
+      str += `template=${name}`;
     }
-    if (templateType) {
-      str += `,type=${templateType}`;
+    if (type) {
+      str += `,type=${type}`;
     }
     return str;
-  }, [templateName, templateType]);
+  }, [template]);
 
   const handleTemplateChange = React.useCallback(
     (templateName?: string, templateType?: TemplateType) => {
-      setTemplateName(templateName);
-      setTemplateType(templateType);
+      setTemplate({
+        name: templateName,
+        type: templateType,
+      });
     },
-    [setTemplateName, setTemplateType]
+    [setTemplate]
   );
 
   const handleMaxAgeChange = React.useCallback((maxAge) => setMaxAge(Number(maxAge)), [setMaxAge]);
@@ -268,7 +270,13 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
             )
           )
         )
-        .subscribe(setTemplates)
+        .subscribe((templates) => {
+          setTemplates(templates);
+          setTemplate((old) => {
+            const matched = templates.find((t) => t.name === old.name && t.type === t.type);
+            return matched ? { name: matched.name, type: matched.type } : {};
+          });
+        })
     );
   }, [addSubscription, context.api, matchedTargets]);
 
@@ -296,7 +304,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
     }
     setMatchExpressionValid(validation);
     matchedTargets.next(matches);
-  }, [matchExpression, targets, matchedTargets, setMatchExpressionValid, setTemplateName]);
+  }, [matchExpression, targets, matchedTargets, setMatchExpressionValid]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -309,11 +317,12 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   );
 
   const selectedSpecifier = React.useMemo(() => {
-    if (templateName && templateType) {
-      return `${templateName},${templateType}`;
+    const { name, type } = template;
+    if (name && type) {
+      return `${name},${type}`;
     }
     return '';
-  }, [templateName, templateType]);
+  }, [template]);
 
   return (
     <Form {...props}>
@@ -435,7 +444,7 @@ enabled in the future.`}
         label="Template"
         isRequired
         fieldId="recording-template"
-        validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+        validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
         helperText="The Event Template to be applied by this Rule against matching target applications."
         helperTextInvalid="A Template must be selected"
         data-quickstart-id="rule-evt-template"
@@ -443,7 +452,7 @@ enabled in the future.`}
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           disabled={loading}
-          validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+          validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
           templates={templates}
           onSelect={handleTemplateChange}
         />
@@ -602,7 +611,7 @@ enabled in the future.`}
           variant="primary"
           onClick={handleSubmit}
           isDisabled={
-            loading || nameValid !== ValidatedOptions.success || !templateName || !templateType || !matchExpression
+            loading || nameValid !== ValidatedOptions.success || !template.name || !template.type || !matchExpression
           }
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}
