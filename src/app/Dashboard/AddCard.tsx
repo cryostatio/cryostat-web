@@ -123,6 +123,8 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
   const [selection, setSelection] = React.useState('');
   const [propsConfig, setPropsConfig] = React.useState({});
 
+  const catalogRef = React.useRef<HTMLDivElement>(null);
+
   const handleSelect = React.useCallback(
     (_: React.MouseEvent, selection: string) => {
       setSelection(selection);
@@ -149,6 +151,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);
+    catalogRef.current?.blur();
   }, [setShowWizard]);
 
   const handleStop = React.useCallback(() => {
@@ -219,6 +222,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
               variant="plain"
               onClick={handleStart}
               style={{ padding: 0 }}
+              ref={catalogRef}
             >
               <QuickSearchIcon />
             </Button>
