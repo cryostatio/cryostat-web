@@ -47,7 +47,7 @@ jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm', () => 
   AutomatedAnalysisConfigForm: (_: any) => <>Automated Analysis Configuration Form</>,
 }));
 
-jest.mock('@app/TargetSelect/TargetSelect', () => ({
+jest.mock('@app/Shared/TargetSelect', () => ({
   TargetSelect: (_: any) => <>Target Select</>,
 }));
 

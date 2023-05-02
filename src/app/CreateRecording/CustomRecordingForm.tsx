@@ -41,10 +41,10 @@ import { NotificationsContext } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorForm';
 import { RecordingOptions, RecordingAttributes, TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { isTargetAgentHttp, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
@@ -110,9 +110,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
   const [duration, setDuration] = React.useState(prefilled?.duration || 30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
-  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [templateName, setTemplateName] = React.useState<string | undefined>(prefilled?.templateName);
-  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(prefilled?.templateType);
+  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
+  const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>({});
   const [maxAge, setMaxAge] = React.useState(prefilled?.maxAge || 0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(prefilled?.maxSize || 0);
@@ -174,22 +173,25 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
 
   const handleTemplateChange = React.useCallback(
     (templateName?: string, templateType?: TemplateType) => {
-      setTemplateName(templateName);
-      setTemplateType(templateType);
+      setTemplate({
+        name: templateName,
+        type: templateType,
+      });
     },
-    [setTemplateName, setTemplateType]
+    [setTemplate]
   );
 
-  const getEventString = React.useCallback(() => {
+  const eventSpecifierString = React.useMemo(() => {
     let str = '';
-    if (templateName) {
-      str += `template=${templateName}`;
+    const { name, type } = template;
+    if (name) {
+      str += `template=${name}`;
     }
-    if (templateType) {
-      str += `,type=${templateType}`;
+    if (type) {
+      str += `,type=${type}`;
     }
     return str;
-  }, [templateName, templateType]);
+  }, [template]);
 
   const getFormattedLabels = React.useCallback(() => {
     const obj = {};
@@ -277,7 +279,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
     };
     const recordingAttributes: RecordingAttributes = {
       name: recordingName,
-      events: getEventString(),
+      events: eventSpecifierString,
       duration: continuous ? undefined : duration * (durationUnit / 1000),
       archiveOnStop: archiveOnStop && !continuous,
       options: options,
@@ -285,7 +287,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
     };
     handleCreateRecording(recordingAttributes);
   }, [
-    getEventString,
+    eventSpecifierString,
     getFormattedLabels,
     archiveOnStop,
     continuous,
@@ -315,20 +317,25 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`
           ),
         }).subscribe({
-          next: (formOptions) => {
+          next: ({ templates, recordingOptions }) => {
             setErrorMessage('');
-            setTemplates(formOptions.templates);
-            setRecordingOptions(formOptions.recordingOptions);
+            setTemplates(templates);
+            setTemplate((old) => {
+              const matched = templates.find((t) => t.name === old.name && t.type === t.type);
+              return matched ? { name: matched.name, type: matched.type } : {};
+            });
+            setRecordingOptions(recordingOptions);
           },
           error: (error) => {
             setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create Recordings' : error.message); // If both throw, first error will be shown
             setTemplates([]);
+            setTemplate({});
             setRecordingOptions({});
           },
         })
       );
     },
-    [addSubscription, context.api, setTemplates, setRecordingOptions, setErrorMessage]
+    [addSubscription, context.api, setTemplates, setTemplate, setRecordingOptions, setErrorMessage]
   );
 
   React.useEffect(() => {
@@ -336,10 +343,11 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       context.target.authFailure().subscribe(() => {
         setErrorMessage(authFailMessage);
         setTemplates([]);
+        setTemplate({});
         setRecordingOptions({});
       })
     );
-  }, [context.target, setErrorMessage, addSubscription, setTemplates, setRecordingOptions]);
+  }, [context.target, setErrorMessage, addSubscription, setTemplates, setTemplate, setRecordingOptions]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshFormOptions));
@@ -349,11 +357,11 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
     return (
       nameValid !== ValidatedOptions.success ||
       durationValid !== ValidatedOptions.success ||
-      !templateName ||
-      !templateType ||
+      !template.name ||
+      !template.type ||
       labelsValid !== ValidatedOptions.success
     );
-  }, [nameValid, durationValid, templateName, templateType, labelsValid]);
+  }, [nameValid, durationValid, template, labelsValid]);
 
   const hasReservedLabels = React.useMemo(
     () => labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
@@ -371,11 +379,12 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
   );
 
   const selectedSpecifier = React.useMemo(() => {
-    if (templateName && templateType) {
-      return `${templateName},${templateType}`;
+    const { name, type } = template;
+    if (name && type) {
+      return `${name},${type}`;
     }
     return '';
-  }, [templateName, templateType]);
+  }, [template]);
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
@@ -477,14 +486,14 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           label="Template"
           isRequired
           fieldId="recording-template"
-          validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+          validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
           helperText={'The Event Template to be applied in this recording'}
           helperTextInvalid="A Template must be selected"
         >
           <SelectTemplateSelectorForm
             selected={selectedSpecifier}
             templates={templates}
-            validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+            validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
             disabled={loading}
             onSelect={handleTemplateChange}
           />

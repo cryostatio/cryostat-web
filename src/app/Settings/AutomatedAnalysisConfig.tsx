@@ -38,7 +38,7 @@
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { TargetSelect } from '@app/Shared/TargetSelect';
 import { Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { of } from 'rxjs';
