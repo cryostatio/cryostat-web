@@ -194,6 +194,9 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
   const setAAConfig = React.useCallback(
     (config: AutomatedAnalysisRecordingConfig) => {
+      if (!config.template) {
+        return;
+      }
       setRecordingConfig(config);
       context.settings.setAutomatedAnalysisRecordingConfig(config);
     },
@@ -251,7 +254,6 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   }, [context.target]);
 
   const selectedSpecifier = React.useMemo(() => {
-    console.log('template', template);
     const { name, type } = template;
     if (name && type) {
       return `${name},${type}`;
@@ -266,8 +268,8 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           toggleTextCollapsed="Show current configuration"
           toggleTextExpanded="Hide current configuration"
         >
-          <Panel variant="raised">
-            <PanelMain>
+          <Panel variant="raised" isScrollable>
+            <PanelMain maxHeight="12em">
               <PanelMainBody>
                 <Stack hasGutter>
                   <StackItem>
@@ -276,7 +278,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                     </Title>
                   </StackItem>
                   <StackItem>
-                    <DescriptionList columnModifier={{ lg: '3Col' }}>
+                    <DescriptionList isCompact isAutoFit>
                       <DescriptionListGroup>
                         <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
                         <DescriptionListDescription>{recordingConfig.template}</DescriptionListDescription>
