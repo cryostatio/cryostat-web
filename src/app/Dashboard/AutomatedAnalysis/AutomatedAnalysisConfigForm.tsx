@@ -48,6 +48,11 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  ExpandableSection,
   Form,
   FormGroup,
   FormSection,
@@ -55,11 +60,17 @@ import {
   FormSelectOption,
   HelperText,
   HelperTextItem,
+  Panel,
+  PanelMain,
+  PanelMainBody,
   Split,
   SplitItem,
+  Stack,
+  StackItem,
   Text,
   TextInput,
   TextVariants,
+  Title,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import * as React from 'react';
@@ -68,11 +79,13 @@ import { concatMap, filter, first, Observable, take } from 'rxjs';
 
 interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
+  inlineForm?: boolean;
   targetObs?: Observable<Target>;
 }
 
 export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
   useTitle = false,
+  inlineForm = false,
   targetObs,
 }) => {
   const context = React.useContext(ServiceContext);
@@ -238,6 +251,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   }, [context.target]);
 
   const selectedSpecifier = React.useMemo(() => {
+    console.log('template', template);
     const { name, type } = template;
     if (name && type) {
       return `${name},${type}`;
@@ -248,17 +262,52 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const formContent = React.useMemo(
     () => (
       <>
+        <ExpandableSection
+          toggleTextCollapsed="Show current configuration"
+          toggleTextExpanded="Hide current configuration"
+        >
+          <Panel variant="raised">
+            <PanelMain>
+              <PanelMainBody>
+                <Stack hasGutter>
+                  <StackItem>
+                    <Title headingLevel="h3" size="md">
+                      {t('AutomatedAnalysisConfigForm.CURRENT_CONFIG')}
+                    </Title>
+                  </StackItem>
+                  <StackItem>
+                    <DescriptionList columnModifier={{ lg: '3Col' }}>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
+                        <DescriptionListDescription>{recordingConfig.template}</DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>
+                          {t('AutomatedAnalysisConfigForm.MAXIMUM_SIZE', { unit: 'B' })}
+                        </DescriptionListTerm>
+                        <DescriptionListDescription>{recordingConfig.maxSize}</DescriptionListDescription>
+                      </DescriptionListGroup>
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>
+                          {t('AutomatedAnalysisConfigForm.MAXIMUM_AGE', { unit: 's' })}
+                        </DescriptionListTerm>
+                        <DescriptionListDescription>{recordingConfig.maxAge}</DescriptionListDescription>
+                      </DescriptionListGroup>
+                    </DescriptionList>
+                  </StackItem>
+                </Stack>
+              </PanelMainBody>
+            </PanelMain>
+          </Panel>
+        </ExpandableSection>
         <FormGroup
           label={t(`TEMPLATE`, { ns: 'common' })}
           isRequired
           fieldId="recording-template"
-          validated={!template.name ? ValidatedOptions.error : ValidatedOptions.success}
           helperText={t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}
-          helperTextInvalid={t('TEMPLATE_HELPER_TEXT_INVALID', { ns: 'common' })}
         >
           <SelectTemplateSelectorForm
             templates={templates}
-            validated={!template.name ? ValidatedOptions.error : ValidatedOptions.success}
             onSelect={handleTemplateChange}
             selected={selectedSpecifier}
           />
@@ -334,6 +383,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     ),
     [
       t,
+      recordingConfig.template,
       template,
       templates,
       selectedSpecifier,
@@ -349,6 +399,16 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     ]
   );
 
+  const formSection = React.useMemo(
+    () =>
+      useTitle ? (
+        <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
+      ) : (
+        formContent
+      ),
+    [useTitle, formContent]
+  );
+
   if (errorMessage != '') {
     return (
       <ErrorView
@@ -361,11 +421,6 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   if (isLoading) {
     return <LoadingView />;
   }
-  return useTitle ? (
-    <Form>
-      <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
-    </Form>
-  ) : (
-    formContent
-  );
+
+  return inlineForm ? formSection : <Form>{formSection}</Form>;
 };

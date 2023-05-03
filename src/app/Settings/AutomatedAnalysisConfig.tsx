@@ -53,7 +53,7 @@ const Component = () => {
       <StackItem>
         <TargetSelect simple onSelect={setTarget} />
       </StackItem>
-      <AutomatedAnalysisConfigForm targetObs={_targetAsObs} />
+      <AutomatedAnalysisConfigForm inlineForm targetObs={_targetAsObs} />
     </Stack>
   );
 };
