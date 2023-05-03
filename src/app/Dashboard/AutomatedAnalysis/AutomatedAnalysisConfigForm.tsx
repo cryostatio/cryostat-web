@@ -42,12 +42,14 @@ import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorFo
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
+  defaultAutomatedAnalysisRecordingConfig,
   TemplateType,
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
+  Button,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -253,6 +255,11 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     context.target.setAuthRetry();
   }, [context.target]);
 
+  const reset = React.useCallback(() => {
+    handleTemplateChange('Continuous', 'TARGET');
+    setAAConfig(defaultAutomatedAnalysisRecordingConfig);
+  }, [handleTemplateChange, setAAConfig]);
+
   const selectedSpecifier = React.useMemo(() => {
     const { name, type } = template;
     if (name && type) {
@@ -381,6 +388,9 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             </HelperTextItem>
           </HelperText>
         )}
+        <Button variant="link" onClick={reset}>
+          Reset default
+        </Button>
       </>
     ),
     [
