@@ -73,7 +73,6 @@ import {
   TextInput,
   TextVariants,
   Title,
-  ValidatedOptions,
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -256,9 +255,16 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   }, [context.target]);
 
   const reset = React.useCallback(() => {
-    handleTemplateChange('Continuous', 'TARGET');
+    setTemplate({
+      name: 'Continuous',
+      type: 'TARGET',
+    });
+    setMaxAgeUnits(1);
+    setMaxAge(defaultAutomatedAnalysisRecordingConfig.maxAge);
+    setMaxSizeUnits(1);
+    setMaxSize(defaultAutomatedAnalysisRecordingConfig.maxSize);
     setAAConfig(defaultAutomatedAnalysisRecordingConfig);
-  }, [handleTemplateChange, setAAConfig]);
+  }, [setTemplate, setMaxAgeUnits, setMaxAge, setMaxSizeUnits, setMaxSize, setAAConfig]);
 
   const selectedSpecifier = React.useMemo(() => {
     const { name, type } = template;
@@ -396,6 +402,8 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     [
       t,
       recordingConfig.template,
+      recordingConfig.maxSize,
+      recordingConfig.maxAge,
       template,
       templates,
       selectedSpecifier,
@@ -408,6 +416,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       handleMaxSizeUnitChange,
       handleMaxAgeUnitChange,
       handleTemplateChange,
+      reset,
     ]
   );
 
@@ -418,7 +427,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       ) : (
         formContent
       ),
-    [useTitle, formContent]
+    [useTitle, t, formContent]
   );
 
   if (errorMessage != '') {
