@@ -66,6 +66,15 @@ const mockAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
   maxAge: 0,
 };
 
+jest.mock('@app/Shared/TargetSelect', () => {
+  return {
+    ...jest.requireActual('@app/Shared/TargetSelect'),
+    TargetSelect: jest.fn(() => {
+      return <div>Target Select</div>;
+    }),
+  };
+});
+
 jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of());
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockTemplate1, mockTemplate2]));
 
@@ -81,9 +90,24 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   afterEach(cleanup);
 
   it('renders default view correctly', async () => {
-    renderWithServiceContext(<AutomatedAnalysisConfigForm useTitle />);
+    renderWithServiceContext(<AutomatedAnalysisConfigForm />);
+
+    expect(screen.getByText(/Current Configuration/i)).toBeInTheDocument();
+    expect(screen.getByText('Template')).toBeInTheDocument();
+    expect(screen.getByText(/maximum size \(b\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/maximum age \(s\)/i)).toBeInTheDocument();
+  });
+
+  it('renders editing drawer view correctly', async () => {
+    const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm useTitle />);
 
     expect(screen.getByText(/profiling recording configuration/i)).toBeInTheDocument(); // Form title
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /edit/i,
+      })
+    ); // Edit button
 
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
@@ -95,10 +119,12 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     expect(screen.getByText(/the maximum age of recording data stored to disk./i)).toBeInTheDocument();
   });
 
-  it('renders settings view correctly', async () => {
-    renderWithServiceContext(<AutomatedAnalysisConfigForm targetObs={of(mockTarget)} />);
+  it('renders editing settings view correctly', async () => {
+    const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm inlineForm />);
 
     expect(screen.queryByText(/profiling recording configuration/i)).not.toBeInTheDocument(); // Form title
+
+    await user.click(screen.getByLabelText('Edit')); // Edit button
 
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
@@ -113,6 +139,12 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   it('saves configuration', async () => {
     const setConfigRequestSpy = jest.spyOn(defaultServices.settings, 'setAutomatedAnalysisRecordingConfig');
     const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm />);
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /edit/i,
+      })
+    );
 
     const templateSelect = screen.getByRole('combobox', {
       name: /event template input/i,
@@ -131,19 +163,10 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     expect(maxSizeInput).toHaveValue(mockAutomatedAnalysisRecordingConfig.maxSize);
 
     await user.selectOptions(templateSelect, ['template2']);
-    expect(setConfigRequestSpy).toHaveBeenCalledTimes(1);
-
     await user.clear(maxSizeInput);
-    expect(setConfigRequestSpy).toHaveBeenCalledTimes(2);
-
     await user.clear(maxAgeInput);
-    expect(setConfigRequestSpy).toHaveBeenCalledTimes(3);
-
     await user.type(maxSizeInput, '100');
-    expect(setConfigRequestSpy).toHaveBeenCalledTimes(6);
-
     await user.type(maxAgeInput, '100');
-    expect(setConfigRequestSpy).toHaveBeenCalledTimes(9); // settings are saved on every change
 
     const config = {
       template: `template=${mockTemplate2.name},type=${mockTemplate2.type}`,
@@ -151,6 +174,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
       maxAge: 100,
     };
 
-    expect(setConfigRequestSpy).toHaveBeenLastCalledWith(config);
+    await user.click(
+      screen.getByRole('button', {
+        name: /save changes/i,
+      })
+    );
+    expect(setConfigRequestSpy).toHaveBeenCalledWith(config);
   });
 });

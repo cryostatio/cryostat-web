@@ -48,7 +48,6 @@ import {
   CardExpandableContent,
   CardHeader,
   CardTitle,
-  Divider,
   Select,
   SelectGroup,
   SelectOption,
@@ -98,14 +97,17 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
 
       const toSelect: Target = isPlaceholder ? NO_TARGET : selection;
       onSelect && onSelect(toSelect);
-      setSelected(toSelect);
     },
-    [context.target, setDropdownOpen, onSelect, setSelected]
+    [context.target, setDropdownOpen, onSelect]
   );
 
   React.useEffect(() => {
     addSubscription(context.targets.targets().subscribe(setTargets));
   }, [addSubscription, context.targets, setTargets]);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(setSelected));
+  }, [addSubscription, context.target, setSelected]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -193,7 +195,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
   );
 
   return (
-    <Card {...props} isRounded isCompact isExpanded={isExpanded}>
+    <Card {...props} isRounded isCompact isFlat isExpanded={isExpanded}>
       <CardHeader {...cardHeaderProps}>
         <CardTitle>Target JVM</CardTitle>
       </CardHeader>

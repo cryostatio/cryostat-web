@@ -41,11 +41,10 @@ import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorFo
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
-  defaultAutomatedAnalysisRecordingConfig,
   TemplateType,
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/Shared/TargetSelect';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -81,7 +80,7 @@ import {
 import { CloseIcon, PencilAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { concatMap, filter, first, of, take, tap, timeout } from 'rxjs';
+import { concatMap, first, of, take } from 'rxjs';
 
 interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
@@ -210,33 +209,29 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const handleMaxAgeChange = React.useCallback(
     (evt) => {
       setMaxAge(Number(evt));
-      setAAConfig({ ...recordingConfig, maxAge: Number(evt) * maxAgeUnits });
     },
-    [setMaxAge, setAAConfig, recordingConfig, maxAgeUnits]
+    [setMaxAge]
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
     (evt) => {
       setMaxAgeUnits(Number(evt));
-      setAAConfig({ ...recordingConfig, maxAge: Number(evt) * maxAge });
     },
-    [setMaxAgeUnits, setAAConfig, recordingConfig, maxAge]
+    [setMaxAgeUnits]
   );
 
   const handleMaxSizeChange = React.useCallback(
     (evt) => {
       setMaxSize(Number(evt));
-      setAAConfig({ ...recordingConfig, maxSize: Number(evt) * maxSizeUnits });
     },
-    [setMaxSize, setAAConfig, recordingConfig, maxSizeUnits]
+    [setMaxSize]
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
     (evt) => {
       setMaxSizeUnits(Number(evt));
-      setAAConfig({ ...recordingConfig, maxSize: Number(evt) * maxSize });
     },
-    [setMaxSizeUnits, setAAConfig, recordingConfig, maxSize]
+    [setMaxSizeUnits]
   );
 
   const handleTemplateChange = React.useCallback(
@@ -245,29 +240,22 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         name: templateName,
         type: templateType,
       });
-      setAAConfig({
-        ...recordingConfig,
-        template: getEventString(templateName || '', templateType || ''),
-      });
     },
-    [setTemplate, recordingConfig, getEventString, setAAConfig]
+    [setTemplate]
   );
+
+  const handleSubmit = React.useCallback(() => {
+    setAAConfig({
+      template: getEventString(template.name || '', template.type || ''),
+      maxSize: maxSize * maxSizeUnits,
+      maxAge: maxAge * maxAgeUnits,
+    });
+    setEditing(false);
+  }, [setAAConfig, setEditing, getEventString, template, maxSize, maxSizeUnits, maxAge, maxAgeUnits]);
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target]);
-
-  const reset = React.useCallback(() => {
-    setTemplate({
-      name: 'Continuous',
-      type: 'TARGET',
-    });
-    setMaxAgeUnits(1);
-    setMaxAge(defaultAutomatedAnalysisRecordingConfig.maxAge);
-    setMaxSizeUnits(1);
-    setMaxSize(defaultAutomatedAnalysisRecordingConfig.maxSize);
-    setAAConfig(defaultAutomatedAnalysisRecordingConfig);
-  }, [setTemplate, setMaxAgeUnits, setMaxAge, setMaxSizeUnits, setMaxSize, setAAConfig]);
 
   const selectedSpecifier = React.useMemo(() => {
     const { name, type } = template;
@@ -434,7 +422,21 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
   const toggleEdit = React.useCallback(() => {
     setEditing((edit) => !edit);
-  }, [setEditing]);
+    setMaxAge(recordingConfig.maxAge);
+    setMaxAgeUnits(1);
+    setMaxSize(recordingConfig.maxSize);
+    setMaxSizeUnits(1);
+    setTemplate(parseEventString);
+  }, [
+    setEditing,
+    setMaxAge,
+    setMaxAgeUnits,
+    setMaxSize,
+    setMaxSizeUnits,
+    setTemplate,
+    recordingConfig,
+    parseEventString,
+  ]);
 
   const formContent = React.useMemo(
     () => (
@@ -447,14 +449,14 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               </Title>
             </CardTitle>
             <CardActions>
-              <Button variant="link" onClick={reset}>
-                {t('AutomatedAnalysisConfigForm.RESET')}
+              {editing && (
+                <Button onClick={handleSubmit} variant={'primary'}>
+                  Save changes
+                </Button>
+              )}
+              <Button variant="plain" onClick={toggleEdit} aria-label={editing ? 'Cancel' : 'Edit'}>
+                {editing ? <CloseIcon /> : <PencilAltIcon />}
               </Button>
-              <Button
-                variant={editing ? 'plain' : 'primary'}
-                icon={editing ? <CloseIcon /> : <PencilAltIcon />}
-                onClick={toggleEdit}
-              />
             </CardActions>
           </CardHeader>
           <CardBody>
@@ -466,7 +468,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         </Card>
       </>
     ),
-    [t, editing, reset, toggleEdit, targetSelect, configData]
+    [t, handleSubmit, toggleEdit, targetSelect, configData, editing]
   );
 
   const formSection = React.useMemo(

@@ -99,13 +99,13 @@ describe('<TargetSelect />', () => {
     renderWithServiceContext(<TargetSelect />);
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
-    expect(screen.getByText(`Select target...`)).toBeInTheDocument();
+    expect(screen.getByText(`Select a target`)).toBeInTheDocument();
   });
 
   it('renders empty state when expanded', async () => {
     const { container, user } = renderWithServiceContext(<TargetSelect />);
 
-    expect(screen.getByText('Select target...')).toBeInTheDocument();
+    expect(screen.getByText('Select a target')).toBeInTheDocument();
 
     const expandButton = screen.getByLabelText('Details');
     await user.click(expandButton);
@@ -123,7 +123,7 @@ describe('<TargetSelect />', () => {
     const { container, user } = renderWithServiceContext(<TargetSelect />);
 
     // Select a target first
-    await user.click(screen.getByText('Select target...'));
+    await user.click(screen.getByLabelText('Options menu'));
     await user.click(screen.getByText('fooTarget (service:jmx:rmi://someFooUrl)'));
 
     const expandButton = screen.getByLabelText('Details');
@@ -147,7 +147,6 @@ describe('<TargetSelect />', () => {
       CUSTOM_TARGET_REALM,
       'fooTarget (service:jmx:rmi://someFooUrl)',
       'barTarget (service:jmx:rmi://someBarUrl)',
-      '2', // Number of discoverable targets
     ].forEach((str) => {
       const element = screen.getByText(str);
       expect(element).toBeInTheDocument();
