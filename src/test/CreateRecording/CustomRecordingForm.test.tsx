@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
+import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { EventTemplate, RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
@@ -186,7 +187,7 @@ describe('<CustomRecordingForm />', () => {
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
-    const authFailText = screen.getByText('Auth failure');
+    const authFailText = screen.getByText(authFailMessage);
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
 

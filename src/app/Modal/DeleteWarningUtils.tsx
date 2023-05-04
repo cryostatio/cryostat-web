@@ -59,89 +59,89 @@ export interface DeleteOrDisableWarning {
 
 export const DeleteActiveRecordings: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteActiveRecordings,
-  title: 'Permanently delete Active Recording?',
+  title: 'Permanently delete your JFR recording?',
   label: 'Delete Active Recording',
-  description: `Recording and report data will be lost.`,
+  description: `If you click delete, recording and report data will be lost.`,
   ariaLabel: 'Recording delete warning',
 };
 
 export const DeleteArchivedRecordings: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteArchivedRecordings,
-  title: 'Permanently delete Archived Recording?',
+  title: 'Permanently delete your archived JFR recording?',
   label: 'Delete Archived Recording',
-  description: `Recording and report data will be lost.`,
+  description: `If you click delete, recording and report data will be lost.`,
   ariaLabel: 'Recording delete warning',
 };
 
 export const DeleteAutomatedRules: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteAutomatedRules,
-  title: 'Permanently delete Automated Rule?',
+  title: 'Permanently delete your Automated Rule?',
   label: 'Delete Automated Rule',
-  description: `Rule data will be lost.`,
+  description: `If you click delete, rule data will be lost.`,
   ariaLabel: 'Automated rule delete warning',
 };
 
 export const DisableAutomatedRules: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DisableAutomatedRules,
-  title: 'Disable Automated Rule?',
+  title: 'Disable your Automated Rule?',
   label: 'Disable Automated Rule',
-  description: `Rule will be disabled.`,
+  description: `If you click delete, the rule will be disabled.`,
   ariaLabel: 'Automated rule disable warning',
 };
 
 export const DeleteEventTemplates: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteEventTemplates,
-  title: 'Permanently delete Event Template?',
+  title: 'Permanently delete your Event Template?',
   label: 'Delete Event Template',
-  description: `Custom event template data will be lost.`,
+  description: `If you click delete, custom event template data will be lost.`,
   ariaLabel: 'Event template delete warning',
 };
 
 export const DeleteProbeTemplates: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteProbeTemplates,
-  title: 'Permanently delete Probe Template?',
+  title: 'Permanently delete your Probe Template?',
   label: 'Delete Probe Template',
-  description: `Custom probe template data will be lost.`,
+  description: `If you click delete, custom probe template data will be lost.`,
   ariaLabel: 'Probe template delete warning',
 };
 
 export const DeleteActiveProbes: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteActiveProbes,
-  title: 'Permanently remove Active Probes from the target?',
+  title: 'Permanently remove your Active Probes from the target?',
   label: 'Remove Active Probes',
-  description: `Active probes will be removed from the target.`,
+  description: `If you click delete, active probes will be removed from the target.`,
   ariaLabel: 'Active Probes remove warning',
 };
 
 export const DeleteCredentials: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteCredentials,
-  title: 'Permanently delete Credentials?',
+  title: 'Permanently delete your Credentials?',
   label: 'Delete Credentials',
-  description: `Credential data for this target will be lost.`,
+  description: `If you click delete, credential data for this target will be lost.`,
   ariaLabel: 'Credentials delete warning',
 };
 
 export const DeleteCustomTargets: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteCustomTargets,
-  title: 'Permanently delete Custom Target?',
+  title: 'Permanently delete your Custom Target?',
   label: 'Delete Custom Targets',
-  description: `Custom target information will be lost.`,
+  description: `If you click delete, custom target information will be lost.`,
   ariaLabel: 'Custom Targets delete warning',
 };
 
 export const DeleteDashboardLayout: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteDashboardLayout,
-  title: 'Permanently delete Dashboard Layout?',
+  title: 'Permanently delete your Dashboard Layout?',
   label: 'Delete Dashboard Layouts',
-  description: `Dashboard layout configuration data will be lost.`,
+  description: `If you click delete, dashboard layout configuration data will be lost.`,
   ariaLabel: 'Dashboard Layout delete warning',
 };
 
 export const DeleteLayoutTemplate: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteLayoutTemplate,
-  title: 'Permanently delete Layout Template?',
+  title: 'Permanently delete your Layout Template?',
   label: 'Delete Layout Template',
-  description: `Layout template configuration data will be lost.`,
+  description: `If you click delete, layout template configuration data will be lost.`,
   ariaLabel: 'Layout Template delete warning',
 };
 

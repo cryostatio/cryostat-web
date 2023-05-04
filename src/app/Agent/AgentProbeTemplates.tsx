@@ -302,7 +302,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
     return (
       <ErrorView
         title={'Error retrieving probe templates'}
-        message={`${errorMessage}. Note: This is commonly caused by the agent not being loaded/active. Check that the target was started with the agent (-javaagent:/path/to/agent.jar).`}
+        message={`${errorMessage}. Note: This error is generally caused when the agent is not loaded or is not active. Check that the target was started with the agent (-javaagent:/path/to/agent.jar).`}
       />
     );
   } else if (isLoading) {

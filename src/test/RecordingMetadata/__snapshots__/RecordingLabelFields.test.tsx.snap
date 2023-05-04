@@ -84,7 +84,7 @@ Array [
             <span
               className="pf-c-helper-text__item-text"
             >
-              Keys must be unique. Labels should not contain whitespace.
+              Keys must be unique. Labels should not contain empty spaces.
             </span>
           </div>
         </div>
@@ -207,7 +207,7 @@ Array [
             <span
               className="pf-c-helper-text__item-text"
             >
-              Keys must be unique. Labels should not contain whitespace.
+              Keys must be unique. Labels should not contain empty spaces.
             </span>
           </div>
         </div>

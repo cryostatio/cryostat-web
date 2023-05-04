@@ -381,7 +381,7 @@ export class ApiService {
             if (resp.status == 202) {
               this.notifications.warning(
                 'Snapshot Failed to Create',
-                'The resultant recording was unreadable for some reason, likely due to a lack of Active, non-Snapshot source recordings to take event data from'
+                'The recording is not readable for reasons, such as, unavailability of active and non-snapshot source recordings from where the event data is read.'
               );
             }
           }),
@@ -1219,7 +1219,7 @@ export class ApiService {
             return { error: new Error('Invalid username or password.'), severeLevel: ValidatedOptions.error };
           case 'NA':
             return {
-              error: new Error('This target does not have authentication enabled.'),
+              error: new Error('The target does not have authentication enabled.'),
               severeLevel: ValidatedOptions.warning,
             };
           case 'SUCCESS':

@@ -198,7 +198,7 @@ describe('<CreateRule />', () => {
 
     await user.type(nameInput, 'some name with spaces');
 
-    const nameHelperText = screen.getByText('A rule name may only contain letters, numbers, and underscores.');
+    const nameHelperText = screen.getByText('A rule name can contain only letters, numbers, and underscores.');
     expect(nameHelperText).toBeInTheDocument();
     expect(nameHelperText).toBeVisible();
 
@@ -208,7 +208,7 @@ describe('<CreateRule />', () => {
 
     await user.type(matchExpressionInput, 'somethingwrong');
 
-    const exphelperText = await screen.findByText('Invalid Match Expression.');
+    const exphelperText = await screen.findByText('The expression matching failed.');
     expect(exphelperText).toBeInTheDocument();
     expect(exphelperText).toBeVisible();
   });
