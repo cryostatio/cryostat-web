@@ -330,7 +330,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             setRecordingOptions(recordingOptions);
           },
           error: (error) => {
-            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create Recordings' : error.message); // If both throw, first error will be shown
+            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create recordings' : error.message); // If both throw, first error will be shown
             setTemplates([]);
             setTemplate({});
             setRecordingOptions({});
@@ -413,8 +413,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           label="Name"
           isRequired
           fieldId="recording-name"
-          helperText="Enter a recording name. This will be unique within the target JVM"
-          helperTextInvalid="A recording name may only contain letters, numbers, and underscores"
+          helperText="Enter a recording name. This will be unique within the target JVM."
+          helperTextInvalid="A recording name can contain only letters, numbers, and underscores."
           validated={nameValid}
         >
           <TextInput
@@ -445,12 +445,12 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           validated={durationValid}
           helperText={
             continuous
-              ? 'A continuous recording will never be automatically stopped'
+              ? 'A continuous recording will never be automatically stopped.'
               : archiveOnStop
-              ? 'Time before the recording is automatically stopped and copied to archive'
-              : 'Time before the recording is automatically stopped'
+              ? 'Time before the recording is automatically stopped and copied to archive.'
+              : 'Time before the recording is automatically stopped.'
           }
-          helperTextInvalid="A recording may only have a positive integer duration"
+          helperTextInvalid="The recording duration must be a positive integer."
           data-quickstart-id="crf-duration"
         >
           <Split hasGutter>

@@ -39,7 +39,7 @@ import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title, StackItem, S
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
-export const authFailMessage = 'Auth failure';
+export const authFailMessage = 'Authentication failure';
 
 export const missingSSLMessage = 'Bad Gateway';
 

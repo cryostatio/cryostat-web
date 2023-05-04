@@ -74,12 +74,12 @@ export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = 
     <EmptyState>
       <EmptyStateIcon variant="container" component={LockIcon} />
       <Title size="lg" headingLevel="h4">
-        Access Permissions Needed
+        Access permissions required
       </Title>
       <EmptyStateBody>
         <Text>
           {`To continue, add permissions to your current account or login with a
-        different account. For more info, see the User Authentication section of the `}
+        different account. For more information, see the User Authentication section of the `}
         </Text>
         <Text
           component={TextVariants.a}

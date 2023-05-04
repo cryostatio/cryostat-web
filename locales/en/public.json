@@ -155,9 +155,9 @@
   "DashboardLayoutCreateModal": {
     "CREATE_LAYOUT": "Create Dashboard Layout",
     "ERROR": {
-      "NAME_INVALID": "Name must be alphanumeric and may contain underscores, dashes, and periods.",
-      "NAME_REQUIRED": "Name is required.",
-      "NAME_TAKEN": "Name is already in use.",
+      "NAME_INVALID": "Name must be alphanumeric and can contain underscores, dashes, and periods.",
+      "NAME_REQUIRED": "Layout name is a mandatory field.",
+      "NAME_TAKEN": "Specified layout name already exists.",
       "NAME_TOO_LONG": "Name must be 20 characters or less."
     },
     "LABEL": "Create a new dashboard layout",
@@ -228,7 +228,7 @@
   },
   "ERROR_BOUNDARY": {
     "ERROR_MESSAGE": "Reason: {{message}}",
-    "RESOLVE_MESSAGE": "Reload the page and try again. If the error still persists, checkout out <issue>{{knownIssue}}</issue> or <report>{{fileReport}}</report>."
+    "RESOLVE_MESSAGE": "Reload the page and try again. If the error still persists, see the list of <issue>{{knownIssue}}</issue> or <report>{{fileReport}}</report>."
   },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
@@ -275,8 +275,8 @@
     }
   },
   "RecordingLabelFields": {
-    "INVALID_UPLOADS_one": "The following file did not contain valid recording metadata:",
-    "INVALID_UPLOADS_other": "The following files did not contain valid recording metadata:"
+    "INVALID_UPLOADS_one": "The file does not contain valid recording metadata:",
+    "INVALID_UPLOADS_other": "These files do not contain valid recording metadata:"
   },
   "SETTINGS": {
     "AUTO_REFRESH": {

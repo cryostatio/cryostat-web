@@ -91,7 +91,7 @@ Array [
           className="pf-c-form__helper-text"
           id="recording-name-helper"
         >
-          Enter a recording name. This will be unique within the target JVM
+          Enter a recording name. This will be unique within the target JVM.
         </div>
       </div>
     </div>
@@ -256,7 +256,7 @@ Array [
           className="pf-c-form__helper-text pf-m-success"
           id="recording-duration-helper"
         >
-          Time before the recording is automatically stopped and copied to archive
+          Time before the recording is automatically stopped and copied to archive.
         </div>
       </div>
     </div>
