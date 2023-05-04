@@ -320,7 +320,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
     return (
       <ErrorView
         title={'Error retrieving active probes'}
-        message={`${errorMessage}.  Note: This error is generally caused when the agent is not loaded or is not active. Check that the target was started with the agent (-javaagent:/path/to/agent.jar).`}
+        message={`${errorMessage}. Note: This error is generally caused when the agent is not loaded or is not active. Check that the target was started with the agent (-javaagent:/path/to/agent.jar).`}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
     );
