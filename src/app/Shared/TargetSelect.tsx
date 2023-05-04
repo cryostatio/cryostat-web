@@ -91,23 +91,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       setDropdownOpen(false);
-      if (selection !== NO_TARGET) {
-        context.target.setTarget(selection);
-      }
-
       const toSelect: Target = isPlaceholder ? NO_TARGET : selection;
       onSelect && onSelect(toSelect);
+      setSelected(toSelect);
     },
-    [context.target, setDropdownOpen, onSelect]
+    [context.target, setDropdownOpen, onSelect, setSelected]
   );
 
   React.useEffect(() => {
     addSubscription(context.targets.targets().subscribe(setTargets));
   }, [addSubscription, context.targets, setTargets]);
-
-  React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(setSelected));
-  }, [addSubscription, context.target, setSelected]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {

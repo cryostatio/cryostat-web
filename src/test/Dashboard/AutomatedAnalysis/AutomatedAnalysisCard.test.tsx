@@ -41,6 +41,7 @@ import {
   emptyArchivedRecordingFilters,
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   ArchivedRecording,
@@ -60,6 +61,9 @@ import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContextAndReduxStore, testT } from '../../Common';
+import { DashboardConfigState } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/dashboard-utils';
+import { TopologyConfig } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 
 jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
   return {
@@ -190,11 +194,14 @@ describe('<AutomatedAnalysisCard />', () => {
           {
             name: 'Default',
             cards: [],
+            favorite: false,
           },
         ],
         current: 0,
         _version: '0',
-      },
+        customTemplates: [] as LayoutTemplate[],
+        templateHistory: [] as LayoutTemplateRecord[],
+      } as DashboardConfigState,
       recordingFilters: {
         list: [
           {
@@ -220,6 +227,8 @@ describe('<AutomatedAnalysisCard />', () => {
           },
         },
       },
+      topologyConfigs: {} as TopologyConfig,
+      topologyFilters: {} as TopologyFilters,
     };
   });
 

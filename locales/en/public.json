@@ -76,7 +76,7 @@
     "FORM_TITLE": "Profiling Recording Configuration",
     "MAXIMUM_AGE": "Maximum age ({{unit}})",
     "MAXIMUM_SIZE": "Maximum size ({{unit}})",
-    "RESET": "Reset",
+    "SAVE_CHANGES": "Save changes",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
   },

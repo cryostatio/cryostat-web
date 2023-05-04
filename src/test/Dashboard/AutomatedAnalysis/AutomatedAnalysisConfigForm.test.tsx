@@ -42,7 +42,7 @@ import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../../Common';
+import { renderWithServiceContext, testT } from '../../Common';
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
@@ -61,7 +61,10 @@ const mockTemplate2: EventTemplate = {
 };
 
 const mockAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
-  template: 'template=template1,type=TARGET',
+  template: {
+    name: 'template1',
+    type: 'TARGET'
+  },
   maxSize: 1048576,
   maxAge: 0,
 };
@@ -176,7 +179,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: /save changes/i,
+        name: testT('AutomatedAnalysisConfigForm.SAVE_CHANGES'),
       })
     );
     expect(setConfigRequestSpy).toHaveBeenCalledWith(config);
