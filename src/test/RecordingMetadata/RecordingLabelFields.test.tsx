@@ -230,7 +230,7 @@ describe('<RecordingLabelFields />', () => {
 
     expect(mockValid).toBe(ValidatedOptions.error);
 
-    const errorText = await screen.findByText('Keys must be unique. Labels should not contain whitespace.');
+    const errorText = await screen.findByText('Keys must be unique. Labels should not contain empty spaces.');
     expect(errorText).toBeInTheDocument();
     expect(errorText).toBeVisible();
   });
@@ -242,7 +242,7 @@ describe('<RecordingLabelFields />', () => {
 
     expect(mockValid).toBe(ValidatedOptions.error);
 
-    const errorText = await screen.findByText('Keys must be unique. Labels should not contain whitespace.');
+    const errorText = await screen.findByText('Keys must be unique. Labels should not contain empty spaces.');
     expect(errorText).toBeInTheDocument();
     expect(errorText).toBeVisible();
   });

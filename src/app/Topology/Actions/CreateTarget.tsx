@@ -494,7 +494,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
       {validation.option === ValidatedOptions.error && (
         <FormAlert>
           <Alert aria-live="polite" isInline title={validation.errorMessage} variant="danger">
-            {'Please check if the Connection URL is valid. Provide any credentials if needed.'}
+            {'Check if the connection URL is valid. Specify the correct credentials in case of authentication failure.'}
           </Alert>
         </FormAlert>
       )}

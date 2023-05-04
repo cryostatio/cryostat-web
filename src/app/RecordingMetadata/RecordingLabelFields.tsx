@@ -274,7 +274,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
             >
               <HelperText id="label-error-text">
                 <HelperTextItem variant="error">
-                  Keys must be unique. Labels should not contain whitespace.
+                  Keys must be unique. Labels should not contain empty spaces.
                 </HelperTextItem>
               </HelperText>
             </FormHelperText>

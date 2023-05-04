@@ -37,6 +37,7 @@
  */
 
 import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
+import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
@@ -116,7 +117,7 @@ describe('<SnapshotRecordingForm />', () => {
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
-    const authFailText = screen.getByText('Auth failure');
+    const authFailText = screen.getByText(authFailMessage);
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
 

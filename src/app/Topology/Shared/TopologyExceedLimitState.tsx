@@ -59,10 +59,11 @@ export const TopologyExceedLimitState: React.FC<TopologyExceedLimitStateProps> =
     <Bullseye {...props}>
       <EmptyState>
         <EmptyStateIcon variant="container" component={TopologyIcon} />
-        <Title headingLevel="h4">Loading is taking longer than expected</Title>
+        <Title headingLevel="h4">Loading of application topology is taking longer than expected</Title>
         <EmptyStateBody>
-          We noticed that it is taking a long time to visualize your application Topology. You can use filters to select
-          a smaller subset of target or click Continue to keep waiting.
+          We are working on loading the topology of your applications. Since the data to be displayed is large, the
+          rendering is taking more time. To see a smaller subset of your applications, use the filters to select the
+          parameters or click Continue to keep waiting.
         </EmptyStateBody>
         <EmptyStateSecondaryActions>
           <Button variant="link" onClick={onShowTopologyAnyway}>
