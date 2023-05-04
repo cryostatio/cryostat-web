@@ -37,7 +37,6 @@
  */
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
 import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorForm';
 import {
   AutomatedAnalysisRecordingConfig,
@@ -47,24 +46,29 @@ import {
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { TargetSelect } from '@app/Shared/TargetSelect';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
+  Card,
+  CardActions,
+  CardBody,
+  CardHeader,
+  CardTitle,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
-  ExpandableSection,
   Form,
   FormGroup,
   FormSection,
   FormSelect,
   FormSelectOption,
+  Grid,
+  GridItem,
   HelperText,
   HelperTextItem,
-  Panel,
-  PanelMain,
-  PanelMainBody,
+  Spinner,
   Split,
   SplitItem,
   Stack,
@@ -74,20 +78,21 @@ import {
   TextVariants,
   Title,
 } from '@patternfly/react-core';
+import { CloseIcon, PencilAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { concatMap, filter, first, Observable, take } from 'rxjs';
+import { concatMap, filter, first, of, take } from 'rxjs';
 
 interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
   inlineForm?: boolean;
-  targetObs?: Observable<Target>;
+  useTarget?: boolean;
 }
 
 export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
   useTitle = false,
   inlineForm = false,
-  targetObs,
+  useTarget = false,
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -114,6 +119,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     context.settings.automatedAnalysisRecordingConfig()
   );
 
+  const [target, setTarget] = React.useState<Target>(NO_TARGET);
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>(parseEventString);
   const [maxAge, setMaxAge] = React.useState(recordingConfig.maxAge);
@@ -121,15 +127,18 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const [maxSize, setMaxSize] = React.useState(recordingConfig.maxSize);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [editing, setEditing] = React.useState(false);
+
+  const targetObs = React.useMemo(() => of(target), [target]);
 
   const refreshTemplates = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      (targetObs ? targetObs : context.target.target())
+      targetObs
         .pipe(
           filter((target) => target !== NO_TARGET),
-          take(1), // first() will throw EmptyError
+          take(1),
           concatMap((target) =>
             context.api
               .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
@@ -150,17 +159,19 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             setTemplates([]);
             setTemplate({});
           },
+          complete: () => {
+            setIsLoading(false);
+          }
         })
     );
   }, [
     addSubscription,
-    context.target,
+    targetObs,
     context.api,
     setErrorMessage,
     setTemplates,
     setTemplate,
     setIsLoading,
-    targetObs,
   ]);
 
   React.useEffect(() => {
@@ -175,12 +186,11 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
   React.useEffect(() => {
     addSubscription(
-      (targetObs ? targetObs : context.target.target()).subscribe(() => {
+      (targetObs).subscribe(() => {
         refreshTemplates();
-        setIsLoading(false);
       })
     );
-  }, [addSubscription, targetObs, refreshTemplates, setIsLoading, context.target]);
+  }, [addSubscription, targetObs, refreshTemplates]);
 
   const getEventString = React.useCallback((templateName: string, templateType: string) => {
     let str = '';
@@ -274,149 +284,209 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     return '';
   }, [template]);
 
+  const targetSelect = React.useMemo(() => {
+    return (editing &&
+      <StackItem>
+        <TargetSelect simple onSelect={setTarget} />
+      </StackItem>
+    );
+  }, [editing, setTarget]);
+
+  const configData = React.useMemo(() => {
+    if (editing) {
+      return (
+        <Grid hasGutter lg={4} md={12}>
+          <GridItem>
+            <FormGroup
+            label={t(`TEMPLATE`, { ns: 'common' })}
+            isRequired
+            fieldId="recording-template"
+            helperText={
+              <>
+
+                <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
+                  <HelperTextItem>
+                    {t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}
+                  </HelperTextItem>
+                  {template.type == 'TARGET' && (
+                  <HelperTextItem variant="warning">
+                    <Text component={TextVariants.p}>{t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}</Text>
+                  </HelperTextItem>
+                  )}
+                </HelperText>
+
+              </>
+              }
+            >
+              {
+                isLoading ? (
+                  <Spinner size="md" />
+                ) : 
+                errorMessage != '' ? (
+                    <ErrorView
+                      title={t('ErrorView.EVENT_TEMPLATES')}
+                      message={errorMessage}
+                      retry={isAuthFail(errorMessage) ? authRetry : undefined}
+                    />
+                ) :
+                (
+                  <SelectTemplateSelectorForm
+                    templates={templates}
+                    onSelect={handleTemplateChange}
+                    selected={selectedSpecifier}
+                  />
+                )
+              }
+
+            </FormGroup>
+          </GridItem>
+          <GridItem>
+            <FormGroup
+              label={t('MAXIMUM_SIZE', { ns: 'common' })}
+              fieldId="maxSize"
+              helperText={t('MAXIMUM_SIZE_HELPER_TEXT', { ns: 'common' })}
+            >
+              <Split hasGutter={true}>
+                <SplitItem isFilled>
+                  <TextInput
+                    value={maxSize}
+                    isRequired
+                    type="number"
+                    id="maxSize"
+                    aria-label={t('AriaLabels.MAXIMUM_SIZE', { ns: 'common' })}
+                    onChange={handleMaxSizeChange}
+                    min="0"
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <FormSelect
+                    value={maxSizeUnits}
+                    onChange={handleMaxSizeUnitChange}
+                    aria-label={t('AriaLabels.MAXIMUM_SIZE_UNITS_INPUT', { ns: 'common' })}
+                  >
+                    <FormSelectOption key="1" value="1" label="B" />
+                    <FormSelectOption key="2" value={1024} label="KiB" />
+                    <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
+                  </FormSelect>
+                </SplitItem>
+              </Split>
+            </FormGroup>
+          </GridItem>
+          <GridItem>
+            <FormGroup
+              label={t('MAXIMUM_AGE', { ns: 'common' })}
+              fieldId="maxAge"
+              helperText={t('MAXIMUM_AGE_HELPER_TEXT', { ns: 'common' })}
+            >
+              <Split hasGutter={true}>
+                <SplitItem isFilled>
+                  <TextInput
+                    value={maxAge}
+                    isRequired
+                    type="number"
+                    id="maxAgeDuration"
+                    aria-label={t('AriaLabels.MAXIMUM_AGE', { ns: 'common' })}
+                    onChange={handleMaxAgeChange}
+                    min="0"
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <FormSelect
+                    value={maxAgeUnits}
+                    onChange={handleMaxAgeUnitChange}
+                    aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT', { ns: 'common' })}
+                  >
+                    <FormSelectOption key="1" value="1" label={t('SECOND', { count: 0, ns: 'common' })} />
+                    <FormSelectOption key="2" value={60} label={t('MINUTE', { count: 0, ns: 'common' })} />
+                    <FormSelectOption key="3" value={60 * 60} label={t('HOUR', { count: 0, ns: 'common' })} />
+                  </FormSelect>
+                </SplitItem>
+              </Split>
+            </FormGroup>
+          </GridItem>
+        </Grid>
+      )
+    }
+    return (
+      <DescriptionList isCompact isAutoFit>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
+          <DescriptionListDescription>{recordingConfig.template}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>
+            {t('AutomatedAnalysisConfigForm.MAXIMUM_SIZE', { unit: 'B' })}
+          </DescriptionListTerm>
+          <DescriptionListDescription>{recordingConfig.maxSize}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>
+            {t('AutomatedAnalysisConfigForm.MAXIMUM_AGE', { unit: 's' })}
+          </DescriptionListTerm>
+          <DescriptionListDescription>{recordingConfig.maxAge}</DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    )
+  }, [
+    t,
+    isLoading,
+    editing,
+    maxSize,
+    maxSizeUnits,
+    maxAge,
+    maxAgeUnits,
+    template,
+    templates,
+    selectedSpecifier,
+    handleTemplateChange,
+    handleMaxSizeChange,
+    handleMaxSizeUnitChange,
+    handleMaxAgeChange,
+    handleMaxAgeUnitChange,
+    errorMessage,
+    authRetry,
+    recordingConfig,
+  ]);
+
+  const toggleEdit = React.useCallback(() => {
+    setEditing((edit) => !edit);
+  }, [setEditing]);
+
   const formContent = React.useMemo(
     () => (
       <>
-        <ExpandableSection
-          toggleTextCollapsed="Show current configuration"
-          toggleTextExpanded="Hide current configuration"
-        >
-          <Panel variant="raised" isScrollable>
-            <PanelMain maxHeight="12em">
-              <PanelMainBody>
-                <Stack hasGutter>
-                  <StackItem>
-                    <Title headingLevel="h3" size="md">
-                      {t('AutomatedAnalysisConfigForm.CURRENT_CONFIG')}
-                    </Title>
-                  </StackItem>
-                  <StackItem>
-                    <DescriptionList isCompact isAutoFit>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
-                        <DescriptionListDescription>{recordingConfig.template}</DescriptionListDescription>
-                      </DescriptionListGroup>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>
-                          {t('AutomatedAnalysisConfigForm.MAXIMUM_SIZE', { unit: 'B' })}
-                        </DescriptionListTerm>
-                        <DescriptionListDescription>{recordingConfig.maxSize}</DescriptionListDescription>
-                      </DescriptionListGroup>
-                      <DescriptionListGroup>
-                        <DescriptionListTerm>
-                          {t('AutomatedAnalysisConfigForm.MAXIMUM_AGE', { unit: 's' })}
-                        </DescriptionListTerm>
-                        <DescriptionListDescription>{recordingConfig.maxAge}</DescriptionListDescription>
-                      </DescriptionListGroup>
-                    </DescriptionList>
-                  </StackItem>
-                </Stack>
-              </PanelMainBody>
-            </PanelMain>
-          </Panel>
-        </ExpandableSection>
-        <FormGroup
-          label={t(`TEMPLATE`, { ns: 'common' })}
-          isRequired
-          fieldId="recording-template"
-          helperText={t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}
-        >
-          <SelectTemplateSelectorForm
-            templates={templates}
-            onSelect={handleTemplateChange}
-            selected={selectedSpecifier}
-          />
-        </FormGroup>
-        <FormGroup
-          label={t('MAXIMUM_SIZE', { ns: 'common' })}
-          fieldId="maxSize"
-          helperText={t('MAXIMUM_SIZE_HELPER_TEXT', { ns: 'common' })}
-        >
-          <Split hasGutter={true}>
-            <SplitItem isFilled>
-              <TextInput
-                value={maxSize}
-                isRequired
-                type="number"
-                id="maxSize"
-                aria-label={t('AriaLabels.MAXIMUM_SIZE', { ns: 'common' })}
-                onChange={handleMaxSizeChange}
-                min="0"
-              />
-            </SplitItem>
-            <SplitItem>
-              <FormSelect
-                value={maxSizeUnits}
-                onChange={handleMaxSizeUnitChange}
-                aria-label={t('AriaLabels.MAXIMUM_SIZE_UNITS_INPUT', { ns: 'common' })}
-              >
-                <FormSelectOption key="1" value="1" label="B" />
-                <FormSelectOption key="2" value={1024} label="KiB" />
-                <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
-              </FormSelect>
-            </SplitItem>
-          </Split>
-        </FormGroup>
-        <FormGroup
-          label={t('MAXIMUM_AGE', { ns: 'common' })}
-          fieldId="maxAge"
-          helperText={t('MAXIMUM_AGE_HELPER_TEXT', { ns: 'common' })}
-        >
-          <Split hasGutter={true}>
-            <SplitItem isFilled>
-              <TextInput
-                value={maxAge}
-                isRequired
-                type="number"
-                id="maxAgeDuration"
-                aria-label={t('AriaLabels.MAXIMUM_AGE', { ns: 'common' })}
-                onChange={handleMaxAgeChange}
-                min="0"
-              />
-            </SplitItem>
-            <SplitItem>
-              <FormSelect
-                value={maxAgeUnits}
-                onChange={handleMaxAgeUnitChange}
-                aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT', { ns: 'common' })}
-              >
-                <FormSelectOption key="1" value="1" label={t('SECOND', { count: 0, ns: 'common' })} />
-                <FormSelectOption key="2" value={60} label={t('MINUTE', { count: 0, ns: 'common' })} />
-                <FormSelectOption key="3" value={60 * 60} label={t('HOUR', { count: 0, ns: 'common' })} />
-              </FormSelect>
-            </SplitItem>
-          </Split>
-        </FormGroup>
-        {template.type == 'TARGET' && (
-          <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
-            <HelperTextItem variant="warning">
-              <Text component={TextVariants.p}>{t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}</Text>
-            </HelperTextItem>
-          </HelperText>
-        )}
-        <Button variant="link" onClick={reset}>
-          Reset default
-        </Button>
+        <Card isFlat style={{ marginTop: '1em'}}>
+          <CardHeader>
+            <CardTitle>
+              <Title headingLevel="h3" size="md">
+                {t('AutomatedAnalysisConfigForm.CURRENT_CONFIG')}
+              </Title>
+            </CardTitle>
+            <CardActions>
+              <Button variant="link" onClick={reset}>
+                {t('AutomatedAnalysisConfigForm.RESET')}
+              </Button>
+              <Button icon={editing ? <CloseIcon /> : <PencilAltIcon />} onClick={toggleEdit} />
+            </CardActions>
+          </CardHeader>
+          <CardBody>
+            <Stack hasGutter>
+              {targetSelect}
+              <StackItem>
+                {configData}
+              </StackItem>
+            </Stack>
+          </CardBody>
+        </Card>
       </>
     ),
     [
       t,
-      recordingConfig.template,
-      recordingConfig.maxSize,
-      recordingConfig.maxAge,
-      template,
-      templates,
-      selectedSpecifier,
-      maxSize,
-      maxSizeUnits,
-      maxAge,
-      maxAgeUnits,
-      handleMaxSizeChange,
-      handleMaxAgeChange,
-      handleMaxSizeUnitChange,
-      handleMaxAgeUnitChange,
-      handleTemplateChange,
+      editing,
       reset,
+      toggleEdit,
+      targetSelect,
+      configData,
     ]
   );
 
@@ -429,19 +499,6 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       ),
     [useTitle, t, formContent]
   );
-
-  if (errorMessage != '') {
-    return (
-      <ErrorView
-        title={t('AutomatedAnalysisConfigForm.ERROR_TITLE')}
-        message={errorMessage}
-        retry={isAuthFail(errorMessage) ? authRetry : undefined}
-      />
-    );
-  }
-  if (isLoading) {
-    return <LoadingView />;
-  }
 
   return inlineForm ? formSection : <Form>{formSection}</Form>;
 };

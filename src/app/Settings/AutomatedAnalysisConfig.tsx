@@ -37,25 +37,11 @@
  */
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/Shared/TargetSelect';
-import { Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
-import { of } from 'rxjs';
 import { SettingTab, UserSetting } from './SettingsUtils';
 
 const Component = () => {
-  const [target, setTarget] = React.useState(NO_TARGET);
-  const _targetAsObs = React.useMemo(() => of(target), [target]);
-
-  return (
-    <Stack hasGutter>
-      <StackItem>
-        <TargetSelect simple onSelect={setTarget} />
-      </StackItem>
-      <AutomatedAnalysisConfigForm inlineForm targetObs={_targetAsObs} />
-    </Stack>
-  );
+    return <AutomatedAnalysisConfigForm inlineForm />
 };
 
 export const AutomatedAnalysisConfig: UserSetting = {
