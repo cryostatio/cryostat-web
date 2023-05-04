@@ -81,18 +81,16 @@ import {
 import { CloseIcon, PencilAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { concatMap, filter, first, of, take } from 'rxjs';
+import { concatMap, filter, first, of, take, tap, timeout } from 'rxjs';
 
 interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
   inlineForm?: boolean;
-  useTarget?: boolean;
 }
 
 export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
   useTitle = false,
   inlineForm = false,
-  useTarget = false,
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -119,7 +117,6 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     context.settings.automatedAnalysisRecordingConfig()
   );
 
-  const [target, setTarget] = React.useState<Target>(NO_TARGET);
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>(parseEventString);
   const [maxAge, setMaxAge] = React.useState(recordingConfig.maxAge);
@@ -130,20 +127,21 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const [isLoading, setIsLoading] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
 
-  const targetObs = React.useMemo(() => of(target), [target]);
-
   const refreshTemplates = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      targetObs
+      context.target
+        .target()
         .pipe(
-          filter((target) => target !== NO_TARGET),
           take(1),
-          concatMap((target) =>
-            context.api
+          concatMap((target) => {
+            if (target === NO_TARGET) {
+              return of([]);
+            }
+            return context.api
               .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
-              .pipe(first())
-          )
+              .pipe(first());
+          })
         )
         .subscribe({
           next: (templates) => {
@@ -161,18 +159,10 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           },
           complete: () => {
             setIsLoading(false);
-          }
+          },
         })
     );
-  }, [
-    addSubscription,
-    targetObs,
-    context.api,
-    setErrorMessage,
-    setTemplates,
-    setTemplate,
-    setIsLoading,
-  ]);
+  }, [addSubscription, context.api, context.target, setErrorMessage, setTemplates, setTemplate, setIsLoading]);
 
   React.useEffect(() => {
     addSubscription(
@@ -185,12 +175,15 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   }, [addSubscription, context.target, setErrorMessage, setTemplates, setIsLoading]);
 
   React.useEffect(() => {
+    if (!editing) {
+      return;
+    }
     addSubscription(
-      (targetObs).subscribe(() => {
+      context.target.target().subscribe(() => {
         refreshTemplates();
       })
     );
-  }, [addSubscription, targetObs, refreshTemplates]);
+  }, [addSubscription, context.target, refreshTemplates, setIsLoading, editing]);
 
   const getEventString = React.useCallback((templateName: string, templateType: string) => {
     let str = '';
@@ -285,12 +278,14 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   }, [template]);
 
   const targetSelect = React.useMemo(() => {
-    return (editing &&
-      <StackItem>
-        <TargetSelect simple onSelect={setTarget} />
-      </StackItem>
+    return (
+      editing && (
+        <StackItem>
+          <TargetSelect simple />
+        </StackItem>
+      )
     );
-  }, [editing, setTarget]);
+  }, [editing]);
 
   const configData = React.useMemo(() => {
     if (editing) {
@@ -298,46 +293,39 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         <Grid hasGutter lg={4} md={12}>
           <GridItem>
             <FormGroup
-            label={t(`TEMPLATE`, { ns: 'common' })}
-            isRequired
-            fieldId="recording-template"
-            helperText={
-              <>
-
-                <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
-                  <HelperTextItem>
-                    {t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}
-                  </HelperTextItem>
-                  {template.type == 'TARGET' && (
-                  <HelperTextItem variant="warning">
-                    <Text component={TextVariants.p}>{t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}</Text>
-                  </HelperTextItem>
-                  )}
-                </HelperText>
-
-              </>
+              label={t(`TEMPLATE`, { ns: 'common' })}
+              isRequired
+              fieldId="recording-template"
+              helperText={
+                <>
+                  <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
+                    <HelperTextItem>{t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}</HelperTextItem>
+                    {template.type == 'TARGET' && (
+                      <HelperTextItem variant="warning">
+                        <Text component={TextVariants.p}>
+                          {t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}
+                        </Text>
+                      </HelperTextItem>
+                    )}
+                  </HelperText>
+                </>
               }
             >
-              {
-                isLoading ? (
-                  <Spinner size="md" />
-                ) : 
-                errorMessage != '' ? (
-                    <ErrorView
-                      title={t('ErrorView.EVENT_TEMPLATES')}
-                      message={errorMessage}
-                      retry={isAuthFail(errorMessage) ? authRetry : undefined}
-                    />
-                ) :
-                (
-                  <SelectTemplateSelectorForm
-                    templates={templates}
-                    onSelect={handleTemplateChange}
-                    selected={selectedSpecifier}
-                  />
-                )
-              }
-
+              {isLoading ? (
+                <Spinner size="md" />
+              ) : errorMessage != '' ? (
+                <ErrorView
+                  title={t('ErrorView.EVENT_TEMPLATES')}
+                  message={errorMessage}
+                  retry={isAuthFail(errorMessage) ? authRetry : undefined}
+                />
+              ) : (
+                <SelectTemplateSelectorForm
+                  templates={templates}
+                  onSelect={handleTemplateChange}
+                  selected={selectedSpecifier}
+                />
+              )}
             </FormGroup>
           </GridItem>
           <GridItem>
@@ -405,7 +393,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             </FormGroup>
           </GridItem>
         </Grid>
-      )
+      );
     }
     return (
       <DescriptionList isCompact isAutoFit>
@@ -414,19 +402,15 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           <DescriptionListDescription>{recordingConfig.template}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>
-            {t('AutomatedAnalysisConfigForm.MAXIMUM_SIZE', { unit: 'B' })}
-          </DescriptionListTerm>
+          <DescriptionListTerm>{t('AutomatedAnalysisConfigForm.MAXIMUM_SIZE', { unit: 'B' })}</DescriptionListTerm>
           <DescriptionListDescription>{recordingConfig.maxSize}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>
-            {t('AutomatedAnalysisConfigForm.MAXIMUM_AGE', { unit: 's' })}
-          </DescriptionListTerm>
+          <DescriptionListTerm>{t('AutomatedAnalysisConfigForm.MAXIMUM_AGE', { unit: 's' })}</DescriptionListTerm>
           <DescriptionListDescription>{recordingConfig.maxAge}</DescriptionListDescription>
         </DescriptionListGroup>
       </DescriptionList>
-    )
+    );
   }, [
     t,
     isLoading,
@@ -455,7 +439,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const formContent = React.useMemo(
     () => (
       <>
-        <Card isFlat style={{ marginTop: '1em'}}>
+        <Card isFlat style={{ marginTop: '1em' }}>
           <CardHeader>
             <CardTitle>
               <Title headingLevel="h3" size="md">
@@ -466,28 +450,23 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               <Button variant="link" onClick={reset}>
                 {t('AutomatedAnalysisConfigForm.RESET')}
               </Button>
-              <Button icon={editing ? <CloseIcon /> : <PencilAltIcon />} onClick={toggleEdit} />
+              <Button
+                variant={editing ? 'plain' : 'primary'}
+                icon={editing ? <CloseIcon /> : <PencilAltIcon />}
+                onClick={toggleEdit}
+              />
             </CardActions>
           </CardHeader>
           <CardBody>
             <Stack hasGutter>
               {targetSelect}
-              <StackItem>
-                {configData}
-              </StackItem>
+              <StackItem>{configData}</StackItem>
             </Stack>
           </CardBody>
         </Card>
       </>
     ),
-    [
-      t,
-      editing,
-      reset,
-      toggleEdit,
-      targetSelect,
-      configData,
-    ]
+    [t, editing, reset, toggleEdit, targetSelect, configData]
   );
 
   const formSection = React.useMemo(

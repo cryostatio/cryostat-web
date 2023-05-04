@@ -41,7 +41,7 @@ import * as React from 'react';
 import { SettingTab, UserSetting } from './SettingsUtils';
 
 const Component = () => {
-    return <AutomatedAnalysisConfigForm inlineForm />
+  return <AutomatedAnalysisConfigForm inlineForm />;
 };
 
 export const AutomatedAnalysisConfig: UserSetting = {

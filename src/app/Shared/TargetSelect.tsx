@@ -92,11 +92,15 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       setDropdownOpen(false);
+      if (selection !== NO_TARGET) {
+        context.target.setTarget(selection);
+      }
+
       const toSelect: Target = isPlaceholder ? NO_TARGET : selection;
       onSelect && onSelect(toSelect);
       setSelected(toSelect);
     },
-    [setDropdownOpen, onSelect, setSelected]
+    [context.target, setDropdownOpen, onSelect, setSelected]
   );
 
   React.useEffect(() => {
@@ -129,10 +133,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
   }, [handleSelect, targets, selected, firstLoadRef]);
 
   const selectOptions = React.useMemo(() => {
-    let options = [
-      <SelectOption key="placeholder" value="Select target..." isPlaceholder={true} itemCount={targets.length} />,
-      <Divider key={'placeholder-divider'} />,
-    ];
+    let options = [] as JSX.Element[];
 
     const groupNames = new Set<string>();
     targets.forEach((t) => groupNames.add(t.annotations?.cryostat['REALM'] || 'Others'));
@@ -202,6 +203,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
         <>
           <CardBody>
             <Select
+              placeholderText="Select a target"
               toggleIcon={<ContainerNodeIcon />}
               variant={SelectVariant.single}
               hasInlineFilter
