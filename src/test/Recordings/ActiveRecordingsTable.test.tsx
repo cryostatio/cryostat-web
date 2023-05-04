@@ -36,9 +36,10 @@
  * SOFTWARE.
  */
 import '@testing-library/jest-dom';
+import { DashboardLayout } from '@app/Dashboard/dashboard-utils';
+import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
-import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -527,7 +528,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
-    const authFailText = screen.getByText('Auth failure');
+    const authFailText = screen.getByText(authFailMessage);
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
 

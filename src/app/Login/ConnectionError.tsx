@@ -43,7 +43,7 @@ export const ConnectionError = () => (
   <EmptyState>
     <EmptyStateIcon variant="container" component={ExclamationCircleIcon} />
     <Title size="lg" headingLevel="h4">
-      Unable to connect
+      Unable to connect to the server
     </Title>
     <EmptyStateBody>Check your connection and reload the page.</EmptyStateBody>
   </EmptyState>

@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { EventType, EventTypes } from '@app/Events/EventTypes';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
@@ -97,7 +98,7 @@ describe('<EventTypes />', () => {
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
-    const authFailText = screen.getByText('Auth failure');
+    const authFailText = screen.getByText(authFailMessage);
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
 

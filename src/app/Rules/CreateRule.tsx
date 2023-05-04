@@ -295,7 +295,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
           if (typeof res === 'boolean') {
             return res;
           }
-          throw new Error('Invalid match expression');
+          throw new Error('The expression matching failed.');
         });
         validation = matches.length ? ValidatedOptions.success : ValidatedOptions.warning;
       } catch (err) {
@@ -337,7 +337,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         isRequired
         fieldId="rule-name"
         helperText="Enter a rule name."
-        helperTextInvalid="A rule name may only contain letters, numbers, and underscores."
+        helperTextInvalid="A rule name can contain only letters, numbers, and underscores."
         validated={nameValid}
         data-quickstart-id="rule-name"
       >
@@ -403,7 +403,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   Enter a match expression. This is a Java-like code snippet that is evaluated against each target
   application to determine whether the rule should be applied.`
         }
-        helperTextInvalid="Invalid Match Expression."
+        helperTextInvalid="The expression matching failed."
         validated={matchExpressionValid}
         data-quickstart-id="rule-matchexpr"
       >

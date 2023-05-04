@@ -178,7 +178,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           if (typeof res === 'boolean') {
             return res;
           }
-          throw new Error('Invalid match expression');
+          throw new Error('The expression matching failed.');
         });
         validation = atLeastOne ? ValidatedOptions.success : ValidatedOptions.warning;
       } catch (err) {
@@ -248,7 +248,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         Enter a match expression. This is a Java-like code snippet that is evaluated against each target
         application to determine whether the rule should be applied.`
         }
-        helperTextInvalid="Invalid Match Expression."
+        helperTextInvalid="IThe expression matching failed."
         validated={matchExpressionValid}
       >
         <TextArea
