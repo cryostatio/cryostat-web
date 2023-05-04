@@ -9,7 +9,7 @@ Array [
     data-ouia-safe={true}
     data-pf-content={true}
   >
-    JDK Flight Recordings are compact records of events which have occurred within the target JVM. Many event types are built-in to the JVM itself, while others are user-defined.
+    JDK Flight Recordings are compact records of events which have occurred within the target JVM. Many event types are built in to the JVM itself, while others are user defined.
   </small>,
   <form
     className="pf-c-form pf-m-horizontal"
