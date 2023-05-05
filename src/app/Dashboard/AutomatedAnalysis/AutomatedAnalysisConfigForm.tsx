@@ -393,7 +393,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         <DescriptionListGroup>
           <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
           <DescriptionListDescription>
-            Name: {recordingConfig.template.name}, Type: {recordingConfig.template.type}
+            {t('AutomatedAnalysisConfigForm.FORMATTED_TEMPLATE', { template: recordingConfig.template })}
           </DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
@@ -472,7 +472,11 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                   {t('AutomatedAnalysisConfigForm.SAVE_CHANGES')}
                 </Button>
               )}
-              <Button variant="plain" onClick={toggleEdit} aria-label={editing ? 'Cancel' : 'Edit'}>
+              <Button
+                variant="plain"
+                onClick={toggleEdit}
+                aria-label={editing ? t('CANCEL', { ns: 'common' }) : t('EDIT', { ns: 'common' })}
+              >
                 {editing ? <CloseIcon /> : <PencilAltIcon />}
               </Button>
             </CardActions>

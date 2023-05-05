@@ -74,6 +74,7 @@
   "AutomatedAnalysisConfigForm": {
     "CURRENT_CONFIG": "Current Configuration",
     "FORM_TITLE": "Profiling Recording Configuration",
+    "FORMATTED_TEMPLATE": "Name: {{template.name}}, Type: {{template.type}}",
     "MAXIMUM_AGE": "Maximum age ({{unit}})",
     "MAXIMUM_SIZE": "Maximum size ({{unit}})",
     "SAVE_CHANGES": "Save changes",
