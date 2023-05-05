@@ -40,7 +40,6 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/Shared/TargetSelect';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
@@ -64,23 +63,9 @@ const mockFooTarget: Target = {
 };
 const mockBarTarget: Target = { ...mockFooTarget, jvmId: 'efgh', connectUrl: mockBarConnectUrl, alias: 'barTarget' };
 
-const history = createMemoryHistory();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: history.location.pathname }),
-  useHistory: () => history,
-}));
-
 jest.mock('@app/Shared/Services/Target.service', () => ({
   ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
 }));
-
-jest
-  .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of()) // contains the correct information
-  .mockReturnValueOnce(of()) // renders empty state when expanded
-  .mockReturnValue(of(mockFooTarget)); // other tests
 
 jest
   .spyOn(defaultServices.targets, 'targets')

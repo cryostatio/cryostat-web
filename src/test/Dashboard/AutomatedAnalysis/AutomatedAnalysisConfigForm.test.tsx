@@ -63,31 +63,31 @@ const mockTemplate2: EventTemplate = {
 const mockAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
   template: {
     name: 'template1',
-    type: 'TARGET'
+    type: 'TARGET',
   },
   maxSize: 1048576,
   maxAge: 0,
 };
 
-jest.mock('@app/Shared/TargetSelect', () => {
+jest.mock('@app/Shared/Services/Target.service', () => ({
+  ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
+}));
+
+jest.mock('@app/utils/LocalStorage', () => {
   return {
-    ...jest.requireActual('@app/Shared/TargetSelect'),
-    TargetSelect: jest.fn(() => {
-      return <div>Target Select</div>;
+    getFromLocalStorage: jest.fn((_key: string, _defaultValue: unknown): unknown => {
+      return 'service:jmx:rmi://someUrl';
     }),
   };
 });
 
-jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of());
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockTemplate1, mockTemplate2]));
 
 jest
   .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')
   .mockReturnValue(mockAutomatedAnalysisRecordingConfig);
 
-jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
-jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
+jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
 
 describe('<AutomatedAnalysisConfigForm />', () => {
   afterEach(cleanup);
@@ -172,7 +172,10 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     await user.type(maxAgeInput, '100');
 
     const config = {
-      template: `template=${mockTemplate2.name},type=${mockTemplate2.type}`,
+      template: {
+        name: mockTemplate2.name,
+        type: mockTemplate2.type,
+      },
       maxSize: 100,
       maxAge: 100,
     };

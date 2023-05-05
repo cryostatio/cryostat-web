@@ -619,7 +619,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         >
           {children}
         </Page>
-        <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} targetObs={serviceContext.target.target()} />
+        <AuthModal
+          visible={showAuthModal}
+          onDismiss={dismissAuthModal}
+          onSave={authModalOnSave}
+          targetObs={serviceContext.target.target()}
+        />
         <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
       </CryostatJoyride>
     </GlobalQuickStartDrawer>

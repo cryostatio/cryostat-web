@@ -95,7 +95,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
       onSelect && onSelect(toSelect);
       setSelected(toSelect);
     },
-    [context.target, setDropdownOpen, onSelect, setSelected]
+    [setDropdownOpen, onSelect, setSelected]
   );
 
   React.useEffect(() => {

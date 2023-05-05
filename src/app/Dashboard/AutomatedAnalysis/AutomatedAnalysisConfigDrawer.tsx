@@ -60,7 +60,6 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
-
 interface AutomatedAnalysisConfigDrawerProps {
   drawerContent: React.ReactNode;
   isContentAbove: boolean;

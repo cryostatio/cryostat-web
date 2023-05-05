@@ -82,7 +82,7 @@ import {
 import { CloseIcon, PencilAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { first, ReplaySubject, take } from 'rxjs';
+import { first, iif, of, ReplaySubject, take } from 'rxjs';
 
 interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
@@ -124,17 +124,26 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const [isLoading, setIsLoading] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
-  const refreshTemplates = React.useCallback((target: Target) => {
-    if (target === NO_TARGET) {
-      return;
-    }
-    setIsLoading(true);
-    addSubscription(
-      context.api
-      .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`, 'v1', undefined, undefined, true)
-      .pipe(first())
-        .subscribe({
-          next: (templates) => {
+  const refreshTemplates = React.useCallback(
+    (target: Target) => {
+      setIsLoading(true);
+      addSubscription(
+        iif(
+          () => {
+            return target === NO_TARGET;
+          },
+          of([]),
+          context.api
+            .doGet<EventTemplate[]>(
+              `targets/${encodeURIComponent(target.connectUrl)}/templates`,
+              'v1',
+              undefined,
+              undefined,
+              true
+            )
+            .pipe(first())
+        ).subscribe({
+          next: (templates: EventTemplate[]) => {
             setErrorMessage('');
             setTemplates(templates);
             setFormConfig((old) => {
@@ -142,8 +151,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               const matched = templates.find((t) => t.name === oldTemplate.name && t.type === t.type);
               return {
                 ...old,
-                template: matched ? { name: matched.name, type: matched.type } : {}
-
+                template: matched ? { name: matched.name, type: matched.type } : {},
               };
             });
             setIsLoading(false);
@@ -159,30 +167,14 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             }
           },
         })
-    );
-  }, [
-    addSubscription,
-    context.api,
-    setErrorMessage,
-    setTemplates,
-    setFormConfig,
-    setIsLoading,
-    setIsAuthModalOpen
-  ]);
+      );
+    },
+    [addSubscription, context.api, setErrorMessage, setTemplates, setFormConfig, setIsLoading, setIsAuthModalOpen]
+  );
 
   React.useEffect(() => {
     addSubscription(
-      context.target.authFailure().subscribe(() => {
-        setErrorMessage(authFailMessage);
-        setTemplates([]);
-        setIsLoading(false);
-      })
-    );
-  }, [addSubscription, context.target, setErrorMessage, setTemplates, setIsLoading]);
-
-  React.useEffect(() => {
-    addSubscription(
-      (targetSubject).subscribe((target) => {
+      targetSubject.subscribe((target) => {
         refreshTemplates(target);
       })
     );
@@ -450,7 +442,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         onSave={() => {
           setIsAuthModalOpen(false);
           addSubscription(
-            (targetSubject).pipe(take(1)).subscribe((target) => {
+            targetSubject.pipe(take(1)).subscribe((target) => {
               refreshTemplates(target);
             })
           );
@@ -475,7 +467,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 <Button
                   onClick={handleSubmit}
                   variant={'primary'}
-                  disabled={!formConfig.template.name || !formConfig.template.type}
+                  isDisabled={!formConfig.template.name || !formConfig.template.type}
                 >
                   {t('AutomatedAnalysisConfigForm.SAVE_CHANGES')}
                 </Button>
@@ -487,7 +479,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           </CardHeader>
           <CardBody>
             <Stack hasGutter>
-              {targetSelect}
+              <StackItem>{targetSelect}</StackItem>
               <StackItem>{configData}</StackItem>
             </Stack>
           </CardBody>
@@ -495,7 +487,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         {authModal}
       </>
     ),
-    [t, handleSubmit, toggleEdit, recordingConfig.template, targetSelect, configData, editing, authModal]
+    [t, handleSubmit, toggleEdit, formConfig.template, targetSelect, configData, editing, authModal]
   );
 
   const formSection = React.useMemo(

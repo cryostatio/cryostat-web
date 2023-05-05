@@ -36,6 +36,9 @@
  * SOFTWARE.
  */
 import { AutomatedAnalysisCard } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
+import { LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/dashboard-utils';
+import { DashboardConfigState } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { TopologyConfig } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -61,9 +64,6 @@ import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContextAndReduxStore, testT } from '../../Common';
-import { DashboardConfigState } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-import { LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/dashboard-utils';
-import { TopologyConfig } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 
 jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
   return {
