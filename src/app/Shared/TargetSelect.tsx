@@ -48,7 +48,6 @@ import {
   CardExpandableContent,
   CardHeader,
   CardTitle,
-  Divider,
   Select,
   SelectGroup,
   SelectOption,
@@ -129,10 +128,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
   }, [handleSelect, targets, selected, firstLoadRef]);
 
   const selectOptions = React.useMemo(() => {
-    let options = [
-      <SelectOption key="placeholder" value="Select target..." isPlaceholder={true} itemCount={targets.length} />,
-      <Divider key={'placeholder-divider'} />,
-    ];
+    let options = [] as JSX.Element[];
 
     const groupNames = new Set<string>();
     targets.forEach((t) => groupNames.add(t.annotations?.cryostat['REALM'] || 'Others'));
@@ -192,7 +188,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
   );
 
   return (
-    <Card {...props} isRounded isCompact isExpanded={isExpanded}>
+    <Card {...props} isRounded isCompact isFlat isExpanded={isExpanded}>
       <CardHeader {...cardHeaderProps}>
         <CardTitle>Target JVM</CardTitle>
       </CardHeader>
@@ -202,6 +198,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSel
         <>
           <CardBody>
             <Select
+              placeholderText="Select a target"
               toggleIcon={<ContainerNodeIcon />}
               variant={SelectVariant.single}
               hasInlineFilter

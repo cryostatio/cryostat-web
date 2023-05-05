@@ -36,21 +36,22 @@
  * SOFTWARE.
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { filter, first, map, mergeMap } from 'rxjs';
+import { Observable, filter, first, map, mergeMap } from 'rxjs';
 import { CredentialAuthForm } from './CredentialAuthForm';
 
 export interface AuthModalProps {
   visible: boolean;
   onDismiss: () => void;
   onSave: () => void;
+  targetObs: Observable<Target>;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onPropsSave, ...props }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onPropsSave, targetObs, ...props }) => {
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -59,8 +60,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
     (username: string, password: string) => {
       setLoading(true);
       addSubscription(
-        context.target
-          .target()
+        targetObs
           .pipe(
             filter((target) => target !== NO_TARGET),
             first(),
@@ -75,7 +75,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
           })
       );
     },
-    [addSubscription, context.authCredentials, context.target, setLoading, onPropsSave]
+    [addSubscription, context.authCredentials, targetObs, setLoading, onPropsSave]
   );
 
   return (

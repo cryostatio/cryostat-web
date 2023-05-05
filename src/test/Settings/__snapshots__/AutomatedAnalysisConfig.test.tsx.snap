@@ -1,14 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<AutomatedAnalysisConfig/> renders correctly 1`] = `
-<div
-  className="pf-l-stack pf-m-gutter"
->
-  <div
-    className="pf-l-stack__item"
-  >
-    Target Select
-  </div>
-  Automated Analysis Configuration Form
-</div>
-`;
+exports[`<AutomatedAnalysisConfig/> renders correctly 1`] = `"Automated Analysis Configuration Form"`;

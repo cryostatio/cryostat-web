@@ -40,7 +40,6 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/Shared/TargetSelect';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
@@ -64,23 +63,9 @@ const mockFooTarget: Target = {
 };
 const mockBarTarget: Target = { ...mockFooTarget, jvmId: 'efgh', connectUrl: mockBarConnectUrl, alias: 'barTarget' };
 
-const history = createMemoryHistory();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: history.location.pathname }),
-  useHistory: () => history,
-}));
-
 jest.mock('@app/Shared/Services/Target.service', () => ({
   ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
 }));
-
-jest
-  .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of()) // contains the correct information
-  .mockReturnValueOnce(of()) // renders empty state when expanded
-  .mockReturnValue(of(mockFooTarget)); // other tests
 
 jest
   .spyOn(defaultServices.targets, 'targets')
@@ -99,13 +84,13 @@ describe('<TargetSelect />', () => {
     renderWithServiceContext(<TargetSelect />);
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
-    expect(screen.getByText(`Select target...`)).toBeInTheDocument();
+    expect(screen.getByText(`Select a target`)).toBeInTheDocument();
   });
 
   it('renders empty state when expanded', async () => {
     const { container, user } = renderWithServiceContext(<TargetSelect />);
 
-    expect(screen.getByText('Select target...')).toBeInTheDocument();
+    expect(screen.getByText('Select a target')).toBeInTheDocument();
 
     const expandButton = screen.getByLabelText('Details');
     await user.click(expandButton);
@@ -123,7 +108,7 @@ describe('<TargetSelect />', () => {
     const { container, user } = renderWithServiceContext(<TargetSelect />);
 
     // Select a target first
-    await user.click(screen.getByText('Select target...'));
+    await user.click(screen.getByLabelText('Options menu'));
     await user.click(screen.getByText('fooTarget (service:jmx:rmi://someFooUrl)'));
 
     const expandButton = screen.getByLabelText('Details');
@@ -147,7 +132,6 @@ describe('<TargetSelect />', () => {
       CUSTOM_TARGET_REALM,
       'fooTarget (service:jmx:rmi://someFooUrl)',
       'barTarget (service:jmx:rmi://someBarUrl)',
-      '2', // Number of discoverable targets
     ].forEach((str) => {
       const element = screen.getByText(str);
       expect(element).toBeInTheDocument();

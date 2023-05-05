@@ -1823,13 +1823,16 @@ export interface ActiveRecordingFilterInput {
 export const automatedAnalysisRecordingName = 'automated-analysis';
 
 export interface AutomatedAnalysisRecordingConfig {
-  template: string;
+  template: Pick<EventTemplate, 'name' | 'type'>;
   maxSize: number;
   maxAge: number;
 }
 
 export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
-  template: 'template=Continuous,type=TARGET',
+  template: {
+    name: 'Continuous',
+    type: 'TARGET',
+  },
   maxSize: 1048576,
   maxAge: 0,
 };
