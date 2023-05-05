@@ -72,8 +72,12 @@
     }
   },
   "AutomatedAnalysisConfigForm": {
-    "ERROR_TITLE": "Error displaying recording configuration settings",
+    "CURRENT_CONFIG": "Current Configuration",
     "FORM_TITLE": "Profiling Recording Configuration",
+    "FORMATTED_TEMPLATE": "Name: {{template.name}}, Type: {{template.type}}",
+    "MAXIMUM_AGE": "Maximum age ({{unit}})",
+    "MAXIMUM_SIZE": "Maximum size ({{unit}})",
+    "SAVE_CHANGES": "Save changes",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
   },
@@ -229,6 +233,9 @@
   "ERROR_BOUNDARY": {
     "ERROR_MESSAGE": "Reason: {{message}}",
     "RESOLVE_MESSAGE": "Reload the page and try again. If the error still persists, see the list of <issue>{{knownIssue}}</issue> or <report>{{fileReport}}</report>."
+  },
+  "ErrorView": {
+    "EVENT_TEMPLATES": "Error retrieving event templates"
   },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
