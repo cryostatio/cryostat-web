@@ -85,17 +85,17 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
     }
   }, [setQuicksearchOpen]);
 
-  const actionIcon = React.useMemo(
+  const modeIcon = React.useMemo(
     () => (
       <Tooltip
         entryDelay={0}
-        content={isGraphView ? 'Graph View' : 'List View'}
+        content={isGraphView ? 'List View' : 'Graph View'}
         aria="none"
         aria-live="polite"
         appendTo={portalRoot}
       >
         <Button className="topology__view-switcher" aria-label="Clipboard" variant="plain" onClick={toggleView}>
-          {isGraphView ? <TopologyIcon /> : <ListIcon />}
+          {isGraphView ? <ListIcon /> : <TopologyIcon />}
         </Button>
       </Tooltip>
     ),
@@ -192,7 +192,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
             </ToolbarItem>
           ) : null}
           {!isDisabled ? <ToolbarItem alignment={{ default: 'alignRight' }}>{shortcuts}</ToolbarItem> : null}
-          <ToolbarItem alignment={isDisabled ? { default: 'alignRight' } : undefined}>{actionIcon}</ToolbarItem>
+          <ToolbarItem alignment={isDisabled ? { default: 'alignRight' } : undefined}>{modeIcon}</ToolbarItem>
         </ToolbarContent>
       </Toolbar>
       <TopologyFilterChips className="topology__toolbar-chip-content" />
