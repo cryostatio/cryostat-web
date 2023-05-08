@@ -50,6 +50,7 @@ import { HelpButton } from './HelpButton';
 import { QuickSearchButton } from './QuickSearchButton';
 import { TopologyFilterChips } from './TopologyFilterChips';
 import { TopologyFilters } from './TopologyFilters';
+import { useTranslation } from 'react-i18next';
 
 export enum TopologyToolbarVariant {
   Graph = 'graph',
@@ -65,6 +66,7 @@ export interface TopologyToolbarProps {
 export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visualization, isDisabled, ...props }) => {
   const isGraphView = variant === TopologyToolbarVariant.Graph;
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [quicksearchOpen, setQuicksearchOpen] = React.useState(false);
 
@@ -89,7 +91,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
     () => (
       <Tooltip
         entryDelay={0}
-        content={isGraphView ? 'List View' : 'Graph View'}
+        content={isGraphView ? t('Topology.LIST_VIEW') : t('Topology.GRAPH_VIEW')}
         aria="none"
         aria-live="polite"
         appendTo={portalRoot}
@@ -99,7 +101,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
         </Button>
       </Tooltip>
     ),
-    [isGraphView, toggleView]
+    [isGraphView, toggleView, t]
   );
 
   const shortcuts = React.useMemo(() => {

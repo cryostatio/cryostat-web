@@ -390,5 +390,9 @@
       "SELECT": "Select a timezone",
       "TYPE_AHEAD": "Search a timezone"
     }
+  },
+  "Topology": {
+    "GRAPH_VIEW": "Graph View",
+    "LIST_VIEW": "List View"
   }
 }
