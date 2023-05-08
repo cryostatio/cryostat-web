@@ -50,6 +50,7 @@ import { HelpButton } from './HelpButton';
 import { QuickSearchButton } from './QuickSearchButton';
 import { TopologyFilterChips } from './TopologyFilterChips';
 import { TopologyFilters } from './TopologyFilters';
+import { useTranslation } from 'react-i18next';
 
 export enum TopologyToolbarVariant {
   Graph = 'graph',
@@ -65,6 +66,7 @@ export interface TopologyToolbarProps {
 export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visualization, isDisabled, ...props }) => {
   const isGraphView = variant === TopologyToolbarVariant.Graph;
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [quicksearchOpen, setQuicksearchOpen] = React.useState(false);
 
@@ -85,21 +87,21 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
     }
   }, [setQuicksearchOpen]);
 
-  const actionIcon = React.useMemo(
+  const modeIcon = React.useMemo(
     () => (
       <Tooltip
         entryDelay={0}
-        content={isGraphView ? 'Graph View' : 'List View'}
+        content={isGraphView ? t('Topology.LIST_VIEW') : t('Topology.GRAPH_VIEW')}
         aria="none"
         aria-live="polite"
         appendTo={portalRoot}
       >
         <Button className="topology__view-switcher" aria-label="Clipboard" variant="plain" onClick={toggleView}>
-          {isGraphView ? <TopologyIcon /> : <ListIcon />}
+          {isGraphView ? <ListIcon /> : <TopologyIcon />}
         </Button>
       </Tooltip>
     ),
-    [isGraphView, toggleView]
+    [isGraphView, toggleView, t]
   );
 
   const shortcuts = React.useMemo(() => {
@@ -192,7 +194,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
             </ToolbarItem>
           ) : null}
           {!isDisabled ? <ToolbarItem alignment={{ default: 'alignRight' }}>{shortcuts}</ToolbarItem> : null}
-          <ToolbarItem alignment={isDisabled ? { default: 'alignRight' } : undefined}>{actionIcon}</ToolbarItem>
+          <ToolbarItem alignment={isDisabled ? { default: 'alignRight' } : undefined}>{modeIcon}</ToolbarItem>
         </ToolbarContent>
       </Toolbar>
       <TopologyFilterChips className="topology__toolbar-chip-content" />
