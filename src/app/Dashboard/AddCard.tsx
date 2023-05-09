@@ -467,10 +467,10 @@ interface PropsConfigFormProps {
   onChange: (config: object) => void;
 }
 
-const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
+const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props }) => {
   const { t } = useTranslation();
   const handleChange = React.useCallback(
-    (k) => (e) => {
+    (k: string) => (e: unknown) => {
       const copy = { ...props.config };
       copy[k] = e;
       onChange(copy);
@@ -479,7 +479,7 @@ const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
   );
 
   const handleNumeric = React.useCallback(
-    (k) => (e) => {
+    (k: string) => (e: React.FormEvent<HTMLInputElement>) => {
       const value = (e.target as HTMLInputElement).value;
       const copy = { ...props.config };
       copy[k] = value;
@@ -489,7 +489,7 @@ const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
   );
 
   const handleNumericStep = React.useCallback(
-    (k, v) => (_) => {
+    (k: string, v: number) => (_: React.MouseEvent) => {
       const copy = { ...props.config };
       copy[k] = props.config[k] + v;
       onChange(copy);
@@ -582,7 +582,7 @@ interface SelectControlProps {
   selectedConfig: string | SelectOptionObject;
 }
 
-const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlProps) => {
+const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, selectedConfig }) => {
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
@@ -638,10 +638,13 @@ const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlP
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
         : options.map((choice, idx) => {
-            if (control.extras && control.extras.displayMapper) {
-              choice = control.extras.displayMapper(choice);
-            }
-            return <SelectOption key={idx + 1} value={choice} />;
+            const display =
+              control.extras && control.extras.displayMapper ? control.extras.displayMapper(choice) : choice;
+            return (
+              <SelectOption key={idx + 1} value={choice}>
+                {display}
+              </SelectOption>
+            );
           })}
     </Select>
   );
