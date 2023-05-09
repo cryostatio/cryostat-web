@@ -555,7 +555,7 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
       key: 'themeColor',
       values: ['blue', 'cyan', 'gold', 'gray', 'green', 'orange', 'purple'],
-      defaultValue: 'Blue',
+      defaultValue: 'blue',
       description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
       kind: 'select',
       extras: {
