@@ -63,7 +63,7 @@ export const DisableAutomatedRules: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DisableAutomatedRules,
   title: 'Disable your Automated Rule?',
   label: 'Disable Automated Rule',
-  description: `If you click delete, the rule will be disabled.`,
+  description: `If you click Disable, the rule will be disabled`,
   ariaLabel: 'Automated rule disable warning',
 };
 
