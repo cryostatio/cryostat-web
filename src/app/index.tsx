@@ -52,7 +52,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { JoyrideProvider } from './Joyride/JoyrideProvider';
 
-const App: React.FunctionComponent = () => (
+export const App: React.FC = () => (
   <ServiceContext.Provider value={defaultServices}>
     <NotificationsContext.Provider value={NotificationsInstance}>
       <Provider store={store}>
@@ -67,5 +67,3 @@ const App: React.FunctionComponent = () => (
     </NotificationsContext.Provider>
   </ServiceContext.Provider>
 );
-
-export { App };

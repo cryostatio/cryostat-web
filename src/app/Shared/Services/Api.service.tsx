@@ -102,7 +102,7 @@ export class ApiService {
     private readonly login: LoginService
   ) {
     // show recording archives when recordings available
-    login
+    this.login
       .getSessionState()
       .pipe(
         concatMap((sessionState) => (sessionState === SessionState.USER_SESSION ? this.doGet('recordings') : EMPTY))

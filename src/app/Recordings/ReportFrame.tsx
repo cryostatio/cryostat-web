@@ -48,7 +48,7 @@ export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   recording: Recording;
 }
 
-export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) => {
+export const ReportFrame: React.FC<ReportFrameProps> = (props) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [report, setReport] = React.useState(undefined as string | undefined);

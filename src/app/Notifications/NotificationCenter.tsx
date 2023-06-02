@@ -70,7 +70,7 @@ export interface NotificationDrawerCategory {
   unreadCount: number;
 }
 
-export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = (props) => {
+export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => {
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();

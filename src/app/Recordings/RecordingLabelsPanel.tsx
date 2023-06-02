@@ -56,7 +56,7 @@ export interface RecordingLabelsPanelProps {
   directoryRecordings?: ArchivedRecording[];
 }
 
-export const RecordingLabelsPanel: React.FunctionComponent<RecordingLabelsPanelProps> = (props) => {
+export const RecordingLabelsPanel: React.FC<RecordingLabelsPanelProps> = (props) => {
   return (
     <DrawerPanelContent isResizable>
       <DrawerHead>

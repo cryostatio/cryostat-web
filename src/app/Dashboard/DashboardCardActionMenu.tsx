@@ -46,7 +46,7 @@ export interface DashboardCardActionProps {
   onResetSize: () => void;
 }
 
-export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = ({
+export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({
   onRemove,
   onResetSize,
   onView,

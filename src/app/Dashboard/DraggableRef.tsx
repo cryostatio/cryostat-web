@@ -164,11 +164,7 @@ export interface DraggableRefProps {
   dashboardId: number;
 }
 
-export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
-  children,
-  dashboardId,
-  ..._props
-}: DraggableRefProps) => {
+export const DraggableRef: React.FC<DraggableRefProps> = ({ children, dashboardId, ..._props }: DraggableRefProps) => {
   const dispatch = useDispatch();
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 

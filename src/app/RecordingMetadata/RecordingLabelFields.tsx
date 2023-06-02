@@ -76,11 +76,7 @@ const matchesLabelSyntax = (l: RecordingLabel) => {
   return l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
 };
 
-export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = ({
-  setLabels,
-  setValid,
-  ...props
-}) => {
+export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setLabels, setValid, ...props }) => {
   const inputRef = React.useRef<HTMLInputElement>(null); // Use ref to refer to child component
   const addSubscription = useSubscriptions();
   const { t } = useTranslation();

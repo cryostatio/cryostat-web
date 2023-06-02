@@ -60,7 +60,7 @@ export function handleDisabledElements(disabled: boolean): void {
   disabledElements.forEach((el) => (el.style['pointer-events'] = disabled ? 'none' : 'auto'));
 }
 
-export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
+export const ResizableRef: React.FC<ResizableRefProps> = ({
   cardId: dashboardId,
   cardSizes,
   ..._props

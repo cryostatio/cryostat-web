@@ -52,9 +52,7 @@ export interface ClickableAutomatedAnalysisLabelProps {
 
 export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label';
 
-export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableAutomatedAnalysisLabelProps> = ({
-  label,
-}) => {
+export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ label }) => {
   const { t } = useTranslation();
 
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);

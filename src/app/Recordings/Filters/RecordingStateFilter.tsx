@@ -45,10 +45,7 @@ export interface RecordingStateFilterProps {
   onSelectToggle: (state: RecordingState) => void;
 }
 
-export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterProps> = ({
-  filteredStates,
-  onSelectToggle,
-}) => {
+export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filteredStates, onSelectToggle }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const onSelect = React.useCallback(

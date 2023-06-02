@@ -45,7 +45,7 @@ import * as React from 'react';
 import { combineLatest } from 'rxjs';
 import { FormProps } from './FormProps';
 
-export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = ({ onSubmit }) => {
+export const OpenShiftPlaceholderAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [showPermissionDenied, setShowPermissionDenied] = React.useState(false);

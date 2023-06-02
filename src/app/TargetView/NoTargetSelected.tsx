@@ -39,7 +39,7 @@ import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react
 import { DisconnectedIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
-export const NoTargetSelected: React.FunctionComponent = () => {
+export const NoTargetSelected: React.FC = () => {
   return (
     <>
       <Card>

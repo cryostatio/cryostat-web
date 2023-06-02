@@ -41,6 +41,7 @@ import { Button, Popover, Toolbar, ToolbarContent, ToolbarItem, Tooltip } from '
 import { TopologyIcon, ListIcon, MouseIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import { Visualization } from '@patternfly/react-topology';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { QuickSearchModal } from '../Actions/QuickSearchPanel';
 import Shortcuts, { ShortcutCommand } from '../Shared/Shortcuts';
@@ -50,7 +51,6 @@ import { HelpButton } from './HelpButton';
 import { QuickSearchButton } from './QuickSearchButton';
 import { TopologyFilterChips } from './TopologyFilterChips';
 import { TopologyFilters } from './TopologyFilters';
-import { useTranslation } from 'react-i18next';
 
 export enum TopologyToolbarVariant {
   Graph = 'graph',

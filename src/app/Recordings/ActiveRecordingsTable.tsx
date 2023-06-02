@@ -137,7 +137,7 @@ export interface ActiveRecordingsTableProps {
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
-export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
+export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
   const routerHistory = useHistory();
@@ -603,7 +603,7 @@ export interface ActiveRecordingsToolbarProps {
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
-const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarProps> = (props) => {
+const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);

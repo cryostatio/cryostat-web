@@ -59,7 +59,7 @@ export interface RecordingActionsProps {
   uploadFn: () => Observable<boolean>;
 }
 
-export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
+export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);

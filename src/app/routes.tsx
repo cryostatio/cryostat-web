@@ -269,7 +269,7 @@ const PageNotFound = ({ title }: { title: string }) => {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AppRoutesProps {}
 
-const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
+const AppRoutes: React.FC<AppRoutesProps> = (_) => {
   const loggedIn = useLogin();
   const activeLevel = useFeatureLevel();
 

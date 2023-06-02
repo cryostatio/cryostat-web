@@ -55,7 +55,7 @@ import { NotFoundCard } from './NotFoundCard';
 
 export interface NotFoundProps {}
 
-export const NotFound: React.FunctionComponent<NotFoundProps> = (_) => {
+export const NotFound: React.FC<NotFoundProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);

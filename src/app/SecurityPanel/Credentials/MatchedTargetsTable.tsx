@@ -76,7 +76,7 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
+export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
   const context = React.useContext(ServiceContext);
 
   const [targets, setTargets] = React.useState([] as Target[]);

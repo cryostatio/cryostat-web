@@ -46,11 +46,7 @@ export interface DynamicFeatureFlagProps {
   defaultComponent?: React.ReactNode;
 }
 
-export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps> = ({
-  levels,
-  component,
-  defaultComponent,
-}) => {
+export const DynamicFeatureFlag: React.FC<DynamicFeatureFlagProps> = ({ levels, component, defaultComponent }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
@@ -75,7 +71,7 @@ export interface FeatureFlagProps {
   children?: React.ReactNode | undefined;
 }
 
-export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, strict, children }) => {
+export const FeatureFlag: React.FC<FeatureFlagProps> = ({ level, strict, children }) => {
   const levels = React.useMemo(
     () => (strict ? [level] : [...Array.from({ length: level + 1 }, (_, i) => i)]),
     [strict, level]

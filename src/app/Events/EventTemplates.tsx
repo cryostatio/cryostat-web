@@ -439,10 +439,7 @@ export interface EventTemplatesUploadModalProps {
   onClose: () => void;
 }
 
-export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUploadModalProps> = ({
-  onClose,
-  ...props
-}) => {
+export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div

@@ -48,7 +48,7 @@ export interface CancelUploadModalProps {
   message: string;
 }
 
-export const CancelUploadModal: React.FunctionComponent<CancelUploadModalProps> = (props) => {
+export const CancelUploadModal: React.FC<CancelUploadModalProps> = (props) => {
   return (
     <Modal
       appendTo={portalRoot}

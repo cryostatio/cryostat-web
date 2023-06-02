@@ -59,7 +59,7 @@ export interface SelectTemplateSelectorFormProps {
   onSelect: (template?: string, templateType?: TemplateType) => void;
 }
 
-export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateSelectorFormProps> = ({
+export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProps> = ({
   selected,
   templates,
   disabled,
