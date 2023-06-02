@@ -59,6 +59,10 @@ import * as React from 'react';
 import { combineLatest } from 'rxjs';
 import { Notification, NotificationsContext } from './Notifications';
 
+const countUnreadNotifications = (notifications: Notification[]) => {
+  return notifications.filter((n) => !n.read).length;
+};
+
 export interface NotificationCenterProps {
   onClose: () => void;
 }
@@ -77,16 +81,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => 
 
   const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
-  const PROBLEMS_CATEGORY_IDX = 2;
   const [drawerCategories, setDrawerCategories] = React.useState([
     { title: 'Completed Actions', isExpanded: true, notifications: [] as Notification[], unreadCount: 0 },
     { title: 'Cryostat Status', isExpanded: false, notifications: [] as Notification[], unreadCount: 0 },
-    { title: 'Problems', isExpanded: false, notifications: [] as Notification[], unreadCount: 0 },
+    { title: 'Problems', isExpanded: true, notifications: [] as Notification[], unreadCount: 0 },
   ] as NotificationDrawerCategory[]);
-
-  const countUnreadNotifications = (notifications: Notification[]) => {
-    return notifications.filter((n) => !n.read).length;
-  };
 
   React.useEffect(() => {
     addSubscription(
@@ -104,7 +103,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => 
         });
       })
     );
-  }, [addSubscription, context, context.notifications, setDrawerCategories]);
+  }, [addSubscription, context, setDrawerCategories]);
 
   React.useEffect(() => {
     addSubscription(
@@ -129,20 +128,6 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => 
     },
     [setDrawerCategories]
   );
-
-  // Expands the Problems tab when unread errors/warnings are present
-  React.useEffect(() => {
-    if (drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount === 0) {
-      return;
-    }
-
-    setDrawerCategories((drawerCategories) => {
-      return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
-        category.isExpanded = idx === PROBLEMS_CATEGORY_IDX;
-        return category;
-      });
-    });
-  }, [setDrawerCategories, drawerCategories]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
