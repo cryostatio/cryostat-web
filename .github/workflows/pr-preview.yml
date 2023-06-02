@@ -1,5 +1,9 @@
 name: Generate Preview (PR)
 
+concurrency:
+  group: pr-${{ github.event.number }}
+  cancel-in-progress: true
+
 on:
   pull_request_target:
     types:
@@ -8,13 +12,15 @@ on:
       - synchronize
       - labeled
       - unlabeled
-      - closed
+
+permissions: 
+  pull-requests: write 
+
 jobs:
   build-preview:
-    if: ${{ github.repository_owner == 'cryostatio' }}
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write # allow surge-preview to create/update PR comments
+    env:
+      DEPLOY_DOMAIN: ${{ github.repository_owner }}-pr-${{ github.event.number }}.surge.sh
     steps:
     - name: Fail if safe-to-test label NOT applied
       if: ${{ !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
@@ -25,13 +31,13 @@ jobs:
       with:
         node-version: 18
     - uses: bahmutov/npm-install@v1
+    - name: Build assets
+      run: yarn build:preview:notests
     - name: Publish to surge
-      id: surge-publish
-      uses: afc163/surge-preview@v1
+      run: |
+        npx surge --project ./dist --domain $DEPLOY_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
+    - name: Comment Preview URL
+      uses: thollander/actions-comment-pull-request@v1
       with:
-        surge_token: ${{ secrets.SURGE_TOKEN }}
-        teardown: 'true'
-        dist: dist
-        build: yarn build:preview:notests
-    - name: Print Preview URL
-      run: echo "Preview URL at ${{ steps.surge-publish.outputs.preview_url }}"
+        message: |-
+          Preview is available: https://$DEPLOY_DOMAIN
