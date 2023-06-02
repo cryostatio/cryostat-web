@@ -1,0 +1,21 @@
+name: Clean up PR-scoped preview deployment
+
+on:
+  pull_request_target:
+    types:
+      - closed
+
+jobs:
+  delete-pr-preview:
+    env:
+      DEPLOY_DOMAIN: ${{ github.repository_owner }}-pr-${{ github.event.number }}.surge.sh
+    name: Delete PR-scoped preview deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - name: Tear down preview
+        run: |
+          npx surge teardown $DEPLOY_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
