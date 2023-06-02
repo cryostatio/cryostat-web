@@ -4,11 +4,10 @@ const common = require('./webpack.common.js');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
-const DotenvPlugin = require('dotenv-webpack');
+const { EnvironmentPlugin } = require('webpack');
 
 module.exports = merge(common('production'), {
   mode: 'production',
-  devtool: 'eval-source-map',
   cache: {
     type: 'filesystem',
     compression: 'gzip',
@@ -16,10 +15,23 @@ module.exports = merge(common('production'), {
   },
   optimization: {
     minimizer: [
-      new TerserJSPlugin({}),
+      new TerserJSPlugin({
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+        },
+        extractComments: false,
+      }),
       new CssMinimizerPlugin({
         minimizerOptions: {
-          preset: ['default', { mergeLonghand: false }]
+          preset: [
+            'default',
+            {
+              mergeLonghand: false,
+              discardComments: { removeAll: true }
+            }
+          ]
         },
       }),
     ],
@@ -29,9 +41,10 @@ module.exports = merge(common('production'), {
       filename: '[name].[contenthash].bundle.css',
       chunkFilename: '[name].[contenthash].bundle.css' // lazy-load css
     }),
-    new DotenvPlugin({
-      path: './.env.prod',
-    }),
+    new EnvironmentPlugin({
+      CRYOSTAT_AUTHORITY: '',
+      PREVIEW: process.env.PREVIEW || 'false'
+    })
   ],
   module: {
     rules: [
