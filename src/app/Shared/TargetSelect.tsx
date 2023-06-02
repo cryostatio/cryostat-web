@@ -63,7 +63,7 @@ export interface TargetSelectProps {
   onSelect?: (target: Target) => void;
 }
 
-export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSelect, simple, ...props }) => {
+export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const firstLoadRef = React.useRef(false);

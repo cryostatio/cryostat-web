@@ -40,10 +40,10 @@ import build from '@app/build.json';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const AboutDescription = () => {
+export const AboutDescription: React.FC = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);

@@ -42,7 +42,7 @@ import { withRouter } from 'react-router-dom';
 
 export interface QuickStartsCatalogPageProps {}
 
-const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProps> = (_) => {
+const QuickStartsCatalogPage: React.FC<QuickStartsCatalogPageProps> = (_) => {
   const { t } = useTranslation();
 
   // TODO: Quick start categories (patternfly/quickstarts supports this through individual components)

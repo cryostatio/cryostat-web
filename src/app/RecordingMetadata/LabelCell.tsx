@@ -53,7 +53,7 @@ export interface LabelCellProps {
   };
 }
 
-export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
+export const LabelCell: React.FC<LabelCellProps> = (props) => {
   const isLabelSelected = React.useCallback(
     (label: RecordingLabel) => {
       if (props.clickableOptions) {

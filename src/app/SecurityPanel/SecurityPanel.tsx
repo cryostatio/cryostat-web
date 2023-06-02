@@ -43,7 +43,7 @@ import { ImportCertificate } from './ImportCertificate';
 
 export interface SecurityPanelProps {}
 
-export const SecurityPanel: React.FunctionComponent<SecurityPanelProps> = (_) => {
+export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
   const securityCards = [ImportCertificate, StoreCredentialsCard].map((c) => ({
     title: c.title,
     description: c.description,
@@ -70,5 +70,5 @@ export default SecurityPanel;
 export interface SecurityCard {
   title: string;
   description: JSX.Element | string;
-  content: React.FunctionComponent;
+  content: React.FC;
 }

@@ -337,7 +337,7 @@ export class NotificationChannel {
           return;
         }
         const message = value.body(msg);
-        notifications.notify({
+        this.notifications.notify({
           title: value.title,
           message,
           category: key,
@@ -352,7 +352,7 @@ export class NotificationChannel {
       .pipe(filter((msg) => !messageKeys.has(msg.meta.category as NotificationCategory)))
       .subscribe((msg) => {
         const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
-        notifications.notify({
+        this.notifications.notify({
           title: msg.meta.category,
           message: msg.message,
           category,
@@ -482,12 +482,9 @@ export class NotificationChannel {
   }
 
   private logError(title: string, err: Error): void {
-    window.console.error(err?.message);
-    window.console.error(err?.stack);
-
-    if (err?.message) {
-      this.notifications.danger(title, JSON.stringify(err?.message));
-    }
+    console.error(`${title}:${err.message}`);
+    err.stack && console.error(err.stack);
+    this.notifications.danger(title, JSON.stringify(err.message));
   }
 }
 

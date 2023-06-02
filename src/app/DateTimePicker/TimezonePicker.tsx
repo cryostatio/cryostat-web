@@ -56,7 +56,7 @@ export interface TimezonePickerProps {
   selected: Timezone;
 }
 
-export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
+export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   isFlipEnabled = true,
   isCompact,
   menuAppendTo = 'parent',

@@ -46,7 +46,7 @@ export interface NameFilterProps {
   onSubmit: (inputName: string) => void;
 }
 
-export const NameFilter: React.FunctionComponent<NameFilterProps> = ({ recordings, filteredNames, onSubmit }) => {
+export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredNames, onSubmit }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const onSelect = React.useCallback(

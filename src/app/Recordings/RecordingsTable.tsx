@@ -83,7 +83,7 @@ export interface RecordingsTableProps {
   children: React.ReactNode;
 }
 
-export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = ({
+export const RecordingsTable: React.FC<RecordingsTableProps> = ({
   toolbar,
   tableColumns,
   tableTitle,

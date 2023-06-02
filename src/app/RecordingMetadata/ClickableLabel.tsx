@@ -46,7 +46,7 @@ export interface ClickableLabelCellProps {
   onLabelClick: (label: RecordingLabel) => void;
 }
 
-export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = ({ onLabelClick, ...props }) => {
+export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ onLabelClick, ...props }) => {
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const labelColor = React.useMemo(() => (props.isSelected ? 'blue' : 'grey'), [props.isSelected]);
 

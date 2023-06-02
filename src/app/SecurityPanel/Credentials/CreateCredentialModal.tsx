@@ -72,7 +72,7 @@ export interface CreateCredentialModalProps {
   onPropsSave: () => void;
 }
 
-export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModalProps> = ({
+export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
   visible,
   onDismiss,
   onPropsSave,

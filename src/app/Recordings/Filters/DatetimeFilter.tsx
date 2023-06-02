@@ -108,7 +108,7 @@ const _emptyDatetimeInput: {
   validation: ValidatedOptions.default,
 };
 
-export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ onSubmit }) => {
+export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
   const [dayjs, datetimeContext] = useDayjs();
   const [datetimeInput, setDatetimeInput] = React.useState(_emptyDatetimeInput);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);

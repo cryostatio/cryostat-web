@@ -41,7 +41,7 @@ import { hashCode } from '@app/utils/utils';
 export interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   title: string;
   description: React.ReactNode;
-  element: React.FunctionComponentElement<Record<string, never>>;
+  element: React.FC<Record<string, never>>;
   orderInGroup: number;
   featureLevel: FeatureLevel;
 }
@@ -74,7 +74,7 @@ export interface UserSetting {
         key: string;
         parts: React.ReactNode[];
       };
-  content: React.FunctionComponent;
+  content: React.FC;
   category: SettingTab;
   orderInGroup?: number; // default -1
   featureLevel?: FeatureLevel; // default PRODUCTION

@@ -239,7 +239,7 @@ export const nodeActions: NodeAction[] = [
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
       services.api
-        .graphql<any>(
+        .graphql<GroupActionResponse>(
           `
           query StartRecordingForGroup($filter: EnvironmentNodeFilterInput, $recordingName: String!, $labels: String) {
             environmentNodes(filter: $filter) {
@@ -288,7 +288,7 @@ export const nodeActions: NodeAction[] = [
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
       services.api
-        .graphql<any>(
+        .graphql<GroupActionResponse>(
           `
           query DeleteRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
             environmentNodes(filter: $groupFilter) {
@@ -330,7 +330,7 @@ export const nodeActions: NodeAction[] = [
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
       services.api
-        .graphql<any>(
+        .graphql<GroupActionResponse>(
           `
           query StopRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
             environmentNodes(filter: $groupFilter) {
@@ -374,7 +374,7 @@ export const nodeActions: NodeAction[] = [
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
       services.api
-        .graphql<any>(
+        .graphql<GroupActionResponse>(
           `
           query DeleteRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
             environmentNodes(filter: $groupFilter) {

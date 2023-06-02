@@ -49,7 +49,7 @@ export interface LabelFilterProps {
 
 export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
 
-export const LabelFilter: React.FunctionComponent<LabelFilterProps> = ({ recordings, filteredLabels, onSubmit }) => {
+export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLabels, onSubmit }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const onSelect = React.useCallback(

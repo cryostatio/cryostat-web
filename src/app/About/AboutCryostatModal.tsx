@@ -40,11 +40,16 @@ import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { portalRoot } from '@app/utils/utils';
 import { AboutModal } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AboutDescription } from './AboutDescription';
 
-export const AboutCryostatModal = ({ isOpen, onClose }) => {
+export interface AboutCryostatModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const AboutCryostatModal: React.FC<AboutCryostatModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   return (
     <AboutModal

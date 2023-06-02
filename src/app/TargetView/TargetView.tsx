@@ -51,7 +51,7 @@ interface TargetViewProps {
   children: React.ReactNode;
 }
 
-export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
+export const TargetView: React.FC<TargetViewProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [hasSelection, setHasSelection] = React.useState(false);
   const addSubscription = useSubscriptions();

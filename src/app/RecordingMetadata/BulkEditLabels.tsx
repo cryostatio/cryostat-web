@@ -65,7 +65,7 @@ export interface BulkEditLabelsProps {
   directoryRecordings?: ArchivedRecording[];
 }
 
-export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
+export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [recordings, setRecordings] = React.useState([] as Recording[]);
   const [editing, setEditing] = React.useState(false);

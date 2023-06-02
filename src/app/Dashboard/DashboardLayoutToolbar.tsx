@@ -101,7 +101,7 @@ const DefaultSelectedTemplate: SelectedLayoutTemplate = {
   category: 'Suggested',
 };
 
-export const DashboardLayoutToolbar: React.FunctionComponent<DashboardLayoutToolbarProps> = (_props) => {
+export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_props) => {
   const dispatch = useDispatch<StateDispatch>();
   const context = React.useContext(ServiceContext);
   const { t } = useTranslation();

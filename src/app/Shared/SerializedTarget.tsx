@@ -45,7 +45,7 @@ export interface SerializedTargetProps {
   indentLevel?: number;
 }
 
-export const SerializedTarget: React.FunctionComponent<SerializedTargetProps> = (props) => {
+export const SerializedTarget: React.FC<SerializedTargetProps> = (props) => {
   return (
     <>
       {!props.target ? (

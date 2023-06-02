@@ -82,7 +82,7 @@ export interface MultiFileUploadProps {
   infoText?: React.ReactNode;
 }
 
-export const MultiFileUpload: React.FunctionComponent<MultiFileUploadProps> = ({
+export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
   titleIcon,
   titleText,
   titleTextSeparator,

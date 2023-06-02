@@ -50,7 +50,7 @@ export interface CertificateUploadModalProps {
   onClose: () => void;
 }
 
-export const CertificateUploadModal: React.FunctionComponent<CertificateUploadModalProps> = ({ visible, onClose }) => {
+export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ visible, onClose }) => {
   const addSubscriptions = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
