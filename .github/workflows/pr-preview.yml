@@ -1,0 +1,35 @@
+name: Generate Preview (PR)
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+      - closed
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # allow surge-preview to create/update PR comments
+    steps:
+    - name: Fail if safe-to-test label NOT applied
+      if: ${{ !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
+      run: exit 1
+    - uses: actions/checkout@v2
+    - name: Use Node.js 18
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+    - uses: bahmutov/npm-install@v1
+    - name: Publish to surge
+      id: surge-publish
+      uses: afc163/surge-preview@v1
+      with:
+        surge_token: ${{ secrets.SURGE_TOKEN }}
+        teardown: 'true'
+        dist: dist
+        build: yarn build:preview:notests
+    - run: echo "Preview URL at ${{ steps.surge-publish.outputs.preview_url }}"
