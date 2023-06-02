@@ -11,6 +11,7 @@ on:
       - closed
 jobs:
   build-preview:
+    if: ${{ github.repository_owner == 'cryostatio' }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write # allow surge-preview to create/update PR comments
@@ -32,4 +33,5 @@ jobs:
         teardown: 'true'
         dist: dist
         build: yarn build:preview:notests
-    - run: echo "Preview URL at ${{ steps.surge-publish.outputs.preview_url }}"
+    - name: Print Preview URL
+      run: echo "Preview URL at ${{ steps.surge-publish.outputs.preview_url }}"

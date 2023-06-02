@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-preview:
+    if: ${{ github.repository_owner == 'cryostatio' }}
     env:
       DEPLOY_DOMAIN: ${{ github.repository_owner }}-main.surge.sh
     runs-on: ubuntu-latest
