@@ -9,6 +9,9 @@ on:
   push:
     branches:
       - main
+      - v[0-9]+
+      - v[0-9]+.[0-9]+
+      - cryostat-v[0-9]+.[0-9]+
     paths:
       - 'src/**'
       - '!src/test/**'
@@ -19,8 +22,6 @@ on:
 jobs:
   build-preview:
     if: ${{ github.repository_owner == 'cryostatio' }}
-    env:
-      DEPLOY_DOMAIN: ${{ github.repository_owner }}-${{ github.event.repository.name }}-main.surge.sh
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -33,4 +34,6 @@ jobs:
       run: yarn build:preview:notests
     - name: Publish to surge
       run: |
+        FORMATTED_REF="$(echo ${{ github.ref_name }} | sed 's/\.//')"
+        DEPLOY_DOMAIN="${{ github.repository_owner }}-${{ github.event.repository.name }}-$FORMATTED_REF.surge.sh"
         npx surge --project ./dist --domain $DEPLOY_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
