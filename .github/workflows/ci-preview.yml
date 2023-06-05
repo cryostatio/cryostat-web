@@ -1,19 +1,25 @@
 name: Generate Preview (CI)
 
 concurrency:
-  group: ci-${{ github.event.number }}
+  group: ci
   cancel-in-progress: true
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'src/app/**'
+      - 'webpack.*.js'
+      - 'yarn.lock'
+      - 'tsconfig.json'
+      - '!src/test/**'
 
 jobs:
   build-preview:
     if: ${{ github.repository_owner == 'cryostatio' }}
     env:
-      DEPLOY_DOMAIN: ${{ github.repository_owner }}-cryostat-web-main.surge.sh
+      DEPLOY_DOMAIN: ${{ github.repository_owner }}-${{ github.event.repository.name }}-main.surge.sh
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
