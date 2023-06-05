@@ -1,0 +1,35 @@
+name: Generate Preview (CI)
+
+concurrency:
+  group: ci
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/app/**'
+      - 'webpack.*.js'
+      - 'yarn.lock'
+      - 'tsconfig.json'
+      - '!src/test/**'
+
+jobs:
+  build-preview:
+    if: ${{ github.repository_owner == 'cryostatio' }}
+    env:
+      DEPLOY_DOMAIN: ${{ github.repository_owner }}-${{ github.event.repository.name }}-main.surge.sh
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 18
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+    - uses: bahmutov/npm-install@v1
+    - name: Build assets
+      run: yarn build:preview:notests
+    - name: Publish to surge
+      run: |
+        npx surge --project ./dist --domain $DEPLOY_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
