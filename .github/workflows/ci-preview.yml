@@ -13,7 +13,7 @@ jobs:
   build-preview:
     if: ${{ github.repository_owner == 'cryostatio' }}
     env:
-      DEPLOY_DOMAIN: ${{ github.repository_owner }}-main.surge.sh
+      DEPLOY_DOMAIN: ${{ github.repository_owner }}-cryostat-web-main.surge.sh
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
