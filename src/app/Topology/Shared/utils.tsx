@@ -111,8 +111,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                   If target has JMX Authentication enabled, add the credential to Cryostat keyring.
                 </Text>
                 <Text component={TextVariants.p}>
-                  If the target has SSL enabled over JMX, add its certificate to Cryostat truststore. Restart is
-                  required.
+                  If the target has SSL enabled over JMX, add its certificate to Cryostat truststore.
                 </Text>
               </>
             ),
@@ -123,7 +122,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                 </Button>
               </WarningResolverAsCredModal>,
               <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
-                Add Certificates
+                Add certificates
               </WarningResolverAsLink>,
             ],
           },
