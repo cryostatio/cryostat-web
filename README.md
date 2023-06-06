@@ -1,4 +1,4 @@
-# Cryostat-Web
+# cryostat-web
 
 ![Build Status](https://github.com/cryostatio/cryostat-web/actions/workflows/ci.yaml/badge.svg)
 [![Google Group : Cryostat Development](https://img.shields.io/badge/Google%20Group-Cryostat%20Development-blue.svg)](https://groups.google.com/g/cryostat-development)
@@ -19,63 +19,81 @@ cluster as well as exposing the Cryostat API as Kubernetes Custom Resources.
 
 * [cryostat](https://github.com/cryostatio/cryostat) for the JFR management service
 
-
 ## REQUIREMENTS
-Build:
-- NPM
-- Yarn
+
+- Node v16+
+- Yarn v3.3.0+
 
 ## BUILD
 
 ### Setup dependencies
 
-```
-npm install --save-dev yarn # or install using your package manager
-npm run yarn:frzinstall # or just yarn install, if installed globally
+```bash
+$ yarn install --immutable
 ```
 
 ### Run a production build
 
+```bash
+$ yarn build
+# or without tests
+$ yarn build:notests
 ```
-npm run build
-```
-
 
 ## DEVELOPMENT SERVER
 
-To run a hot-reloading instance of cryostat-web, first run a `cryostat` instance with WebSocket communication and CORS enabled. Use `CRYOSTAT_CORS_ORIGIN` to target `http://localhost:9000`
+Development environment supports hot reload with Webpack's [Hot Module Replacement](https://webpack.js.org/guides/hot-module-replacement).
 
-For example:
-`cd /path/to/cryostat && CRYOSTAT_DISABLE_SSL=true CRYOSTAT_CORS_ORIGIN=http://localhost:9000 sh run.sh`
+### With Cryostat
 
-Then run `npm run start:dev`. This will target the `cryostat` instance started above by default. This can be customized by editing the `.env` file, for example if you have another service already listening on the default port `8181` and your Cryostat is listening elsewhere.
+First, launch a [`Cryostat`](https://github.com/cryostatio/cryostat) instance with CORS enabled by setting `CRYOSTAT_CORS_ORIGIN` to `http://localhost:9000`. For example:
+
+```bash
+$ cd /path/to/cryostat
+$ CRYOSTAT_DISABLE_SSL=true CRYOSTAT_CORS_ORIGIN=http://localhost:9000 sh run.sh
+```
+
+Then, run:
+
+```bash
+$ yarn start:dev
+```
+
+### Without Cryostat
+
+To quickly preview changes without launching a `Cryostat` instance, run:
+
+```bash
+$ yarn start:dev:preview
+```
+
+In this case, API requests are intercepted and handled by [Mirage JS](https://miragejs.com/).
 
 ## TEST
 
+### Run the unit tests
+```
+$ yarn test
+```
 
-### Run the test suite
-```
-npm run test
-```
+Refer to [TESTING.md](TESTING.md) for more details about tests.
 
 ### Run the linter
-```
-npm run lint
+
+```bash
+$ yarn eslint:apply
 ```
 
 ### Run the code formatter
-```
-npm run format
+
+```bash
+$ yarn format:apply
 ```
 
 ### Inspect the bundle size
-```
-npm run bundle-profile:analyze
-```
 
-### Start the express server (run a production build first)
 ```
-npm run start
+$ yarn bundle-profile:analyze
 ```
 
 ## LOCALIZATION
