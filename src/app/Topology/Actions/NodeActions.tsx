@@ -98,11 +98,16 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
     if (isDisabled) {
       addSubscription(
         elementSubj
-          .pipe(switchMap((element) => isDisabled(element, { services, notifications, history })))
+          .pipe(
+            switchMap((element) => {
+              setDisabled(true);
+              return isDisabled(element, { services, notifications, history });
+            })
+          )
           .subscribe(setDisabled)
       );
     }
-  }, [addSubscription, elementSubj, isDisabled, services, notifications, history]);
+  }, [addSubscription, elementSubj, isDisabled, setDisabled, services, notifications, history]);
 
   React.useEffect(() => {
     elementSubj.next(element);
