@@ -69,7 +69,7 @@ Snapshot testing helps ensure that we stay on top of any changes to our UI. It�
 When the Jest test suite runs, a new snapshot will be created for every component under test and compared to the reference snapshot in version control. If there is any discrepancy between the two snapshots a diff will be output to the command line. From here, it is up to you to determine whether the difference is due to a bug or an intentional implementation change. This may warrant updating or adding more unit tests. When you are satisfied with the reasons behind the changed snapshot, you can update it to be the new reference snapshot by running the following command:
 
 ```
-npm run test -- -u -t=”SPEC_NAME” 
+yarn test -- -u -t=”SPEC_NAME” 
 ```
 
 Where the `-u` flag tells Jest to update the snapshot and the `-t` flag specifies which test to update it for. `SPEC_NAME` is matched against the string passed into the `describe` call of the test file in question. For example, in `Recordings.test.tsx` the unit tests are housed inside of the `describe(‘<Recordings />’, ….)` block so in order to update the snapshot for the `Recordings` component, you would pass `-t=”<Recordings />”` to the above command. 
