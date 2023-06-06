@@ -37,12 +37,12 @@
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { evaluateTargetWithExpr } from '@app/utils/utils';
-import { Button } from '@patternfly/react-core';
+import { Button, Text, TextVariants } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, NodeAction, nodeActions } from '../Actions/NodeActions';
-import { WarningResolverAsCredModal } from '../Actions/WarningResolver';
+import { WarningResolverAsCredModal, WarningResolverAsLink } from '../Actions/WarningResolver';
 import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
 
 export const DiscoveryTreeContext = React.createContext(DEFAULT_EMPTY_UNIVERSE);
@@ -95,7 +95,7 @@ export const getUniqueTargetId = (target: TargetNode) => {
   return `${target.id}`;
 };
 
-export type StatusExtra = { title?: string; description?: string; callForAction?: React.ReactNode[] };
+export type StatusExtra = { title?: string; description?: React.ReactNode; callForAction?: React.ReactNode[] };
 
 export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeStatus?, StatusExtra?] => {
   if (isTargetNode(node)) {
@@ -105,13 +105,26 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
           NodeStatus.warning,
           {
             title: 'Failed to compute JVM ID',
-            description: `Target ${node.target.alias} might be missing credentials.`,
+            description: (
+              <>
+                <Text component={TextVariants.p}>
+                  If target has JMX Authentication enabled, add the credential to Cryostat keyring.
+                </Text>
+                <Text component={TextVariants.p}>
+                  If the target has SSL enabled over JMX, add its certificate to Cryostat truststore. Restart is
+                  required.
+                </Text>
+              </>
+            ),
             callForAction: [
               <WarningResolverAsCredModal key={`${node.target.alias}-resolver-as-credential-modal`}>
                 <Button variant="link" isSmall style={{ padding: 0 }}>
                   Add credentials
                 </Button>
               </WarningResolverAsCredModal>,
+              <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
+                Add Certificates
+              </WarningResolverAsLink>,
             ],
           },
         ];
