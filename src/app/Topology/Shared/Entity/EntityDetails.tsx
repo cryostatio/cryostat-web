@@ -63,9 +63,10 @@ import {
   Tab,
   Tabs,
   TabTitleText,
+  Text,
   Tooltip,
 } from '@patternfly/react-core';
-import { WarningTriangleIcon } from '@patternfly/react-icons';
+import { ExclamationTriangleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
@@ -203,8 +204,26 @@ export const TargetDetails: React.FC<{
       },
       {
         key: 'JVM ID',
-        title: 'JVM ID',
-        helperTitle: 'JVM ID',
+        title: (
+          <>
+            <span style={{ marginRight: '0.5em' }}>JVM ID</span>
+            {!serviceRef.jvmId && (
+              <Tooltip content={'Failed to compute JVM ID'}>
+                <ExclamationTriangleIcon color="orange" />
+              </Tooltip>
+            )}
+          </>
+        ),
+        helperTitle: (
+          <>
+            <span style={{ marginRight: '0.5em' }}>JVM ID</span>
+            {!serviceRef.jvmId && (
+              <Tooltip content={'Failed to compute JVM ID'}>
+                <ExclamationTriangleIcon color="orange" />
+              </Tooltip>
+            )}
+          </>
+        ),
         helperDescription: constructHelperDescription('The ID of the current JVM.', 'Target', ['jvmId']),
         content: serviceRef.jvmId || <EmptyText text="No JVM ID" />,
       },
