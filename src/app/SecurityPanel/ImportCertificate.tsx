@@ -60,6 +60,6 @@ const Component = () => {
 
 export const ImportCertificate: SecurityCard = {
   title: 'Import SSL Certificates',
-  description: 'Restart is needed to apply changes.',
+  description: 'The Cryostat server must be restarted in order to reload the certificate store.',
   content: Component,
 };
