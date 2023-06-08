@@ -10,11 +10,11 @@ on:
     branches:
       - main
     paths:
-      - 'src/app/**'
+      - 'src/**'
+      - '!src/test/**'
       - 'webpack.*.js'
       - 'yarn.lock'
       - 'tsconfig.json'
-      - '!src/test/**'
 
 jobs:
   build-preview:
