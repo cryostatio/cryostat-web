@@ -35,16 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import assert from 'assert';
 import { By, Builder, WebDriver, until } from 'selenium-webdriver';
 import firefox from 'selenium-webdriver/firefox';
-import assert from 'assert';
 import { getElementByCSS, getElementById, getElementByLinkText, getElementByXPath, selectFakeTarget } from './util';
 
 describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
-  let options = new firefox.Options();
+  const options = new firefox.Options();
   options.setAcceptInsecureCerts(true);
-  let builder = new Builder().forBrowser('firefox').setFirefoxOptions(options);
+  const builder = new Builder().forBrowser('firefox').setFirefoxOptions(options);
   jest.setTimeout(30000);
 
   beforeAll(async function () {
@@ -59,13 +59,13 @@ describe('Dashboard route functionalities', function () {
     await selectFakeTarget(driver);
   });
 
-  afterAll(async function ()  {
+  afterAll(async function () {
     await driver.quit();
   });
 
   it('shows correct route', async function () {
-    let url = await driver.getCurrentUrl();
-    let route = url.split('/').pop();
+    const url = await driver.getCurrentUrl();
+    const route = url.split('/').pop();
     assert.equal('', route);
   });
 
@@ -76,13 +76,13 @@ describe('Dashboard route functionalities', function () {
     const newLayoutButton = await getElementByXPath(driver, '//button[contains(.,"New Layout")]');
     await newLayoutButton.click();
 
-    let emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
+    const emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
     expect(emptyState).toBeTruthy();
   });
 
   it('adds three different cards', async function () {
     let finishButton;
-    let addCardButton = await getElementByCSS(driver, `[aria-label="Add card"]`);
+    const addCardButton = await getElementByCSS(driver, `[aria-label="Add card"]`);
     await addCardButton.click();
 
     // click TargetJVMDetails card
@@ -113,21 +113,27 @@ describe('Dashboard route functionalities', function () {
   });
 
   it('removes all cards', async function () {
-    let firstCard = await driver.findElement(By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`));
+    let firstCard = await driver.findElement(
+      By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
+    );
     let actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
     await actionsButton.click();
 
     let removeButton = await getElementByLinkText(driver, 'Remove');
     await removeButton.click();
 
-    firstCard = await driver.findElement(By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`));
+    firstCard = await driver.findElement(
+      By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
+    );
     actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
     await actionsButton.click();
 
     removeButton = await getElementByLinkText(driver, 'Remove');
     await removeButton.click();
 
-    firstCard = await driver.findElement(By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`));
+    firstCard = await driver.findElement(
+      By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
+    );
     actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
     await actionsButton.click();
 
@@ -135,7 +141,7 @@ describe('Dashboard route functionalities', function () {
     await removeButton.click();
 
     // check all cards are removed
-    let emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
+    const emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
     expect(emptyState).toBeTruthy();
   });
 });
