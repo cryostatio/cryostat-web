@@ -59,20 +59,17 @@ describe('Dashboard route functionalities', function () {
     await selectFakeTarget(driver);
   });
 
-  beforeEach(async function () {
-  });
-
   afterAll(async function ()  {
-    // await driver.quit();
+    await driver.quit();
   });
 
-  test('shows correct route', async function () {
+  it('shows correct route', async function () {
     let url = await driver.getCurrentUrl();
     let route = url.split('/').pop();
     assert.equal('', route);
   });
 
-  test('layout additions', async function () {
+  it('adds a new layout', async function () {
     const layoutSelector = await getElementById(driver, 'dashboard-layout-dropdown-toggle');
     await layoutSelector.click();
 
@@ -83,7 +80,7 @@ describe('Dashboard route functionalities', function () {
     expect(emptyState).toBeTruthy();
   });
 
-  test('card addition of three different cards', async function () {
+  it('adds three different cards', async function () {
     let finishButton;
     let addCardButton = await getElementByCSS(driver, `[aria-label="Add card"]`);
     await addCardButton.click();
@@ -115,7 +112,7 @@ describe('Dashboard route functionalities', function () {
     await finishButton.click(); // finish
   });
 
-  test('card removal', async function () {
+  it('removes all cards', async function () {
     let firstCard = await driver.findElement(By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`));
     let actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
     await actionsButton.click();
