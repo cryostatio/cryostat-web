@@ -59,6 +59,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x, 18.x]
+        firefox: [ '84.0', 'latest-beta', 'latest-devedition', 'latest-esr', 'latest' ]
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -66,4 +67,16 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - uses: bahmutov/npm-install@v1
+    - name: Setup firefox
+      id: setup-firefox
+      uses: browser-actions/setup-firefox@v1
+      with:
+        firefox-version: ${{ matrix.firefox }}
+    - run: |
+        echo Installed firefox versions: ${{ steps.setup-firefox.outputs.firefox-version }}
+        firefox --version
+    - name: Download geckodriver
+      run: curl -sL $(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep  "https.*linux64.tar.gz" | head -n 1 | awk '{print $2}' | sed 's|[\"\,]*||g') | tar xzvf -
+    - name: Add to PATH
+      run: mv geckodriver $HOME/bin
     - run: yarn itest:preview
