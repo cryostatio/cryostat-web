@@ -36,28 +36,27 @@
  * SOFTWARE.
  */
 import assert from 'assert';
-import { By, Builder, WebDriver, until } from 'selenium-webdriver';
-import firefox from 'selenium-webdriver/firefox';
-import { getElementByCSS, getElementById, getElementByLinkText, getElementByXPath, selectFakeTarget } from './util';
+import { By, WebDriver, until } from 'selenium-webdriver';
+import {
+  getElementByCSS,
+  getElementById,
+  getElementByLinkText,
+  getElementByXPath,
+  selectFakeTarget,
+  setupBuilder,
+} from './util';
 
 describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
-  const headless = process.env.HEADLESS_BROWSER === 'true';
-  const options = new firefox.Options();
-  if (headless) {
-    options.headless();
-  }
-  options.setAcceptInsecureCerts(true);
-  const builder = new Builder().forBrowser('firefox').setFirefoxOptions(options);
   jest.setTimeout(30000);
 
   beforeAll(async function () {
-    driver = await builder.build();
+    driver = await setupBuilder().build();
     await driver.get('http://localhost:9091');
 
-    const skipButton = await driver.wait(until.elementLocated(By.css('button[data-action="skip"]')), 1000).catch(() => {
-      return null;
-    });
+    const skipButton = await driver
+      .wait(until.elementLocated(By.css('button[data-action="skip"]')), 1000)
+      .catch(() => null);
     if (skipButton) await skipButton.click();
 
     await selectFakeTarget(driver);

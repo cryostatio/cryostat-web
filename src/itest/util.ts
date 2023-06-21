@@ -35,7 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { By, WebDriver } from 'selenium-webdriver';
+import { Builder, By, WebDriver } from 'selenium-webdriver';
+import firefox from 'selenium-webdriver/firefox';
 
 export async function selectFakeTarget(driver: WebDriver) {
   const targetName = 'Fake Target';
@@ -63,4 +64,14 @@ export async function getElementById(driver: WebDriver, id: string) {
 export async function getElementByLinkText(driver: WebDriver, linkText: string) {
   const element = await driver.findElement(By.linkText(linkText));
   return element;
+}
+
+export function setupBuilder(): Builder {
+  const headless = process.env.HEADLESS_BROWSER === 'true';
+  const options = new firefox.Options();
+  if (headless) {
+    options.headless();
+  }
+  options.setAcceptInsecureCerts(true);
+  return new Builder().forBrowser('firefox').setFirefoxOptions(options);
 }
