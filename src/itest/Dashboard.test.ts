@@ -42,7 +42,12 @@ import { getElementByCSS, getElementById, getElementByLinkText, getElementByXPat
 
 describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
+  const headless = process.env.HEADLESS_BROWSER === 'true';
+  console.log(`HEADLESS_BROWSER=${headless}`)
   const options = new firefox.Options();
+  if (headless) {
+    options.headless();
+  }
   options.setAcceptInsecureCerts(true);
   const builder = new Builder().forBrowser('firefox').setFirefoxOptions(options);
   jest.setTimeout(30000);
