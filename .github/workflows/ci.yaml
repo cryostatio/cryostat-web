@@ -21,11 +21,12 @@ jobs:
       matrix:
         node-version: [16.x, 18.x]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
     - uses: bahmutov/npm-install@v1
     - run: yarn format:check
   eslint-check:
@@ -34,11 +35,12 @@ jobs:
       matrix:
         node-version: [16.x, 18.x]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
     - uses: bahmutov/npm-install@v1
     - run: yarn eslint:check
   test:
@@ -47,10 +49,34 @@ jobs:
       matrix:
         node-version: [16.x, 18.x]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
     - uses: bahmutov/npm-install@v1
     - run: yarn test:ci
+  integration-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'yarn'
+    - uses: bahmutov/npm-install@v1
+    - name: Setup firefox
+      id: setup-firefox
+      uses: browser-actions/setup-firefox@v1
+      with:
+        firefox-version: latest
+    - name: Download geckodriver
+      run: curl -sL $(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep  "https.*linux64.tar.gz" | head -n 1 | awk '{print $2}' | sed 's|[\"\,]*||g') | tar xzvf -
+    - name: Add to PATH
+      run: sudo mv geckodriver /usr/local/bin
+    - run: yarn itest:preview

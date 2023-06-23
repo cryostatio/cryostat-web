@@ -1,5 +1,4 @@
-# Unit Testing
-
+# Web Testing
 Refer to this document for information on how to unit test Cryostat Web.
 
 ## LIBRARIES
@@ -9,6 +8,8 @@ Refer to this document for information on how to unit test Cryostat Web.
 * [React Testing Library (RTL)](https://testing-library.com/docs/react-testing-library/intro/) is used to test the React components comprising Cryostat Web. It gives you the ability to render components into their [HTML Document Object Model (DOM)](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) representation (i.e. what the user “sees” when they visit a webpage) and [query](https://testing-library.com/docs/queries/about/)/assert on the nodes and objects in the DOM. For example, a node could be a `<button />` element that we query for and perform assertions or actions (such as a “click”) on (i.e. what the user “does” when they interact with the Cryostat Web UI).
 
 * [Test Renderer](https://reactjs.org/docs/test-renderer.html) is used to render components into their React virtual DOM representation, a lightweight abstraction of the actual HTML DOM, consisting of pure Javascript. The render result is used to perform [snapshot testing](https://jestjs.io/docs/snapshot-testing). 
+
+* [Selenium](https://www.selenium.dev/) is used to perform end-to-end testing of Cryostat Web. It allows you to automate browser actions such as clicking buttons and typing text into input fields.
 
 ## CONFIGURATION
 
@@ -81,3 +82,18 @@ Where the `-u` flag tells Jest to update the snapshot and the `-t` flag specifie
 * If the component you would like to snapshot test uses `React.useEffect`, you may need to use the asynchronous `act` function from the `react-test-renderer` library to ensure the snapshot of the component is accurate. `React.useEffect` calls are run only after the render of a component is committed or "painted" to the screen. However, the nature of the virtual DOM is such that nothing is painted to the screen. Fortunately, the `act` function ensures that any state updates and enqueued effects will be executed alongside the render. 
 
 * Some PatternFly components use random, dynamic strings as `ids` which will then be displayed as elements in the rendered React virtual DOM. These strings change upon every render, causing snapshots to fail even though the component under test is still functionally the same. This can be remedied by supplying [custom `ids` as props](https://github.com/patternfly/patternfly-react/issues/3518) to the culprit PatternFly child components inside the source file of the component under test. 
+
+
+## INTEGRATION TESTING
+
+We can also use Jest as a test runner for Selenium tests. This allows us to write integration tests that simulate user actions and interactions with the Cryostat Web UI.
+
+To run the integration tests, you will need to have the preview server running. You can start the preview server by running `yarn start:dev:preview`.
+
+You will also need a WebDriver implementation for the specific browser you want to automate. WebDriver allows Selenium to control the browser and perform actions on web elements. Here are the correct download links for Geckodriver, ChromeDriver, and EdgeDriver:
+
+* [Geckodriver (for Firefox)](https://github.com/mozilla/geckodriver/releases)
+* [ChromeDriver (for Chrome)](https://sites.google.com/chromium.org/driver)
+* [Edge WebDriver (for Microsoft Edge)](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
+
+Then, finally we can run `yarn itest` to run the integration tests, which will open up a fresh browser window and run the tests.

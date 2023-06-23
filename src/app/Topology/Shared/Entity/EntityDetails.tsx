@@ -63,7 +63,6 @@ import {
   Tab,
   Tabs,
   TabTitleText,
-  Text,
   Tooltip,
 } from '@patternfly/react-core';
 import { ExclamationTriangleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
