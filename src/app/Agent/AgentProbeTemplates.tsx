@@ -210,7 +210,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
           return [
             ...old,
             {
-              name: event.message.templateName,
+              name: event.message.probeTemplate,
               xml: event.message.templateContent,
             } as ProbeTemplate,
           ];
