@@ -71,9 +71,8 @@ const mockCreateTemplateNotification = {
     type: mockMessageType,
   } as MessageMeta,
   message: {
-    templateName: mockAnotherProbeTemplate.name,
+    probeTemplate: mockAnotherProbeTemplate.name,
     templateContent: mockAnotherProbeTemplate.xml,
-    probeTemplate: 'files-uploads/abcdfg',
   },
 } as NotificationMessage;
 
