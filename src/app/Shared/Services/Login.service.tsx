@@ -39,7 +39,7 @@ import { Base64 } from 'js-base64';
 import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
-import { ApiV2Response, HttpError } from './Api.service';
+import { ApiV2Response } from './Api.service';
 import { Credential, AuthCredentials } from './AuthCredentials.service';
 import { isQuotaExceededError } from './Report.service';
 import { SettingsService } from './Settings.service';
@@ -133,7 +133,7 @@ export class LoginService {
         return jsonResp.meta.status === 'OK';
       }),
       catchError((e: Error): ObservableInput<boolean> => {
-        window.console.error(JSON.stringify(e));
+        window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
         this.authMethod.complete();
         return of(false);
       })
@@ -197,41 +197,96 @@ export class LoginService {
         const token = parts[0];
         const method = parts[1];
 
-        return fromFetch(`${this.authority}/api/v2.1/logout`, {
+        // Call the logout backend endpoint
+        const resp = fromFetch(`${this.authority}/api/v2.1/logout`, {
           credentials: 'include',
           mode: 'cors',
           method: 'POST',
           body: null,
           headers: this.getAuthHeaders(token, method),
         });
+        return combineLatest([of(token), of(method), resp]);
       }),
-      concatMap((response) => {
-        if (response.status === 302) {
-          const redirectUrl = response.headers.get('X-Location');
-          if (!redirectUrl) {
-            throw new HttpError(response);
-          }
+      concatMap((parts) => {
+        const token = parts[0];
+        const method = parts[1];
+        const response = parts[2];
 
-          return fromFetch(redirectUrl, {
-            credentials: 'include',
-            mode: 'cors',
-            method: 'POST',
-            body: null,
-          });
-        } else {
-          return of(response);
+        if (method === AuthMethod.BEARER) {
+          // Assume Bearer method means OpenShift
+          const redirectUrl = response.headers.get('X-Location');
+          // On OpenShift, the backend logout endpoint should respond with a redirect
+          if (response.status !== 302 || !redirectUrl) {
+            throw new Error('Could not find OAuth logout endpoint');
+          }
+          return this.openshiftLogout(redirectUrl);
         }
-      }),
-      map((response) => response.ok),
-      tap((responseOk) => {
-        if (responseOk) {
-          this.resetSessionState();
-          this.navigateToLoginPage();
-        }
+        return of(response).pipe(
+          map((response) => response.ok),
+          tap(() => {
+            this.resetSessionState();
+            this.navigateToLoginPage();
+          })
+        );
       }),
       catchError((e: Error): ObservableInput<boolean> => {
-        window.console.error(JSON.stringify(e));
+        window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
         return of(false);
+      })
+    );
+  }
+
+  private openshiftLogout(logoutUrl: string): Observable<boolean> {
+    // Query the backend auth endpoint. On OpenShift, without providing a
+    // token, this should return a redirect to OpenShift's OAuth login.
+    const resp = fromFetch(`${this.authority}/api/v2.1/auth`, {
+      credentials: 'include',
+      mode: 'cors',
+      method: 'POST',
+      body: null,
+    });
+
+    return resp.pipe(
+      first(),
+      concatMap((response) => {
+        // Fail if we don't get a valid redirect URL for the user to log
+        // back in.
+        const loginUrlString = response.headers.get('X-Location');
+        if (response.status !== 302 || !loginUrlString) {
+          throw new Error('Could not find OAuth login endpoint');
+        }
+
+        const loginUrl = new URL(loginUrlString);
+        if (!loginUrl) {
+          throw new Error(`OAuth login endpoint is invalid: ${loginUrlString}`);
+        }
+        return of(loginUrl);
+      }),
+      tap(() => {
+        this.resetSessionState();
+        this.resetAuthMethod();
+      }),
+      concatMap((loginUrl) => {
+        // Create a hidden form to submit to the OAuth server's
+        // logout endpoint. The "then" parameter will redirect back
+        // to the login/authorize endpoint once logged out.
+        const form = document.createElement('form');
+        form.id = 'logoutForm';
+        form.action = logoutUrl;
+        form.method = 'POST';
+
+        const input = document.createElement('input');
+        // The OAuth server is strict about valid redirects. Convert
+        // the result from our auth response into a relative URL.
+        input.value = `${loginUrl.pathname}${loginUrl.search}`;
+        input.name = 'then';
+        input.type = 'hidden';
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+
+        form.submit();
+        return of(true);
       })
     );
   }
@@ -247,9 +302,13 @@ export class LoginService {
     this.sessionState.next(SessionState.NO_USER_SESSION);
   }
 
-  private navigateToLoginPage(): void {
+  private resetAuthMethod(): void {
     this.authMethod.next(AuthMethod.UNKNOWN);
     this.removeCacheItem(this.AUTH_METHOD_KEY);
+  }
+
+  private navigateToLoginPage(): void {
+    this.resetAuthMethod();
     const url = new URL(window.location.href.split('#')[0]);
     window.location.href = url.pathname.match(/\/settings/i) ? '/' : url.pathname;
   }
