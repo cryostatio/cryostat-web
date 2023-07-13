@@ -36,17 +36,17 @@
  * SOFTWARE.
  */
 
-import { AuthMethod, LoginService, SessionState } from '@app/Shared/Services/Login.service';
-import { TargetService } from '@app/Shared/Services/Target.service';
-import { AuthCredentials } from '@app/Shared/Services/AuthCredentials.service';
 import { ApiV2Response } from '@app/Shared/Services/Api.service';
+import { AuthCredentials } from '@app/Shared/Services/AuthCredentials.service';
+import { AuthMethod, LoginService, SessionState } from '@app/Shared/Services/Login.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
+import { TargetService } from '@app/Shared/Services/Target.service';
 import { firstValueFrom, of, timeout } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 
 jest.mock('rxjs/fetch', () => {
   return {
-    fromFetch: jest.fn((url: any, opts: any): any => {}),
+    fromFetch: jest.fn((url: any, opts: any): any => undefined),
   };
 });
 
@@ -92,6 +92,8 @@ describe('Login.service', () => {
 
     afterEach(() => {
       sessionStorage.clear();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
     });
 
     describe('with Basic AuthMethod', () => {

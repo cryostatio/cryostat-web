@@ -205,13 +205,9 @@ export class LoginService {
           body: null,
           headers: this.getAuthHeaders(token, method),
         });
-        return combineLatest([of(token), of(method), resp]);
+        return combineLatest([of(method), resp]);
       }),
-      concatMap((parts) => {
-        const token = parts[0];
-        const method = parts[1];
-        const response = parts[2];
-
+      concatMap(([method, response]) => {
         if (method === AuthMethod.BEARER) {
           // Assume Bearer method means OpenShift
           const redirectUrl = response.headers.get('X-Location');
@@ -225,6 +221,7 @@ export class LoginService {
           map((response) => response.ok),
           tap(() => {
             this.resetSessionState();
+            this.resetAuthMethod();
             this.navigateToLoginPage();
           })
         );
@@ -248,7 +245,7 @@ export class LoginService {
 
     return resp.pipe(
       first(),
-      concatMap((response) => {
+      map((response) => {
         // Fail if we don't get a valid redirect URL for the user to log
         // back in.
         const loginUrlString = response.headers.get('X-Location');
@@ -260,13 +257,13 @@ export class LoginService {
         if (!loginUrl) {
           throw new Error(`OAuth login endpoint is invalid: ${loginUrlString}`);
         }
-        return of(loginUrl);
+        return loginUrl;
       }),
       tap(() => {
         this.resetSessionState();
         this.resetAuthMethod();
       }),
-      concatMap((loginUrl) => {
+      map((loginUrl) => {
         // Create a hidden form to submit to the OAuth server's
         // logout endpoint. The "then" parameter will redirect back
         // to the login/authorize endpoint once logged out.
@@ -286,7 +283,7 @@ export class LoginService {
         document.body.appendChild(form);
 
         form.submit();
-        return of(true);
+        return true;
       })
     );
   }
@@ -308,7 +305,6 @@ export class LoginService {
   }
 
   private navigateToLoginPage(): void {
-    this.resetAuthMethod();
     const url = new URL(window.location.href.split('#')[0]);
     window.location.href = url.pathname.match(/\/settings/i) ? '/' : url.pathname;
   }
