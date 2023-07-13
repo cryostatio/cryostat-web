@@ -108,9 +108,7 @@ export class LoginService {
       headers: this.getAuthHeaders(token, method),
     }).pipe(
       concatMap((response) => {
-        if (!this.authMethod.isStopped) {
-          this.completeAuthMethod(response.headers.get('X-WWW-Authenticate') || '');
-        }
+        this.updateAuthMethod(response.headers.get('X-WWW-Authenticate') || '');
 
         if (response.status === 302) {
           const redirectUrl = response.headers.get('X-Location');
@@ -173,7 +171,9 @@ export class LoginService {
   }
 
   getAuthMethod(): Observable<AuthMethod> {
-    return this.authMethod.asObservable();
+    return this.authMethod
+      .asObservable()
+      .pipe(distinctUntilChanged(), debounceTime(this.settings.webSocketDebounceMs()));
   }
 
   getUsername(): Observable<string> {
@@ -336,7 +336,7 @@ export class LoginService {
     }
   }
 
-  private completeAuthMethod(method: string): void {
+  private updateAuthMethod(method: string): void {
     let validMethod = method as AuthMethod;
 
     if (!Object.values(AuthMethod).includes(validMethod)) {
@@ -345,7 +345,6 @@ export class LoginService {
 
     this.authMethod.next(validMethod);
     this.setCacheItem(this.AUTH_METHOD_KEY, validMethod);
-    this.authMethod.complete();
   }
 
   private getCacheItem(key: string): string {
