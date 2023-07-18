@@ -53,6 +53,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardTitle,
   Form,
   FormGroup,
   FormSelect,
@@ -659,6 +660,7 @@ const Comp: React.FC = () => {
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
+              <CardTitle>Match Expression Visualizer</CardTitle>
               <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
                 <MatchExpressionVisualizer />
               </CardBody>
