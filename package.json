@@ -19,7 +19,7 @@
     "eslint:check": "eslint --cache --ext .ts,.tsx,.js ./src/",
     "eslint:apply": "eslint --cache --ext .ts,.tsx,.js --fix ./src/",
     "itest:preview": "HEADLESS_BROWSER=true concurrently -c 'auto' 'yarn:start:dev:preview --no-open' 'yarn:itest' --kill-others --success first",
-    "itest": "wait-on -lt 60000 http://localhost:9091 && jest --testMatch='**/itest/**/*.test.(ts|tsx)'",
+    "itest": "wait-on -lt 60000 http://localhost:9091 && sleep 10 && jest --testMatch='**/itest/**/*.test.(ts|tsx)'",
     "license:check": "license-check-and-add check -f license-config.json",
     "license:apply": "license-check-and-add add -f license-config.json",
     "lint": "concurrently -c 'auto' 'yarn:format' 'yarn:eslint' 'yarn:type-check'",
