@@ -90,6 +90,18 @@ $ yarn eslint:apply
 $ yarn format:apply
 ```
 
+### Getting Rid of Organize Imports Functionality
+When saving any changes before pushing the code, save would auto organize/sort the imports.
+The reason is that VSCode's setting may go agaisnt ESlin.
+To get rid of that behaviour, from `settings.json` change the ` "source.organizeImports" ` to `false`
+
+``` "redhat.telemetry.enabled": true,
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": false
+    },
+```
+
 ### Inspect the bundle size
 
 ```
