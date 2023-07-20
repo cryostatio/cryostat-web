@@ -92,7 +92,7 @@ $ yarn format:apply
 
 ### Getting Rid of Organize Imports Functionality
 When saving any changes before pushing the code, save would auto organize/sort the imports.
-The reason is that VSCode's setting may go agaisnt ESlin.
+The reason is that VSCode's setting may go agaisnt ESLint.
 To get rid of that behaviour, from `settings.json` change the ` "source.organizeImports" ` to `false`
 
 ``` "redhat.telemetry.enabled": true,
