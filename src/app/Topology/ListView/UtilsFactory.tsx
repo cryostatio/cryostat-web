@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
+import { Target, includesTarget } from '@app/Shared/Services/Target.service';
 import { Badge, Flex, FlexItem, Label, LabelGroup, TreeViewDataItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { ActionDropdown } from '../Actions/NodeActions';
@@ -47,7 +48,6 @@ import {
   getUniqueGroupId,
   getUniqueTargetId,
   isGroupNodeFiltered,
-  isTargetMatched,
   isTargetNodeFiltered,
   TransformConfig,
 } from '../Shared/utils';
@@ -56,7 +56,7 @@ import { EnvironmentNode, isTargetNode, NodeType, TargetNode } from '../typings'
 const _transformDataGroupedByTopLevel = (
   universe: EnvironmentNode,
   filters?: TopologyFilters,
-  searchExpression = ''
+  includeOnlyTargets: Target[] = []
 ): TreeViewDataItem[] => {
   return universe.children
     .filter((realm: EnvironmentNode) => isGroupNodeFiltered(realm, filters?.groupFilters.filters))
@@ -78,7 +78,7 @@ const _transformDataGroupedByTopLevel = (
           .filter(
             (child: TargetNode) =>
               isTargetNodeFiltered(child, filters?.targetFilters.filters) &&
-              (searchExpression === '' || isTargetMatched(child, searchExpression))
+              (!includeOnlyTargets.length || includesTarget(includeOnlyTargets, child.target))
           )
           .map((child: TargetNode) => ({
             id: `${child.name}-wrapper`,
@@ -131,12 +131,12 @@ const _buildFullData = (
   node: EnvironmentNode | TargetNode,
   expandMode = true,
   filters?: TopologyFilters,
-  searchExpression = ''
+  includeOnlyTargets: Target[] = []
 ): TreeViewDataItem[] => {
   if (isTargetNode(node)) {
     if (
-      !isTargetNodeFiltered(node, filters?.targetFilters.filters) ||
-      (searchExpression !== '' && !isTargetMatched(node, searchExpression))
+      !isTargetNodeFiltered(node, filters?.targetFilters.filters) &&
+      (!includeOnlyTargets.length || includesTarget(includeOnlyTargets, node.target))
     ) {
       return [];
     }
@@ -169,10 +169,7 @@ const _buildFullData = (
   }
 
   const INIT: TreeViewDataItem[] = [];
-  const children = node.children.reduce(
-    (prev, curr) => prev.concat(_buildFullData(curr, expandMode, filters, searchExpression)),
-    INIT
-  );
+  const children = node.children.reduce((prev, curr) => prev.concat(_buildFullData(curr, expandMode, filters)), INIT);
 
   // Do show empty or filtered-out groups
   if (
@@ -226,9 +223,9 @@ const _transformDataFull = (
   root: EnvironmentNode,
   expandMode = true,
   filters?: TopologyFilters,
-  searchExpression = ''
+  includeOnlyTargets: Target[] = []
 ): TreeViewDataItem[] => {
-  const _transformedRoot = _buildFullData(root, expandMode, filters, searchExpression)[0];
+  const _transformedRoot = _buildFullData(root, expandMode, filters, includeOnlyTargets)[0];
   return _transformedRoot && _transformedRoot.children ? _transformedRoot.children : [];
 };
 
@@ -236,9 +233,9 @@ export const transformData = (
   universe: EnvironmentNode,
   { showOnlyTopGroup = false, expandMode = true }: TransformConfig = {},
   filters?: TopologyFilters,
-  searchExpression = ''
+  includeOnlyTargets: Target[] = []
 ): TreeViewDataItem[] => {
   return showOnlyTopGroup
-    ? _transformDataGroupedByTopLevel(universe, filters, searchExpression)
-    : _transformDataFull(universe, expandMode, filters, searchExpression);
+    ? _transformDataGroupedByTopLevel(universe, filters, includeOnlyTargets)
+    : _transformDataFull(universe, expandMode, filters, includeOnlyTargets);
 };

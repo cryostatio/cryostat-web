@@ -41,10 +41,9 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { StoredCredential } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { TableColumn, evaluateTargetWithExpr, sortResources } from '@app/utils/utils';
+import { TableColumn, sortResources } from '@app/utils/utils';
 import {
   Badge,
   Button,
@@ -66,14 +65,14 @@ import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from 
 import _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { concatMap, forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { SecurityCard } from '../SecurityPanel';
 import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 const enum Actions {
   HANDLE_REFRESH,
-  HANDLE_TARGET_NOTIFICATION,
+  HANDLE_MATCHED_TARGET_NOTIFICATION,
   HANDLE_CREDENTIALS_STORED_NOTIFICATION,
   HANDLE_CREDENTIALS_DELETED_NOTIFICATION,
   HANDLE_ROW_CHECK,
@@ -99,27 +98,15 @@ const reducer = (state: State, action) => {
         credentials: credentials,
       };
     }
-    case Actions.HANDLE_TARGET_NOTIFICATION: {
+    case Actions.HANDLE_MATCHED_TARGET_NOTIFICATION: {
       return {
         ...state,
         credentials: state.credentials.map((credential) => {
-          let matched = false;
-          try {
-            const res = evaluateTargetWithExpr(action.payload.target, credential.matchExpression);
-            if (typeof res === 'boolean') {
-              matched = res;
-            }
-          } catch (_error) {
-            matched = false;
-          }
-          if (matched) {
-            const delta = action.payload.kind === 'FOUND' ? 1 : -1;
-            return {
-              ...credential,
-              numMatchingTargets: credential.numMatchingTargets + delta,
-            };
-          }
-          return credential;
+          const delta = action.payload.kind === 'FOUND' ? 1 : -1;
+          return {
+            ...credential,
+            numMatchingTargets: credential.numMatchingTargets + delta,
+          };
         }),
       };
     }
@@ -268,31 +255,26 @@ export const StoreCredentials = () => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.CredentialsDeleted)
-        .pipe(
-          concatMap((v) =>
-            of(dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message } }))
-          )
+        .subscribe((v) =>
+          dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message } })
         )
-        .subscribe(() => undefined /* do nothing - dispatch will have already handled updating state */)
     );
   }, [addSubscription, context, context.notificationChannel]);
-
-  const handleTargetNotification = (evt: TargetDiscoveryEvent) => {
-    dispatch({ type: Actions.HANDLE_TARGET_NOTIFICATION, payload: { target: evt.serviceRef, kind: evt.kind } });
-  };
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
-        .pipe(concatMap((v) => of(handleTargetNotification(v.message.event))))
-        .subscribe(() => undefined /* do nothing - dispatch will have already handled updating state */)
+        .subscribe((_) => refreshStoredCredentialsAndCounts())
     );
-  }, [addSubscription, context, context.notificationChannel]);
+  }, [addSubscription, refreshStoredCredentialsAndCounts, context, context.notificationChannel, context.api]);
 
-  const handleHeaderCheck = React.useCallback((checked: boolean) => {
-    dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked } });
-  }, []);
+  const handleHeaderCheck = React.useCallback(
+    (checked: boolean) => {
+      dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked } });
+    },
+    [dispatch]
+  );
 
   const handleDeleteCredentials = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];

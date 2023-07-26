@@ -37,11 +37,11 @@
  */
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
+import { Target, includesTarget } from '@app/Shared/Services/Target.service';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { TableColumn, evaluateTargetWithExpr, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -103,43 +103,64 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
   const [matchExpression] = useSearchExpression();
   const [sortBy, getSortParams] = useSort();
 
-  const [targets, setTargets] = React.useState<Target[]>([]);
+  const [targets, setTargets] = React.useState<{ target: Target; matched: boolean }[]>([]);
   const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
   const [searchText, setSearchText] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [err, setErr] = React.useState<Error>();
 
   React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
+    addSubscription(
+      context.targets.targets().subscribe((targets) => {
+        setTargets(targets.map((t) => ({ target: t, matched: false })));
+      })
+    );
   }, [addSubscription, context.targets, setTargets]);
 
-  const matchedTargets = React.useMemo(() => {
-    try {
-      return targets.filter((t) => {
-        const res = evaluateTargetWithExpr(t, matchExpression);
-        if (typeof res === 'boolean') {
-          return res;
-        }
-        throw new Error('Invalid match expression');
-      });
-    } catch (err) {
-      return [];
+  React.useEffect(() => {
+    if (!targets.length) {
+      return;
+    } else if (!matchExpression) {
+      setTargets((ts) => ts.map((t) => ({ ...t, matched: false })));
+    } else {
+      setLoading(true);
+      addSubscription(
+        context.api
+          .matchTargetsWithExpr(
+            matchExpression,
+            targets.map((t) => t.target)
+          )
+          .subscribe({
+            next: (ts) => {
+              setLoading(false);
+              const matched = targets.filter((t) => includesTarget(ts, t.target)).map((t) => ({ ...t, matched: true }));
+              // Matched targets are by default pushed to top
+              setTargets([...matched, ...targets.filter((t) => !includesTarget(ts, t.target))]);
+            },
+            error: (err: Error) => {
+              setLoading(false);
+              setErr(err);
+            },
+          })
+      );
     }
-  }, [targets, matchExpression]);
+  }, [targets, matchExpression, context.api, addSubscription]);
 
-  const rows = React.useMemo(
-    () =>
-      sortResources(
-        {
-          index: sortBy.index ?? 0,
-          direction: sortBy.direction ?? SortByDirection.asc,
-        },
-        matchedTargets,
-        tableColumns
-      ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />),
-    [matchedTargets, filters, searchText, sortBy]
-  );
+  const rows = React.useMemo(() => {
+    const matchedTargets = targets.filter((t) => t.matched).map((t) => t.target);
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      matchedTargets,
+      tableColumns
+    ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />);
+  }, [targets, filters, searchText, sortBy]);
 
-  const toolbar = React.useMemo(
-    () => (
+  const toolbar = React.useMemo(() => {
+    const matchedTargets = targets.filter((t) => t.matched).map((t) => t.target);
+    return (
       <CredentialToolbar
         onFilter={setFilters}
         onSearch={setSearchText}
@@ -147,9 +168,8 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         searchText={searchText}
         matchedTargets={matchedTargets}
       />
-    ),
-    [setFilters, setSearchText, filters, searchText, matchedTargets]
-  );
+    );
+  }, [setFilters, setSearchText, filters, searchText, targets]);
 
   return rows.length ? (
     <OuterScrollContainer>

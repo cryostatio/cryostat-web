@@ -39,6 +39,8 @@
 import cryostatSvg from '@app/assets/cryostat_icon_rgb_default.svg';
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import {
@@ -58,7 +60,7 @@ import {
 } from '@patternfly/react-topology';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { getStatusTargetNode, isTargetMatched, nodeTypeToAbbr, useSearchExpression } from '../Shared/utils';
+import { getStatusTargetNode, nodeTypeToAbbr, useSearchExpression } from '../Shared/utils';
 import { TargetNode } from '../typings';
 import { getNodeDecorators } from './NodeDecorator';
 import { TOPOLOGY_GRAPH_ID } from './TopologyGraphView';
@@ -106,6 +108,9 @@ const CustomNode: React.FC<CustomNodeProps> = ({
   useAnchor(EllipseAnchor); // For edges
   const [hover, hoverRef] = useHover(200, 200);
   const [expression] = useSearchExpression();
+  const [matched, setMatched] = React.useState(true);
+  const addSubscription = useSubscriptions();
+  const svcContext = React.useContext(ServiceContext);
 
   const displayOptions = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
   const { badge: showBadge, connectionUrl: showConnectUrl, icon: showIcon, status: showStatus } = displayOptions.show;
@@ -118,13 +123,19 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 
   const classNames = React.useMemo(() => {
     const graphId = element.getGraph().getId();
-    const matchExprForSearch = graphId === TOPOLOGY_GRAPH_ID;
-    const additional =
-      (matchExprForSearch && expression === '') || isTargetMatched(data, expression) ? '' : 'search-inactive';
+    const additional = (graphId === TOPOLOGY_GRAPH_ID && expression === '') || matched ? '' : 'search-inactive';
     return css('topology__target-node', additional);
-  }, [data, expression, element]);
+  }, [expression, matched, element]);
 
   const nodeDecorators = React.useMemo(() => (showStatus ? getNodeDecorators(element) : null), [element, showStatus]);
+
+  React.useEffect(() => {
+    if (!expression) {
+      setMatched(element.getGraph().getId() === TOPOLOGY_GRAPH_ID);
+      return;
+    }
+    addSubscription(svcContext.api.isTargetMatched(expression, data.target).subscribe(setMatched));
+  }, [element, data.target, expression, svcContext.api, addSubscription, setMatched]);
 
   return (
     <Layer id={contextMenuOpen ? TOP_LAYER : DEFAULT_LAYER}>

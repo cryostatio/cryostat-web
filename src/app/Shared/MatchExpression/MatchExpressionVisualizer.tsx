@@ -35,6 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
 import { SavedGraphPosition, SavedNodePosition } from '@app/Topology/GraphView/TopologyGraphView';
 import { getNodeById } from '@app/Topology/GraphView/UtilsFactory';
@@ -44,7 +46,7 @@ import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
 import { NodeType } from '@app/Topology/typings';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, hashCode } from '@app/utils/utils';
+import { hashCode } from '@app/utils/utils';
 import {
   Bullseye,
   DataList,
@@ -84,7 +86,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { ServiceContext } from '../Services/Services';
-import { Target } from '../Services/Target.service';
+import { Target, includesTarget } from '../Services/Target.service';
 import { componentFactory, createTargetNode, layoutFactory, transformData } from './utils';
 
 export interface MatchExpressionVisualizerProps {
@@ -317,12 +319,17 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [matchExpression] = useSearchExpression();
-  const [targets, setTargets] = React.useState<Target[]>([]);
-
+  const [targets, setTargets] = React.useState<{ target: Target; matched: boolean }[]>([]);
   const [expanded, setExpanded] = React.useState<string[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [err, setErr] = React.useState<Error>();
 
   React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
+    addSubscription(
+      context.targets.targets().subscribe((targets) => {
+        setTargets(targets.map((t) => ({ target: t, matched: false })));
+      })
+    );
   }, [addSubscription, context.targets, setTargets]);
 
   const toggleExpand = React.useCallback(
@@ -337,25 +344,43 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
     [setExpanded]
   );
 
-  const targetNodes = React.useMemo(() => targets.map(createTargetNode), [targets]);
-
-  const filtered = React.useMemo(
-    () =>
-      targetNodes.filter(({ target }) => {
-        try {
-          const res = evaluateTargetWithExpr(target, matchExpression);
-          if (typeof res === 'boolean') {
-            return res;
-          }
-          return false;
-        } catch (err) {
-          return false;
-        }
-      }),
-    [targetNodes, matchExpression]
-  );
+  React.useEffect(() => {
+    if (!targets.length) {
+      return;
+    } else if (!matchExpression) {
+      setTargets((ts) => ts.map((t) => ({ ...t, matched: false })));
+    } else {
+      setLoading(true);
+      addSubscription(
+        context.api
+          .matchTargetsWithExpr(
+            matchExpression,
+            targets.map((t) => t.target)
+          )
+          .subscribe({
+            next: (ts) => {
+              setLoading(false);
+              const matched = targets.filter((t) => includesTarget(ts, t.target)).map((t) => ({ ...t, matched: true }));
+              // Matched targets are by default pushed to top
+              setTargets([...matched, ...targets.filter((t) => !includesTarget(ts, t.target))]);
+            },
+            error: (err: Error) => {
+              setLoading(false);
+              setErr(err);
+            },
+          })
+      );
+    }
+  }, [targets, matchExpression, context.api, addSubscription]);
 
   const content = React.useMemo(() => {
+    if (loading) {
+      return <LoadingView />;
+    }
+    if (err) {
+      return <ErrorView title={'Failed to evaluate matched targets'} message={err.message} />;
+    }
+    const filtered = targets.filter((t) => t.matched);
     if (!filtered || !filtered.length) {
       return (
         <Bullseye>
@@ -412,7 +437,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         </DataListItem>
       );
     });
-  }, [filtered, expanded, matchExpression, toggleExpand, props, alertOptions]);
+  }, [targets, loading, err, expanded, matchExpression, toggleExpand, props, alertOptions]);
 
   return (
     <DataList aria-label={'Target List'} style={{ height: '100%' }}>

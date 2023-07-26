@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
-import { evaluateTargetWithExpr } from '@app/utils/utils';
 import { Button, Text, TextVariants } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
@@ -258,16 +257,4 @@ export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => 
     [exprSvc]
   );
   return [expr, handleChange];
-};
-
-export const isTargetMatched = ({ target }: TargetNode, matchExpression: string): boolean => {
-  try {
-    const res = evaluateTargetWithExpr(target, matchExpression);
-    if (typeof res === 'boolean') {
-      return res;
-    }
-    return false;
-  } catch (err) {
-    return false;
-  }
 };

@@ -36,11 +36,14 @@
  * SOFTWARE.
  */
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Divider, Stack, StackItem, TreeView, TreeViewDataItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
-import { DiscoveryTreeContext, TransformConfig, useSearchExpression } from '../Shared/utils';
+import { DiscoveryTreeContext, TransformConfig, getAllLeaves, useSearchExpression } from '../Shared/utils';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
 import { transformData } from './UtilsFactory';
 
@@ -50,17 +53,25 @@ export interface TopologyListViewProps {
 
 export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformConfig, ...props }) => {
   const discoveryTree = React.useContext(DiscoveryTreeContext);
+  const svcContext = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   const filters = useSelector((state: RootState) => state.topologyFilters);
 
   const [expression] = useSearchExpression(100);
+  const [matchedTargets, setMatchedTargets] = React.useState<Target[]>([]);
 
   const _treeViewData: TreeViewDataItem[] = React.useMemo(
-    () => transformData(discoveryTree, transformConfig, filters, expression),
-    [discoveryTree, transformConfig, filters, expression]
+    () => transformData(discoveryTree, transformConfig, filters, matchedTargets),
+    [discoveryTree, transformConfig, filters, matchedTargets]
   );
 
   const isEmptyList = React.useMemo(() => !_treeViewData.length, [_treeViewData]);
+
+  React.useEffect(() => {
+    const allTargets = getAllLeaves(discoveryTree).map((tn) => tn.target);
+    addSubscription(svcContext.api.matchTargetsWithExpr(expression, allTargets).subscribe(setMatchedTargets));
+  }, [svcContext.api, expression, discoveryTree, addSubscription, setMatchedTargets]);
 
   return (
     <Stack {...props}>

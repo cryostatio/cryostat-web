@@ -47,7 +47,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot } from '@app/utils/utils';
+import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -286,26 +286,20 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   }, [addSubscription, context.targets, setTargets]);
 
   React.useEffect(() => {
-    // Set validations
-    let validation: ValidatedOptions = ValidatedOptions.default;
-    let matches: Target[] = [];
     if (matchExpression !== '' && targets.length > 0) {
-      try {
-        matches = targets.filter((t) => {
-          const res = evaluateTargetWithExpr(t, matchExpression);
-          if (typeof res === 'boolean') {
-            return res;
-          }
-          throw new Error('The expression matching failed.');
-        });
-        validation = matches.length ? ValidatedOptions.success : ValidatedOptions.warning;
-      } catch (err) {
-        validation = ValidatedOptions.error;
-      }
+      addSubscription(
+        context.api.matchTargetsWithExpr(matchExpression, targets).subscribe({
+          next: (ts) => {
+            setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
+            matchedTargets.next(ts);
+          },
+          error: (_) => {
+            setMatchExpressionValid(ValidatedOptions.error);
+          },
+        })
+      );
     }
-    setMatchExpressionValid(validation);
-    matchedTargets.next(matches);
-  }, [matchExpression, targets, matchedTargets, setMatchExpressionValid]);
+  }, [matchExpression, targets, matchedTargets, context.api, setMatchExpressionValid, addSubscription]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>

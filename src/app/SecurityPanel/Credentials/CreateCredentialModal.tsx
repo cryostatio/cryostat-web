@@ -42,7 +42,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot, StreamOf } from '@app/utils/utils';
+import { portalRoot, StreamOf } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -170,23 +170,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   }, [addSubscription, context.targets, setTargets]);
 
   React.useEffect(() => {
-    let validation: ValidatedOptions = ValidatedOptions.default;
     if (matchExpression !== '' && targets.length > 0) {
-      try {
-        const atLeastOne = targets.some((t) => {
-          const res = evaluateTargetWithExpr(t, matchExpression);
-          if (typeof res === 'boolean') {
-            return res;
-          }
-          throw new Error('The expression matching failed.');
-        });
-        validation = atLeastOne ? ValidatedOptions.success : ValidatedOptions.warning;
-      } catch (err) {
-        validation = ValidatedOptions.error;
-      }
+      addSubscription(
+        context.api.matchTargetsWithExpr(matchExpression, targets).subscribe({
+          next: (ts) => {
+            setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
+          },
+          error: (_) => {
+            setMatchExpressionValid(ValidatedOptions.error);
+          },
+        })
+      );
     }
-    setMatchExpressionValid(validation);
-  }, [matchExpression, targets, setMatchExpressionValid]);
+  }, [matchExpression, targets, context.api, setMatchExpressionValid, addSubscription]);
 
   React.useEffect(() => {
     progressChange && progressChange(saving);
