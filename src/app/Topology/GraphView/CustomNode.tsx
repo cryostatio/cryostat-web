@@ -107,7 +107,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 }) => {
   useAnchor(EllipseAnchor); // For edges
   const [hover, hoverRef] = useHover(200, 200);
-  const [expression] = useSearchExpression();
+  const [expression] = useSearchExpression(100);
   const [matched, setMatched] = React.useState(true);
   const addSubscription = useSubscriptions();
   const svcContext = React.useContext(ServiceContext);

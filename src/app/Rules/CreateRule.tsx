@@ -45,7 +45,7 @@ import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorFo
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
+import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
@@ -75,7 +75,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
 import { forkJoin, iif, of, Subject } from 'rxjs';
-import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
+import { catchError, concatMap, debounceTime, map, switchMap } from 'rxjs/operators';
 import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
@@ -87,9 +87,11 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
-  // Note: Do not use useSearchExpression(). This causes the cursor to jump to the end due to async updates.
-  const matchExprService = React.useContext(SearchExprServiceContext);
-  const [matchExpression, setMatchExpression] = React.useState('');
+  // Do not use useSearchExpression hook for display.
+  // This causes the cursor to jump to the end due to async updates.
+  const matchExprService = useExprSvc();
+  // Use this for displaying match expression input
+  const [matchExpressionInput, setMatchExpressionInput] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const [name, setName] = React.useState('');
@@ -198,7 +200,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
       name,
       description,
       enabled,
-      matchExpression,
+      matchExpression: matchExpressionInput,
       eventSpecifier: eventSpecifierString,
       archivalPeriodSeconds: archivalPeriod * archivalPeriodUnits,
       initialDelaySeconds: initialDelay * initialDelayUnits,
@@ -224,7 +226,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
     nameValid,
     description,
     enabled,
-    matchExpression,
+    matchExpressionInput,
     eventSpecifierString,
     archivalPeriod,
     archivalPeriodUnits,
@@ -286,20 +288,23 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   }, [addSubscription, context.targets, setTargets]);
 
   React.useEffect(() => {
-    if (matchExpression !== '' && targets.length > 0) {
+    if (targets.length > 0) {
       addSubscription(
-        context.api.matchTargetsWithExpr(matchExpression, targets).subscribe({
-          next: (ts) => {
-            setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
-            matchedTargets.next(ts);
-          },
-          error: (_) => {
-            setMatchExpressionValid(ValidatedOptions.error);
-          },
-        })
+        matchExprService
+          .searchExpression(100)
+          .pipe(concatMap((input) => context.api.matchTargetsWithExpr(input, targets)))
+          .subscribe({
+            next: (ts) => {
+              setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
+              matchedTargets.next(ts);
+            },
+            error: (_) => {
+              setMatchExpressionValid(ValidatedOptions.error);
+            },
+          })
       );
     }
-  }, [matchExpression, targets, matchedTargets, context.api, setMatchExpressionValid, addSubscription]);
+  }, [matchExprService, targets, matchedTargets, context.api, setMatchExpressionValid, addSubscription]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -403,7 +408,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         data-quickstart-id="rule-matchexpr"
       >
         <TextArea
-          value={matchExpression}
+          value={matchExpressionInput}
           isDisabled={loading}
           isRequired
           type="text"
@@ -412,7 +417,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
           resizeOrientation="vertical"
           autoResize
           onChange={(value) => {
-            setMatchExpression(value);
+            setMatchExpressionInput(value);
             matchExprService.setSearchExpression(value);
           }}
           validated={matchExpressionValid}
@@ -606,7 +611,11 @@ enabled in the future.`}
           variant="primary"
           onClick={handleSubmit}
           isDisabled={
-            loading || nameValid !== ValidatedOptions.success || !template.name || !template.type || !matchExpression
+            loading ||
+            nameValid !== ValidatedOptions.success ||
+            !template.name ||
+            !template.type ||
+            !matchExpressionInput
           }
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}

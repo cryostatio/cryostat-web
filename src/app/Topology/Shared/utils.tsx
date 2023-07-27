@@ -229,8 +229,8 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
 export class SearchExprService {
   private readonly _state$ = new BehaviorSubject<string>('');
 
-  searchExpression(): Observable<string> {
-    return this._state$.asObservable();
+  searchExpression(debounceMs = 0): Observable<string> {
+    return this._state$.asObservable().pipe(debounceTime(debounceMs));
   }
 
   setSearchExpression(expr: string): void {
@@ -246,7 +246,7 @@ export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => 
   const _subRef = React.useRef<Subscription>();
 
   React.useEffect(() => {
-    _subRef.current = exprSvc.searchExpression().pipe(debounceTime(debounceMs)).subscribe(setExpr);
+    _subRef.current = exprSvc.searchExpression(debounceMs).subscribe(setExpr);
     return () => _subRef.current?.unsubscribe();
   }, [_subRef, setExpr, exprSvc, debounceMs]);
 
@@ -258,3 +258,5 @@ export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => 
   );
   return [expr, handleChange];
 };
+
+export const useExprSvc = (): SearchExprService => React.useContext(SearchExprServiceContext);

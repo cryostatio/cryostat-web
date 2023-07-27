@@ -40,7 +40,7 @@ import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpression
 import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
+import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot, StreamOf } from '@app/utils/utils';
 import {
@@ -62,7 +62,7 @@ import {
 } from '@patternfly/react-core';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { distinctUntilChanged, interval, map } from 'rxjs';
+import { concatMap, distinctUntilChanged, interval, map } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
 import { CredentialContext, TestPoolContext, TestRequest, useAuthCredential } from './utils';
 
@@ -140,8 +140,8 @@ interface AuthFormProps extends Omit<CreateCredentialModalProps, 'visible'> {
 export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, progressChange, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const matchExprService = React.useContext(SearchExprServiceContext);
-  const [matchExpression, setMatchExpression] = React.useState('');
+  const matchExprService = useExprSvc();
+  const [matchExpressionInput, setMatchExpressionInput] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [_, setCredential] = useAuthCredential(true);
   const testPool = React.useContext(TestPoolContext);
@@ -154,7 +154,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
     (username: string, password: string) => {
       setSaving(true);
       addSubscription(
-        context.api.postCredentials(matchExpression, username, password).subscribe((ok) => {
+        context.api.postCredentials(matchExpressionInput, username, password).subscribe((ok) => {
           setSaving(false);
           if (ok) {
             onPropsSave();
@@ -162,7 +162,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         })
       );
     },
-    [addSubscription, onPropsSave, context.api, matchExpression, setSaving]
+    [addSubscription, onPropsSave, context.api, matchExpressionInput, setSaving]
   );
 
   React.useEffect(() => {
@@ -170,19 +170,22 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   }, [addSubscription, context.targets, setTargets]);
 
   React.useEffect(() => {
-    if (matchExpression !== '' && targets.length > 0) {
+    if (targets.length > 0) {
       addSubscription(
-        context.api.matchTargetsWithExpr(matchExpression, targets).subscribe({
-          next: (ts) => {
-            setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
-          },
-          error: (_) => {
-            setMatchExpressionValid(ValidatedOptions.error);
-          },
-        })
+        matchExprService
+          .searchExpression(100)
+          .pipe(concatMap((input) => context.api.matchTargetsWithExpr(input, targets)))
+          .subscribe({
+            next: (ts) => {
+              setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
+            },
+            error: (_) => {
+              setMatchExpressionValid(ValidatedOptions.error);
+            },
+          })
       );
     }
-  }, [matchExpression, targets, context.api, setMatchExpressionValid, addSubscription]);
+  }, [matchExprService, targets, context.api, setMatchExpressionValid, addSubscription]);
 
   React.useEffect(() => {
     progressChange && progressChange(saving);
@@ -244,18 +247,18 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         Enter a match expression. This is a Java-like code snippet that is evaluated against each target
         application to determine whether the rule should be applied.`
         }
-        helperTextInvalid="IThe expression matching failed."
+        helperTextInvalid="The expression matching failed."
         validated={matchExpressionValid}
       >
         <TextArea
-          value={matchExpression}
+          value={matchExpressionInput}
           isDisabled={isDisabled}
           isRequired
           type="text"
           id="rule-matchexpr"
           aria-describedby="rule-matchexpr-helper"
           onChange={(v) => {
-            setMatchExpression(v);
+            setMatchExpressionInput(v);
             matchExprService.setSearchExpression(v);
           }}
           validated={matchExpressionValid}

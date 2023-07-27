@@ -35,6 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target, includesTarget } from '@app/Shared/Services/Target.service';
@@ -100,7 +102,7 @@ export interface CredentialTestTableProps {}
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [matchExpression] = useSearchExpression();
+  const [matchExpression] = useSearchExpression(100);
   const [sortBy, getSortParams] = useSort();
 
   const [targets, setTargets] = React.useState<{ target: Target; matched: boolean }[]>([]);
@@ -118,10 +120,8 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
   }, [addSubscription, context.targets, setTargets]);
 
   React.useEffect(() => {
-    if (!targets.length) {
-      return;
-    } else if (!matchExpression) {
-      setTargets((ts) => ts.map((t) => ({ ...t, matched: false })));
+    if (!targets.length || !matchExpression) {
+      setTargets((ts) => (ts.length ? ts.map((t) => ({ ...t, matched: false })) : ts));
     } else {
       setLoading(true);
       addSubscription(
@@ -171,7 +171,11 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
     );
   }, [setFilters, setSearchText, filters, searchText, targets]);
 
-  return rows.length ? (
+  return loading ? (
+    <LoadingView />
+  ) : err ? (
+    <ErrorView title={'Failed to evaluate matched targets'} message={err.message} />
+  ) : rows.length ? (
     <OuterScrollContainer>
       {toolbar}
       <InnerScrollContainer>

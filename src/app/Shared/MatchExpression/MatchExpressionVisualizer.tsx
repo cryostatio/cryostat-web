@@ -318,7 +318,7 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
 const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [matchExpression] = useSearchExpression();
+  const [matchExpression] = useSearchExpression(100);
   const [targets, setTargets] = React.useState<{ target: Target; matched: boolean }[]>([]);
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -345,10 +345,8 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
   );
 
   React.useEffect(() => {
-    if (!targets.length) {
-      return;
-    } else if (!matchExpression) {
-      setTargets((ts) => ts.map((t) => ({ ...t, matched: false })));
+    if (!targets.length || !matchExpression) {
+      setTargets((ts) => (ts.length ? ts.map((t) => ({ ...t, matched: false })) : ts));
     } else {
       setLoading(true);
       addSubscription(
