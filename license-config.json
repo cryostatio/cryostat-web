@@ -11,6 +11,7 @@
 	},
 	"ignore": [
     ".git",
+    ".build_cache",
     "tags",
     "coverage",
     "stories",

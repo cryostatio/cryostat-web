@@ -3,7 +3,7 @@
   "version": "2.4.0-dev",
   "description": "Web-Client for Cryostat",
   "repository": "https://github.com/cryostatio/cryostat-web.git",
-  "license": "UPL",
+  "license": "Apache-2.0",
   "private": true,
   "scripts": {
     "build": "concurrently -c 'auto' 'yarn:build:notests' 'yarn:test'",
