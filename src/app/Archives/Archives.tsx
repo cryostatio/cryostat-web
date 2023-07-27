@@ -1,12 +1,12 @@
 /*
  * Copyright The Cryostat Authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecording
 /*
   This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
   The connectUrl is the 'uploads' because for actions performed on uploaded archived recordings,
-  the backend issues a notification with the "target" field set to the 'uploads', signalling that 
+  the backend issues a notification with the "target" field set to the 'uploads', signalling that
   these recordings are not associated with any target. We can then match on the 'uploads' when performing
   notification handling in the ArchivedRecordingsTable.
 */

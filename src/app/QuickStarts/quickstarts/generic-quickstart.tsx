@@ -1,12 +1,12 @@
 /*
  * Copyright The Cryostat Authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,11 +67,11 @@ const GenericQuickStart: QuickStart = {
 ## Text
   1. The main body of the task. You can use markdown syntax here to create list items and more.
 
-  This is a paragraph.  
+  This is a paragraph.
   This is another paragraph. Add an empty line between paragraphs for line breaks or two spaces at the end.
   1. For more information on markdown syntax you can visit [this resource](https://www.markdownguide.org/basic-syntax/).
   1. A <small>limited set</small> of <strong>HTML tags</strong> [are also supported](https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html#supported-tags-for-quick-starts_creating-quick-start-tutorials)
-  
+
 ## Images
   HTML img tag: <img alt="[APP] logo" src="${cryostatLogo}" width="30" height="30" />
 
@@ -91,7 +91,7 @@ const GenericQuickStart: QuickStart = {
   <pre>[Recordings nav item]{{highlight nav-recordings-tab}}</pre>
 
   will highlight an element with the \`data-quickstart-id="quickstarts"\` attribute
-  
+
 ### Code snippets
 The syntax for an inline code snippet contains:
 - Text between back quotes, followed by \`{{copy}}\`
@@ -111,7 +111,7 @@ oc expose svc/ruby-ex
 \`\`\`
 Hello
 world
-\`\`\`{{copy}}  
+\`\`\`{{copy}}
   - Clicking the _Next_ button will display the **Check your work** module.
 ### Admonition blocks
   The syntax for rendering "Admonition Blocks" to Patternfly React Alerts:

@@ -1,12 +1,12 @@
 /*
  * Copyright The Cryostat Authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,7 +62,7 @@ const RecordingQuickStart: QuickStart = {
       },
       {
         title: 'Select a target JVM',
-        description: `    
+        description: `
 Select a target JVM from the list of available targets that [APP] has discovered.
 
 1. Click the [Target Select]{{highlight target-select}} dropdown menu.
@@ -86,7 +86,7 @@ There are two tabs within the Recordings page:
 
 To start an active recording:
 
-1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**. 
+1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**.
 [If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including \`Create\`."]{{admonition note}}
 2. Enter a name for the recording in the [Name]{{highlight crf-name}} field.
 3. Select the [Duration]{{highlight crf-duration}} for the recording. You can select \`CONTINUOUS\` to record until the recording is stopped.

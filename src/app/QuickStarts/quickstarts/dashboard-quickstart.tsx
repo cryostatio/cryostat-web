@@ -1,12 +1,12 @@
 /*
  * Copyright The Cryostat Authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ const DashboardQuickStart: QuickStart = {
 ## Dashboard
 The **[APP] Dashboard** is the main page of the [APP] console. The [APP] dashboard provides a high-level overview of the connected target JVMs and the instance itself through the use of **Dashboard Cards**.
 
-Dashboard Cards are displayed in **Dashboard Layouts**, which can be customized by adding, removing, or rearranging cards. The layout can also be saved and restored at a later time. 
+Dashboard Cards are displayed in **Dashboard Layouts**, which can be customized by adding, removing, or rearranging cards. The layout can also be saved and restored at a later time.
 
 ### What you'll learn
 - How to create a simple Dashboard Layout
@@ -98,7 +98,7 @@ Each card displays a different set of information about the currently selected t
 To create a card, go through a creation wizard that guides the process of selecting and configuring the desired card.
 
 1. Click the [Catalog Icon]{{highlight dashboard-add-btn}}.
-    
+
     This will open a modal. From the card catalog, select the **Target JVM Details** card. Full details and any available preview will be shown on the drawer panel.
 
 2. Click **Finish**.
@@ -146,8 +146,8 @@ You can rename, delete and quickly switch between **Dashboard Layouts** for diff
         description: `
 **Layout Templates** are pre-configured Dashboard Layouts that are used to quickly create new Dashboard Layouts. You can also download and upload your own Dashboard Layouts as templates. [APP] provides a few templates that you can use to get started.
 1. To create a new Dashboard Layout from a template, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and click the caret icon next to the **New Layout** button.
-   
-   This will open a dropdown menu. 
+
+   This will open a dropdown menu.
 2. Select **Choose Template**.
    A modal will open with a list of available templates. There will be two template categories: **Suggested** and **Cryostat**.
 3. From the **Cryostat** category, select the **Automated Analysis** template.

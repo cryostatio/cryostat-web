@@ -1,12 +1,12 @@
 /*
  * Copyright The Cryostat Authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ const SettingsQuickStart: QuickStart = {
     prerequisites: [''],
     introduction: `
 ## Using Settings
-      
+
 [APP] provides a settings page that lets you configure various aspects of the application. This quick start will show you how to use the settings page.
 
 ### What you'll learn
@@ -103,10 +103,10 @@ The **Automated Analysis** dashboard card allows you to automatically start an a
 
 1. Click [Advanced]{{highlight settings-advanced-tab}}.
 2. Configure the **Credentials Storage** settings.
-  
+
   Credentials are necessary to authenticate with the target JVMs that [APP] communicates with, if JMX auth is enabled or if a [APP] agent authenticated connection is required. If you prefer not to store these credentials in the [APP] backend, you can opt to store them in local session storage instead.
 3. Configure the **Feature Level** settings.
-  
+
   The **Feature Level** setting enables you to enable or disable beta features.
 
 `,
