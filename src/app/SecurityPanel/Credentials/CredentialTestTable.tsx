@@ -35,12 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { ErrorView } from '@app/ErrorView/ErrorView';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target, includesTarget } from '@app/Shared/Services/Target.service';
-import { useSearchExpression } from '@app/Topology/Shared/utils';
+import { Target } from '@app/Shared/Services/Target.service';
+import { DEFAULT_MATCH_EXPR_DEBOUNCE_TIME, useExprSvc } from '@app/Topology/Shared/utils';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
@@ -79,6 +78,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
+import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { TestPoolContext, useAuthCredential } from './utils';
 
 const tableColumns: TableColumn[] = [
@@ -102,52 +102,35 @@ export interface CredentialTestTableProps {}
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [matchExpression] = useSearchExpression(100);
+  const matchExprService = useExprSvc();
   const [sortBy, getSortParams] = useSort();
 
-  const [targets, setTargets] = React.useState<{ target: Target; matched: boolean }[]>([]);
+  const [matchedExpr, setMatchExpr] = React.useState('');
+  const [matchedTargets, setMatchedTargets] = React.useState<Target[]>([]);
   const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
   const [searchText, setSearchText] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [err, setErr] = React.useState<Error>();
 
   React.useEffect(() => {
     addSubscription(
-      context.targets.targets().subscribe((targets) => {
-        setTargets(targets.map((t) => ({ target: t, matched: false })));
-      })
-    );
-  }, [addSubscription, context.targets, setTargets]);
-
-  React.useEffect(() => {
-    if (!targets.length || !matchExpression) {
-      setTargets((ts) => (ts.length ? ts.map((t) => ({ ...t, matched: false })) : ts));
-    } else {
-      setLoading(true);
-      addSubscription(
-        context.api
-          .matchTargetsWithExpr(
-            matchExpression,
-            targets.map((t) => t.target)
+      combineLatest([
+        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME).pipe(tap((exp) => setMatchExpr(exp))),
+        context.targets.targets(),
+      ])
+        .pipe(
+          tap(() => setLoading(true)),
+          switchMap(([input, targets]) =>
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([])
           )
-          .subscribe({
-            next: (ts) => {
-              setLoading(false);
-              const matched = targets.filter((t) => includesTarget(ts, t.target)).map((t) => ({ ...t, matched: true }));
-              // Matched targets are by default pushed to top
-              setTargets([...matched, ...targets.filter((t) => !includesTarget(ts, t.target))]);
-            },
-            error: (err: Error) => {
-              setLoading(false);
-              setErr(err);
-            },
-          })
-      );
-    }
-  }, [targets, matchExpression, context.api, addSubscription]);
+        )
+        .subscribe((ts) => {
+          setLoading(false);
+          setMatchedTargets(ts);
+        })
+    );
+  }, [matchExprService, context.api, context.targets, setMatchedTargets, setLoading, addSubscription]);
 
   const rows = React.useMemo(() => {
-    const matchedTargets = targets.filter((t) => t.matched).map((t) => t.target);
     return sortResources(
       {
         index: sortBy.index ?? 0,
@@ -156,10 +139,9 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
       matchedTargets,
       tableColumns
     ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />);
-  }, [targets, filters, searchText, sortBy]);
+  }, [matchedTargets, filters, searchText, sortBy]);
 
   const toolbar = React.useMemo(() => {
-    const matchedTargets = targets.filter((t) => t.matched).map((t) => t.target);
     return (
       <CredentialToolbar
         onFilter={setFilters}
@@ -169,12 +151,10 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         matchedTargets={matchedTargets}
       />
     );
-  }, [setFilters, setSearchText, filters, searchText, targets]);
+  }, [setFilters, setSearchText, filters, searchText, matchedTargets]);
 
   return loading ? (
     <LoadingView />
-  ) : err ? (
-    <ErrorView title={'Failed to evaluate matched targets'} message={err.message} />
   ) : rows.length ? (
     <OuterScrollContainer>
       {toolbar}
@@ -200,7 +180,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
           No Targets Matched
         </Title>
         <EmptyStateBody>{`${
-          matchExpression === '' ? 'Enter another' : 'Clear'
+          matchedExpr === '' ? 'Enter another' : 'Clear'
         } Match Expression and try again.`}</EmptyStateBody>
       </EmptyState>
     </Bullseye>

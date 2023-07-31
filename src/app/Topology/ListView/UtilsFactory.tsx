@@ -56,7 +56,7 @@ import { EnvironmentNode, isTargetNode, NodeType, TargetNode } from '../typings'
 const _transformDataGroupedByTopLevel = (
   universe: EnvironmentNode,
   filters?: TopologyFilters,
-  includeOnlyTargets: Target[] = []
+  includeOnlyTargets?: Target[]
 ): TreeViewDataItem[] => {
   return universe.children
     .filter((realm: EnvironmentNode) => isGroupNodeFiltered(realm, filters?.groupFilters.filters))
@@ -78,7 +78,7 @@ const _transformDataGroupedByTopLevel = (
           .filter(
             (child: TargetNode) =>
               isTargetNodeFiltered(child, filters?.targetFilters.filters) &&
-              (!includeOnlyTargets.length || includesTarget(includeOnlyTargets, child.target))
+              (!includeOnlyTargets || includesTarget(includeOnlyTargets, child.target))
           )
           .map((child: TargetNode) => ({
             id: `${child.name}-wrapper`,
@@ -131,12 +131,12 @@ const _buildFullData = (
   node: EnvironmentNode | TargetNode,
   expandMode = true,
   filters?: TopologyFilters,
-  includeOnlyTargets: Target[] = []
+  includeOnlyTargets?: Target[]
 ): TreeViewDataItem[] => {
   if (isTargetNode(node)) {
     if (
       !isTargetNodeFiltered(node, filters?.targetFilters.filters) &&
-      (!includeOnlyTargets.length || includesTarget(includeOnlyTargets, node.target))
+      (!includeOnlyTargets || includesTarget(includeOnlyTargets, node.target))
     ) {
       return [];
     }
@@ -169,7 +169,10 @@ const _buildFullData = (
   }
 
   const INIT: TreeViewDataItem[] = [];
-  const children = node.children.reduce((prev, curr) => prev.concat(_buildFullData(curr, expandMode, filters)), INIT);
+  const children = node.children.reduce(
+    (prev, curr) => prev.concat(_buildFullData(curr, expandMode, filters, includeOnlyTargets)),
+    INIT
+  );
 
   // Do show empty or filtered-out groups
   if (
@@ -223,7 +226,7 @@ const _transformDataFull = (
   root: EnvironmentNode,
   expandMode = true,
   filters?: TopologyFilters,
-  includeOnlyTargets: Target[] = []
+  includeOnlyTargets?: Target[]
 ): TreeViewDataItem[] => {
   const _transformedRoot = _buildFullData(root, expandMode, filters, includeOnlyTargets)[0];
   return _transformedRoot && _transformedRoot.children ? _transformedRoot.children : [];
@@ -233,7 +236,7 @@ export const transformData = (
   universe: EnvironmentNode,
   { showOnlyTopGroup = false, expandMode = true }: TransformConfig = {},
   filters?: TopologyFilters,
-  includeOnlyTargets: Target[] = []
+  includeOnlyTargets?: Target[]
 ): TreeViewDataItem[] => {
   return showOnlyTopGroup
     ? _transformDataGroupedByTopLevel(universe, filters, includeOnlyTargets)

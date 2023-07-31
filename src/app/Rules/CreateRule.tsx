@@ -45,7 +45,12 @@ import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorFo
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
+import {
+  DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
+  SearchExprService,
+  SearchExprServiceContext,
+  useExprSvc,
+} from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
@@ -74,8 +79,8 @@ import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
-import { forkJoin, iif, of, Subject } from 'rxjs';
-import { catchError, concatMap, debounceTime, map, switchMap } from 'rxjs/operators';
+import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
+import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
@@ -111,10 +116,9 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
-  const [targets, setTargets] = React.useState<Target[]>([]);
+  const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
   const matchedTargetsRef = React.useRef(new Subject<Target[]>());
-  const matchedTargets = matchedTargetsRef.current;
 
   const handleNameChange = React.useCallback(
     (name) => {
@@ -240,6 +244,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   ]);
 
   React.useEffect(() => {
+    const matchedTargets = matchedTargetsRef.current;
     addSubscription(
       matchedTargets
         .pipe(
@@ -281,30 +286,28 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
           });
         })
     );
-  }, [addSubscription, context.api, matchedTargets]);
+  }, [addSubscription, context.api]);
 
   React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
-  }, [addSubscription, context.targets, setTargets]);
-
-  React.useEffect(() => {
-    if (targets.length > 0) {
-      addSubscription(
-        matchExprService
-          .searchExpression(100)
-          .pipe(concatMap((input) => context.api.matchTargetsWithExpr(input, targets)))
-          .subscribe({
-            next: (ts) => {
-              setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
-              matchedTargets.next(ts);
-            },
-            error: (_) => {
-              setMatchExpressionValid(ValidatedOptions.error);
-            },
-          })
-      );
-    }
-  }, [matchExprService, targets, matchedTargets, context.api, setMatchExpressionValid, addSubscription]);
+    const matchedTargets = matchedTargetsRef.current;
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME),
+        context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
+      ])
+        .pipe(
+          switchMap(([input, targets]) =>
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)
+          )
+        )
+        .subscribe((ts) => {
+          setMatchExpressionValid(
+            !ts ? ValidatedOptions.default : ts.length ? ValidatedOptions.success : ValidatedOptions.warning
+          );
+          matchedTargets.next(ts || []);
+        })
+    );
+  }, [matchExprService, context.api, context.targets, setSampleTarget, setMatchExpressionValid, addSubscription]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -378,7 +381,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
             bodyContent={
               <>
                 Try an expression like:
-                <MatchExpressionHint target={targets[0]} />
+                <MatchExpressionHint target={sampleTarget} />
               </>
             }
             hasAutoWidth

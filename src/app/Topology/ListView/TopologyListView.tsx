@@ -42,9 +42,17 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Divider, Stack, StackItem, TreeView, TreeViewDataItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
+import { Subject, catchError, combineLatest, of, switchMap } from 'rxjs';
 import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
-import { DiscoveryTreeContext, TransformConfig, getAllLeaves, useSearchExpression } from '../Shared/utils';
+import {
+  DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
+  DiscoveryTreeContext,
+  TransformConfig,
+  getAllLeaves,
+  useExprSvc,
+} from '../Shared/utils';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
+import { TargetNode } from '../typings';
 import { transformData } from './UtilsFactory';
 
 export interface TopologyListViewProps {
@@ -55,11 +63,14 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
   const discoveryTree = React.useContext(DiscoveryTreeContext);
   const svcContext = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const matchExprService = useExprSvc();
+
+  const tnSubjectRef = React.useRef(new Subject<TargetNode[]>());
+  const tnSubject = tnSubjectRef.current;
 
   const filters = useSelector((state: RootState) => state.topologyFilters);
 
-  const [expression] = useSearchExpression(100);
-  const [matchedTargets, setMatchedTargets] = React.useState<Target[]>([]);
+  const [matchedTargets, setMatchedTargets] = React.useState<Target[]>();
 
   const _treeViewData: TreeViewDataItem[] = React.useMemo(
     () => transformData(discoveryTree, transformConfig, filters, matchedTargets),
@@ -69,9 +80,27 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
   const isEmptyList = React.useMemo(() => !_treeViewData.length, [_treeViewData]);
 
   React.useEffect(() => {
-    const allTargets = getAllLeaves(discoveryTree).map((tn) => tn.target);
-    addSubscription(svcContext.api.matchTargetsWithExpr(expression, allTargets).subscribe(setMatchedTargets));
-  }, [svcContext.api, expression, discoveryTree, addSubscription, setMatchedTargets]);
+    addSubscription(
+      combineLatest([matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME), tnSubject])
+        .pipe(
+          switchMap(([input, tns]) =>
+            input
+              ? svcContext.api
+                  .matchTargetsWithExpr(
+                    input,
+                    tns.map((tn) => tn.target)
+                  )
+                  .pipe(catchError((_) => of([])))
+              : of(undefined)
+          )
+        )
+        .subscribe(setMatchedTargets)
+    );
+  }, [svcContext.api, matchExprService, tnSubject, addSubscription, setMatchedTargets]);
+
+  React.useEffect(() => {
+    tnSubject.next(getAllLeaves(discoveryTree));
+  }, [discoveryTree, tnSubject]);
 
   return (
     <Stack {...props}>
@@ -90,7 +119,7 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
             data={_treeViewData}
             variant="compact"
             hasGuides
-            allExpanded={expression !== ''}
+            allExpanded={matchedTargets !== undefined}
           />
         )}
       </StackItem>

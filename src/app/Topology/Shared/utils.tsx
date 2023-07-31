@@ -39,7 +39,7 @@ import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { Button, Text, TextVariants } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
-import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, Observable } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, NodeAction, nodeActions } from '../Actions/NodeActions';
 import { WarningResolverAsCredModal, WarningResolverAsLink } from '../Actions/WarningResolver';
 import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
@@ -240,23 +240,6 @@ export class SearchExprService {
 
 export const SearchExprServiceContext = React.createContext(new SearchExprService());
 
-export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => void] => {
-  const [expr, setExpr] = React.useState('');
-  const exprSvc = React.useContext(SearchExprServiceContext);
-  const _subRef = React.useRef<Subscription>();
-
-  React.useEffect(() => {
-    _subRef.current = exprSvc.searchExpression(debounceMs).subscribe(setExpr);
-    return () => _subRef.current?.unsubscribe();
-  }, [_subRef, setExpr, exprSvc, debounceMs]);
-
-  const handleChange = React.useCallback(
-    (value: string) => {
-      exprSvc.setSearchExpression(value);
-    },
-    [exprSvc]
-  );
-  return [expr, handleChange];
-};
-
 export const useExprSvc = (): SearchExprService => React.useContext(SearchExprServiceContext);
+
+export const DEFAULT_MATCH_EXPR_DEBOUNCE_TIME = 250; // ms

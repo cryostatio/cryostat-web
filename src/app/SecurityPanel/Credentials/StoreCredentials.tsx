@@ -72,7 +72,6 @@ import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 const enum Actions {
   HANDLE_REFRESH,
-  HANDLE_MATCHED_TARGET_NOTIFICATION,
   HANDLE_CREDENTIALS_STORED_NOTIFICATION,
   HANDLE_CREDENTIALS_DELETED_NOTIFICATION,
   HANDLE_ROW_CHECK,
@@ -96,18 +95,6 @@ const reducer = (state: State, action) => {
       return {
         ...state,
         credentials: credentials,
-      };
-    }
-    case Actions.HANDLE_MATCHED_TARGET_NOTIFICATION: {
-      return {
-        ...state,
-        credentials: state.credentials.map((credential) => {
-          const delta = action.payload.kind === 'FOUND' ? 1 : -1;
-          return {
-            ...credential,
-            numMatchingTargets: credential.numMatchingTargets + delta,
-          };
-        }),
       };
     }
     case Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION: {

@@ -1096,16 +1096,20 @@ export class ApiService {
 
   // Filter targets that the expression matches
   matchTargetsWithExpr(matchExpression: string, targets: Target[]): Observable<Target[]> {
-    const body = new window.FormData();
-    body.append('matchExpression', matchExpression);
-    body.append('targets', JSON.stringify(targets));
+    const body = JSON.stringify({
+      matchExpression,
+      targets,
+    });
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
 
     return this.sendRequest(
       'beta',
       'matchExpressions',
       {
         method: 'POST',
-        body: body,
+        body,
+        headers,
       },
       undefined,
       true,
@@ -1120,7 +1124,8 @@ export class ApiService {
   isTargetMatched(matchExpression: string, target: Target): Observable<boolean> {
     return this.matchTargetsWithExpr(matchExpression, [target]).pipe(
       first(),
-      map((ts) => includesTarget(ts, target))
+      map((ts) => includesTarget(ts, target)),
+      catchError((_) => of(false))
     );
   }
 

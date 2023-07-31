@@ -60,7 +60,8 @@ import {
 } from '@patternfly/react-topology';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { getStatusTargetNode, nodeTypeToAbbr, useSearchExpression } from '../Shared/utils';
+import { Subject, combineLatest, of, switchMap, tap } from 'rxjs';
+import { DEFAULT_MATCH_EXPR_DEBOUNCE_TIME, getStatusTargetNode, nodeTypeToAbbr, useExprSvc } from '../Shared/utils';
 import { TargetNode } from '../typings';
 import { getNodeDecorators } from './NodeDecorator';
 import { TOPOLOGY_GRAPH_ID } from './TopologyGraphView';
@@ -107,7 +108,9 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 }) => {
   useAnchor(EllipseAnchor); // For edges
   const [hover, hoverRef] = useHover(200, 200);
-  const [expression] = useSearchExpression(100);
+  const matchExprService = useExprSvc();
+  const [matchedExpr, setMatchExpr] = React.useState('');
+
   const [matched, setMatched] = React.useState(true);
   const addSubscription = useSubscriptions();
   const svcContext = React.useContext(ServiceContext);
@@ -119,23 +122,38 @@ const CustomNode: React.FC<CustomNodeProps> = ({
   const labelIcon = React.useMemo(() => <img src={cryostatSvg} />, []);
 
   const data: TargetNode = element.getData();
+  const tnSubjectRef = React.useRef(new Subject<TargetNode>());
+  const tnSubject = tnSubjectRef.current;
+
   const [nodeStatus] = getStatusTargetNode(data);
 
+  const graphId = React.useMemo(() => element.getGraph().getId(), [element]);
+
   const classNames = React.useMemo(() => {
-    const graphId = element.getGraph().getId();
-    const additional = (graphId === TOPOLOGY_GRAPH_ID && expression === '') || matched ? '' : 'search-inactive';
+    const additional = (graphId === TOPOLOGY_GRAPH_ID && matchedExpr === '') || matched ? '' : 'search-inactive';
     return css('topology__target-node', additional);
-  }, [expression, matched, element]);
+  }, [matchedExpr, matched, graphId]);
 
   const nodeDecorators = React.useMemo(() => (showStatus ? getNodeDecorators(element) : null), [element, showStatus]);
 
   React.useEffect(() => {
-    if (!expression) {
-      setMatched(element.getGraph().getId() === TOPOLOGY_GRAPH_ID);
-      return;
-    }
-    addSubscription(svcContext.api.isTargetMatched(expression, data.target).subscribe(setMatched));
-  }, [element, data.target, expression, svcContext.api, addSubscription, setMatched]);
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME).pipe(tap((input) => setMatchExpr(input))),
+        tnSubject,
+      ])
+        .pipe(
+          switchMap(([input, tn]) =>
+            input ? svcContext.api.isTargetMatched(input, tn.target) : of(graphId === TOPOLOGY_GRAPH_ID)
+          )
+        )
+        .subscribe(setMatched)
+    );
+  }, [graphId, tnSubject, svcContext.api, matchExprService, addSubscription, setMatched, setMatchExpr]);
+
+  React.useEffect(() => {
+    tnSubject.next(data);
+  }, [data, tnSubject]);
 
   return (
     <Layer id={contextMenuOpen ? TOP_LAYER : DEFAULT_LAYER}>

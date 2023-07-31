@@ -35,13 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { ErrorView } from '@app/ErrorView/ErrorView';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
 import { SavedGraphPosition, SavedNodePosition } from '@app/Topology/GraphView/TopologyGraphView';
 import { getNodeById } from '@app/Topology/GraphView/UtilsFactory';
 import EntityDetails, { AlertOptions } from '@app/Topology/Shared/Entity/EntityDetails';
-import { useSearchExpression } from '@app/Topology/Shared/utils';
+import { DEFAULT_MATCH_EXPR_DEBOUNCE_TIME, useExprSvc } from '@app/Topology/Shared/utils';
 import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
 import { NodeType } from '@app/Topology/typings';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
@@ -85,8 +84,9 @@ import {
 } from '@patternfly/react-topology';
 import _ from 'lodash';
 import * as React from 'react';
+import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { ServiceContext } from '../Services/Services';
-import { Target, includesTarget } from '../Services/Target.service';
+import { Target } from '../Services/Target.service';
 import { componentFactory, createTargetNode, layoutFactory, transformData } from './utils';
 
 export interface MatchExpressionVisualizerProps {
@@ -318,19 +318,12 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
 const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [matchExpression] = useSearchExpression(100);
-  const [targets, setTargets] = React.useState<{ target: Target; matched: boolean }[]>([]);
+  const matchExprService = useExprSvc();
+
+  const [matchedExpr, setMatchExpr] = React.useState('');
+  const [matchedTargets, setMatchedTargets] = React.useState<Target[]>([]);
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
-  const [err, setErr] = React.useState<Error>();
-
-  React.useEffect(() => {
-    addSubscription(
-      context.targets.targets().subscribe((targets) => {
-        setTargets(targets.map((t) => ({ target: t, matched: false })));
-      })
-    );
-  }, [addSubscription, context.targets, setTargets]);
 
   const toggleExpand = React.useCallback(
     (id: string) => {
@@ -345,41 +338,29 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
   );
 
   React.useEffect(() => {
-    if (!targets.length || !matchExpression) {
-      setTargets((ts) => (ts.length ? ts.map((t) => ({ ...t, matched: false })) : ts));
-    } else {
-      setLoading(true);
-      addSubscription(
-        context.api
-          .matchTargetsWithExpr(
-            matchExpression,
-            targets.map((t) => t.target)
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME).pipe(tap((exp) => setMatchExpr(exp))),
+        context.targets.targets(),
+      ])
+        .pipe(
+          tap(() => setLoading(true)),
+          switchMap(([input, targets]) =>
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([])
           )
-          .subscribe({
-            next: (ts) => {
-              setLoading(false);
-              const matched = targets.filter((t) => includesTarget(ts, t.target)).map((t) => ({ ...t, matched: true }));
-              // Matched targets are by default pushed to top
-              setTargets([...matched, ...targets.filter((t) => !includesTarget(ts, t.target))]);
-            },
-            error: (err: Error) => {
-              setLoading(false);
-              setErr(err);
-            },
-          })
-      );
-    }
-  }, [targets, matchExpression, context.api, addSubscription]);
+        )
+        .subscribe((ts) => {
+          setLoading(false);
+          setMatchedTargets(ts);
+        })
+    );
+  }, [matchExprService, context.api, context.targets, setMatchedTargets, setLoading, addSubscription]);
 
   const content = React.useMemo(() => {
     if (loading) {
       return <LoadingView />;
     }
-    if (err) {
-      return <ErrorView title={'Failed to evaluate matched targets'} message={err.message} />;
-    }
-    const filtered = targets.filter((t) => t.matched);
-    if (!filtered || !filtered.length) {
+    if (!matchedTargets || !matchedTargets.length) {
       return (
         <Bullseye>
           <EmptyState variant={EmptyStateVariant.full}>
@@ -389,15 +370,15 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
             </Title>
             <EmptyStateSecondaryActions>
               <EmptyStateBody>{`${
-                matchExpression === '' ? 'Enter another' : 'Clear'
+                matchedExpr === '' ? 'Enter another' : 'Clear'
               } Match Expression and try again.`}</EmptyStateBody>
             </EmptyStateSecondaryActions>
           </EmptyState>
         </Bullseye>
       );
     }
-    return filtered.map((tn) => {
-      const { connectUrl, alias } = tn.target;
+    return matchedTargets.map((target) => {
+      const { connectUrl, alias } = target;
       return (
         <DataListItem {...props} key={connectUrl} isExpanded={expanded.includes(connectUrl)}>
           <DataListItemRow>
@@ -425,7 +406,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
               isHidden={!expanded.includes(connectUrl)}
             >
               <EntityDetails
-                entity={{ getData: () => tn }}
+                entity={{ getData: () => target }}
                 columnModifier={{ default: '3Col' }}
                 alertOptions={alertOptions}
                 className="topology__list-view__entity-details"
@@ -435,7 +416,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         </DataListItem>
       );
     });
-  }, [targets, loading, err, expanded, matchExpression, toggleExpand, props, alertOptions]);
+  }, [matchedTargets, loading, expanded, matchedExpr, toggleExpand, props, alertOptions]);
 
   return (
     <DataList aria-label={'Target List'} style={{ height: '100%' }}>

@@ -40,7 +40,12 @@ import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpression
 import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
+import {
+  DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
+  SearchExprService,
+  SearchExprServiceContext,
+  useExprSvc,
+} from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot, StreamOf } from '@app/utils/utils';
 import {
@@ -62,7 +67,7 @@ import {
 } from '@patternfly/react-core';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { concatMap, distinctUntilChanged, interval, map } from 'rxjs';
+import { catchError, combineLatest, distinctUntilChanged, interval, map, of, switchMap, tap } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
 import { CredentialContext, TestPoolContext, TestRequest, useAuthCredential } from './utils';
 
@@ -148,7 +153,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   const [saving, setSaving] = React.useState(false);
   const [isDisabled, setIsDisabled] = React.useState(false);
 
-  const [targets, setTargets] = React.useState<Target[]>([]);
+  const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
   const onSave = React.useCallback(
     (username: string, password: string) => {
@@ -166,26 +171,23 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   );
 
   React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
-  }, [addSubscription, context.targets, setTargets]);
-
-  React.useEffect(() => {
-    if (targets.length > 0) {
-      addSubscription(
-        matchExprService
-          .searchExpression(100)
-          .pipe(concatMap((input) => context.api.matchTargetsWithExpr(input, targets)))
-          .subscribe({
-            next: (ts) => {
-              setMatchExpressionValid(ts.length ? ValidatedOptions.success : ValidatedOptions.warning);
-            },
-            error: (_) => {
-              setMatchExpressionValid(ValidatedOptions.error);
-            },
-          })
-      );
-    }
-  }, [matchExprService, targets, context.api, setMatchExpressionValid, addSubscription]);
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME),
+        context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
+      ])
+        .pipe(
+          switchMap(([input, targets]) =>
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)
+          )
+        )
+        .subscribe((ts) => {
+          setMatchExpressionValid(
+            !ts ? ValidatedOptions.default : ts.length ? ValidatedOptions.success : ValidatedOptions.warning
+          );
+        })
+    );
+  }, [matchExprService, context.api, context.targets, setSampleTarget, setMatchExpressionValid, addSubscription]);
 
   React.useEffect(() => {
     progressChange && progressChange(saving);
@@ -223,7 +225,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             bodyContent={
               <>
                 Try an expression like:
-                <MatchExpressionHint target={targets[0]} />
+                <MatchExpressionHint target={sampleTarget} />
               </>
             }
             hasAutoWidth
