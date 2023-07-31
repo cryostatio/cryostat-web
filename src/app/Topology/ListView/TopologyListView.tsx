@@ -52,7 +52,6 @@ import {
   useExprSvc,
 } from '../Shared/utils';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
-import { TargetNode } from '../typings';
 import { transformData } from './UtilsFactory';
 
 export interface TopologyListViewProps {
@@ -65,8 +64,8 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
   const addSubscription = useSubscriptions();
   const matchExprService = useExprSvc();
 
-  const tnSubjectRef = React.useRef(new Subject<TargetNode[]>());
-  const tnSubject = tnSubjectRef.current;
+  const tSubjectRef = React.useRef(new Subject<Target[]>());
+  const tSubject = tSubjectRef.current;
 
   const filters = useSelector((state: RootState) => state.topologyFilters);
 
@@ -81,26 +80,19 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
 
   React.useEffect(() => {
     addSubscription(
-      combineLatest([matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME), tnSubject])
+      combineLatest([matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME), tSubject.asObservable()])
         .pipe(
-          switchMap(([input, tns]) =>
-            input
-              ? svcContext.api
-                  .matchTargetsWithExpr(
-                    input,
-                    tns.map((tn) => tn.target)
-                  )
-                  .pipe(catchError((_) => of([])))
-              : of(undefined)
+          switchMap(([input, ts]) =>
+            input ? svcContext.api.matchTargetsWithExpr(input, ts).pipe(catchError((_) => of([]))) : of(undefined)
           )
         )
         .subscribe(setMatchedTargets)
     );
-  }, [svcContext.api, matchExprService, tnSubject, addSubscription, setMatchedTargets]);
+  }, [svcContext.api, matchExprService, tSubject, addSubscription, setMatchedTargets]);
 
   React.useEffect(() => {
-    tnSubject.next(getAllLeaves(discoveryTree));
-  }, [discoveryTree, tnSubject]);
+    tSubject.next(getAllLeaves(discoveryTree).map((tn) => tn.target));
+  }, [discoveryTree, tSubject]);
 
   return (
     <Stack {...props}>

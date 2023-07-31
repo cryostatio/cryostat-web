@@ -135,8 +135,8 @@ const _buildFullData = (
 ): TreeViewDataItem[] => {
   if (isTargetNode(node)) {
     if (
-      !isTargetNodeFiltered(node, filters?.targetFilters.filters) &&
-      (!includeOnlyTargets || includesTarget(includeOnlyTargets, node.target))
+      !isTargetNodeFiltered(node, filters?.targetFilters.filters) ||
+      (includeOnlyTargets && !includesTarget(includeOnlyTargets, node.target))
     ) {
       return [];
     }
