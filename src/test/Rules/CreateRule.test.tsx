@@ -44,7 +44,7 @@ import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
 
 jest.mock('@app/Shared/MatchExpression/MatchExpressionVisualizer', () => ({
@@ -84,7 +84,7 @@ const mockRule: Rule = {
   maxSizeBytes: 0,
 };
 
-const history = createMemoryHistory({ initialEntries: ['/rules'] });
+const history = createMemoryHistory({ initialEntries: ['/rules/create'] });
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -92,9 +92,15 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
-const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
+jest
+  .spyOn(defaultServices.api, 'matchTargetsWithExpr')
+  .mockReturnValueOnce(of([mockTarget])) // should update selection when template list updates
+  .mockReturnValueOnce(of([mockTarget])) // should submit form if form input is valid
+  .mockReturnValueOnce(throwError(() => new Error('400 Response'))) // should show error helper text if rule form inputs are invalid
+  .mockReturnValue(of([])); // Other tests
+const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
 
 describe('<CreateRule />', () => {
   beforeEach(() => {
@@ -105,7 +111,7 @@ describe('<CreateRule />', () => {
 
   afterEach(cleanup);
 
-  it('should update selection when template list updates ', async () => {
+  it('should update selection when template list updates', async () => {
     const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
 
     const matchExpressionInput = screen.getByLabelText('Match Expression *');

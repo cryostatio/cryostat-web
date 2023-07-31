@@ -178,12 +178,23 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       ])
         .pipe(
           switchMap(([input, targets]) =>
-            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)
+            input
+              ? context.api.matchTargetsWithExpr(input, targets).pipe(
+                  map((ts) => [ts, undefined]),
+                  catchError((err) => of([[], err]))
+                )
+              : of([undefined, undefined])
           )
         )
-        .subscribe((ts) => {
+        .subscribe(([ts, err]) => {
           setMatchExpressionValid(
-            !ts ? ValidatedOptions.default : ts.length ? ValidatedOptions.success : ValidatedOptions.warning
+            err
+              ? ValidatedOptions.error
+              : !ts
+              ? ValidatedOptions.default
+              : ts.length
+              ? ValidatedOptions.success
+              : ValidatedOptions.warning
           );
         })
     );

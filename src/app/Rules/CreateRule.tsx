@@ -281,7 +281,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         .subscribe((templates) => {
           setTemplates(templates);
           setTemplate((old) => {
-            const matched = templates.find((t) => t.name === old.name && t.type === t.type);
+            const matched = templates.find((t) => t.name === old.name && t.type === old.type);
             return matched ? { name: matched.name, type: matched.type } : {};
           });
         })
@@ -297,12 +297,23 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
       ])
         .pipe(
           switchMap(([input, targets]) =>
-            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)
+            input
+              ? context.api.matchTargetsWithExpr(input, targets).pipe(
+                  map((ts) => [ts, undefined]),
+                  catchError((err) => of([[], err]))
+                )
+              : of([undefined, undefined])
           )
         )
-        .subscribe((ts) => {
+        .subscribe(([ts, err]) => {
           setMatchExpressionValid(
-            !ts ? ValidatedOptions.default : ts.length ? ValidatedOptions.success : ValidatedOptions.warning
+            err
+              ? ValidatedOptions.error
+              : !ts
+              ? ValidatedOptions.default
+              : ts.length
+              ? ValidatedOptions.success
+              : ValidatedOptions.warning
           );
           matchedTargets.next(ts || []);
         })
