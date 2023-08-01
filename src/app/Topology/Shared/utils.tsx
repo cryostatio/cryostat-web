@@ -229,10 +229,12 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
   return matched;
 };
 
+export const DEFAULT_MATCH_EXPR_DEBOUNCE_TIME = 300; // ms
+
 export class SearchExprService {
   private readonly _state$ = new BehaviorSubject<string>('');
 
-  searchExpression(debounceMs = 0): Observable<string> {
+  searchExpression(debounceMs = DEFAULT_MATCH_EXPR_DEBOUNCE_TIME): Observable<string> {
     return this._state$.asObservable().pipe(debounceTime(debounceMs));
   }
 
@@ -244,8 +246,6 @@ export class SearchExprService {
 export const SearchExprServiceContext = React.createContext(new SearchExprService());
 
 export const useExprSvc = (): SearchExprService => React.useContext(SearchExprServiceContext);
-
-export const DEFAULT_MATCH_EXPR_DEBOUNCE_TIME = 250; // ms
 
 export const MatchedTargetsServiceContext = React.createContext(new BehaviorSubject<Target[] | undefined>(undefined));
 
