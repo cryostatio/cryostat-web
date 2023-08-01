@@ -39,7 +39,7 @@
 import cryostatSvg from '@app/assets/cryostat_icon_rgb_default.svg';
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { includesTarget } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -60,8 +60,12 @@ import {
 } from '@patternfly/react-topology';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { Subject, combineLatest, of, switchMap, tap } from 'rxjs';
-import { DEFAULT_MATCH_EXPR_DEBOUNCE_TIME, getStatusTargetNode, nodeTypeToAbbr, useExprSvc } from '../Shared/utils';
+import { map } from 'rxjs';
+import {
+  getStatusTargetNode,
+  nodeTypeToAbbr,
+  useMatchedTargetsSvc,
+} from '../Shared/utils';
 import { TargetNode } from '../typings';
 import { getNodeDecorators } from './NodeDecorator';
 import { TOPOLOGY_GRAPH_ID } from './TopologyGraphView';
@@ -108,12 +112,10 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 }) => {
   useAnchor(EllipseAnchor); // For edges
   const [hover, hoverRef] = useHover(200, 200);
-  const matchExprService = useExprSvc();
-  const [matchedExpr, setMatchExpr] = React.useState('');
 
   const [matched, setMatched] = React.useState(true);
   const addSubscription = useSubscriptions();
-  const svcContext = React.useContext(ServiceContext);
+  const matchedTargetSvc = useMatchedTargetsSvc();
 
   const displayOptions = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
   const { badge: showBadge, connectionUrl: showConnectUrl, icon: showIcon, status: showStatus } = displayOptions.show;
@@ -122,38 +124,22 @@ const CustomNode: React.FC<CustomNodeProps> = ({
   const labelIcon = React.useMemo(() => <img src={cryostatSvg} />, []);
 
   const data: TargetNode = element.getData();
-  const tnSubjectRef = React.useRef(new Subject<TargetNode>());
-  const tnSubject = tnSubjectRef.current;
 
   const [nodeStatus] = getStatusTargetNode(data);
 
   const graphId = React.useMemo(() => element.getGraph().getId(), [element]);
 
-  const classNames = React.useMemo(() => {
-    const additional = (graphId === TOPOLOGY_GRAPH_ID && matchedExpr === '') || matched ? '' : 'search-inactive';
-    return css('topology__target-node', additional);
-  }, [matchedExpr, matched, graphId]);
+  const classNames = React.useMemo(() => css('topology__target-node', matched ? '' : 'search-inactive'), [matched]);
 
   const nodeDecorators = React.useMemo(() => (showStatus ? getNodeDecorators(element) : null), [element, showStatus]);
 
   React.useEffect(() => {
     addSubscription(
-      combineLatest([
-        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME).pipe(tap((input) => setMatchExpr(input))),
-        tnSubject,
-      ])
-        .pipe(
-          switchMap(([input, tn]) =>
-            input ? svcContext.api.isTargetMatched(input, tn.target) : of(graphId === TOPOLOGY_GRAPH_ID)
-          )
-        )
+      matchedTargetSvc
+        .pipe(map((ts) => (ts ? includesTarget(ts, data.target) : graphId === TOPOLOGY_GRAPH_ID)))
         .subscribe(setMatched)
     );
-  }, [graphId, tnSubject, svcContext.api, matchExprService, addSubscription, setMatched, setMatchExpr]);
-
-  React.useEffect(() => {
-    tnSubject.next(data);
-  }, [data, tnSubject]);
+  }, [graphId, addSubscription, setMatched, matchedTargetSvc, data.target]);
 
   return (
     <Layer id={contextMenuOpen ? TOP_LAYER : DEFAULT_LAYER}>

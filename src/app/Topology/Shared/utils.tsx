@@ -36,10 +36,13 @@
  * SOFTWARE.
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Text, TextVariants } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
-import { BehaviorSubject, debounceTime, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, Observable, of, switchMap } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, NodeAction, nodeActions } from '../Actions/NodeActions';
 import { WarningResolverAsCredModal, WarningResolverAsLink } from '../Actions/WarningResolver';
 import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
@@ -243,3 +246,30 @@ export const SearchExprServiceContext = React.createContext(new SearchExprServic
 export const useExprSvc = (): SearchExprService => React.useContext(SearchExprServiceContext);
 
 export const DEFAULT_MATCH_EXPR_DEBOUNCE_TIME = 250; // ms
+
+export const MatchedTargetsServiceContext = React.createContext(new BehaviorSubject<Target[] | undefined>(undefined));
+
+export const useMatchedTargetsSvcSource = (): BehaviorSubject<Target[] | undefined> => {
+  const matchedTargetsSvcRef = React.useRef(new BehaviorSubject<Target[] | undefined>(undefined));
+  const matchExprService = useExprSvc();
+  const svc = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME), svc.targets.targets()])
+        .pipe(
+          switchMap(([input, targets]) =>
+            input ? svc.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)
+          )
+        )
+        .subscribe((ts) => {
+          matchedTargetsSvcRef.current.next(ts);
+        })
+    );
+  }, [svc.targets, svc.api, matchExprService, addSubscription]);
+
+  return matchedTargetsSvcRef.current;
+};
+
+export const useMatchedTargetsSvc = () => React.useContext(MatchedTargetsServiceContext);

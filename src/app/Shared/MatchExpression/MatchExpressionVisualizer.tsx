@@ -40,7 +40,12 @@ import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
 import { SavedGraphPosition, SavedNodePosition } from '@app/Topology/GraphView/TopologyGraphView';
 import { getNodeById } from '@app/Topology/GraphView/UtilsFactory';
 import EntityDetails, { AlertOptions } from '@app/Topology/Shared/Entity/EntityDetails';
-import { DEFAULT_MATCH_EXPR_DEBOUNCE_TIME, useExprSvc } from '@app/Topology/Shared/utils';
+import {
+  DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
+  MatchedTargetsServiceContext,
+  useExprSvc,
+  useMatchedTargetsSvcSource,
+} from '@app/Topology/Shared/utils';
 import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
 import { NodeType } from '@app/Topology/typings';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
@@ -154,6 +159,7 @@ export const MATCH_EXPRES_VIS_GRAPH_ID = 'cryostat-match-expression-visualizer';
 const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
+  const matchedTargetsSvcSource = useMatchedTargetsSvcSource();
 
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]); // selectedIds is exactly matched by VisualizationSurface
   const [selectedEntity, setSelectedEntity] = React.useState<GraphElement>();
@@ -297,21 +303,23 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
   }, [handleDrawerClose, selectedEntity, alertOptions]);
 
   return (
-    <TopologyView
-      {...props}
-      id="match-expression__visualization-container"
-      className={css('topology__main-container')}
-      controlBar={<TopologyControlBar visualization={visualization} noCollapse />}
-      sideBar={sidebar}
-      sideBarOpen={selectedIds.length > 0}
-      sideBarResizable={true}
-      minSideBarSize={`200px`}
-      defaultSideBarSize={`425px`}
-    >
-      <VisualizationProvider controller={visualization}>
-        <VisualizationSurface state={{ selectedIds }} />
-      </VisualizationProvider>
-    </TopologyView>
+    <MatchedTargetsServiceContext.Provider value={matchedTargetsSvcSource}>
+      <TopologyView
+        {...props}
+        id="match-expression__visualization-container"
+        className={css('topology__main-container')}
+        controlBar={<TopologyControlBar visualization={visualization} noCollapse />}
+        sideBar={sidebar}
+        sideBarOpen={selectedIds.length > 0}
+        sideBarResizable={true}
+        minSideBarSize={`200px`}
+        defaultSideBarSize={`425px`}
+      >
+        <VisualizationProvider controller={visualization}>
+          <VisualizationSurface state={{ selectedIds }} />
+        </VisualizationProvider>
+      </TopologyView>
+    </MatchedTargetsServiceContext.Provider>
   );
 };
 

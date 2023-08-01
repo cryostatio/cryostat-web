@@ -63,7 +63,12 @@ import { QuickSearchContextMenu } from '../Actions/QuickSearchPanel';
 import EntityDetails from '../Shared/Entity/EntityDetails';
 import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
 import { TopologyExceedLimitState } from '../Shared/TopologyExceedLimitState';
-import { DiscoveryTreeContext, TransformConfig } from '../Shared/utils';
+import {
+  DiscoveryTreeContext,
+  MatchedTargetsServiceContext,
+  TransformConfig,
+  useMatchedTargetsSvcSource,
+} from '../Shared/utils';
 import { TopologySideBar } from '../SideBar/TopologySideBar';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
 import { TopologyControlBar } from './TopologyControlBar';
@@ -100,6 +105,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]); // selectedIds is exactly matched by VisualizationSurface
   const [selectedEntity, setSelectedEntity] = React.useState<GraphElement>();
   const [showGraphAnyway, setShowGraphAnyway] = React.useState(false);
+  const matchedTargetsSvcSource = useMatchedTargetsSvcSource();
 
   const filters = useSelector((state: RootState) => state.topologyFilters);
 
@@ -278,21 +284,23 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
           ) : exceedLimit && !showGraphAnyway ? (
             <TopologyExceedLimitState onShowTopologyAnyway={() => setShowGraphAnyway(true)} />
           ) : (
-            <TopologyView
-              {...props}
-              id="topology__visualization-container"
-              className={css('topology__main-container')}
-              controlBar={<TopologyControlBar visualization={visualization} />}
-              sideBar={sidebar}
-              sideBarOpen={selectedIds.length > 0}
-              sideBarResizable={true}
-              minSideBarSize={`${MIN_SIZEBAR_SIZE}px`}
-              defaultSideBarSize={`${DEFAULT_SIZEBAR_SIZE}px`}
-            >
-              <VisualizationProvider controller={visualization}>
-                <VisualizationSurface state={{ selectedIds }} />
-              </VisualizationProvider>
-            </TopologyView>
+            <MatchedTargetsServiceContext.Provider value={matchedTargetsSvcSource}>
+              <TopologyView
+                {...props}
+                id="topology__visualization-container"
+                className={css('topology__main-container')}
+                controlBar={<TopologyControlBar visualization={visualization} />}
+                sideBar={sidebar}
+                sideBarOpen={selectedIds.length > 0}
+                sideBarResizable={true}
+                minSideBarSize={`${MIN_SIZEBAR_SIZE}px`}
+                defaultSideBarSize={`${DEFAULT_SIZEBAR_SIZE}px`}
+              >
+                <VisualizationProvider controller={visualization}>
+                  <VisualizationSurface state={{ selectedIds }} />
+                </VisualizationProvider>
+              </TopologyView>
+            </MatchedTargetsServiceContext.Provider>
           )}
         </StackItem>
       </Stack>
