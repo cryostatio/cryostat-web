@@ -40,12 +40,7 @@ import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
 import { SavedGraphPosition, SavedNodePosition } from '@app/Topology/GraphView/TopologyGraphView';
 import { getNodeById } from '@app/Topology/GraphView/UtilsFactory';
 import EntityDetails, { AlertOptions } from '@app/Topology/Shared/Entity/EntityDetails';
-import {
-  DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
-  MatchedTargetsServiceContext,
-  useExprSvc,
-  useMatchedTargetsSvcSource,
-} from '@app/Topology/Shared/utils';
+import { MatchedTargetsServiceContext, useExprSvc, useMatchedTargetsSvcSource } from '@app/Topology/Shared/utils';
 import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
 import { NodeType } from '@app/Topology/typings';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
@@ -348,7 +343,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME).pipe(tap((exp) => setMatchExpr(exp))),
+        matchExprService.searchExpression().pipe(tap((exp) => setMatchExpr(exp))),
         context.targets.targets(),
       ])
         .pipe(

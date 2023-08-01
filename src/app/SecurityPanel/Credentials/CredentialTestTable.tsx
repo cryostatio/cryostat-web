@@ -39,7 +39,7 @@ import { LoadingView } from '@app/LoadingView/LoadingView';
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { DEFAULT_MATCH_EXPR_DEBOUNCE_TIME, useExprSvc } from '@app/Topology/Shared/utils';
+import { useExprSvc } from '@app/Topology/Shared/utils';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
@@ -114,7 +114,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME).pipe(tap((exp) => setMatchExpr(exp))),
+        matchExprService.searchExpression().pipe(tap((exp) => setMatchExpr(exp))),
         context.targets.targets(),
       ])
         .pipe(

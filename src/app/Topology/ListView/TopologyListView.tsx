@@ -44,13 +44,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { Subject, catchError, combineLatest, of, switchMap } from 'rxjs';
 import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
-import {
-  DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
-  DiscoveryTreeContext,
-  TransformConfig,
-  getAllLeaves,
-  useExprSvc,
-} from '../Shared/utils';
+import { DiscoveryTreeContext, TransformConfig, getAllLeaves, useExprSvc } from '../Shared/utils';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
 import { transformData } from './UtilsFactory';
 
@@ -80,7 +74,7 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
 
   React.useEffect(() => {
     addSubscription(
-      combineLatest([matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME), tSubject.asObservable()])
+      combineLatest([matchExprService.searchExpression(), tSubject.asObservable()])
         .pipe(
           switchMap(([input, ts]) =>
             input ? svcContext.api.matchTargetsWithExpr(input, ts).pipe(catchError((_) => of([]))) : of(undefined)

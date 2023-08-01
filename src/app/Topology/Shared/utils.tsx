@@ -257,7 +257,7 @@ export const useMatchedTargetsSvcSource = (): BehaviorSubject<Target[] | undefin
 
   React.useEffect(() => {
     addSubscription(
-      combineLatest([matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME), svc.targets.targets()])
+      combineLatest([matchExprService.searchExpression(), svc.targets.targets()])
         .pipe(
           switchMap(([input, targets]) =>
             input ? svc.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)

@@ -40,12 +40,7 @@ import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpression
 import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import {
-  DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
-  SearchExprService,
-  SearchExprServiceContext,
-  useExprSvc,
-} from '@app/Topology/Shared/utils';
+import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot, StreamOf } from '@app/utils/utils';
 import {
@@ -173,7 +168,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        matchExprService.searchExpression(DEFAULT_MATCH_EXPR_DEBOUNCE_TIME),
+        matchExprService.searchExpression(),
         context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
       ])
         .pipe(
