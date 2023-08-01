@@ -41,10 +41,9 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { StoredCredential } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { TableColumn, evaluateTargetWithExpr, sortResources } from '@app/utils/utils';
+import { TableColumn, sortResources } from '@app/utils/utils';
 import {
   Badge,
   Button,
@@ -63,17 +62,19 @@ import {
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { concatMap, forkJoin, Observable, of } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { SecurityCard } from '../SecurityPanel';
 import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
+export const includesCredential = (credentials: StoredCredential[], credential: StoredCredential): boolean => {
+  return credentials.some((cred) => cred.id === credential.id);
+};
+
 const enum Actions {
   HANDLE_REFRESH,
-  HANDLE_TARGET_NOTIFICATION,
   HANDLE_CREDENTIALS_STORED_NOTIFICATION,
   HANDLE_CREDENTIALS_DELETED_NOTIFICATION,
   HANDLE_ROW_CHECK,
@@ -94,55 +95,39 @@ const reducer = (state: State, action) => {
   switch (action.type) {
     case Actions.HANDLE_REFRESH: {
       const credentials: StoredCredential[] = action.payload.credentials;
+      const updatedCheckedCredentials = state.checkedCredentials.filter((cred) =>
+        includesCredential(credentials, cred)
+      );
+      const updatedExpandedCredentials = state.expandedCredentials.filter((cred) =>
+        includesCredential(credentials, cred)
+      );
+
       return {
         ...state,
         credentials: credentials,
-      };
-    }
-    case Actions.HANDLE_TARGET_NOTIFICATION: {
-      return {
-        ...state,
-        credentials: state.credentials.map((credential) => {
-          let matched = false;
-          try {
-            const res = evaluateTargetWithExpr(action.payload.target, credential.matchExpression);
-            if (typeof res === 'boolean') {
-              matched = res;
-            }
-          } catch (_error) {
-            matched = false;
-          }
-          if (matched) {
-            const delta = action.payload.kind === 'FOUND' ? 1 : -1;
-            return {
-              ...credential,
-              numMatchingTargets: credential.numMatchingTargets + delta,
-            };
-          }
-          return credential;
-        }),
+        expandedCredentials: updatedExpandedCredentials,
+        checkedCredentials: updatedCheckedCredentials,
+        isHeaderChecked:
+          updatedCheckedCredentials.length > 0 && updatedCheckedCredentials.length === credentials.length,
       };
     }
     case Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION: {
       return {
         ...state,
         credentials: state.credentials.concat(action.payload.credential),
+        isHeaderChecked: false,
       };
     }
     case Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION: {
       const deletedCredential: StoredCredential = action.payload.credential;
-      let deletedIdx;
-      for (deletedIdx = 0; deletedIdx < state.credentials.length; deletedIdx++) {
-        if (_.isEqual(deletedCredential, state.credentials[deletedIdx])) break;
-      }
-      const updatedCheckedCredentials = state.checkedCredentials.filter((o) => !_.isEqual(o, deletedCredential));
+      const updatedCheckedCredentials = state.checkedCredentials.filter((o) => o.id !== deletedCredential.id);
 
       return {
         ...state,
-        credentials: state.credentials.filter((o) => !_.isEqual(o, deletedCredential)),
-        expandedCredentials: state.expandedCredentials.filter((o) => !_.isEqual(o, deletedCredential)),
+        credentials: state.credentials.filter((o) => o.id !== deletedCredential.id),
+        expandedCredentials: state.expandedCredentials.filter((o) => o.id !== deletedCredential.id),
         checkedCredentials: updatedCheckedCredentials,
-        isHeaderChecked: updatedCheckedCredentials.length === 0 ? false : state.isHeaderChecked,
+        isHeaderChecked: updatedCheckedCredentials.length > 0 && state.isHeaderChecked,
       };
     }
     case Actions.HANDLE_ROW_CHECK: {
@@ -156,7 +141,7 @@ const reducer = (state: State, action) => {
       } else {
         return {
           ...state,
-          checkedCredentials: state.checkedCredentials.filter((o) => !_.isEqual(o, action.payload.credential)),
+          checkedCredentials: state.checkedCredentials.filter((o) => o.id !== action.payload.credential.id),
           isHeaderChecked: false,
         };
       }
@@ -182,15 +167,11 @@ const reducer = (state: State, action) => {
     }
     case Actions.HANDLE_TOGGLE_EXPANDED: {
       const credential: StoredCredential = action.payload.credential;
-      const idx = state.expandedCredentials.indexOf(credential);
-      const updated =
-        idx >= 0
-          ? [
-              ...state.expandedCredentials.slice(0, idx),
-              ...state.expandedCredentials.slice(idx + 1, state.expandedCredentials.length),
-            ]
-          : [...state.expandedCredentials, credential];
-
+      const matched = state.expandedCredentials.some((o) => o.id === credential.id);
+      const updated = state.expandedCredentials.filter((o) => o.id !== credential.id);
+      if (!matched) {
+        updated.push(credential);
+      }
       return {
         ...state,
         expandedCredentials: updated,
@@ -268,41 +249,32 @@ export const StoreCredentials = () => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.CredentialsDeleted)
-        .pipe(
-          concatMap((v) =>
-            of(dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message } }))
-          )
+        .subscribe((v) =>
+          dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message } })
         )
-        .subscribe(() => undefined /* do nothing - dispatch will have already handled updating state */)
     );
   }, [addSubscription, context, context.notificationChannel]);
-
-  const handleTargetNotification = (evt: TargetDiscoveryEvent) => {
-    dispatch({ type: Actions.HANDLE_TARGET_NOTIFICATION, payload: { target: evt.serviceRef, kind: evt.kind } });
-  };
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
-        .pipe(concatMap((v) => of(handleTargetNotification(v.message.event))))
-        .subscribe(() => undefined /* do nothing - dispatch will have already handled updating state */)
+        .subscribe((_) => refreshStoredCredentialsAndCounts())
     );
-  }, [addSubscription, context, context.notificationChannel]);
+  }, [addSubscription, refreshStoredCredentialsAndCounts, context, context.notificationChannel, context.api]);
 
-  const handleHeaderCheck = React.useCallback((checked: boolean) => {
-    dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked } });
-  }, []);
+  const handleHeaderCheck = React.useCallback(
+    (checked: boolean) => {
+      dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked } });
+    },
+    [dispatch]
+  );
 
   const handleDeleteCredentials = React.useCallback(() => {
-    const tasks: Observable<boolean>[] = [];
-    state.credentials.forEach((credential) => {
-      if (state.checkedCredentials.includes(credential)) {
-        tasks.push(context.api.deleteCredentials(credential.id));
-      }
-    });
-    addSubscription(forkJoin(tasks).subscribe());
-  }, [state.credentials, state.checkedCredentials, context.api, addSubscription]);
+    addSubscription(
+      forkJoin(state.checkedCredentials.map((credential) => context.api.deleteCredentials(credential.id))).subscribe()
+    );
+  }, [state.checkedCredentials, context.api, addSubscription]);
 
   const handleAuthModalOpen = React.useCallback(() => {
     setShowAuthModal(true);
@@ -370,8 +342,8 @@ export const StoreCredentials = () => {
 
   const matchExpressionRows = React.useMemo(() => {
     return sortResources(sortBy, state.credentials, tableColumns).map((credential, idx) => {
-      const isExpanded: boolean = state.expandedCredentials.includes(credential);
-      const isChecked: boolean = state.checkedCredentials.includes(credential);
+      const isExpanded = includesCredential(state.expandedCredentials, credential);
+      const isChecked = includesCredential(state.checkedCredentials, credential);
 
       const handleToggleExpanded = () => {
         dispatch({ type: Actions.HANDLE_TOGGLE_EXPANDED, payload: { credential: credential } });
@@ -415,7 +387,7 @@ export const StoreCredentials = () => {
 
   const targetRows = React.useMemo(() => {
     return state.credentials.map((credential, idx) => {
-      const isExpanded: boolean = state.expandedCredentials.includes(credential);
+      const isExpanded: boolean = includesCredential(state.expandedCredentials, credential);
 
       return (
         <Tr key={`${idx}_child`} isExpanded={isExpanded}>

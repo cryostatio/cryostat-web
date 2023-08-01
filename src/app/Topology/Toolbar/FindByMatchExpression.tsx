@@ -37,21 +37,25 @@
  */
 import { SearchInput } from '@patternfly/react-core';
 import * as React from 'react';
-import { useSearchExpression as useSearchExpression } from '../Shared/utils';
+import { useExprSvc } from '../Shared/utils';
 
 export interface FindByMatchExpressionProps {
   isDisabled?: boolean;
 }
 
 export const FindByMatchExpression: React.FC<FindByMatchExpressionProps> = ({ isDisabled, ...props }) => {
-  const [expression, setExpression] = useSearchExpression();
+  const matchExprService = useExprSvc();
+  const [expression, setExpression] = React.useState('');
 
   return (
     <SearchInput
       {...props}
       placeholder={'Find by match expression...'}
       value={expression}
-      onChange={setExpression}
+      onChange={(input) => {
+        setExpression(input);
+        matchExprService.setSearchExpression(input);
+      }}
       isDisabled={isDisabled}
     />
   );

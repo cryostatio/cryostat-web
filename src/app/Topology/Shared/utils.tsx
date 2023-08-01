@@ -36,11 +36,13 @@
  * SOFTWARE.
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
-import { evaluateTargetWithExpr } from '@app/utils/utils';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Text, TextVariants } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
-import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, Observable, of, switchMap, tap } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, NodeAction, nodeActions } from '../Actions/NodeActions';
 import { WarningResolverAsCredModal, WarningResolverAsLink } from '../Actions/WarningResolver';
 import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
@@ -227,11 +229,16 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
   return matched;
 };
 
+export const DEFAULT_MATCH_EXPR_DEBOUNCE_TIME = 300; // ms
+
 export class SearchExprService {
   private readonly _state$ = new BehaviorSubject<string>('');
 
-  searchExpression(): Observable<string> {
-    return this._state$.asObservable();
+  searchExpression({
+    debounceMs = DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
+    immediateFn = (_: string) => undefined,
+  } = {}): Observable<string> {
+    return this._state$.asObservable().pipe(tap(immediateFn), debounceTime(debounceMs));
   }
 
   setSearchExpression(expr: string): void {
@@ -241,33 +248,31 @@ export class SearchExprService {
 
 export const SearchExprServiceContext = React.createContext(new SearchExprService());
 
-export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => void] => {
-  const [expr, setExpr] = React.useState('');
-  const exprSvc = React.useContext(SearchExprServiceContext);
-  const _subRef = React.useRef<Subscription>();
+export const useExprSvc = (): SearchExprService => React.useContext(SearchExprServiceContext);
+
+export const MatchedTargetsServiceContext = React.createContext(new BehaviorSubject<Target[] | undefined>(undefined));
+
+export const useMatchedTargetsSvcSource = (): BehaviorSubject<Target[] | undefined> => {
+  const matchedTargetsSvcRef = React.useRef(new BehaviorSubject<Target[] | undefined>(undefined));
+  const matchExprService = useExprSvc();
+  const svc = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    _subRef.current = exprSvc.searchExpression().pipe(debounceTime(debounceMs)).subscribe(setExpr);
-    return () => _subRef.current?.unsubscribe();
-  }, [_subRef, setExpr, exprSvc, debounceMs]);
+    addSubscription(
+      combineLatest([matchExprService.searchExpression(), svc.targets.targets()])
+        .pipe(
+          switchMap(([input, targets]) =>
+            input ? svc.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)
+          )
+        )
+        .subscribe((ts) => {
+          matchedTargetsSvcRef.current.next(ts);
+        })
+    );
+  }, [svc.targets, svc.api, matchExprService, addSubscription]);
 
-  const handleChange = React.useCallback(
-    (value: string) => {
-      exprSvc.setSearchExpression(value);
-    },
-    [exprSvc]
-  );
-  return [expr, handleChange];
+  return matchedTargetsSvcRef.current;
 };
 
-export const isTargetMatched = ({ target }: TargetNode, matchExpression: string): boolean => {
-  try {
-    const res = evaluateTargetWithExpr(target, matchExpression);
-    if (typeof res === 'boolean') {
-      return res;
-    }
-    return false;
-  } catch (err) {
-    return false;
-  }
-};
+export const useMatchedTargetsSvc = () => React.useContext(MatchedTargetsServiceContext);

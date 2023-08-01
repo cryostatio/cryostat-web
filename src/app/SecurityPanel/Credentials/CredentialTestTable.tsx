@@ -35,13 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { useSearchExpression } from '@app/Topology/Shared/utils';
+import { useExprSvc } from '@app/Topology/Shared/utils';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { TableColumn, evaluateTargetWithExpr, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -77,6 +78,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
+import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { TestPoolContext, useAuthCredential } from './utils';
 
 const tableColumns: TableColumn[] = [
@@ -100,46 +102,47 @@ export interface CredentialTestTableProps {}
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [matchExpression] = useSearchExpression();
+  const matchExprService = useExprSvc();
   const [sortBy, getSortParams] = useSort();
 
-  const [targets, setTargets] = React.useState<Target[]>([]);
+  const [matchedExpr, setMatchExpr] = React.useState('');
+  const [matchedTargets, setMatchedTargets] = React.useState<Target[]>([]);
   const [filters, setFilters] = React.useState<CredentialTestState[]>([]);
   const [searchText, setSearchText] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
-  }, [addSubscription, context.targets, setTargets]);
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression().pipe(tap((exp) => setMatchExpr(exp))),
+        context.targets.targets(),
+      ])
+        .pipe(
+          tap(() => setLoading(true)),
+          switchMap(([input, targets]) =>
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([])
+          )
+        )
+        .subscribe((ts) => {
+          setLoading(false);
+          setMatchedTargets(ts);
+        })
+    );
+  }, [matchExprService, context.api, context.targets, setMatchedTargets, setLoading, addSubscription]);
 
-  const matchedTargets = React.useMemo(() => {
-    try {
-      return targets.filter((t) => {
-        const res = evaluateTargetWithExpr(t, matchExpression);
-        if (typeof res === 'boolean') {
-          return res;
-        }
-        throw new Error('Invalid match expression');
-      });
-    } catch (err) {
-      return [];
-    }
-  }, [targets, matchExpression]);
+  const rows = React.useMemo(() => {
+    return sortResources(
+      {
+        index: sortBy.index ?? 0,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      matchedTargets,
+      tableColumns
+    ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />);
+  }, [matchedTargets, filters, searchText, sortBy]);
 
-  const rows = React.useMemo(
-    () =>
-      sortResources(
-        {
-          index: sortBy.index ?? 0,
-          direction: sortBy.direction ?? SortByDirection.asc,
-        },
-        matchedTargets,
-        tableColumns
-      ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />),
-    [matchedTargets, filters, searchText, sortBy]
-  );
-
-  const toolbar = React.useMemo(
-    () => (
+  const toolbar = React.useMemo(() => {
+    return (
       <CredentialToolbar
         onFilter={setFilters}
         onSearch={setSearchText}
@@ -147,11 +150,12 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         searchText={searchText}
         matchedTargets={matchedTargets}
       />
-    ),
-    [setFilters, setSearchText, filters, searchText, matchedTargets]
-  );
+    );
+  }, [setFilters, setSearchText, filters, searchText, matchedTargets]);
 
-  return rows.length ? (
+  return loading ? (
+    <LoadingView />
+  ) : rows.length ? (
     <OuterScrollContainer>
       {toolbar}
       <InnerScrollContainer>
@@ -176,7 +180,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
           No Targets Matched
         </Title>
         <EmptyStateBody>{`${
-          matchExpression === '' ? 'Enter another' : 'Clear'
+          matchedExpr === '' ? 'Enter another' : 'Clear'
         } Match Expression and try again.`}</EmptyStateBody>
       </EmptyState>
     </Bullseye>

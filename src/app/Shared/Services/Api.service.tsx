@@ -50,7 +50,7 @@ import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
-import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
+import { NO_TARGET, Target, TargetService, includesTarget } from './Target.service';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
@@ -1094,28 +1094,38 @@ export class ApiService {
     );
   }
 
-  isTargetMatched(matchExpression: string, target: Target): Observable<boolean> {
-    const body = new window.FormData();
-    body.append('matchExpression', matchExpression);
-    body.append('targets', JSON.stringify([target]));
+  // Filter targets that the expression matches
+  matchTargetsWithExpr(matchExpression: string, targets: Target[]): Observable<Target[]> {
+    const body = JSON.stringify({
+      matchExpression,
+      targets,
+    });
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
 
     return this.sendRequest(
       'beta',
       'matchExpressions',
       {
         method: 'POST',
-        body: body,
+        body,
+        headers,
       },
       undefined,
       true,
       true
     ).pipe(
+      first(),
       concatMap((resp: Response) => resp.json()),
-      map((body) => {
-        const matchedTargets: Target[] = body.data.result.targets || [];
-        return includesTarget(matchedTargets, target);
-      }),
-      first()
+      map((body): Target[] => body.data.result.targets || [])
+    );
+  }
+
+  isTargetMatched(matchExpression: string, target: Target): Observable<boolean> {
+    return this.matchTargetsWithExpr(matchExpression, [target]).pipe(
+      first(),
+      map((ts) => includesTarget(ts, target)),
+      catchError((_) => of(false))
     );
   }
 

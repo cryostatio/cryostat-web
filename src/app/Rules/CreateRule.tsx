@@ -45,9 +45,9 @@ import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorFo
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
+import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot } from '@app/utils/utils';
+import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -74,8 +74,8 @@ import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
-import { forkJoin, iif, of, Subject } from 'rxjs';
-import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
+import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
+import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
@@ -87,9 +87,11 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
-  // Note: Do not use useSearchExpression(). This causes the cursor to jump to the end due to async updates.
-  const matchExprService = React.useContext(SearchExprServiceContext);
-  const [matchExpression, setMatchExpression] = React.useState('');
+  // Do not use useSearchExpression hook for display.
+  // This causes the cursor to jump to the end due to async updates.
+  const matchExprService = useExprSvc();
+  // Use this for displaying match expression input
+  const [matchExpressionInput, setMatchExpressionInput] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const [name, setName] = React.useState('');
@@ -109,10 +111,10 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
-  const [targets, setTargets] = React.useState<Target[]>([]);
+  const [evaluating, setEvaluating] = React.useState(false);
+  const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
   const matchedTargetsRef = React.useRef(new Subject<Target[]>());
-  const matchedTargets = matchedTargetsRef.current;
 
   const handleNameChange = React.useCallback(
     (name) => {
@@ -198,7 +200,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
       name,
       description,
       enabled,
-      matchExpression,
+      matchExpression: matchExpressionInput,
       eventSpecifier: eventSpecifierString,
       archivalPeriodSeconds: archivalPeriod * archivalPeriodUnits,
       initialDelaySeconds: initialDelay * initialDelayUnits,
@@ -224,7 +226,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
     nameValid,
     description,
     enabled,
-    matchExpression,
+    matchExpressionInput,
     eventSpecifierString,
     archivalPeriod,
     archivalPeriodUnits,
@@ -238,6 +240,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   ]);
 
   React.useEffect(() => {
+    const matchedTargets = matchedTargetsRef.current;
     addSubscription(
       matchedTargets
         .pipe(
@@ -274,38 +277,58 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         .subscribe((templates) => {
           setTemplates(templates);
           setTemplate((old) => {
-            const matched = templates.find((t) => t.name === old.name && t.type === t.type);
+            const matched = templates.find((t) => t.name === old.name && t.type === old.type);
             return matched ? { name: matched.name, type: matched.type } : {};
           });
         })
     );
-  }, [addSubscription, context.api, matchedTargets]);
+  }, [addSubscription, context.api]);
 
   React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
-  }, [addSubscription, context.targets, setTargets]);
-
-  React.useEffect(() => {
-    // Set validations
-    let validation: ValidatedOptions = ValidatedOptions.default;
-    let matches: Target[] = [];
-    if (matchExpression !== '' && targets.length > 0) {
-      try {
-        matches = targets.filter((t) => {
-          const res = evaluateTargetWithExpr(t, matchExpression);
-          if (typeof res === 'boolean') {
-            return res;
-          }
-          throw new Error('The expression matching failed.');
-        });
-        validation = matches.length ? ValidatedOptions.success : ValidatedOptions.warning;
-      } catch (err) {
-        validation = ValidatedOptions.error;
-      }
-    }
-    setMatchExpressionValid(validation);
-    matchedTargets.next(matches);
-  }, [matchExpression, targets, matchedTargets, setMatchExpressionValid]);
+    const matchedTargets = matchedTargetsRef.current;
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression({
+          immediateFn: () => {
+            setEvaluating(true);
+            setMatchExpressionValid(ValidatedOptions.default);
+          },
+        }),
+        context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
+      ])
+        .pipe(
+          switchMap(([input, targets]) =>
+            input
+              ? context.api.matchTargetsWithExpr(input, targets).pipe(
+                  map((ts) => [ts, undefined]),
+                  catchError((err) => of([[], err]))
+                )
+              : of([undefined, undefined])
+          )
+        )
+        .subscribe(([ts, err]) => {
+          setEvaluating(false);
+          setMatchExpressionValid(
+            err
+              ? ValidatedOptions.error
+              : !ts
+              ? ValidatedOptions.default
+              : ts.length
+              ? ValidatedOptions.success
+              : ValidatedOptions.warning
+          );
+          matchedTargets.next(ts || []);
+        })
+    );
+  }, [
+    matchExprService,
+    context.api,
+    context.targets,
+    setSampleTarget,
+    setMatchExpressionValid,
+    setEvaluating,
+    addSubscription,
+  ]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -379,7 +402,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
             bodyContent={
               <>
                 Try an expression like:
-                <MatchExpressionHint target={targets[0]} />
+                <MatchExpressionHint target={sampleTarget} />
               </>
             }
             hasAutoWidth
@@ -398,7 +421,9 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         isRequired
         fieldId="rule-matchexpr"
         helperText={
-          matchExpressionValid === ValidatedOptions.warning
+          evaluating
+            ? 'Evaluating match expression...'
+            : matchExpressionValid === ValidatedOptions.warning
             ? `Warning: Match expression matches no targets.`
             : `
   Enter a match expression. This is a Java-like code snippet that is evaluated against each target
@@ -409,7 +434,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         data-quickstart-id="rule-matchexpr"
       >
         <TextArea
-          value={matchExpression}
+          value={matchExpressionInput}
           isDisabled={loading}
           isRequired
           type="text"
@@ -418,7 +443,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
           resizeOrientation="vertical"
           autoResize
           onChange={(value) => {
-            setMatchExpression(value);
+            setMatchExpressionInput(value);
             matchExprService.setSearchExpression(value);
           }}
           validated={matchExpressionValid}
@@ -612,7 +637,11 @@ enabled in the future.`}
           variant="primary"
           onClick={handleSubmit}
           isDisabled={
-            loading || nameValid !== ValidatedOptions.success || !template.name || !template.type || !matchExpression
+            loading ||
+            nameValid !== ValidatedOptions.success ||
+            !template.name ||
+            !template.type ||
+            !matchExpressionInput
           }
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}

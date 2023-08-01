@@ -40,9 +40,9 @@ import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpression
 import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
+import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, portalRoot, StreamOf } from '@app/utils/utils';
+import { portalRoot, StreamOf } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -62,7 +62,7 @@ import {
 } from '@patternfly/react-core';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { distinctUntilChanged, interval, map } from 'rxjs';
+import { catchError, combineLatest, distinctUntilChanged, interval, map, of, switchMap, tap } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
 import { CredentialContext, TestPoolContext, TestRequest, useAuthCredential } from './utils';
 
@@ -140,21 +140,22 @@ interface AuthFormProps extends Omit<CreateCredentialModalProps, 'visible'> {
 export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, progressChange, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const matchExprService = React.useContext(SearchExprServiceContext);
-  const [matchExpression, setMatchExpression] = React.useState('');
+  const matchExprService = useExprSvc();
+  const [matchExpressionInput, setMatchExpressionInput] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [_, setCredential] = useAuthCredential(true);
   const testPool = React.useContext(TestPoolContext);
   const [saving, setSaving] = React.useState(false);
   const [isDisabled, setIsDisabled] = React.useState(false);
+  const [evaluating, setEvaluating] = React.useState(false);
 
-  const [targets, setTargets] = React.useState<Target[]>([]);
+  const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
   const onSave = React.useCallback(
     (username: string, password: string) => {
       setSaving(true);
       addSubscription(
-        context.api.postCredentials(matchExpression, username, password).subscribe((ok) => {
+        context.api.postCredentials(matchExpressionInput, username, password).subscribe((ok) => {
           setSaving(false);
           if (ok) {
             onPropsSave();
@@ -162,31 +163,52 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         })
       );
     },
-    [addSubscription, onPropsSave, context.api, matchExpression, setSaving]
+    [addSubscription, onPropsSave, context.api, matchExpressionInput, setSaving]
   );
 
   React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
-  }, [addSubscription, context.targets, setTargets]);
-
-  React.useEffect(() => {
-    let validation: ValidatedOptions = ValidatedOptions.default;
-    if (matchExpression !== '' && targets.length > 0) {
-      try {
-        const atLeastOne = targets.some((t) => {
-          const res = evaluateTargetWithExpr(t, matchExpression);
-          if (typeof res === 'boolean') {
-            return res;
-          }
-          throw new Error('The expression matching failed.');
-        });
-        validation = atLeastOne ? ValidatedOptions.success : ValidatedOptions.warning;
-      } catch (err) {
-        validation = ValidatedOptions.error;
-      }
-    }
-    setMatchExpressionValid(validation);
-  }, [matchExpression, targets, setMatchExpressionValid]);
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression({
+          immediateFn: (_) => {
+            setEvaluating(true);
+            setMatchExpressionValid(ValidatedOptions.default);
+          },
+        }),
+        context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
+      ])
+        .pipe(
+          switchMap(([input, targets]) =>
+            input
+              ? context.api.matchTargetsWithExpr(input, targets).pipe(
+                  map((ts) => [ts, undefined]),
+                  catchError((err) => of([[], err]))
+                )
+              : of([undefined, undefined])
+          )
+        )
+        .subscribe(([ts, err]) => {
+          setEvaluating(false);
+          setMatchExpressionValid(
+            err
+              ? ValidatedOptions.error
+              : !ts
+              ? ValidatedOptions.default
+              : ts.length
+              ? ValidatedOptions.success
+              : ValidatedOptions.warning
+          );
+        })
+    );
+  }, [
+    matchExprService,
+    context.api,
+    context.targets,
+    setSampleTarget,
+    setMatchExpressionValid,
+    setEvaluating,
+    addSubscription,
+  ]);
 
   React.useEffect(() => {
     progressChange && progressChange(saving);
@@ -224,7 +246,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             bodyContent={
               <>
                 Try an expression like:
-                <MatchExpressionHint target={targets[0]} />
+                <MatchExpressionHint target={sampleTarget} />
               </>
             }
             hasAutoWidth
@@ -242,24 +264,26 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         isRequired
         fieldId="match-expression"
         helperText={
-          matchExpressionValid === ValidatedOptions.warning
+          evaluating
+            ? 'Evaluating match expression...'
+            : matchExpressionValid === ValidatedOptions.warning
             ? `Warning: Match expression matches no targets.`
             : `
         Enter a match expression. This is a Java-like code snippet that is evaluated against each target
         application to determine whether the rule should be applied.`
         }
-        helperTextInvalid="IThe expression matching failed."
+        helperTextInvalid="The expression matching failed."
         validated={matchExpressionValid}
       >
         <TextArea
-          value={matchExpression}
+          value={matchExpressionInput}
           isDisabled={isDisabled}
           isRequired
           type="text"
           id="rule-matchexpr"
           aria-describedby="rule-matchexpr-helper"
           onChange={(v) => {
-            setMatchExpression(v);
+            setMatchExpressionInput(v);
             matchExprService.setSearchExpression(v);
           }}
           validated={matchExpressionValid}

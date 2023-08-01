@@ -35,16 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
 import { SavedGraphPosition, SavedNodePosition } from '@app/Topology/GraphView/TopologyGraphView';
 import { getNodeById } from '@app/Topology/GraphView/UtilsFactory';
 import EntityDetails, { AlertOptions } from '@app/Topology/Shared/Entity/EntityDetails';
-import { useSearchExpression } from '@app/Topology/Shared/utils';
+import { MatchedTargetsServiceContext, useExprSvc, useMatchedTargetsSvcSource } from '@app/Topology/Shared/utils';
 import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
 import { NodeType } from '@app/Topology/typings';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { evaluateTargetWithExpr, hashCode } from '@app/utils/utils';
+import { hashCode } from '@app/utils/utils';
 import {
   Bullseye,
   DataList,
@@ -83,6 +84,7 @@ import {
 } from '@patternfly/react-topology';
 import _ from 'lodash';
 import * as React from 'react';
+import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { ServiceContext } from '../Services/Services';
 import { Target } from '../Services/Target.service';
 import { componentFactory, createTargetNode, layoutFactory, transformData } from './utils';
@@ -152,6 +154,7 @@ export const MATCH_EXPRES_VIS_GRAPH_ID = 'cryostat-match-expression-visualizer';
 const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
+  const matchedTargetsSvcSource = useMatchedTargetsSvcSource();
 
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]); // selectedIds is exactly matched by VisualizationSurface
   const [selectedEntity, setSelectedEntity] = React.useState<GraphElement>();
@@ -295,35 +298,35 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
   }, [handleDrawerClose, selectedEntity, alertOptions]);
 
   return (
-    <TopologyView
-      {...props}
-      id="match-expression__visualization-container"
-      className={css('topology__main-container')}
-      controlBar={<TopologyControlBar visualization={visualization} noCollapse />}
-      sideBar={sidebar}
-      sideBarOpen={selectedIds.length > 0}
-      sideBarResizable={true}
-      minSideBarSize={`200px`}
-      defaultSideBarSize={`425px`}
-    >
-      <VisualizationProvider controller={visualization}>
-        <VisualizationSurface state={{ selectedIds }} />
-      </VisualizationProvider>
-    </TopologyView>
+    <MatchedTargetsServiceContext.Provider value={matchedTargetsSvcSource}>
+      <TopologyView
+        {...props}
+        id="match-expression__visualization-container"
+        className={css('topology__main-container')}
+        controlBar={<TopologyControlBar visualization={visualization} noCollapse />}
+        sideBar={sidebar}
+        sideBarOpen={selectedIds.length > 0}
+        sideBarResizable={true}
+        minSideBarSize={`200px`}
+        defaultSideBarSize={`425px`}
+      >
+        <VisualizationProvider controller={visualization}>
+          <VisualizationSurface state={{ selectedIds }} />
+        </VisualizationProvider>
+      </TopologyView>
+    </MatchedTargetsServiceContext.Provider>
   );
 };
 
 const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [matchExpression] = useSearchExpression();
-  const [targets, setTargets] = React.useState<Target[]>([]);
+  const matchExprService = useExprSvc();
 
+  const [matchedExpr, setMatchExpr] = React.useState('');
+  const [matchedTargets, setMatchedTargets] = React.useState<Target[]>([]);
   const [expanded, setExpanded] = React.useState<string[]>([]);
-
-  React.useEffect(() => {
-    addSubscription(context.targets.targets().subscribe(setTargets));
-  }, [addSubscription, context.targets, setTargets]);
+  const [loading, setLoading] = React.useState(false);
 
   const toggleExpand = React.useCallback(
     (id: string) => {
@@ -337,26 +340,30 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
     [setExpanded]
   );
 
-  const targetNodes = React.useMemo(() => targets.map(createTargetNode), [targets]);
-
-  const filtered = React.useMemo(
-    () =>
-      targetNodes.filter(({ target }) => {
-        try {
-          const res = evaluateTargetWithExpr(target, matchExpression);
-          if (typeof res === 'boolean') {
-            return res;
-          }
-          return false;
-        } catch (err) {
-          return false;
-        }
-      }),
-    [targetNodes, matchExpression]
-  );
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        matchExprService.searchExpression().pipe(tap((exp) => setMatchExpr(exp))),
+        context.targets.targets(),
+      ])
+        .pipe(
+          tap(() => setLoading(true)),
+          switchMap(([input, targets]) =>
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([])
+          )
+        )
+        .subscribe((ts) => {
+          setLoading(false);
+          setMatchedTargets(ts);
+        })
+    );
+  }, [matchExprService, context.api, context.targets, setMatchedTargets, setLoading, addSubscription]);
 
   const content = React.useMemo(() => {
-    if (!filtered || !filtered.length) {
+    if (loading) {
+      return <LoadingView />;
+    }
+    if (!matchedTargets || !matchedTargets.length) {
       return (
         <Bullseye>
           <EmptyState variant={EmptyStateVariant.full}>
@@ -366,15 +373,15 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
             </Title>
             <EmptyStateSecondaryActions>
               <EmptyStateBody>{`${
-                matchExpression === '' ? 'Enter another' : 'Clear'
+                matchedExpr === '' ? 'Enter another' : 'Clear'
               } Match Expression and try again.`}</EmptyStateBody>
             </EmptyStateSecondaryActions>
           </EmptyState>
         </Bullseye>
       );
     }
-    return filtered.map((tn) => {
-      const { connectUrl, alias } = tn.target;
+    return matchedTargets.map((target) => {
+      const { connectUrl, alias } = target;
       return (
         <DataListItem {...props} key={connectUrl} isExpanded={expanded.includes(connectUrl)}>
           <DataListItemRow>
@@ -402,7 +409,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
               isHidden={!expanded.includes(connectUrl)}
             >
               <EntityDetails
-                entity={{ getData: () => tn }}
+                entity={{ getData: () => target }}
                 columnModifier={{ default: '3Col' }}
                 alertOptions={alertOptions}
                 className="topology__list-view__entity-details"
@@ -412,7 +419,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         </DataListItem>
       );
     });
-  }, [filtered, expanded, matchExpression, toggleExpand, props, alertOptions]);
+  }, [matchedTargets, loading, expanded, matchedExpr, toggleExpand, props, alertOptions]);
 
   return (
     <DataList aria-label={'Target List'} style={{ height: '100%' }}>

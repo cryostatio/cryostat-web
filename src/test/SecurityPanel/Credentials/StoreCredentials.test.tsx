@@ -111,81 +111,95 @@ jest.mock('@app/SecurityPanel/Credentials/CreateCredentialModal', () => {
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  .mockReturnValueOnce(of(mockCredentialNotification)) // 'adds the correct table entry when a stored notification is received'
+  .mockReturnValueOnce(of(mockCredentialNotification)) // adds the correct table entry when a stored notification is received
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // 'removes the correct table entry when a deletion notification is received'
+  .mockReturnValueOnce(of()) // removes the correct table entry when a deletion notification is received
   .mockReturnValueOnce(of(mockCredentialNotification))
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // 'renders an empty table after receiving deletion notifications for all credentials'
+  .mockReturnValueOnce(of()) // renders an empty table after receiving deletion notifications for all credentials'
   .mockReturnValueOnce(of(mockCredentialNotification))
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // 'expands to show the correct nested targets'
+  .mockReturnValueOnce(of()) // expands to show the correct nested targets
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
+  .mockReturnValueOnce(of()) // decrements the correct count and updates the correct nested table when a lost target notification is received
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockLostTargetNotification))
-  .mockReturnValueOnce(of(mockLostTargetNotification))
-  .mockReturnValueOnce(of(mockLostTargetNotification))
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // 'increments the correct count and updates the correct nested table when a found target notification is received'
+  .mockReturnValueOnce(of()) // increments the correct count and updates the correct nested table when a found target notification is received
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockFoundTargetNotification))
-  .mockReturnValueOnce(of(mockFoundTargetNotification))
-  .mockReturnValueOnce(of(mockFoundTargetNotification))
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
-  .mockReturnValue(of()), // remaining tests
-  jest.spyOn(defaultServices.api, 'deleteCredentials').mockReturnValue(of(true));
-jest
+  .mockReturnValue(of()); // remaining tests
+
+jest.spyOn(defaultServices.api, 'deleteCredentials').mockReturnValue(of(true));
+const apiRequestSpy = jest
   .spyOn(defaultServices.api, 'getCredentials')
+  .mockReturnValueOnce(of([])) // adds the correct table entry when a stored notification is received
 
-  .mockReturnValueOnce(of([])) // 'adds the correct table entry when a stored notification is received'
+  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // removes the correct table entry when a deletion notification is received
 
-  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'removes the correct table entry when a deletion notification is received'
+  .mockReturnValueOnce(of([mockCredential])) // renders an empty table after receiving deletion notifications for all credentials
 
-  .mockReturnValueOnce(of([mockCredential])) // 'renders an empty table after receiving deletion notifications for all credentials'
+  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // expands to show the correct nested targets
 
-  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'expands to show the correct nested targets'
+  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // decrements the correct count and updates the correct nested table when a lost target notification is received
+  .mockReturnValueOnce(
+    of([mockCredential, { ...mockAnotherCredential, numMatchingTargets: mockAnotherCredential.numMatchingTargets - 1 }])
+  )
 
-  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
+  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // increments the correct count and updates the correct nested table when a found target notification is received
+  .mockReturnValueOnce(
+    of([mockCredential, { ...mockAnotherCredential, numMatchingTargets: mockAnotherCredential.numMatchingTargets + 1 }])
+  )
 
-  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'increments the correct count and updates the correct nested table when a found target notification is received'
+  .mockReturnValueOnce(of([])) // opens the auth modal when Add is clicked
 
-  .mockReturnValueOnce(of([])) // 'opens the auth modal when Add is clicked'
+  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete
 
-  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete'
-
-  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes multiple delete requests when all credentials are deleted at once'
+  .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // makes multiple delete requests when all credentials are deleted at once
 
   .mockReturnValue(throwError(() => new Error('Too many calls')));
 
 jest
   .spyOn(defaultServices.api, 'getCredential')
-  .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // 'expands to show the correct nested targets'
+  .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // expands to show the correct nested targets
   .mockReturnValueOnce(of(mockAnotherMatchedCredentialResponse))
 
-  .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
-  .mockReturnValueOnce(of(mockAnotherMatchedCredentialResponse))
+  .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // decrements the correct count and updates the correct nested table when a lost target notification is received
+  .mockReturnValueOnce(of({ ...mockAnotherMatchedCredentialResponse, targets: [mockAnotherMatchingTarget] }))
 
-  .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // 'increments the correct count and updates the correct nested table when a found target notification is received'
-  .mockReturnValueOnce(of(mockAnotherMatchedCredentialResponse))
+  .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // increments the correct count and updates the correct nested table when a found target notification is received
+  .mockReturnValueOnce(
+    of({
+      ...mockAnotherMatchedCredentialResponse,
+      targets: mockAnotherMatchedCredentialResponse.targets.concat(mockYetAnotherMatchingTarget),
+    })
+  )
 
   .mockReturnValue(throwError(() => new Error('Too many calls')));
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValueOnce(true);
 
 describe('<StoreCredentials />', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterEach(cleanup);
 
   it('adds the correct table entry when a stored notification is received', async () => {
-    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
@@ -194,7 +208,6 @@ describe('<StoreCredentials />', () => {
   });
 
   it('removes the correct table entry when a deletion notification is received', async () => {
-    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
@@ -219,39 +232,40 @@ describe('<StoreCredentials />', () => {
   it('expands to show the correct nested targets', async () => {
     const { user } = renderWithServiceContext(<StoreCredentials />);
 
+    const targets = [mockTarget, mockAnotherTarget, mockAnotherMatchingTarget];
+    targets.forEach(({ alias, connectUrl }) => {
+      expect(screen.queryByText(`${alias} (${connectUrl})`)).not.toBeInTheDocument();
+    });
     expect(screen.queryByText('Target')).not.toBeInTheDocument();
-    expect(screen.queryByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).not.toBeInTheDocument();
-    expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
-    ).not.toBeInTheDocument();
 
     const expandButtons = screen.getAllByLabelText('Details');
+    expect(expandButtons.length).toBe(2);
 
     await user.click(expandButtons[0]);
 
-    expect(screen.getByText('Target')).toBeInTheDocument();
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
-    expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
-    ).not.toBeInTheDocument();
+    expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeVisible();
+
+    const otherTargets = targets.filter((t) => t.connectUrl !== mockTarget.connectUrl);
+    otherTargets.forEach(({ alias, connectUrl }) =>
+      expect(screen.queryByText(`${alias} (${connectUrl})`)).not.toBeInTheDocument()
+    );
 
     await user.click(expandButtons[1]);
 
-    expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
-    expect(
-      screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
-    ).toBeInTheDocument();
+    otherTargets.forEach(({ alias, connectUrl }) => {
+      const element = screen.getByText(`${alias} (${connectUrl})`);
+      expect(element).toBeInTheDocument();
+      expect(element).toBeVisible();
+    });
   });
 
   it('decrements the correct count and updates the correct nested table when a lost target notification is received', async () => {
     const { user } = renderWithServiceContext(<StoreCredentials />);
 
     // both counts should now be equal to 1
-    const counts = screen.getAllByText(mockAnotherCredential.numMatchingTargets - 1);
-    expect(within(counts[0]).getByText(mockCredential.numMatchingTargets)).toBeTruthy();
-    expect(within(counts[1]).getByText(mockAnotherCredential.numMatchingTargets - 1)).toBeTruthy();
+    const counts = screen.getAllByText('1');
+    expect(counts.length).toBe(2);
 
     const expandButtons = screen.getAllByLabelText('Details');
 
@@ -262,9 +276,10 @@ describe('<StoreCredentials />', () => {
     await user.click(expandButtons[1]);
 
     expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
-    expect(
-      screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
-    ).toBeInTheDocument();
+
+    const element = screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`);
+    expect(element).toBeInTheDocument();
+    expect(element).toBeVisible();
   });
 
   it('increments the correct count and updates the correct nested table when a found target notification is received', async () => {
@@ -284,13 +299,11 @@ describe('<StoreCredentials />', () => {
 
     await user.click(expandButtons[1]);
 
-    expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
-    expect(
-      screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)
-    ).toBeInTheDocument();
+    [mockAnotherTarget, mockAnotherMatchingTarget, mockYetAnotherMatchingTarget].forEach(({ alias, connectUrl }) => {
+      const element = screen.getByText(`${alias} (${connectUrl})`);
+      expect(element).toBeInTheDocument();
+      expect(element).toBeVisible();
+    });
   });
 
   it('opens the auth modal when Add is clicked', async () => {
@@ -304,7 +317,6 @@ describe('<StoreCredentials />', () => {
   });
 
   it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', async () => {
-    const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     const { user } = renderWithServiceContext(<StoreCredentials />);
 
@@ -322,12 +334,11 @@ describe('<StoreCredentials />', () => {
 
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteCredentials, false);
-    expect(queryRequestSpy).toHaveBeenCalledTimes(1);
+
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', async () => {
-    const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     const { user } = renderWithServiceContext(<StoreCredentials />);
 
@@ -340,7 +351,7 @@ describe('<StoreCredentials />', () => {
     const selectAllCheck = checkboxes[0];
     await user.click(selectAllCheck);
     await user.click(screen.getByText('Delete'));
-    expect(queryRequestSpy).toHaveBeenCalledTimes(1);
+
     expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
   });
 });

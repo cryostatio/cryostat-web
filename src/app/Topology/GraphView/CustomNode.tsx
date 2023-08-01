@@ -39,6 +39,8 @@
 import cryostatSvg from '@app/assets/cryostat_icon_rgb_default.svg';
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { includesTarget } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import {
@@ -58,7 +60,8 @@ import {
 } from '@patternfly/react-topology';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { getStatusTargetNode, isTargetMatched, nodeTypeToAbbr, useSearchExpression } from '../Shared/utils';
+import { map } from 'rxjs';
+import { getStatusTargetNode, nodeTypeToAbbr, useMatchedTargetsSvc } from '../Shared/utils';
 import { TargetNode } from '../typings';
 import { getNodeDecorators } from './NodeDecorator';
 import { TOPOLOGY_GRAPH_ID } from './TopologyGraphView';
@@ -105,7 +108,10 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 }) => {
   useAnchor(EllipseAnchor); // For edges
   const [hover, hoverRef] = useHover(200, 200);
-  const [expression] = useSearchExpression();
+
+  const [matched, setMatched] = React.useState(true);
+  const addSubscription = useSubscriptions();
+  const matchedTargetSvc = useMatchedTargetsSvc();
 
   const displayOptions = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
   const { badge: showBadge, connectionUrl: showConnectUrl, icon: showIcon, status: showStatus } = displayOptions.show;
@@ -114,17 +120,22 @@ const CustomNode: React.FC<CustomNodeProps> = ({
   const labelIcon = React.useMemo(() => <img src={cryostatSvg} />, []);
 
   const data: TargetNode = element.getData();
+
   const [nodeStatus] = getStatusTargetNode(data);
 
-  const classNames = React.useMemo(() => {
-    const graphId = element.getGraph().getId();
-    const matchExprForSearch = graphId === TOPOLOGY_GRAPH_ID;
-    const additional =
-      (matchExprForSearch && expression === '') || isTargetMatched(data, expression) ? '' : 'search-inactive';
-    return css('topology__target-node', additional);
-  }, [data, expression, element]);
+  const graphId = React.useMemo(() => element.getGraph().getId(), [element]);
+
+  const classNames = React.useMemo(() => css('topology__target-node', matched ? '' : 'search-inactive'), [matched]);
 
   const nodeDecorators = React.useMemo(() => (showStatus ? getNodeDecorators(element) : null), [element, showStatus]);
+
+  React.useEffect(() => {
+    addSubscription(
+      matchedTargetSvc
+        .pipe(map((ts) => (ts ? includesTarget(ts, data.target) : graphId === TOPOLOGY_GRAPH_ID)))
+        .subscribe(setMatched)
+    );
+  }, [graphId, addSubscription, setMatched, matchedTargetSvc, data.target]);
 
   return (
     <Layer id={contextMenuOpen ? TOP_LAYER : DEFAULT_LAYER}>
