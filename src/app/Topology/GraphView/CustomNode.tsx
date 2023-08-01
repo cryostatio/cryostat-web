@@ -61,11 +61,7 @@ import {
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { map } from 'rxjs';
-import {
-  getStatusTargetNode,
-  nodeTypeToAbbr,
-  useMatchedTargetsSvc,
-} from '../Shared/utils';
+import { getStatusTargetNode, nodeTypeToAbbr, useMatchedTargetsSvc } from '../Shared/utils';
 import { TargetNode } from '../typings';
 import { getNodeDecorators } from './NodeDecorator';
 import { TOPOLOGY_GRAPH_ID } from './TopologyGraphView';
