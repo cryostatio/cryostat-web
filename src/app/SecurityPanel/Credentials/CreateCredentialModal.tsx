@@ -169,20 +169,23 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        matchExprService.searchExpression(),
+        matchExprService.searchExpression({
+          immediateFn: (_) => {
+            setEvaluating(true);
+            setMatchExpressionValid(ValidatedOptions.default);
+          },
+        }),
         context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
       ])
         .pipe(
-          switchMap(([input, targets]) => {
-            setEvaluating(true);
-            setMatchExpressionValid(ValidatedOptions.default);
-            return input
+          switchMap(([input, targets]) =>
+            input
               ? context.api.matchTargetsWithExpr(input, targets).pipe(
                   map((ts) => [ts, undefined]),
                   catchError((err) => of([[], err]))
                 )
-              : of([undefined, undefined]);
-          })
+              : of([undefined, undefined])
+          )
         )
         .subscribe(([ts, err]) => {
           setEvaluating(false);

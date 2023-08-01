@@ -42,7 +42,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Text, TextVariants } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
-import { BehaviorSubject, catchError, combineLatest, debounceTime, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, Observable, of, switchMap, tap } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, NodeAction, nodeActions } from '../Actions/NodeActions';
 import { WarningResolverAsCredModal, WarningResolverAsLink } from '../Actions/WarningResolver';
 import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
@@ -234,8 +234,11 @@ export const DEFAULT_MATCH_EXPR_DEBOUNCE_TIME = 300; // ms
 export class SearchExprService {
   private readonly _state$ = new BehaviorSubject<string>('');
 
-  searchExpression(debounceMs = DEFAULT_MATCH_EXPR_DEBOUNCE_TIME): Observable<string> {
-    return this._state$.asObservable().pipe(debounceTime(debounceMs));
+  searchExpression({
+    debounceMs = DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
+    immediateFn = (_: string) => undefined,
+  } = {}): Observable<string> {
+    return this._state$.asObservable().pipe(tap(immediateFn), debounceTime(debounceMs));
   }
 
   setSearchExpression(expr: string): void {
