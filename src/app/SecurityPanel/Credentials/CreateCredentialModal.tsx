@@ -147,6 +147,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   const testPool = React.useContext(TestPoolContext);
   const [saving, setSaving] = React.useState(false);
   const [isDisabled, setIsDisabled] = React.useState(false);
+  const [evaluating, setEvaluating] = React.useState(false);
 
   const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
@@ -172,16 +173,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
       ])
         .pipe(
-          switchMap(([input, targets]) =>
-            input
+          switchMap(([input, targets]) => {
+            setEvaluating(true);
+            setMatchExpressionValid(ValidatedOptions.default);
+            return input
               ? context.api.matchTargetsWithExpr(input, targets).pipe(
                   map((ts) => [ts, undefined]),
                   catchError((err) => of([[], err]))
                 )
-              : of([undefined, undefined])
-          )
+              : of([undefined, undefined]);
+          })
         )
         .subscribe(([ts, err]) => {
+          setEvaluating(false);
           setMatchExpressionValid(
             err
               ? ValidatedOptions.error
@@ -193,7 +197,15 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           );
         })
     );
-  }, [matchExprService, context.api, context.targets, setSampleTarget, setMatchExpressionValid, addSubscription]);
+  }, [
+    matchExprService,
+    context.api,
+    context.targets,
+    setSampleTarget,
+    setMatchExpressionValid,
+    setEvaluating,
+    addSubscription,
+  ]);
 
   React.useEffect(() => {
     progressChange && progressChange(saving);
@@ -249,7 +261,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         isRequired
         fieldId="match-expression"
         helperText={
-          matchExpressionValid === ValidatedOptions.warning
+          evaluating
+            ? 'Evaluating match expression...'
+            : matchExpressionValid === ValidatedOptions.warning
             ? `Warning: Match expression matches no targets.`
             : `
         Enter a match expression. This is a Java-like code snippet that is evaluated against each target
