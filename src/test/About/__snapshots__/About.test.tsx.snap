@@ -29,7 +29,7 @@ exports[`<About /> renders correctly 1`] = `
     <div
       className="pf-c-card__footer"
     >
-      Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0
+      Copyright The Cryostat Authors, The Apache License, Version 2.0
     </div>
   </article>
 </div>

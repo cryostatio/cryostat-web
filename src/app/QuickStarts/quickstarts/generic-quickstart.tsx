@@ -1,39 +1,17 @@
 /*
- * Copyright The Cryostat Authors
+ * Copyright The Cryostat Authors.
  *
- * The Universal Permissive License (UPL), Version 1.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Subject to the condition set forth below, permission is hereby granted to any
- * person obtaining a copy of this software, associated documentation and/or data
- * (collectively the "Software"), free of charge and under any and all copyright
- * rights in the Software, and any and all patent rights owned or freely
- * licensable by each licensor hereunder covering either (i) the unmodified
- * Software as contributed to or provided by such licensor, or (ii) the Larger
- * Works (as defined below), to deal in both
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * (a) the Software, and
- * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
- * one is included with the Software (each a "Larger Work" to which the Software
- * is contributed by such licensors),
- *
- * without restriction, including without limitation the rights to copy, create
- * derivative works of, display, perform, and distribute the Software and make,
- * use, sell, offer for sale, import, export, have made, and have sold the
- * Software and the Larger Work(s), and to sublicense the foregoing rights on
- * either these or other terms.
- *
- * This license is subject to the following condition:
- * The above copyright notice and either this complete permission notice or at
- * a minimum a reference to the UPL must be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
@@ -89,11 +67,11 @@ const GenericQuickStart: QuickStart = {
 ## Text
   1. The main body of the task. You can use markdown syntax here to create list items and more.
 
-  This is a paragraph.  
+  This is a paragraph.
   This is another paragraph. Add an empty line between paragraphs for line breaks or two spaces at the end.
   1. For more information on markdown syntax you can visit [this resource](https://www.markdownguide.org/basic-syntax/).
   1. A <small>limited set</small> of <strong>HTML tags</strong> [are also supported](https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html#supported-tags-for-quick-starts_creating-quick-start-tutorials)
-  
+
 ## Images
   HTML img tag: <img alt="[APP] logo" src="${cryostatLogo}" width="30" height="30" />
 
@@ -113,7 +91,7 @@ const GenericQuickStart: QuickStart = {
   <pre>[Recordings nav item]{{highlight nav-recordings-tab}}</pre>
 
   will highlight an element with the \`data-quickstart-id="quickstarts"\` attribute
-  
+
 ### Code snippets
 The syntax for an inline code snippet contains:
 - Text between back quotes, followed by \`{{copy}}\`
@@ -133,7 +111,7 @@ oc expose svc/ruby-ex
 \`\`\`
 Hello
 world
-\`\`\`{{copy}}  
+\`\`\`{{copy}}
   - Clicking the _Next_ button will display the **Check your work** module.
 ### Admonition blocks
   The syntax for rendering "Admonition Blocks" to Patternfly React Alerts:

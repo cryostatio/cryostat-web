@@ -1,39 +1,17 @@
 /*
- * Copyright The Cryostat Authors
+ * Copyright The Cryostat Authors.
  *
- * The Universal Permissive License (UPL), Version 1.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Subject to the condition set forth below, permission is hereby granted to any
- * person obtaining a copy of this software, associated documentation and/or data
- * (collectively the "Software"), free of charge and under any and all copyright
- * rights in the Software, and any and all patent rights owned or freely
- * licensable by each licensor hereunder covering either (i) the unmodified
- * Software as contributed to or provided by such licensor, or (ii) the Larger
- * Works (as defined below), to deal in both
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * (a) the Software, and
- * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
- * one is included with the Software (each a "Larger Work" to which the Software
- * is contributed by such licensors),
- *
- * without restriction, including without limitation the rights to copy, create
- * derivative works of, display, perform, and distribute the Software and make,
- * use, sell, offer for sale, import, export, have made, and have sold the
- * Software and the Larger Work(s), and to sublicense the foregoing rights on
- * either these or other terms.
- *
- * This license is subject to the following condition:
- * The above copyright notice and either this complete permission notice or at
- * a minimum a reference to the UPL must be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
@@ -84,7 +62,7 @@ const RecordingQuickStart: QuickStart = {
       },
       {
         title: 'Select a target JVM',
-        description: `    
+        description: `
 Select a target JVM from the list of available targets that [APP] has discovered.
 
 1. Click the [Target Select]{{highlight target-select}} dropdown menu.
@@ -108,7 +86,7 @@ There are two tabs within the Recordings page:
 
 To start an active recording:
 
-1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**. 
+1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**.
 [If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including \`Create\`."]{{admonition note}}
 2. Enter a name for the recording in the [Name]{{highlight crf-name}} field.
 3. Select the [Duration]{{highlight crf-duration}} for the recording. You can select \`CONTINUOUS\` to record until the recording is stopped.
