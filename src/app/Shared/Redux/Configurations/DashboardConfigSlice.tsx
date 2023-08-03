@@ -233,7 +233,7 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
 );
 
 export const dashboardConfigClearAllCardsIntent = createAction<void>(
-  DashboardConfigAction.CLEAR_ALL_DASHBOARD_CARDS,
+  DashboardConfigAction.CLEAR_ALL_CARDS,
   () => ({
     payload: {} as DashboardHistoryClearTemplateActionPayload,
   })
