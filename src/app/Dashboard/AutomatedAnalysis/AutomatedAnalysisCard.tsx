@@ -97,7 +97,12 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '../dashboard-utils';
+import {
+  DashboardCardDescriptor,
+  DashboardCardFC,
+  DashboardCardSizes,
+  DashboardCardTypeProps,
+} from '../dashboard-utils';
 import { DashboardCard } from '../DashboardCard';
 import { AutomatedAnalysisCardList } from './AutomatedAnalysisCardList';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
@@ -113,7 +118,7 @@ import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFi
 
 export interface AutomatedAnalysisCardProps extends DashboardCardTypeProps {}
 
-export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (props) => {
+export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
@@ -852,6 +857,8 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     </DashboardCard>
   );
 };
+
+AutomatedAnalysisCard.cardComponentName = 'AutomatedAnalysisCard';
 
 export type AutomatedAnalysisHeaderLabelType = 'critical' | 'warning' | 'ok';
 

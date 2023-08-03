@@ -280,8 +280,8 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     .addCase(dashboardConfigFirstRunIntent, (state) => {
       state.layouts[state.current].cards = [
         {
-          id: `${MBeanMetricsChartCardDescriptor.component.name}-1`,
-          name: MBeanMetricsChartCardDescriptor.component.name,
+          id: `${MBeanMetricsChartCardDescriptor.component.cardComponentName}-1`,
+          name: MBeanMetricsChartCardDescriptor.component.cardComponentName,
           span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
           props: {
             themeColor: 'blue',
@@ -291,8 +291,8 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
           },
         },
         {
-          id: `${MBeanMetricsChartCardDescriptor.component.name}-2`,
-          name: MBeanMetricsChartCardDescriptor.component.name,
+          id: `${MBeanMetricsChartCardDescriptor.component.cardComponentName}-2`,
+          name: MBeanMetricsChartCardDescriptor.component.cardComponentName,
           span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
           props: {
             themeColor: 'purple',
@@ -302,8 +302,8 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
           },
         },
         {
-          id: `${MBeanMetricsChartCardDescriptor.component.name}-3`,
-          name: MBeanMetricsChartCardDescriptor.component.name,
+          id: `${MBeanMetricsChartCardDescriptor.component.cardComponentName}-3`,
+          name: MBeanMetricsChartCardDescriptor.component.cardComponentName,
           span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
           props: {
             themeColor: 'green',
