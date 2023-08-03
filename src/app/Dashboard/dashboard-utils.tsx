@@ -372,11 +372,9 @@ export interface DashboardCardDescriptor {
   propControls: PropControl[];
   advancedConfig?: JSX.Element;
 }
-export type DashboardCardFC<P = Props> = React.FC<P> & {
+export type DashboardCardFC<P> = React.FC<P> & {
   cardComponentName: string;
 };
-
-interface Props {}
 
 export interface PropControlExtra {
   displayMapper?: (value: string) => string /* only has effect with 'select' PropControl kind */;
