@@ -92,6 +92,11 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
 
+  // clear layout
+  const [isClearAllCardsConfirmationOpen, setIsClearAllCardsConfirmationOpen] = React.useState(false);
+  const [selectedLayoutForClear, setSelectedLayoutForClear] = React.useState<string>('');
+
+
   // layout selector
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
 
@@ -114,6 +119,34 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
   const deleteRef = React.useRef<HTMLButtonElement>(null);
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
+
+  // first save
+  // Handle the click event of the "Clear All Cards" button
+  const handleClearAllCards = React.useCallback(() => {
+    // Dispatch an action to clear all cards for the selected layout
+    const updatedLayout = { ...currLayout, cards: [] };
+    dispatch(dashboardConfigCreateLayoutIntent(updatedLayout));
+  }, [dispatch, currLayout]);
+  
+  
+
+  const handleClearAllCardsWarningModalOpen = React.useCallback(
+    () => {
+      setSelectedLayoutForClear(currLayout.name);
+      setIsClearAllCardsConfirmationOpen(true);
+    },
+    [setSelectedLayoutForClear, setIsClearAllCardsConfirmationOpen, currLayout.name]
+  );
+  
+  const handleConfirmClearAllCards = React.useCallback(() => {
+    handleClearAllCards();
+    setIsClearAllCardsConfirmationOpen(false);
+  }, [handleClearAllCards]);
+  
+  const handleCancelClearAllCards = React.useCallback(() => {
+    setIsClearAllCardsConfirmationOpen(false);
+  }, [setIsClearAllCardsConfirmationOpen]);
+  
 
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -346,6 +379,9 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         <DropdownItem key="download" itemId={'download'}>
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
+        <DropdownItem key="clearAll" itemId={'clearAll'}>
+        {t('DashboardLayoutToolbar.CLEAR_ALL_CARDS')}
+        </DropdownItem>
       </DropdownList>
     );
   }, [t]);
@@ -373,12 +409,15 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         case 'download':
           handleDownloadTemplateModalOpen();
           break;
+        case 'clearAll':
+          handleClearAllCardsWarningModalOpen();
+          break;
         default:
           console.error('unknown item id ' + itemId);
       }
       setIsKebabOpen(false);
     },
-    [handleSetAsTemplateModalOpen, handleDownloadTemplateModalOpen, setIsKebabOpen]
+    [handleSetAsTemplateModalOpen, handleDownloadTemplateModalOpen, handleClearAllCards, setIsKebabOpen]
   );
 
   const kebabDropdown = React.useMemo(

@@ -231,6 +231,10 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
   })
 );
 
+export const dashboardConfigClearAllCardsIntent = createAction<void>(
+  DashboardConfigAction.CLEAR_ALL_DASHBOARD_CARDS,
+);
+
 export interface DashboardConfig {
   layouts: DashboardLayout[];
   customTemplates: LayoutTemplate[];

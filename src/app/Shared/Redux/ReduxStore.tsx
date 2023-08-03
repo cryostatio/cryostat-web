@@ -21,6 +21,8 @@ import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from '.
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
 import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
+import { dashboardConfigClearAllCardsIntent, RootState } from './Configurations/DashboardConfigSlice';
+
 
 // Export actions
 export const {
@@ -36,6 +38,8 @@ export const {
   dashboardConfigFavoriteLayoutIntent,
   dashboardConfigCreateTemplateIntent,
   dashboardConfigDeleteTemplateIntent,
+  dashboardConfigClearAllCardsIntent,
+  RootState,
   dashboardConfigTemplateHistoryPushIntent,
   dashboardConfigTemplateHistoryClearIntent,
   defaultDashboardConfigs,
