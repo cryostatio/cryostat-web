@@ -39,7 +39,6 @@ export const {
   dashboardConfigCreateTemplateIntent,
   dashboardConfigDeleteTemplateIntent,
   dashboardConfigClearAllCardsIntent,
-  RootState,
   dashboardConfigTemplateHistoryPushIntent,
   dashboardConfigTemplateHistoryClearIntent,
   defaultDashboardConfigs,

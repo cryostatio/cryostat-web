@@ -69,6 +69,7 @@ import {
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutSetAsTemplateModal } from './DashboardLayoutSetAsTemplateModal';
 import { LayoutTemplateUploadModal } from './LayoutTemplateUploadModal';
+import { dashboardConfigClearAllCardsIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 
 export interface DashboardLayoutToolbarProps {
   children?: React.ReactNode;
@@ -123,29 +124,8 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
   // first save
   // Handle the click event of the "Clear All Cards" button
   const handleClearAllCards = React.useCallback(() => {
-    // Dispatch an action to clear all cards for the selected layout
-    const updatedLayout = { ...currLayout, cards: [] };
-    dispatch(dashboardConfigCreateLayoutIntent(updatedLayout));
+    dispatch(dashboardConfigClearAllCardsIntent());
   }, [dispatch, currLayout]);
-  
-  
-
-  const handleClearAllCardsWarningModalOpen = React.useCallback(
-    () => {
-      setSelectedLayoutForClear(currLayout.name);
-      setIsClearAllCardsConfirmationOpen(true);
-    },
-    [setSelectedLayoutForClear, setIsClearAllCardsConfirmationOpen, currLayout.name]
-  );
-  
-  const handleConfirmClearAllCards = React.useCallback(() => {
-    handleClearAllCards();
-    setIsClearAllCardsConfirmationOpen(false);
-  }, [handleClearAllCards]);
-  
-  const handleCancelClearAllCards = React.useCallback(() => {
-    setIsClearAllCardsConfirmationOpen(false);
-  }, [setIsClearAllCardsConfirmationOpen]);
   
 
   const handleUploadModalOpen = React.useCallback(
@@ -410,7 +390,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           handleDownloadTemplateModalOpen();
           break;
         case 'clearAll':
-          handleClearAllCardsWarningModalOpen();
+          handleClearAllCards();
           break;
         default:
           console.error('unknown item id ' + itemId);
