@@ -96,7 +96,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
               Object.keys(cardConfig).length !== Object.keys(mockSerialCardConfig).length ||
               cardConfig.name === undefined ||
               !getDashboardCards()
-                .map((c) => c.component.displayName)
+                .map((c) => c.component.cardComponentName)
                 .includes(cardConfig.name) ||
               cardConfig.span === undefined ||
               cardConfig.props === undefined
