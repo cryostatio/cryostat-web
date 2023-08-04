@@ -45,7 +45,7 @@ export enum DashboardConfigAction {
   TEMPLATE_RENAME = 'template-config/rename',
   TEMPLATE_HISTORY_PUSH = 'template-history/push',
   TEMPLATE_HISTORY_CLEAR = 'template-history/clear',
-  CLEAR_ALL_CARDS = 'dashboard-card-config/clear-all-cards'
+  CLEAR_ALL_CARDS = 'dashboard-card-config/clear-all-cards',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -232,12 +232,9 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
   })
 );
 
-export const dashboardConfigClearAllCardsIntent = createAction<void>(
-  DashboardConfigAction.CLEAR_ALL_CARDS,
-  () => ({
-    payload: {} as DashboardHistoryClearTemplateActionPayload,
-  })
-);
+export const dashboardConfigClearAllCardsIntent = createAction(DashboardConfigAction.CLEAR_ALL_CARDS, () => ({
+  payload: {} as DashboardHistoryClearTemplateActionPayload,
+}));
 
 export interface DashboardConfig {
   layouts: DashboardLayout[];
@@ -272,8 +269,13 @@ const getTemplateHistoryIndexForMutation = (state: DashboardConfig, templateName
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
-    .addCase(dashboardConfigClearAllCardsIntent, (state) =>{
-      state.layouts[state.current].cards = [];
+    .addCase(dashboardConfigClearAllCardsIntent, (state) => {
+      const currentLayout = state.layouts[state.current];
+      if (currentLayout.cards.length < 1) {
+        state.errorMessage = 'No cards to clear.';
+      } else {
+        currentLayout.cards = [];
+      }
     })
     .addCase(dashboardConfigAddCardIntent, (state, { payload }) => {
       state.layouts[state.current].cards.push(payload);

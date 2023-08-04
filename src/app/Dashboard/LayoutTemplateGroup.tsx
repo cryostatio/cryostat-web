@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
+import {
+  dashboardConfigClearAllCardsIntent,
+  dashboardConfigTemplateHistoryClearIntent,
+} from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { portalRoot } from '@app/utils/utils';
@@ -203,11 +206,11 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
   const handleClearCards = React.useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      dispatch(clearAllDashboardCards());
+      dispatch(dashboardConfigClearAllCardsIntent());
     },
     [dispatch]
   );
-  
+
   const dropdownItems = React.useMemo(() => {
     return [
       <DropdownItem key={'download'} onClick={handleTemplateDownload}>
@@ -216,9 +219,9 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
       <DropdownItem key={'delete'} onClick={handleTemplateDelete}>
         {t('DELETE', { ns: 'common' })}
       </DropdownItem>,
-      <DropdownItem key={'clear'}onClick={handleClearCards}>
-        {t('CLEAR_ALL_CARDS',{ns:'common'})}
-      </DropdownItem>
+      <DropdownItem key={'clear'} onClick={handleClearCards}>
+        {t('CLEAR_ALL_CARDS', { ns: 'common' })}
+      </DropdownItem>,
     ];
   }, [t, handleTemplateDownload, handleTemplateDelete, handleClearCards]);
   //

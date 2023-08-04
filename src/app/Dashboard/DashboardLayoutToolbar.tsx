@@ -15,6 +15,7 @@
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { dashboardConfigClearAllCardsIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigCreateLayoutIntent,
   dashboardConfigDeleteLayoutIntent,
@@ -69,7 +70,6 @@ import {
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutSetAsTemplateModal } from './DashboardLayoutSetAsTemplateModal';
 import { LayoutTemplateUploadModal } from './LayoutTemplateUploadModal';
-import { dashboardConfigClearAllCardsIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 
 export interface DashboardLayoutToolbarProps {
   children?: React.ReactNode;
@@ -92,11 +92,6 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
   });
 
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
-
-  // clear layout
-  const [isClearAllCardsConfirmationOpen, setIsClearAllCardsConfirmationOpen] = React.useState(false);
-  const [selectedLayoutForClear, setSelectedLayoutForClear] = React.useState<string>('');
-
 
   // layout selector
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
@@ -121,12 +116,9 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
-  // first save
-  // Handle the click event of the "Clear All Cards" button
   const handleClearAllCards = React.useCallback(() => {
     dispatch(dashboardConfigClearAllCardsIntent());
   }, [dispatch, currLayout]);
-  
 
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -360,7 +352,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
         <DropdownItem key="clearAll" itemId={'clearAll'}>
-        {t('DashboardLayoutToolbar.CLEAR_ALL_CARDS')}
+          {t('DashboardLayoutToolbar.CLEAR_ALL_CARDS')}
         </DropdownItem>
       </DropdownList>
     );
