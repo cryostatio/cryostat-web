@@ -11,6 +11,6 @@
   "fileIssueUrl": "https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+__REPLACE_VERSION__",
   "mailingListName": "Google Groups",
   "mailingListUrl": "https://groups.google.com/g/cryostat-development",
-  "licenseUrl": "https://github.com/cryostatio/cryostat/blob/main/LICENSE",
+  "licenseUrl": "https://github.com/cryostatio/cryostat/blob/main/LICENSE.txt",
   "version": "2.4.0-dev"
 }
