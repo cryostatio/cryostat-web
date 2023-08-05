@@ -24,13 +24,18 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '../dashboard-utils';
+import {
+  DashboardCardDescriptor,
+  DashboardCardFC,
+  DashboardCardSizes,
+  DashboardCardTypeProps,
+} from '../dashboard-utils';
 import { DashboardCard } from '../DashboardCard';
 import '@app/Topology/styles/base.css';
 
 export interface JvmDetailsCardProps extends DashboardCardTypeProps {}
 
-export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
+export const JvmDetailsCard: DashboardCardFC<JvmDetailsCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -77,6 +82,8 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
     </DashboardCard>
   );
 };
+
+JvmDetailsCard.cardComponentName = 'JvmDetailsCard';
 
 export const JvmDetailsCardSizes: DashboardCardSizes = {
   span: {

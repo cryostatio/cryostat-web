@@ -31,7 +31,13 @@ import {
 import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { CardConfig, CardValidationResult, DashboardCardSizes, DashboardCardTypeProps } from './dashboard-utils';
+import {
+  CardConfig,
+  CardValidationResult,
+  DashboardCardFC,
+  DashboardCardSizes,
+  DashboardCardTypeProps,
+} from './dashboard-utils';
 import { DashboardCard } from './DashboardCard';
 
 export interface ErrorCardProps extends DashboardCardTypeProps {
@@ -40,7 +46,7 @@ export interface ErrorCardProps extends DashboardCardTypeProps {
 }
 
 // TODO: Fix title + design body
-export const ErrorCard: React.FC<ErrorCardProps> = ({
+export const ErrorCard: DashboardCardFC<ErrorCardProps> = ({
   validationResult,
   cardConfig: _cardConfig,
   dashboardId,
@@ -90,6 +96,8 @@ export const ErrorCard: React.FC<ErrorCardProps> = ({
     </DashboardCard>
   );
 };
+
+ErrorCard.cardComponentName = 'ErrorCard';
 
 export const ErrorCardSizes: DashboardCardSizes = {
   span: {

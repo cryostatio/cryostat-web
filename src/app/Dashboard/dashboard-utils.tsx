@@ -173,7 +173,7 @@ export const getUniqueIncrementingName = (init = 'Custom', names: string[]): str
 
 export function hasCardDescriptorByName(name: string): boolean {
   for (const choice of getDashboardCards()) {
-    if (choice.component.name === name) {
+    if (choice.component.cardComponentName === name) {
       return true;
     }
   }
@@ -182,7 +182,7 @@ export function hasCardDescriptorByName(name: string): boolean {
 
 export function getCardDescriptorByName(name: string): DashboardCardDescriptor {
   for (const choice of getDashboardCards()) {
-    if (choice.component.name === name) {
+    if (choice.component.cardComponentName === name) {
       return choice;
     }
   }
@@ -368,10 +368,13 @@ export interface DashboardCardDescriptor {
   cardSizes: DashboardCardSizes;
   description: string;
   descriptionFull: JSX.Element | string;
-  component: React.FC<any>;
+  component: DashboardCardFC<any>;
   propControls: PropControl[];
   advancedConfig?: JSX.Element;
 }
+export type DashboardCardFC<P> = React.FC<P> & {
+  cardComponentName: string;
+};
 
 export interface PropControlExtra {
   displayMapper?: (value: string) => string /* only has effect with 'select' PropControl kind */;

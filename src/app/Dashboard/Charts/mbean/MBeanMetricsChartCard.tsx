@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '@app/Dashboard/dashboard-utils';
+import {
+  DashboardCardDescriptor,
+  DashboardCardFC,
+  DashboardCardSizes,
+  DashboardCardTypeProps,
+} from '@app/Dashboard/dashboard-utils';
 import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
 import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -357,7 +362,7 @@ function getChartKindByName(name: string): MBeanMetricsChartKind {
   return chartKinds.filter((k) => k.displayName === name)[0];
 }
 
-export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (props) => {
+export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> = (props) => {
   const { t } = useTranslation();
   const [theme] = useTheme();
   const serviceContext = React.useContext(ServiceContext);
@@ -476,6 +481,8 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
     </DashboardCard>
   );
 };
+
+MBeanMetricsChartCard.cardComponentName = 'MBeanMetricsChartCard';
 
 export const MBeanMetricsChartCardSizes: DashboardCardSizes = {
   span: {

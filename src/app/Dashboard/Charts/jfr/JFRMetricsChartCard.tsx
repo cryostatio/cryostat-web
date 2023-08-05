@@ -15,7 +15,12 @@
  */
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
-import { DashboardCardDescriptor, DashboardCardSizes, DashboardCardTypeProps } from '@app/Dashboard/dashboard-utils';
+import {
+  DashboardCardDescriptor,
+  DashboardCardFC,
+  DashboardCardSizes,
+  DashboardCardTypeProps,
+} from '@app/Dashboard/dashboard-utils';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
@@ -82,7 +87,7 @@ export function kindToId(kind: string): number {
   return JFRMetricsChartKind[kind];
 }
 
-export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) => {
+export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (props) => {
   const [t] = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
@@ -262,6 +267,8 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
     </DashboardCard>
   );
 };
+
+JFRMetricsChartCard.cardComponentName = 'JFRMetricsChartCard';
 
 export const JFRMetricsChartCardSizes: DashboardCardSizes = {
   span: {

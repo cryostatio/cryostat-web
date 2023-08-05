@@ -119,8 +119,8 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
     setShowWizard(false);
     const config = getCardDescriptorByTitle(selection, t);
     const cardConfig: CardConfig = {
-      id: `${config.component.name}-${nanoid()}`,
-      name: config.component.name,
+      id: `${config.component.cardComponentName}-${nanoid()}`,
+      name: config.component.cardComponentName,
       span: config.cardSizes.span.default,
       props: propsConfig,
     };
