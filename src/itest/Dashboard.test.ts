@@ -16,28 +16,29 @@
 import assert from 'assert';
 import { By, WebDriver, until } from 'selenium-webdriver';
 import {
+  CardType,
+  Cryostat,
+  Dashboard,
   getElementByCSS,
   getElementById,
   getElementByLinkText,
   getElementByXPath,
-  selectFakeTarget,
   setupBuilder,
 } from './util';
 
 describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
+  let dashboard: Dashboard;
+  let cryostat: Cryostat;
   jest.setTimeout(30000);
 
   beforeAll(async function () {
     driver = await setupBuilder().build();
-    await driver.get('http://localhost:9091');
+    cryostat = Cryostat.getInstance(driver); 
+    dashboard = await cryostat.navigateToDashboard();
 
-    const skipButton = await driver
-      .wait(until.elementLocated(By.css('button[data-action="skip"]')), 1000)
-      .catch(() => null);
-    if (skipButton) await skipButton.click();
-
-    await selectFakeTarget(driver);
+    await cryostat.skipTour(driver);
+    await cryostat.selectFakeTarget(driver);
   });
 
   afterAll(async function () {
@@ -51,78 +52,22 @@ describe('Dashboard route functionalities', function () {
   });
 
   it('adds a new layout', async function () {
-    const layoutSelector = await getElementById(driver, 'dashboard-layout-dropdown-toggle');
-    await layoutSelector.click();
-
-    const newLayoutButton = await getElementByXPath(driver, '//button[contains(.,"New Layout")]');
-    await newLayoutButton.click();
-
-    const emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
-    expect(emptyState).toBeTruthy();
+    await dashboard.addLayout();
+    const layoutName = await dashboard.getLayoutName();
+    assert.equal(layoutName, 'Custom1');
   });
 
-  it('adds three different cards', async function () {
-    let finishButton;
-    const addCardButton = await getElementByCSS(driver, `[aria-label="Add card"]`);
-    await addCardButton.click();
+  it('adds three different cards and removes them', async function () {
+    await dashboard.addCard(CardType.TARGET_JVM_DETAILS);
+    await dashboard.addCard(CardType.AUTOMATED_ANALYSIS);
+    await dashboard.addCard(CardType.MBEAN_METRICS_CHART);
 
-    // click TargetJVMDetails card
-    const detailsCard = await getElementById(driver, `JvmDetailsCard.CARD_TITLE`);
-    await detailsCard.click();
-
-    finishButton = await getElementByCSS(driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
-    await finishButton.click();
-    await addCardButton.click();
-
-    // click AutomatedAnalysis card
-    const aaCard = await driver.findElement(By.id(`AutomatedAnalysisCard.CARD_TITLE`));
-    await aaCard.click();
-
-    finishButton = await getElementByCSS(driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
-    await finishButton.click(); // next
-    await finishButton.click(); // finish
-
-    await addCardButton.click();
-
-    // click MBeanMetrics card
-    const mbeanCard = await driver.findElement(By.id(`CHART_CARD.MBEAN_METRICS_CARD_TITLE`));
-    await mbeanCard.click();
-
-    finishButton = await getElementByCSS(driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
-    await finishButton.click(); // next
-    await finishButton.click(); // finish
-  });
-
-  it('removes all cards', async function () {
-    let firstCard = await driver.findElement(
-      By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
-    );
-    let actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
-    await actionsButton.click();
-
-    let removeButton = await getElementByLinkText(driver, 'Remove');
-    await removeButton.click();
-
-    firstCard = await driver.findElement(
-      By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
-    );
-    actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
-    await actionsButton.click();
-
-    removeButton = await getElementByLinkText(driver, 'Remove');
-    await removeButton.click();
-
-    firstCard = await driver.findElement(
-      By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
-    );
-    actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
-    await actionsButton.click();
-
-    removeButton = await getElementByLinkText(driver, 'Remove');
-    await removeButton.click();
-
-    // check all cards are removed
-    const emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
-    expect(emptyState).toBeTruthy();
+    assert.equal((await dashboard.getCards()).length, 3);
+   
+    while ((await dashboard.getCards()).length > 0) {
+      await dashboard.removeCard();
+    }
+    
+    assert.ok(await dashboard.isEmpty());
   });
 });
