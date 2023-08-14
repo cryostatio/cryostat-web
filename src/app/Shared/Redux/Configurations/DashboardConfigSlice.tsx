@@ -271,8 +271,8 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
   builder
     .addCase(dashboardConfigClearAllCardsIntent, (state) => {
       const currentLayout = state.layouts[state.current];
-      if (currentLayout.cards.length < 1) {
-        state.errorMessage = 'No cards to clear.';
+      if (currentLayout.cards.length === 0) {
+        return;
       } else {
         currentLayout.cards = [];
       }

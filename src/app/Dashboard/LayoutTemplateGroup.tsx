@@ -219,11 +219,8 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
       <DropdownItem key={'delete'} onClick={handleTemplateDelete}>
         {t('DELETE', { ns: 'common' })}
       </DropdownItem>,
-      <DropdownItem key={'clear'} onClick={handleClearCards}>
-        {t('CLEAR_ALL_CARDS', { ns: 'common' })}
-      </DropdownItem>,
     ];
-  }, [t, handleTemplateDownload, handleTemplateDelete, handleClearCards]);
+  }, [t, handleTemplateDownload, handleTemplateDelete]);
   //
 
   return (

@@ -197,9 +197,9 @@
     }
   },
   "DashboardLayoutToolbar": {
-    "CLEAR_ALL_CARDS": "Clear all cards",
+    "CLEAR_ALL_CARDS": "Clear layout",
     "DELETE": {
-      "LABEL": "Clear All Dashboard Cards"
+      "LABEL": "Delete layout"
     },
     "DOWNLOAD_AS_TEMPLATE": "Download as template",
     "MENU": {
