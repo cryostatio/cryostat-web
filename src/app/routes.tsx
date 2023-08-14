@@ -15,8 +15,7 @@
  */
 
 import * as React from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
+import { Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
 import About from './About/About';
 import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
@@ -55,7 +54,6 @@ export interface IAppRoute {
   path: string;
   title: string;
   description?: string; // non-empty description is used to filter routes for the NotFound page
-  isAsync?: boolean;
   navGroup?: string;
   featureLevel?: FeatureLevel;
   children?: IAppRoute[];
@@ -208,20 +206,18 @@ const flatten = (routes: IAppRoute[]): IAppRoute[] => {
 // a custom hook for sending focus to the primary content container
 // after a view has loaded so that subsequent press of tab key
 // sends focus directly to relevant content
-const useA11yRouteChange = (isAsync: boolean) => {
-  const lastNavigation = useLastLocation();
+const useA11yRouteChange = () => {
+  const { pathname } = useLocation();
   React.useEffect(() => {
-    if (!isAsync && lastNavigation !== null) {
-      routeFocusTimer = accessibleRouteChangeHandler();
-    }
+    routeFocusTimer = accessibleRouteChangeHandler();
     return () => {
       window.clearTimeout(routeFocusTimer);
     };
-  }, [isAsync, lastNavigation]);
+  }, [pathname]);
 };
 
-const RouteWithTitleUpdates = ({ component: Component, isAsync = false, path, title, ...rest }: IAppRoute) => {
-  useA11yRouteChange(isAsync);
+const RouteWithTitleUpdates = ({ component: Component, title, path, ...rest }: IAppRoute) => {
+  useA11yRouteChange();
   useDocumentTitle(title);
 
   const renderFallback = React.useCallback((error: Error) => {
@@ -252,24 +248,15 @@ const AppRoutes: React.FC<AppRoutesProps> = (_) => {
   const activeLevel = useFeatureLevel();
 
   return (
-    <LastLocationProvider>
-      <Switch>
-        {flatten(routes)
-          .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
-          .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
-          .map(({ path, exact, component, title, isAsync }, idx) => (
-            <RouteWithTitleUpdates
-              path={path}
-              exact={exact}
-              component={component}
-              key={idx}
-              title={title}
-              isAsync={isAsync}
-            />
-          ))}
-        <PageNotFound title="404 Page Not Found" />
-      </Switch>
-    </LastLocationProvider>
+    <Switch>
+      {flatten(routes)
+        .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
+        .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
+        .map(({ path, exact, component, title }, idx) => (
+          <RouteWithTitleUpdates path={path} exact={exact} component={component} key={idx} title={title} />
+        ))}
+      <PageNotFound title="404 Page Not Found" />
+    </Switch>
   );
 };
 
