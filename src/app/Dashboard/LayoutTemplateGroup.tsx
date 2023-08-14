@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  dashboardConfigClearAllCardsIntent,
+  //dashboardConfigClearAllCardsIntent,
   dashboardConfigTemplateHistoryClearIntent,
 } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -148,7 +148,6 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
                       {FeatureLevel[level].toLowerCase()}
                     </Label>
                   ),
-                  <ClearAllCardsCatalogTileBadge key="clear-all-cards" />,
                   <KebabCatalogTileBadge template={template} onTemplateDelete={onTemplateDelete} key={template.name} />,
                 ]}
               >
@@ -213,7 +212,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
         {t('DELETE', { ns: 'common' })}
       </DropdownItem>,
     ];
-  }, [t, handleTemplateDownload, handleTemplateDelete, handleClearCards]);
+  }, [t, handleTemplateDownload, handleTemplateDelete]);
 
   return (
     <Dropdown

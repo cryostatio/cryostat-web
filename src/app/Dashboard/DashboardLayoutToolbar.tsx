@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { Modal } from '@patternfly/react-core';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import {
   dashboardConfigCreateLayoutIntent,
@@ -41,6 +40,7 @@ import {
   MenuItemAction,
   MenuList,
   MenuToggle,
+  Modal,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -595,7 +595,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           ]}
           className="small-warning-modal"
         >
-          Are you sure you want to clear all cards? This action cannot be undone.
+          Are you sure you want to clear all cards?
         </Modal>
       </Toolbar>
     </LayoutTemplateContext.Provider>
