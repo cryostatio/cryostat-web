@@ -208,7 +208,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
       e.stopPropagation();
       dispatch(dashboardConfigClearAllCardsIntent());
     },
-    [dispatch]
+    []
   );
 
   const dropdownItems = React.useMemo(() => {

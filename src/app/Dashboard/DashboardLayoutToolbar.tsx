@@ -118,7 +118,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const handleClearAllCards = React.useCallback(() => {
     dispatch(dashboardConfigClearAllCardsIntent());
-  }, [dispatch, currLayout]);
+  }, [dispatch]);
 
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
