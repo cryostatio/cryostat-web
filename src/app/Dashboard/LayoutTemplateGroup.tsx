@@ -148,6 +148,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
                       {FeatureLevel[level].toLowerCase()}
                     </Label>
                   ),
+                  <ClearAllCardsCatalogTileBadge key="clear-all-cards" />,
                   <KebabCatalogTileBadge template={template} onTemplateDelete={onTemplateDelete} key={template.name} />,
                 ]}
               >
@@ -203,14 +204,6 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
     [onTemplateDelete, template.name]
   );
 
-  const handleClearCards = React.useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      dispatch(dashboardConfigClearAllCardsIntent());
-    },
-    []
-  );
-
   const dropdownItems = React.useMemo(() => {
     return [
       <DropdownItem key={'download'} onClick={handleTemplateDownload}>
@@ -220,8 +213,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
         {t('DELETE', { ns: 'common' })}
       </DropdownItem>,
     ];
-  }, [t, handleTemplateDownload, handleTemplateDelete]);
-  //
+  }, [t, handleTemplateDownload, handleTemplateDelete, handleClearCards]);
 
   return (
     <Dropdown

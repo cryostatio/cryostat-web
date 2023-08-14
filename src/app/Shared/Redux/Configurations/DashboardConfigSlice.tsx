@@ -233,7 +233,7 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
 );
 
 export const dashboardConfigClearAllCardsIntent = createAction(DashboardConfigAction.CLEAR_ALL_CARDS, () => ({
-  payload: {} as DashboardHistoryClearTemplateActionPayload,
+  payload: {} as DashboardClearAllCardsActionPayload,
 }));
 
 export interface DashboardConfig {
@@ -271,11 +271,7 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
   builder
     .addCase(dashboardConfigClearAllCardsIntent, (state) => {
       const currentLayout = state.layouts[state.current];
-      if (currentLayout.cards.length === 0) {
-        return;
-      } else {
-        currentLayout.cards = [];
-      }
+      currentLayout.cards = [];
     })
     .addCase(dashboardConfigAddCardIntent, (state, { payload }) => {
       state.layouts[state.current].cards.push(payload);

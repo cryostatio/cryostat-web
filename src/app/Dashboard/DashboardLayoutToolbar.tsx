@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { Modal } from '@patternfly/react-core';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { dashboardConfigClearAllCardsIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigCreateLayoutIntent,
   dashboardConfigDeleteLayoutIntent,
   dashboardConfigFavoriteLayoutIntent,
+  dashboardConfigClearAllCardsIntent,
   dashboardConfigReplaceLayoutIntent,
   RootState,
   StateDispatch,
@@ -116,9 +117,24 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
+  //new addition
+  // clear all cards
+  const [showClearConfirmation, setShowClearConfirmation] = React.useState(false);
+
   const handleClearAllCards = React.useCallback(() => {
+    setShowClearConfirmation(true); // Show the confirmation modal
+  }, []);
+
+  const handleConfirmClearAllCards = React.useCallback(() => {
     dispatch(dashboardConfigClearAllCardsIntent());
+    setShowClearConfirmation(false); // Close the confirmation modal
   }, [dispatch]);
+
+  // end
+
+  /* const handleClearAllCards = React.useCallback(() => {
+    dispatch(dashboardConfigClearAllCardsIntent());
+  }, [dispatch]); */
 
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -564,6 +580,23 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           downloadModal={isDownloadModal}
         />
         {deleteWarningModal}
+        {/* Confirmation modal for clearing all cards */}
+        <Modal
+          title="Confirm Clear All Cards"
+          isOpen={showClearConfirmation}
+          onClose={() => setShowClearConfirmation(false)}
+          actions={[
+            <Button key="confirm" variant="primary" onClick={handleConfirmClearAllCards}>
+              Confirm
+            </Button>,
+            <Button key="cancel" variant="link" onClick={() => setShowClearConfirmation(false)}>
+              Cancel
+            </Button>,
+          ]}
+          className="small-warning-modal"
+        >
+          Are you sure you want to clear all cards? This action cannot be undone.
+        </Modal>
       </Toolbar>
     </LayoutTemplateContext.Provider>
   );
