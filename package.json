@@ -33,7 +33,8 @@
     "build:bundle-analyze": "webpack-bundle-analyzer ./stats.json dist",
     "build:bundle-profile-analyze": "concurrently -c 'auto' 'yarn:build:bundle-*'",
     "yarn:install": "yarn install",
-    "yarn:frzinstall": "yarn install --immutable"
+    "yarn:frzinstall": "yarn install --immutable",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@testing-library/dom": "^9.3.1",

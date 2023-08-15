@@ -15,7 +15,6 @@
  */
 import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -32,7 +31,12 @@ import { screen, within, cleanup } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of, Subject } from 'rxjs';
-import { DEFAULT_DIMENSIONS, renderWithServiceContextAndReduxStoreWithRouter, resize } from '../Common';
+import {
+  basePreloadedState,
+  DEFAULT_DIMENSIONS,
+  renderWithServiceContextAndReduxStoreWithRouter,
+  resize,
+} from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -152,9 +156,7 @@ describe('<ArchivedRecordingsTable />', () => {
   beforeEach(() => {
     history.go(-history.length);
     preloadedState = {
-      dashboardConfigs: {
-        layouts: [] as DashboardLayout[],
-      },
+      ...basePreloadedState,
       recordingFilters: {
         list: [
           {
@@ -169,18 +171,9 @@ describe('<ArchivedRecordingsTable />', () => {
             },
           } as TargetRecordingFilters,
         ],
+        _version: '0',
       },
-      automatedAnalysisFilters: {
-        state: {
-          targetFilters: [],
-          globalFilters: {
-            filters: {
-              Score: 100,
-            },
-          },
-        },
-      },
-    } as RootState;
+    };
   });
 
   afterEach(cleanup);

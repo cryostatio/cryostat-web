@@ -38,6 +38,7 @@ export const {
   dashboardConfigDeleteTemplateIntent,
   dashboardConfigTemplateHistoryPushIntent,
   dashboardConfigTemplateHistoryClearIntent,
+  defaultDashboardConfigs,
 } = dashboardConfigSlice;
 export const {
   recordingAddFilterIntent,
@@ -47,6 +48,7 @@ export const {
   recordingDeleteCategoryFiltersIntent,
   recordingUpdateCategoryIntent,
   recordingDeleteAllFiltersIntent,
+  defaultRecordingFilters,
 } = recordingFilterSlice;
 export const {
   automatedAnalysisAddGlobalFilterIntent,
@@ -57,9 +59,11 @@ export const {
   automatedAnalysisDeleteFilterIntent,
   automatedAnalysisDeleteTargetIntent,
   automatedAnalysisUpdateCategoryIntent,
+  defaultAutomatedAnalysisFilters,
 } = automatedAnalysisFilterSlice;
 
-export const { topologyConfigSetViewModeIntent, topologyDisplayOptionsSetIntent } = topologyConfigSlice;
+export const { topologyConfigSetViewModeIntent, topologyDisplayOptionsSetIntent, defaultTopologyConfig } =
+  topologyConfigSlice;
 
 export const {
   topologyUpdateCategoryTypeIntent,
@@ -68,6 +72,7 @@ export const {
   topologyDeleteAllFiltersIntent,
   topologyDeleteCategoryFiltersIntent,
   topologyDeleteFilterIntent,
+  defaultTopologyFilters,
 } = topologyFilterSlice;
 
 export const rootReducer = combineReducers({

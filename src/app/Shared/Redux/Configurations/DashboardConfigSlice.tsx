@@ -26,7 +26,7 @@ import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-export const _dashboardConfigVersion = '4';
+export const _version = '4';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {
@@ -231,7 +231,7 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
   })
 );
 
-export interface DashboardConfigState {
+export interface DashboardConfig {
   layouts: DashboardLayout[];
   customTemplates: LayoutTemplate[];
   templateHistory: LayoutTemplateRecord[];
@@ -241,20 +241,23 @@ export interface DashboardConfigState {
 
 export const TEMPLATE_HISTORY_LIMIT = 5;
 
-const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _dashboardConfigVersion, {
+export const defaultDashboardConfigs: DashboardConfig = {
   layouts: [
     {
       name: 'Default',
       cards: [],
       favorite: true,
     },
-  ] as DashboardLayout[],
-  customTemplates: [] as LayoutTemplate[],
-  templateHistory: [] as LayoutTemplateRecord[],
+  ],
+  customTemplates: [],
+  templateHistory: [],
   current: 0,
-});
+  _version: _version,
+};
 
-const getTemplateHistoryIndexForMutation = (state: DashboardConfigState, templateName: string) => {
+const INITIAL_STATE: DashboardConfig = getPersistedState('DASHBOARD_CFG', _version, defaultDashboardConfigs);
+
+const getTemplateHistoryIndexForMutation = (state: DashboardConfig, templateName: string) => {
   const idx = state.templateHistory.findIndex((t) => t.name === templateName && t.vendor === LayoutTemplateVendor.USER);
   return idx;
 };

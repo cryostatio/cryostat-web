@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { DashboardConfigState } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { DashboardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigDeleteCardIntent,
   dashboardConfigFirstRunIntent,
@@ -47,7 +47,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const { t } = useTranslation();
-  const dashboardConfigs: DashboardConfigState = useSelector((state: RootState) => state.dashboardConfigs);
+  const dashboardConfigs: DashboardConfig = useSelector((state: RootState) => state.dashboardConfigs);
   const jfrChartController = React.useRef(
     new JFRMetricsChartController(
       serviceContext.api,
@@ -65,7 +65,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
   }, [dashboardConfigs]);
 
   React.useEffect(() => {
-    const layouts = getFromLocalStorage('DASHBOARD_CFG', {}) as DashboardConfigState;
+    const layouts = getFromLocalStorage('DASHBOARD_CFG', {}) as DashboardConfig;
     if (layouts._version === undefined) {
       dispatch(dashboardConfigFirstRunIntent());
     }

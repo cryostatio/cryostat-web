@@ -30,7 +30,6 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilter';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
@@ -53,14 +52,13 @@ export interface AutomatedAnalysisFiltersProps {
 
 export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> = ({ updateFilters, ...props }) => {
   const dispatch = useDispatch<StateDispatch>();
-  const { t } = useTranslation();
 
   const currentCategory = useSelector((state: RootState) => {
-    const targetAutomatedAnalysisFilters = state.automatedAnalysisFilters.state.targetFilters.filter(
+    const targetAutomatedAnalysisFilters = state.automatedAnalysisFilters.targetFilters.filter(
       (targetFilter) => targetFilter.target === props.target
     );
     if (!targetAutomatedAnalysisFilters.length) {
-      return t('FILTER_NAME', { ns: 'common' });
+      return 'Name';
     } // Target is not yet loaded
     return targetAutomatedAnalysisFilters[0].selectedCategory;
   });

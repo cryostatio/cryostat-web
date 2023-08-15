@@ -73,7 +73,7 @@ jest.mock('react-router-dom', () => ({
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
-jest.spyOn(defaultServices.api, 'matchTargetsWithExpr').mockImplementation((matchExpression, targets) => {
+jest.spyOn(defaultServices.api, 'matchTargetsWithExpr').mockImplementation((matchExpression, _targets) => {
   switch (matchExpression) {
     case mockRule.matchExpression:
       return of([mockTarget]);

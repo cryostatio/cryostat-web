@@ -214,7 +214,9 @@ export class SearchExprService {
 
   searchExpression({
     debounceMs = DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
-    immediateFn = (_: string) => undefined,
+    immediateFn = (_: string) => {
+      /* do nothing */
+    },
   } = {}): Observable<string> {
     return this._state$.asObservable().pipe(tap(immediateFn), debounceTime(debounceMs));
   }

@@ -25,7 +25,8 @@
       "@test/*": ["src/test/*"],
       "@i18n/*": ["src/i18n/*"],
       "@assets/*": ["node_modules/@patternfly/react-core/dist/styles/assets/*"]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*.ts",

@@ -144,14 +144,14 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const [showListView, setShowListView] = React.useState<boolean>(false);
 
   const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
-    const filters = state.automatedAnalysisFilters.state.targetFilters.filter(
+    const filters = state.automatedAnalysisFilters.targetFilters.filter(
       (targetFilter: TargetAutomatedAnalysisFilters) => targetFilter.target === targetConnectURL
     );
     return filters.length > 0 ? filters[0].filters : emptyAutomatedAnalysisFilters;
   }) as AutomatedAnalysisFiltersCategories;
 
   const targetAutomatedAnalysisGlobalFilters = useSelector((state: RootState) => {
-    return state.automatedAnalysisFilters.state.globalFilters.filters;
+    return state.automatedAnalysisFilters.globalFilters.filters;
   }) as AutomatedAnalysisGlobalFiltersCategories;
 
   const categorizeEvaluation = React.useCallback(
