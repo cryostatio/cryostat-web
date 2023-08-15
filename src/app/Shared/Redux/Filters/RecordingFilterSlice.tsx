@@ -77,7 +77,7 @@ export const allowedArchivedRecordingFilters = Object.keys(emptyArchivedRecordin
 
 export interface RecordingFilterActionPayload {
   target: string;
-  category?: string;
+  category: string;
   filter?: unknown;
   isArchived?: boolean;
 }
@@ -123,7 +123,7 @@ export const recordingDeleteAllFiltersIntent = createAction(
     payload: {
       target: target,
       isArchived: isArchived,
-    } as RecordingFilterActionPayload,
+    } as Pick<RecordingFilterActionPayload, 'target' | 'isArchived'>,
   })
 );
 
@@ -141,25 +141,25 @@ export const recordingUpdateCategoryIntent = createAction(
 export const recordingAddTargetIntent = createAction(RecordingFilterAction.TARGET_ADD, (target: string) => ({
   payload: {
     target: target,
-  } as RecordingFilterActionPayload,
+  } as Pick<RecordingFilterActionPayload, 'target'>,
 }));
 
 export const recordingDeleteTargetIntent = createAction(RecordingFilterAction.TARGET_DELETE, (target: string) => ({
   payload: {
     target: target,
-  } as RecordingFilterActionPayload,
+  } as Pick<RecordingFilterActionPayload, 'target'>,
 }));
 
 export interface TargetRecordingFilters {
   target: string; // connectURL
   active: {
     // active recordings
-    selectedCategory?: string;
+    selectedCategory: string;
     filters: RecordingFiltersCategories;
   };
   archived: {
     // archived recordings
-    selectedCategory?: string;
+    selectedCategory: string;
     filters: RecordingFiltersCategories;
   };
 }
@@ -229,9 +229,17 @@ export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRec
   };
 };
 
-const INITIAL_STATE = getPersistedState('TARGET_RECORDING_FILTERS', _version, {
+export interface RecordingFilters {
+  list: TargetRecordingFilters[];
+  readonly _version: string;
+}
+
+export const defaultRecordingFilters: RecordingFilters = {
   list: [] as TargetRecordingFilters[],
-});
+  _version: _version,
+};
+
+const INITIAL_STATE = getPersistedState('TARGET_RECORDING_FILTERS', _version, defaultRecordingFilters);
 
 export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder

@@ -86,7 +86,7 @@ export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);
 
 export interface RecordingFiltersProps {
   target: string;
-  breakpoint: 'md' | 'lg' | 'xl' | '2xl';
+  breakpoint?: 'md' | 'lg' | 'xl' | '2xl';
   isArchived: boolean;
   recordings: Recording[];
   filters: RecordingFiltersCategories;

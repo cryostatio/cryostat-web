@@ -64,7 +64,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const dateTab = screen.getByRole('tab', { name: testT('DATE', 'common') });
+    const dateTab = screen.getByRole('tab', { name: testT('DATE', { ns: 'common' }) });
     expect(dateTab).toBeInTheDocument();
     expect(dateTab).toBeVisible();
     expect(dateTab.getAttribute('aria-selected')).toBe('true');
@@ -106,7 +106,7 @@ describe('<DateTimePicker/>', () => {
 
     await user.click(selectedDate);
 
-    const timeTab = screen.getByRole('tab', { name: testT('TIME', 'common') });
+    const timeTab = screen.getByRole('tab', { name: testT('TIME', { ns: 'common' }) });
     expect(timeTab).toBeInTheDocument();
     expect(timeTab).toBeVisible();
     expect(timeTab.getAttribute('aria-selected')).toBe('true');
@@ -123,7 +123,7 @@ describe('<DateTimePicker/>', () => {
     await user.click(selectedDate);
 
     // Switched to time now
-    const mInput = within(screen.getByLabelText(testT('MINUTE', 'common'))).getByLabelText(
+    const mInput = within(screen.getByLabelText(testT('MINUTE', { ns: 'common' }))).getByLabelText(
       testT('TimeSpinner.INPUT_MINUTE_VALUE')
     );
     expect(mInput).toBeInTheDocument();
@@ -142,7 +142,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const submitButton = screen.getByText(testT('SELECT', 'common'));
+    const submitButton = screen.getByText(testT('SELECT', { ns: 'common' }));
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
 
@@ -157,7 +157,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const dismissButton = screen.getByText(testT('CANCEL', 'common'));
+    const dismissButton = screen.getByText(testT('CANCEL', { ns: 'common' }));
     expect(dismissButton).toBeInTheDocument();
     expect(dismissButton).toBeVisible();
 

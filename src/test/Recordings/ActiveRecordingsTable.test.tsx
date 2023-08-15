@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import '@testing-library/jest-dom';
-import { DashboardLayout } from '@app/Dashboard/dashboard-utils';
 import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
@@ -55,7 +54,12 @@ import { act, cleanup, screen, within } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of, Subject } from 'rxjs';
-import { DEFAULT_DIMENSIONS, renderWithServiceContextAndReduxStoreWithRouter, resize } from '../Common';
+import {
+  basePreloadedState,
+  DEFAULT_DIMENSIONS,
+  renderWithServiceContextAndReduxStoreWithRouter,
+  resize,
+} from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -181,9 +185,7 @@ describe('<ActiveRecordingsTable />', () => {
     mockRecording.state = RecordingState.RUNNING;
     history.go(-history.length);
     preloadedState = {
-      dashboardConfigs: {
-        layouts: [] as DashboardLayout[],
-      },
+      ...basePreloadedState,
       recordingFilters: {
         list: [
           {
@@ -198,18 +200,9 @@ describe('<ActiveRecordingsTable />', () => {
             },
           } as TargetRecordingFilters,
         ],
+        _version: '0',
       },
-      automatedAnalysisFilters: {
-        state: {
-          targetFilters: [],
-          globalFilters: {
-            filters: {
-              Score: 100,
-            },
-          },
-        },
-      },
-    } as RootState;
+    };
   });
 
   afterAll(() => {

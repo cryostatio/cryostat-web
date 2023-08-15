@@ -92,6 +92,22 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
+<<<<<<< HEAD
+=======
+jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
+
+jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
+jest.spyOn(defaultServices.api, 'matchTargetsWithExpr').mockImplementation((matchExpression, _targets) => {
+  switch (matchExpression) {
+    case mockRule.matchExpression:
+      return of([mockTarget]);
+    case 'false':
+      return of([]);
+    default: // Assume incomplete input or others are invalid
+      return throwError(() => new Error('400 Response'));
+  }
+});
+>>>>>>> 5aa3f5c (chore(ts): fix typescript type-checking errors (#1087))
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));

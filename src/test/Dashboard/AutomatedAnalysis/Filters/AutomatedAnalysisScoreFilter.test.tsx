@@ -37,52 +37,28 @@
  */
 
 import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter';
-import {
-  emptyActiveRecordingFilters,
-  emptyArchivedRecordingFilters,
-  TargetRecordingFilters,
-} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { cleanup, screen } from '@testing-library/react';
 import React from 'react';
-import { renderWithReduxStore } from '../../../Common';
+import { basePreloadedState, renderWithReduxStore } from '../../../Common';
 
-const mockTargetConnectUrl = 'service:jmx:rmi://someUrl';
-
-const onlyShowingText = (value) => `Only showing analysis results with severity scores ≥ ${value}:`;
+const onlyShowingText = (value: number) => `Only showing analysis results with severity scores ≥ ${value}:`;
 
 describe('<AutomatedAnalysisScoreFilter />', () => {
   let preloadedState: RootState;
 
   beforeEach(() => {
     preloadedState = {
-      dashboardConfigs: {
-        layouts: [],
-      },
-      recordingFilters: {
-        list: [
-          {
-            target: mockTargetConnectUrl,
-            active: {
-              selectedCategory: 'Labels',
-              filters: emptyActiveRecordingFilters,
-            },
-            archived: {
-              selectedCategory: 'Name',
-              filters: emptyArchivedRecordingFilters,
-            },
-          } as TargetRecordingFilters,
-        ],
-      },
+      ...basePreloadedState,
       automatedAnalysisFilters: {
-        state: {
-          targetFilters: [],
-          globalFilters: {
-            filters: {
-              Score: 100,
-            },
+        targetFilters: [],
+        globalFilters: {
+          filters: {
+            Score: 100,
           },
         },
+        _version: '0',
       },
     };
   });

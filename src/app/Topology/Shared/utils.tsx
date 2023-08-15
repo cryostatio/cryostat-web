@@ -230,8 +230,18 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
 export class SearchExprService {
   private readonly _state$ = new BehaviorSubject<string>('');
 
+<<<<<<< HEAD
   searchExpression(): Observable<string> {
     return this._state$.asObservable();
+=======
+  searchExpression({
+    debounceMs = DEFAULT_MATCH_EXPR_DEBOUNCE_TIME,
+    immediateFn = (_: string) => {
+      /* do nothing */
+    },
+  } = {}): Observable<string> {
+    return this._state$.asObservable().pipe(tap(immediateFn), debounceTime(debounceMs));
+>>>>>>> 5aa3f5c (chore(ts): fix typescript type-checking errors (#1087))
   }
 
   setSearchExpression(expr: string): void {

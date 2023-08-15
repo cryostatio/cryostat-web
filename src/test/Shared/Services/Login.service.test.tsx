@@ -46,7 +46,7 @@ import { fromFetch } from 'rxjs/fetch';
 
 jest.mock('rxjs/fetch', () => {
   return {
-    fromFetch: jest.fn((url: any, opts: any): any => undefined),
+    fromFetch: jest.fn((_url: unknown, _opts: unknown): unknown => undefined),
   };
 });
 

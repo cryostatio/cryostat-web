@@ -69,7 +69,7 @@ const Component = () => {
       aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT') || ''}
       onToggle={handleLanguageToggle}
       onSelect={handleLanguageSelect}
-      selections={localeReadable(i18n.language)}
+      selections={i18n.language}
       isFlipEnabled
       menuAppendTo="parent"
     >

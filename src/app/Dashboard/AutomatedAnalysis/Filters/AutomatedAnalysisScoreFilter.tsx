@@ -59,7 +59,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
   const dispatch = useDispatch<StateDispatch>();
   const { t } = useTranslation();
   const currentScore = useSelector((state: RootState) => {
-    const filters = state.automatedAnalysisFilters.state.globalFilters.filters;
+    const filters = state.automatedAnalysisFilters.globalFilters.filters;
     if (!filters) return 0;
     return filters.Score;
   });

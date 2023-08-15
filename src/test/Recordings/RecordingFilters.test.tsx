@@ -57,7 +57,7 @@ import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { of } from 'rxjs';
-import { renderWithReduxStore } from '../Common';
+import { basePreloadedState, renderWithReduxStore } from '../Common';
 
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
@@ -132,9 +132,7 @@ describe('<RecordingFilters />', () => {
     } as RecordingFiltersCategories;
 
     preloadedState = {
-      dashboardConfigs: {
-        layouts: [],
-      },
+      ...basePreloadedState,
       recordingFilters: {
         list: [
           {
@@ -149,16 +147,16 @@ describe('<RecordingFilters />', () => {
             },
           } as TargetRecordingFilters,
         ],
+        _version: '0',
       },
       automatedAnalysisFilters: {
-        state: {
-          targetFilters: [],
-          globalFilters: {
-            filters: {
-              Score: 100,
-            },
+        targetFilters: [],
+        globalFilters: {
+          filters: {
+            Score: 100,
           },
         },
+        _version: '0',
       },
     };
   });

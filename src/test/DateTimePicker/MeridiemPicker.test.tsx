@@ -62,7 +62,7 @@ describe('<MeridiemPicker/>', () => {
   it('should select a meridiem when click', async () => {
     const { user } = renderDefault(<MeridiemPicker onSelect={onSelect} />);
 
-    const pm = screen.getByText(testT('MERIDIEM_PM', 'common'));
+    const pm = screen.getByText(testT('MERIDIEM_PM', { ns: 'common' }));
     expect(pm).toBeInTheDocument();
     expect(pm).toBeVisible();
 

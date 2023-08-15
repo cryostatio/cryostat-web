@@ -102,31 +102,33 @@ export interface TopologyConfig {
   displayOptions: DisplayOptions;
 }
 
-export const defaultDisplayOptions: DisplayOptions = {
-  show: {
-    connectionUrl: false,
-    badge: true,
-    status: true,
-    icon: true,
-  },
-  groupings: {
-    realmOnly: false,
-    collapseSingles: false,
+export const defaultTopologyConfig: TopologyConfig = {
+  viewMode: 'graph',
+  displayOptions: {
+    show: {
+      connectionUrl: false,
+      badge: true,
+      status: true,
+      icon: true,
+    },
+    groupings: {
+      realmOnly: false,
+      collapseSingles: false,
+    },
   },
 };
 
-export const showOptions: [string, string][] = Object.keys(defaultDisplayOptions.show).map((k) => {
+export const showOptions: [string, string][] = Object.keys(defaultTopologyConfig.displayOptions.show).map((k) => {
   return [getDisplayFieldName(k), k];
 });
 
-export const groupingOptions: [string, string][] = Object.keys(defaultDisplayOptions.groupings).map((k) => {
-  return [getDisplayFieldName(k), k];
-});
+export const groupingOptions: [string, string][] = Object.keys(defaultTopologyConfig.displayOptions.groupings).map(
+  (k) => {
+    return [getDisplayFieldName(k), k];
+  }
+);
 
-const INITIAL_STATE: TopologyConfig = getPersistedState('TOPOLOGY_CONFIG', _version, {
-  viewMode: 'graph',
-  displayOptions: defaultDisplayOptions,
-});
+const INITIAL_STATE: TopologyConfig = getPersistedState('TOPOLOGY_CONFIG', _version, defaultTopologyConfig);
 
 export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = createReducer(
   INITIAL_STATE,
