@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 import { AutomatedAnalysisCard } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
-import { LayoutTemplate, LayoutTemplateRecord } from '@app/Dashboard/dashboard-utils';
-import { DashboardConfigState } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-import { TopologyConfig } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
-import {
-  emptyActiveRecordingFilters,
-  emptyArchivedRecordingFilters,
-  TargetRecordingFilters,
-} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
-import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   ArchivedRecording,
@@ -41,7 +32,7 @@ import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndReduxStore, testT } from '../../Common';
+import { basePreloadedState, renderWithServiceContextAndReduxStore, testT } from '../../Common';
 
 jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
   return {
@@ -167,46 +158,16 @@ describe('<AutomatedAnalysisCard />', () => {
 
   beforeEach(() => {
     preloadedState = {
-      dashboardConfigs: {
-        layouts: [
-          {
-            name: 'Default',
-            cards: [],
-            favorite: false,
-          },
-        ],
-        current: 0,
-        _version: '0',
-        customTemplates: [] as LayoutTemplate[],
-        templateHistory: [] as LayoutTemplateRecord[],
-      } as DashboardConfigState,
-      recordingFilters: {
-        list: [
-          {
-            target: mockTarget.connectUrl,
-            active: {
-              selectedCategory: 'Labels',
-              filters: emptyActiveRecordingFilters,
-            },
-            archived: {
-              selectedCategory: 'Name',
-              filters: emptyArchivedRecordingFilters,
-            },
-          } as TargetRecordingFilters,
-        ],
-      },
+      ...basePreloadedState,
       automatedAnalysisFilters: {
-        state: {
-          targetFilters: [],
-          globalFilters: {
-            filters: {
-              Score: 100,
-            },
+        targetFilters: [],
+        globalFilters: {
+          filters: {
+            Score: 100,
           },
         },
+        _version: '0',
       },
-      topologyConfigs: {} as TopologyConfig,
-      topologyFilters: {} as TopologyFilters,
     };
   });
 
@@ -364,12 +325,10 @@ describe('<AutomatedAnalysisCard />', () => {
     const newPreloadedState = {
       ...preloadedState,
       automatedAnalysisFilters: {
-        state: {
-          targetFilters: [],
-          globalFilters: {
-            filters: {
-              Score: 0,
-            },
+        targetFilters: [],
+        globalFilters: {
+          filters: {
+            Score: 0,
           },
         },
       },

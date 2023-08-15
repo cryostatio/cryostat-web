@@ -19,7 +19,7 @@ import { hashCode } from '@app/utils/utils';
 export interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   title: string;
   description: React.ReactNode;
-  element: React.FC<Record<string, never>>;
+  element: React.ReactNode;
   orderInGroup: number;
   featureLevel: FeatureLevel;
 }

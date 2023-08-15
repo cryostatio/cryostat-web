@@ -22,7 +22,7 @@
     "itest": "wait-on -lt 60000 http://localhost:9091 && jest --testMatch='**/itest/**/*.test.(ts|tsx)'",
     "license:check": "license-check-and-add check -f license-config.json",
     "license:apply": "license-check-and-add add -f license-config.json",
-    "lint": "concurrently -c 'auto' 'yarn:format' 'yarn:eslint'",
+    "lint": "concurrently -c 'auto' 'yarn:format' 'yarn:eslint' 'yarn:type-check'",
     "localize": "i18next \"src/**/*.{js,jsx,ts,tsx,json}\" -c ./i18next-parser.config.js",
     "format": "yarn format:check",
     "format:check": "concurrently -c 'auto' 'yarn:license:check' 'yarn:prettier:check'",
@@ -33,7 +33,8 @@
     "build:bundle-analyze": "webpack-bundle-analyzer ./stats.json dist",
     "build:bundle-profile-analyze": "concurrently -c 'auto' 'yarn:build:bundle-*'",
     "yarn:install": "yarn install",
-    "yarn:frzinstall": "yarn install --immutable"
+    "yarn:frzinstall": "yarn install --immutable",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@testing-library/dom": "^9.3.1",

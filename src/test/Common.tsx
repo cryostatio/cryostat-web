@@ -15,7 +15,15 @@
  */
 
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { setupStore } from '@app/Shared/Redux/ReduxStore';
+import {
+  defaultAutomatedAnalysisFilters,
+  defaultDashboardConfigs,
+  defaultRecordingFilters,
+  defaultTopologyConfig,
+  defaultTopologyFilters,
+  RootState,
+  setupStore,
+} from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -25,6 +33,7 @@ import React, { PropsWithChildren } from 'react';
 import '@i18n/config';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
+
 // userEvent functions are recommended to be called in tests (i.e it()).
 // See https://testing-library.com/docs/user-event/intro#writing-tests-with-userevent
 
@@ -228,4 +237,12 @@ export const mockMediaQueryList: MediaQueryList = {
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
   dispatchEvent: jest.fn(),
+};
+
+export const basePreloadedState: RootState = {
+  dashboardConfigs: defaultDashboardConfigs,
+  recordingFilters: defaultRecordingFilters,
+  automatedAnalysisFilters: defaultAutomatedAnalysisFilters,
+  topologyConfigs: defaultTopologyConfig,
+  topologyFilters: defaultTopologyFilters,
 };

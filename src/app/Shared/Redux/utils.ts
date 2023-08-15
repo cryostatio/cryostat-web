@@ -16,8 +16,7 @@
 
 import { getFromLocalStorage, LocalStorageKeyStrings } from '@app/utils/LocalStorage';
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export const getPersistedState = (key: LocalStorageKeyStrings, _version: string, defaultConfig: any): any => {
+export const getPersistedState = <T>(key: LocalStorageKeyStrings, _version: string, defaultConfig: T): T => {
   const persisted = getFromLocalStorage(key, undefined);
   if (!persisted || persisted._version !== _version) {
     return {
