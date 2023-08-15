@@ -117,24 +117,16 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
-  //new addition
-  // clear all cards
   const [showClearConfirmation, setShowClearConfirmation] = React.useState(false);
 
   const handleClearAllCards = React.useCallback(() => {
-    setShowClearConfirmation(true); // Show the confirmation modal
+    setShowClearConfirmation(true);
   }, []);
 
   const handleConfirmClearAllCards = React.useCallback(() => {
     dispatch(dashboardConfigClearAllCardsIntent());
-    setShowClearConfirmation(false); // Close the confirmation modal
+    setShowClearConfirmation(false);
   }, [dispatch]);
-
-  // end
-
-  /* const handleClearAllCards = React.useCallback(() => {
-    dispatch(dashboardConfigClearAllCardsIntent());
-  }, [dispatch]); */
 
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -367,12 +359,14 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         <DropdownItem key="download" itemId={'download'}>
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
-        <DropdownItem key="clearAll" itemId={'clearAll'}>
+        <DropdownItem key="clearAll" itemId={'clearAll' }
+        isDisabled = {currLayout.cards.length < 1}
+        >
           {t('DashboardLayoutToolbar.CLEAR_ALL_CARDS')}
         </DropdownItem>
       </DropdownList>
     );
-  }, [t]);
+  }, [t, currLayout.cards.length]);
 
   const handleDownloadTemplateModalOpen = React.useCallback(() => {
     setIsDownloadModal(true);
