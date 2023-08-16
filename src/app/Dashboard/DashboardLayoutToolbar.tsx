@@ -40,7 +40,6 @@ import {
   MenuItemAction,
   MenuList,
   MenuToggle,
-  Modal,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -121,12 +120,12 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const handleClearAllCards = React.useCallback(() => {
     setShowClearConfirmation(true);
-  }, []);
+  }, [setShowClearConfirmation]);
 
   const handleConfirmClearAllCards = React.useCallback(() => {
     dispatch(dashboardConfigClearAllCardsIntent());
     setShowClearConfirmation(false);
-  }, [dispatch]);
+  }, [dispatch, setShowClearConfirmation]);
 
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -553,6 +552,18 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
     );
   }, [isDeleteWarningModalOpen, handleDeleteWarningModalClose, handleDeleteLayout]);
 
+  const clearAllCardsWarningModal = React.useMemo(() => {
+    return (
+      <DeleteWarningModal
+        warningType={DeleteOrDisableWarningType.ClearAllDashboardCards}
+        visible={showClearConfirmation}
+        onClose={() => setShowClearConfirmation(false)}
+        onAccept={handleConfirmClearAllCards}
+        acceptButtonText={t('CLEAR', { ns: 'common' })}
+      />
+    );
+  }, [showClearConfirmation, handleConfirmClearAllCards,t]);
+
   return (
     <LayoutTemplateContext.Provider
       value={{
@@ -572,23 +583,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           downloadModal={isDownloadModal}
         />
         {deleteWarningModal}
-        {/* Confirmation modal for clearing all cards */}
-        <Modal
-          title="Confirm Clear All Cards"
-          isOpen={showClearConfirmation}
-          onClose={() => setShowClearConfirmation(false)}
-          actions={[
-            <Button key="confirm" variant="primary" onClick={handleConfirmClearAllCards}>
-              Confirm
-            </Button>,
-            <Button key="cancel" variant="link" onClick={() => setShowClearConfirmation(false)}>
-              Cancel
-            </Button>,
-          ]}
-          className="small-warning-modal"
-        >
-          Are you sure you want to clear all cards?
-        </Modal>
+        {clearAllCardsWarningModal}
       </Toolbar>
     </LayoutTemplateContext.Provider>
   );

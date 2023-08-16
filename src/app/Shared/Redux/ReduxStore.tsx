@@ -16,7 +16,7 @@
 
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
-import { dashboardConfigClearAllCardsIntent, RootState } from './Configurations/DashboardConfigSlice';
+import { dashboardConfigClearAllCardsIntent } from './Configurations/DashboardConfigSlice';
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';

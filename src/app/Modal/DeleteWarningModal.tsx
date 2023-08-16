@@ -68,7 +68,7 @@ export const DeleteWarningModal = ({ onAccept, onClose, ...props }: DeleteWarnin
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
-              Delete
+              {props.warningType === DeleteOrDisableWarningType.ClearAllDashboardCards ? 'Clear' : 'Delete'}
             </Button>
             <Button variant="link" onClick={onInnerClose}>
               Cancel

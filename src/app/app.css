@@ -699,9 +699,3 @@ svg.topology__node-decorator-icon.progress {
 :is(.pf-theme-dark) .configuration-error-list code {
   background-color: var(--pf-global--palette--black-600);
 }
-
-/* Custom styles for the warning modal */
-.small-warning-modal {
-  max-width: 500px !important; /* Adjust the width as needed */
-}
-
