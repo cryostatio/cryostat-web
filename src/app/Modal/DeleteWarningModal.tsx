@@ -28,12 +28,12 @@ export interface DeleteWarningProps {
   acceptButtonText?: string;
 }
 
-export const DeleteWarningModal = ({
+export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
   onAccept,
   onClose,
   acceptButtonText = 'Delete',
   ...props
-}: DeleteWarningProps): JSX.Element => {
+}) => {
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
