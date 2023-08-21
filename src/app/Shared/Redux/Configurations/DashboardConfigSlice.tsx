@@ -111,7 +111,8 @@ export interface DashboardHistoryPushTemplateActionPayload {
 }
 
 export interface DashboardHistoryClearTemplateActionPayload {}
-export interface DashboardClearAllCardsActionPayload {}
+
+export interface ClearDashboardLayoutActionPayload {}
 
 export const dashboardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
@@ -233,8 +234,8 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
   })
 );
 
-export const dashboardConfigClearAllCardsIntent = createAction(DashboardConfigAction.LAYOUT_CLEAR, () => ({
-  payload: {} as DashboardClearAllCardsActionPayload,
+export const dashboardConfigClearLayoutIntent = createAction(DashboardConfigAction.LAYOUT_CLEAR, () => ({
+  payload: {} as ClearDashboardLayoutActionPayload,
 }));
 
 export interface DashboardConfig {
@@ -270,7 +271,7 @@ const getTemplateHistoryIndexForMutation = (state: DashboardConfig, templateName
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
-    .addCase(dashboardConfigClearAllCardsIntent, (state) => {
+    .addCase(dashboardConfigClearLayoutIntent, (state) => {
       const currentLayout = state.layouts[state.current];
       currentLayout.cards = [];
     })

@@ -19,7 +19,7 @@ import {
   dashboardConfigCreateLayoutIntent,
   dashboardConfigDeleteLayoutIntent,
   dashboardConfigFavoriteLayoutIntent,
-  dashboardConfigClearAllCardsIntent,
+  dashboardConfigClearLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
   RootState,
   StateDispatch,
@@ -118,16 +118,16 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const [showClearConfirmation, setShowClearConfirmation] = React.useState(false);
 
-  const handleClearAllCards = React.useCallback(() => {
+  const handleClearLayout = React.useCallback(() => {
     if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.ClearDashboardLayout)) {
       setShowClearConfirmation(true);
     } else {
-      dispatch(dashboardConfigClearAllCardsIntent());
+      dispatch(dashboardConfigClearLayoutIntent());
     }
   }, [context.settings, setShowClearConfirmation, dispatch]);
 
-  const handleConfirmClearAllCards = React.useCallback(() => {
-    dispatch(dashboardConfigClearAllCardsIntent());
+  const handleConfirmClearDashboardLayout = React.useCallback(() => {
+    dispatch(dashboardConfigClearLayoutIntent());
     setShowClearConfirmation(false);
   }, [dispatch, setShowClearConfirmation]);
 
@@ -393,14 +393,14 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           handleDownloadTemplateModalOpen();
           break;
         case 'clearAll':
-          handleClearAllCards();
+          handleClearLayout();
           break;
         default:
           console.error('unknown item id ' + itemId);
       }
       setIsKebabOpen(false);
     },
-    [handleSetAsTemplateModalOpen, handleDownloadTemplateModalOpen, handleClearAllCards, setIsKebabOpen]
+    [handleSetAsTemplateModalOpen, handleDownloadTemplateModalOpen, handleClearLayout, setIsKebabOpen]
   );
 
   const kebabDropdown = React.useMemo(
@@ -556,17 +556,17 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
     );
   }, [isDeleteWarningModalOpen, handleDeleteWarningModalClose, handleDeleteLayout]);
 
-  const clearAllCardsWarningModal = React.useMemo(() => {
+  const clearDashboardLayoutWarningModal = React.useMemo(() => {
     return (
       <DeleteWarningModal
         warningType={DeleteOrDisableWarningType.ClearDashboardLayout}
         visible={showClearConfirmation}
         onClose={() => setShowClearConfirmation(false)}
-        onAccept={handleConfirmClearAllCards}
-        acceptButtonText={t('CLEAR_LAYOUT')}
+        onAccept={handleConfirmClearDashboardLayout}
+        acceptButtonText={t('CLEAR', { ns: 'common' })}
       />
     );
-  }, [showClearConfirmation, handleConfirmClearAllCards, t]);
+  }, [showClearConfirmation, handleConfirmClearDashboardLayout, t]);
 
   return (
     <LayoutTemplateContext.Provider
@@ -587,7 +587,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           downloadModal={isDownloadModal}
         />
         {deleteWarningModal}
-        {clearAllCardsWarningModal}
+        {clearDashboardLayoutWarningModal}
       </Toolbar>
     </LayoutTemplateContext.Provider>
   );
