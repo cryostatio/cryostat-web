@@ -32,6 +32,10 @@ export function getElementByLinkText(driver: WebDriver, linkText: string) {
   return driver.findElement(By.linkText(linkText));
 }
 
+export function getElementByAttribute(driver: WebDriver, attribute: string, value: string) {
+  return driver.findElement(By.xpath(`//*[@${attribute}='${value}']`));
+}
+
 export function setupBuilder(): Builder {
   const headless = process.env.HEADLESS_BROWSER === 'true';
   const options = new firefox.Options();
@@ -39,6 +43,7 @@ export function setupBuilder(): Builder {
     options.headless();
   }
   options.setAcceptInsecureCerts(true);
+  options.addArguments("--width=1920", "--height=1080");
   return new Builder().forBrowser('firefox').setFirefoxOptions(options);
 }
 
@@ -62,21 +67,25 @@ export class Cryostat {
     return new Dashboard(this.driver);
   }
 
+  async navigateToRecordings(): Promise<Recordings> {
+    await this.driver.get('http://localhost:9091/recordings');
+    return new Recordings(this.driver);
+  }
+
   async selectFakeTarget(driver: WebDriver) {
     const targetName = 'Fake Target';
-    const targetSelect = await driver.findElement(By.css(`[aria-label="Options menu"]`));
+    const targetSelect = await driver.wait(until.elementLocated(By.css(`[aria-label="Options menu"]`)));
     await targetSelect.click();
-    const targetOption = await driver.findElement(By.xpath(`//*[contains(text(), '${targetName}')]`));
+    const targetOption = await driver.wait(until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`)));
     await targetOption.click();
   }
   
   async skipTour(driver: WebDriver) {
     const skipButton = await driver
-    .wait(until.elementLocated(By.css('button[data-action="skip"]')), 1000)
+    .wait(until.elementLocated(By.css('button[data-action="skip"]')))
     .catch(() => null);
     if (skipButton) await skipButton.click();
   }
-  
 }
 
 export class Dashboard {
@@ -153,6 +162,34 @@ export class Dashboard {
     await removeButton.click();
   }
 }
+
+export class Recordings {
+  private driver: WebDriver;
+
+  constructor(driver: WebDriver) {
+    this.driver = driver;
+  }
+
+  async createRecording(name: string) {
+    const createButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-create-btn');
+      // const createButton = await getElementByXPath(this.driver, "//*[@data-quickstart-id='recordings-create-btn']");
+      await createButton.click();
+
+      // Enter recording name
+      const recordingNameInput = await getElementById(this.driver, 'recording-name');
+      await recordingNameInput.sendKeys(name);
+
+      // Select template
+      await getElementById(this.driver, 'recording-template').sendKeys('Demo Template');
+
+      const submitButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'crf-create-btn');
+      await submitButton.click();
+      await sleep(10000);
+  }
+}
+
+// utility function for integration test debugging
+export const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
 export enum CardType {
   TARGET_JVM_DETAILS,

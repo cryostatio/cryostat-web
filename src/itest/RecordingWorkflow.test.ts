@@ -16,27 +16,31 @@
 import assert from 'assert';
 import { By, WebDriver, until } from 'selenium-webdriver';
 import {
+  Cryostat,
+  Dashboard,
+  Recordings,
   getElementByCSS,
   getElementById,
   getElementByLinkText,
   getElementByXPath,
   setupBuilder,
+  sleep,
 } from './util';
 
-describe.skip('Dashboard route functionalities', function () {
+describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
-  jest.setTimeout(30000);
+  let recordings: Recordings;
+  let cryostat: Cryostat;
+  jest.setTimeout(60000);
 
   beforeAll(async function () {
     driver = await setupBuilder().build();
-    await driver.get('http://localhost:9091');
+    cryostat = Cryostat.getInstance(driver); 
+    recordings = await cryostat.navigateToRecordings();
 
-    const skipButton = await driver
-      .wait(until.elementLocated(By.css('button[data-action="skip"]')), 1000)
-      .catch(() => null);
-    if (skipButton) await skipButton.click();
 
-    await selectFakeTarget(driver);
+    await cryostat.skipTour(driver);
+    await cryostat.selectFakeTarget(driver);
   });
 
   afterAll(async function () {
@@ -44,8 +48,10 @@ describe.skip('Dashboard route functionalities', function () {
   });
 
   it('creates a new recording', async function () {
-    const recordingTab = await getElementByXPath(driver, "//a[contains(@href, '/recordings')]");
-    await recordingTab.click();
+    recordings.createRecording('helloWorld');
+
+    await sleep(10000);
+
 
     // const newLayoutButton = await getElementByXPath(driver, '//button[contains(.,"New Layout")]');
     // await newLayoutButton.click();

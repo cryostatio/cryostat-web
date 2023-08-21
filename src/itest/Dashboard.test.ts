@@ -30,7 +30,7 @@ describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
   let dashboard: Dashboard;
   let cryostat: Cryostat;
-  jest.setTimeout(30000);
+  jest.setTimeout(60000);
 
   beforeAll(async function () {
     driver = await setupBuilder().build();
