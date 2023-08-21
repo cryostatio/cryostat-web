@@ -119,14 +119,12 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
   const [showClearConfirmation, setShowClearConfirmation] = React.useState(false);
 
   const handleClearAllCards = React.useCallback(() => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.ClearDashboardLayout)) {
-        setShowClearConfirmation(true);
-      } else {
-        dispatch(dashboardConfigClearAllCardsIntent());
-      }
-    },
-    [context.settings, setShowClearConfirmation, dispatch]
-  );
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.ClearDashboardLayout)) {
+      setShowClearConfirmation(true);
+    } else {
+      dispatch(dashboardConfigClearAllCardsIntent());
+    }
+  }, [context.settings, setShowClearConfirmation, dispatch]);
 
   const handleConfirmClearAllCards = React.useCallback(() => {
     dispatch(dashboardConfigClearAllCardsIntent());
