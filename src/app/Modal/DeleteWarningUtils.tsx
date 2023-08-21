@@ -118,7 +118,7 @@ export const DeleteDashboardLayout: DeleteOrDisableWarning = {
 
 export const ClearDashboardLayout: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.ClearDashboardLayout,
-  title: 'Permanently Clear your Dashboard Layout?',
+  title: 'Permanently clear your Dashboard Layout?',
   label: 'Clear Dashboard Layout',
   description: 'If you click clear, all cards in the current dashboard layout will be removed.',
   ariaLabel: 'Dashboard Layout clear warning',
