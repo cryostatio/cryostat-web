@@ -197,7 +197,7 @@
     }
   },
   "DashboardLayoutToolbar": {
-    "CLEAR_ALL_CARDS": "Clear layout",
+    "CLEAR_LAYOUT": "Clear layout",
     "DELETE": {
       "LABEL": "Delete layout"
     },

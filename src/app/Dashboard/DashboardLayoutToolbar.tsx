@@ -118,9 +118,16 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const [showClearConfirmation, setShowClearConfirmation] = React.useState(false);
 
-  const handleClearAllCards = React.useCallback(() => {
-    setShowClearConfirmation(true);
-  }, [setShowClearConfirmation]);
+  const handleClearAllCards = React.useCallback(
+    (ev:React.MouseEvent<HTMLButtonElement, MouseEvent>, layout:string)=>{
+      if(context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.ClearDashboardLayout)){
+        setShowClearConfirmation(true);
+      } else{
+        dispatch(dashboardConfigClearAllCardsIntent());
+      }
+    },
+    [context.settings, setShowClearConfirmation]
+  );
 
   const handleConfirmClearAllCards = React.useCallback(() => {
     dispatch(dashboardConfigClearAllCardsIntent());
@@ -359,7 +366,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
         <DropdownItem key="clearAll" itemId={'clearAll'} isDisabled={currLayout.cards.length < 1}>
-          {t('DashboardLayoutToolbar.CLEAR_ALL_CARDS')}
+          {t('DashboardLayoutToolbar.CLEAR_LAYOUT')}
         </DropdownItem>
       </DropdownList>
     );
@@ -555,11 +562,11 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
   const clearAllCardsWarningModal = React.useMemo(() => {
     return (
       <DeleteWarningModal
-        warningType={DeleteOrDisableWarningType.ClearAllDashboardCards}
+        warningType={DeleteOrDisableWarningType.ClearDashboardLayout}
         visible={showClearConfirmation}
         onClose={() => setShowClearConfirmation(false)}
         onAccept={handleConfirmClearAllCards}
-        acceptButtonText={t('CLEAR', { ns: 'common' })}
+        acceptButtonText={t('CLEAR_LAYOUT')}
       />
     );
   }, [showClearConfirmation, handleConfirmClearAllCards,t]);

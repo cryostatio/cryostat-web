@@ -25,7 +25,7 @@ export enum DeleteOrDisableWarningType {
   DeleteCustomTargets = 'DeleteCustomTargets',
   DeleteDashboardLayout = 'DeleteDashboardLayout',
   DeleteLayoutTemplate = 'DeleteLayoutTemplate',
-  ClearAllDashboardCards = 'ClearAllDashboardCards',
+  ClearDashboardLayout = 'ClearDashboardLayout',
 }
 
 export interface DeleteOrDisableWarning {
@@ -116,11 +116,11 @@ export const DeleteDashboardLayout: DeleteOrDisableWarning = {
   ariaLabel: 'Dashboard Layout delete warning',
 };
 
-export const ClearAllDashboardCards: DeleteOrDisableWarning = {
-  id: DeleteOrDisableWarningType.ClearAllDashboardCards,
+export const ClearDashboardLayout: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.ClearDashboardLayout,
   title: 'Clear All Dashboard Cards',
   label: 'Clear All Cards',
-  description: 'If you click clear, all cards on the dashboard will be removed.',
+  description: 'If you click clear, all cards in the current dashboard layout will be removed.',
   ariaLabel: 'Clear all dashboard cards warning',
 };
 
@@ -144,7 +144,7 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteCustomTargets,
   DeleteDashboardLayout,
   DeleteLayoutTemplate,
-  ClearAllDashboardCards,
+  ClearDashboardLayout,
 ];
 
 export const getFromWarningMap = (warning: DeleteOrDisableWarningType): DeleteOrDisableWarning | undefined => {

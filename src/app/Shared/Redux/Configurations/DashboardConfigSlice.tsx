@@ -45,7 +45,7 @@ export enum DashboardConfigAction {
   TEMPLATE_RENAME = 'template-config/rename',
   TEMPLATE_HISTORY_PUSH = 'template-history/push',
   TEMPLATE_HISTORY_CLEAR = 'template-history/clear',
-  CLEAR_ALL_CARDS = 'dashboard-card-config/clear-all-cards',
+  LAYOUT_CLEAR = 'dashboard-card-config/layout-clear',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -232,7 +232,8 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
   })
 );
 
-export const dashboardConfigClearAllCardsIntent = createAction(DashboardConfigAction.CLEAR_ALL_CARDS, () => ({
+export const dashboardConfigClearAllCardsIntent = createAction(
+  DashboardConfigAction.LAYOUT_CLEAR, () => ({
   payload: {} as DashboardClearAllCardsActionPayload,
 }));
 

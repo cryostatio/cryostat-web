@@ -25,9 +25,10 @@ export interface DeleteWarningProps {
   visible: boolean;
   onAccept: () => void;
   onClose: () => void;
+  acceptButtonText?: string;
 }
 
-export const DeleteWarningModal = ({ onAccept, onClose, ...props }: DeleteWarningProps): JSX.Element => {
+export const DeleteWarningModal = ({ onAccept, onClose, acceptButtonText = 'Delete', ...props }: DeleteWarningProps): JSX.Element => {
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
@@ -68,7 +69,7 @@ export const DeleteWarningModal = ({ onAccept, onClose, ...props }: DeleteWarnin
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
-              {props.warningType === DeleteOrDisableWarningType.ClearAllDashboardCards ? 'Clear' : 'Delete'}
+            {acceptButtonText}
             </Button>
             <Button variant="link" onClick={onInnerClose}>
               Cancel
