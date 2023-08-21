@@ -111,6 +111,7 @@ export interface DashboardHistoryPushTemplateActionPayload {
 }
 
 export interface DashboardHistoryClearTemplateActionPayload {}
+export interface DashboardClearAllCardsActionPayload{}
 
 export const dashboardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
@@ -232,8 +233,7 @@ export const dashboardConfigTemplateHistoryClearIntent = createAction(
   })
 );
 
-export const dashboardConfigClearAllCardsIntent = createAction(
-  DashboardConfigAction.LAYOUT_CLEAR, () => ({
+export const dashboardConfigClearAllCardsIntent = createAction(DashboardConfigAction.LAYOUT_CLEAR, () => ({
   payload: {} as DashboardClearAllCardsActionPayload,
 }));
 

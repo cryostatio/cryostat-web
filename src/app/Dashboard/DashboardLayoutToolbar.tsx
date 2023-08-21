@@ -118,15 +118,14 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const [showClearConfirmation, setShowClearConfirmation] = React.useState(false);
 
-  const handleClearAllCards = React.useCallback(
-    (ev:React.MouseEvent<HTMLButtonElement, MouseEvent>, layout:string)=>{
-      if(context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.ClearDashboardLayout)){
+  const handleClearAllCards = React.useCallback(() => {
+      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.ClearDashboardLayout)) {
         setShowClearConfirmation(true);
-      } else{
+      } else {
         dispatch(dashboardConfigClearAllCardsIntent());
       }
     },
-    [context.settings, setShowClearConfirmation]
+    [context.settings, setShowClearConfirmation, dispatch]
   );
 
   const handleConfirmClearAllCards = React.useCallback(() => {
@@ -569,7 +568,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         acceptButtonText={t('CLEAR_LAYOUT')}
       />
     );
-  }, [showClearConfirmation, handleConfirmClearAllCards,t]);
+  }, [showClearConfirmation, handleConfirmClearAllCards, t]);
 
   return (
     <LayoutTemplateContext.Provider
