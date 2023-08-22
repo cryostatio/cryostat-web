@@ -175,8 +175,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
       this.delete('api/beta/recordings/:targetId/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
-        const recording = schema.where(Resource.ARCHIVE, { name: recordingName });
-        schema.findBy(Resource.ARCHIVE, { name: recordingName })?.destroy();
+        const recording = schema.findBy(Resource.ARCHIVE, { name: recordingName });
+
+        if (!recording) {
+          return new Response(404);
+        }
+        recording.destroy();
+
         const msg = {
           meta: {
             category: 'ArchivedRecordingDeleted',
@@ -185,7 +190,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
           message: {
             recording: {
-              ...recording.models[0].attrs,
+              ...recording.attrs,
             },
             target: request.params['targetId'],
           },
@@ -237,8 +242,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.get('api/v1/targets/:targetId/recordings', (schema) => schema.all(Resource.RECORDING).models);
       this.delete('api/v1/targets/:targetId/recordings/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
-        const recording = schema.where(Resource.RECORDING, { name: recordingName });
-        schema.findBy(Resource.RECORDING, { name: recordingName })?.destroy();
+        const recording = schema.findBy(Resource.RECORDING, { name: recordingName });
+
+        if (!recording) {
+          return new Response(404);
+        }
+        recording.destroy();
+
         const msg = {
           meta: {
             category: 'ActiveRecordingDeleted',
@@ -396,17 +406,80 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         },
       ]);
       this.get('api/v2/probes', () => []);
-      this.post('api/v2/rules', (schema, request) => {
-        const attrs = JSON.parse(request.requestBody);
+      this.post('/api/beta/matchExpressions', (_, request) => {
+        const attr = JSON.parse(request.requestBody);
+        if (!attr.matchExpression || !attr.targets) {
+          return new Response(400);
+        }
         return {
           data: {
-            result: schema.create(Resource.RULE, attrs),
+            result: {
+              targets: attr.targets,
+            },
+          },
+        };
+      });
+      this.post('api/v2/rules', (schema, request) => {
+        const attrs = JSON.parse(request.requestBody);
+        const rule = schema.create(Resource.RULE, attrs);
+        const msg = {
+          meta: {
+            category: 'RuleCreated',
+            type: { type: 'application', subType: 'json' },
+            serverTime: +Date.now(),
+          },
+          message: rule,
+        };
+        websocket.send(JSON.stringify(msg));
+        return {
+          data: {
+            result: rule,
           },
         };
       });
       this.get('api/v2/rules', (schema) => ({
         data: { result: schema.all(Resource.RULE).models },
       }));
+      this.patch('api/v2/rules/:ruleName', (schema, request) => {
+        const ruleName = request.params.ruleName;
+        const patch = JSON.parse(request.requestBody);
+        const rule = schema.findBy(Resource.RULE, { name: ruleName });
+
+        if (!rule) {
+          return new Response(404);
+        }
+        rule.update(patch);
+        const msg = {
+          meta: {
+            category: 'RuleUpdated',
+            type: { type: 'application', subType: 'json' },
+            serverTime: +Date.now(),
+          },
+          message: rule,
+        };
+        websocket.send(JSON.stringify(msg));
+        return new Response(200);
+      });
+      this.delete('api/v2/rules/:ruleName', (schema, request) => {
+        const ruleName = request.params.ruleName;
+        const rule = schema.findBy(Resource.RULE, { name: ruleName });
+
+        if (!rule) {
+          return new Response(404);
+        }
+        rule.destroy();
+
+        const msg = {
+          meta: {
+            category: 'RuleDeleted',
+            type: { type: 'application', subType: 'json' },
+            serverTime: +Date.now(),
+          },
+          message: rule,
+        };
+        websocket.send(JSON.stringify(msg));
+        return new Response(200);
+      });
       this.get('api/v2.2/credentials', () => ({ data: { result: [] } }));
       this.post('api/v2.2/graphql', (schema, request) => {
         const body = JSON.parse(request.requestBody);
