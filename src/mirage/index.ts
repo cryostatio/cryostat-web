@@ -220,7 +220,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             labels: {
               ...(attrs.labels || {}),
               'template.type': 'TARGET',
-              'template.name': 'Demo Template',
+              'template.name': 'Demo_Template',
             },
           },
         });
