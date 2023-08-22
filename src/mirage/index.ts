@@ -130,8 +130,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.get('api/v1/targets', (schema) => schema.all(Resource.TARGET).models);
       this.get('api/v2.1/discovery', (schema) => {
         const models = schema.all(Resource.TARGET).models;
-        const ct = models.filter((t) => t.annotations.cryostat['REALM'] === 'Custom Targets');
-        const k8s = models.filter((t) => t.annotations.cryostat['REALM'] === 'KubernetesApi');
+        const realmTypes = models.map((t) => t.annotations.cryostat['REALM']);
         return {
           meta: {
             status: 'OK',
@@ -142,32 +141,20 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               name: 'Universe',
               nodeType: 'Universe',
               labels: {},
-              children: [
-                {
-                  name: 'KubernetesApi',
-                  nodeType: 'Realm',
-                  labels: {},
-                  id: 'KubernetesApi',
-                  children: k8s.map((t) => ({
+              children: realmTypes.map((r: string) => ({
+                name: r,
+                nodeType: 'Realm',
+                labels: {},
+                id: r,
+                children: models
+                  .filter((t) => t.annotations.cryostat['REALM'] === r)
+                  .map((t) => ({
                     id: t.alias,
                     name: t.alias,
-                    nodeType: 'JVM',
+                    nodeType: r === 'Custom Targets' ? 'CustomTarget' : 'JVM',
                     target: t,
                   })),
-                },
-                {
-                  name: 'Custom Targets',
-                  nodeType: 'Realm',
-                  labels: {},
-                  id: 'Custom Targets',
-                  children: ct.map((t) => ({
-                    id: t.alias,
-                    name: t.alias,
-                    nodeType: 'CustomTarget',
-                    target: t,
-                  })),
-                },
-              ],
+              })),
             },
           },
         };
