@@ -23,11 +23,7 @@ export const targetFactory: FactoryDefinition<any> = Factory.extend({
   jvmId: '1234',
   annotations: {
     platform: { 'io.cryostat.demo': 'this-is-not-real' },
-<<<<<<< HEAD
     cryostat: { hello: 'world', REALM: 'Some Realm' },
-=======
-    cryostat: { hello: 'world', REALM: 'KubernetesApi' },
->>>>>>> d0673a09 (feat(mirage): improve discovery route response and fix FormData handler)
   },
 });
 
