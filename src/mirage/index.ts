@@ -256,7 +256,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(200);
       });
       this.patch('api/v1/targets/:targetId/recordings/:recordingName', (schema, request) => {
-        const body = JSON.parse(request.requestBody);
+        const body = request.requestBody;
         const recordingName = request.params.recordingName;
         const target = schema.findBy(Resource.TARGET, { connectUrl: request.params.targetId });
         const recording = schema.findBy(Resource.RECORDING, { name: recordingName });
