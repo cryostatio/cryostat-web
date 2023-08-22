@@ -16,27 +16,29 @@
 import { Builder, By, WebDriver, WebElement, WebElementPromise, until } from 'selenium-webdriver';
 import firefox from 'selenium-webdriver/firefox';
 
+const DEFAULT_FIND_ELEMENT_TIMEOUT = 5000;
+
 export function getElementByXPath(driver: WebDriver, xpath: string) {
-  return driver.findElement(By.xpath(xpath));
+  return driver.wait(until.elementLocated(By.xpath(xpath)));
 }
 
 export function getElementByCSS(driver: WebDriver, cssSelector: string) {
-  return driver.findElement(By.css(cssSelector));
+  return driver.wait(until.elementLocated(By.css(cssSelector)));
 }
 
 export function getElementById(driver: WebDriver, id: string): WebElementPromise {
-  return driver.findElement(By.id(id));
+  return driver.wait(until.elementLocated(By.id(id)));
 }
 
 export function getElementByLinkText(driver: WebDriver, linkText: string) {
-  return driver.findElement(By.linkText(linkText));
+  return driver.wait(until.elementLocated(By.linkText(linkText)));
 }
 
 export function getElementByAttribute(driver: WebDriver, attribute: string, value: string) {
-  return driver.findElement(By.xpath(`//*[@${attribute}='${value}']`));
+  return driver.wait(until.elementLocated(By.xpath(`//*[@${attribute}='${value}']`)));
 }
 
-export function setupBuilder(): Builder {
+export async function setupDriver(): Promise<WebDriver> {
   const headless = process.env.HEADLESS_BROWSER === 'true';
   const options = new firefox.Options();
   if (headless) {
@@ -44,7 +46,11 @@ export function setupBuilder(): Builder {
   }
   options.setAcceptInsecureCerts(true);
   options.addArguments("--width=1920", "--height=1080");
-  return new Builder().forBrowser('firefox').setFirefoxOptions(options);
+  const driver = new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
+  await driver.manage().setTimeouts({
+    implicit: DEFAULT_FIND_ELEMENT_TIMEOUT,
+  });
+  return driver;
 }
 
 export class Cryostat {
@@ -172,19 +178,26 @@ export class Recordings {
 
   async createRecording(name: string) {
     const createButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-create-btn');
-      // const createButton = await getElementByXPath(this.driver, "//*[@data-quickstart-id='recordings-create-btn']");
-      await createButton.click();
+    await createButton.click();
 
-      // Enter recording name
-      const recordingNameInput = await getElementById(this.driver, 'recording-name');
-      await recordingNameInput.sendKeys(name);
+    // Enter recording name
+    const recordingNameInput = await getElementById(this.driver, 'recording-name');
+    await recordingNameInput.sendKeys(name);
 
-      // Select template
-      await getElementById(this.driver, 'recording-template').sendKeys('Demo Template');
+    // Select template
+    await getElementById(this.driver, 'recording-template').sendKeys('Demo Template');
 
-      const submitButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'crf-create-btn');
-      await submitButton.click();
-      await sleep(10000);
+    const submitButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'crf-create-btn');
+    await submitButton.click();
+  }
+
+  async getRecordings(): Promise<WebElement[]> {
+    const tableXPath = "//div[@class='recording-table--inner-container pf-c-scroll-inner-wrapper']";
+    return this.driver.findElements(By.xpath(`${tableXPath}//tbody`));
+  }
+
+  async getRecordingState(recording: WebElement): Promise<string> {
+    return recording.findElement(By.xpath(`.//td[@data-label='State']`)).getText();
   }
 }
 

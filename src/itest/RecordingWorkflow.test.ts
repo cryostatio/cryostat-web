@@ -23,9 +23,10 @@ import {
   getElementById,
   getElementByLinkText,
   getElementByXPath,
-  setupBuilder,
+  setupDriver,
   sleep,
 } from './util';
+import { RecordingState } from '@app/Shared/Services/Api.service';
 
 describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
@@ -34,30 +35,32 @@ describe('Dashboard route functionalities', function () {
   jest.setTimeout(60000);
 
   beforeAll(async function () {
-    driver = await setupBuilder().build();
+    driver = await setupDriver();
     cryostat = Cryostat.getInstance(driver); 
     recordings = await cryostat.navigateToRecordings();
-
 
     await cryostat.skipTour(driver);
     await cryostat.selectFakeTarget(driver);
   });
 
   afterAll(async function () {
-    await driver.quit();
+    await driver.close();
+  });
+
+  it('shows correct route', async function () {
+    const url = await driver.getCurrentUrl();
+    const route = url.split('/').pop();
+    assert.equal('recordings', route);
   });
 
   it('creates a new recording', async function () {
-    recordings.createRecording('helloWorld');
+    assert.equal((await recordings.getRecordings()).length, 0);
+    await recordings.createRecording('helloWorld');
+    const active = await recordings.getRecordings();
+    assert.equal(active.length, 1);
 
-    await sleep(10000);
-
-
-    // const newLayoutButton = await getElementByXPath(driver, '//button[contains(.,"New Layout")]');
-    // await newLayoutButton.click();
-
-    // const emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
-    // expect(emptyState).toBeTruthy();
+    const state = await recordings.getRecordingState(active[0]);
+    assert.equal(state, RecordingState.RUNNING);
   });
 
   // it('adds three different cards', async function () {

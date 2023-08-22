@@ -19,11 +19,7 @@ import {
   CardType,
   Cryostat,
   Dashboard,
-  getElementByCSS,
-  getElementById,
-  getElementByLinkText,
-  getElementByXPath,
-  setupBuilder,
+  setupDriver,
 } from './util';
 
 describe('Dashboard route functionalities', function () {
@@ -33,7 +29,7 @@ describe('Dashboard route functionalities', function () {
   jest.setTimeout(60000);
 
   beforeAll(async function () {
-    driver = await setupBuilder().build();
+    driver = await setupDriver();
     cryostat = Cryostat.getInstance(driver); 
     dashboard = await cryostat.navigateToDashboard();
 
@@ -42,7 +38,7 @@ describe('Dashboard route functionalities', function () {
   });
 
   afterAll(async function () {
-    await driver.quit();
+    await driver.close();
   });
 
   it('shows correct route', async function () {
