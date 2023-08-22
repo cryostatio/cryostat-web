@@ -539,6 +539,45 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
             </span>
           </label>
         </div>
+        <div
+          className="pf-l-stack__item"
+        >
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-13"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="ClearDashboardLayout"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ClearDashboardLayout-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="ClearDashboardLayout"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="ClearDashboardLayout-on"
+            >
+              Clear Dashboard Layout
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="ClearDashboardLayout-off"
+            >
+              Clear Dashboard Layout
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   </div>

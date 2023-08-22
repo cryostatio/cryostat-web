@@ -197,6 +197,7 @@
     }
   },
   "DashboardLayoutToolbar": {
+    "CLEAR_LAYOUT": "Clear layout",
     "DELETE": {
       "LABEL": "Delete layout"
     },

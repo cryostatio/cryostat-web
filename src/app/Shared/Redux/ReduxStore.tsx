@@ -36,6 +36,7 @@ export const {
   dashboardConfigFavoriteLayoutIntent,
   dashboardConfigCreateTemplateIntent,
   dashboardConfigDeleteTemplateIntent,
+  dashboardConfigClearLayoutIntent,
   dashboardConfigTemplateHistoryPushIntent,
   dashboardConfigTemplateHistoryClearIntent,
   defaultDashboardConfigs,
