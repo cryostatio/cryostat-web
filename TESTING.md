@@ -97,3 +97,9 @@ You will also need a WebDriver implementation for the specific browser you want 
 * [Edge WebDriver (for Microsoft Edge)](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
 
 Then, finally we can run `yarn itest` to run the integration tests, which will open up a fresh browser window and run the tests.
+
+Alternatively, you can start the integration tests immediately without the need for an already up and running dev server, by running 
+```bash
+$ yarn itest:preview
+```
+This will automatically start a Mirage dev server, run the integration tests on that server, and tear down the server on completion.
