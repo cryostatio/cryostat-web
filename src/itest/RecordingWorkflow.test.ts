@@ -63,68 +63,33 @@ describe('Dashboard route functionalities', function () {
     assert.equal(state, RecordingState.RUNNING);
   });
 
-  // it('adds three different cards', async function () {
-  //   let finishButton;
-  //   const addCardButton = await getElementByCSS(driver, `[aria-label="Add card"]`);
-  //   await addCardButton.click();
+  it('stops a new recording', async function () {
+    const active = await recordings.getRecordings();
+    assert.equal(active.length, 1);
 
-  //   // click TargetJVMDetails card
-  //   const detailsCard = await getElementById(driver, `JvmDetailsCard.CARD_TITLE`);
-  //   await detailsCard.click();
+    await recordings.stopRecording(active[0]);
 
-  //   finishButton = await getElementByCSS(driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
-  //   await finishButton.click();
-  //   await addCardButton.click();
+    const state = await recordings.getRecordingState(active[0]);
+    assert.equal(state, RecordingState.STOPPED);
+  });
 
-  //   // click AutomatedAnalysis card
-  //   const aaCard = await driver.findElement(By.id(`AutomatedAnalysisCard.CARD_TITLE`));
-  //   await aaCard.click();
+  // it('archives a new recording', async function () {
+  //   assert.equal((await recordings.getRecordings()).length, 0);
+  //   await recordings.createRecording('helloWorld');
+  //   const active = await recordings.getRecordings();
+  //   assert.equal(active.length, 1);
 
-  //   finishButton = await getElementByCSS(driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
-  //   await finishButton.click(); // next
-  //   await finishButton.click(); // finish
-
-  //   await addCardButton.click();
-
-  //   // click MBeanMetrics card
-  //   const mbeanCard = await driver.findElement(By.id(`CHART_CARD.MBEAN_METRICS_CARD_TITLE`));
-  //   await mbeanCard.click();
-
-  //   finishButton = await getElementByCSS(driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
-  //   await finishButton.click(); // next
-  //   await finishButton.click(); // finish
+  //   const state = await recordings.getRecordingState(active[0]);
+  //   assert.equal(state, RecordingState.RUNNING);
   // });
 
-  // it('removes all cards', async function () {
-  //   let firstCard = await driver.findElement(
-  //     By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
-  //   );
-  //   let actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
-  //   await actionsButton.click();
+  // it('downloads a new recording', async function () {
+  //   assert.equal((await recordings.getRecordings()).length, 0);
+  //   await recordings.createRecording('helloWorld');
+  //   const active = await recordings.getRecordings();
+  //   assert.equal(active.length, 1);
 
-  //   let removeButton = await getElementByLinkText(driver, 'Remove');
-  //   await removeButton.click();
-
-  //   firstCard = await driver.findElement(
-  //     By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
-  //   );
-  //   actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
-  //   await actionsButton.click();
-
-  //   removeButton = await getElementByLinkText(driver, 'Remove');
-  //   await removeButton.click();
-
-  //   firstCard = await driver.findElement(
-  //     By.xpath(`//div[contains(@class, 'pf-l-grid__item')][@style='--pf-l-grid--item--Order: 0;']`)
-  //   );
-  //   actionsButton = await firstCard.findElement(By.css('button[aria-label="Actions"]'));
-  //   await actionsButton.click();
-
-  //   removeButton = await getElementByLinkText(driver, 'Remove');
-  //   await removeButton.click();
-
-  //   // check all cards are removed
-  //   const emptyState = await getElementByCSS(driver, `.pf-c-empty-state__content`);
-  //   expect(emptyState).toBeTruthy();
+  //   const state = await recordings.getRecordingState(active[0]);
+  //   assert.equal(state, RecordingState.RUNNING);
   // });
 });

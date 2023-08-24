@@ -199,6 +199,12 @@ export class Recordings {
   async getRecordingState(recording: WebElement): Promise<string> {
     return recording.findElement(By.xpath(`.//td[@data-label='State']`)).getText();
   }
+
+  async stopRecording(recording: WebElement) {
+    await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
+    await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-stop-btn').click();
+    await sleep(10000);
+  }
 }
 
 // utility function for integration test debugging
