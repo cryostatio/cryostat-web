@@ -45,7 +45,7 @@ export async function setupDriver(): Promise<WebDriver> {
     options.headless();
   }
   options.setAcceptInsecureCerts(true);
-  options.addArguments("--width=1920", "--height=1080");
+  options.addArguments('--width=1920', '--height=1080');
   const driver = new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
   await driver.manage().setTimeouts({
     implicit: DEFAULT_FIND_ELEMENT_TIMEOUT,
@@ -82,30 +82,37 @@ export class Cryostat {
     const targetName = 'Fake Target';
     const targetSelect = await this.driver.wait(until.elementLocated(By.css(`[aria-label="Options menu"]`)));
     await targetSelect.click();
-    const targetOption = await this.driver.wait(until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`)));
+    const targetOption = await this.driver.wait(
+      until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`))
+    );
     await targetOption.click();
   }
-  
+
   async skipTour() {
     const skipButton = await this.driver
-    .wait(until.elementLocated(By.css('button[data-action="skip"]')))
-    .catch(() => null);
+      .wait(until.elementLocated(By.css('button[data-action="skip"]')))
+      .catch(() => null);
     if (skipButton) await skipButton.click();
   }
 
   async getLatestNotification(): Promise<ITestNotification> {
-    const latestNotification = await this.driver
-    .wait(until.elementLocated(By.className('pf-c-alert-group pf-m-toast')))
+    const latestNotification = await this.driver.wait(
+      until.elementLocated(By.className('pf-c-alert-group pf-m-toast'))
+    );
     return {
-      title: await getDirectTextContent(this.driver, await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__title'))),
-      description: await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__description')).getText()
-    }
+      title: await getDirectTextContent(
+        this.driver,
+        await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__title'))
+      ),
+      description: await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__description')).getText(),
+    };
   }
 }
 
 // from here: https://stackoverflow.com/a/19040341/22316240
 async function getDirectTextContent(driver: WebDriver, el: WebElement): Promise<string> {
-  return driver.executeScript<string>(`
+  return driver.executeScript<string>(
+    `
     const parent = arguments[0];
     let child = parent.firstChild;
     let ret = "";
@@ -116,13 +123,15 @@ async function getDirectTextContent(driver: WebDriver, el: WebElement): Promise<
         child = child.nextSibling;
     }
     return ret;
-  `, el);
+  `,
+    el
+  );
 }
 
 interface ITestNotification {
-    title: string,
-    description: string
-} 
+  title: string;
+  description: string;
+}
 
 export class Dashboard {
   private driver: WebDriver;
@@ -148,33 +157,34 @@ export class Dashboard {
   }
 
   async getCards(): Promise<WebElement[]> {
-   return (await this.driver.findElements(By.className('dashboard-card')));
+    return await this.driver.findElements(By.className('dashboard-card'));
   }
 
   async addCard(cardType: CardType) {
-    let finishButton;
     const addCardButton = await getElementByCSS(this.driver, `[aria-label="Add card"]`);
     await addCardButton.click();
-    const twoPartCards = [CardType.AUTOMATED_ANALYSIS, CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART]
+    const twoPartCards = [CardType.AUTOMATED_ANALYSIS, CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
 
-    switch(cardType) {
-      case CardType.AUTOMATED_ANALYSIS:
+    switch (cardType) {
+      case CardType.AUTOMATED_ANALYSIS: {
         const aaCard = await getElementById(this.driver, `AutomatedAnalysisCard.CARD_TITLE`);
         await aaCard.click();
         break;
+      }
       case CardType.JFR_METRICS_CHART:
         break;
-      case CardType.TARGET_JVM_DETAILS:
+      case CardType.TARGET_JVM_DETAILS: {
         const detailsCard = await getElementById(this.driver, `JvmDetailsCard.CARD_TITLE`);
         await detailsCard.click();
         break;
-      case CardType.MBEAN_METRICS_CHART:
+      }
+      case CardType.MBEAN_METRICS_CHART: {
         const mbeanCard = await getElementById(this.driver, `CHART_CARD.MBEAN_METRICS_CARD_TITLE`);
         await mbeanCard.click();
         break;
+      }
     }
-
-    finishButton = await getElementByCSS(this.driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
+    const finishButton = await getElementByCSS(this.driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
     await finishButton.click();
     if (twoPartCards.includes(cardType)) {
       await finishButton.click();
@@ -182,7 +192,7 @@ export class Dashboard {
   }
 
   async removeCard() {
-    let el: WebElement[] = await this.getCards();
+    const el: WebElement[] = await this.getCards();
     let firstCard;
     if (el.length > 0) {
       firstCard = el[0];
@@ -191,10 +201,10 @@ export class Dashboard {
       return;
     }
 
-    let actionsButton = await getElementByCSS(this.driver, 'button[aria-label="Actions"]');
+    const actionsButton = await getElementByCSS(this.driver, 'button[aria-label="Actions"]');
     await actionsButton.click();
 
-    let removeButton = await getElementByLinkText(this.driver, 'Remove');
+    const removeButton = await getElementByLinkText(this.driver, 'Remove');
     await removeButton.click();
   }
 }
@@ -253,15 +263,15 @@ export class Recordings {
 
   // async removeAllLabels(recording: WebElement) {
   //   await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
-  // } 
+  // }
 }
 
 // utility function for integration test debugging
-export const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
+export const sleep = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export enum CardType {
   TARGET_JVM_DETAILS,
   AUTOMATED_ANALYSIS,
   JFR_METRICS_CHART,
-  MBEAN_METRICS_CHART
+  MBEAN_METRICS_CHART,
 }

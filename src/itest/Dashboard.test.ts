@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import { By, WebDriver, until } from 'selenium-webdriver';
-import {
-  CardType,
-  Cryostat,
-  Dashboard,
-  setupDriver,
-} from './util';
+import { WebDriver } from 'selenium-webdriver';
+import { CardType, Cryostat, Dashboard, setupDriver } from './util';
 
 describe('Dashboard route functionalities', function () {
   let driver: WebDriver;
@@ -30,7 +25,7 @@ describe('Dashboard route functionalities', function () {
 
   beforeAll(async function () {
     driver = await setupDriver();
-    cryostat = Cryostat.getInstance(driver); 
+    cryostat = Cryostat.getInstance(driver);
     dashboard = await cryostat.navigateToDashboard();
 
     await cryostat.skipTour();
@@ -59,11 +54,11 @@ describe('Dashboard route functionalities', function () {
     await dashboard.addCard(CardType.MBEAN_METRICS_CHART);
 
     assert.equal((await dashboard.getCards()).length, 3);
-   
+
     while ((await dashboard.getCards()).length > 0) {
       await dashboard.removeCard();
     }
-    
+
     assert.ok(await dashboard.isEmpty());
   });
 });

@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import { By, WebDriver, until } from 'selenium-webdriver';
-import {
-  Cryostat,
-  Dashboard,
-  Recordings,
-  getElementByCSS,
-  getElementById,
-  getElementByLinkText,
-  getElementByXPath,
-  setupDriver,
-  sleep,
-} from './util';
 import { RecordingState } from '@app/Shared/Services/Api.service';
+import { WebDriver } from 'selenium-webdriver';
+import { Cryostat, Recordings, setupDriver, sleep } from './util';
 
 describe('Recording workflow steps', function () {
   let driver: WebDriver;
@@ -36,7 +26,7 @@ describe('Recording workflow steps', function () {
 
   beforeAll(async function () {
     driver = await setupDriver();
-    cryostat = Cryostat.getInstance(driver); 
+    cryostat = Cryostat.getInstance(driver);
     recordings = await cryostat.navigateToRecordings();
 
     await cryostat.skipTour();
@@ -89,7 +79,7 @@ describe('Recording workflow steps', function () {
     assert.equal(active.length, 1);
 
     await recordings.deleteRecording(active[0]);
-    await sleep(10000)
+    await sleep(10000);
     assert.equal((await recordings.getRecordings()).length, 0);
   });
 
