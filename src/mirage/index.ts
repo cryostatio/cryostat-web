@@ -257,7 +257,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
           message: {
             recording: {
-              ...recording.models[0].attrs,
+              ...recording.attrs,
             },
             target: request.params.targetId,
           },
