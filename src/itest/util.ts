@@ -78,21 +78,51 @@ export class Cryostat {
     return new Recordings(this.driver);
   }
 
-  async selectFakeTarget(driver: WebDriver) {
+  async selectFakeTarget() {
     const targetName = 'Fake Target';
-    const targetSelect = await driver.wait(until.elementLocated(By.css(`[aria-label="Options menu"]`)));
+    const targetSelect = await this.driver.wait(until.elementLocated(By.css(`[aria-label="Options menu"]`)));
     await targetSelect.click();
-    const targetOption = await driver.wait(until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`)));
+    const targetOption = await this.driver.wait(until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`)));
     await targetOption.click();
   }
   
-  async skipTour(driver: WebDriver) {
-    const skipButton = await driver
+  async skipTour() {
+    const skipButton = await this.driver
     .wait(until.elementLocated(By.css('button[data-action="skip"]')))
     .catch(() => null);
     if (skipButton) await skipButton.click();
   }
+
+  async getLatestNotification(): Promise<ITestNotification> {
+    const latestNotification = await this.driver
+    .wait(until.elementLocated(By.className('pf-c-alert-group pf-m-toast')))
+    return {
+      title: await getDirectTextContent(this.driver, await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__title'))),
+      description: await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__description')).getText()
+    }
+  }
 }
+
+// from here: https://stackoverflow.com/a/19040341/22316240
+async function getDirectTextContent(driver: WebDriver, el: WebElement): Promise<string> {
+  return driver.executeScript<string>(`
+    const parent = arguments[0];
+    let child = parent.firstChild;
+    let ret = "";
+    while (child) {
+        if (child.nodeType === Node.TEXT_NODE) {
+            ret += child.textContent;
+        }
+        child = child.nextSibling;
+    }
+    return ret;
+  `, el);
+}
+
+interface ITestNotification {
+    title: string,
+    description: string
+} 
 
 export class Dashboard {
   private driver: WebDriver;
@@ -203,8 +233,27 @@ export class Recordings {
   async stopRecording(recording: WebElement) {
     await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
     await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-stop-btn').click();
-    await sleep(10000);
   }
+
+  async archiveRecording(recording: WebElement) {
+    await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
+    await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-archive-btn').click();
+  }
+
+  async deleteRecording(recording: WebElement) {
+    await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
+    await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-delete-btn').click();
+    // confirm prompt
+    await getElementByXPath(this.driver, `//div[@id='portal-root']//button[contains(text(),'Delete')]`).click();
+  }
+
+  // async addLabel(recording: WebElement, k: string, v: string) {
+  //   await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
+  // }
+
+  // async removeAllLabels(recording: WebElement) {
+  //   await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
+  // } 
 }
 
 // utility function for integration test debugging

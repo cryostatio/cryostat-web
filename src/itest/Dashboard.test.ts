@@ -33,8 +33,8 @@ describe('Dashboard route functionalities', function () {
     cryostat = Cryostat.getInstance(driver); 
     dashboard = await cryostat.navigateToDashboard();
 
-    await cryostat.skipTour(driver);
-    await cryostat.selectFakeTarget(driver);
+    await cryostat.skipTour();
+    await cryostat.selectFakeTarget();
   });
 
   afterAll(async function () {

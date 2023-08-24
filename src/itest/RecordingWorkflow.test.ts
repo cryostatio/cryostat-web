@@ -28,7 +28,7 @@ import {
 } from './util';
 import { RecordingState } from '@app/Shared/Services/Api.service';
 
-describe('Dashboard route functionalities', function () {
+describe('Recording workflow steps', function () {
   let driver: WebDriver;
   let recordings: Recordings;
   let cryostat: Cryostat;
@@ -39,8 +39,8 @@ describe('Dashboard route functionalities', function () {
     cryostat = Cryostat.getInstance(driver); 
     recordings = await cryostat.navigateToRecordings();
 
-    await cryostat.skipTour(driver);
-    await cryostat.selectFakeTarget(driver);
+    await cryostat.skipTour();
+    await cryostat.selectFakeTarget();
   });
 
   afterAll(async function () {
@@ -63,7 +63,7 @@ describe('Dashboard route functionalities', function () {
     assert.equal(state, RecordingState.RUNNING);
   });
 
-  it('stops a new recording', async function () {
+  it('stops a recording', async function () {
     const active = await recordings.getRecordings();
     assert.equal(active.length, 1);
 
@@ -73,23 +73,25 @@ describe('Dashboard route functionalities', function () {
     assert.equal(state, RecordingState.STOPPED);
   });
 
-  // it('archives a new recording', async function () {
-  //   assert.equal((await recordings.getRecordings()).length, 0);
-  //   await recordings.createRecording('helloWorld');
-  //   const active = await recordings.getRecordings();
-  //   assert.equal(active.length, 1);
+  it('archives a new recording', async function () {
+    const active = await recordings.getRecordings();
+    assert.equal(active.length, 1);
 
-  //   const state = await recordings.getRecordingState(active[0]);
-  //   assert.equal(state, RecordingState.RUNNING);
-  // });
+    await recordings.archiveRecording(active[0]);
+    const notif = await cryostat.getLatestNotification();
 
-  // it('downloads a new recording', async function () {
-  //   assert.equal((await recordings.getRecordings()).length, 0);
-  //   await recordings.createRecording('helloWorld');
-  //   const active = await recordings.getRecordings();
-  //   assert.equal(active.length, 1);
+    assert.equal(notif.title, 'Recording Saved');
+    assert.ok(notif.description.includes('helloWorld'));
+  });
 
-  //   const state = await recordings.getRecordingState(active[0]);
-  //   assert.equal(state, RecordingState.RUNNING);
-  // });
+  it('deletes a recording', async function () {
+    const active = await recordings.getRecordings();
+    assert.equal(active.length, 1);
+
+    await recordings.deleteRecording(active[0]);
+    await sleep(10000)
+    assert.equal((await recordings.getRecordings()).length, 0);
+  });
+
+  // TODO: checking UI for download, report generation, label editing
 });
