@@ -1,39 +1,17 @@
 /*
- * Copyright The Cryostat Authors
+ * Copyright The Cryostat Authors.
  *
- * The Universal Permissive License (UPL), Version 1.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Subject to the condition set forth below, permission is hereby granted to any
- * person obtaining a copy of this software, associated documentation and/or data
- * (collectively the "Software"), free of charge and under any and all copyright
- * rights in the Software, and any and all patent rights owned or freely
- * licensable by each licensor hereunder covering either (i) the unmodified
- * Software as contributed to or provided by such licensor, or (ii) the Larger
- * Works (as defined below), to deal in both
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * (a) the Software, and
- * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
- * one is included with the Software (each a "Larger Work" to which the Software
- * is contributed by such licensors),
- *
- * without restriction, including without limitation the rights to copy, create
- * derivative works of, display, perform, and distribute the Software and make,
- * use, sell, offer for sale, import, export, have made, and have sold the
- * Software and the Larger Work(s), and to sublicense the foregoing rights on
- * either these or other terms.
- *
- * This license is subject to the following condition:
- * The above copyright notice and either this complete permission notice or at
- * a minimum a reference to the UPL must be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import build from '@app/build.json';
@@ -121,14 +99,16 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         () => new Response(400, {}, 'Resource downloads are not supported in this demo')
       );
       this.post('api/v2/targets', (schema, request) => {
-        const attrs = JSON.parse(request.requestBody);
+        const attrs = request.requestBody as any;
         const target = schema.create(Resource.TARGET, {
-          jvmId: `${Math.floor(1000 * Math.random())}`,
+          jvmId: `${Date.now().toString(16)}`,
           alias: attrs.get('alias'),
           connectUrl: attrs.get('connectUrl'),
           annotations: {
             platform: {},
-            cryostat: {},
+            cryostat: {
+              REALM: 'Custom Targets',
+            },
           },
         });
         websocket.send(
@@ -148,31 +128,37 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         };
       });
       this.get('api/v1/targets', (schema) => schema.all(Resource.TARGET).models);
-      this.get('api/v2.1/discovery', (schema) => ({
-        meta: {
-          status: 'OK',
-          type: 'application/json',
-        },
-        data: {
-          result: {
-            name: 'Universe',
-            nodeType: 'Universe',
-            labels: {},
-            children: [
-              {
-                name: 'KubernetesApi',
+      this.get('api/v2.1/discovery', (schema) => {
+        const models = schema.all(Resource.TARGET).models;
+        const realmTypes = models.map((t) => t.annotations.cryostat['REALM']);
+        return {
+          meta: {
+            status: 'OK',
+            type: 'application/json',
+          },
+          data: {
+            result: {
+              name: 'Universe',
+              nodeType: 'Universe',
+              labels: {},
+              children: realmTypes.map((r: string) => ({
+                name: r,
                 nodeType: 'Realm',
                 labels: {},
-                children: schema.all(Resource.TARGET).models.map((t) => ({
-                  name: t.alias,
-                  nodeType: 'JVM',
-                  target: t,
-                })),
-              },
-            ],
+                id: r,
+                children: models
+                  .filter((t) => t.annotations.cryostat['REALM'] === r)
+                  .map((t) => ({
+                    id: t.alias,
+                    name: t.alias,
+                    nodeType: r === 'Custom Targets' ? 'CustomTarget' : 'JVM',
+                    target: t,
+                  })),
+              })),
+            },
           },
-        },
-      }));
+        };
+      });
       this.get('api/v1/recordings', (schema) => schema.all(Resource.ARCHIVE).models);
       this.get('api/beta/fs/recordings', (schema) => {
         const target = schema.first(Resource.TARGET);
@@ -189,8 +175,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
       this.delete('api/beta/recordings/:targetId/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
-        const recording = schema.where(Resource.ARCHIVE, { name: recordingName });
-        schema.findBy(Resource.ARCHIVE, { name: recordingName })?.destroy();
+        const recording = schema.findBy(Resource.ARCHIVE, { name: recordingName });
+
+        if (!recording) {
+          return new Response(404);
+        }
+        recording.destroy();
+
         const msg = {
           meta: {
             category: 'ArchivedRecordingDeleted',
@@ -199,7 +190,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
           message: {
             recording: {
-              ...recording.models[0].attrs,
+              ...recording.attrs,
             },
             target: request.params['targetId'],
           },
@@ -208,7 +199,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(200);
       });
       this.post('api/v1/targets/:targetId/recordings', (schema, request) => {
-        const attrs = JSON.parse(request.requestBody);
+        // Note: MirageJS will fake serialize FormData (i.e. FormData object is returned when accessing request.requestBody)
+        const attrs = request.requestBody as any;
+
         const recording = schema.create(Resource.RECORDING, {
           // id will generated by Mirage (i.e. increment intergers)
           downloadUrl: '',
@@ -227,7 +220,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             labels: {
               ...(attrs.labels || {}),
               'template.type': 'TARGET',
-              'template.name': 'Demo Template',
+              'template.name': 'Demo_Template',
             },
           },
         });
@@ -249,8 +242,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.get('api/v1/targets/:targetId/recordings', (schema) => schema.all(Resource.RECORDING).models);
       this.delete('api/v1/targets/:targetId/recordings/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
-        const recording = schema.where(Resource.RECORDING, { name: recordingName });
-        schema.findBy(Resource.RECORDING, { name: recordingName })?.destroy();
+        const recording = schema.findBy(Resource.RECORDING, { name: recordingName });
+
+        if (!recording) {
+          return new Response(404);
+        }
+        recording.destroy();
+
         const msg = {
           meta: {
             category: 'ActiveRecordingDeleted',
@@ -259,7 +257,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
           message: {
             recording: {
-              ...recording.models[0].attrs,
+              ...recording.attrs,
             },
             target: request.params.targetId,
           },
@@ -268,7 +266,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(200);
       });
       this.patch('api/v1/targets/:targetId/recordings/:recordingName', (schema, request) => {
-        const body = JSON.parse(request.requestBody);
+        const body = request.requestBody as any;
         const recordingName = request.params.recordingName;
         const target = schema.findBy(Resource.TARGET, { connectUrl: request.params.targetId });
         const recording = schema.findBy(Resource.RECORDING, { name: recordingName });
@@ -408,17 +406,80 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         },
       ]);
       this.get('api/v2/probes', () => []);
-      this.post('api/v2/rules', (schema, request) => {
-        const attrs = JSON.parse(request.requestBody);
+      this.post('/api/beta/matchExpressions', (_, request) => {
+        const attr = JSON.parse(request.requestBody);
+        if (!attr.matchExpression || !attr.targets) {
+          return new Response(400);
+        }
         return {
           data: {
-            result: schema.create(Resource.RULE, attrs),
+            result: {
+              targets: attr.targets,
+            },
+          },
+        };
+      });
+      this.post('api/v2/rules', (schema, request) => {
+        const attrs = JSON.parse(request.requestBody);
+        const rule = schema.create(Resource.RULE, attrs);
+        const msg = {
+          meta: {
+            category: 'RuleCreated',
+            type: { type: 'application', subType: 'json' },
+            serverTime: +Date.now(),
+          },
+          message: rule,
+        };
+        websocket.send(JSON.stringify(msg));
+        return {
+          data: {
+            result: rule,
           },
         };
       });
       this.get('api/v2/rules', (schema) => ({
         data: { result: schema.all(Resource.RULE).models },
       }));
+      this.patch('api/v2/rules/:ruleName', (schema, request) => {
+        const ruleName = request.params.ruleName;
+        const patch = JSON.parse(request.requestBody);
+        const rule = schema.findBy(Resource.RULE, { name: ruleName });
+
+        if (!rule) {
+          return new Response(404);
+        }
+        rule.update(patch);
+        const msg = {
+          meta: {
+            category: 'RuleUpdated',
+            type: { type: 'application', subType: 'json' },
+            serverTime: +Date.now(),
+          },
+          message: rule,
+        };
+        websocket.send(JSON.stringify(msg));
+        return new Response(200);
+      });
+      this.delete('api/v2/rules/:ruleName', (schema, request) => {
+        const ruleName = request.params.ruleName;
+        const rule = schema.findBy(Resource.RULE, { name: ruleName });
+
+        if (!rule) {
+          return new Response(404);
+        }
+        rule.destroy();
+
+        const msg = {
+          meta: {
+            category: 'RuleDeleted',
+            type: { type: 'application', subType: 'json' },
+            serverTime: +Date.now(),
+          },
+          message: rule,
+        };
+        websocket.send(JSON.stringify(msg));
+        return new Response(200);
+      });
       this.get('api/v2.2/credentials', () => ({ data: { result: [] } }));
       this.post('api/v2.2/graphql', (schema, request) => {
         const body = JSON.parse(request.requestBody);
