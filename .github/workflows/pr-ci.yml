@@ -1,33 +1,74 @@
 name: CI build and push (PR)
 
 concurrency:
-  group: pr-${{ github.event.number }}
+  group: ci-${{ github.run_id }}
   cancel-in-progress: true
 
 on:
-  pull_request_target:
+  issue_comment:
     types:
-      - opened
-      - reopened
-      - synchronize
-      - labeled
-      - unlabeled
-    branches:
-      - main
-      - v[0-9]+
-      - v[0-9]+.[0-9]+
-      - cryostat-v[0-9]+.[0-9]+
+      - created
 
 jobs:
+  check-before-build:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    if: github.repository_owner == 'cryostatio' && github.event.issue.pull_request && startsWith(github.event.comment.body, '/build_test')
+    steps:
+    - name: Fail if needs-triage label applied
+      if: ${{ contains(github.event.issue.labels.*.name, 'needs-triage') }}
+      run: exit 1
+    - name: Show warning if permission is denied
+      if: |
+        !(github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER')
+        && (!contains(github.event.issue.labels.*.name, 'safe-to-test') || github.event.issue.user.name != github.event.comment.user.name)
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |-
+          You do not have permission to run the /build_test command. Please ask @cryostatio/reviewers
+          to resolve the issue.
+    - name: Fail if command permission is denied
+      if: |
+        !(github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER')
+        && (!contains(github.event.issue.labels.*.name, 'safe-to-test') || github.event.issue.user.name != github.event.comment.user.name)
+      run: exit 1
+    - name: React to comment
+      uses: actions/github-script@v4
+      with:
+        script: |
+            const {owner, repo} = context.issue
+            github.reactions.createForIssueComment({
+              owner,
+              repo,
+              comment_id: context.payload.comment.id,
+              content: "+1",
+            });  
+
+  checkout-branch:
+    runs-on: ubuntu-latest
+    needs: [check-before-build]
+    permissions:
+      pull-requests: read
+    outputs:
+      PR_head_sha: ${{ fromJSON(steps.comment-branch.outputs.result).head_sha }}
+      PR_num: ${{ fromJSON(steps.comment-branch.outputs.result).num }}
+    steps:
+    - uses: actions/github-script@v4
+      id: comment-branch
+      with:
+        script: |
+          const result = await github.pulls.get ({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number
+          })
+          return { num: result.data.number, head_sha: result.data.head.sha }
+
   get-pom-properties:
     runs-on: ubuntu-latest
+    needs: [checkout-branch]
     steps:
-    - name: Fail if safe-to-test label NOT applied
-      if: ${{ !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
-      run: exit 1
-    - name: Fail if needs-triage label applied
-      if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-triage')}}
-      run: exit 1
     - uses: actions/checkout@v2
       with:
         repository: cryostatio/cryostat
@@ -41,7 +82,7 @@ jobs:
     outputs:
       core-version: ${{ steps.query-pom.outputs.core-version }}
       image-version: ${{ steps.query-pom.outputs.image-version }}
-    if: github.repository_owner == 'cryostatio'
+  
   build-deps:
     runs-on: ubuntu-latest
     needs: [get-pom-properties]
@@ -60,9 +101,16 @@ jobs:
       with:
         name: cryostat-core
         path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
+  
   build-image-and-push:
     runs-on: ubuntu-latest
-    needs: [get-pom-properties, build-deps]
+    permissions:
+      packages: write
+      pull-requests: write
+    needs: [get-pom-properties, build-deps, checkout-branch]
+    env:
+      PR_num: ${{ needs.checkout-branch.outputs.PR_num }}
+      head_sha: ${{ needs.checkout-branch.outputs.PR_head_sha }}
     steps:
     - uses: actions/checkout@v3
       with:
@@ -80,20 +128,20 @@ jobs:
         path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
     - run: git submodule init
     - run: git submodule update --remote
-    - run: cd web-client && git fetch origin pull/${{ github.event.number }}/head:pr-${{ github.event.number }} && git checkout pr-${{ github.event.number }}
+    - run: cd web-client && git fetch origin pull/${{ env.PR_num }}/head:pr-${{ env.PR_num }} && git checkout pr-${{ env.PR_num }}
     - run: cd ..
     - run: mvn -B -U -Dmaven.test.skip=true clean package
     - name: Tag cryostat image
-      run: podman tag cryostat ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}
+      run: podman tag cryostat ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ env.PR_num }}-${{ env.head_sha }}
     - name: Push PR test image to ghcr.io
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
         image: cryostat-web
-        tags: pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}
+        tags: pr-${{ env.PR_num }}-${{ env.head_sha }}
         registry: ghcr.io/${{ github.repository_owner }}
-        username: ${{ github.event.pull_request.user.login }}
-        password: ${{ secrets.GHCR_PR_TOKEN }}
+        username: ${{ github.event.comment.user.login }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Comment test image link
       uses: thollander/actions-comment-pull-request@v1
       with:
