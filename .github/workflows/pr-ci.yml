@@ -12,9 +12,11 @@ on:
 jobs:
   check-before-build:
     runs-on: ubuntu-latest
-    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/build_test')
+    permissions:
+      pull-requests: write
+    if: github.repository_owner == 'cryostatio' && github.event.issue.pull_request && startsWith(github.event.comment.body, '/build_test')
     steps:
-    - name: Fail if needs-triage label applied 
+    - name: Fail if needs-triage label applied
       if: ${{ contains(github.event.issue.labels.*.name, 'needs-triage') }}
       run: exit 1
     - name: Show warning if permission is denied
@@ -43,14 +45,12 @@ jobs:
               content: "+1",
             });  
 
-  checkout-branch: 
+  checkout-branch:
     runs-on: ubuntu-latest
     needs: [check-before-build]
     permissions:
-      contents: read
-      issues: read
       pull-requests: read
-    outputs: 
+    outputs:
       PR_head_sha: ${{ fromJSON(steps.comment-branch.outputs.result).head_sha }}
       PR_num: ${{ fromJSON(steps.comment-branch.outputs.result).num }}
     steps:
@@ -64,30 +64,6 @@ jobs:
             pull_number: context.issue.number
           })
           return { num: result.data.number, head_sha: result.data.head.sha }
-
-  checkout-branch: 
-    runs-on: ubuntu-latest
-    needs: [check-before-build]
-    permissions:
-      contents: read
-      issues: read
-      pull-requests: read
-    outputs: 
-      PR_head_ref: ${{ fromJSON(steps.comment-branch.outputs.result).head_ref }}
-      PR_head_sha: ${{ fromJSON(steps.comment-branch.outputs.result).head_sha }}
-      PR_num: ${{ fromJSON(steps.comment-branch.outputs.result).num }}
-      PR_repo: ${{ fromJSON(steps.comment-branch.outputs.result).repo }}
-    steps:
-    - uses: actions/github-script@v4
-      id: comment-branch
-      with:
-        script: |
-          const result = await github.pulls.get ({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.issue.number
-          })
-          return { repo: result.data.head.repo.full_name, num: result.data.number, head_sha: result.data.head.sha, head_ref: result.data.head.ref}
 
   get-pom-properties:
     runs-on: ubuntu-latest
@@ -128,6 +104,9 @@ jobs:
   
   build-image-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      pull-requests: write
     needs: [get-pom-properties, build-deps, checkout-branch]
     env:
       PR_num: ${{ needs.checkout-branch.outputs.PR_num }}
@@ -149,17 +128,17 @@ jobs:
         path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
     - run: git submodule init
     - run: git submodule update --remote
-    - run: cd web-client && git fetch origin pull/${{ PR_num }}/head:pr-${{ PR_num }} && git checkout pr-${{ PR_num }}
+    - run: cd web-client && git fetch origin pull/${{ env.PR_num }}/head:pr-${{ env.PR_num }} && git checkout pr-${{ env.PR_num }}
     - run: cd ..
     - run: mvn -B -U -Dmaven.test.skip=true clean package
     - name: Tag cryostat image
-      run: podman tag cryostat ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ PR_num }}-${{ head_sha }}
+      run: podman tag cryostat ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ env.PR_num }}-${{ env.head_sha }}
     - name: Push PR test image to ghcr.io
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
         image: cryostat-web
-        tags: pr-${{ PR_num }}-${{ head_sha }}
+        tags: pr-${{ env.PR_num }}-${{ env.head_sha }}
         registry: ghcr.io/${{ github.repository_owner }}
         username: ${{ github.event.comment.user.login }}
         password: ${{ secrets.GITHUB_TOKEN }}
