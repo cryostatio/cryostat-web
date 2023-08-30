@@ -364,8 +364,8 @@
       "TITLE": "Theme"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
-      "DESCRIPTION": "Set the debounce time (in milliseconds) used when establishing WebSocket connections. Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages. Decrease this time if the web-interface takes a long time to populate on startup.",
-      "TITLE": "WebSocket Connection Debounce"
+      "DESCRIPTION": "Set the retry interval (debounce) time (in milliseconds) used when establishing WebSocket connections. Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages. Decrease this time if the web-interface takes a long time to populate on startup.",
+      "TITLE": "WebSocket Connection Retry Interval"
     }
   },
   "TimePicker": {
