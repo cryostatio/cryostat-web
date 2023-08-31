@@ -41,11 +41,7 @@ import { hashCode } from '@app/utils/utils';
 export interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   title: string;
   description: React.ReactNode;
-<<<<<<< HEAD
-  element: React.FunctionComponentElement<Record<string, never>>;
-=======
   element: React.ReactNode;
->>>>>>> 5aa3f5c (chore(ts): fix typescript type-checking errors (#1087))
   orderInGroup: number;
   featureLevel: FeatureLevel;
 }
