@@ -45,7 +45,7 @@ export const targetFactory: FactoryDefinition<any> = Factory.extend({
   jvmId: '1234',
   annotations: {
     platform: { 'io.cryostat.demo': 'this-is-not-real' },
-    cryostat: { hello: 'world' },
+    cryostat: { hello: 'world', REALM: 'Some Realm' },
   },
 });
 
