@@ -42,7 +42,7 @@ export const getAllLeaves = (root: EnvironmentNode | TargetNode): TargetNode[] =
 
 export const flattenTree = (
   node: EnvironmentNode | TargetNode,
-  includeUniverse?: boolean
+  includeUniverse?: boolean,
 ): (EnvironmentNode | TargetNode)[] => {
   if (isTargetNode(node)) {
     return [node];
@@ -114,7 +114,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
 export const actionFactory = (
   element: GraphElement | ListElement,
   variant: MenuItemVariant = 'contextMenuItem',
-  actionFilter = (_: NodeAction) => true
+  actionFilter = (_: NodeAction) => true,
 ) => {
   const data: TargetNode = element.getData();
   const isGroup = !isTargetNode(data);
@@ -161,7 +161,7 @@ export const COLLAPSE_EXEMPTS = [NodeType.NAMESPACE, NodeType.REALM, NodeType.UN
 // For searching
 export const isGroupNodeFiltered = (
   groupNode: EnvironmentNode,
-  filters?: TopologyFilters['groupFilters']['filters']
+  filters?: TopologyFilters['groupFilters']['filters'],
 ) => {
   if (!filters || !filters[groupNode.nodeType]) {
     return true;
@@ -201,7 +201,7 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
     matched =
       matched &&
       [...Object.entries(annotations?.cryostat || {}), ...Object.entries(annotations?.platform || {})].filter(
-        ([k, v]) => filters.Annotation.includes(`${k}=${v}`)
+        ([k, v]) => filters.Annotation.includes(`${k}=${v}`),
       ).length > 0;
   }
   return matched;
@@ -243,12 +243,12 @@ export const useMatchedTargetsSvcSource = (): BehaviorSubject<Target[] | undefin
       combineLatest([matchExprService.searchExpression(), svc.targets.targets()])
         .pipe(
           switchMap(([input, targets]) =>
-            input ? svc.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined)
-          )
+            input ? svc.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of(undefined),
+          ),
         )
         .subscribe((ts) => {
           matchedTargetsSvcRef.current.next(ts);
-        })
+        }),
     );
   }, [svc.targets, svc.api, matchExprService, addSubscription]);
 

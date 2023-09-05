@@ -35,7 +35,7 @@ export const AutomatedAnalysisTopicFilter: React.FC<AutomatedAnalysisTopicFilter
         onSubmit(selection);
       }
     },
-    [onSubmit, setIsExpanded]
+    [onSubmit, setIsExpanded],
   );
 
   const topicOptions = React.useMemo(() => {

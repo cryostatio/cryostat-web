@@ -44,7 +44,7 @@ export const ResizableRef: React.FC<ResizableRefProps> = ({
   ..._props
 }: ResizableRefProps) => {
   const cardConfigs: CardConfig[] = useSelector(
-    (state: RootState) => state.dashboardConfigs.layouts[state.dashboardConfigs.current].cards
+    (state: RootState) => state.dashboardConfigs.layouts[state.dashboardConfigs.current].cards,
   );
   const dispatch = useDispatch();
 
@@ -91,7 +91,7 @@ export const ResizableRef: React.FC<ResizableRefProps> = ({
           minCardRight,
           maxCardRight,
           cardSizes.span.minimum,
-          cardSizes.span.maximum
+          cardSizes.span.maximum,
         ) as gridSpans;
 
         dispatch(dashboardConfigResizeCardIntent(dashboardId, gridSpan));
@@ -99,7 +99,7 @@ export const ResizableRef: React.FC<ResizableRefProps> = ({
         console.error('cardRef.current is undefined');
       }
     },
-    [dispatch, cardRef, cardConfigs, nearEdgeMultiplier, dashboardId, cardSizes]
+    [dispatch, cardRef, cardConfigs, nearEdgeMultiplier, dashboardId, cardSizes],
   );
 
   const callbackMouseUp = React.useCallback(() => {
@@ -125,7 +125,7 @@ export const ResizableRef: React.FC<ResizableRefProps> = ({
       maxWidth.current = undefined;
       handleDisabledElements(true);
     },
-    [callbackMouseMove, callbackMouseUp]
+    [callbackMouseMove, callbackMouseUp],
   );
 
   return <div className="resizable-ref" onMouseDown={handleOnMouseDown} />;

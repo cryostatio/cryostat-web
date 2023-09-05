@@ -63,7 +63,7 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
 
   const currentCategory = useSelector((state: RootState) => {
     const targetAutomatedAnalysisFilters = state.automatedAnalysisFilters.targetFilters.filter(
-      (targetFilter) => targetFilter.target === target
+      (targetFilter) => targetFilter.target === target,
     );
     if (!targetAutomatedAnalysisFilters.length) {
       return 'Name';
@@ -82,31 +82,31 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
       setIsCategoryDropdownOpen(false);
       dispatch(automatedAnalysisUpdateCategoryIntent(target, category));
     },
-    [dispatch, setIsCategoryDropdownOpen, target]
+    [dispatch, setIsCategoryDropdownOpen, target],
   );
 
   const onDelete = React.useCallback(
     (category: string | ToolbarChipGroup, value) =>
       updateFilters(target, { filterKey: category as string, filterValue: value, deleted: true }),
-    [updateFilters, target]
+    [updateFilters, target],
   );
 
   const onDeleteGroup = React.useCallback(
     (category: string | ToolbarChipGroup) =>
       updateFilters(target, { filterKey: category as string, deleted: true, deleteOptions: { all: true } }),
-    [updateFilters, target]
+    [updateFilters, target],
   );
 
   const onNameInput = React.useCallback(
     (inputName: string) => updateFilters(target, { filterKey: currentCategory, filterValue: inputName }),
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const onTopicInput = React.useCallback(
     (inputTopic: string) => {
       updateFilters(target, { filterKey: currentCategory, filterValue: inputTopic });
     },
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const getCategoryDisplay = React.useCallback(
@@ -120,7 +120,7 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
           throw new Error(`Unknown Automated Analysis Filter Category: ${category}`);
       }
     },
-    [t]
+    [t],
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -158,7 +158,7 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
         onSubmit={onTopicInput}
       />,
     ],
-    [evaluations, filters.Name, filters.Topic, onNameInput, onTopicInput]
+    [evaluations, filters.Name, filters.Topic, onNameInput, onTopicInput],
   );
 
   return (
@@ -190,7 +190,7 @@ export const filterAutomatedAnalysis = (
   topicEvalTuple: [string, RuleEvaluation[]][],
   filters: AutomatedAnalysisFiltersCategories,
   globalFilters: AutomatedAnalysisGlobalFiltersCategories,
-  showNAScores: boolean
+  showNAScores: boolean,
 ) => {
   if (!topicEvalTuple || !topicEvalTuple.length) {
     return topicEvalTuple;
@@ -202,7 +202,7 @@ export const filterAutomatedAnalysis = (
     filtered = filtered.map(([topic, evaluations]) => {
       return [topic, evaluations.filter((evaluation) => filters.Name.includes(evaluation.name))] as [
         string,
-        RuleEvaluation[]
+        RuleEvaluation[],
       ];
     });
   }

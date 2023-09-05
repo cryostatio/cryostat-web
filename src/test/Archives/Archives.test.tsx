@@ -129,7 +129,7 @@ describe('<Archives />', () => {
               <Archives />
             </Router>
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

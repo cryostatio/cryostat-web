@@ -39,7 +39,7 @@ const Component = () => {
         return value;
       });
     },
-    [setMinRefresh, context.settings]
+    [setMinRefresh, context.settings],
   );
 
   const handleVisibleStep = React.useCallback(
@@ -48,7 +48,7 @@ const Component = () => {
       context.settings.setChartControllerConfig({ minRefresh: v });
       setMinRefresh(v);
     },
-    [minRefresh, context.settings]
+    [minRefresh, context.settings],
   );
 
   return (

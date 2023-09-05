@@ -68,7 +68,7 @@ export const EventTabs: React.FC = () => {
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
       switchTab(history, pathname, search, { tabKey: 'eventTab', tabValue: `${key}` }),
-    [history, pathname, search]
+    [history, pathname, search],
   );
 
   return (
@@ -104,7 +104,7 @@ export const AgentTabs: React.FC = () => {
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
       switchTab(history, pathname, search, { tabKey: 'agentTab', tabValue: `${key}` }),
-    [history, pathname, search]
+    [history, pathname, search],
   );
 
   React.useEffect(() => {
@@ -113,9 +113,9 @@ export const AgentTabs: React.FC = () => {
         .target()
         .pipe(
           filter((target) => target !== NO_TARGET),
-          concatMap((_) => context.api.isProbeEnabled())
+          concatMap((_) => context.api.isProbeEnabled()),
         )
-        .subscribe(setAgentDetected)
+        .subscribe(setAgentDetected),
     );
   }, [addSubscription, context.target, context.api, setAgentDetected]);
 

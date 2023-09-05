@@ -111,7 +111,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({
     addSubscription(
       matchedTargetSvc
         .pipe(map((ts) => (ts ? includesTarget(ts, data.target) : graphId === TOPOLOGY_GRAPH_ID)))
-        .subscribe(setMatched)
+        .subscribe(setMatched),
     );
   }, [graphId, addSubscription, setMatched, matchedTargetSvc, data.target]);
 

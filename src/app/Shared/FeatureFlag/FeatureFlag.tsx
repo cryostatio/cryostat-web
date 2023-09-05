@@ -52,7 +52,7 @@ export interface FeatureFlagProps {
 export const FeatureFlag: React.FC<FeatureFlagProps> = ({ level, strict, children }) => {
   const levels = React.useMemo(
     () => (strict ? [level] : [...Array.from({ length: level + 1 }, (_, i) => i)]),
-    [strict, level]
+    [strict, level],
   );
   const component = React.useCallback((_) => <>{children}</>, [children]);
 

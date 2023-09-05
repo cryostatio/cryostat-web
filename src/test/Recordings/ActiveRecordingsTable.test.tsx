@@ -195,7 +195,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     ['Create', 'Edit Labels', 'Stop', 'Delete'].map((text) => {
@@ -234,7 +234,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(toolTip).toBeVisible();
 
     const duration = screen.getByText(
-      mockRecording.continuous || mockRecording.duration === 0 ? 'Continuous' : `${mockRecording.duration / 1000}s`
+      mockRecording.continuous || mockRecording.duration === 0 ? 'Continuous' : `${mockRecording.duration / 1000}s`,
     );
     expect(duration).toBeInTheDocument();
     expect(duration).toBeVisible();
@@ -295,7 +295,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     expect(screen.getByText('Create')).toBeInTheDocument();
@@ -311,7 +311,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await user.click(screen.getByText('Create'));
@@ -325,7 +325,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -345,7 +345,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -365,7 +365,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -381,7 +381,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -411,7 +411,7 @@ describe('<ActiveRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');

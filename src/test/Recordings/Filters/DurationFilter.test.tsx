@@ -63,7 +63,7 @@ describe('<DurationFilter />', () => {
           durations={emptyFilteredDuration}
           onContinuousDurationSelect={onContinuousSelect}
           onDurationInput={onDurationInput}
-        />
+        />,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -75,7 +75,7 @@ describe('<DurationFilter />', () => {
         durations={filteredDurationsWithCont}
         onContinuousDurationSelect={onContinuousSelect}
         onDurationInput={onDurationInput}
-      />
+      />,
     );
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
@@ -90,7 +90,7 @@ describe('<DurationFilter />', () => {
         durations={filteredDurationsWithoutCont}
         onContinuousDurationSelect={onContinuousSelect}
         onDurationInput={onDurationInput}
-      />
+      />,
     );
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
@@ -109,7 +109,7 @@ describe('<DurationFilter />', () => {
         durations={filteredDurationsWithoutCont}
         onContinuousDurationSelect={submitContinuous}
         onDurationInput={onDurationInput}
-      />
+      />,
     );
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
@@ -135,7 +135,7 @@ describe('<DurationFilter />', () => {
         durations={filteredDurationsWithCont}
         onContinuousDurationSelect={submitContinuous}
         onDurationInput={onDurationInput}
-      />
+      />,
     );
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
@@ -160,7 +160,7 @@ describe('<DurationFilter />', () => {
         durations={emptyFilteredDuration}
         onContinuousDurationSelect={onContinuousSelect}
         onDurationInput={submitDuration}
-      />
+      />,
     );
 
     const durationInput = screen.getByLabelText('duration filter');
@@ -188,7 +188,7 @@ describe('<DurationFilter />', () => {
         durations={emptyFilteredDuration}
         onContinuousDurationSelect={onContinuousSelect}
         onDurationInput={submitDuration}
-      />
+      />,
     );
 
     const durationInput = screen.getByLabelText('duration filter');

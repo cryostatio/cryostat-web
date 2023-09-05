@@ -40,12 +40,12 @@ export const LabelCell: React.FC<LabelCellProps> = (props) => {
       }
       return false;
     },
-    [props.clickableOptions]
+    [props.clickableOptions],
   );
 
   const getLabelColor = React.useCallback(
     (label: RecordingLabel) => (isLabelSelected(label) ? 'blue' : 'grey'),
-    [isLabelSelected]
+    [isLabelSelected],
   );
   const onLabelSelectToggle = React.useCallback(
     (clickedLabel: RecordingLabel) => {
@@ -57,7 +57,7 @@ export const LabelCell: React.FC<LabelCellProps> = (props) => {
         });
       }
     },
-    [isLabelSelected, props.clickableOptions, props.target]
+    [isLabelSelected, props.clickableOptions, props.target],
   );
 
   return (
@@ -75,7 +75,7 @@ export const LabelCell: React.FC<LabelCellProps> = (props) => {
             <Label aria-label={`${label.key}: ${label.value}`} key={label.key} color={getLabelColor(label)}>
               {`${label.key}: ${label.value}`}
             </Label>
-          )
+          ),
         )
       ) : (
         <Text>-</Text>

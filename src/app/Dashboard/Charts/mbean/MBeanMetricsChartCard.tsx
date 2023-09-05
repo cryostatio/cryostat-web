@@ -87,7 +87,7 @@ const SimpleChart: React.FC<{
 
   const data = React.useMemo(
     () => samples.map((v) => ({ x: v.timestamp, y: v.datapoint.value, name: v.datapoint.name })),
-    [samples]
+    [samples],
   );
 
   const keys = React.useMemo(() => _.uniqBy(data, (d) => d.name), [data]);
@@ -99,7 +99,7 @@ const SimpleChart: React.FC<{
       ) : (
         <ChartArea key={key} data={data} name={units} interpolation={interpolation} />
       ),
-    [units, interpolation]
+    [units, interpolation],
   );
 
   return (
@@ -161,8 +161,8 @@ const SimpleChart: React.FC<{
           render(
             k,
             data.filter((d) => d.name === k.name),
-            style
-          )
+            style,
+          ),
         )}
       </ChartGroup>
     </Chart>
@@ -388,7 +388,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
           }
           return [...old, ...newSamples].filter((d) => d.timestamp > timestamp - props.duration * 1000);
         });
-      })
+      }),
     );
   }, [addSubscription, controllerContext, props.chartKind, props.duration]);
 
@@ -411,7 +411,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
     addSubscription(
       serviceContext.target.target().subscribe((_) => {
         setSamples([]);
-      })
+      }),
     );
   }, [addSubscription, serviceContext, setSamples, refresh]);
 
@@ -435,7 +435,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
         isDisabled={isLoading}
       />
     ),
-    [t, props.chartKind, refresh, isLoading]
+    [t, props.chartKind, refresh, isLoading],
   );
 
   const actions = React.useMemo(() => {
@@ -452,7 +452,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
         <CardActions>{actions}</CardActions>
       </CardHeader>
     ),
-    [t, props.chartKind, props.duration, props.period, actions]
+    [t, props.chartKind, props.duration, props.period, actions],
   );
 
   const chartKind = React.useMemo(() => getChartKindByName(props.chartKind), [props.chartKind]);
@@ -463,7 +463,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
         {chartKind.visual(theme, props.themeColor, cardWidth, samples)}
       </div>
     ),
-    [theme, containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples]
+    [theme, containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples],
   );
 
   return (

@@ -38,7 +38,7 @@ describe('<WebSocketDebounce/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           {React.createElement(WebSocketDebounce.content, null)}
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

@@ -47,7 +47,7 @@ export const parseLabelsFromFile = (file: File): Observable<RecordingLabel[]> =>
           return labels;
         }
         throw new Error('No labels found in file');
-      })
+      }),
   );
 };
 

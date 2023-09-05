@@ -42,7 +42,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
         context.target.setTarget(toSelect);
       }
     },
-    [setIsTargetOpen, selectedTarget, context.target]
+    [setIsTargetOpen, selectedTarget, context.target],
   );
 
   React.useEffect(() => {
@@ -54,7 +54,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
           // NO_TARGET will clear storage
           saveToLocalStorage('TARGET', target.connectUrl);
         }
-      })
+      }),
     );
   }, [addSubscription, context.target, setSelectedTarget]);
 
@@ -89,7 +89,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
     }
     const id = window.setInterval(
       () => refreshTargetList(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, refreshTargetList]);
@@ -173,11 +173,11 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
               const { target } = option.props.value;
               return matchExp.test(target.connectUrl) || matchExp.test(target.alias);
             }),
-          })
+          }),
         )
         .filter((grp) => grp.props.children.length > 0);
     },
-    [selectOptions, noOptions]
+    [selectOptions, noOptions],
   );
 
   const handleFavorite = React.useCallback(
@@ -188,12 +188,12 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
         return toUpdate;
       });
     },
-    [setFavorites]
+    [setFavorites],
   );
 
   const selectionPrefix = React.useMemo(
     () => (selectedTarget !== NO_TARGET ? <span style={{ fontWeight: 700 }}>Target:</span> : undefined),
-    [selectedTarget]
+    [selectedTarget],
   );
 
   const selectFooter = React.useMemo(
@@ -202,7 +202,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
         <Button variant="secondary">Create Target</Button>
       </Link>
     ),
-    []
+    [],
   );
 
   return (

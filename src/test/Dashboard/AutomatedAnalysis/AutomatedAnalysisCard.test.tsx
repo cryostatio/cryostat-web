@@ -208,12 +208,12 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
 
     await user.click(
-      screen.getByRole('button', { name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL') })
+      screen.getByRole('button', { name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL') }),
     );
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toBeCalledWith(
-      automatedAnalysisConfigToRecordingAttributes(defaultAutomatedAnalysisRecordingConfig)
+      automatedAnalysisConfigToRecordingAttributes(defaultAutomatedAnalysisRecordingConfig),
     );
   });
 
@@ -249,12 +249,12 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(
       screen.queryByRole('button', {
         name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
-      })
+      }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', {
         name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
-      })
+      }),
     ).not.toBeInTheDocument();
 
     mockEvaluations.forEach((evaluation) => {
@@ -295,18 +295,18 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(screen.getByText(`Archived report name=${mockArchivedRecording.name}`)).toBeInTheDocument(); // Archived report name
     expect(
-      screen.getByText(testT('AutomatedAnalysisCard.STALE_REPORT.TEXT', { count: 1, units: 'day' }))
+      screen.getByText(testT('AutomatedAnalysisCard.STALE_REPORT.TEXT', { count: 1, units: 'day' })),
     ).toBeInTheDocument(); // Last updated text
 
     expect(
       screen.getByRole('button', {
         name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
-      })
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
         name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
-      })
+      }),
     ).toBeInTheDocument();
 
     mockEvaluations.forEach((evaluation) => {
@@ -362,12 +362,12 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(
       screen.getByRole('button', {
         name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
-      })
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
         name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
-      })
+      }),
     ).toBeInTheDocument();
 
     mockCachedReport.report.forEach((evaluation) => {

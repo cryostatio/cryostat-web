@@ -106,7 +106,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
       },
       columnIndex,
     }),
-    [sortBy, setSortBy]
+    [sortBy, setSortBy],
   );
 
   const handleTemplates = React.useCallback(
@@ -115,14 +115,14 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
       setIsLoading(false);
       setErrorMessage('');
     },
-    [setTemplates, setIsLoading, setErrorMessage]
+    [setTemplates, setIsLoading, setErrorMessage],
   );
   const handleError = React.useCallback(
     (error) => {
       setIsLoading(false);
       setErrorMessage(error.message);
     },
-    [setIsLoading, setErrorMessage]
+    [setIsLoading, setErrorMessage],
   );
 
   const refreshTemplates = React.useCallback(() => {
@@ -131,7 +131,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
       context.api.getProbeTemplates().subscribe({
         next: (value) => handleTemplates(value),
         error: (err) => handleError(err),
-      })
+      }),
     );
   }, [addSubscription, context.api, setIsLoading, handleTemplates, handleError]);
 
@@ -140,10 +140,10 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
       addSubscription(
         context.api.deleteCustomProbeTemplate(template.name).subscribe(() => {
           /** Do nothing. Notifications hook will handle */
-        })
+        }),
       );
     },
-    [addSubscription, context.api]
+    [addSubscription, context.api],
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
@@ -176,7 +176,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
     }
     const id = window.setInterval(
       () => refreshTemplates(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, refreshTemplates]);
@@ -193,7 +193,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
             } as ProbeTemplate,
           ];
         });
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, setTemplates]);
 
@@ -201,7 +201,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ProbeTemplateDeleted).subscribe((event) => {
         setTemplates((old) => old.filter((t) => t.name !== event.message.probeTemplate));
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, setTemplates]);
 
@@ -212,7 +212,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
     } else {
       const ft = filterText.trim().toLowerCase();
       filtered = templates.filter(
-        (t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft)
+        (t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft),
       );
     }
 
@@ -223,8 +223,8 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         filtered,
-        tableColumns
-      )
+        tableColumns,
+      ),
     );
   }, [filterText, templates, sortBy, setFilteredTemplates]);
 
@@ -237,7 +237,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
         handleDelete(template);
       }
     },
-    [context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete]
+    [context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete],
   );
 
   const handleInsertAction = React.useCallback(
@@ -246,10 +246,10 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
         context.api
           .insertProbes(template.name)
           .pipe(first())
-          .subscribe(() => undefined)
+          .subscribe(() => undefined),
       );
     },
-    [addSubscription, context.api]
+    [addSubscription, context.api],
   );
 
   const templateRows = React.useMemo(
@@ -273,7 +273,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
           </Tr>
         );
       }),
-    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction]
+    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction],
   );
 
   if (errorMessage != '') {
@@ -393,7 +393,7 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
             .addCustomProbeTemplate(
               fileUpload.file,
               getProgressUpdateCallback(fileUpload.file.name),
-              fileUpload.abortSignal
+              fileUpload.abortSignal,
             )
             .pipe(
               tap({
@@ -404,8 +404,8 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
                   onSingleFailure(fileUpload.file.name, err);
                 },
               }),
-              catchError((_) => of(false))
-            )
+              catchError((_) => of(false)),
+            ),
         );
       });
 
@@ -415,10 +415,10 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
           .subscribe((oks) => {
             setUploading(false);
             setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
-          })
+          }),
       );
     },
-    [addSubscription, context.api, setAllOks, setUploading]
+    [addSubscription, context.api, setAllOks, setUploading],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -430,7 +430,7 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
       setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
       setNumOfFiles(fileUploads.length);
     },
-    [setNumOfFiles, setAllOks]
+    [setNumOfFiles, setAllOks],
   );
 
   const submitButtonLoadingProps = React.useMemo(
@@ -439,8 +439,8 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-probe-template',
         isLoading: uploading,
-      } as LoadingPropsType),
-    [uploading]
+      }) as LoadingPropsType,
+    [uploading],
   );
 
   return (

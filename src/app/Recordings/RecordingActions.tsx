@@ -50,7 +50,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
       context.api
         .grafanaDatasourceUrl()
         .pipe(first())
-        .subscribe(() => setGrafanaEnabled(true))
+        .subscribe(() => setGrafanaEnabled(true)),
     );
   }, [context.api, setGrafanaEnabled, addSubscription]);
 
@@ -68,7 +68,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
               .pipe(first())
               .subscribe((url) => window.open(url, '_blank'));
           }
-        })
+        }),
     );
   }, [addSubscription, notifications, props, context.api]);
 
@@ -108,7 +108,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
       setIsOpen(false);
       action.onClick();
     },
-    [setIsOpen]
+    [setIsOpen],
   );
 
   return (

@@ -45,7 +45,7 @@ const Component = () => {
       setState((state) => ({ ...state, autoRefreshEnabled }));
       context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
     },
-    [setState, context.settings]
+    [setState, context.settings],
   );
 
   const handleAutoRefreshPeriodChange = React.useCallback(
@@ -53,7 +53,7 @@ const Component = () => {
       setState((state) => ({ ...state, autoRefreshPeriod }));
       context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
     },
-    [setState, context.settings]
+    [setState, context.settings],
   );
 
   const handleAutoRefreshUnitScalarChange = React.useCallback(
@@ -61,7 +61,7 @@ const Component = () => {
       setState((state) => ({ ...state, autoRefreshUnits }));
       context.settings.setAutoRefreshUnits(autoRefreshUnits);
     },
-    [setState, context.settings]
+    [setState, context.settings],
   );
 
   return (

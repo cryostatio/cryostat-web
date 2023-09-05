@@ -39,7 +39,7 @@ export const parseRule = (file: File): Observable<Rule> => {
       } else {
         throw new Error('Automated rule content is invalid.');
       }
-    })
+    }),
   );
 };
 
@@ -78,7 +78,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
           parseRule(fileUpload.file).pipe(
             first(),
             concatMap((rule) =>
-              context.api.uploadRule(rule, getProgressUpdateCallback(fileUpload.file.name), fileUpload.abortSignal)
+              context.api.uploadRule(rule, getProgressUpdateCallback(fileUpload.file.name), fileUpload.abortSignal),
             ),
             tap({
               next: (_) => {
@@ -88,8 +88,8 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
                 onSingleFailure(fileUpload.file.name, err);
               },
             }),
-            catchError((_) => of(false))
-          )
+            catchError((_) => of(false)),
+          ),
         );
       });
 
@@ -99,10 +99,10 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
           .subscribe((oks) => {
             setUploading(false);
             setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
-          })
+          }),
       );
     },
-    [setUploading, context.api, addSubscription, setAllOks]
+    [setUploading, context.api, addSubscription, setAllOks],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -114,7 +114,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
       setNumOfFiles(fileUploads.length);
     },
-    [setNumOfFiles, setAllOks]
+    [setNumOfFiles, setAllOks],
   );
 
   const submitButtonLoadingProps = React.useMemo(
@@ -123,8 +123,8 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-automated-rule',
         isLoading: uploading,
-      } as LoadingPropsType),
-    [uploading]
+      }) as LoadingPropsType,
+    [uploading],
   );
 
   return (

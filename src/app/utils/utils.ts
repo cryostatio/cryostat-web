@@ -229,7 +229,7 @@ export const switchTab = (
   history: ReturnType<typeof useHistory>,
   pathname: string,
   search: string,
-  { tabKey, tabValue }: TabConfig
+  { tabKey, tabValue }: TabConfig,
 ) => {
   const query = new URLSearchParams(search);
   query.set(tabKey, tabValue);

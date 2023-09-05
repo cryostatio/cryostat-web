@@ -42,7 +42,7 @@ describe('<DeletionDialogControl/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           {React.createElement(DeletionDialogControl.content, null)}
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

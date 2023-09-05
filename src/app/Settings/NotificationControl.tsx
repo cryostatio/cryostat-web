@@ -51,7 +51,7 @@ const Component = () => {
       context.settings.setNotificationsEnabled(state);
       setState(new Map(state));
     },
-    [state, setState, context.settings]
+    [state, setState, context.settings],
   );
 
   const handleCheckAll = React.useCallback(
@@ -61,7 +61,7 @@ const Component = () => {
       context.settings.setNotificationsEnabled(newState);
       setState(newState);
     },
-    [context.settings, setState, state]
+    [context.settings, setState, state],
   );
 
   const handleChange = React.useCallback(
@@ -74,7 +74,7 @@ const Component = () => {
       }
       context.settings.setVisibleNotificationCount(value);
     },
-    [visibleNotificationsCount, context.settings]
+    [visibleNotificationsCount, context.settings],
   );
 
   const handleVisibleStep = React.useCallback(
@@ -82,7 +82,7 @@ const Component = () => {
       const v = visibleNotificationsCount + delta;
       context.settings.setVisibleNotificationCount(v);
     },
-    [visibleNotificationsCount, context.settings]
+    [visibleNotificationsCount, context.settings],
   );
 
   const allChecked = React.useMemo(() => {

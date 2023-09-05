@@ -102,7 +102,7 @@ const LayoutRadioGroup: React.FC<LayoutRadioGroupProps> = ({ onChange, ...props 
         isGraph: false,
       },
     ],
-    []
+    [],
   );
 
   React.useEffect(() => onChange(isGraph), [isGraph, onChange]);
@@ -168,7 +168,7 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
           };
           saveToLocalStorage('MATCH_EXPRES_VIS_GRAPH_POSITIONS', saved);
         }
-      }, 200)
+      }, 200),
     );
 
     _newVisualization.addEventListener(
@@ -184,7 +184,7 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
           }));
           saveToLocalStorage('MATCH_EXPRES_VIS_NODE_POSITIONS', savedPos);
         }
-      }, 200)
+      }, 200),
     );
 
     return _newVisualization;
@@ -244,7 +244,7 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
         if (!graphData.id || !graphData.x || !graphData.y) {
           visualization.getGraph().fit();
         }
-      })
+      }),
     );
     return () => clearTimeout(_id);
   }, [_transformedData, targetNodes, visualization]);
@@ -315,7 +315,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         return [...old, id];
       });
     },
-    [setExpanded]
+    [setExpanded],
   );
 
   React.useEffect(() => {
@@ -327,13 +327,13 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         .pipe(
           tap(() => setLoading(true)),
           switchMap(([input, targets]) =>
-            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([])
-          )
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([]),
+          ),
         )
         .subscribe((ts) => {
           setLoading(false);
           setMatchedTargets(ts);
-        })
+        }),
     );
   }, [matchExprService, context.api, context.targets, setMatchedTargets, setLoading, addSubscription]);
 

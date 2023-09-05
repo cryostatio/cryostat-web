@@ -51,7 +51,7 @@ export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, qu
 
   const runningRecs = React.useMemo(
     () => recordings.filter((rec) => rec.state === RecordingState.RUNNING),
-    [recordings]
+    [recordings],
   );
 
   const iconConfig = React.useMemo(() => {

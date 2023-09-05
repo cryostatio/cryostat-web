@@ -45,7 +45,7 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
 
   const _treeViewData: TreeViewDataItem[] = React.useMemo(
     () => transformData(discoveryTree, transformConfig, filters, matchedTargets),
-    [discoveryTree, transformConfig, filters, matchedTargets]
+    [discoveryTree, transformConfig, filters, matchedTargets],
   );
 
   const isEmptyList = React.useMemo(() => !_treeViewData.length, [_treeViewData]);
@@ -55,10 +55,10 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
       combineLatest([matchExprService.searchExpression(), tSubject.asObservable()])
         .pipe(
           switchMap(([input, ts]) =>
-            input ? svcContext.api.matchTargetsWithExpr(input, ts).pipe(catchError((_) => of([]))) : of(undefined)
-          )
+            input ? svcContext.api.matchTargetsWithExpr(input, ts).pipe(catchError((_) => of([]))) : of(undefined),
+          ),
         )
-        .subscribe(setMatchedTargets)
+        .subscribe(setMatchedTargets),
     );
   }, [svcContext.api, matchExprService, tSubject, addSubscription, setMatchedTargets]);
 

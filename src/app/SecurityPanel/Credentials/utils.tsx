@@ -32,7 +32,7 @@ export const TestPoolContext = React.createContext(new Set<TestRequest>());
 
 export const useAuthCredential = (
   ignoreEmit?: boolean,
-  debounceMs = 50
+  debounceMs = 50,
 ): [AuthCredential, (credential: AuthCredential) => void] => {
   const [credential$, setCredential$] = React.useState<AuthCredential>({ username: '', password: '' });
   const authCredentialContext = React.useContext(CredentialContext);
@@ -49,7 +49,7 @@ export const useAuthCredential = (
     (credential: AuthCredential) => {
       authCredentialContext.set(credential);
     },
-    [authCredentialContext]
+    [authCredentialContext],
   );
 
   return [credential$, setCredential];

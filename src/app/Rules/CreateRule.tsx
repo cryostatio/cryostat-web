@@ -99,7 +99,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
       setNameValid(RuleNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
       setName(name);
     },
-    [setNameValid, setName]
+    [setNameValid, setName],
   );
 
   const eventSpecifierString = React.useMemo(() => {
@@ -121,46 +121,46 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         type: templateType,
       });
     },
-    [setTemplate]
+    [setTemplate],
   );
 
   const handleMaxAgeChange = React.useCallback((maxAge) => setMaxAge(Number(maxAge)), [setMaxAge]);
 
   const handleMaxAgeUnitChange = React.useCallback(
     (maxAgeUnit) => setMaxAgeUnits(Number(maxAgeUnit)),
-    [setMaxAgeUnits]
+    [setMaxAgeUnits],
   );
 
   const handleMaxSizeChange = React.useCallback((maxSize) => setMaxSize(Number(maxSize)), [setMaxSize]);
 
   const handleMaxSizeUnitChange = React.useCallback(
     (maxSizeUnit) => setMaxSizeUnits(Number(maxSizeUnit)),
-    [setMaxSizeUnits]
+    [setMaxSizeUnits],
   );
 
   const handleArchivalPeriodChange = React.useCallback(
     (archivalPeriod) => setArchivalPeriod(Number(archivalPeriod)),
-    [setArchivalPeriod]
+    [setArchivalPeriod],
   );
 
   const handleArchivalPeriodUnitsChange = React.useCallback(
     (evt) => setArchivalPeriodUnits(Number(evt)),
-    [setArchivalPeriodUnits]
+    [setArchivalPeriodUnits],
   );
 
   const handleInitialDelayChange = React.useCallback(
     (initialDelay) => setInitialDelay(Number(initialDelay)),
-    [setInitialDelay]
+    [setInitialDelay],
   );
 
   const handleInitialDelayUnitsChanged = React.useCallback(
     (initialDelayUnit) => setInitialDelayUnits(Number(initialDelayUnit)),
-    [setInitialDelayUnits]
+    [setInitialDelayUnits],
   );
 
   const handlePreservedArchivesChange = React.useCallback(
     (preservedArchives) => setPreservedArchives(Number(preservedArchives)),
-    [setPreservedArchives]
+    [setPreservedArchives],
   );
 
   const handleSubmit = React.useCallback((): void => {
@@ -192,7 +192,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         if (success) {
           history.push('/rules');
         }
-      })
+      }),
     );
   }, [
     setLoading,
@@ -234,23 +234,23 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
                       'v1',
                       undefined,
                       true,
-                      true
+                      true,
                     )
                     .pipe(
-                      catchError((_) => of<EventTemplate[]>([])) // Fail silently
-                    )
-                )
+                      catchError((_) => of<EventTemplate[]>([])), // Fail silently
+                    ),
+                ),
               ).pipe(
                 map((allTemplates) => {
                   const allFiltered = allTemplates.filter((ts) => ts.length);
                   return allFiltered.length
                     ? allFiltered.reduce((acc, curr) => _.intersectionWith(acc, curr, _.isEqual))
                     : [];
-                })
+                }),
               ),
-              of([])
-            )
-          )
+              of([]),
+            ),
+          ),
         )
         .subscribe((templates) => {
           setTemplates(templates);
@@ -258,7 +258,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
             const matched = templates.find((t) => t.name === old.name && t.type === old.type);
             return matched ? { name: matched.name, type: matched.type } : {};
           });
-        })
+        }),
     );
   }, [addSubscription, context.api]);
 
@@ -279,10 +279,10 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
             input
               ? context.api.matchTargetsWithExpr(input, targets).pipe(
                   map((ts) => [ts, undefined]),
-                  catchError((err) => of([[], err]))
+                  catchError((err) => of([[], err])),
                 )
-              : of([undefined, undefined])
-          )
+              : of([undefined, undefined]),
+          ),
         )
         .subscribe(([ts, err]) => {
           setEvaluating(false);
@@ -293,10 +293,10 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
               ? ValidatedOptions.default
               : ts.length
               ? ValidatedOptions.success
-              : ValidatedOptions.warning
+              : ValidatedOptions.warning,
           );
           matchedTargets.next(ts || []);
-        })
+        }),
     );
   }, [
     matchExprService,
@@ -314,8 +314,8 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         spinnerAriaValueText: 'Creating',
         spinnerAriaLabel: 'creating-automated-rule',
         isLoading: loading,
-      } as LoadingPropsType),
-    [loading]
+      }) as LoadingPropsType,
+    [loading],
   );
 
   const selectedSpecifier = React.useMemo(() => {
@@ -643,7 +643,7 @@ const Comp: React.FC = () => {
         path: '/rules',
       },
     ],
-    []
+    [],
   );
 
   const gridStyles: React.CSSProperties = React.useMemo(
@@ -651,7 +651,7 @@ const Comp: React.FC = () => {
       // viewportHeight - masterheadHeight - pageSectionPadding - breadcrumbHeight
       height: 'calc(100vh - 4.375rem - 48px - 1.5rem)',
     }),
-    []
+    [],
   );
 
   return (

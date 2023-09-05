@@ -48,7 +48,7 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
         context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
       }
     },
-    [context.settings, onAccept, onClose, doNotAsk, realWarningType]
+    [context.settings, onAccept, onClose, doNotAsk, realWarningType],
   );
 
   const onInnerClose = React.useCallback(
@@ -56,7 +56,7 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
       ev && ev.stopPropagation();
       onClose();
     },
-    [onClose]
+    [onClose],
   );
 
   return (

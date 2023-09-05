@@ -61,7 +61,7 @@ export const topologyConfigSetViewModeIntent = createAction(
     payload: {
       viewMode,
     } as TopologySetViewModeActionPayload,
-  })
+  }),
 );
 
 export const topologyDisplayOptionsSetIntent = createAction(
@@ -72,7 +72,7 @@ export const topologyDisplayOptionsSetIntent = createAction(
       key,
       value,
     } as TopologySetDisplayOptionsActionPayload,
-  })
+  }),
 );
 
 export interface TopologyConfig {
@@ -103,7 +103,7 @@ export const showOptions: [string, string][] = Object.keys(defaultTopologyConfig
 export const groupingOptions: [string, string][] = Object.keys(defaultTopologyConfig.displayOptions.groupings).map(
   (k) => {
     return [getDisplayFieldName(k), k];
-  }
+  },
 );
 
 const INITIAL_STATE: TopologyConfig = getPersistedState('TOPOLOGY_CONFIG', _version, defaultTopologyConfig);
@@ -132,7 +132,7 @@ export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = cr
         }
       }
     });
-  }
+  },
 );
 
 export default topologyConfigReducer;

@@ -68,7 +68,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
       context.api.getCredential(id).subscribe((v) => {
         setTargets(v.targets);
         setIsLoading(false);
-      })
+      }),
     );
   }, [addSubscription, setIsLoading, context.api, setTargets, id]);
 
@@ -89,7 +89,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
         } else if (evt.kind === 'LOST') {
           setTargets((old) => old.filter((o) => !_.isEqual(o, target)));
         }
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setTargets, matchExpression]);
 
@@ -100,7 +100,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       targets,
-      tableColumns
+      tableColumns,
     ).map((target, idx) => {
       return (
         <Tr key={`target-${idx}`}>

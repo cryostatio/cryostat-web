@@ -30,10 +30,10 @@ const mockMetadataFileName = 'mock.metadata.json';
 const mockMetadataFile = new File(
   [JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })],
   mockMetadataFileName,
-  { type: 'json' }
+  { type: 'json' },
 );
 mockMetadataFile.text = jest.fn(
-  () => new Promise((resolve, _) => resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })))
+  () => new Promise((resolve, _) => resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } }))),
 );
 
 describe('<RecordingLabelFields />', () => {

@@ -39,7 +39,7 @@ const Component = () => {
         },
       });
     },
-    [context.settings, datetimeFormat, setDateLocaleOpen]
+    [context.settings, datetimeFormat, setDateLocaleOpen],
   );
 
   const handleTimezoneSelect = React.useCallback(
@@ -52,7 +52,7 @@ const Component = () => {
         },
       });
     },
-    [context.settings, datetimeFormat]
+    [context.settings, datetimeFormat],
   );
 
   const dateLocaleOptions = React.useMemo(
@@ -70,7 +70,7 @@ const Component = () => {
           {locale.name}
         </SelectOption>
       )),
-    []
+    [],
   );
 
   const handleDateLocaleFilter = React.useCallback(
@@ -80,10 +80,10 @@ const Component = () => {
       }
       const matchExp = new RegExp(value, 'i');
       return dateLocaleOptions.filter(
-        (opt) => matchExp.test(opt.props.value.name) || matchExp.test(opt.props.description)
+        (opt) => matchExp.test(opt.props.value.name) || matchExp.test(opt.props.description),
       );
     },
-    [dateLocaleOptions]
+    [dateLocaleOptions],
   );
 
   return (

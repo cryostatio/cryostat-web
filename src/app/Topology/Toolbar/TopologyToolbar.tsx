@@ -79,7 +79,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
         </Button>
       </Tooltip>
     ),
-    [isGraphView, toggleView, t]
+    [isGraphView, toggleView, t],
   );
 
   const shortcuts = React.useMemo(() => {

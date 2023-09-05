@@ -36,7 +36,7 @@ export enum FeatureLevel {
 }
 
 export const automatedAnalysisConfigToRecordingAttributes = (
-  config: AutomatedAnalysisRecordingConfig
+  config: AutomatedAnalysisRecordingConfig,
 ): RecordingAttributes => {
   return {
     name: automatedAnalysisRecordingName,
@@ -57,15 +57,15 @@ export const automatedAnalysisConfigToRecordingAttributes = (
 };
 export class SettingsService {
   private readonly _featureLevel$ = new BehaviorSubject<FeatureLevel>(
-    getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION)
+    getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION),
   );
 
   private readonly _visibleNotificationsCount$ = new BehaviorSubject<number>(
-    getFromLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', 5)
+    getFromLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', 5),
   );
 
   private readonly _datetimeFormat$ = new BehaviorSubject<DatetimeFormat>(
-    getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat)
+    getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat),
   );
 
   private readonly _theme$ = new BehaviorSubject<ThemeSetting>(getFromLocalStorage('THEME', ThemeSetting.AUTO));
@@ -73,7 +73,7 @@ export class SettingsService {
   constructor() {
     this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
     this._visibleNotificationsCount$.subscribe((count: number) =>
-      saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
+      saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count),
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
     this._theme$.subscribe((theme: ThemeSetting) => saveToLocalStorage('THEME', theme));
@@ -133,7 +133,7 @@ export class SettingsService {
   }
 
   automatedAnalysisRecordingConfig(
-    defaultConfig = defaultAutomatedAnalysisRecordingConfig
+    defaultConfig = defaultAutomatedAnalysisRecordingConfig,
   ): AutomatedAnalysisRecordingConfig {
     return getFromLocalStorage('AUTOMATED_ANALYSIS_RECORDING_CONFIG', defaultConfig);
   }

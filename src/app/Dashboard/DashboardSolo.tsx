@@ -38,7 +38,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
     () =>
       (dashboardConfigs.layouts.find((l) => l.name === layout) ?? dashboardConfigs.layouts[dashboardConfigs.current])
         .cards,
-    [dashboardConfigs, layout]
+    [dashboardConfigs, layout],
   );
 
   const cardConfig = React.useMemo(() => {

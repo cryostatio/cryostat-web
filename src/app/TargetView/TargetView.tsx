@@ -40,9 +40,9 @@ export const TargetView: React.FC<TargetViewProps> = (props) => {
         .target()
         .pipe(
           map((target) => target !== NO_TARGET),
-          distinctUntilChanged()
+          distinctUntilChanged(),
         )
-        .subscribe(setHasSelection)
+        .subscribe(setHasSelection),
     );
   }, [context.target, addSubscription, setHasSelection]);
 

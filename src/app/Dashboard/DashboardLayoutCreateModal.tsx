@@ -90,7 +90,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         }
       }
     },
-    [t, setName, setNameValidated, setErrorMessage, dashboardConfigs]
+    [t, setName, setNameValidated, setErrorMessage, dashboardConfigs],
   );
 
   const handleClose = React.useCallback(
@@ -100,7 +100,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       setNameValidated(ValidatedOptions.default);
       onClose();
     },
-    [setName, setNameValidated, onClose, props.oldName]
+    [setName, setNameValidated, onClose, props.oldName],
   );
 
   const handleSubmit = React.useCallback(
@@ -122,7 +122,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       }
       handleClose();
     },
-    [dispatch, handleClose, selectedTemplate, name, nameValidated, isCreateModal, props.oldName]
+    [dispatch, handleClose, selectedTemplate, name, nameValidated, isCreateModal, props.oldName],
   );
 
   const handleKeyUp = React.useCallback(
@@ -132,14 +132,14 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         handleSubmit();
       }
     },
-    [handleSubmit, nameValidated]
+    [handleSubmit, nameValidated],
   );
 
   const onTemplateSelect = React.useCallback(
     (template: SelectedLayoutTemplate) => {
       setSelectedTemplate(template);
     },
-    [setSelectedTemplate]
+    [setSelectedTemplate],
   );
 
   const formGroup = React.useMemo(() => {
@@ -197,7 +197,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         {isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')}
       </Title>
     ),
-    [t, isCreateModal]
+    [t, isCreateModal],
   );
 
   return (

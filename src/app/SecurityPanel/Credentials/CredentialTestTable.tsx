@@ -98,13 +98,13 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         .pipe(
           tap(() => setLoading(true)),
           switchMap(([input, targets]) =>
-            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([])
-          )
+            input ? context.api.matchTargetsWithExpr(input, targets).pipe(catchError((_) => of([]))) : of([]),
+          ),
         )
         .subscribe((ts) => {
           setLoading(false);
           setMatchedTargets(ts);
-        })
+        }),
     );
   }, [matchExprService, context.api, context.targets, setMatchedTargets, setLoading, addSubscription]);
 
@@ -115,7 +115,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       matchedTargets,
-      tableColumns
+      tableColumns,
     ).map((t) => <CredentialTestRow target={t} key={t.connectUrl} filters={filters} searchText={searchText} />);
   }, [matchedTargets, filters, searchText, sortBy]);
 
@@ -245,7 +245,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
             ? CredentialTestState.NA
             : CredentialTestState.INVALID,
         });
-      })
+      }),
     );
   }, [setStatus, addSubscription, context.api, target, credential, isEmptyCredential, loading, testPool]);
 
@@ -362,7 +362,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
       const old = filters;
       onChange && onChange(old.includes(value) ? old.filter((v) => v !== value) : [...old, value]);
     },
-    [onChange, filters]
+    [onChange, filters],
   );
 
   return (

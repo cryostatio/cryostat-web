@@ -69,7 +69,7 @@ describe('<Dashboard />', () => {
               <Dashboard />
             </Provider>
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

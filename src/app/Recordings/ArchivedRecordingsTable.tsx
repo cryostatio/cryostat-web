@@ -125,7 +125,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
-      (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL
+      (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL,
     );
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
@@ -135,7 +135,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       setHeaderChecked(checked);
       setCheckedIndices(checked ? filteredRecordings.map((r) => hashCode(r.name)) : []);
     },
-    [setHeaderChecked, setCheckedIndices, filteredRecordings]
+    [setHeaderChecked, setCheckedIndices, filteredRecordings],
   );
 
   const handleRowCheck = React.useCallback(
@@ -147,7 +147,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         setCheckedIndices((ci) => ci.filter((v) => v !== index));
       }
     },
-    [setCheckedIndices, setHeaderChecked]
+    [setCheckedIndices, setHeaderChecked],
   );
 
   const handleEditLabels = React.useCallback(() => {
@@ -159,7 +159,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       setRecordings(recordings);
       setIsLoading(false);
     },
-    [setRecordings, setIsLoading]
+    [setRecordings, setIsLoading],
   );
 
   const handleError = React.useCallback(
@@ -168,7 +168,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       setErrorMessage(error.message);
       setRecordings([]);
     },
-    [setIsLoading, setErrorMessage, setRecordings]
+    [setIsLoading, setErrorMessage, setRecordings],
   );
 
   const queryTargetRecordings = React.useCallback(
@@ -189,10 +189,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           }
         }
       }`,
-        { connectUrl }
+        { connectUrl },
       );
     },
-    [context.api]
+    [context.api],
   );
 
   const queryUploadedRecordings = React.useCallback(() => {
@@ -211,7 +211,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           }
         }
       }`,
-      { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } }
+      { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
     );
   }, [context.api]);
 
@@ -226,7 +226,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           .subscribe({
             next: handleRecordings,
             error: handleError,
-          })
+          }),
       );
     } else {
       addSubscription(
@@ -235,12 +235,12 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             filter((target) => target !== NO_TARGET),
             first(),
             concatMap((target) => queryTargetRecordings(target.connectUrl)),
-            map((v) => v.data.archivedRecordings.data as ArchivedRecording[])
+            map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
           )
           .subscribe({
             next: handleRecordings,
             error: handleError,
-          })
+          }),
       );
     }
   }, [
@@ -272,7 +272,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         dispatch(recordingAddFilterIntent(target, filterKey, filterValue, true));
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   React.useEffect(() => {
@@ -281,7 +281,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         setTargetConnectURL(target.connectUrl);
         dispatch(recordingAddTargetIntent(target.connectUrl));
         refreshRecordingList();
-      })
+      }),
     );
   }, [addSubscription, refreshRecordingList, dispatch, setTargetConnectURL, propsTarget]);
 
@@ -291,16 +291,16 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         merge(
           context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
         ),
       ]).subscribe(([currentTarget, event]) => {
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) =>
-          old.filter((r) => r.name !== event.message.recording.name).concat(event.message.recording)
+          old.filter((r) => r.name !== event.message.recording.name).concat(event.message.recording),
         );
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, setRecordings, propsTarget]);
 
@@ -315,7 +315,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         }
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
         setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(event.message.recording.name)));
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, setRecordings, setCheckedIndices, propsTarget]);
 
@@ -330,10 +330,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         }
         setRecordings((old) =>
           old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o
-          )
+            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
+          ),
         );
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, propsTarget]);
 
@@ -345,8 +345,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         filterRecordings(recordings, targetRecordingFilters),
-        tableColumns
-      )
+        tableColumns,
+      ),
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 
@@ -356,7 +356,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     }
     const id = window.setInterval(
       () => refreshRecordingList(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context, context.settings, refreshRecordingList]);
@@ -380,7 +380,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         return newActionLoadings;
       });
     },
-    [setActionLoadings]
+    [setActionLoadings],
   );
 
   const handleDeleteRecordings = React.useCallback(() => {
@@ -408,9 +408,9 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             forkJoin(tasks).subscribe({
               next: () => handlePostActions('DELETE'),
               error: () => handlePostActions('DELETE'),
-            })
+            }),
           );
-        })
+        }),
       );
     }
   }, [
@@ -434,7 +434,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           : [...expandedRows, id];
       });
     },
-    [setExpandedRows]
+    [setExpandedRows],
   );
 
   const RecordingsToolbar = React.useMemo(
@@ -469,7 +469,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       isUploadsTable,
       actionLoadings,
       toolbarBreakReference,
-    ]
+    ],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -487,7 +487,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         directoryRecordings={directoryRecordings}
       />
     ),
-    [checkedIndices, setShowDetailsPanel, isUploadsTable, propsDirectory, directoryRecordings]
+    [checkedIndices, setShowDetailsPanel, isUploadsTable, propsDirectory, directoryRecordings],
   );
 
   const totalArchiveSize = React.useMemo(() => {
@@ -501,7 +501,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       columns: tableColumns,
       onSort: getSortParams,
     }),
-    [getSortParams]
+    [getSortParams],
   );
   return (
     <Drawer isExpanded={showDetailsPanel} isInline id={'archived-recording-drawer'}>
@@ -615,7 +615,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
         isLoading: props.actionLoadings['DELETE'],
       } as LoadingPropsType,
     }),
-    [props]
+    [props],
   );
 
   const buttons = React.useMemo(() => {
@@ -769,7 +769,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     (checked: boolean) => {
       handleRowCheck(checked, index);
     },
-    [index, handleRowCheck]
+    [index, handleRowCheck],
   );
 
   const parentRow = React.useMemo(() => {

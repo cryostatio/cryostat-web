@@ -63,7 +63,7 @@ describe('<RecordingStateFilter />', () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
-        <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />
+        <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -71,7 +71,7 @@ describe('<RecordingStateFilter />', () => {
 
   it('should display state selections when dropdown is clicked', async () => {
     const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />
+      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
     );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
@@ -93,7 +93,7 @@ describe('<RecordingStateFilter />', () => {
 
   it('should close state selections when dropdown is toggled', async () => {
     const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />
+      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
     );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
@@ -119,7 +119,7 @@ describe('<RecordingStateFilter />', () => {
 
   it('should display filtered states as checked', async () => {
     const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onStateSelectToggle} />
+      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onStateSelectToggle} />,
     );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
@@ -154,7 +154,7 @@ describe('<RecordingStateFilter />', () => {
     });
 
     const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onRecordingStateToggle} />
+      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onRecordingStateToggle} />,
     );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
@@ -195,7 +195,7 @@ describe('<RecordingStateFilter />', () => {
     });
 
     const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onRecordingStateToggle} />
+      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onRecordingStateToggle} />,
     );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });

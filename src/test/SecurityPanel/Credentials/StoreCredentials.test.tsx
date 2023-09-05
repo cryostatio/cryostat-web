@@ -134,12 +134,18 @@ const apiRequestSpy = jest
 
   .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // decrements the correct count and updates the correct nested table when a lost target notification is received
   .mockReturnValueOnce(
-    of([mockCredential, { ...mockAnotherCredential, numMatchingTargets: mockAnotherCredential.numMatchingTargets - 1 }])
+    of([
+      mockCredential,
+      { ...mockAnotherCredential, numMatchingTargets: mockAnotherCredential.numMatchingTargets - 1 },
+    ]),
   )
 
   .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // increments the correct count and updates the correct nested table when a found target notification is received
   .mockReturnValueOnce(
-    of([mockCredential, { ...mockAnotherCredential, numMatchingTargets: mockAnotherCredential.numMatchingTargets + 1 }])
+    of([
+      mockCredential,
+      { ...mockAnotherCredential, numMatchingTargets: mockAnotherCredential.numMatchingTargets + 1 },
+    ]),
   )
 
   .mockReturnValueOnce(of([])) // opens the auth modal when Add is clicked
@@ -163,7 +169,7 @@ jest
     of({
       ...mockAnotherMatchedCredentialResponse,
       targets: mockAnotherMatchedCredentialResponse.targets.concat(mockYetAnotherMatchingTarget),
-    })
+    }),
   )
 
   .mockReturnValue(throwError(() => new Error('Too many calls')));
@@ -226,7 +232,7 @@ describe('<StoreCredentials />', () => {
 
     const otherTargets = targets.filter((t) => t.connectUrl !== mockTarget.connectUrl);
     otherTargets.forEach(({ alias, connectUrl }) =>
-      expect(screen.queryByText(`${alias} (${connectUrl})`)).not.toBeInTheDocument()
+      expect(screen.queryByText(`${alias} (${connectUrl})`)).not.toBeInTheDocument(),
     );
 
     await user.click(expandButtons[1]);
@@ -272,7 +278,7 @@ describe('<StoreCredentials />', () => {
 
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
     expect(
-      screen.queryByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)
+      screen.queryByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`),
     ).not.toBeInTheDocument();
 
     await user.click(expandButtons[1]);

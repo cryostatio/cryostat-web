@@ -156,7 +156,7 @@ export const layoutize = (template: LayoutTemplate, name: string): DashboardLayo
 
 export const recordToLayoutTemplate = (
   record: LayoutTemplateRecord,
-  allTemplates: LayoutTemplate[]
+  allTemplates: LayoutTemplate[],
 ): LayoutTemplate | undefined => {
   return allTemplates.find((template) => template.name === record.name && template.vendor === record.vendor);
 };
@@ -208,7 +208,7 @@ export function getCardDescriptorByTitle(title: string, t: TFunction): Dashboard
 }
 
 export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
-  featureLevel = FeatureLevel.DEVELOPMENT
+  featureLevel = FeatureLevel.DEVELOPMENT,
 ) => {
   const cards = [
     JvmDetailsCardDescriptor,

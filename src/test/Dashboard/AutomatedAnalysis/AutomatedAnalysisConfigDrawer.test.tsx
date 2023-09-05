@@ -50,7 +50,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
         isContentAbove={false}
         onCreate={() => undefined}
         onError={() => undefined}
-      />
+      />,
     );
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
         isContentAbove={false}
         onCreate={() => undefined}
         onError={() => undefined}
-      />
+      />,
     );
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
@@ -92,7 +92,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
         isContentAbove={false}
         onCreate={onCreateFunction}
         onError={() => undefined}
-      />
+      />,
     );
 
     const createRecording = screen.getByRole('button', {

@@ -88,7 +88,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           {resizeBar}
         </>
       ),
-    [cardRef, props, onMouseEnter, onMouseLeave, cardHeader, children, isDraggable, dashboardId, resizeBar]
+    [cardRef, props, onMouseEnter, onMouseLeave, cardHeader, children, isDraggable, dashboardId, resizeBar],
   );
 
   return <DashboardCardContext.Provider value={cardRef}>{content}</DashboardCardContext.Provider>;

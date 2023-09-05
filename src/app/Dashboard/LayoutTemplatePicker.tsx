@@ -123,10 +123,10 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
 
   const { t } = useTranslation();
   const recentTemplateRecords: LayoutTemplateRecord[] = useSelector(
-    (state: RootState) => state.dashboardConfigs.templateHistory
+    (state: RootState) => state.dashboardConfigs.templateHistory,
   );
   const userSubmittedTemplates: LayoutTemplate[] = useSelector(
-    (state: RootState) => state.dashboardConfigs.customTemplates
+    (state: RootState) => state.dashboardConfigs.customTemplates,
   );
 
   const searchFilteredTemplates = React.useCallback(
@@ -136,7 +136,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       }
       return templates.filter((t) => t.name.toLowerCase().includes(searchFilter.toLowerCase()));
     },
-    [searchFilter]
+    [searchFilter],
   );
 
   const allTemplates: LayoutTemplate[] = React.useMemo(() => {
@@ -153,7 +153,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       setSelectedTemplate(template);
       setIsDrawerExpanded(true);
     },
-    [onTemplateSelect, setSelectedTemplate, setIsDrawerExpanded]
+    [onTemplateSelect, setSelectedTemplate, setIsDrawerExpanded],
   );
 
   const handleTemplateDelete = React.useCallback(
@@ -166,7 +166,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         return prev;
       });
     },
-    [dispatch, setSelectedTemplate]
+    [dispatch, setSelectedTemplate],
   );
 
   const onInnerTemplateDelete = React.useCallback(
@@ -178,7 +178,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         handleTemplateDelete(templateName);
       }
     },
-    [serviceContext.settings, setIsDeleteWarningModalOpen, setToDelete, handleTemplateDelete]
+    [serviceContext.settings, setIsDeleteWarningModalOpen, setToDelete, handleTemplateDelete],
   );
 
   const handleDeleteWarningModalClose = React.useCallback(() => {
@@ -214,28 +214,28 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         {t('UPLOAD', { ns: 'common' })}
       </Button>
     ),
-    [t, handleUploadButton]
+    [t, handleUploadButton],
   );
 
   const onSearchChange = React.useCallback(
     (value: string) => {
       setSearchFilter(value);
     },
-    [setSearchFilter]
+    [setSearchFilter],
   );
 
   const onDeleteChip = React.useCallback(
     (_category: string, chip: string) => {
       setSelectedFilters((prev) => prev.filter((item) => item !== chip));
     },
-    [setSelectedFilters]
+    [setSelectedFilters],
   );
 
   const onFilterSelect = React.useCallback(
     (
       _ev: React.MouseEvent | React.ChangeEvent,
       selection: string | SelectOptionObject,
-      isPlaceholder: boolean | undefined
+      isPlaceholder: boolean | undefined,
     ) => {
       const selected = selection as LayoutTemplateFilter;
       setSelectedFilters((prev) => {
@@ -248,14 +248,14 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         return [...prev, selected];
       });
     },
-    [setSelectedFilters]
+    [setSelectedFilters],
   );
 
   const onFilterSelectToggle = React.useCallback(
     (isExpanded: boolean) => {
       setIsFilterSelectOpen(isExpanded);
     },
-    [setIsFilterSelectOpen]
+    [setIsFilterSelectOpen],
   );
 
   const onClearAllFilters = React.useCallback(() => {
@@ -266,14 +266,14 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     (isExpanded: boolean) => {
       setIsSortSelectOpen(isExpanded);
     },
-    [setIsSortSelectOpen]
+    [setIsSortSelectOpen],
   );
 
   const onSortSelect = React.useCallback(
     (
       _ev: React.MouseEvent | React.ChangeEvent,
       selection: string | SelectOptionObject,
-      isPlaceholder: boolean | undefined
+      isPlaceholder: boolean | undefined,
     ) => {
       const selected = selection.valueOf() as LayoutTemplateSort;
       setSelectedSort((_prev) => {
@@ -284,7 +284,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       });
       setIsSortSelectOpen(false);
     },
-    [setSelectedSort, setIsSortSelectOpen]
+    [setSelectedSort, setIsSortSelectOpen],
   );
 
   const sortArrowIcon = React.useMemo(() => {
@@ -501,7 +501,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       sortDirection,
       onInnerTemplateSelect,
       onInnerTemplateDelete,
-    ]
+    ],
   );
 
   const RecentTemplates = React.useMemo(() => {
@@ -614,7 +614,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                     {sortedFilteredFeatureLeveledTemplateLayoutGroup('Cryostat', CryostatLayoutTemplates)}
                     {sortedFilteredFeatureLeveledTemplateLayoutGroup(
                       t('USER_SUBMITTED', { ns: 'common' }),
-                      userSubmittedTemplates
+                      userSubmittedTemplates,
                     )}
                   </>
                 ) : (

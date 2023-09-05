@@ -64,7 +64,7 @@ export const TopologyFilterChips: React.FC<TopologyFilterChipsProps> = ({ classN
         });
       }
     },
-    []
+    [],
   );
 
   const groupChips = React.useMemo(() => generateChip(groupFilters, true), [groupFilters, generateChip]);
@@ -101,7 +101,7 @@ export const TopologyFilterChip: React.FC<TopologyFilterChipProps> = ({
     (value: string) => {
       dispatch(topologyDeleteFilterIntent(isGroupCategory, nodeType, category, value));
     },
-    [dispatch, isGroupCategory, nodeType, category]
+    [dispatch, isGroupCategory, nodeType, category],
   );
 
   const handleDeleteChipGroup = React.useCallback(() => {

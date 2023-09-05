@@ -62,7 +62,7 @@ describe('<LabelCell />', () => {
           target={mockFooTarget.connectUrl}
           labels={mockLabelList}
           clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
-        />
+        />,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -90,7 +90,7 @@ describe('<LabelCell />', () => {
         target={mockFooTarget.connectUrl}
         labels={mockLabelList}
         clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
-      />
+      />,
     );
 
     let count = 0;

@@ -123,7 +123,7 @@ export const dashboardConfigAddCardIntent = createAction(
       span,
       props,
     } as DashboardAddConfigActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigDeleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
@@ -139,7 +139,7 @@ export const dashboardConfigResizeCardIntent = createAction(
       idx,
       span,
     } as DashboardResizeConfigActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigReorderCardIntent = createAction(
@@ -150,7 +150,7 @@ export const dashboardConfigReorderCardIntent = createAction(
       nextOrder,
       swap,
     } as DashboardOrderConfigActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigFirstRunIntent = createAction(DashboardConfigAction.FIRST_RUN, () => ({
@@ -163,7 +163,7 @@ export const dashboardConfigCreateLayoutIntent = createAction(
     payload: {
       layout,
     } as DashboardAddLayoutActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigDeleteLayoutIntent = createAction(DashboardConfigAction.LAYOUT_REMOVE, (name: string) => ({
@@ -179,7 +179,7 @@ export const dashboardConfigRenameLayoutIntent = createAction(
       oldName,
       newName,
     } as DashboardRenameLayoutActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigReplaceLayoutIntent = createAction(
@@ -188,7 +188,7 @@ export const dashboardConfigReplaceLayoutIntent = createAction(
     payload: {
       newLayoutName: name,
     } as DashboardReplaceLayoutActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigFavoriteLayoutIntent = createAction(
@@ -197,7 +197,7 @@ export const dashboardConfigFavoriteLayoutIntent = createAction(
     payload: {
       newLayoutName: name,
     } as DashboardReplaceLayoutActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigCreateTemplateIntent = createAction(
@@ -206,7 +206,7 @@ export const dashboardConfigCreateTemplateIntent = createAction(
     payload: {
       template,
     } as DashboardAddTemplateActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigDeleteTemplateIntent = createAction(
@@ -215,7 +215,7 @@ export const dashboardConfigDeleteTemplateIntent = createAction(
     payload: {
       name,
     } as DashboardDeleteTemplateActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigTemplateHistoryPushIntent = createAction(
@@ -224,14 +224,14 @@ export const dashboardConfigTemplateHistoryPushIntent = createAction(
     payload: {
       template,
     } as DashboardHistoryPushTemplateActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigTemplateHistoryClearIntent = createAction(
   DashboardConfigAction.TEMPLATE_HISTORY_CLEAR,
   () => ({
     payload: {} as DashboardHistoryClearTemplateActionPayload,
-  })
+  }),
 );
 
 export const dashboardConfigClearLayoutIntent = createAction(DashboardConfigAction.LAYOUT_CLEAR, () => ({

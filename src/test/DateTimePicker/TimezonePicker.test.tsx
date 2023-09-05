@@ -36,7 +36,7 @@ describe('<TimezonePicker/>', () => {
     renderDefault(<TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />);
 
     const displaySelected = screen.getByText(
-      `(UTC${dayjs().tz(supportedTimezones()[0].full).format('Z')}) ${supportedTimezones()[0].full}`
+      `(UTC${dayjs().tz(supportedTimezones()[0].full).format('Z')}) ${supportedTimezones()[0].full}`,
     );
     expect(displaySelected).toBeInTheDocument();
     expect(displaySelected).toBeVisible();
@@ -44,7 +44,7 @@ describe('<TimezonePicker/>', () => {
 
   it('should show correct timezone options', async () => {
     const { user } = renderDefault(
-      <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />
+      <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />,
     );
 
     const optionMenu = screen.getByLabelText('Options menu');
@@ -78,7 +78,7 @@ describe('<TimezonePicker/>', () => {
 
   it('should show correct timezone options in compact mode', async () => {
     const { user } = renderDefault(
-      <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />
+      <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />,
     );
 
     const optionMenu = screen.getByLabelText('Options menu');
@@ -107,7 +107,7 @@ describe('<TimezonePicker/>', () => {
 
   it('should select a timezone when an option is clicked', async () => {
     const { user } = renderDefault(
-      <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />
+      <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />,
     );
 
     const optionMenu = screen.getByLabelText('Options menu');

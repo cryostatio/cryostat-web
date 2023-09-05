@@ -46,13 +46,13 @@ export function useDayjs(): [typeof dayjs, DatetimeFormat] {
                       .catch((err) => {
                         console.warn(err);
                         return f;
-                      })
+                      }),
                   );
             } else {
               console.warn(`${f.dateLocale.name} (${f.dateLocale.key}) is not supported.`);
               return of(f);
             }
-          })
+          }),
         )
         .subscribe(setDatetimeContext),
     ]);

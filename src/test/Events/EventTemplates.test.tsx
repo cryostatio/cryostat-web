@@ -109,7 +109,7 @@ describe('<EventTemplates />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <EventTemplates />
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

@@ -77,10 +77,10 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
             setIsLoading(false);
             onError(err);
           },
-        })
+        }),
       );
     },
-    [addSubscription, context.api, setIsLoading, onCreate, onError]
+    [addSubscription, context.api, setIsLoading, onCreate, onError],
   );
 
   const onDefaultRecordingStart = React.useCallback(() => {

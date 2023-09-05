@@ -43,17 +43,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
             filter((target) => target !== NO_TARGET),
             first(),
             map((target) => target.connectUrl),
-            mergeMap((connectUrl) => context.authCredentials.setCredential(connectUrl, username, password))
+            mergeMap((connectUrl) => context.authCredentials.setCredential(connectUrl, username, password)),
           )
           .subscribe((ok) => {
             setLoading(false);
             if (ok) {
               onPropsSave();
             }
-          })
+          }),
       );
     },
-    [addSubscription, context.authCredentials, targetObs, setLoading, onPropsSave]
+    [addSubscription, context.authCredentials, targetObs, setLoading, onPropsSave],
   );
 
   return (

@@ -51,7 +51,7 @@ describe('<EventTypes />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <EventTypes />
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

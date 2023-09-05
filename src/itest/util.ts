@@ -83,7 +83,7 @@ export class Cryostat {
     const targetSelect = await this.driver.wait(until.elementLocated(By.css(`[aria-label="Options menu"]`)));
     await targetSelect.click();
     const targetOption = await this.driver.wait(
-      until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`))
+      until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`)),
     );
     await targetOption.click();
   }
@@ -97,12 +97,12 @@ export class Cryostat {
 
   async getLatestNotification(): Promise<ITestNotification> {
     const latestNotification = await this.driver.wait(
-      until.elementLocated(By.className('pf-c-alert-group pf-m-toast'))
+      until.elementLocated(By.className('pf-c-alert-group pf-m-toast')),
     );
     return {
       title: await getDirectTextContent(
         this.driver,
-        await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__title'))
+        await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__title')),
       ),
       description: await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__description')).getText(),
     };
@@ -124,7 +124,7 @@ async function getDirectTextContent(driver: WebDriver, el: WebElement): Promise<
     }
     return ret;
   `,
-    el
+    el,
   );
 }
 

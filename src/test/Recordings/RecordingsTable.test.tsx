@@ -88,7 +88,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     expect(screen.getByText('Fake Button')).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     expect(screen.getByLabelText('Test Table')).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     const table = screen.getByLabelText('Test Table');
@@ -157,7 +157,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     expect(screen.getByText('some error')).toBeInTheDocument();
@@ -177,7 +177,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     const spinner = screen.getByRole('progressbar');
@@ -198,7 +198,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     expect(screen.getByText(`No ${fakeTableTitle}`)).toBeInTheDocument();
@@ -218,7 +218,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     const headerCheckAll = screen.getByLabelText('Select all rows');
@@ -241,7 +241,7 @@ describe('<RecordingsTable />', () => {
         onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
-      </RecordingsTable>
+      </RecordingsTable>,
     );
 
     const headerCheckAll = screen.getByLabelText('Select all rows');

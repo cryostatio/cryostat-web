@@ -124,7 +124,7 @@ describe('<AgentLiveProbes />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <AgentLiveProbes />
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

@@ -57,7 +57,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
         short: timezone.short,
       });
     },
-    [onTimezoneChange, setIsTimezoneOpen]
+    [onTimezoneChange, setIsTimezoneOpen],
   );
 
   const timezones = React.useMemo(() => supportedTimezones(), []);
@@ -66,7 +66,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
     (_e: React.MouseEvent) => {
       setNumOfOptions((old) => Math.min(old + OPTION_INCREMENT, timezones.length));
     },
-    [setNumOfOptions, timezones]
+    [setNumOfOptions, timezones],
   );
 
   const mapToSelection = React.useCallback(
@@ -85,7 +85,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
         </SelectOption>
       );
     },
-    [dayjs]
+    [dayjs],
   );
 
   const options = React.useMemo(() => {
@@ -101,7 +101,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
                 </span>
               </SelectOption>,
             ]
-          : []
+          : [],
       );
   }, [isCompact, timezones, numOfOptions, t, handleViewMore, mapToSelection]);
 
@@ -115,7 +115,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
         .filter((op) => matchExp.test(op.full) || matchExp.test(op.short))
         .map((t) => mapToSelection(t, isCompact));
     },
-    [timezones, options, isCompact, mapToSelection]
+    [timezones, options, isCompact, mapToSelection],
   );
 
   return (

@@ -37,7 +37,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
         onSubmit(selection);
       }
     },
-    [onSubmit, setIsExpanded]
+    [onSubmit, setIsExpanded],
   );
 
   const labels = React.useMemo(() => {

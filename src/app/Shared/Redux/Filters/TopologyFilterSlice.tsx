@@ -38,7 +38,7 @@ export const topologyUpdateCategoryTypeIntent = createAction(
     payload: {
       isGroup,
     },
-  })
+  }),
 );
 
 export const topologyUpdateCategoryIntent = createAction(
@@ -48,7 +48,7 @@ export const topologyUpdateCategoryIntent = createAction(
       isGroup,
       category,
     },
-  })
+  }),
 );
 
 export const topologyAddFilterIntent = createAction(
@@ -60,7 +60,7 @@ export const topologyAddFilterIntent = createAction(
       category,
       value,
     },
-  })
+  }),
 );
 
 export const topologyDeleteFilterIntent = createAction(
@@ -72,7 +72,7 @@ export const topologyDeleteFilterIntent = createAction(
       category,
       value,
     },
-  })
+  }),
 );
 
 export const topologyDeleteAllFiltersIntent = createAction(TopologyFilterAction.FILTER_DELETE_ALL, () => ({
@@ -87,7 +87,7 @@ export const topologyDeleteCategoryFiltersIntent = createAction(
       nodeType,
       category,
     },
-  })
+  }),
 );
 
 export interface TopologyFilters {
@@ -228,7 +228,7 @@ export const topologyFilterReducer: ReducerWithInitialState<TopologyFilters> = c
         filters: defaultEmptyTargetFilters,
       };
     });
-  }
+  },
 );
 
 export default topologyFilterReducer;

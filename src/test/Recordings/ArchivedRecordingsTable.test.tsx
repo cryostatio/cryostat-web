@@ -51,7 +51,7 @@ const mockMetadataFileName = 'mock.metadata.json';
 const mockMetadataFile = new File(
   [JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })],
   mockMetadataFileName,
-  { type: 'json' }
+  { type: 'json' },
 );
 mockMetadataFile.text = jest.fn(() => Promise.resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })));
 
@@ -193,7 +193,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     ['Delete', 'Edit Labels'].map((text) => {
@@ -244,7 +244,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
     expect(screen.getByText('someRecording')).toBeInTheDocument();
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
@@ -256,7 +256,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
     expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
@@ -268,7 +268,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
     expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
   });
@@ -284,7 +284,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     expect(screen.getByText('Delete')).toBeInTheDocument();
@@ -302,7 +302,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -323,7 +323,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -357,7 +357,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -378,7 +378,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await tlr.act(async () => {
@@ -398,7 +398,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await tlr.act(async () => {
@@ -417,7 +417,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await tlr.act(async () => {
@@ -441,7 +441,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     expect(screen.getByText('someRecording')).toBeInTheDocument();
@@ -466,7 +466,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await user.click(screen.getByLabelText('upload-recording'));
@@ -526,7 +526,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await user.click(screen.getByLabelText('upload-recording'));
@@ -595,7 +595,7 @@ describe('<ArchivedRecordingsTable />', () => {
       mockFileUpload,
       { someLabel: 'someValue' },
       expect.any(Function),
-      expect.any(Subject)
+      expect.any(Subject),
     );
 
     expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
@@ -614,7 +614,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await user.click(screen.getByLabelText('upload-recording'));
@@ -681,7 +681,7 @@ describe('<ArchivedRecordingsTable />', () => {
       mockFileUpload,
       mockUploadedRecordingLabels,
       expect.any(Function),
-      expect.any(Subject)
+      expect.any(Subject),
     );
 
     expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
@@ -698,7 +698,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     await user.click(screen.getByLabelText('upload-recording'));
@@ -771,7 +771,7 @@ describe('<ArchivedRecordingsTable />', () => {
       {
         preloadState: preloadedState,
         history: history,
-      }
+      },
     );
 
     const failTitle = screen.getByText('Error retrieving recordings');

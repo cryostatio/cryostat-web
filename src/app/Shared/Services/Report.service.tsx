@@ -22,7 +22,10 @@ import { isActiveRecording, RecordingState, Recording } from './Api.service';
 import { LoginService } from './Login.service';
 
 export class ReportService {
-  constructor(private login: LoginService, private notifications: Notifications) {}
+  constructor(
+    private login: LoginService,
+    private notifications: Notifications,
+  ) {}
 
   report(recording: Recording): Observable<string> {
     if (!recording.reportUrl) {
@@ -39,7 +42,7 @@ export class ReportService {
           mode: 'cors',
           credentials: 'include',
           headers,
-        })
+        }),
       ),
       concatMap((resp) => {
         if (resp.ok) {
@@ -83,7 +86,7 @@ export class ReportService {
             this.notifications.danger(err.name, err.message);
           }
         },
-      })
+      }),
     );
   }
 
@@ -107,7 +110,7 @@ export class ReportService {
             resp
               .text()
               .then(JSON.parse)
-              .then((obj) => Object.values(obj) as RuleEvaluation[])
+              .then((obj) => Object.values(obj) as RuleEvaluation[]),
           );
         } else {
           const ge: GenerationError = {
@@ -147,7 +150,7 @@ export class ReportService {
             this.notifications.danger(err.name, err.message);
           }
         },
-      })
+      }),
     );
   }
 

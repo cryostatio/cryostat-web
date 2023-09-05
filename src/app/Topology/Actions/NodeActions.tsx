@@ -69,7 +69,7 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
       e.stopPropagation();
       onClick && onClick(element, { history, services, notifications });
     },
-    [onClick, history, services, notifications, element]
+    [onClick, history, services, notifications, element],
   );
 
   React.useEffect(() => {
@@ -80,9 +80,9 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
             switchMap((element) => {
               setDisabled(true);
               return isDisabled(element, { services, notifications, history });
-            })
+            }),
           )
-          .subscribe(setDisabled)
+          .subscribe(setDisabled),
       );
     }
   }, [addSubscription, elementSubj, isDisabled, setDisabled, services, notifications, history]);
@@ -142,13 +142,13 @@ const isQuickRecordingExist = (group: EnvironmentNode, { services }: ActionUtils
     services.api.groupHasRecording(group, { name: QUICK_RECORDING_NAME }),
     services.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated).pipe(
       filter(filterFn),
-      map((_) => true)
+      map((_) => true),
     ),
     services.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted).pipe(
       filter(filterFn),
       debounceTime(500),
-      map((_) => services.api.groupHasRecording(group, { name: QUICK_RECORDING_NAME }))
-    )
+      map((_) => services.api.groupHasRecording(group, { name: QUICK_RECORDING_NAME })),
+    ),
   );
 };
 
@@ -257,7 +257,7 @@ export const nodeActions: NodeAction[] = [
             ]),
           },
           false,
-          true
+          true,
         )
         .subscribe((body) => {
           notifyGroupActionErrors('GROUP_START_RECORDING', group, body, notifications);
@@ -296,7 +296,7 @@ export const nodeActions: NodeAction[] = [
             recordingFilter: { name: QUICK_RECORDING_NAME },
           },
           false,
-          true
+          true,
         )
         .subscribe((body) => {
           notifyGroupActionErrors('GROUP_ARCHIVE_RECORDING', group, body, notifications);
@@ -339,7 +339,7 @@ export const nodeActions: NodeAction[] = [
             recordingFilter: { name: QUICK_RECORDING_NAME },
           },
           false,
-          true
+          true,
         )
         .subscribe((body) => {
           notifyGroupActionErrors('GROUP_STOP_RECORDING', group, body, notifications);
@@ -383,7 +383,7 @@ export const nodeActions: NodeAction[] = [
             recordingFilter: { name: QUICK_RECORDING_NAME },
           },
           false,
-          true
+          true,
         )
         .subscribe((body) => {
           notifyGroupActionErrors('GROUP_DELETE_RECORDING', group, body, notifications);
@@ -414,7 +414,7 @@ export const notifyGroupActionErrors = (
   >,
   group: EnvironmentNode,
   { errors, data }: GroupActionResponse,
-  notifications: Notifications
+  notifications: Notifications,
 ): void => {
   if (errors) {
     const actionVerb = type

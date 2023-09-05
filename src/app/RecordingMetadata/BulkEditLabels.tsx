@@ -55,7 +55,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
 
   const getIdxFromRecording = React.useCallback(
     (r: Recording): number => (props.isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
-    [props.isTargetRecording]
+    [props.isTargetRecording],
   );
 
   const handlePostUpdate = React.useCallback(() => {
@@ -77,7 +77,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
         });
         if (props.directory) {
           tasks.push(
-            context.api.postRecordingMetadataFromPath(props.directory.jvmId, r.name, updatedLabels).pipe(first())
+            context.api.postRecordingMetadataFromPath(props.directory.jvmId, r.name, updatedLabels).pipe(first()),
           );
         }
         if (props.isTargetRecording) {
@@ -93,7 +93,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
       forkJoin(tasks).subscribe({
         next: handlePostUpdate,
         error: handlePostUpdate,
-      })
+      }),
     );
   }, [
     addSubscription,
@@ -133,13 +133,13 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
         allRecordingLabels.length > 0
           ? allRecordingLabels.reduce(
               (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
-              allRecordingLabels[0]
+              allRecordingLabels[0],
             )
           : [];
 
       setLabels(updatedCommonLabels);
     },
-    [recordings, getIdxFromRecording, props.checkedIndices]
+    [recordings, getIdxFromRecording, props.checkedIndices],
   );
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -151,9 +151,9 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
       observable = context.target.target().pipe(
         filter((target) => target !== NO_TARGET),
         concatMap((target) =>
-          context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+          context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`),
         ),
-        first()
+        first(),
       );
     } else {
       observable = props.isUploadsTable
@@ -171,11 +171,11 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
                   }
                 }
               }`,
-              { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } }
+              { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
             )
             .pipe(
               map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
-              first()
+              first(),
             )
         : context.target.target().pipe(
             filter((target) => target !== NO_TARGET),
@@ -197,11 +197,11 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
                   }
                 }
               }`,
-                { connectUrl: target.connectUrl }
-              )
+                { connectUrl: target.connectUrl },
+              ),
             ),
             map((v) => v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
-            first()
+            first(),
           );
     }
 
@@ -223,8 +223,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
         spinnerAriaValueText: 'Saving',
         spinnerAriaLabel: 'saving-recording-labels',
         isLoading: loading,
-      } as LoadingPropsType),
-    [loading]
+      }) as LoadingPropsType,
+    [loading],
   );
 
   React.useEffect(() => {
@@ -246,10 +246,10 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
         }
         setRecordings((old) =>
           old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o
-          )
+            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
+          ),
         );
-      })
+      }),
     );
   }, [addSubscription, context.target, context.notificationChannel, setRecordings, props.isUploadsTable]);
 

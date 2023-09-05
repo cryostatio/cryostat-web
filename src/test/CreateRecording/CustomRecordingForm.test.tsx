@@ -89,7 +89,7 @@ describe('<CustomRecordingForm />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <CustomRecordingForm />
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

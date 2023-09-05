@@ -52,7 +52,7 @@ export const ReportFrame: React.FC<ReportFrameProps> = (props) => {
               setReport(JSON.stringify(err));
             }
           },
-        })
+        }),
     );
   }, [addSubscription, context.reports, recording, isExpanded, setReport, props]);
 

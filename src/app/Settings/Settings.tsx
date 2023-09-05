@@ -107,9 +107,9 @@ export const Settings: React.FC<SettingsProps> = (_) => {
               disabled: c.disabled,
               orderInGroup: c.orderInGroup || -1,
               featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
-            } as _TransformedUserSetting)
+            }) as _TransformedUserSetting,
         ),
-    [t, loggedIn]
+    [t, loggedIn],
   );
 
   const history = useHistory();
@@ -121,15 +121,15 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         search,
         'tab',
         Object.values(SettingTab).map((v) => tabAsParam(v)),
-        tabAsParam(SettingTab.GENERAL)
-      )
+        tabAsParam(SettingTab.GENERAL),
+      ),
     );
   }, [search]);
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
       switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${tabAsParam(key as SettingTab)}` }),
-    [history, pathname, search]
+    [history, pathname, search],
   );
 
   const settingGroups = React.useMemo(() => {

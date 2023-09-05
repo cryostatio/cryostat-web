@@ -39,7 +39,7 @@ export const HelpButton: React.FC<HelpButtonProps> = ({ visualization, ...props 
         to fit to the screen.
       </>
     ),
-    [onClick]
+    [onClick],
   );
 
   return (

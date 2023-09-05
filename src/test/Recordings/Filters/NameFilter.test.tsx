@@ -60,7 +60,7 @@ describe('<NameFilter />', () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
-        <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+        <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -68,7 +68,7 @@ describe('<NameFilter />', () => {
 
   it('display name selections when text input is clicked', async () => {
     const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
     );
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('<NameFilter />', () => {
 
   it('display name selections when dropdown arrow is clicked', async () => {
     const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
     );
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe('<NameFilter />', () => {
 
   it('should close selection menu when toggled with dropdown arrow', async () => {
     const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
     );
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
@@ -136,7 +136,7 @@ describe('<NameFilter />', () => {
 
   it('should close selection menu when toggled with text input', async () => {
     const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
     );
 
     const nameInput = screen.getByLabelText('Filter by name...');
@@ -162,7 +162,7 @@ describe('<NameFilter />', () => {
 
   it('should not display selected names', async () => {
     const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={filteredNames} />
+      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={filteredNames} />,
     );
 
     const nameInput = screen.getByLabelText('Filter by name...');
@@ -183,7 +183,7 @@ describe('<NameFilter />', () => {
     const submitNameInput = jest.fn((nameInput) => emptyFilteredNames.push(nameInput));
 
     const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={submitNameInput} filteredNames={emptyFilteredNames} />
+      <NameFilter recordings={mockRecordingList} onSubmit={submitNameInput} filteredNames={emptyFilteredNames} />,
     );
 
     const nameInput = screen.getByLabelText('Filter by name...');

@@ -80,7 +80,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         evaluations={mockCategorizedEvaluations}
         onSubmit={onTopicInput}
         filteredTopics={emptyFilteredTopics}
-      />
+      />,
     );
     const nameInput = screen.getByLabelText('Filter by topic...');
     expect(nameInput).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         evaluations={mockCategorizedEvaluations}
         onSubmit={onTopicInput}
         filteredTopics={emptyFilteredTopics}
-      />
+      />,
     );
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         evaluations={mockCategorizedEvaluations}
         onSubmit={onTopicInput}
         filteredTopics={emptyFilteredTopics}
-      />
+      />,
     );
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
@@ -160,7 +160,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         evaluations={mockCategorizedEvaluations}
         onSubmit={onTopicInput}
         filteredTopics={emptyFilteredTopics}
-      />
+      />,
     );
 
     const nameInput = screen.getByLabelText('Filter by topic...');
@@ -190,7 +190,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         evaluations={mockCategorizedEvaluations}
         onSubmit={onTopicInput}
         filteredTopics={filteredTopics}
-      />
+      />,
     );
 
     const nameInput = screen.getByLabelText('Filter by topic...');
@@ -215,7 +215,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         evaluations={mockCategorizedEvaluations}
         onSubmit={submitNameInput}
         filteredTopics={emptyFilteredTopics}
-      />
+      />,
     );
 
     const nameInput = screen.getByLabelText('Filter by topic...');

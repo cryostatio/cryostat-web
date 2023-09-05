@@ -68,7 +68,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
       updatedLabels[idx].key = key;
       setLabels(updatedLabels);
     },
-    [props.labels, setLabels]
+    [props.labels, setLabels],
   );
 
   const handleValueChange = React.useCallback(
@@ -77,7 +77,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
       updatedLabels[idx].value = value;
       setLabels(updatedLabels);
     },
-    [props.labels, setLabels]
+    [props.labels, setLabels],
   );
 
   const handleAddLabelButtonClick = React.useCallback(() => {
@@ -90,7 +90,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
       updated.splice(idx, 1);
       setLabels(updated);
     },
-    [props.labels, setLabels]
+    [props.labels, setLabels],
   );
 
   const isLabelValid = React.useCallback(matchesLabelSyntax, [matchesLabelSyntax]);
@@ -105,7 +105,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
     }
     return props.labels.reduce(
       (prev, curr) => isLabelValid(curr) && !isDuplicateKey(curr.key, props.labels) && prev,
-      true
+      true,
     );
   }, [props.labels, isLabelValid, isDuplicateKey]);
 
@@ -145,8 +145,8 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
               catchError((_) => {
                 setInvalidUploads((old) => old.concat([labelFile.name]));
                 return of([]);
-              })
-            )
+              }),
+            ),
           );
         }
         addSubscription(
@@ -154,11 +154,11 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
             setLoading(false);
             const labels = labelArrays.reduce((acc, next) => acc.concat(next), []);
             setLabels([...props.labels, ...labels]);
-          })
+          }),
         );
       }
     },
-    [setLabels, props.labels, addSubscription, setLoading]
+    [setLabels, props.labels, addSubscription, setLoading],
   );
 
   const closeWarningPopover = React.useCallback(() => setInvalidUploads([]), [setInvalidUploads]);

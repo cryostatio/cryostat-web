@@ -66,7 +66,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
             })),
         },
       ] as TemplateSelectionGroup[],
-    [templates]
+    [templates],
   );
 
   const handleTemplateSelect = React.useCallback(
@@ -78,7 +78,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
         onSelect(str[0], str[1] as TemplateType);
       }
     },
-    [onSelect]
+    [onSelect],
   );
 
   return (

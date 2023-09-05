@@ -127,7 +127,7 @@ describe('<BulkEditLabels />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -163,7 +163,7 @@ describe('<BulkEditLabels />', () => {
 
   it('should display editable labels form when in edit mode', async () => {
     const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
+      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
     );
 
     const editButton = screen.getByRole('button', { name: 'Edit Labels' });
@@ -223,7 +223,7 @@ describe('<BulkEditLabels />', () => {
 
   it('should return to read-only view when edited labels are cancelled', async () => {
     const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
+      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
     );
 
     let editButton = screen.getByRole('button', { name: 'Edit Labels' });
@@ -269,7 +269,7 @@ describe('<BulkEditLabels />', () => {
       .spyOn(defaultServices.api, 'postTargetRecordingMetadata')
       .mockReturnValue(of([mockActiveRecording]));
     const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
+      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
     );
 
     const editButton = screen.getByRole('button', { name: 'Edit Labels' });
@@ -312,7 +312,7 @@ describe('<BulkEditLabels />', () => {
       .spyOn(defaultServices.api, 'postRecordingMetadata')
       .mockReturnValue(of([mockArchivedRecording]));
     const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
+      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
     );
 
     const editButton = screen.getByRole('button', { name: 'Edit Labels' });

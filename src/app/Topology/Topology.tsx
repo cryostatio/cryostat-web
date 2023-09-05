@@ -44,7 +44,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   const { groupings } = displayOptions;
   const transformConfig = React.useMemo(
     () => ({ showOnlyTopGroup: groupings.realmOnly, expandMode: !groupings.collapseSingles }),
-    [groupings]
+    [groupings],
   );
 
   const [discoveryTree, setDiscoveryTree] = React.useState(DEFAULT_EMPTY_UNIVERSE);
@@ -68,10 +68,10 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
           error: (err) => {
             setError(err);
           },
-        })
+        }),
       );
     },
-    [addSubscription, context.api, setDiscoveryTree, setError]
+    [addSubscription, context.api, setDiscoveryTree, setError],
   );
 
   React.useEffect(() => {
@@ -79,7 +79,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
       // Credentials will trigger modifed target event if any
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
-        .subscribe((_) => _refreshDiscoveryTree())
+        .subscribe((_) => _refreshDiscoveryTree()),
     );
   }, [addSubscription, context.notificationChannel, _refreshDiscoveryTree]);
 
@@ -93,7 +93,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
     }
     const id = window.setInterval(
       () => _refreshDiscoveryTree(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, _refreshDiscoveryTree]);

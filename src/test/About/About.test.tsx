@@ -64,7 +64,7 @@ describe('<About />', () => {
     renderDefault(
       <I18nextProvider i18n={i18n}>
         <About />
-      </I18nextProvider>
+      </I18nextProvider>,
     );
 
     expect(screen.getByText('About')).toBeInTheDocument();

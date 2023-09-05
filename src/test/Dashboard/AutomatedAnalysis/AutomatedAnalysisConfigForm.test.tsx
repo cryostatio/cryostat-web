@@ -87,7 +87,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     await user.click(
       screen.getByRole('button', {
         name: /edit/i,
-      })
+      }),
     ); // Edit button
 
     const templateSelect = screen.getByLabelText('Template *'); // Template select
@@ -124,7 +124,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     await user.click(
       screen.getByRole('button', {
         name: /edit/i,
-      })
+      }),
     );
 
     const templateSelect = screen.getByRole('combobox', {
@@ -161,7 +161,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     await user.click(
       screen.getByRole('button', {
         name: testT('AutomatedAnalysisConfigForm.SAVE_CHANGES'),
-      })
+      }),
     );
     expect(setConfigRequestSpy).toHaveBeenCalledWith(config);
   });

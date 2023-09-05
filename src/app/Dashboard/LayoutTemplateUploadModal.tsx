@@ -115,10 +115,10 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
             cards: template.cards,
             vendor: LayoutTemplateVendor.USER,
           } as LayoutTemplate;
-        })
+        }),
       );
     },
-    [t, customTemplates]
+    [t, customTemplates],
   );
 
   const reset = React.useCallback(() => {
@@ -136,13 +136,13 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
         onClose();
       }
     },
-    [uploading, reset, onClose]
+    [uploading, reset, onClose],
   );
 
   const onFileSubmit = React.useCallback(
     (
       fileUploads: FUpload[],
-      { getProgressUpdateCallback: _getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks
+      { getProgressUpdateCallback: _getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks,
     ) => {
       setUploading(true);
 
@@ -162,7 +162,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                     <Text component="p" style={{ color: 'var(--pf-global--warning-color--200)' }}>
                       Warning: To see this template in the template picker, make sure the Cryostat Feature Level is set
                       to BETA.
-                    </Text>
+                    </Text>,
                   );
                 } else {
                   onSingleSuccess(fileUpload.file.name);
@@ -172,7 +172,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                 // template name already taken from previous upload
                 onSingleFailure(
                   fileUpload.file.name,
-                  new Error(t('LayoutTemplateUploadModal.ERROR.DUPLICATE_UPLOAD', { name: template.name }))
+                  new Error(t('LayoutTemplateUploadModal.ERROR.DUPLICATE_UPLOAD', { name: template.name })),
                 );
                 return of(null);
               }
@@ -180,8 +180,8 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
             catchError((err) => {
               onSingleFailure(fileUpload.file.name, err);
               return of(null);
-            })
-          )
+            }),
+          ),
         );
       });
 
@@ -198,10 +198,10 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                 category: 'User-submitted',
               });
             }
-          })
+          }),
       );
     },
-    [addSubscription, dispatch, t, validateParseTemplate, setUploading, setSelectedTemplate, setAllOks]
+    [addSubscription, dispatch, t, validateParseTemplate, setUploading, setSelectedTemplate, setAllOks],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -213,7 +213,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
       setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
       setNumOfFiles(fileUploads.length);
     },
-    [setNumOfFiles, setAllOks]
+    [setNumOfFiles, setAllOks],
   );
 
   const submitButtonLoadingProps = React.useMemo(
@@ -222,8 +222,8 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
         spinnerAriaValueText: t('SUBMITTING', { ns: 'common' }),
         spinnerAriaLabel: 'submitting-layout-templates',
         isLoading: uploading,
-      } as LoadingPropsType),
-    [t, uploading]
+      }) as LoadingPropsType,
+    [t, uploading],
   );
 
   return (

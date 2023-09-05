@@ -119,7 +119,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       setIsLoading(false);
       setErrorMessage('');
     },
-    [setTypes, setIsLoading, setErrorMessage]
+    [setTypes, setIsLoading, setErrorMessage],
   );
 
   const handleError = React.useCallback(
@@ -127,7 +127,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       setIsLoading(false);
       setErrorMessage(error.message);
     },
-    [setIsLoading, setErrorMessage]
+    [setIsLoading, setErrorMessage],
   );
 
   const refreshEvents = React.useCallback(() => {
@@ -139,13 +139,13 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
           filter((target) => target !== NO_TARGET),
           first(),
           concatMap((target) =>
-            context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`)
-          )
+            context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`),
+          ),
         )
         .subscribe({
           next: handleTypes,
           error: handleError,
-        })
+        }),
     );
   }, [addSubscription, context.target, context.api, handleTypes, handleError]);
 
@@ -154,7 +154,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       context.target.target().subscribe(() => {
         setFilterText('');
         refreshEvents();
-      })
+      }),
     );
   }, [addSubscription, context, context.target, refreshEvents]);
 
@@ -175,7 +175,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       types.filter(withFilters),
-      tableColumns
+      tableColumns,
     );
   }, [types, filterText, sortBy]);
 
@@ -204,7 +204,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
     (_, currentPage: number) => {
       setCurrentPage(currentPage);
     },
-    [setCurrentPage]
+    [setCurrentPage],
   );
 
   const onPerPage = React.useCallback(
@@ -214,7 +214,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       setPerPage(perPage);
       setCurrentPage(1 + Math.floor(offset / perPage));
     },
-    [currentPage, prevPerPage, setPerPage, setCurrentPage]
+    [currentPage, prevPerPage, setPerPage, setCurrentPage],
   );
 
   const onToggle = React.useCallback(
@@ -227,7 +227,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         return [...old, typeId];
       });
     },
-    [setOpenRows]
+    [setOpenRows],
   );
 
   const onFilterTextChange = React.useCallback(
@@ -235,7 +235,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       setFilterText(filterText);
       setCurrentPage(1);
     },
-    [setFilterText, setCurrentPage]
+    [setFilterText, setCurrentPage],
   );
 
   const authRetry = React.useCallback(() => {

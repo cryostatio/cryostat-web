@@ -77,7 +77,7 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
       });
       onPopoverDismiss();
     },
-    [setDatetimeInput, onPopoverDismiss, dayjs]
+    [setDatetimeInput, onPopoverDismiss, dayjs],
   );
 
   const handleTextInput = React.useCallback(
@@ -102,7 +102,7 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
         }
       });
     },
-    [setDatetimeInput, dayjs]
+    [setDatetimeInput, dayjs],
   );
 
   return (

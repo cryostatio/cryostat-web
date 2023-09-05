@@ -137,7 +137,7 @@ describe('<Recordings />', () => {
               <Recordings />
             </NotificationsContext.Provider>
           </Router>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

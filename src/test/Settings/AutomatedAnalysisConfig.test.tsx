@@ -40,7 +40,7 @@ describe('<AutomatedAnalysisConfig/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           {React.createElement(AutomatedAnalysisConfig.content, null)}
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

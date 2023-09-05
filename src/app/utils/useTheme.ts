@@ -33,7 +33,7 @@ export function useTheme(): [ThemeType, ThemeSetting] {
         setTheme(
           window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
             ? ThemeSetting.DARK
-            : ThemeSetting.LIGHT
+            : ThemeSetting.LIGHT,
         );
       } else {
         setTheme(theme);

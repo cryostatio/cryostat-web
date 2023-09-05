@@ -92,7 +92,7 @@ export const supportedTimezones = () =>
           ({
             full: tname,
             short: dayjs().tz(tname).format('z'), // Get abbreviation
-          } as Timezone)
+          }) as Timezone,
       );
 
 export const getTimezone = (short: string): Timezone | undefined => {

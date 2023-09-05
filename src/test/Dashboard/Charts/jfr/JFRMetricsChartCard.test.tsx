@@ -53,12 +53,12 @@ const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,
   defaultServices.target,
   defaultServices.notificationChannel,
-  defaultServices.settings
+  defaultServices.settings,
 );
 const mockMbeanController = new MBeanMetricsChartController(
   defaultServices.api,
   defaultServices.target,
-  defaultServices.settings
+  defaultServices.settings,
 );
 const mockChartContext = {
   jfrController: mockJfrController,
@@ -83,7 +83,7 @@ describe('<JFRMetricsChartCard />', () => {
               </Provider>
             </ChartContext.Provider>
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -103,7 +103,7 @@ describe('<JFRMetricsChartCard />', () => {
               </Provider>
             </ChartContext.Provider>
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -123,7 +123,7 @@ describe('<JFRMetricsChartCard />', () => {
               </Provider>
             </ChartContext.Provider>
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -137,7 +137,7 @@ describe('<JFRMetricsChartCard />', () => {
     expect(screen.getByText('CPU Load (last 120s, every 10s)')).toBeInTheDocument();
     expect(screen.getByText('No source recording')).toBeInTheDocument();
     expect(
-      screen.getByText((s) => s.includes('Metrics cards display data taken from running flight recordings'))
+      screen.getByText((s) => s.includes('Metrics cards display data taken from running flight recordings')),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });
@@ -146,7 +146,7 @@ describe('<JFRMetricsChartCard />', () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     const { user } = renderChartCard(
-      <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
+      <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />,
     );
 
     expect(history.location.pathname).toBe('/');
@@ -178,7 +178,7 @@ describe('<JFRMetricsChartCard />', () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
     const { container } = renderChartCard(
-      <JFRMetricsChartCard chartKind={chartKind} duration={duration} period={period} span={6} dashboardId={0} />
+      <JFRMetricsChartCard chartKind={chartKind} duration={duration} period={period} span={6} dashboardId={0} />,
     );
 
     const iframe = container.querySelector('iframe');
@@ -206,7 +206,7 @@ const renderChartCard = (
     store = setupStore(preloadState),
     user = userEvent.setup(),
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   return renderWithProvidersAndRedux(
     ui,
@@ -228,6 +228,6 @@ const renderChartCard = (
       store,
       user,
       ...renderOptions,
-    }
+    },
   );
 };

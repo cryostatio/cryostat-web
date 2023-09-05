@@ -38,7 +38,7 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({
     (_) => {
       setOpen(false);
     },
-    [setOpen]
+    [setOpen],
   );
 
   return (

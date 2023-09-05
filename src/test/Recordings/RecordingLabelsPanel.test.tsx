@@ -66,7 +66,7 @@ describe('<RecordingLabelsPanel />', () => {
       tree = renderer.create(
         <Drawer isExpanded={true} isInline>
           <DrawerContent panelContent={<RecordingLabelsPanel {...props} />} />
-        </Drawer>
+        </Drawer>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -76,7 +76,7 @@ describe('<RecordingLabelsPanel />', () => {
     renderDefault(
       <Drawer isExpanded={true} isInline>
         <DrawerContent panelContent={<RecordingLabelsPanel {...props} />} />
-      </Drawer>
+      </Drawer>,
     );
     expect(screen.getByText('Bulk Edit Labels')).toBeInTheDocument();
     expect(screen.getAllByLabelText('Resize').length).toBe(1);

@@ -35,7 +35,7 @@ export class TargetsService {
     private readonly api: ApiService,
     private readonly notifications: Notifications,
     login: LoginService,
-    notificationChannel: NotificationChannel
+    notificationChannel: NotificationChannel,
   ) {
     login
       .getSessionState()
@@ -75,7 +75,7 @@ export class TargetsService {
       catchError((err) => {
         this.notifications.danger('Target List Update Failed', JSON.stringify(err));
         return of(undefined);
-      })
+      }),
     );
   }
 
