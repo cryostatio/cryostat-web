@@ -40,6 +40,9 @@
     "unused-imports",
     "import"
   ],
+  "ignorePatterns": [
+    "src/mirage/**"
+  ],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/interface-name-prefix": "off",
