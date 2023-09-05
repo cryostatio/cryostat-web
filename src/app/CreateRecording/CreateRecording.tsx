@@ -57,7 +57,7 @@ const Comp: React.FC<RouteComponentProps<Record<string, never>, StaticContext, C
       maxAge: props.location?.state?.maxAge,
       maxSize: props.location?.state?.maxSize,
     }),
-    [props.location]
+    [props.location],
   );
 
   return (

@@ -74,7 +74,7 @@ describe('<LabelFilter />', () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
-        <LabelFilter recordings={mockRecordingList} filteredLabels={emptyFilteredLabels} onSubmit={onLabelInput} />
+        <LabelFilter recordings={mockRecordingList} filteredLabels={emptyFilteredLabels} onSubmit={onLabelInput} />,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -82,7 +82,7 @@ describe('<LabelFilter />', () => {
 
   it('display label selections when text input is clicked', async () => {
     const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />
+      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
     );
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
@@ -103,7 +103,7 @@ describe('<LabelFilter />', () => {
 
   it('display label selections when dropdown arrow is clicked', async () => {
     const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />
+      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
     );
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
@@ -125,7 +125,7 @@ describe('<LabelFilter />', () => {
 
   it('should close selection menu when toggled with dropdown arrow', async () => {
     const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />
+      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
     );
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
@@ -151,7 +151,7 @@ describe('<LabelFilter />', () => {
 
   it('should close selection menu when toggled with text input', async () => {
     const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />
+      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
     );
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
@@ -176,7 +176,7 @@ describe('<LabelFilter />', () => {
 
   it('should not display selected labels', async () => {
     const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={filteredLabels} />
+      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={filteredLabels} />,
     );
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
@@ -196,7 +196,7 @@ describe('<LabelFilter />', () => {
     const submitLabelInput = jest.fn((labelInput) => emptyFilteredLabels.push(labelInput));
 
     const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={submitLabelInput} filteredLabels={emptyFilteredLabels} />
+      <LabelFilter recordings={mockRecordingList} onSubmit={submitLabelInput} filteredLabels={emptyFilteredLabels} />,
     );
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();

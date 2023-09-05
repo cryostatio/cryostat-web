@@ -68,7 +68,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
       const hour = is24h ? rawHour : hourIn24HrFormat(rawHour, meridiemAM);
       onHourSelect && onHourSelect(hour);
     },
-    [is24h, onHourSelect, meridiemAM]
+    [is24h, onHourSelect, meridiemAM],
   );
 
   return (
@@ -162,7 +162,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
     (value: number) => {
       return _.clamp(value, computedMin, computedMax);
     },
-    [computedMax, computedMin]
+    [computedMax, computedMin],
   );
 
   const handleValueChange = React.useCallback(
@@ -173,7 +173,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
       const newVal = _sanitizeValue(Number(value));
       onChange && onChange(newVal);
     },
-    [onChange, _sanitizeValue]
+    [onChange, _sanitizeValue],
   );
 
   const handleIncrement = React.useCallback(() => {

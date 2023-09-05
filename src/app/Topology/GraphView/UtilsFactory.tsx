@@ -73,7 +73,7 @@ export const RESOURCE_NAME_TRUNCATE_LENGTH = 20;
 const _buildFullNodeModel = (
   node: EnvironmentNode | TargetNode,
   expandMode = true,
-  filters?: TopologyFilters
+  filters?: TopologyFilters,
 ): NodeModel[] => {
   if (isTargetNode(node)) {
     if (!isTargetNodeFiltered(node, filters?.targetFilters.filters)) {
@@ -212,7 +212,7 @@ export const _transformDataFull = (root: EnvironmentNode, expandMode = true, fil
 export const transformData = (
   universe: EnvironmentNode,
   { showOnlyTopGroup = false, expandMode = true }: TransformConfig = {},
-  filters?: TopologyFilters
+  filters?: TopologyFilters,
 ): {
   nodes: NodeModel[];
   edges: EdgeModel[];
@@ -245,8 +245,8 @@ export const componentFactory: ComponentFactory = (kind: ModelKind, type: string
     case 'group':
       return withContextMenu(actionFactory)(
         withDragNode(nodeDragSourceSpec('group', false, false))(
-          withSelection({ multiSelect: false, controlled: true })(CustomGroup)
-        )
+          withSelection({ multiSelect: false, controlled: true })(CustomGroup),
+        ),
       );
     default:
       switch (kind) {
@@ -255,8 +255,8 @@ export const componentFactory: ComponentFactory = (kind: ModelKind, type: string
         case ModelKind.node:
           return withContextMenu(actionFactory)(
             withDragNode(nodeDragSourceSpec('node', false, false))(
-              withSelection({ multiSelect: false, controlled: true })(CustomNode)
-            )
+              withSelection({ multiSelect: false, controlled: true })(CustomNode),
+            ),
           );
         case ModelKind.edge:
           return DefaultEdge;
@@ -304,7 +304,7 @@ export const ensureGraphVisible = (visualization: Visualization) => {
             }
             return [closestNode, closestDistance];
           },
-          [nodes[0], nodeDistanceToBounds(nodes[0], graphBounds)]
+          [nodes[0], nodeDistanceToBounds(nodes[0], graphBounds)],
         );
 
         graph.panIntoView(toPanNode);

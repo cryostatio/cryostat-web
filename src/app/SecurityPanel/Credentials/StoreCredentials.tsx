@@ -74,10 +74,10 @@ const reducer = (state: State, action) => {
     case Actions.HANDLE_REFRESH: {
       const credentials: StoredCredential[] = action.payload.credentials;
       const updatedCheckedCredentials = state.checkedCredentials.filter((cred) =>
-        includesCredential(credentials, cred)
+        includesCredential(credentials, cred),
       );
       const updatedExpandedCredentials = state.expandedCredentials.filter((cred) =>
-        includesCredential(credentials, cred)
+        includesCredential(credentials, cred),
       );
 
       return {
@@ -135,7 +135,7 @@ const reducer = (state: State, action) => {
     case Actions.HANDLE_NO_MATCH_ROW_CHECK: {
       const noMatch = action.payload.noMatch;
       const checkedCredentials = state.credentials.filter(({ numMatchingTargets }) =>
-        noMatch ? numMatchingTargets === 0 : numMatchingTargets > 0
+        noMatch ? numMatchingTargets === 0 : numMatchingTargets > 0,
       );
       return {
         ...state,
@@ -196,7 +196,7 @@ export const StoreCredentials = () => {
       context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
         dispatch({ type: Actions.HANDLE_REFRESH, payload: { credentials: credentials } });
         setIsLoading(false);
-      })
+      }),
     );
   }, [addSubscription, context.api, setIsLoading]);
 
@@ -210,7 +210,7 @@ export const StoreCredentials = () => {
     }
     const id = window.setInterval(
       () => refreshStoredCredentialsAndCounts(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshStoredCredentialsAndCounts]);
@@ -219,7 +219,7 @@ export const StoreCredentials = () => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
         dispatch({ type: Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION, payload: { credential: v.message } });
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel]);
 
@@ -228,8 +228,8 @@ export const StoreCredentials = () => {
       context.notificationChannel
         .messages(NotificationCategory.CredentialsDeleted)
         .subscribe((v) =>
-          dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message } })
-        )
+          dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message } }),
+        ),
     );
   }, [addSubscription, context, context.notificationChannel]);
 
@@ -237,7 +237,7 @@ export const StoreCredentials = () => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
-        .subscribe((_) => refreshStoredCredentialsAndCounts())
+        .subscribe((_) => refreshStoredCredentialsAndCounts()),
     );
   }, [addSubscription, refreshStoredCredentialsAndCounts, context, context.notificationChannel, context.api]);
 
@@ -245,12 +245,12 @@ export const StoreCredentials = () => {
     (checked: boolean) => {
       dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked } });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleDeleteCredentials = React.useCallback(() => {
     addSubscription(
-      forkJoin(state.checkedCredentials.map((credential) => context.api.deleteCredentials(credential.id))).subscribe()
+      forkJoin(state.checkedCredentials.map((credential) => context.api.deleteCredentials(credential.id))).subscribe(),
     );
   }, [state.checkedCredentials, context.api, addSubscription]);
 

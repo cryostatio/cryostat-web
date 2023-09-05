@@ -135,7 +135,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       setIsUploadModalOpen(true);
     },
-    [setIsUploadModalOpen]
+    [setIsUploadModalOpen],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -149,7 +149,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       setIsSelectorOpen(false);
       setSelectedTemplate(DefaultSelectedTemplate);
     },
-    [setOldName, setIsCreateModalOpen, setIsSelectorOpen]
+    [setOldName, setIsCreateModalOpen, setIsSelectorOpen],
   );
 
   const handleCreateModalClose = React.useCallback(() => {
@@ -162,7 +162,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       setSelectDelete(layout);
       setIsDeleteWarningModalOpen(true);
     },
-    [setSelectDelete, setIsDeleteWarningModalOpen]
+    [setSelectDelete, setIsDeleteWarningModalOpen],
   );
 
   const handleDeleteWarningModalClose = React.useCallback(() => {
@@ -186,7 +186,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       }
       if (deleteRef.current) deleteRef.current.blur();
     },
-    [context.settings, dispatch, handleDeleteWarningModalOpen]
+    [context.settings, dispatch, handleDeleteWarningModalOpen],
   );
 
   const handleRenameLayout = React.useCallback(
@@ -194,14 +194,14 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       setOldName(oldName);
       setIsCreateModalOpen(true);
     },
-    [setOldName, setIsCreateModalOpen]
+    [setOldName, setIsCreateModalOpen],
   );
 
   const handleFavoriteLayout = React.useCallback(
     (layoutName: string) => {
       dispatch(dashboardConfigFavoriteLayoutIntent(layoutName));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onFocus = React.useCallback(() => {
@@ -220,7 +220,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       setIsSelectorOpen(false);
       onFocus();
     },
-    [dispatch, setIsSelectorOpen, onFocus, dashboardConfigs]
+    [dispatch, setIsSelectorOpen, onFocus, dashboardConfigs],
   );
 
   const onActionClick = React.useCallback(
@@ -234,14 +234,14 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         handleFavoriteLayout(itemId);
       }
     },
-    [handleRenameLayout, handleDeleteButton, handleFavoriteLayout]
+    [handleRenameLayout, handleDeleteButton, handleFavoriteLayout],
   );
 
   const onToggle = React.useCallback(
     (_ev: React.MouseEvent<Element, MouseEvent>) => {
       setIsSelectorOpen((open) => !open);
     },
-    [setIsSelectorOpen]
+    [setIsSelectorOpen],
   );
 
   const onCreateDropdownSelect = React.useCallback(() => {
@@ -251,7 +251,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
   const createBlankLayout = React.useCallback(() => {
     const name = getUniqueIncrementingName(
       'Custom',
-      dashboardConfigs.layouts.map((l) => l.name)
+      dashboardConfigs.layouts.map((l) => l.name),
     );
 
     const template: DashboardLayout = {
@@ -276,7 +276,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         Upload Template
       </PF4DropdownItem>,
     ],
-    [createBlankLayout, handleCreateModalOpen, handleUploadModalOpen]
+    [createBlankLayout, handleCreateModalOpen, handleUploadModalOpen],
   );
 
   const createTemplateButton = React.useMemo(
@@ -317,7 +317,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       setIsCreateDropdownOpen,
       isCreateDropdownOpen,
       createTemplateDropdownItems,
-    ]
+    ],
   );
 
   const renameButton = React.useMemo(
@@ -332,7 +332,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         data-quickstart-id="dashboard-rename-btn"
       />
     ),
-    [t, handleRenameLayout, currLayout.name]
+    [t, handleRenameLayout, currLayout.name],
   );
 
   const deleteButton = React.useMemo(
@@ -350,7 +350,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         {t('DELETE', { ns: 'common' })}
       </Button>
     ),
-    [t, handleDeleteButton, currLayout.name]
+    [t, handleDeleteButton, currLayout.name],
   );
 
   const dropdownItems = React.useMemo(() => {
@@ -400,7 +400,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       }
       setIsKebabOpen(false);
     },
-    [handleSetAsTemplateModalOpen, handleDownloadTemplateModalOpen, handleClearLayout, setIsKebabOpen]
+    [handleSetAsTemplateModalOpen, handleDownloadTemplateModalOpen, handleClearLayout, setIsKebabOpen],
   );
 
   const kebabDropdown = React.useMemo(
@@ -428,7 +428,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         {dropdownItems}
       </Dropdown>
     ),
-    [t, onKebabSelect, setIsKebabOpen, isKebabOpen, dropdownItems]
+    [t, onKebabSelect, setIsKebabOpen, isKebabOpen, dropdownItems],
   );
 
   const menuGroups = React.useCallback(
@@ -470,7 +470,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         </MenuGroup>
       );
     },
-    [t, currLayout.name, dashboardConfigs.layouts]
+    [t, currLayout.name, dashboardConfigs.layouts],
   );
 
   const onOpenChange = React.useCallback(
@@ -480,7 +480,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       }
       setIsSelectorOpen(_isOpen);
     },
-    [setIsSelectorOpen, isDeleteWarningModalOpen, isCreateModalOpen, isUploadModalOpen]
+    [setIsSelectorOpen, isDeleteWarningModalOpen, isCreateModalOpen, isUploadModalOpen],
   );
 
   const menuDropdown = React.useMemo(() => {

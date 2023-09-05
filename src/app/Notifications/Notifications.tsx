@@ -39,15 +39,15 @@ export class Notifications {
     this._drawerState$
       .pipe(
         filter((v) => v),
-        concatMap(() => this._notifications$.pipe(first()))
+        concatMap(() => this._notifications$.pipe(first())),
       )
       .subscribe((prev) =>
         this._notifications$.next(
           prev.map((n) => ({
             ...n,
             hidden: true,
-          }))
-        )
+          })),
+        ),
       );
   }
 
@@ -111,9 +111,9 @@ export class Notifications {
     return this.notifications().pipe(
       map((a) =>
         a.filter(
-          (n) => (this.isWsClientActivity(n) || this.isJvmDiscovery(n)) && !Notifications.isProblemNotification(n)
-        )
-      )
+          (n) => (this.isWsClientActivity(n) || this.isJvmDiscovery(n)) && !Notifications.isProblemNotification(n),
+        ),
+      ),
     );
   }
 

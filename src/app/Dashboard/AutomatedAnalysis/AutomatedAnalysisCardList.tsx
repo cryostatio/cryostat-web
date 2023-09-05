@@ -76,7 +76,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
       },
       columnIndex,
     }),
-    [setSortBy, sortBy]
+    [setSortBy, sortBy],
   );
 
   const flatFiltered = React.useMemo(() => {

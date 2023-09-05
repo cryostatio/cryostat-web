@@ -98,14 +98,14 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
               ({
                 file: f,
                 abortSignal: new Subject<void>(),
-              } as FUpload)
+              }) as FUpload,
           ),
         ];
         onFilesChange && onFilesChange(newFileUploads);
         return newFileUploads;
       });
     },
-    [setFileUploads, onFilesChange]
+    [setFileUploads, onFilesChange],
   );
 
   const handleFileReject = React.useCallback(
@@ -121,7 +121,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
         }
       });
     },
-    [notifications, dzAccept]
+    [notifications, dzAccept],
   );
 
   const handleFileRemove = React.useCallback(
@@ -137,7 +137,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
         });
       }
     },
-    [fileUploads, setFileUploads, onFilesChange]
+    [fileUploads, setFileUploads, onFilesChange],
   );
 
   const getProgressUpdateCallback = React.useCallback(
@@ -161,7 +161,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
         });
       };
     },
-    [setFileUploads]
+    [setFileUploads],
   );
 
   const onSingleFailure = React.useCallback(
@@ -184,7 +184,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
         return old;
       });
     },
-    [setFileUploads]
+    [setFileUploads],
   );
 
   const onSingleSuccess = React.useCallback(
@@ -207,7 +207,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
         return old;
       });
     },
-    [setFileUploads]
+    [setFileUploads],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -222,7 +222,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
             error: undefined,
             progress: f.progress?.progressVariant === 'success' ? f.progress : undefined,
             helperText: f.progress?.progressVariant === 'success' ? 'Already uploaded' : undefined,
-          } as FUpload)
+          }) as FUpload,
       );
       return newFileUploads;
     });

@@ -36,7 +36,7 @@ export const OpenShiftPlaceholderAuthForm: React.FC<FormProps> = ({ onSubmit }) 
         const errors = parts[1];
         const missingCryostatPermissions = errors.find((error) => error.title.includes('401')) !== undefined;
         setShowPermissionDenied(sessionState === SessionState.NO_USER_SESSION && missingCryostatPermissions);
-      })
+      }),
     );
   }, [addSubscription, notifications, context.login, setShowPermissionDenied]);
 
@@ -45,7 +45,7 @@ export const OpenShiftPlaceholderAuthForm: React.FC<FormProps> = ({ onSubmit }) 
       // Triggers a redirect to OpenShift Container Platform login page
       onSubmit(evt, 'anInvalidToken', AuthMethod.BEARER, true);
     },
-    [onSubmit]
+    [onSubmit],
   );
 
   const permissionDenied = (

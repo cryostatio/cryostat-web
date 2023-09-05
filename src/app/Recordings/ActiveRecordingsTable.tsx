@@ -142,7 +142,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
-      (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL
+      (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL,
     );
     return filters.length > 0 ? filters[0].active.filters : emptyActiveRecordingFilters;
   }) as RecordingFiltersCategories;
@@ -156,7 +156,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         setCheckedIndices((ci) => ci.filter((v) => v !== index));
       }
     },
-    [setCheckedIndices, setHeaderChecked]
+    [setCheckedIndices, setHeaderChecked],
   );
 
   const handleHeaderCheck = React.useCallback(
@@ -164,7 +164,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       setHeaderChecked(checked);
       setCheckedIndices(checked ? filteredRecordings.map((r) => r.id) : []);
     },
-    [setHeaderChecked, setCheckedIndices, filteredRecordings]
+    [setHeaderChecked, setCheckedIndices, filteredRecordings],
   );
 
   const handleCreateRecording = React.useCallback(() => {
@@ -182,7 +182,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       setIsLoading(false);
       setErrorMessage('');
     },
-    [setRecordings, setIsLoading, setErrorMessage]
+    [setRecordings, setIsLoading, setErrorMessage],
   );
 
   const handleError = React.useCallback(
@@ -191,7 +191,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       setErrorMessage(error.message);
       setRecordings([]);
     },
-    [setIsLoading, setErrorMessage, setRecordings]
+    [setIsLoading, setErrorMessage, setRecordings],
   );
 
   const refreshRecordingList = React.useCallback(() => {
@@ -202,14 +202,14 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         .pipe(
           filter((target) => target !== NO_TARGET),
           concatMap((target) =>
-            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`),
           ),
-          first()
+          first(),
         )
         .subscribe({
           next: handleRecordings,
           error: handleError,
-        })
+        }),
     );
   }, [addSubscription, context.target, context.api, setIsLoading, handleRecordings, handleError]);
 
@@ -219,7 +219,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         setTargetConnectURL(target.connectUrl);
         dispatch(recordingAddTargetIntent(target.connectUrl));
         refreshRecordingList();
-      })
+      }),
     );
   }, [addSubscription, context, context.target, refreshRecordingList, setTargetConnectURL, dispatch]);
 
@@ -229,14 +229,14 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         merge(
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-          context.notificationChannel.messages(NotificationCategory.SnapshotCreated)
+          context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
         ),
       ]).subscribe(([currentTarget, event]) => {
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) => old.concat([event.message.recording]));
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -246,7 +246,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         merge(
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
+          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
         ),
       ]).subscribe(([currentTarget, event]) => {
         if (currentTarget.connectUrl != event.message.target) {
@@ -255,7 +255,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
 
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
         setCheckedIndices((old) => old.filter((idx) => idx !== event.message.recording.id));
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
@@ -277,7 +277,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           }
           return updated;
         });
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -286,7 +286,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       context.target.authFailure().subscribe(() => {
         setErrorMessage(authFailMessage);
         setRecordings([]);
-      })
+      }),
     );
   }, [context, context.target, setErrorMessage, addSubscription, setRecordings]);
 
@@ -301,10 +301,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         }
         setRecordings((old) =>
           old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o
-          )
+            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
+          ),
         );
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -316,8 +316,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         filterRecordings(recordings, targetRecordingFilters),
-        tableColumns
-      )
+        tableColumns,
+      ),
     );
   }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 
@@ -338,7 +338,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     }
     const id = window.setInterval(
       () => refreshRecordingList(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [refreshRecordingList, context, context.settings]);
@@ -351,7 +351,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         return newActionLoadings;
       });
     },
-    [setActionLoadings]
+    [setActionLoadings],
   );
 
   const handleArchiveRecordings = React.useCallback(() => {
@@ -367,7 +367,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       forkJoin(tasks).subscribe({
         next: () => handlePostActions('ARCHIVE'),
         error: () => handlePostActions('ARCHIVE'),
-      })
+      }),
     );
   }, [
     filteredRecordings,
@@ -394,7 +394,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       forkJoin(tasks).subscribe({
         next: () => handlePostActions('STOP'),
         error: () => handlePostActions('STOP'),
-      })
+      }),
     );
   }, [
     filteredRecordings,
@@ -419,7 +419,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       forkJoin(tasks).subscribe({
         next: () => handlePostActions('DELETE'),
         error: () => handlePostActions('DELETE'),
-      })
+      }),
     );
   }, [
     filteredRecordings,
@@ -447,7 +447,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         dispatch(recordingAddFilterIntent(target, filterKey, filterValue, false));
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   const toggleExpanded = React.useCallback(
@@ -459,7 +459,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           : [...expandedRows, id];
       });
     },
-    [setExpandedRows]
+    [setExpandedRows],
   );
 
   const RecordingsToolbar = React.useMemo(
@@ -498,7 +498,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       handleDeleteRecordings,
       actionLoadings,
       props.toolbarBreakReference,
-    ]
+    ],
   );
 
   const LabelsPanel = React.useMemo(
@@ -509,7 +509,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         checkedIndices={checkedIndices}
       />
     ),
-    [checkedIndices, setShowDetailsPanel]
+    [checkedIndices, setShowDetailsPanel],
   );
 
   const columnConfig: ColumnConfig = React.useMemo(
@@ -517,7 +517,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       columns: tableColumns,
       onSort: getSortParams,
     }),
-    [getSortParams]
+    [getSortParams],
   );
 
   return (
@@ -627,7 +627,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         isLoading: props.actionLoadings['DELETE'],
       },
     }),
-    [props.actionLoadings]
+    [props.actionLoadings],
   );
 
   const buttons = React.useMemo(() => {
@@ -836,7 +836,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
 
   const expandedRowId = React.useMemo(
     () => `active-table-row-${recording.name}-${recording.startTime}-exp`,
-    [recording]
+    [recording],
   );
 
   const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
@@ -849,14 +849,14 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     (checked: boolean) => {
       handleRowCheck(checked, index);
     },
-    [index, handleRowCheck]
+    [index, handleRowCheck],
   );
 
   const parentRow = React.useMemo(() => {
     const RecordingDuration = (props: { duration: number }) => {
       const str = React.useMemo(
         () => (props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`),
-        [props.duration]
+        [props.duration],
       );
       return <span>{str}</span>;
     };

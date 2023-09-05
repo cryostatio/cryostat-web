@@ -76,7 +76,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
       setDescriptionValidated,
       setNameErrorMessage,
       setDescriptionErrorMessage,
-    ]
+    ],
   );
 
   const handleSubmit = React.useCallback(
@@ -88,12 +88,12 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
         notifications.success(
           'Layout Template Created',
           `${name} was created as a layout template`,
-          NotificationCategory.LayoutTemplateCreated
+          NotificationCategory.LayoutTemplateCreated,
         );
       }
       handleClose(ev);
     },
-    [dispatch, handleClose, serviceContext.api, downloadModal, currLayout, name, description, notifications]
+    [dispatch, handleClose, serviceContext.api, downloadModal, currLayout, name, description, notifications],
   );
 
   const handleNameChange = React.useCallback(
@@ -115,7 +115,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
         }
       }
     },
-    [t, setName, setNameValidated, setNameErrorMessage, templates]
+    [t, setName, setNameValidated, setNameErrorMessage, templates],
   );
 
   const handleDescriptionChange = React.useCallback(
@@ -135,7 +135,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
         setDescriptionErrorMessage(t('DashboardLayoutSetAsTemplateModal.ERROR.DESCRIPTION_INVALID'));
       }
     },
-    [t, setDescription, setDescriptionValidated, setDescriptionErrorMessage]
+    [t, setDescription, setDescriptionValidated, setDescriptionErrorMessage],
   );
 
   return (

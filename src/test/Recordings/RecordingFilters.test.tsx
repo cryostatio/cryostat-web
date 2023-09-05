@@ -158,7 +158,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
-      }
+      },
     );
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
@@ -186,7 +186,7 @@ describe('<RecordingFilters />', () => {
       {
         preloadState: preloadedState,
         user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
-      }
+      },
     );
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
@@ -214,7 +214,7 @@ describe('<RecordingFilters />', () => {
       {
         preloadState: preloadedState,
         user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
-      }
+      },
     );
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
@@ -254,7 +254,7 @@ describe('<RecordingFilters />', () => {
       {
         preloadState: preloadedState,
         user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
-      }
+      },
     );
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
@@ -302,7 +302,7 @@ describe('<RecordingFilters />', () => {
       {
         preloadState: preloadedState,
         user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
-      }
+      },
     );
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
@@ -340,7 +340,7 @@ describe('<RecordingFilters />', () => {
       {
         preloadState: preloadedState,
         user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
-      }
+      },
     );
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
@@ -393,7 +393,7 @@ describe('<RecordingFilters />', () => {
       {
         preloadState: preloadedState,
         user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
-      }
+      },
     );
 
     // Label group
@@ -456,7 +456,7 @@ describe('<RecordingFilters />', () => {
       {
         preloadState: emptyPreloadedState,
         user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
-      }
+      },
     );
 
     activeCategoryOptions.forEach((category) => {

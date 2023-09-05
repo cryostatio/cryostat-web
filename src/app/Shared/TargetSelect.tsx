@@ -62,7 +62,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
       context.targets.queryForTargets().subscribe(() => {
         // Reset loading and context.targets.targets will emit
         setLoading(false);
-      })
+      }),
     );
   }, [addSubscription, context.targets, setLoading]);
 
@@ -73,7 +73,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
       onSelect && onSelect(toSelect);
       setSelected(toSelect);
     },
-    [setDropdownOpen, onSelect, setSelected]
+    [setDropdownOpen, onSelect, setSelected],
   );
 
   React.useEffect(() => {
@@ -86,7 +86,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
     }
     const id = window.setInterval(
       () => _refreshTargetList(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, _refreshTargetList]);
@@ -124,7 +124,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
               ))}
           </SelectGroup>
         ))
-        .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`))
+        .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`)),
     );
     return options;
   }, [targets]);
@@ -140,13 +140,13 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
         .map((grp) =>
           React.cloneElement(grp, {
             children: grp.props.children.filter(
-              (option) => matchExp.test(option.props.value.connectUrl) || matchExp.test(option.props.value.alias)
+              (option) => matchExp.test(option.props.value.connectUrl) || matchExp.test(option.props.value.alias),
             ),
-          })
+          }),
         )
         .filter((grp) => grp.props.children.length > 0);
     },
-    [selectOptions]
+    [selectOptions],
   );
 
   const cardHeaderProps = React.useMemo(
@@ -162,7 +162,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
               'aria-expanded': isExpanded,
             },
           },
-    [simple, onExpand, isExpanded]
+    [simple, onExpand, isExpanded],
   );
 
   return (

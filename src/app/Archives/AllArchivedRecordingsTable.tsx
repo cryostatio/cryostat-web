@@ -89,13 +89,13 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       setDirectories(directories.map((dir) => ({ ...dir, targetAsObs: of(getTargetFromDirectory(dir)) })));
       setIsLoading(false);
     },
-    [setDirectories, setIsLoading]
+    [setDirectories, setIsLoading],
   );
 
   const refreshDirectoriesAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe(handleDirectoriesAndCounts)
+      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe(handleDirectoriesAndCounts),
     );
   }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts]);
 
@@ -103,7 +103,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     (searchInput: string) => {
       setSearchText(searchInput);
     },
-    [setSearchText]
+    [setSearchText],
   );
 
   const handleSearchInputClear = React.useCallback(() => {
@@ -123,7 +123,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       updatedSearchedDirectories = directories.filter(
         (d: _RecordingDirectory) =>
           d.jvmId.toLowerCase().includes(formattedSearchText) ||
-          d.connectUrl.toLowerCase().includes(formattedSearchText)
+          d.connectUrl.toLowerCase().includes(formattedSearchText),
       );
     }
     return sortResources(
@@ -132,7 +132,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       updatedSearchedDirectories,
-      tableColumns
+      tableColumns,
     );
   }, [directories, searchText, sortBy]);
 
@@ -142,7 +142,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     }
     const id = window.setInterval(
       () => refreshDirectoriesAndCounts(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, refreshDirectoriesAndCounts]);
@@ -151,7 +151,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe(() => {
         refreshDirectoriesAndCounts();
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
@@ -159,7 +159,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe(() => {
         refreshDirectoriesAndCounts();
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
@@ -167,7 +167,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe(() => {
         refreshDirectoriesAndCounts();
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
@@ -175,7 +175,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe(() => {
         refreshDirectoriesAndCounts();
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
@@ -188,10 +188,10 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
               ...prevExpandedDirectories.slice(0, idx),
               ...prevExpandedDirectories.slice(idx + 1, prevExpandedDirectories.length),
             ]
-          : [...prevExpandedDirectories, dir]
+          : [...prevExpandedDirectories, dir],
       );
     },
-    [expandedDirectories, setExpandedDirectories]
+    [expandedDirectories, setExpandedDirectories],
   );
 
   const directoryRows = React.useMemo(() => {

@@ -40,7 +40,7 @@ describe('<AutoRefresh/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           {React.createElement(AutoRefresh.content, null)}
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

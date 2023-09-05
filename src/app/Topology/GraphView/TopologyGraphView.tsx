@@ -92,14 +92,14 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
   const discoveryTree = React.useContext(DiscoveryTreeContext);
   const _transformData = React.useMemo(
     () => transformData(discoveryTree, transformConfig, filters),
-    [discoveryTree, transformConfig, filters]
+    [discoveryTree, transformConfig, filters],
   );
 
   const exceedLimit = React.useMemo(() => _transformData.nodes.length > MAX_NODE_LIMIT, [_transformData]);
 
   const isEmptyGraph = React.useMemo(
     () => !_transformData.nodes.some((node) => node.type === 'node'),
-    [_transformData]
+    [_transformData],
   );
 
   const _createVisualization = React.useCallback(() => {
@@ -132,7 +132,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
           };
           saveToLocalStorage('TOPOLOGY_GRAPH_POSITONS', saved);
         }
-      }, 200)
+      }, 200),
     );
 
     _newVisualization.addEventListener(
@@ -148,7 +148,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
           }));
           saveToLocalStorage('TOPOLOGY_NODE_POSITIONS', savedPos);
         }
-      }, 200)
+      }, 200),
     );
     return _newVisualization;
   }, [setSelectedIds, setSelectedEntity]);
@@ -225,7 +225,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
     // Visualize surface needs time to intialize.
     // Workaround: find drawer body which is already ready and tightly wraps the surface.
     const container: HTMLElement | null = document.querySelector(
-      '#topology__visualization-container .pf-c-drawer__content'
+      '#topology__visualization-container .pf-c-drawer__content',
     );
     if (container) {
       container.addEventListener('contextmenu', showMenu);
@@ -240,7 +240,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
         <EntityDetails entity={selectedEntity} />
       </TopologySideBar>
     ),
-    [handleDrawerClose, selectedEntity]
+    [handleDrawerClose, selectedEntity],
   );
 
   return (

@@ -159,7 +159,7 @@ Archiving a recording will save the recording to [APP]'s archival storage, and w
     conclusion: conclusion(
       displayName,
       'Start a recording',
-      `To learn more about [APP]'s extensive features and capabilities, please visit our website at <a href="${build.documentationUrl}" target="_blank">${build.documentationUrl}</a>.`
+      `To learn more about [APP]'s extensive features and capabilities, please visit our website at <a href="${build.documentationUrl}" target="_blank">${build.documentationUrl}</a>.`,
     ),
     type: {
       text: 'Introduction',

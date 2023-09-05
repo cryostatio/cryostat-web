@@ -54,7 +54,7 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
         if (s == SessionState.NO_USER_SESSION) {
           setActiveQuickStartID('');
         }
-      })
+      }),
     );
   }, [addSubscription, context.login, setActiveQuickStartID]);
 

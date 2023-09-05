@@ -175,7 +175,7 @@ export const TargetDetails: React.FC<{
         helperDescription: constructHelperDescription(
           'Connection Nickname (same as Connection URL if not specified).',
           'Target',
-          ['alias']
+          ['alias'],
         ),
         content: serviceRef.alias,
       },
@@ -211,7 +211,7 @@ export const TargetDetails: React.FC<{
         helperDescription: constructHelperDescription(
           'Map of string keys and values that can be used to organize and categorize targets.',
           'Target',
-          ['labels']
+          ['labels'],
         ),
         content: <EntityLabels labels={serviceRef.labels} maxDisplay={3} />,
       },
@@ -222,7 +222,7 @@ export const TargetDetails: React.FC<{
         helperDescription: constructHelperDescription(
           'Annotations is an unstructured key value map stored with a target that may be set by external tools.',
           'Target',
-          ['annotations']
+          ['annotations'],
         ),
         content: <EntityAnnotations annotations={serviceRef.annotations} maxDisplay={3} />,
       },
@@ -279,13 +279,13 @@ const MBeanDetails: React.FC<{
                 }
               }
             }`,
-            { connectUrl }
+            { connectUrl },
           )
           .pipe(
             map((resp) => resp.data.targetNodes[0].mbeanMetrics || {}),
-            catchError((_) => of({}))
+            catchError((_) => of({})),
           )
-          .subscribe(setMbeanMetrics)
+          .subscribe(setMbeanMetrics),
       );
     }
   }, [isExpanded, addSubscription, connectUrl, context.api, setMbeanMetrics]);
@@ -299,7 +299,9 @@ const MBeanDetails: React.FC<{
         helperDescription: 'The time when this JVM process started.',
         content:
           (mbeanMetrics?.runtime?.startTime || 0) > 0 ? (
-            dayjs(mbeanMetrics?.runtime?.startTime).tz(dateTimeFormat.timeZone.full).format('LLLL')
+            dayjs(mbeanMetrics?.runtime?.startTime)
+              .tz(dateTimeFormat.timeZone.full)
+              .format('LLLL')
           ) : (
             <EmptyText text="Unknown start time" />
           ),
@@ -388,9 +390,9 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
         .doGet(`targets/${encodeURIComponent(target.connectUrl)}/probes`, 'v2', undefined, true, true)
         .pipe(
           concatMap(() => of(true)),
-          catchError(() => of(false))
+          catchError(() => of(false)),
         )
-        .subscribe(setAgentDetected)
+        .subscribe(setAgentDetected),
     );
   }, [addSubscription, context.api, setAgentDetected, target]);
 
@@ -409,7 +411,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
         rowData: TargetRelatedResourceTypeAsArray,
       },
     ],
-    [agentDetected]
+    [agentDetected],
   );
 
   return (
@@ -455,7 +457,7 @@ export const TargetResourceItem: React.FC<{
 
   const switchTarget = React.useCallback(
     () => services.target.setTarget(targetNode.target),
-    [targetNode.target, services.target]
+    [targetNode.target, services.target],
   );
 
   const ExpandedComponent = React.useMemo(() => {

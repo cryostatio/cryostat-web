@@ -305,7 +305,10 @@ export class NotificationChannel {
   private readonly _messages = new Subject<NotificationMessage>();
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
-  constructor(private readonly notifications: Notifications, private readonly login: LoginService) {
+  constructor(
+    private readonly notifications: Notifications,
+    private readonly login: LoginService,
+  ) {
     messageKeys.forEach((value, key) => {
       if (!value || !value.body || !value.variant) {
         return;
@@ -347,7 +350,7 @@ export class NotificationChannel {
           const body: string = await resp.text();
           throw new Error(resp.status + ' ' + body);
         }
-      })
+      }),
     );
 
     combineLatest([

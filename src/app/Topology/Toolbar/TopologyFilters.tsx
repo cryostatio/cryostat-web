@@ -76,14 +76,14 @@ export const TopologyFilterCategorySelect: React.FC<{ isDisabled?: boolean }> = 
         dispatch(topologyUpdateCategoryIntent(isGroup, category));
       }
     },
-    [dispatch, isGroup]
+    [dispatch, isGroup],
   );
 
   const handleCategoryTypeChange = React.useCallback(
     (isChecked: boolean) => {
       dispatch(topologyUpdateCategoryTypeIntent(isChecked));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const selected = React.useMemo(() => {
@@ -156,7 +156,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
 
   const groupNodeTypes = React.useMemo(
     () => getUniqueNodeTypes(flattenedTree.filter((n) => !isTargetNode(n))),
-    [flattenedTree]
+    [flattenedTree],
   );
 
   const generateOnSelect = React.useCallback(
@@ -165,7 +165,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
         dispatch(topologyAddFilterIntent(isGroup, nodeType, category, value));
       };
     },
-    [dispatch]
+    [dispatch],
   );
 
   const groupInputs = React.useMemo(() => {
@@ -189,8 +189,8 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
                     return !criteria || !criteria.includes(val);
                   }
                   return true;
-                })
-            )
+                }),
+            ),
           ),
         }))
         .filter((group) => group.options && group.options.length); // Do show show empty groups
@@ -260,8 +260,8 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
             .filter((val) => {
               const criteria: string[] = targetFilters.filters[cat];
               return !criteria || !criteria.includes(val);
-            })
-        )
+            }),
+        ),
       );
 
       const selectOptions = options.map((opt) => {

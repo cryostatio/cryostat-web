@@ -76,7 +76,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
       setSelectedTemplate(selected);
       onTemplateSelect(selected);
     },
-    [setSelectedTemplate, onTemplateSelect, props.title]
+    [setSelectedTemplate, onTemplateSelect, props.title],
   );
 
   const handleClearRecent = React.useCallback(() => {
@@ -173,7 +173,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
     (_ev) => {
       setIsOpen(false);
     },
-    [setIsOpen]
+    [setIsOpen],
   );
 
   const openKebab = React.useCallback(
@@ -181,7 +181,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
       e.stopPropagation();
       setIsOpen(value);
     },
-    [setIsOpen]
+    [setIsOpen],
   );
 
   const handleTemplateDownload = React.useCallback(
@@ -189,7 +189,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
       e.stopPropagation();
       serviceContext.api.downloadLayoutTemplate(template);
     },
-    [serviceContext.api, template]
+    [serviceContext.api, template],
   );
 
   const handleTemplateDelete = React.useCallback(
@@ -197,7 +197,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
       e.stopPropagation();
       onTemplateDelete(template.name);
     },
-    [onTemplateDelete, template.name]
+    [onTemplateDelete, template.name],
   );
 
   const dropdownItems = React.useMemo(() => {

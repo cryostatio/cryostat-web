@@ -50,7 +50,7 @@ export const JoyrideProvider: React.FC<{ children }> = (props) => {
   const [isNavBarOpen, setIsNavBarOpen] = React.useState(true);
   const value = React.useMemo(
     () => ({ state, setState, isNavBarOpen, setIsNavBarOpen }),
-    [state, setState, isNavBarOpen, setIsNavBarOpen]
+    [state, setState, isNavBarOpen, setIsNavBarOpen],
   );
   return (
     <JoyrideContext.Provider value={value} {...props}>

@@ -146,7 +146,7 @@ class FakeSetting extends SettingsService {
   chartControllerConfig(
     _defaultConfig = {
       minRefresh: 0.1,
-    }
+    },
   ): ChartControllerConfig {
     return {
       minRefresh: 0.1,
@@ -245,7 +245,7 @@ class FakeApiService extends ApiService {
   getActiveProbesForTarget(
     _target: Target,
     _suppressNotifications?: boolean,
-    _skipStatusCheck?: boolean
+    _skipStatusCheck?: boolean,
   ): Observable<EventProbe[]> {
     return of([]);
   }
@@ -265,7 +265,7 @@ class FakeApiService extends ApiService {
     _query: string,
     _variables?: unknown,
     _suppressNotifications?: boolean | undefined,
-    _skipStatusCheck?: boolean | undefined
+    _skipStatusCheck?: boolean | undefined,
   ): Observable<T> {
     return of({
       data: {
@@ -312,7 +312,7 @@ export const fakeChartContext = {
     fakeServices.api,
     fakeServices.target,
     fakeServices.notificationChannel,
-    fakeServices.settings
+    fakeServices.settings,
   ),
   mbeanController: new MBeanMetricsChartController(fakeServices.api, fakeServices.target, fakeServices.settings),
 };

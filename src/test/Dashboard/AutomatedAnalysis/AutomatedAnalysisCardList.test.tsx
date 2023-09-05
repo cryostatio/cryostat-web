@@ -71,7 +71,7 @@ describe('<AutomatedAnalysisCardList />', () => {
               <AutomatedAnalysisCardList evaluations={mockCategorizedEvaluations} />
             </Provider>
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

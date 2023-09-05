@@ -48,7 +48,7 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
       setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
       setNumOfFiles(fileUploads.length);
     },
-    [setNumOfFiles, setAllOks]
+    [setNumOfFiles, setAllOks],
   );
 
   const handleClose = React.useCallback(() => {
@@ -75,7 +75,7 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
             .uploadSSLCertificate(
               fileUpload.file,
               getProgressUpdateCallback(fileUpload.file.name),
-              fileUpload.abortSignal
+              fileUpload.abortSignal,
             )
             .pipe(
               tap({
@@ -86,8 +86,8 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
                   onSingleFailure(fileUpload.file.name, err);
                 },
               }),
-              catchError((_) => of(false))
-            )
+              catchError((_) => of(false)),
+            ),
         );
       });
 
@@ -97,10 +97,10 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
           .subscribe((oks) => {
             setUploading(false);
             setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
-          })
+          }),
       );
     },
-    [setUploading, context.api, addSubscriptions, setAllOks]
+    [setUploading, context.api, addSubscriptions, setAllOks],
   );
 
   const submitButtonLoadingProps = React.useMemo(
@@ -109,8 +109,8 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-ssl-certificates',
         isLoading: uploading,
-      } as LoadingPropsType),
-    [uploading]
+      }) as LoadingPropsType,
+    [uploading],
   );
 
   return (

@@ -46,12 +46,12 @@ const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,
   defaultServices.target,
   defaultServices.notificationChannel,
-  defaultServices.settings
+  defaultServices.settings,
 );
 const mockMbeanController = new MBeanMetricsChartController(
   defaultServices.api,
   defaultServices.target,
-  defaultServices.settings
+  defaultServices.settings,
 );
 const mockChartContext = {
   jfrController: mockJfrController,
@@ -134,7 +134,7 @@ describe('<MBeanMetricsChartCard />', () => {
               />
             </Provider>
           </ChartContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot('with-content');
@@ -163,7 +163,7 @@ describe('<MBeanMetricsChartCard />', () => {
               </Provider>
             </ChartContext.Provider>
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot('loading-view');

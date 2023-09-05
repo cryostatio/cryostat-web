@@ -32,7 +32,7 @@ const Component = () => {
       i18n.changeLanguage(v);
       setOpen(false);
     },
-    [i18n, setOpen]
+    [i18n, setOpen],
   );
 
   React.useEffect(() => {

@@ -40,7 +40,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
         dispatch(topologyDisplayOptionsSetIntent(group, key, checked));
       };
     },
-    [dispatch]
+    [dispatch],
   );
 
   const checkBoxContents = React.useMemo((): [string, JSX.Element][] => {

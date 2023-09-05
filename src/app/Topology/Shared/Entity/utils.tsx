@@ -103,7 +103,7 @@ export const isOwnedResource = (resourceType: TargetOwnedResourceType | TargetRe
 export const getTargetOwnedResources = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
   { target }: TargetNode,
-  apiService: ApiService
+  apiService: ApiService,
 ): Observable<ResourceTypes[]> => {
   switch (resourceType) {
     case 'activeRecordings':
@@ -120,25 +120,25 @@ export const getTargetOwnedResources = (
       return apiService.getRules(true, true).pipe(
         concatMap((rules) => {
           const tasks = rules.map((r) =>
-            apiService.isTargetMatched(r.matchExpression, target).pipe(map((ok) => (ok ? [r] : [])))
+            apiService.isTargetMatched(r.matchExpression, target).pipe(map((ok) => (ok ? [r] : []))),
           );
           return forkJoin(tasks).pipe(
             defaultIfEmpty([[] as Rule[]]),
-            map((rules) => rules.reduce((prev, curr) => prev.concat(curr)))
+            map((rules) => rules.reduce((prev, curr) => prev.concat(curr))),
           );
-        })
+        }),
       );
     case 'credentials':
       return apiService.getCredentials(true, true).pipe(
         concatMap((credentials) => {
           const tasks = credentials.map((crd) =>
-            apiService.isTargetMatched(crd.matchExpression, target).pipe(map((ok) => (ok ? [crd] : [])))
+            apiService.isTargetMatched(crd.matchExpression, target).pipe(map((ok) => (ok ? [crd] : []))),
           );
           return forkJoin(tasks).pipe(
             defaultIfEmpty([[] as StoredCredential[]]),
-            map((credentials) => credentials.reduce((prev, curr) => prev.concat(curr)))
+            map((credentials) => credentials.reduce((prev, curr) => prev.concat(curr))),
           );
-        })
+        }),
       );
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
@@ -194,13 +194,13 @@ export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType |
 export type PatchFn = (
   arr: ResourceTypes[],
   eventData: NotificationMessage,
-  removed?: boolean
+  removed?: boolean,
 ) => Observable<ResourceTypes[]>;
 
 export const getResourceListPatchFn = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
   { target }: TargetNode,
-  apiService: ApiService
+  apiService: ApiService,
 ): PatchFn => {
   switch (resourceType) {
     case 'activeRecordings':
@@ -246,7 +246,7 @@ export const getResourceListPatchFn = (
               return newArr;
             }
             return arr;
-          })
+          }),
         );
       };
     case 'credentials':
@@ -263,7 +263,7 @@ export const getResourceListPatchFn = (
               return newArr;
             }
             return arr;
-          })
+          }),
         );
       };
     default:
@@ -273,7 +273,7 @@ export const getResourceListPatchFn = (
 
 // TODO: Revisit when updating to react-router v6
 export const getLinkPropsForTargetResource = (
-  resourceType: TargetOwnedResourceType | TargetRelatedResourceType
+  resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
 ): React.ComponentProps<Link> => {
   switch (resourceType) {
     case 'activeRecordings':
@@ -311,7 +311,7 @@ export const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ re
         items: resources.filter((rec) => rec.state === RecordingState.STOPPED),
       },
     ],
-    [resources]
+    [resources],
   );
 
   return (
@@ -348,7 +348,7 @@ export const Nothing: React.FC<{ resources: ResourceTypes[] }> = () => {
 };
 
 export const getExpandedResourceDetails = (
-  resourceType: TargetOwnedResourceType | TargetRelatedResourceType
+  resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
 ): React.FC<{ resources: ResourceTypes[] }> => {
   switch (resourceType) {
     case 'activeRecordings':
@@ -364,7 +364,7 @@ export const getConnectUrlFromEvent = (event: NotificationMessage): string | und
 
 export const useResources = <R = ResourceTypes,>(
   targetNode: TargetNode,
-  resourceType: TargetOwnedResourceType | TargetRelatedResourceType
+  resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
 ): { resources: R[]; error?: Error; loading?: boolean } => {
   const { api, notificationChannel, settings } = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -390,23 +390,23 @@ export const useResources = <R = ResourceTypes,>(
                 of({
                   resources: [],
                   error: err,
-                })
-              )
+                }),
+              ),
             );
             if (!settings.autoRefreshEnabled()) {
               return resourceObs;
             }
             return merge(
               resourceObs,
-              interval(settings.autoRefreshPeriod() * settings.autoRefreshUnits()).pipe(concatMap(() => resourceObs))
+              interval(settings.autoRefreshPeriod() * settings.autoRefreshUnits()).pipe(concatMap(() => resourceObs)),
             );
-          })
+          }),
         )
         .subscribe(({ resources, error }) => {
           setLoading(false);
           setError(error);
           setResources(resources);
-        })
+        }),
     );
   }, [addSubscription, setLoading, setError, setResources, api, settings, targetSubject, resourceType]);
 
@@ -426,8 +426,8 @@ export const useResources = <R = ResourceTypes,>(
         targetSubject
           .pipe(
             switchMap((tn) =>
-              combineLatest([of(tn), merge(...categories.map((cat) => notificationChannel.messages(cat)))])
-            )
+              combineLatest([of(tn), merge(...categories.map((cat) => notificationChannel.messages(cat)))]),
+            ),
           )
           .subscribe(([targetNode, event]) => {
             const extractedUrl = getConnectUrlFromEvent(event);
@@ -448,12 +448,12 @@ export const useResources = <R = ResourceTypes,>(
                       setLoading(false);
                       setError(error);
                     },
-                  })
+                  }),
                 );
                 return old;
               });
             }
-          })
+          }),
       );
     });
   }, [addSubscription, setLoading, api, targetSubject, resourceType, notificationChannel, setResources, setError]);

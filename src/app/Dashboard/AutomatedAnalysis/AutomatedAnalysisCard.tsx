@@ -145,7 +145,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
 
   const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.targetFilters.filter(
-      (targetFilter: TargetAutomatedAnalysisFilters) => targetFilter.target === targetConnectURL
+      (targetFilter: TargetAutomatedAnalysisFilters) => targetFilter.target === targetConnectURL,
     );
     return filters.length > 0 ? filters[0].filters : emptyAutomatedAnalysisFilters;
   }) as AutomatedAnalysisFiltersCategories;
@@ -170,7 +170,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
       setCategorizedEvaluation(sorted);
     },
-    [setCategorizedEvaluation, setEvaluations]
+    [setCategorizedEvaluation, setEvaluations],
   );
 
   // Will perform analysis on the first ActiveRecording which has
@@ -201,10 +201,10 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           }
         }
       }`,
-        { connectUrl }
+        { connectUrl },
       );
     },
-    [context.api]
+    [context.api],
   );
 
   const queryArchivedRecordings = React.useCallback(
@@ -225,10 +225,10 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           }
         }
       }`,
-        { connectUrl }
+        { connectUrl },
       );
     },
-    [context.api]
+    [context.api],
   );
 
   const handleStateErrors = React.useCallback(
@@ -238,7 +238,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       setUsingArchivedReport(false);
       setUsingCachedReport(false);
     },
-    [setErrorMessage, setIsLoading, setUsingArchivedReport, setUsingCachedReport]
+    [setErrorMessage, setIsLoading, setUsingArchivedReport, setUsingCachedReport],
   );
 
   const handleLoading = React.useCallback(() => {
@@ -251,14 +251,14 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const handleArchivedRecordings = React.useCallback(
     (recordings: ArchivedRecording[]) => {
       const freshestRecording = recordings.reduce((prev, current) =>
-        prev?.archivedTime > current?.archivedTime ? prev : current
+        prev?.archivedTime > current?.archivedTime ? prev : current,
       );
       addSubscription(
         context.target
           .target()
           .pipe(
             filter((target) => target !== NO_TARGET),
-            first()
+            first(),
           )
           .subscribe((target) => {
             context.reports
@@ -276,7 +276,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                   handleStateErrors(err.message);
                 },
               });
-          })
+          }),
       );
     },
     [
@@ -289,7 +289,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       setReportTime,
       setIsLoading,
       setReport,
-    ]
+    ],
   );
 
   // try generating report on cached or archived recordings
@@ -307,7 +307,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           queryArchivedRecordings(connectUrl)
             .pipe(
               first(),
-              map((v) => v.data.archivedRecordings.data as ArchivedRecording[])
+              map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
             )
             .subscribe({
               next: (recordings) => {
@@ -320,7 +320,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
               error: (err) => {
                 handleStateErrors(err.message);
               },
-            })
+            }),
         );
       }
     },
@@ -335,7 +335,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       setReportTime,
       setReport,
       setIsLoading,
-    ]
+    ],
   );
 
   const generateReport = React.useCallback(() => {
@@ -345,7 +345,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         .target()
         .pipe(
           filter((target) => target !== NO_TARGET),
-          first()
+          first(),
         )
         .subscribe((target) => {
           addSubscription(
@@ -367,7 +367,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                   if (recording === null || recording === undefined) {
                     throw new Error(NO_RECORDINGS_MESSAGE);
                   }
-                })
+                }),
               )
               .subscribe({
                 next: (recording) => {
@@ -392,9 +392,9 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                     handleEmptyRecordings(target.connectUrl);
                   }
                 },
-              })
+              }),
           );
-        })
+        }),
     );
   }, [
     addSubscription,
@@ -425,7 +425,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         } else {
           handleStateErrors(RECORDING_FAILURE_MESSAGE);
         }
-      })
+      }),
     );
   }, [addSubscription, context.api, context.settings, generateReport, handleStateErrors]);
 
@@ -448,7 +448,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       }
       return [undefined, undefined];
     },
-    [t, startProfilingRecording, generateReport]
+    [t, startProfilingRecording, generateReport],
   );
 
   React.useEffect(() => {
@@ -489,8 +489,8 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         categorizedEvaluation,
         targetAutomatedAnalysisFilters,
         targetAutomatedAnalysisGlobalFilters,
-        showNAScores
-      )
+        showNAScores,
+      ),
     );
   }, [
     categorizedEvaluation,
@@ -526,7 +526,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           error: (error) => {
             handleStateErrors(error.message);
           },
-        })
+        }),
       );
     }
   }, [
@@ -553,7 +553,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         dispatch(automatedAnalysisAddFilterIntent(target, filterKey, filterValue));
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleClearFilters = React.useCallback(() => {
@@ -741,7 +741,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
     (error) => {
       handleStateErrors(error.message);
     },
-    [handleStateErrors]
+    [handleStateErrors],
   );
 
   const view = React.useMemo(() => {

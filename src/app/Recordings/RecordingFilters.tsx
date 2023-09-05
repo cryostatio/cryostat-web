@@ -99,7 +99,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       setIsCategoryDropdownOpen(false);
       dispatch(recordingUpdateCategoryIntent(target, category, isArchived));
     },
-    [dispatch, setIsCategoryDropdownOpen, target, isArchived]
+    [dispatch, setIsCategoryDropdownOpen, target, isArchived],
   );
 
   const onDelete = React.useCallback(
@@ -107,7 +107,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       const value = typeof chip === 'string' ? chip : chip.key;
       updateFilters(target, { filterKey: category, filterValue: value, deleted: true });
     },
-    [updateFilters, target]
+    [updateFilters, target],
   );
 
   const onDeleteGroup = React.useCallback(
@@ -115,32 +115,32 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       const category = typeof chip === 'string' ? chip : chip.key;
       updateFilters(target, { filterKey: category, deleted: true, deleteOptions: { all: true } });
     },
-    [updateFilters, target]
+    [updateFilters, target],
   );
 
   const onNameInput = React.useCallback(
     (inputName) => updateFilters(target, { filterKey: currentCategory, filterValue: inputName }),
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const onLabelInput = React.useCallback(
     (inputLabel) => updateFilters(target, { filterKey: currentCategory, filterValue: inputLabel }),
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const onStartedBeforeInput = React.useCallback(
     (searchDate) => updateFilters(target, { filterKey: currentCategory, filterValue: searchDate }),
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const onStartedAfterInput = React.useCallback(
     (searchDate) => updateFilters(target, { filterKey: currentCategory, filterValue: searchDate }),
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const onDurationInput = React.useCallback(
     (duration) => updateFilters(target, { filterKey: currentCategory, filterValue: `${duration.toString()} s` }),
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const onRecordingStateSelectToggle = React.useCallback(
@@ -148,12 +148,12 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       const deleted = filters.State && filters.State.includes(searchState);
       updateFilters(target, { filterKey: currentCategory, filterValue: searchState, deleted: deleted });
     },
-    [updateFilters, currentCategory, target, filters.State]
+    [updateFilters, currentCategory, target, filters.State],
   );
 
   const onContinuousDurationSelect = React.useCallback(
     (cont) => updateFilters(target, { filterKey: currentCategory, filterValue: 'continuous', deleted: !cont }),
-    [updateFilters, currentCategory, target]
+    [updateFilters, currentCategory, target],
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -212,7 +212,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       onStartedBeforeInput,
       onContinuousDurationSelect,
       onDurationInput,
-    ]
+    ],
   );
 
   return (
@@ -295,7 +295,7 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
   }
   if (filters.Label.length) {
     filtered = filtered.filter(
-      (r) => Object.entries(r.metadata.labels).filter(([k, v]) => filters.Label.includes(`${k}:${v}`)).length
+      (r) => Object.entries(r.metadata.labels).filter(([k, v]) => filters.Label.includes(`${k}:${v}`)).length,
     );
   }
 

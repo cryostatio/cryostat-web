@@ -41,7 +41,7 @@ describe('<ClickableLabel />', () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
-        <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>
+        <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -69,7 +69,7 @@ describe('<ClickableLabel />', () => {
 
   it('should display hover effect when hovered and is selected', async () => {
     const { user } = renderDefault(
-      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>
+      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>,
     );
 
     const label = screen.getByLabelText(mockLabelAsString);
@@ -88,7 +88,7 @@ describe('<ClickableLabel />', () => {
 
   it('should display hover effect when hovered and is not selected', async () => {
     const { user } = renderDefault(
-      <ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>
+      <ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>,
     );
 
     const label = screen.getByLabelText(mockLabelAsString);
@@ -107,7 +107,7 @@ describe('<ClickableLabel />', () => {
 
   it('should update label filters when clicked', async () => {
     const { user } = renderDefault(
-      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>
+      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>,
     );
 
     const label = screen.getByLabelText(mockLabelAsString);

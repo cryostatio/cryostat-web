@@ -64,7 +64,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
       setValue(newValue);
       onChange(newValue);
     },
-    [setValue, setHint, setIsAutocompleteOpen, setAutocompleteOptions, onChange, props.values]
+    [setValue, setHint, setIsAutocompleteOpen, setAutocompleteOptions, onChange, props.values],
   );
 
   // Whenever an autocomplete option is selected, set the search input value, close the menu, and put the browser
@@ -77,7 +77,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
       setIsAutocompleteOpen(false);
       searchInputRef.current && searchInputRef.current.focus();
     },
-    [setValue, setHint, setIsAutocompleteOpen]
+    [setValue, setHint, setIsAutocompleteOpen],
   );
 
   const handleMenuKeys = React.useCallback(
@@ -125,7 +125,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
         searchInputRef.current && searchInputRef.current.focus();
       }
     },
-    [hint, isAutocompleteOpen]
+    [hint, isAutocompleteOpen],
   );
 
   // The autocomplete menu should close if the user clicks outside the menu.
@@ -135,7 +135,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
         setIsAutocompleteOpen(false);
       }
     },
-    [isAutocompleteOpen]
+    [isAutocompleteOpen],
   );
 
   React.useEffect(() => {
@@ -158,7 +158,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
         id="cryostat-autocomplete-search"
       />
     ),
-    [value, onSearchChange, onClear, hint]
+    [value, onSearchChange, onClear, hint],
   );
 
   const autocomplete = React.useMemo(
@@ -169,7 +169,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
         </MenuContent>
       </Menu>
     ),
-    [autocompleteOptions, onSelect]
+    [autocompleteOptions, onSelect],
   );
 
   return (

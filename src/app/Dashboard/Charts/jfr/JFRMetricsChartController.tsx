@@ -55,12 +55,12 @@ export class JFRMetricsChartController {
     private readonly _api: ApiService,
     private readonly _target: TargetService,
     private readonly _notifications: NotificationChannel,
-    private readonly _settings: SettingsService
+    private readonly _settings: SettingsService,
   ) {
     this._lazy = this._refCount$
       .pipe(
         map((v) => v > 0),
-        pairwise()
+        pairwise(),
       )
       .subscribe(([prev, curr]) => {
         if (!prev && curr) {
@@ -78,7 +78,7 @@ export class JFRMetricsChartController {
     this._refCount$.next(this._refCount$.value + 1);
     return this._state$.asObservable().pipe(
       distinctUntilChanged(),
-      finalize(() => this._refCount$.next(this._refCount$.value - 1))
+      finalize(() => this._refCount$.next(this._refCount$.value - 1)),
     );
   }
 
@@ -106,9 +106,9 @@ export class JFRMetricsChartController {
         this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh * 1000)),
         this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
         this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
-        this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
+        this._notifications.messages(NotificationCategory.ActiveRecordingStopped),
       ).pipe(switchMap((_) => this._target.target().pipe(first()))),
-      this._target.target().pipe(tap((_) => this._state$.next(ControllerState.UNKNOWN)))
+      this._target.target().pipe(tap((_) => this._state$.next(ControllerState.UNKNOWN))),
     )
       .pipe(concatMap((t) => this._hasRecording(t)))
       .subscribe((v) => {

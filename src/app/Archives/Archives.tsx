@@ -66,7 +66,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
       switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
-    [history, pathname, search]
+    [history, pathname, search],
   );
 
   const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);

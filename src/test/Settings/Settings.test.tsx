@@ -159,7 +159,7 @@ describe('<Settings/>', () => {
           <Router history={history}>
             <Settings />
           </Router>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

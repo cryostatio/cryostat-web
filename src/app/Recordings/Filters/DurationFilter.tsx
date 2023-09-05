@@ -35,7 +35,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
     (checked) => {
       onContinuousDurationSelect(checked);
     },
-    [onContinuousDurationSelect]
+    [onContinuousDurationSelect],
   );
 
   const handleEnterKey = React.useCallback(
@@ -45,7 +45,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
       }
       onDurationInput(duration);
     },
-    [onDurationInput, duration]
+    [onDurationInput, duration],
   );
 
   return (

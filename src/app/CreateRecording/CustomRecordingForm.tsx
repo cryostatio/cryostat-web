@@ -80,7 +80,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       ? RecordingNamePattern.test(recordingName)
         ? ValidatedOptions.success
         : ValidatedOptions.error
-      : ValidatedOptions.default
+      : ValidatedOptions.default,
   );
   const [restartExisting, setRestartExisting] = React.useState(prefilled?.restartExisting || false);
   const [continuous, setContinuous] = React.useState((prefilled?.duration || 30) < 1);
@@ -115,17 +115,17 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             if (resp && resp.ok) {
               history.goBack();
             }
-          })
+          }),
       );
     },
-    [addSubscription, context.api, history, setLoading]
+    [addSubscription, context.api, history, setLoading],
   );
 
   const handleRestartExistingChange = React.useCallback(
     (checked) => {
       setRestartExisting(checked);
     },
-    [setRestartExisting]
+    [setRestartExisting],
   );
 
   const handleContinuousChange = React.useCallback(
@@ -134,7 +134,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       setDuration(0);
       setDurationValid(checked ? ValidatedOptions.success : ValidatedOptions.error);
     },
-    [setContinuous, setDuration, setDurationValid]
+    [setContinuous, setDuration, setDurationValid],
   );
 
   const handleDurationChange = React.useCallback(
@@ -142,14 +142,14 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       setDuration(Number(evt));
       setDurationValid(DurationPattern.test(evt) ? ValidatedOptions.success : ValidatedOptions.error);
     },
-    [setDurationValid, setDuration]
+    [setDurationValid, setDuration],
   );
 
   const handleDurationUnitChange = React.useCallback(
     (evt) => {
       setDurationUnit(Number(evt));
     },
-    [setDurationUnit]
+    [setDurationUnit],
   );
 
   const handleTemplateChange = React.useCallback(
@@ -159,7 +159,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
         type: templateType,
       });
     },
-    [setTemplate]
+    [setTemplate],
   );
 
   const eventSpecifierString = React.useMemo(() => {
@@ -191,42 +191,42 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
       setRecordingName(name);
     },
-    [setNameValid, setRecordingName]
+    [setNameValid, setRecordingName],
   );
 
   const handleMaxAgeChange = React.useCallback(
     (evt) => {
       setMaxAge(Number(evt));
     },
-    [setMaxAge]
+    [setMaxAge],
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
     (evt) => {
       setMaxAgeUnits(Number(evt));
     },
-    [setMaxAgeUnits]
+    [setMaxAgeUnits],
   );
 
   const handleMaxSizeChange = React.useCallback(
     (evt) => {
       setMaxSize(Number(evt));
     },
-    [setMaxSize]
+    [setMaxSize],
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
     (evt) => {
       setMaxSizeUnits(Number(evt));
     },
-    [setMaxSizeUnits]
+    [setMaxSizeUnits],
   );
 
   const handleToDiskChange = React.useCallback(
     (checked, evt) => {
       setToDisk(evt.target.checked);
     },
-    [setToDisk]
+    [setToDisk],
   );
 
   const setRecordingOptions = React.useCallback(
@@ -237,7 +237,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       setMaxSize(prefilled?.maxSize || options.maxSize || 0);
       setMaxSizeUnits(1);
     },
-    [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits, prefilled]
+    [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits, prefilled],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -295,7 +295,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
         forkJoin({
           templates: context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
           recordingOptions: context.api.doGet<RecordingOptions>(
-            `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`
+            `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`,
           ),
         }).subscribe({
           next: ({ templates, recordingOptions }) => {
@@ -313,10 +313,10 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             setTemplate({});
             setRecordingOptions({});
           },
-        })
+        }),
       );
     },
-    [addSubscription, context.api, setTemplates, setTemplate, setRecordingOptions, setErrorMessage]
+    [addSubscription, context.api, setTemplates, setTemplate, setRecordingOptions, setErrorMessage],
   );
 
   React.useEffect(() => {
@@ -326,7 +326,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
         setTemplates([]);
         setTemplate({});
         setRecordingOptions({});
-      })
+      }),
     );
   }, [context.target, setErrorMessage, addSubscription, setTemplates, setTemplate, setRecordingOptions]);
 
@@ -346,7 +346,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
 
   const hasReservedLabels = React.useMemo(
     () => labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
-    [labels]
+    [labels],
   );
 
   const createButtonLoadingProps = React.useMemo(
@@ -355,8 +355,8 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
         spinnerAriaValueText: 'Creating',
         spinnerAriaLabel: 'create-active-recording',
         isLoading: loading,
-      } as LoadingPropsType),
-    [loading]
+      }) as LoadingPropsType,
+    [loading],
   );
 
   const selectedSpecifier = React.useMemo(() => {

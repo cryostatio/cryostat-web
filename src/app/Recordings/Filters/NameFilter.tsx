@@ -34,7 +34,7 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
         onSubmit(selection);
       }
     },
-    [onSubmit, setIsExpanded]
+    [onSubmit, setIsExpanded],
   );
 
   const nameOptions = React.useMemo(() => {

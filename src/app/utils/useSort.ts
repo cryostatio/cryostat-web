@@ -29,7 +29,7 @@ export const useSort = (): [ISortBy, (columnIndex: number) => ThProps['sort']] =
       },
       columnIndex,
     }),
-    [sortBy, setSortBy]
+    [sortBy, setSortBy],
   );
   return [sortBy, getSortParams];
 };

@@ -53,11 +53,11 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
       serviceContext.api,
       serviceContext.target,
       serviceContext.notificationChannel,
-      serviceContext.settings
-    )
+      serviceContext.settings,
+    ),
   );
   const mbeanChartController = React.useRef(
-    new MBeanMetricsChartController(serviceContext.api, serviceContext.target, serviceContext.settings)
+    new MBeanMetricsChartController(serviceContext.api, serviceContext.target, serviceContext.settings),
   );
 
   const currLayout = React.useMemo(() => {
@@ -91,7 +91,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
     (idx: number) => {
       dispatch(dashboardConfigDeleteCardIntent(idx));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleResetSize = React.useCallback(
@@ -102,7 +102,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
       }
       dispatch(dashboardConfigResizeCardIntent(idx, defaultSpan));
     },
-    [dispatch, currLayout]
+    [dispatch, currLayout],
   );
 
   const emptyLayout = React.useMemo(() => !currLayout.cards || !currLayout.cards.length, [currLayout.cards]);

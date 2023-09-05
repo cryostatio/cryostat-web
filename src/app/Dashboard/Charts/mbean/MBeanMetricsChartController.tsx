@@ -46,12 +46,12 @@ export class MBeanMetricsChartController {
   constructor(
     private readonly _api: ApiService,
     private readonly _target: TargetService,
-    private readonly _settings: SettingsService
+    private readonly _settings: SettingsService,
   ) {
     this._lazy = this._refCount$
       .pipe(
         map((v) => v > 0),
-        pairwise()
+        pairwise(),
       )
       .subscribe(([prev, curr]) => {
         if (!prev && curr) {
@@ -84,7 +84,7 @@ export class MBeanMetricsChartController {
           }
         });
         this._metrics.get(category)?.push(...updated);
-      })
+      }),
     );
   }
 
@@ -114,14 +114,14 @@ export class MBeanMetricsChartController {
     this._attach = merge(
       this._updates$.pipe(
         throttleTime(this._settings.chartControllerConfig().minRefresh * 1000),
-        concatMap((_) => this._target.target().pipe(first()))
+        concatMap((_) => this._target.target().pipe(first())),
       ),
-      this._target.target()
+      this._target.target(),
     )
       .pipe(
         tap((_) => this._loading$.next(true)),
         concatMap((t) => this._queryMetrics(t)),
-        tap((_) => this._loading$.next(false))
+        tap((_) => this._loading$.next(false)),
       )
       .subscribe((v) => this._state$.next(v));
   }

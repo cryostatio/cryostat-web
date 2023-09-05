@@ -93,7 +93,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
               fileUpload.file,
               getFormattedLabels(),
               getProgressUpdateCallback(fileUpload.file.name),
-              fileUpload.abortSignal
+              fileUpload.abortSignal,
             )
             .pipe(
               tap({
@@ -104,8 +104,8 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
                   onSingleFailure(fileUpload.file.name, err);
                 },
               }),
-              catchError((_) => of(undefined))
-            )
+              catchError((_) => of(undefined)),
+            ),
         );
       });
 
@@ -115,10 +115,10 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
           .subscribe((savedNames) => {
             setUploading(false);
             setAllOks(!savedNames.some((name) => name === undefined));
-          })
+          }),
       );
     },
-    [addSubscriptions, context.api, setUploading, getFormattedLabels, setAllOks]
+    [addSubscriptions, context.api, setUploading, getFormattedLabels, setAllOks],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -130,7 +130,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
       setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
       setNumOfFiles(fileUploads.length);
     },
-    [setNumOfFiles, setAllOks]
+    [setNumOfFiles, setAllOks],
   );
 
   const submitButtonLoadingProps = React.useMemo(
@@ -139,8 +139,8 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-uploaded-recording',
         isLoading: uploading,
-      } as LoadingPropsType),
-    [uploading]
+      }) as LoadingPropsType,
+    [uploading],
   );
 
   return (

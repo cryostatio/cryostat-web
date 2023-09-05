@@ -103,8 +103,8 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
         spinnerAriaValueText: 'Creating',
         spinnerAriaLabel: 'creating-custom-target',
         isLoading: loading,
-      } as LoadingPropsType),
-    [loading]
+      }) as LoadingPropsType,
+    [loading],
   );
 
   const toggleCredentialForm = React.useCallback(
@@ -117,12 +117,12 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
           return [...old, toggleId];
         }
       }),
-    [setExpandedSections]
+    [setExpandedSections],
   );
 
   const resetTestState = React.useCallback(
     () => setValidation({ option: ValidatedOptions.default, errorMessage: '' }),
-    [setValidation]
+    [setValidation],
   );
 
   const handleConnectUrlChange = React.useCallback(
@@ -139,7 +139,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
       }));
       resetTestState();
     },
-    [setFormData, resetTestState]
+    [setFormData, resetTestState],
   );
 
   const handleAliasChange = React.useCallback(
@@ -147,7 +147,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
       setFormData((old) => ({ ...old, alias }));
       resetTestState();
     },
-    [setFormData, resetTestState]
+    [setFormData, resetTestState],
   );
 
   const handleUsernameChange = React.useCallback(
@@ -155,7 +155,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
       setFormData((old) => ({ ...old, username }));
       resetTestState();
     },
-    [setFormData, resetTestState]
+    [setFormData, resetTestState],
   );
 
   const handlePasswordChange = React.useCallback(
@@ -163,7 +163,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
       setFormData((old) => ({ ...old, password }));
       resetTestState();
     },
-    [setFormData, resetTestState]
+    [setFormData, resetTestState],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -178,7 +178,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
             alias: alias.trim() || connectUrl,
           },
           credentials,
-          locationKey === Locations.BACKEND.key
+          locationKey === Locations.BACKEND.key,
         )
         .subscribe(({ status, body }) => {
           setLoading(false);
@@ -191,7 +191,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
               errorMessage: body['data']['reason'],
             });
           }
-        })
+        }),
     );
   }, [setLoading, setValidation, addSubscription, context.api, connectUrl, alias, history, credentials]);
 
@@ -208,7 +208,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
           },
           credentials,
           false,
-          true
+          true,
         )
         .subscribe(({ status, body }) => {
           setTesting(false);
@@ -217,7 +217,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
             option: option,
             errorMessage: option !== ValidatedOptions.success ? body['data']['reason'] : '',
           });
-        })
+        }),
     );
     setTesting(true);
     resetTestState();
@@ -245,7 +245,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
         if (discoveredTargets.length) {
           setExample(discoveredTargets[0].connectUrl);
         }
-      })
+      }),
     );
   }, [addSubscription, context.targets, setExample]);
 
@@ -266,7 +266,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
         sm: 12 as gridSpans,
       } as Record<'xl2' | 'xl' | 'lg' | 'md' | 'sm', gridSpans>,
     ],
-    []
+    [],
   );
 
   return (
@@ -445,7 +445,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
 }) => {
   const _transformedTarget = React.useMemo(
     () => ({ connectUrl: target.connectUrl, alias: target.alias.trim() || target.connectUrl }),
-    [target]
+    [target],
   );
 
   const _actionEnabled = React.useMemo(() => isValidTargetConnectURL(target.connectUrl), [target]);
@@ -499,7 +499,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
                 <div
                   className={css(
                     'sample-node-donut__node-icon',
-                    validation.option !== ValidatedOptions.default ? validation.option : ''
+                    validation.option !== ValidatedOptions.default ? validation.option : '',
                   )}
                 >
                   <Bullseye>{testing ? <LinearDotSpinner /> : <img src={openjdkSvg} alt="Cryostat Logo" />}</Bullseye>

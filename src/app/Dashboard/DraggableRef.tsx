@@ -65,7 +65,7 @@ const inBetween = (
   ev: MouseEvent,
   rect1: DOMRect,
   rect2: DOMRect,
-  scales: [number, number]
+  scales: [number, number],
 ): [boolean, ItemPosition] => {
   const [leftScale, rightScale] = scales;
   const withinHeightRect1 = ev.clientY > rect1.top && ev.clientY < rect1.bottom;
@@ -165,7 +165,7 @@ export const DraggableRef: React.FC<DraggableRefProps> = ({ children, dashboardI
       }
       handleDisabledElements(false);
     },
-    [setIsDragging, setRefStyle, isDragging]
+    [setIsDragging, setRefStyle, isDragging],
   );
 
   const onMouseUpWhileDragging = React.useCallback(
@@ -189,7 +189,7 @@ export const DraggableRef: React.FC<DraggableRefProps> = ({ children, dashboardI
       }
       handleDisabledElements(false);
     },
-    [dispatch, setIsDragging, setRefStyle, refStyle, dashboardId]
+    [dispatch, setIsDragging, setRefStyle, refStyle, dashboardId],
   );
 
   const onMouseMoveWhileDragging = React.useCallback(
@@ -315,7 +315,7 @@ export const DraggableRef: React.FC<DraggableRefProps> = ({ children, dashboardI
       });
       handleDisabledElements(true);
     },
-    [setRefStyle, refStyle]
+    [setRefStyle, refStyle],
   );
 
   const onDragStart = React.useCallback(
@@ -360,7 +360,7 @@ export const DraggableRef: React.FC<DraggableRefProps> = ({ children, dashboardI
       document.addEventListener('mouseup', mouseUpListener.current);
       handleDisabledElements(true);
     },
-    [setRefStyle, setIsDragging, onMouseMoveWhileDragging, onMouseUpWhileDragging, refStyle, isDragging]
+    [setRefStyle, setIsDragging, onMouseMoveWhileDragging, onMouseUpWhileDragging, refStyle, isDragging],
   );
 
   return (

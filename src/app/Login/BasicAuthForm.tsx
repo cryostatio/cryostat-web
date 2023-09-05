@@ -47,28 +47,28 @@ export const BasicAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
     (evt) => {
       setUsername(evt);
     },
-    [setUsername]
+    [setUsername],
   );
 
   const handlePasswordChange = React.useCallback(
     (evt) => {
       setPassword(evt);
     },
-    [setPassword]
+    [setPassword],
   );
 
   const handleRememberMeToggle = React.useCallback(
     (evt) => {
       setRememberMe(evt);
     },
-    [setRememberMe]
+    [setRememberMe],
   );
 
   const handleSubmit = React.useCallback(
     (evt) => {
       onSubmit(evt, `${username}:${password}`, AuthMethod.BASIC, rememberMe);
     },
-    [onSubmit, username, password, rememberMe]
+    [onSubmit, username, password, rememberMe],
   );
 
   // FIXME Patternfly Form component onSubmit is not triggered by Enter keydown when the Form contains
@@ -79,7 +79,7 @@ export const BasicAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
         handleSubmit(evt);
       }
     },
-    [handleSubmit]
+    [handleSubmit],
   );
 
   return (

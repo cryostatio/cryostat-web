@@ -39,7 +39,7 @@ describe('<DateTimePicker/>', () => {
 
   it('should show date tab as default', async () => {
     renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
     );
 
     const dateTab = screen.getByRole('tab', { name: testT('DATE', { ns: 'common' }) });
@@ -50,7 +50,7 @@ describe('<DateTimePicker/>', () => {
 
   it('should render currently selected date in calendar', async () => {
     renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
     );
 
     const selectedDate = screen.getByLabelText('14 September 2022');
@@ -60,7 +60,7 @@ describe('<DateTimePicker/>', () => {
 
   it('should render currently selected datetime', async () => {
     renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
     );
 
     const display = screen.getByLabelText(testT('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
@@ -75,7 +75,7 @@ describe('<DateTimePicker/>', () => {
 
   it('should switch to time tab when a date is selected', async () => {
     const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
     );
 
     const selectedDate = screen.getByLabelText('14 September 2022');
@@ -92,7 +92,7 @@ describe('<DateTimePicker/>', () => {
 
   it('should update selected datetime when date or time is seleted', async () => {
     const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
     );
     const selectedDate = screen.getByLabelText('13 September 2022');
     expect(selectedDate).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('<DateTimePicker/>', () => {
 
     // Switched to time now
     const mInput = within(screen.getByLabelText(testT('MINUTE', { ns: 'common' }))).getByLabelText(
-      testT('TimeSpinner.INPUT_MINUTE_VALUE')
+      testT('TimeSpinner.INPUT_MINUTE_VALUE'),
     );
     expect(mInput).toBeInTheDocument();
     expect(mInput).toBeVisible();
@@ -117,7 +117,7 @@ describe('<DateTimePicker/>', () => {
 
   it('should submit when select button is clicked', async () => {
     const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
     );
 
     const submitButton = screen.getByText(testT('SELECT', { ns: 'common' }));
@@ -132,7 +132,7 @@ describe('<DateTimePicker/>', () => {
 
   it('shoud dismiss the modal when cancel button is clicked', async () => {
     const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
     );
 
     const dismissButton = screen.getByText(testT('CANCEL', { ns: 'common' }));

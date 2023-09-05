@@ -138,10 +138,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           if (ok) {
             onPropsSave();
           }
-        })
+        }),
       );
     },
-    [addSubscription, onPropsSave, context.api, matchExpressionInput, setSaving]
+    [addSubscription, onPropsSave, context.api, matchExpressionInput, setSaving],
   );
 
   React.useEffect(() => {
@@ -160,10 +160,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             input
               ? context.api.matchTargetsWithExpr(input, targets).pipe(
                   map((ts) => [ts, undefined]),
-                  catchError((err) => of([[], err]))
+                  catchError((err) => of([[], err])),
                 )
-              : of([undefined, undefined])
-          )
+              : of([undefined, undefined]),
+          ),
         )
         .subscribe(([ts, err]) => {
           setEvaluating(false);
@@ -174,9 +174,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
               ? ValidatedOptions.default
               : ts.length
               ? ValidatedOptions.success
-              : ValidatedOptions.warning
+              : ValidatedOptions.warning,
           );
-        })
+        }),
     );
   }, [
     matchExprService,
@@ -199,9 +199,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       interval(16)
         .pipe(
           map(() => testPool.size > 0),
-          distinctUntilChanged()
+          distinctUntilChanged(),
         )
-        .subscribe(setIsDisabled)
+        .subscribe(setIsDisabled),
     );
   }, [testPool, setIsDisabled, addSubscription]);
 
@@ -282,7 +282,7 @@ export const FormHelper: React.FC = ({ ...props }) => {
 
   const handleTabChange = React.useCallback(
     (_: React.MouseEvent, key: string | number) => setActiveTab(`${key}` as _SupportedTab),
-    [setActiveTab]
+    [setActiveTab],
   );
 
   return (

@@ -31,7 +31,7 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
       setIsOpen(false);
       onSelectToggle(selection);
     },
-    [setIsOpen, onSelectToggle]
+    [setIsOpen, onSelectToggle],
   );
 
   return (

@@ -75,7 +75,7 @@ const Component = () => {
         return { ...state, webSocketDebounceMs: next };
       });
     },
-    [setState, context.settings]
+    [setState, context.settings],
   );
 
   return (

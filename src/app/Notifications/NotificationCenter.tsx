@@ -79,7 +79,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => 
             return category;
           });
         });
-      })
+      }),
     );
   }, [addSubscription, context, setDrawerCategories]);
 
@@ -87,7 +87,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => 
     addSubscription(
       context.unreadNotifications().subscribe((s) => {
         setTotalUnreadNotificationsCount(s.length);
-      })
+      }),
     );
   }, [addSubscription, context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
 
@@ -104,7 +104,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => 
         });
       });
     },
-    [setDrawerCategories]
+    [setDrawerCategories],
   );
 
   const handleMarkAllRead = React.useCallback(() => {
@@ -119,7 +119,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = (props) => 
     (key?: string) => {
       context.setRead(key);
     },
-    [context]
+    [context],
   );
 
   const timestampToDateTimeString = (timestamp?: number): string => {

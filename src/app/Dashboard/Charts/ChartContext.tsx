@@ -29,12 +29,12 @@ const ChartContext: React.Context<Controllers> = React.createContext({
     defaultServices.api,
     defaultServices.target,
     defaultServices.notificationChannel,
-    defaultServices.settings
+    defaultServices.settings,
   ),
   mbeanController: new MBeanMetricsChartController(
     defaultServices.api,
     defaultServices.target,
-    defaultServices.settings
+    defaultServices.settings,
   ),
 });
 

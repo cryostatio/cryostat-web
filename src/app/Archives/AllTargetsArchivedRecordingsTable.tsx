@@ -99,7 +99,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         return old;
       });
     },
-    [setArchivesForTargets]
+    [setArchivesForTargets],
   );
 
   const handleArchivesForTargets = React.useCallback(
@@ -117,10 +117,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             targetAsObs: of(target),
             archiveCount: node.recordings.archived.aggregate.count,
           };
-        })
+        }),
       );
     },
-    [setArchivesForTargets, setIsLoading]
+    [setArchivesForTargets, setIsLoading],
   );
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -143,10 +143,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                    }
                  }
                }
-             }`
+             }`,
         )
         .pipe(map((v) => v.data.targetNodes))
-        .subscribe(handleArchivesForTargets)
+        .subscribe(handleArchivesForTargets),
     );
   }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets]);
 
@@ -168,7 +168,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             }
           }
         }`,
-            { connectUrl: target.connectUrl }
+            { connectUrl: target.connectUrl },
           )
           .subscribe((v) => {
             setArchivesForTargets((old) => {
@@ -181,10 +181,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 },
               ];
             });
-          })
+          }),
       );
     },
-    [addSubscription, context.api]
+    [addSubscription, context.api],
   );
 
   /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -193,7 +193,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       setArchivesForTargets((old) => old.filter(({ target: t }) => !isEqualTarget(t, target)));
       setExpandedTargets((old) => old.filter((t) => !isEqualTarget(t, target)));
     },
-    [setArchivesForTargets, setExpandedTargets]
+    [setArchivesForTargets, setExpandedTargets],
   );
 
   const handleTargetNotification = React.useCallback(
@@ -221,14 +221,14 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         handleLostTarget(target);
       }
     },
-    [setArchivesForTargets, getCountForNewTarget, handleLostTarget]
+    [setArchivesForTargets, getCountForNewTarget, handleLostTarget],
   );
 
   const handleSearchInput = React.useCallback(
     (searchInput: string) => {
       setSearchText(searchInput);
     },
-    [setSearchText]
+    [setSearchText],
   );
 
   const handleSearchInputClear = React.useCallback(() => {
@@ -248,7 +248,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       updated = archivesForTargets.filter(
         ({ target: t }) =>
           t.alias.toLowerCase().includes(formattedSearchText) ||
-          t.connectUrl.toLowerCase().includes(formattedSearchText)
+          t.connectUrl.toLowerCase().includes(formattedSearchText),
       );
     }
     return sortResources(
@@ -257,7 +257,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
-      tableColumns
+      tableColumns,
     );
   }, [searchText, archivesForTargets, sortBy, hideEmptyTargets]);
 
@@ -267,7 +267,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     }
     const id = window.setInterval(
       () => refreshArchivesForTargets(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshArchivesForTargets]);
@@ -276,7 +276,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
-        .subscribe((v) => handleTargetNotification(v.message.event))
+        .subscribe((v) => handleTargetNotification(v.message.event)),
     );
   }, [addSubscription, context.notificationChannel, handleTargetNotification]);
 
@@ -284,7 +284,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe((v) => {
         updateCount(v.message.target, 1);
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, updateCount]);
 
@@ -292,7 +292,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe((v) => {
         updateCount(v.message.target, 1);
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, updateCount]);
 
@@ -300,7 +300,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
         updateCount(v.message.target, -1);
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, updateCount]);
 
@@ -310,10 +310,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       setExpandedTargets((expandedTargets) =>
         idx >= 0
           ? [...expandedTargets.slice(0, idx), ...expandedTargets.slice(idx + 1, expandedTargets.length)]
-          : [...expandedTargets, target]
+          : [...expandedTargets, target],
       );
     },
-    [expandedTargets, setExpandedTargets]
+    [expandedTargets, setExpandedTargets],
   );
 
   const targetRows = React.useMemo(() => {

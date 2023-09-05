@@ -109,7 +109,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
       },
       columnIndex,
     }),
-    [sortBy, setSortBy]
+    [sortBy, setSortBy],
   );
 
   const handleProbes = React.useCallback(
@@ -118,7 +118,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
       setErrorMessage('');
       setIsLoading(false);
     },
-    [setProbes, setIsLoading, setErrorMessage]
+    [setProbes, setIsLoading, setErrorMessage],
   );
 
   const handleError = React.useCallback(
@@ -126,7 +126,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
       setErrorMessage(error.message);
       setIsLoading(false);
     },
-    [setIsLoading, setErrorMessage]
+    [setIsLoading, setErrorMessage],
   );
 
   const refreshProbes = React.useCallback(() => {
@@ -135,7 +135,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
       context.api.getActiveProbes(true).subscribe({
         next: (value) => handleProbes(value),
         error: (err) => handleError(err),
-      })
+      }),
     );
   }, [addSubscription, context.api, setIsLoading, handleProbes, handleError]);
 
@@ -158,7 +158,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
             REMOVE: false,
           };
         });
-      })
+      }),
     );
   }, [addSubscription, context.api, setActionLoadings]);
 
@@ -181,7 +181,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
       context.target.target().subscribe(() => {
         setFilterText('');
         refreshProbes();
-      })
+      }),
     );
   }, [context, context.target, addSubscription, setFilterText, refreshProbes]);
 
@@ -191,7 +191,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
     }
     const id = window.setInterval(
       () => refreshProbes(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, refreshProbes]);
@@ -200,7 +200,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
         setErrorMessage(authFailMessage);
-      })
+      }),
     );
   }, [addSubscription, context.target, setErrorMessage]);
 
@@ -221,13 +221,13 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
           }
           return old;
         });
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, context.target, setProbes]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ProbesRemoved).subscribe((_) => setProbes([]))
+      context.notificationChannel.messages(NotificationCategory.ProbesRemoved).subscribe((_) => setProbes([])),
     );
   }, [addSubscription, context, context.notificationChannel, setProbes]);
 
@@ -243,7 +243,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
           t.description.toLowerCase().includes(ft) ||
           t.clazz.toLowerCase().includes(ft) ||
           t.methodDescriptor.toLowerCase().includes(ft) ||
-          t.methodName.toLowerCase().includes(ft)
+          t.methodName.toLowerCase().includes(ft),
       );
     }
 
@@ -254,8 +254,8 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         filtered,
-        tableColumns
-      )
+        tableColumns,
+      ),
     );
   }, [filterText, probes, sortBy, setFilteredProbes]);
 
@@ -280,7 +280,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
           </Td>
         </Tr>
       )),
-    [filteredProbes]
+    [filteredProbes],
   );
 
   const actionLoadingProps = React.useMemo<Record<LiveProbeActions, LoadingPropsType>>(
@@ -291,7 +291,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
         isLoading: actionLoadings['REMOVE'],
       } as LoadingPropsType,
     }),
-    [actionLoadings]
+    [actionLoadings],
   );
 
   if (errorMessage != '') {

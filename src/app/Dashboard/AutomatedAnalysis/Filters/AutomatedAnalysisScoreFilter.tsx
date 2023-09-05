@@ -80,7 +80,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
       }
       dispatch(automatedAnalysisAddGlobalFilterIntent('Score', newValue));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const className = React.useMemo(() => {

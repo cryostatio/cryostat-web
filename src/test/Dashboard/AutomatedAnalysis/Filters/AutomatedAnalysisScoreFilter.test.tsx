@@ -76,7 +76,7 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
 
     expect(sliderValue).toHaveValue(100);
     expect(
-      document.getElementsByClassName('automated-analysis-score-filter-slider-critical').item(0)
+      document.getElementsByClassName('automated-analysis-score-filter-slider-critical').item(0),
     ).toBeInTheDocument();
     expect(screen.getByText(onlyShowingText(100))).toBeInTheDocument();
 
@@ -90,7 +90,7 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
     await user.keyboard('{Enter}');
     expect(sliderValue).toHaveValue(50);
     expect(
-      document.getElementsByClassName('automated-analysis-score-filter-slider-warning').item(0)
+      document.getElementsByClassName('automated-analysis-score-filter-slider-warning').item(0),
     ).toBeInTheDocument();
     expect(screen.getByText(onlyShowingText(50))).toBeInTheDocument();
 
@@ -98,7 +98,7 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
     await user.keyboard('{Enter}');
     expect(sliderValue).toHaveValue(100);
     expect(
-      document.getElementsByClassName('automated-analysis-score-filter-slider-critical').item(0)
+      document.getElementsByClassName('automated-analysis-score-filter-slider-critical').item(0),
     ).toBeInTheDocument();
     expect(screen.getByText(onlyShowingText(100))).toBeInTheDocument();
   });

@@ -60,7 +60,7 @@ export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({
         handleSave();
       }
     },
-    [handleSave, username, password]
+    [handleSave, username, password],
   );
 
   const saveButtonLoadingProps = React.useMemo(
@@ -69,8 +69,8 @@ export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({
         spinnerAriaValueText: 'Saving',
         spinnerAriaLabel: 'saving-credentials',
         isLoading: loading,
-      } as LoadingPropsType),
-    [loading]
+      }) as LoadingPropsType,
+    [loading],
   );
 
   return (

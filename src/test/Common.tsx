@@ -43,7 +43,7 @@ export const renderDefault = (
     user = userEvent.setup(), // Create a default user session
     notifications = NotificationsInstance,
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>;
@@ -59,7 +59,7 @@ export const renderWithReduxStore = (
     user = userEvent.setup(), // Create a default user session
     notifications = NotificationsInstance,
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
@@ -78,7 +78,7 @@ export const renderWithServiceContext = (
     notifications = NotificationsInstance,
     user = userEvent.setup(), // Create a default user session
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
@@ -97,7 +97,7 @@ export const renderWithRouter = (
     user = userEvent.setup(), // Create a default user session
     notifications = NotificationsInstance,
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
@@ -118,7 +118,7 @@ export const renderWithServiceContextAndReduxStore = (
     notifications = NotificationsInstance,
     user = userEvent.setup(), // Create a default user session
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
@@ -140,7 +140,7 @@ export const renderWithServiceContextAndRouter = (
     user = userEvent.setup(), // Create a default user session
     history = createMemoryHistory({ initialEntries: ['/'] }),
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
@@ -164,7 +164,7 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
     user = userEvent.setup(), // Create a default user session
     history = createMemoryHistory({ initialEntries: ['/'] }),
     ...renderOptions
-  } = {}
+  } = {},
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
@@ -184,7 +184,7 @@ export const renderWithProvidersAndRedux = (
   ui: React.ReactElement,
   /* eslint-disable @typescript-eslint/no-explicit-any */
   providers: ProviderInstance<any>[],
-  { preloadedState = {}, store = setupStore(preloadedState), user = userEvent.setup(), ...renderOptions } = {}
+  { preloadedState = {}, store = setupStore(preloadedState), user = userEvent.setup(), ...renderOptions } = {},
 ) => {
   if (providers.length < 1) {
     throw new Error('At least one provider must be specified');

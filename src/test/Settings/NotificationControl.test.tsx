@@ -51,7 +51,7 @@ describe('<NotificationControl/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           {React.createElement(NotificationControl.content, null)}
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

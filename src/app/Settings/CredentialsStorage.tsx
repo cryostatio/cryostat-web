@@ -63,7 +63,7 @@ const Component = () => {
       setExpanded(false);
       saveToLocalStorage('CREDENTIAL_LOCATION', selection.value);
     },
-    [setSelection, setExpanded]
+    [setSelection, setExpanded],
   );
 
   React.useEffect(() => {

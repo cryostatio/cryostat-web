@@ -241,7 +241,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
         }
       }
     },
-    [setState, isNavBarOpen]
+    [setState, isNavBarOpen],
   );
 
   return (

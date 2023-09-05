@@ -113,7 +113,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
       },
       columnIndex,
     }),
-    [sortBy, setSortBy]
+    [sortBy, setSortBy],
   );
 
   React.useEffect(() => {
@@ -126,7 +126,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
         (t: EventTemplate) =>
           t.name.toLowerCase().includes(ft) ||
           t.description.toLowerCase().includes(ft) ||
-          t.provider.toLowerCase().includes(ft)
+          t.provider.toLowerCase().includes(ft),
       );
     }
 
@@ -137,8 +137,8 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           direction: sortBy.direction ?? SortByDirection.asc,
         },
         filtered,
-        tableColumns
-      )
+        tableColumns,
+      ),
     );
   }, [filterText, templates, sortBy]);
 
@@ -148,7 +148,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
       setIsLoading(false);
       setErrorMessage('');
     },
-    [setTemplates, setIsLoading, setErrorMessage]
+    [setTemplates, setIsLoading, setErrorMessage],
   );
 
   const handleError = React.useCallback(
@@ -156,7 +156,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
       setIsLoading(false);
       setErrorMessage(error.message);
     },
-    [setIsLoading, setErrorMessage]
+    [setIsLoading, setErrorMessage],
   );
 
   const refreshTemplates = React.useCallback(() => {
@@ -168,13 +168,13 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           filter((target) => target !== NO_TARGET),
           first(),
           concatMap((target) =>
-            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
-          )
+            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
+          ),
         )
         .subscribe({
           next: handleTemplates,
           error: handleError,
-        })
+        }),
     );
   }, [addSubscription, context.api, context.target, setIsLoading, handleTemplates, handleError]);
 
@@ -183,7 +183,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
       context.target.target().subscribe(() => {
         setFilterText('');
         refreshTemplates();
-      })
+      }),
     );
   }, [context.target, addSubscription, refreshTemplates]);
 
@@ -191,7 +191,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.TemplateUploaded)
-        .subscribe((v) => setTemplates((old) => old.concat(v.message.template)))
+        .subscribe((v) => setTemplates((old) => old.concat(v.message.template))),
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
@@ -201,9 +201,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
         .messages(NotificationCategory.TemplateDeleted)
         .subscribe((v) =>
           setTemplates((old) =>
-            old.filter((o) => o.name != v.message.template.name || o.type != v.message.template.type)
-          )
-        )
+            old.filter((o) => o.name != v.message.template.name || o.type != v.message.template.type),
+          ),
+        ),
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
@@ -213,7 +213,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     }
     const id = window.setInterval(
       () => refreshTemplates(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, refreshTemplates]);
@@ -222,7 +222,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
         setErrorMessage(authFailMessage);
-      })
+      }),
     );
   }, [addSubscription, context.target, setErrorMessage]);
 
@@ -232,10 +232,10 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
         context.api
           .deleteCustomEventTemplate(t.name)
           .pipe(first())
-          .subscribe(() => undefined /* do nothing - notification will handle updating state */)
+          .subscribe(() => undefined /* do nothing - notification will handle updating state */),
       );
     },
-    [addSubscription, context.api]
+    [addSubscription, context.api],
   );
 
   const handleDeleteButton = React.useCallback(
@@ -247,7 +247,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
         handleDelete(t);
       }
     },
-    [context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete]
+    [context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete],
   );
 
   const actionsResolver = React.useCallback(
@@ -284,7 +284,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
       }
       return actions;
     },
-    [context.api, history, handleDeleteButton]
+    [context.api, history, handleDeleteButton],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -316,7 +316,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           </Td>
         </Tr>
       )),
-    [actionsResolver, filteredTemplates]
+    [actionsResolver, filteredTemplates],
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
@@ -453,7 +453,7 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
             .addCustomEventTemplate(
               fileUpload.file,
               getProgressUpdateCallback(fileUpload.file.name),
-              fileUpload.abortSignal
+              fileUpload.abortSignal,
             )
             .pipe(
               tap({
@@ -464,8 +464,8 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
                   onSingleFailure(fileUpload.file.name, err);
                 },
               }),
-              catchError((_) => of(false))
-            )
+              catchError((_) => of(false)),
+            ),
         );
       });
 
@@ -475,10 +475,10 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
           .subscribe((oks) => {
             setUploading(false);
             setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
-          })
+          }),
       );
     },
-    [addSubscription, context.api, setUploading, setAllOks]
+    [addSubscription, context.api, setUploading, setAllOks],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -490,7 +490,7 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
       setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
       setNumOfFiles(fileUploads.length);
     },
-    [setNumOfFiles, setAllOks]
+    [setNumOfFiles, setAllOks],
   );
 
   const submitButtonLoadingProps = React.useMemo(
@@ -499,8 +499,8 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-custom-event-template',
         isLoading: uploading,
-      } as LoadingPropsType),
-    [uploading]
+      }) as LoadingPropsType,
+    [uploading],
   );
 
   return (

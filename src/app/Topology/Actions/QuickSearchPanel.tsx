@@ -123,14 +123,14 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
 
   const handleTabChange = React.useCallback(
     (_, eventKey: string | number) => setActiveTab(`${eventKey}`),
-    [setActiveTab]
+    [setActiveTab],
   );
 
   const handleSearch = React.useCallback(
     (input: string) => {
       setSearchText(input);
     },
-    [setSearchText]
+    [setSearchText],
   );
 
   const filteredQuicksearches = React.useMemo(() => {
@@ -294,7 +294,7 @@ export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ is
 
   const filteredQuicksearches = React.useMemo(
     () => quickSearches.filter((qs) => activeLevel <= qs.featureLevel),
-    [activeLevel]
+    [activeLevel],
   );
 
   const items = React.useMemo(() => {

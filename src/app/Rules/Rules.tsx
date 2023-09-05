@@ -180,7 +180,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
       },
       columnIndex,
     }),
-    [sortBy, setSortBy]
+    [sortBy, setSortBy],
   );
 
   const refreshRules = React.useCallback(() => {
@@ -189,7 +189,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
       context.api.getRules().subscribe((rules) => {
         setRules(rules);
         setIsLoading(false);
-      })
+      }),
     );
   }, [setIsLoading, addSubscription, context.api, setRules]);
 
@@ -201,7 +201,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.RuleCreated)
-        .subscribe((v) => setRules((old) => old.concat(v.message)))
+        .subscribe((v) => setRules((old) => old.concat(v.message))),
     );
   }, [addSubscription, context, context.notificationChannel, setRules]);
 
@@ -209,7 +209,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.RuleDeleted)
-        .subscribe((v) => setRules((old) => old.filter((o) => o.name != v.message.name)))
+        .subscribe((v) => setRules((old) => old.filter((o) => o.name != v.message.name))),
     );
   }, [addSubscription, context, context.notificationChannel, setRules]);
 
@@ -225,7 +225,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
           }
           return old;
         });
-      })
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setRules]);
 
@@ -235,7 +235,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
     }
     const id = window.setInterval(
       () => refreshRules(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
     );
     return () => window.clearInterval(id);
   }, [context.settings, refreshRules]);
@@ -252,7 +252,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
     (rule: Rule, cleanRuleEnabled: boolean) => {
       addSubscription(context.api.updateRule({ ...rule, enabled: false }, cleanRuleEnabled).subscribe());
     },
-    [context.api, addSubscription]
+    [context.api, addSubscription],
   );
 
   const handleToggle = React.useCallback(
@@ -276,7 +276,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
       handleDisableRule,
       setRuleToWarn,
       setWarningModalOpen,
-    ]
+    ],
   );
 
   const handleDelete = React.useCallback(
@@ -285,10 +285,10 @@ export const Rules: React.FC<RulesProps> = (_) => {
         context.api
           .deleteRule(rule.name, clean)
           .pipe(first())
-          .subscribe(() => undefined /* do nothing - notification will handle updating state */)
+          .subscribe(() => undefined /* do nothing - notification will handle updating state */),
       );
     },
-    [addSubscription, context.api]
+    [addSubscription, context.api],
   );
 
   const handleDeleteButton = React.useCallback(
@@ -300,7 +300,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
         handleDelete(rule, cleanRuleEnabled);
       }
     },
-    [context.settings, setWarningModalOpen, handleDelete, setRuleToWarn, cleanRuleEnabled]
+    [context.settings, setWarningModalOpen, handleDelete, setRuleToWarn, cleanRuleEnabled],
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
@@ -336,7 +336,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
         },
       ];
     },
-    [context.api, handleDeleteButton]
+    [context.api, handleDeleteButton],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -350,7 +350,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
         direction: sortBy.direction ?? SortByDirection.asc,
       },
       rules,
-      tableColumns
+      tableColumns,
     );
 
     return sorted.map((r: Rule, index) => (

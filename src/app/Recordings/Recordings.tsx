@@ -49,7 +49,7 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
       switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
-    [history, pathname, search]
+    [history, pathname, search],
   );
 
   const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);

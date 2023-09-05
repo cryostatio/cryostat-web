@@ -52,11 +52,11 @@ export const Login: React.FC<LoginProps> = (_) => {
           if (!authSuccess) {
             notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
           }
-        })
+        }),
       );
       evt.preventDefault();
     },
-    [addSubscription, context.login, notifications, setAuthMethod]
+    [addSubscription, context.login, notifications, setAuthMethod],
   );
 
   React.useEffect(() => {

@@ -112,7 +112,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
       }
       setPropsConfig(c);
     },
-    [t, setSelection, setPropsConfig]
+    [t, setSelection, setPropsConfig],
   );
 
   const handleAdd = React.useCallback(() => {
@@ -144,7 +144,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
       isExpanded: boolean,
       steps: WizardControlStep[],
       activeStep: WizardControlStep,
-      goToStepByIndex: (index: number) => void
+      goToStepByIndex: (index: number) => void,
     ) => {
       return (
         <WizardNav isExpanded={isExpanded}>
@@ -164,7 +164,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
         </WizardNav>
       );
     },
-    [selection]
+    [selection],
   );
 
   const content = React.useMemo(() => {
@@ -453,7 +453,7 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
       copy[k] = e;
       onChange(copy);
     },
-    [onChange, props.config]
+    [onChange, props.config],
   );
 
   const handleNumeric = React.useCallback(
@@ -463,7 +463,7 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
       copy[k] = value;
       onChange(copy);
     },
-    [onChange, props.config]
+    [onChange, props.config],
   );
 
   const handleNumericStep = React.useCallback(
@@ -472,7 +472,7 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
       copy[k] = props.config[k] + v;
       onChange(copy);
     },
-    [onChange, props.config]
+    [onChange, props.config],
   );
 
   const createControl = React.useCallback(
@@ -537,7 +537,7 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
         </FormGroup>
       );
     },
-    [t, props.config, handleChange, handleNumeric, handleNumericStep]
+    [t, props.config, handleChange, handleNumeric, handleNumericStep],
   );
 
   return (
@@ -574,7 +574,7 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
       }
       setSelectOpen(false);
     },
-    [handleChange, setSelectOpen]
+    [handleChange, setSelectOpen],
   );
 
   React.useEffect(() => {
@@ -599,7 +599,7 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
           setErrored(true);
           setOptions([`${err}`]);
         },
-      })
+      }),
     );
   }, [addSubscription, setOptions, setErrored, control, control.values]);
 

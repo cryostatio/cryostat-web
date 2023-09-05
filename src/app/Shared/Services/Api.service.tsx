@@ -77,13 +77,13 @@ export class ApiService {
   constructor(
     private readonly target: TargetService,
     private readonly notifications: Notifications,
-    private readonly login: LoginService
+    private readonly login: LoginService,
   ) {
     // show recording archives when recordings available
     this.login
       .getSessionState()
       .pipe(
-        concatMap((sessionState) => (sessionState === SessionState.USER_SESSION ? this.doGet('recordings') : EMPTY))
+        concatMap((sessionState) => (sessionState === SessionState.USER_SESSION ? this.doGet('recordings') : EMPTY)),
       )
       .subscribe({
         next: () => {
@@ -95,10 +95,10 @@ export class ApiService {
       });
 
     const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v1/grafana_datasource_url`
+      `${this.login.authority}/api/v1/grafana_datasource_url`,
     ).pipe(concatMap((resp) => from(resp.json())));
     const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v1/grafana_dashboard_url`
+      `${this.login.authority}/api/v1/grafana_dashboard_url`,
     ).pipe(concatMap((resp) => from(resp.json())));
     const health: Observable<HealthGetResponse> = fromFetch(`${this.login.authority}/health`).pipe(
       tap((resp: Response) => {
@@ -108,7 +108,7 @@ export class ApiService {
         }
       }),
       concatMap((resp: Response) => from(resp.json())),
-      shareReplay()
+      shareReplay(),
     );
     health
       .pipe(
@@ -151,9 +151,9 @@ export class ApiService {
             }));
           }
           return forkJoin(
-            toFetch as [Observable<GrafanaDatasourceUrlGetResponse>, Observable<GrafanaDashboardUrlGetResponse>]
+            toFetch as [Observable<GrafanaDatasourceUrlGetResponse>, Observable<GrafanaDashboardUrlGetResponse>],
           );
-        })
+        }),
       )
       .subscribe({
         next: (parts) => {
@@ -175,7 +175,7 @@ export class ApiService {
     target: Target,
     credentials?: { username?: string; password?: string },
     storeCredentials = false,
-    dryrun = false
+    dryrun = false,
   ): Observable<{ status: number; body: object }> {
     const form = new window.FormData();
     form.append('connectUrl', target.connectUrl);
@@ -193,18 +193,18 @@ export class ApiService {
       },
       new URLSearchParams({ storeCredentials: `${storeCredentials}`, dryrun: `${dryrun}` }),
       true,
-      true
+      true,
     ).pipe(
       first(),
       concatMap((resp) => resp.json().then((body) => ({ status: resp.status, body: body as object }))),
       catchError((err: Error) => {
         if (isHttpError(err)) {
           return from(
-            err.httpResponse.json().then((body) => ({ status: err.httpResponse.status, body: body as object }))
+            err.httpResponse.json().then((body) => ({ status: err.httpResponse.status, body: body as object })),
           );
         }
         return of({ status: 0, body: { data: { reason: err.message } } }); // Status 0 -> request is not completed
-      })
+      }),
     );
   }
 
@@ -214,14 +214,14 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
-      first()
+      first(),
     );
   }
 
   uploadRule(
     rule: Rule,
     onUploadProgress?: (progress: string | number) => void,
-    abortSignal?: Observable<void>
+    abortSignal?: Observable<void>,
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
@@ -243,7 +243,7 @@ export class ApiService {
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
       }),
-      first()
+      first(),
     );
   }
 
@@ -257,7 +257,7 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError((_) => of(false)),
-      first()
+      first(),
     );
   }
 
@@ -272,10 +272,10 @@ export class ApiService {
         body: JSON.stringify(rule),
         headers,
       },
-      new URLSearchParams({ clean: String(clean) })
+      new URLSearchParams({ clean: String(clean) }),
     ).pipe(
       map((resp) => resp.ok),
-      first()
+      first(),
     );
   }
 
@@ -286,10 +286,10 @@ export class ApiService {
       {
         method: 'DELETE',
       },
-      new URLSearchParams({ clean: String(clean) })
+      new URLSearchParams({ clean: String(clean) }),
     ).pipe(
       map((resp) => resp.ok),
-      first()
+      first(),
     );
   }
 
@@ -343,9 +343,9 @@ export class ApiService {
               return of(undefined);
             }
           }),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -359,15 +359,15 @@ export class ApiService {
             if (resp.status == 202) {
               this.notifications.warning(
                 'Snapshot Failed to Create',
-                'The recording is not readable for reasons, such as, unavailability of active and non-snapshot source recordings from where the event data is read.'
+                'The recording is not readable for reasons, such as, unavailability of active and non-snapshot source recordings from where the event data is read.',
               );
             }
           }),
           map((resp) => resp.status == 200),
           catchError((_) => of(false)),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -380,9 +380,9 @@ export class ApiService {
           concatMap((resp) => resp.json() as Promise<RecordingResponse>),
           map((response) => response.data.result),
           catchError((_) => of(undefined)),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -399,12 +399,12 @@ export class ApiService {
           {
             method: 'PATCH',
             body: 'SAVE',
-          }
+          },
         ).pipe(
           map((resp) => resp.ok),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -417,12 +417,12 @@ export class ApiService {
           {
             method: 'PATCH',
             body: 'STOP',
-          }
+          },
         ).pipe(
           map((resp) => resp.ok),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -434,12 +434,12 @@ export class ApiService {
           `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'DELETE',
-          }
+          },
         ).pipe(
           map((resp) => resp.ok),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -449,10 +449,10 @@ export class ApiService {
       `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`,
       {
         method: 'DELETE',
-      }
+      },
     ).pipe(
       map((resp) => resp.ok),
-      first()
+      first(),
     );
   }
 
@@ -464,12 +464,12 @@ export class ApiService {
           `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/upload`,
           {
             method: 'POST',
-          }
+          },
         ).pipe(
           map((resp) => resp.ok),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -481,12 +481,12 @@ export class ApiService {
           `recordings/${encodeURIComponent(target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
           {
             method: 'POST',
-          }
+          },
         ).pipe(
           map((resp) => resp.ok),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -497,7 +497,7 @@ export class ApiService {
       method: 'POST',
     }).pipe(
       map((resp) => resp.ok),
-      first()
+      first(),
     );
   }
   deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
@@ -506,7 +506,7 @@ export class ApiService {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
-      first()
+      first(),
     );
   }
 
@@ -526,10 +526,10 @@ export class ApiService {
       {
         method: 'POST',
         body: this.transformAndStringifyToRawLabels(labels),
-      }
+      },
     ).pipe(
       map((resp) => resp.ok),
-      first()
+      first(),
     );
   }
 
@@ -537,7 +537,7 @@ export class ApiService {
     return this.getActiveProbes(true).pipe(
       concatMap((_) => of(true)),
       catchError((_) => of(false)),
-      first()
+      first(),
     );
   }
 
@@ -547,14 +547,14 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
-      first()
+      first(),
     );
   }
 
   addCustomEventTemplate(
     file: File,
     onUploadProgress?: (progress: string | number) => void,
-    abortSignal?: Observable<void>
+    abortSignal?: Observable<void>,
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
@@ -576,7 +576,7 @@ export class ApiService {
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
       }),
-      first()
+      first(),
     );
   }
 
@@ -588,9 +588,9 @@ export class ApiService {
         }).pipe(
           map((resp) => resp.ok),
           catchError(() => of(false)),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
@@ -602,28 +602,28 @@ export class ApiService {
           `targets/${encodeURIComponent(target.connectUrl)}/probes/${encodeURIComponent(templateName)}`,
           {
             method: 'POST',
-          }
+          },
         ).pipe(
           tap((resp) => {
             if (resp.status == 400) {
               this.notifications.warning(
                 'Failed to insert Probes',
-                'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent'
+                'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent',
               );
             }
           }),
           map((resp) => resp.ok),
           catchError((_) => of(false)),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
   addCustomProbeTemplate(
     file: File,
     onUploadProgress?: (progress: string | number) => void,
-    abortSignal?: Observable<void>
+    abortSignal?: Observable<void>,
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
@@ -645,7 +645,7 @@ export class ApiService {
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
       }),
-      first()
+      first(),
     );
   }
 
@@ -655,7 +655,7 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
-      first()
+      first(),
     );
   }
 
@@ -676,12 +676,12 @@ export class ApiService {
     apiVersion: ApiVersion = 'v1',
     params?: URLSearchParams,
     suppressNotifications?: boolean,
-    skipStatusCheck?: boolean
+    skipStatusCheck?: boolean,
   ): Observable<T> {
     return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
       map((resp) => resp.json()),
       concatMap(from),
-      first()
+      first(),
     );
   }
 
@@ -689,7 +689,7 @@ export class ApiService {
     return this.sendRequest('v2', 'probes', { method: 'GET' }).pipe(
       concatMap((resp) => resp.json()),
       map((response: ProbeTemplateResponse) => response.data.result),
-      first()
+      first(),
     );
   }
 
@@ -703,20 +703,20 @@ export class ApiService {
             method: 'GET',
           },
           undefined,
-          suppressNotifications
+          suppressNotifications,
         ).pipe(
           concatMap((resp) => resp.json()),
           map((response: EventProbesResponse) => response.data.result),
-          first()
-        )
-      )
+          first(),
+        ),
+      ),
     );
   }
 
   getActiveProbesForTarget(
     target: Target,
     suppressNotifications = false,
-    skipStatusCheck = false
+    skipStatusCheck = false,
   ): Observable<EventProbe[]> {
     return this.sendRequest(
       'v2',
@@ -726,11 +726,11 @@ export class ApiService {
       },
       undefined,
       suppressNotifications,
-      skipStatusCheck
+      skipStatusCheck,
     ).pipe(
       concatMap((resp) => resp.json()),
       map((response: EventProbesResponse) => response.data.result),
-      first()
+      first(),
     );
   }
 
@@ -738,7 +738,7 @@ export class ApiService {
     query: string,
     variables?: unknown,
     suppressNotifications?: boolean,
-    skipStatusCheck?: boolean
+    skipStatusCheck?: boolean,
   ): Observable<T> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
@@ -755,11 +755,11 @@ export class ApiService {
       },
       undefined,
       suppressNotifications,
-      skipStatusCheck
+      skipStatusCheck,
     ).pipe(
       map((resp) => resp.json()),
       concatMap(from),
-      first()
+      first(),
     );
   }
 
@@ -776,7 +776,7 @@ export class ApiService {
     })
       .pipe(
         concatMap((resp) => resp.json()),
-        map((response: AssetJwtResponse) => response.data.result.resourceUrl)
+        map((response: AssetJwtResponse) => response.data.result.resourceUrl),
       )
       .subscribe((resourceUrl) => {
         this.downloadFile(resourceUrl, `${recording.name}.report.html`, false);
@@ -796,13 +796,13 @@ export class ApiService {
     })
       .pipe(
         concatMap((resp) => resp.json()),
-        map((response: AssetJwtResponse) => response.data.result.resourceUrl)
+        map((response: AssetJwtResponse) => response.data.result.resourceUrl),
       )
       .subscribe((resourceUrl) => {
         this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
         this.downloadFile(
           createBlobURL(JSON.stringify(recording.metadata), 'application/json'), // Blob for metadata
-          recording.name.replace(/\.jfr$/, '') + '.metadata.json'
+          recording.name.replace(/\.jfr$/, '') + '.metadata.json',
         );
       });
   }
@@ -815,9 +815,9 @@ export class ApiService {
         map(
           (target) =>
             `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
-              target.connectUrl
-            )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
-        )
+              target.connectUrl,
+            )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`,
+        ),
       )
       .subscribe((resource) => {
         const body = new window.FormData();
@@ -828,7 +828,7 @@ export class ApiService {
         })
           .pipe(
             concatMap((resp) => resp.json()),
-            map((response: AssetJwtResponse) => response.data.result.resourceUrl)
+            map((response: AssetJwtResponse) => response.data.result.resourceUrl),
           )
           .subscribe((resourceUrl) => {
             this.downloadFile(resourceUrl, `${template.name}.jfc`);
@@ -840,7 +840,7 @@ export class ApiService {
     this.doGet<RuleResponse>('rules/' + name, 'v2')
       .pipe(
         first(),
-        map((resp) => resp.data.result)
+        map((resp) => resp.data.result),
       )
       .subscribe((rule) => {
         const filename = `${rule.name}.json`;
@@ -855,7 +855,7 @@ export class ApiService {
     file: File,
     labels: object,
     onUploadProgress?: (progress: number) => void,
-    abortSignal?: Observable<void>
+    abortSignal?: Observable<void>,
   ): Observable<string> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
@@ -884,14 +884,14 @@ export class ApiService {
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
       }),
-      first()
+      first(),
     );
   }
 
   uploadSSLCertificate(
     file: File,
     onUploadProgress?: (progress: number) => void,
-    abortSignal?: Observable<void>
+    abortSignal?: Observable<void>,
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
@@ -913,7 +913,7 @@ export class ApiService {
         next: () => (window.onbeforeunload = null),
         error: () => (window.onbeforeunload = null),
       }),
-      first()
+      first(),
     );
   }
 
@@ -939,10 +939,10 @@ export class ApiService {
             }
           }
         }`,
-          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) }
-        )
+          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
+        ),
       ),
-      map((v) => v.data.targetNodes[0].recordings.archived as ArchivedRecording[])
+      map((v) => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
     );
   }
 
@@ -960,7 +960,7 @@ export class ApiService {
           }
         }
       }`,
-      { connectUrl: UPLOADS_SUBDIRECTORY, recordingName, labels: this.stringifyRecordingLabels(labels) }
+      { connectUrl: UPLOADS_SUBDIRECTORY, recordingName, labels: this.stringifyRecordingLabels(labels) },
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
@@ -986,10 +986,10 @@ export class ApiService {
             }
           }
         }`,
-          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) }
-        )
+          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
+        ),
       ),
-      map((v) => v.data.targetNodes[0].recordings.active as ActiveRecording[])
+      map((v) => v.data.targetNodes[0].recordings.active as ActiveRecording[]),
     );
   }
 
@@ -1005,7 +1005,7 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError((_) => of(false)),
-      first()
+      first(),
     );
   }
 
@@ -1015,7 +1015,7 @@ export class ApiService {
     }).pipe(
       concatMap((resp) => resp.json()),
       map((response: CredentialResponse) => response.data.result),
-      first()
+      first(),
     );
   }
 
@@ -1028,11 +1028,11 @@ export class ApiService {
       },
       undefined,
       suppressNotifications,
-      skipStatusCheck
+      skipStatusCheck,
     ).pipe(
       concatMap((resp) => resp.json()),
       map((response: CredentialsResponse) => response.data.result),
-      first()
+      first(),
     );
   }
 
@@ -1041,7 +1041,7 @@ export class ApiService {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
-      first()
+      first(),
     );
   }
 
@@ -1054,11 +1054,11 @@ export class ApiService {
       },
       undefined,
       suppressNotifications,
-      skipStatusCheck
+      skipStatusCheck,
     ).pipe(
       concatMap((resp) => resp.json()),
       map((response: RulesResponse) => response.data.result),
-      first()
+      first(),
     );
   }
 
@@ -1068,7 +1068,7 @@ export class ApiService {
     }).pipe(
       concatMap((resp) => resp.json()),
       map((body: DiscoveryResponse) => body.data.result),
-      first()
+      first(),
     );
   }
 
@@ -1091,11 +1091,11 @@ export class ApiService {
       },
       undefined,
       true,
-      true
+      true,
     ).pipe(
       first(),
       concatMap((resp: Response) => resp.json()),
-      map((body): Target[] => body.data.result.targets || [])
+      map((body): Target[] => body.data.result.targets || []),
     );
   }
 
@@ -1103,7 +1103,7 @@ export class ApiService {
     return this.matchTargetsWithExpr(matchExpression, [target]).pipe(
       first(),
       map((ts) => includesTarget(ts, target)),
-      catchError((_) => of(false))
+      catchError((_) => of(false)),
     );
   }
 
@@ -1129,17 +1129,17 @@ export class ApiService {
       {
         groupFilter: { id: group.id },
         recordingFilter: filter,
-      }
+      },
     ).pipe(
       first(),
       map((body) =>
         body.data.environmentNodes[0].descendantTargets.reduce(
           (acc: Partial<ActiveRecording>[], curr) => acc.concat(curr.recordings?.active?.data || []),
-          [] as Partial<ActiveRecording>[]
-        )
+          [] as Partial<ActiveRecording>[],
+        ),
       ),
       catchError((_) => of([])),
-      map((recs: Partial<ActiveRecording>[]) => recs.length > 0) // At least one
+      map((recs: Partial<ActiveRecording>[]) => recs.length > 0), // At least one
     );
   }
 
@@ -1162,7 +1162,7 @@ export class ApiService {
         recordingFilter: filter,
       },
       true,
-      true
+      true,
     ).pipe(
       map((resp) => {
         const nodes = resp.data.targetNodes;
@@ -1172,13 +1172,13 @@ export class ApiService {
         const count = nodes[0].recordings.active.aggregate.count;
         return count > 0;
       }),
-      catchError((_) => of(false))
+      catchError((_) => of(false)),
     );
   }
 
   checkCredentialForTarget(
     target: Target,
-    credentials: { username: string; password: string }
+    credentials: { username: string; password: string },
   ): Observable<
     | {
         error: Error;
@@ -1196,7 +1196,7 @@ export class ApiService {
       { method: 'POST', body },
       undefined,
       true,
-      true
+      true,
     ).pipe(
       first(),
       concatMap((resp) => resp.json()),
@@ -1226,7 +1226,7 @@ export class ApiService {
             .then((detail) => ({ error: new Error(detail), severeLevel: ValidatedOptions.error }));
         }
         return of({ error: err, severeLevel: ValidatedOptions.error });
-      })
+      }),
     );
   }
 
@@ -1240,7 +1240,7 @@ export class ApiService {
             }
           }
         }`,
-      { connectUrl: target.connectUrl }
+      { connectUrl: target.connectUrl },
     ).pipe(
       map((resp) => {
         const nodes = resp.data.targetNodes;
@@ -1249,7 +1249,7 @@ export class ApiService {
         }
         return nodes[0]?.mbeanMetrics;
       }),
-      catchError((_) => of({}))
+      catchError((_) => of({})),
     );
   }
 
@@ -1272,7 +1272,7 @@ export class ApiService {
           }`,
       { connectUrl: target.connectUrl },
       true,
-      true
+      true,
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
@@ -1282,7 +1282,7 @@ export class ApiService {
       'v1',
       undefined,
       true,
-      true
+      true,
     );
   }
 
@@ -1292,7 +1292,7 @@ export class ApiService {
       'v1',
       undefined,
       true,
-      true
+      true,
     );
   }
 
@@ -1302,7 +1302,7 @@ export class ApiService {
       'v1',
       undefined,
       true,
-      true
+      true,
     );
   }
 
@@ -1345,7 +1345,7 @@ export class ApiService {
     config?: RequestInit,
     params?: URLSearchParams,
     suppressNotifications = false,
-    skipStatusCheck = false
+    skipStatusCheck = false,
   ): Observable<Response> {
     const req = () =>
       this.login.getHeaders().pipe(
@@ -1375,7 +1375,7 @@ export class ApiService {
             throw err;
           }
           return this.handleError<Response>(err, req, suppressNotifications);
-        })
+        }),
       );
     return req();
   }
@@ -1412,7 +1412,7 @@ export class ApiService {
     { method = 'GET', body, headers = {}, listeners, abortSignal }: XMLHttpRequestConfig,
     params?: URLSearchParams,
     suppressNotifications = false,
-    skipStatusCheck = false
+    skipStatusCheck = false,
   ): Observable<XMLHttpResponse> {
     const req = () =>
       this.login.getHeaders().pipe(
@@ -1467,7 +1467,7 @@ export class ApiService {
 
               // Send request
               xhr.send(body);
-            })
+            }),
           );
         }),
         map((resp) => {
@@ -1479,7 +1479,7 @@ export class ApiService {
             throw err;
           }
           return this.handleLegacyError<XMLHttpResponse>(err, req, suppressNotifications);
-        })
+        }),
       );
     return req();
   }
@@ -1487,7 +1487,7 @@ export class ApiService {
   private handleLegacyError<T>(
     error: Error,
     retry: () => Observable<T>,
-    suppressNotifications = false
+    suppressNotifications = false,
   ): ObservableInput<T> {
     if (isXMLHttpError(error)) {
       if (error.xmlHttpResponse.status === 427) {

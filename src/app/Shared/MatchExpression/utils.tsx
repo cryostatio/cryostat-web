@@ -58,7 +58,7 @@ export const componentFactory: ComponentFactory = (kind: ModelKind, type: string
           return withPanZoom()(GraphComponent);
         case ModelKind.node:
           return withDragNode(nodeDragSourceSpec('node', false, false))(
-            withSelection({ multiSelect: false, controlled: true })(CustomNode)
+            withSelection({ multiSelect: false, controlled: true })(CustomNode),
           );
         case ModelKind.edge:
           return DefaultEdge;
@@ -82,7 +82,7 @@ const DEFAULT_NODE_DIAMETER = 50;
 const DEFAULT_NODE_PADDINGS = [0, 35];
 
 export const transformData = (
-  targets: TargetNode[]
+  targets: TargetNode[],
 ): {
   nodes: NodeModel[];
   edges: EdgeModel[];

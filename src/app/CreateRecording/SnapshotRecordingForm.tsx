@@ -42,7 +42,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
           if (success) {
             history.push('/recordings');
           }
-        })
+        }),
     );
   }, [addSubscription, context.api, history, setLoading]);
 
@@ -52,8 +52,8 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
         spinnerAriaValueText: 'Creating',
         spinnerAriaLabel: 'create-snapshot-recording',
         isLoading: loading,
-      } as LoadingPropsType),
-    [loading]
+      }) as LoadingPropsType,
+    [loading],
   );
 
   React.useEffect(() => {
@@ -61,7 +61,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
       context.target.sslFailure().subscribe(() => {
         // also triggered if api calls in Custom Recording form fail
         setErrorMessage(missingSSLMessage);
-      })
+      }),
     );
   }, [context.target, setErrorMessage, addSubscription]);
 
@@ -69,7 +69,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
     addSubscription(
       context.target.authRetry().subscribe(() => {
         setErrorMessage(''); // Reset on retry
-      })
+      }),
     );
   }, [context.target, setErrorMessage, addSubscription]);
 
@@ -78,7 +78,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
       context.target.authFailure().subscribe(() => {
         // also triggered if api calls in Custom Recording form fail
         setErrorMessage(authFailMessage);
-      })
+      }),
     );
   }, [context.target, setErrorMessage, addSubscription]);
 
@@ -86,7 +86,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
     addSubscription(
       context.target.target().subscribe(() => {
         setErrorMessage(''); // Reset on change
-      })
+      }),
     );
   }, [context.target, setErrorMessage, addSubscription]);
 

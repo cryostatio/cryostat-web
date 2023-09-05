@@ -69,7 +69,7 @@ export const recordingAddFilterIntent = createAction(
       filter: filter,
       isArchived: isArchived,
     } as RecordingFilterActionPayload,
-  })
+  }),
 );
 
 export const recordingDeleteFilterIntent = createAction(
@@ -81,7 +81,7 @@ export const recordingDeleteFilterIntent = createAction(
       filter: filter,
       isArchived: isArchived,
     } as RecordingFilterActionPayload,
-  })
+  }),
 );
 
 export const recordingDeleteCategoryFiltersIntent = createAction(
@@ -92,7 +92,7 @@ export const recordingDeleteCategoryFiltersIntent = createAction(
       category: category,
       isArchived: isArchived,
     } as RecordingFilterActionPayload,
-  })
+  }),
 );
 
 export const recordingDeleteAllFiltersIntent = createAction(
@@ -102,7 +102,7 @@ export const recordingDeleteAllFiltersIntent = createAction(
       target: target,
       isArchived: isArchived,
     } as Pick<RecordingFilterActionPayload, 'target' | 'isArchived'>,
-  })
+  }),
 );
 
 export const recordingUpdateCategoryIntent = createAction(
@@ -113,7 +113,7 @@ export const recordingUpdateCategoryIntent = createAction(
       category: category,
       isArchived: isArchived,
     } as RecordingFilterActionPayload,
-  })
+  }),
 );
 
 export const recordingAddTargetIntent = createAction(RecordingFilterAction.TARGET_ADD, (target: string) => ({
@@ -144,7 +144,7 @@ export interface TargetRecordingFilters {
 
 export const createOrUpdateRecordingFilter = (
   old: RecordingFiltersCategories,
-  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
+  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions,
 ): RecordingFiltersCategories => {
   let newFilterValues: unknown[];
   if (!old[filterKey]) {
@@ -169,7 +169,7 @@ export const createOrUpdateRecordingFilter = (
 
 export const getTargetRecordingFilter = (
   state: WritableDraft<{ list: TargetRecordingFilters[] }>,
-  target: string
+  target: string,
 ): TargetRecordingFilters => {
   const targetFilter = state.list.filter((targetFilters) => targetFilters.target === target);
   return targetFilter.length > 0 ? targetFilter[0] : createEmptyTargetRecordingFilters(target);
@@ -186,7 +186,7 @@ export const createEmptyTargetRecordingFilters = (target: string) =>
       selectedCategory: 'Name',
       filters: emptyArchivedRecordingFilters,
     },
-  } as TargetRecordingFilters);
+  }) as TargetRecordingFilters;
 
 export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRecordingFilters, isArchived: boolean) => {
   if (isArchived) {

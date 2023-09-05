@@ -50,7 +50,7 @@ export class LoginService {
   constructor(
     private readonly target: TargetService,
     private readonly authCredentials: AuthCredentials,
-    private readonly settings: SettingsService
+    private readonly settings: SettingsService,
   ) {
     this.authority = process.env.CRYOSTAT_AUTHORITY || '';
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
@@ -112,7 +112,7 @@ export class LoginService {
         window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
         this.authMethod.complete();
         return of(false);
-      })
+      }),
     );
   }
 
@@ -136,11 +136,11 @@ export class LoginService {
       this.getAuthMethod(),
       this.target.target().pipe(
         map((target) => target.connectUrl),
-        concatMap((connect) => this.authCredentials.getCredential(connect))
+        concatMap((connect) => this.authCredentials.getCredential(connect)),
       ),
     ]).pipe(
       map((parts: [string, AuthMethod, Credential | undefined]) => this.getAuthHeaders(parts[0], parts[1], parts[2])),
-      first()
+      first(),
     );
   }
 
@@ -201,13 +201,13 @@ export class LoginService {
             this.resetSessionState();
             this.resetAuthMethod();
             this.navigateToLoginPage();
-          })
+          }),
         );
       }),
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
         return of(false);
-      })
+      }),
     );
   }
 
@@ -262,7 +262,7 @@ export class LoginService {
 
         form.submit();
         return true;
-      })
+      }),
     );
   }
 

@@ -41,7 +41,7 @@ export const AboutDescription: React.FC = () => {
     if (!result) {
       notificationsContext.warning(
         'Cryostat Version Parse Failure',
-        `Could not parse Cryostat version string '${cryostatVersion}'.`
+        `Could not parse Cryostat version string '${cryostatVersion}'.`,
       );
       return 'main';
     }

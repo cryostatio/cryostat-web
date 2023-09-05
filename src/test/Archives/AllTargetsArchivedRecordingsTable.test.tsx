@@ -213,7 +213,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
           <NotificationsContext.Provider value={NotificationsInstance}>
             <AllTargetsArchivedRecordingsTable />
           </NotificationsContext.Provider>
-        </ServiceContext.Provider>
+        </ServiceContext.Provider>,
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();

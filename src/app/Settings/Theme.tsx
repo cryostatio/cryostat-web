@@ -33,7 +33,7 @@ const Component = () => {
       context.settings.setThemeSetting(v as ThemeSetting);
       setOpen(false);
     },
-    [context.settings, setOpen]
+    [context.settings, setOpen],
   );
 
   return (

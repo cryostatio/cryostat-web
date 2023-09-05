@@ -41,7 +41,7 @@ const Component = () => {
       context.settings.setDeletionDialogsEnabled(state);
       setState(new Map(state));
     },
-    [state, setState, context.settings]
+    [state, setState, context.settings],
   );
 
   const handleCheckAll = React.useCallback(
@@ -51,7 +51,7 @@ const Component = () => {
       context.settings.setDeletionDialogsEnabled(newState);
       setState(newState);
     },
-    [context.settings, setState, state]
+    [context.settings, setState, state],
   );
 
   const allChecked = React.useMemo(() => {

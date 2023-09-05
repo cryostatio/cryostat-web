@@ -87,7 +87,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const targetSubject = targetSubjectRef.current;
 
   const [recordingConfig, setRecordingConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
-    context.settings.automatedAnalysisRecordingConfig()
+    context.settings.automatedAnalysisRecordingConfig(),
   );
   const [formConfig, setFormConfig] = React.useState<FormConfig>({
     maxAge: context.settings.automatedAnalysisRecordingConfig().maxAge,
@@ -117,9 +117,9 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               'v1',
               undefined,
               undefined,
-              true
+              true,
             )
-            .pipe(first())
+            .pipe(first()),
         ).subscribe({
           next: (templates: EventTemplate[]) => {
             setErrorMessage('');
@@ -144,17 +144,17 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               setErrorMessage(err.message);
             }
           },
-        })
+        }),
       );
     },
-    [addSubscription, context.api, setErrorMessage, setTemplates, setFormConfig, setIsLoading, setIsAuthModalOpen]
+    [addSubscription, context.api, setErrorMessage, setTemplates, setFormConfig, setIsLoading, setIsAuthModalOpen],
   );
 
   React.useEffect(() => {
     addSubscription(
       targetSubject.subscribe((target) => {
         refreshTemplates(target);
-      })
+      }),
     );
   }, [targetSubject, addSubscription, refreshTemplates, setIsLoading, editing]);
 
@@ -166,7 +166,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       setRecordingConfig(config);
       context.settings.setAutomatedAnalysisRecordingConfig(config);
     },
-    [context.settings, setRecordingConfig]
+    [context.settings, setRecordingConfig],
   );
 
   const handleMaxAgeChange = React.useCallback(
@@ -178,7 +178,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         };
       });
     },
-    [setFormConfig]
+    [setFormConfig],
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
@@ -190,7 +190,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         };
       });
     },
-    [setFormConfig]
+    [setFormConfig],
   );
 
   const handleMaxSizeChange = React.useCallback(
@@ -202,7 +202,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         };
       });
     },
-    [setFormConfig]
+    [setFormConfig],
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
@@ -214,7 +214,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         };
       });
     },
-    [setFormConfig]
+    [setFormConfig],
   );
 
   const handleTemplateChange = React.useCallback(
@@ -229,7 +229,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         };
       });
     },
-    [setFormConfig]
+    [setFormConfig],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -422,7 +422,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           addSubscription(
             targetSubject.pipe(take(1)).subscribe((target) => {
               refreshTemplates(target);
-            })
+            }),
           );
         }}
         targetObs={targetSubject}
@@ -469,7 +469,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         {authModal}
       </>
     ),
-    [t, handleSubmit, toggleEdit, formConfig.template, targetSelect, configData, editing, authModal]
+    [t, handleSubmit, toggleEdit, formConfig.template, targetSelect, configData, editing, authModal],
   );
 
   const formSection = React.useMemo(
@@ -479,7 +479,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       ) : (
         formContent
       ),
-    [useTitle, t, formContent]
+    [useTitle, t, formContent],
   );
 
   return inlineForm ? formSection : <Form>{formSection}</Form>;

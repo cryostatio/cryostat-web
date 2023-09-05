@@ -164,7 +164,7 @@ You can rename, delete and quickly switch between **Dashboard Layouts** for diff
     conclusion: conclusion(
       displayName,
       'Dashboard',
-      `For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] ${build.version}, read our guides on the <a href="${build.dashboardGuideUrl}" target="_blank">Cryostat documentation</a>.`
+      `For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] ${build.version}, read our guides on the <a href="${build.dashboardGuideUrl}" target="_blank">Cryostat documentation</a>.`,
     ),
     type: {
       text: 'Introduction',

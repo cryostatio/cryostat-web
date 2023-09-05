@@ -74,7 +74,7 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
 
   const collapsedContent = React.useMemo(
     () => <g id={'topology-visual-collapsed-icon'}>{renderIcon(collapsedWidth, collapsedHeight)}</g>,
-    [collapsedWidth, collapsedHeight]
+    [collapsedWidth, collapsedHeight],
   );
 
   React.useEffect(() => {
@@ -104,7 +104,7 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
           contextMenuOpen: contextMenuOpen,
           onContextMenu: onContextMenu,
         } as React.ComponentProps<typeof DefaultGroup>,
-        element.isCollapsed() ? collapsedContent : null
+        element.isCollapsed() ? collapsedContent : null,
       )}
     </g>
   );

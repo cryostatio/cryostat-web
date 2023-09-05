@@ -59,7 +59,7 @@ export const automatedAnalysisAddGlobalFilterIntent = createAction(
       category: category,
       filter: filter,
     },
-  })
+  }),
 );
 
 export const automatedAnalysisAddFilterIntent = createAction(
@@ -70,7 +70,7 @@ export const automatedAnalysisAddFilterIntent = createAction(
       category: category,
       filter: filter,
     } as AutomatedAnalysisFilterActionPayload,
-  })
+  }),
 );
 
 export const automatedAnalysisDeleteFilterIntent = createAction(
@@ -81,7 +81,7 @@ export const automatedAnalysisDeleteFilterIntent = createAction(
       category: category,
       filter: filter,
     } as AutomatedAnalysisFilterActionPayload,
-  })
+  }),
 );
 
 export const automatedAnalysisDeleteCategoryFiltersIntent = createAction(
@@ -91,7 +91,7 @@ export const automatedAnalysisDeleteCategoryFiltersIntent = createAction(
       target: target,
       category: category,
     } as AutomatedAnalysisFilterActionPayload,
-  })
+  }),
 );
 
 export const automatedAnalysisDeleteAllFiltersIntent = createAction(
@@ -100,7 +100,7 @@ export const automatedAnalysisDeleteAllFiltersIntent = createAction(
     payload: {
       target: target,
     } as Pick<AutomatedAnalysisFilterActionPayload, 'target'>,
-  })
+  }),
 );
 
 export const automatedAnalysisUpdateCategoryIntent = createAction(
@@ -110,7 +110,7 @@ export const automatedAnalysisUpdateCategoryIntent = createAction(
       target: target,
       category: category,
     } as Pick<AutomatedAnalysisFilterActionPayload, 'target' | 'category'>,
-  })
+  }),
 );
 
 export const automatedAnalysisAddTargetIntent = createAction(
@@ -119,7 +119,7 @@ export const automatedAnalysisAddTargetIntent = createAction(
     payload: {
       target: target,
     } as Pick<AutomatedAnalysisFilterActionPayload, 'target'>,
-  })
+  }),
 );
 
 export const automatedAnalysisDeleteTargetIntent = createAction(
@@ -128,7 +128,7 @@ export const automatedAnalysisDeleteTargetIntent = createAction(
     payload: {
       target: target,
     } as Pick<AutomatedAnalysisFilterActionPayload, 'target'>,
-  })
+  }),
 );
 
 export interface AutomatedAnalysisFilters {
@@ -147,7 +147,7 @@ export interface TargetAutomatedAnalysisFilters {
 
 export const createOrUpdateAutomatedAnalysisGlobalFilter = (
   old: AutomatedAnalysisGlobalFiltersCategories,
-  { filterValue, filterKey }
+  { filterValue, filterKey },
 ): AutomatedAnalysisGlobalFiltersCategories => {
   const newFilters = { ...old };
   newFilters[filterKey] = filterValue;
@@ -156,7 +156,7 @@ export const createOrUpdateAutomatedAnalysisGlobalFilter = (
 
 export const createOrUpdateAutomatedAnalysisFilter = (
   old: AutomatedAnalysisFiltersCategories,
-  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
+  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions,
 ): AutomatedAnalysisFiltersCategories => {
   let newFilterValues: unknown[];
 
@@ -181,14 +181,14 @@ export const createOrUpdateAutomatedAnalysisFilter = (
 };
 
 export const getAutomatedAnalysisGlobalFilter = (
-  state: WritableDraft<{ globalFilters: TargetAutomatedAnalysisGlobalFilters }>
+  state: WritableDraft<{ globalFilters: TargetAutomatedAnalysisGlobalFilters }>,
 ) => {
   return state.globalFilters;
 };
 
 export const getAutomatedAnalysisFilter = (
   state: WritableDraft<{ targetFilters: TargetAutomatedAnalysisFilters[] }>,
-  target: string
+  target: string,
 ): TargetAutomatedAnalysisFilters => {
   const targetFilter = state.targetFilters.filter((targetFilters) => targetFilters.target === target);
   return targetFilter.length > 0 ? targetFilter[0] : createEmptyAutomatedAnalysisFilters(target);
@@ -199,7 +199,7 @@ export const createEmptyAutomatedAnalysisFilters = (target: string) =>
     target: target,
     selectedCategory: 'Name',
     filters: emptyAutomatedAnalysisFilters,
-  } as TargetAutomatedAnalysisFilters);
+  }) as TargetAutomatedAnalysisFilters;
 
 export const deleteAllAutomatedAnalysisFilters = (automatedAnalysisFilter: TargetAutomatedAnalysisFilters) => {
   return {
@@ -239,7 +239,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
         }),
       };
       state.targetFilters = state.targetFilters.filter(
-        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target,
       );
       state.targetFilters.push(newAutomatedAnalysisFilter);
     })
@@ -257,7 +257,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
       };
 
       state.targetFilters = state.targetFilters.filter(
-        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target,
       );
       state.targetFilters.push(newAutomatedAnalysisFilter);
     })
@@ -274,7 +274,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
         }),
       };
       state.targetFilters = state.targetFilters.filter(
-        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target,
       );
       state.targetFilters.push(newAutomatedAnalysisFilter);
     })
@@ -282,7 +282,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
       const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
       const newAutomatedAnalysisFilter = deleteAllAutomatedAnalysisFilters(oldAutomatedAnalysisFilter);
       state.targetFilters = state.targetFilters.filter(
-        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target,
       );
       state.targetFilters.push(newAutomatedAnalysisFilter);
     })
@@ -293,7 +293,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
       newAutomatedAnalysisFilter.selectedCategory = payload.category;
 
       state.targetFilters = state.targetFilters.filter(
-        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target,
       );
       state.targetFilters.push(newAutomatedAnalysisFilter);
     })

@@ -129,7 +129,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     addSubscription(
       serviceContext.target.authFailure().subscribe(() => {
         setShowAuthModal(true);
-      })
+      }),
     );
   }, [serviceContext.target, setShowAuthModal, addSubscription]);
 
@@ -181,10 +181,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         .unreadNotifications()
         .pipe(
           map((notifications: Notification[]) =>
-            _.filter(notifications, (n) => n.variant === AlertVariant.danger || n.variant === AlertVariant.warning)
-          )
+            _.filter(notifications, (n) => n.variant === AlertVariant.danger || n.variant === AlertVariant.warning),
+          ),
         )
-        .subscribe((s) => setErrorNotificationsCount(s.length))
+        .subscribe((s) => setErrorNotificationsCount(s.length)),
     );
   }, [
     notificationsContext,
@@ -205,7 +205,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handleMarkNotificationRead = React.useCallback(
     (key) => () => notificationsContext.setRead(key, true),
-    [notificationsContext]
+    [notificationsContext],
   );
 
   const handleTimeout = React.useCallback((key) => () => notificationsContext.setHidden(key), [notificationsContext]);
@@ -214,7 +214,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     addSubscription(
       serviceContext.target.sslFailure().subscribe(() => {
         setShowSslErrorModal(true);
-      })
+      }),
     );
   }, [serviceContext.target, serviceContext.target.sslFailure, setShowSslErrorModal, addSubscription]);
 
@@ -237,7 +237,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         setIsNavOpen(!props.mobileView);
       }
     },
-    [joyState, setIsMobileView, setIsNavOpen]
+    [joyState, setIsMobileView, setIsNavOpen],
   );
 
   const mobileOnSelect = React.useCallback(
@@ -246,7 +246,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         setIsNavOpen(false);
       }
     },
-    [isMobileView, setIsNavOpen]
+    [isMobileView, setIsNavOpen],
   );
 
   const handleSettingsButtonClick = React.useCallback(() => {
@@ -295,7 +295,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
       </DropdownGroup>,
     ],
-    [handleLogout, handleLanguagePref]
+    [handleLogout, handleLanguagePref],
   );
 
   const UserInfoToggle = React.useMemo(
@@ -304,7 +304,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         {username || <UserIcon color="white" size="sm" />}
       </DropdownToggle>
     ),
-    [username, handleUserInfoToggle]
+    [username, handleUserInfoToggle],
   );
 
   const handleHelpToggle = React.useCallback(() => setShowHelpDropdown((v) => !v), [setShowHelpDropdown]);
@@ -448,7 +448,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       UserInfoToggle,
       userInfoItems,
       helpItems,
-    ]
+    ],
   );
 
   const Header = React.useMemo(
@@ -481,7 +481,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [isNavOpen, aboutModalOpen, HeaderToolbar, handleCloseAboutModal, onNavToggle, levelBadge]
+    [isNavOpen, aboutModalOpen, HeaderToolbar, handleCloseAboutModal, onNavToggle, levelBadge],
   );
 
   const isActiveRoute = React.useCallback(
@@ -498,7 +498,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       }
       return false;
     },
-    [location]
+    [location],
   );
 
   const Navigation = React.useMemo(
@@ -537,22 +537,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         })}
       </Nav>
     ),
-    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel]
+    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel],
   );
 
   const Sidebar = React.useMemo(
     () => <PageSidebar theme="dark" nav={Navigation} isNavOpen={isNavOpen} />,
-    [Navigation, isNavOpen]
+    [Navigation, isNavOpen],
   );
 
   const PageSkipToContent = React.useMemo(
     () => <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>,
-    []
+    [],
   );
 
   const NotificationDrawer = React.useMemo(
     () => <NotificationCenter onClose={handleCloseNotificationCenter} />,
-    [handleCloseNotificationCenter]
+    [handleCloseNotificationCenter],
   );
 
   React.useEffect(() => {

@@ -184,7 +184,7 @@ describe('Login.service', () => {
           new Headers({
             'X-Location': 'https://oauth-server.example.com/logout',
             'access-control-expose-headers': 'Location',
-          })
+          }),
         );
         authRedirectResp = createResponse(
           302,
@@ -202,7 +202,7 @@ describe('Login.service', () => {
             data: {
               result: undefined,
             },
-          }
+          },
         );
         // Submit is unimplemented in JSDOM
         submitSpy = jest.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation();
@@ -269,7 +269,7 @@ describe('Login.service', () => {
           expect(rawInput).toBeInstanceOf(HTMLInputElement);
           const input = rawInput as HTMLInputElement;
           expect(input.value).toEqual(
-            '/oauth/authorize?client_id=system%3Aserviceaccount%3Amy-namespace%3Amy-cryostat&response_type=token&response_mode=fragment&scope=user%3Acheck-access+role%3Acryostat-operator-oauth-client%3Amy-namespace'
+            '/oauth/authorize?client_id=system%3Aserviceaccount%3Amy-namespace%3Amy-cryostat&response_type=token&response_mode=fragment&scope=user%3Acheck-access+role%3Acryostat-operator-oauth-client%3Amy-namespace',
           );
           expect(input.name).toEqual('then');
           expect(input.type).toEqual('hidden');
@@ -311,7 +311,7 @@ describe('Login.service', () => {
               new Headers({
                 'X-Location': 'https://oauth-server.example.com/logout',
                 'access-control-expose-headers': 'Location',
-              })
+              }),
             );
             mockFromFetch.mockReturnValueOnce(of(badLogoutResp)).mockReturnValueOnce(of(authRedirectResp));
           });
@@ -320,7 +320,7 @@ describe('Login.service', () => {
             const result = await firstValueFrom(svc.setLoggedOut());
             expect(result).toBeFalsy();
             expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth logout endpoint"')
+              expect.stringContaining('"message":"Could not find OAuth logout endpoint"'),
             );
           });
         });
@@ -332,7 +332,7 @@ describe('Login.service', () => {
               true,
               new Headers({
                 'access-control-expose-headers': 'Location',
-              })
+              }),
             );
             mockFromFetch.mockReturnValueOnce(of(badLogoutResp)).mockReturnValueOnce(of(authRedirectResp));
           });
@@ -341,7 +341,7 @@ describe('Login.service', () => {
             const result = await firstValueFrom(svc.setLoggedOut());
             expect(result).toBeFalsy();
             expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth logout endpoint"')
+              expect.stringContaining('"message":"Could not find OAuth logout endpoint"'),
             );
           });
         });
@@ -364,7 +364,7 @@ describe('Login.service', () => {
                 data: {
                   result: undefined,
                 },
-              }
+              },
             );
             mockFromFetch.mockReturnValueOnce(of(logoutResp)).mockReturnValueOnce(of(badAuthRedirectResp));
           });
@@ -373,7 +373,7 @@ describe('Login.service', () => {
             const result = await firstValueFrom(svc.setLoggedOut());
             expect(result).toBeFalsy();
             expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth login endpoint"')
+              expect.stringContaining('"message":"Could not find OAuth login endpoint"'),
             );
           });
         });
@@ -394,7 +394,7 @@ describe('Login.service', () => {
                 data: {
                   result: undefined,
                 },
-              }
+              },
             );
             mockFromFetch.mockReturnValueOnce(of(logoutResp)).mockReturnValueOnce(of(badAuthRedirectResp));
           });
@@ -403,7 +403,7 @@ describe('Login.service', () => {
             const result = await firstValueFrom(svc.setLoggedOut());
             expect(result).toBeFalsy();
             expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth login endpoint"')
+              expect.stringContaining('"message":"Could not find OAuth login endpoint"'),
             );
           });
         });
