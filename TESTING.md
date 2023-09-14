@@ -119,8 +119,9 @@ This will automatically start a Mirage dev server, run the integration tests on 
     await cryostat.selectFakeTarget();
   });
 ```
-In the previous example, we created the Cryostat top level Page Object (PO) by calling `Cryostat.getInstance(driver)` and using the driver we created before.
-We then use call a function `navigateToDashboard` to both allow the Cryostat PO to tell the web browser to navigate to the `Dashboard` page, and also obtain another `Dashboard` Page Object. The we can call more functions on our `Dashboard` object in order to simulate more browser actions with our mirage testing server. Add more methods to each PO, to test more actions. The point is, we want to abstract each browser action, so that even if something changes within our code, (e.g. a class tag is renamed, or a button is placed in a different component), all we have to do is change the underlying implementation of each function to keep tests consistent.
+In the previous example, we created the Cryostat top level Page Object (PO) by calling `Cryostat.getInstance(driver)` and using the driver we created before. We then call the function `navigateToDashboard` to allow the Cryostat PO to tell the web browser to navigate to the `Dashboard` page, and obtain a `Dashboard` Page Object. Then, we can call more functions on our `Dashboard` object in order to simulate more browser actions.
+
+Add more methods to each PO, to test more actions. The point is, we want to abstract each browser action, so that even if something changes within our code, (e.g. a class tag is renamed, or a button is placed in a different component), all we need is to change the underlying implementation of each function to keep tests consistent.
 
 * Retrieving DOM objects on our webpages to interact with is the tricky part. Sometimes, it's annoying to have to find the "right" query for the object we want to select. For example, take our code for skipping the Cryostat tour:
 
