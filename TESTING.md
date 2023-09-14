@@ -108,7 +108,7 @@ This will automatically start a Mirage dev server, run the integration tests on 
 
 ### Tips
 * Running the integration tests will open a Firefox browser and simulate any actions that you instruct the browser to perform. That means we must first navigate to the local Cryostat Web page, before performing any useful testing.
-* Let's get started! In our `beforeAll` jest declaration, we setup our web driver with our default configuration (found in [src/itest/util.ts](src/itest/util.ts)), and then use that driver to create our first **Page Object**. A Page Object is an abstraction that acts as an interface to your web pages. For more info on the **Page Object Model** in Selenium: https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models/.
+* In our `beforeAll` jest declaration, we setup our web driver with the [default configurations](src/itest/util.ts)), and then use that driver to create our first **Page Object**. A Page Object is an abstraction that acts as an interface to your web pages. For more info on the **Page Object Model** in Selenium, see https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models/.
 ```ts
  beforeAll(async function () {
     driver = await setupDriver();
