@@ -133,6 +133,6 @@ We then use call a function `navigateToDashboard` to both allow the Cryostat PO 
   }
 ```
 In the code, we first tell the driver to wait, until an element is location by the css selector ('button[data-action="skip"]'), and assign it to a variable. If not found, we assign null. Then if the variable is non-null, we click it. To find a good query to use, it is recommended to use the [Selenium IDE](https://addons.mozilla.org/en-CA/firefox/addon/selenium-ide/) extension on your browser. The extension allows you to easily see queries that can be used to select an element you want. 
-* All integration testing code is found in [src/itest](src/itest)
+* Integration tests are found in [src/itest](src/itest).
 * All code is asynchronous which entails the use of the `async/await` pattern.
 * Follow the Selenium testing practices when writing integration tests: https://www.selenium.dev/documentation/test_practices/.
