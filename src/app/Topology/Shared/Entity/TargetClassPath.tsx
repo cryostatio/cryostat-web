@@ -17,15 +17,11 @@ import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../EmptyText';
 
-export const TargetPaths: React.FC<{ locations?: string[]; maxDisplay?: number }> = ({
-  locations,
-  maxDisplay,
-  ...props
-}) => {
-  return locations?.length ? (
+export const TargetPaths: React.FC<{ paths?: string[]; maxDisplay?: number }> = ({ paths, maxDisplay, ...props }) => {
+  return paths?.length ? (
     <div className="entity-overview__displayed-paths-wrapper" {...props}>
       <LabelGroup numLabels={maxDisplay}>
-        {locations.map((l) => (
+        {paths.map((l) => (
           <Label color="blue" key={l} isTruncated>
             {l}
           </Label>

@@ -273,6 +273,7 @@ const MBeanDetails: React.FC<{
                     vmVersion
                     classPath
                     libraryPath
+                    inputArguments
                   }
                   os {
                     name
@@ -381,14 +382,21 @@ const MBeanDetails: React.FC<{
         title: 'Class Path',
         helperTitle: 'JVM Class Path',
         helperDescription: 'The list of class path locations for this JVM',
-        content: <TargetPaths locations={mbeanMetrics.runtime?.classPath?.split(':')} />,
+        content: <TargetPaths paths={mbeanMetrics.runtime?.classPath?.split(':')} />,
       },
       {
         key: 'Library Paths',
         title: 'Library Paths',
         helperTitle: 'JVM Library Paths',
         helperDescription: 'The list of library path locations for this JVM',
-        content: <TargetPaths locations={mbeanMetrics.runtime?.libraryPath?.split(':')} />,
+        content: <TargetPaths paths={mbeanMetrics.runtime?.libraryPath?.split(':')} />,
+      },
+      {
+        key: 'Input Arguments',
+        title: 'Input Arguments',
+        helperTitle: 'JVM Input Arguments',
+        helperDescription: 'The arguments passed to this JVM on startup',
+        content: <TargetPaths paths={mbeanMetrics.runtime?.inputArguments} />,
       },
     ];
   }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);
