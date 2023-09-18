@@ -57,6 +57,7 @@ import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, Status
 import { EntityAnnotations } from './EntityAnnotations';
 import { EntityLabels } from './EntityLabels';
 import { EntityTitle } from './EntityTitle';
+import { TargetClassPath } from './TargetClassPath';
 import {
   DescriptionConfig,
   getExpandedResourceDetails,
@@ -270,6 +271,7 @@ const MBeanDetails: React.FC<{
                     startTime
                     vmVendor
                     vmVersion
+                    classPath
                   }
                   os {
                     name
@@ -372,6 +374,13 @@ const MBeanDetails: React.FC<{
         ) : (
           <EmptyText text="Unknown amount of swap space" />
         ),
+      },
+      {
+        key: 'Class Path',
+        title: 'Class Path',
+        helperTitle: 'JVM Class Path',
+        helperDescription: 'The list of class path locations for this JVM',
+        content: <TargetClassPath locations={mbeanMetrics.runtime?.classPath?.split(':')} />,
       },
     ];
   }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);

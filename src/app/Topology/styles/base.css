@@ -151,6 +151,12 @@ Below CSS rules only apply to Topology components
   margin-bottom: 0.5em;
 }
 
+.entity-overview__displayed-classpath-wrapper {
+  border: 1px solid var(--pf-global--palette--black-200);
+  padding: 4px;
+  width: fit-content;
+}
+
 .entity-overview__entity-title-wrapper {
   font-weight: 700;
   font-size: 1.2em;
