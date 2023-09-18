@@ -24,7 +24,7 @@ export function keyValueEntryTransformer(kv: object): string[] {
 export const valuesEntryTransformer: (kv: string[] | object) => string[] = Object.values;
 
 export const EntityKeyValues: React.FC<{
-  kv: string[] | object;
+  kv?: string[] | object;
   maxDisplay?: number;
   transformer?: (o: object) => string[];
 }> = ({ kv, maxDisplay, transformer = valuesEntryTransformer, ...props }) => {
