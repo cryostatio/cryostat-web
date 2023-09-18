@@ -1655,7 +1655,7 @@ export interface MBeanMetrics {
     processCpuLoad?: number;
     totalPhysicalMemorySize?: number;
     freePhysicalMemorySize?: number;
-    totalSwapSpaceSize: number;
+    totalSwapSpaceSize?: number;
   };
   memory?: {
     heapMemoryUsage?: MemoryUsage;
