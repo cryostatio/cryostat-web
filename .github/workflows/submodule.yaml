@@ -41,5 +41,5 @@ jobs:
         git config commit.gpgsign true
         git add --all
         git_hash="$(git rev-parse --short :web-client)"
-        git commit -m "build(web-client): update submodule to $git_hash" || echo "No changes to commit"
+        git commit -S -m "build(web-client): update submodule to $git_hash" || echo "No changes to commit"
         git push
