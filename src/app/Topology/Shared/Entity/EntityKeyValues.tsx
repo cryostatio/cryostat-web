@@ -18,7 +18,7 @@ import * as React from 'react';
 import { EmptyText } from '../EmptyText';
 
 export function keyValueEntryTransformer(kv: object): string[] {
-  return Object.keys(kv).map((k) => `${k}=${kv[k]}`);
+  return Object.entries(kv).map(([k, v]) => `${k}=${v}`);
 }
 
 export function valuesEntryTransformer(kv: string[] | object): string[] {
