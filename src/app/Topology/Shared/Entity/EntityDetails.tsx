@@ -55,7 +55,7 @@ import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
 import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, StatusExtra } from '../utils';
 import { EntityAnnotations } from './EntityAnnotations';
-import { EntityLabels } from './EntityLabels';
+import { EntityKeyValues } from './EntityKeyValues';
 import { EntityTitle } from './EntityTitle';
 import { TargetClassPath } from './TargetClassPath';
 import {
@@ -214,7 +214,7 @@ export const TargetDetails: React.FC<{
           'Target',
           ['labels'],
         ),
-        content: <EntityLabels labels={serviceRef.labels} maxDisplay={3} />,
+        content: <EntityKeyValues kv={serviceRef.labels} maxDisplay={3} />,
       },
       {
         key: 'Annotations',
@@ -406,7 +406,7 @@ export const GroupDetails: React.FC<{
         title: 'Labels',
         helperTitle: 'Labels',
         helperDescription: 'Map of string keys and values that can be used to organize and categorize targets.',
-        content: <EntityLabels labels={envNode.labels} />,
+        content: <EntityKeyValues kv={envNode.labels} />,
       },
     ];
   }, [envNode]);

@@ -141,7 +141,7 @@ Below CSS rules only apply to Topology components
   color: var(--pf-global--palette--blue-400);
 }
 
-.entity-overview__displayed-labels-wrapper {
+.entity-overview__displayed-keyvalues-wrapper {
   border: 1px solid var(--pf-global--palette--black-200);
   padding: 4px;
   width: fit-content;
