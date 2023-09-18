@@ -18,11 +18,11 @@ import * as React from 'react';
 import { EmptyText } from '../EmptyText';
 
 export function keyValueEntryTransformer(kv: object): string[] {
-  return kv ? Object.keys(kv).map((k) => `${k}=${kv[k]}`) : [];
+  return Object.keys(kv).map((k) => `${k}=${kv[k]}`);
 }
 
 export function valuesEntryTransformer(kv: string[] | object): string[] {
-  return kv ? Object.keys(kv).map((k) => `${kv[k]}`) : [];
+  return Object.values(kv);
 }
 
 export const EntityKeyValues: React.FC<{
@@ -30,7 +30,7 @@ export const EntityKeyValues: React.FC<{
   maxDisplay?: number;
   transformer?: (o: object) => string[];
 }> = ({ kv, maxDisplay, transformer = valuesEntryTransformer, ...props }) => {
-  const _transformedKv = React.useMemo(() => transformer(kv), [kv, transformer]);
+  const _transformedKv = React.useMemo(() => (kv ? transformer(kv) : []), [kv, transformer]);
   return _transformedKv.length ? (
     <div className="entity-overview__displayed-keyvalues-wrapper" {...props}>
       <LabelGroup numLabels={maxDisplay}>
