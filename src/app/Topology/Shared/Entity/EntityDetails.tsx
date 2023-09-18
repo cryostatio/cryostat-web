@@ -21,7 +21,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown, NodeAction } from '@app/Topology/Actions/NodeActions';
 import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, portalRoot, splitWordsOnUppercase } from '@app/utils/utils';
+import { formatBytes, hashCode, portalRoot, splitWordsOnUppercase } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -275,6 +275,7 @@ const MBeanDetails: React.FC<{
                     version
                     arch
                     availableProcessors
+                    totalPhysicalMemorySize
                   }
                 }
               }
@@ -340,6 +341,17 @@ const MBeanDetails: React.FC<{
         helperTitle: 'Available Processors',
         helperDescription: 'The count of total processors available to the JVM process on its host.',
         content: mbeanMetrics.os?.availableProcessors || <EmptyText text="Unknown number of processors" />,
+      },
+      {
+        key: 'Total Physical Memory',
+        title: 'Total Physical Memory',
+        helperTitle: 'Total Physical Memory',
+        helperDescription: 'The total amount of physical memory of the host operating system.',
+        content: mbeanMetrics.os?.totalPhysicalMemorySize ? (
+          formatBytes(mbeanMetrics.os?.totalPhysicalMemorySize)
+        ) : (
+          <EmptyText text="Unknown amount of physical memory" />
+        ),
       },
     ];
   }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);
