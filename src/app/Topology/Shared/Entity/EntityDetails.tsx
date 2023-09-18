@@ -57,7 +57,7 @@ import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, Status
 import { EntityAnnotations } from './EntityAnnotations';
 import { EntityKeyValues } from './EntityKeyValues';
 import { EntityTitle } from './EntityTitle';
-import { TargetClassPath } from './TargetClassPath';
+import { TargetPaths } from './TargetClassPath';
 import {
   DescriptionConfig,
   getExpandedResourceDetails,
@@ -272,6 +272,7 @@ const MBeanDetails: React.FC<{
                     vmVendor
                     vmVersion
                     classPath
+                    libraryPath
                   }
                   os {
                     name
@@ -380,7 +381,14 @@ const MBeanDetails: React.FC<{
         title: 'Class Path',
         helperTitle: 'JVM Class Path',
         helperDescription: 'The list of class path locations for this JVM',
-        content: <TargetClassPath locations={mbeanMetrics.runtime?.classPath?.split(':')} />,
+        content: <TargetPaths locations={mbeanMetrics.runtime?.classPath?.split(':')} />,
+      },
+      {
+        key: 'Library Paths',
+        title: 'Library Paths',
+        helperTitle: 'JVM Library Paths',
+        helperDescription: 'The list of library path locations for this JVM',
+        content: <TargetPaths locations={mbeanMetrics.runtime?.libraryPath?.split(':')} />,
       },
     ];
   }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);
