@@ -55,7 +55,7 @@ import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
 import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, StatusExtra } from '../utils';
 import { EntityAnnotations } from './EntityAnnotations';
-import { EntityKeyValues, valuesEntryTransformer } from './EntityKeyValues';
+import { EntityKeyValues, keyValueEntryTransformer, valuesEntryTransformer } from './EntityKeyValues';
 import { EntityTitle } from './EntityTitle';
 import {
   DescriptionConfig,
@@ -213,7 +213,7 @@ export const TargetDetails: React.FC<{
           'Target',
           ['labels'],
         ),
-        content: <EntityKeyValues kv={serviceRef.labels} maxDisplay={3} />,
+        content: <EntityKeyValues kv={serviceRef.labels} maxDisplay={3} transformer={keyValueEntryTransformer} />,
       },
       {
         key: 'Annotations',
@@ -382,32 +382,28 @@ const MBeanDetails: React.FC<{
         title: 'Class Path',
         helperTitle: 'JVM Class Path',
         helperDescription: 'The list of class path locations for this JVM',
-        content: (
-          <EntityKeyValues kv={mbeanMetrics.runtime?.classPath?.split(':')} transformer={valuesEntryTransformer} />
-        ),
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.classPath?.split(':')} />,
       },
       {
         key: 'Library Paths',
         title: 'Library Paths',
         helperTitle: 'JVM Library Paths',
         helperDescription: 'The list of library path locations for this JVM',
-        content: (
-          <EntityKeyValues kv={mbeanMetrics.runtime?.libraryPath?.split(':')} transformer={valuesEntryTransformer} />
-        ),
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.libraryPath?.split(':')} />,
       },
       {
         key: 'Input Arguments',
         title: 'Input Arguments',
         helperTitle: 'JVM Input Arguments',
         helperDescription: 'The arguments passed to this JVM on startup',
-        content: <EntityKeyValues kv={mbeanMetrics.runtime?.inputArguments} transformer={valuesEntryTransformer} />,
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.inputArguments} />,
       },
       {
         key: 'System Properties',
         title: 'System Properties',
         helperTitle: 'JVM System Properties',
         helperDescription: 'The current system properties of this JVM',
-        content: <EntityKeyValues kv={mbeanMetrics.runtime?.systemProperties} />,
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.systemProperties} transformer={keyValueEntryTransformer} />,
       },
     ];
   }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);
@@ -433,7 +429,7 @@ export const GroupDetails: React.FC<{
         title: 'Labels',
         helperTitle: 'Labels',
         helperDescription: 'Map of string keys and values that can be used to organize and categorize targets.',
-        content: <EntityKeyValues kv={envNode.labels} />,
+        content: <EntityKeyValues kv={envNode.labels} transformer={keyValueEntryTransformer} />,
       },
     ];
   }, [envNode]);

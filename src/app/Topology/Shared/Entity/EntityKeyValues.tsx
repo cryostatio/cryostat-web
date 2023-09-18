@@ -29,7 +29,7 @@ export const EntityKeyValues: React.FC<{
   kv?: string[] | object;
   maxDisplay?: number;
   transformer?: (o: object) => string[];
-}> = ({ kv, maxDisplay, transformer = keyValueEntryTransformer, ...props }) => {
+}> = ({ kv, maxDisplay, transformer = valuesEntryTransformer, ...props }) => {
   const _transformedKv = React.useMemo(() => transformer.call(this, kv), [kv, transformer]);
   return _transformedKv.length ? (
     <div className="entity-overview__displayed-keyvalues-wrapper" {...props}>
