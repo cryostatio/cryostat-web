@@ -57,7 +57,7 @@ import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, Status
 import { EntityAnnotations } from './EntityAnnotations';
 import { EntityKeyValues } from './EntityKeyValues';
 import { EntityTitle } from './EntityTitle';
-import { TargetPaths } from './TargetClassPath';
+import { TargetPaths } from './TargetPaths';
 import {
   DescriptionConfig,
   getExpandedResourceDetails,
