@@ -30,7 +30,7 @@ export const EntityKeyValues: React.FC<{
   maxDisplay?: number;
   transformer?: (o: object) => string[];
 }> = ({ kv, maxDisplay, transformer = keyValueEntryTransformer, ...props }) => {
-  const _transformedKv = React.useMemo(() => transformer.call(this, kv), [kv]);
+  const _transformedKv = React.useMemo(() => transformer.call(this, kv), [kv, transformer]);
   return _transformedKv.length ? (
     <div className="entity-overview__displayed-keyvalues-wrapper" {...props}>
       <LabelGroup numLabels={maxDisplay}>
