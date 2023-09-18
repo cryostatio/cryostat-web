@@ -274,6 +274,7 @@ const MBeanDetails: React.FC<{
                     classPath
                     libraryPath
                     inputArguments
+                    systemProperties
                   }
                   os {
                     name
@@ -397,6 +398,13 @@ const MBeanDetails: React.FC<{
         helperTitle: 'JVM Input Arguments',
         helperDescription: 'The arguments passed to this JVM on startup',
         content: <TargetPaths paths={mbeanMetrics.runtime?.inputArguments} />,
+      },
+      {
+        key: 'System Properties',
+        title: 'System Properties',
+        helperTitle: 'JVM System Properties',
+        helperDescription: 'The current system properties of this JVM',
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.systemProperties} />,
       },
     ];
   }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);

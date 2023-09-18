@@ -1672,7 +1672,7 @@ export interface MBeanMetrics {
     specName?: string;
     specVendor?: string;
     startTime?: number;
-    // systemProperties?: Object
+    systemProperties?: Object;
     uptime?: number;
     vmName?: string;
     vmVendor?: string;
