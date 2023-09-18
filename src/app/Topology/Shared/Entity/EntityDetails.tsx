@@ -272,6 +272,7 @@ const MBeanDetails: React.FC<{
                     vmVersion
                   }
                   os {
+                    name
                     version
                     arch
                     availableProcessors
@@ -321,6 +322,13 @@ const MBeanDetails: React.FC<{
         helperTitle: 'JVM Vendor',
         helperDescription: 'The vendor who supplied this JVM',
         content: mbeanMetrics.runtime?.vmVendor || <EmptyText text="Unknown JVM vendor" />,
+      },
+      {
+        key: 'Operating System Name',
+        title: 'Operating System Name',
+        helperTitle: 'Operating System Name',
+        helperDescription: 'The name of the host system.',
+        content: mbeanMetrics.os?.name || <EmptyText text="Unknown operating system name" />,
       },
       {
         key: 'Operating System Architecture',

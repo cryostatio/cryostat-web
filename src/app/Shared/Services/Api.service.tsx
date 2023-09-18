@@ -1646,6 +1646,7 @@ export interface MBeanMetrics {
     daemonThreadCount?: number;
   };
   os?: {
+    name?: string;
     arch?: string;
     availableProcessors?: number;
     version?: string;
