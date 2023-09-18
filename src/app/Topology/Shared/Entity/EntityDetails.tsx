@@ -55,7 +55,7 @@ import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
 import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, StatusExtra } from '../utils';
 import { EntityAnnotations } from './EntityAnnotations';
-import { EntityKeyValues } from './EntityKeyValues';
+import { EntityKeyValues, valuesEntryTransformer } from './EntityKeyValues';
 import { EntityTitle } from './EntityTitle';
 import { TargetPaths } from './TargetPaths';
 import {
@@ -383,21 +383,25 @@ const MBeanDetails: React.FC<{
         title: 'Class Path',
         helperTitle: 'JVM Class Path',
         helperDescription: 'The list of class path locations for this JVM',
-        content: <TargetPaths paths={mbeanMetrics.runtime?.classPath?.split(':')} />,
+        content: (
+          <EntityKeyValues kv={mbeanMetrics.runtime?.classPath?.split(':')} transformer={valuesEntryTransformer} />
+        ),
       },
       {
         key: 'Library Paths',
         title: 'Library Paths',
         helperTitle: 'JVM Library Paths',
         helperDescription: 'The list of library path locations for this JVM',
-        content: <TargetPaths paths={mbeanMetrics.runtime?.libraryPath?.split(':')} />,
+        content: (
+          <EntityKeyValues kv={mbeanMetrics.runtime?.libraryPath?.split(':')} transformer={valuesEntryTransformer} />
+        ),
       },
       {
         key: 'Input Arguments',
         title: 'Input Arguments',
         helperTitle: 'JVM Input Arguments',
         helperDescription: 'The arguments passed to this JVM on startup',
-        content: <TargetPaths paths={mbeanMetrics.runtime?.inputArguments} />,
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.inputArguments} transformer={valuesEntryTransformer} />,
       },
       {
         key: 'System Properties',

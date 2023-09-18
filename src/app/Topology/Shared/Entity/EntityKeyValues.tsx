@@ -17,11 +17,20 @@ import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../EmptyText';
 
-export const EntityKeyValues: React.FC<{ kv?: object; maxDisplay?: number }> = ({ kv, maxDisplay, ...props }) => {
-  const _transformedKv = React.useMemo(() => {
-    return kv ? Object.keys(kv).map((k) => `${k}=${kv[k]}`) : [];
-  }, [kv]);
+export function keyValueEntryTransformer(kv: string[] | object): string[] {
+  return kv ? Object.keys(kv).map((k) => `${k}=${kv[k]}`) : [];
+}
 
+export function valuesEntryTransformer(kv: string[] | object): string[] {
+  return kv ? Object.keys(kv).map((k) => `${kv[k]}`) : [];
+}
+
+export const EntityKeyValues: React.FC<{
+  kv?: string[] | object;
+  maxDisplay?: number;
+  transformer?: (o: object) => string[];
+}> = ({ kv, maxDisplay, transformer = keyValueEntryTransformer, ...props }) => {
+  const _transformedKv = React.useMemo(() => transformer.call(this, kv), [kv]);
   return _transformedKv.length ? (
     <div className="entity-overview__displayed-keyvalues-wrapper" {...props}>
       <LabelGroup numLabels={maxDisplay}>
