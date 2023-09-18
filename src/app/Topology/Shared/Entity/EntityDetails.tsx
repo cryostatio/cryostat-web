@@ -55,7 +55,7 @@ import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
 import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, StatusExtra } from '../utils';
 import { EntityAnnotations } from './EntityAnnotations';
-import { EntityKeyValues, keyValueEntryTransformer, valuesEntryTransformer } from './EntityKeyValues';
+import { EntityKeyValues, keyValueEntryTransformer } from './EntityKeyValues';
 import { EntityTitle } from './EntityTitle';
 import {
   DescriptionConfig,
