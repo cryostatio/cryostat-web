@@ -276,6 +276,7 @@ const MBeanDetails: React.FC<{
                     arch
                     availableProcessors
                     totalPhysicalMemorySize
+                    totalSwapSpaceSize
                   }
                 }
               }
@@ -351,6 +352,17 @@ const MBeanDetails: React.FC<{
           formatBytes(mbeanMetrics.os?.totalPhysicalMemorySize)
         ) : (
           <EmptyText text="Unknown amount of physical memory" />
+        ),
+      },
+      {
+        key: 'Total Swap Space',
+        title: 'Total Swap Space',
+        helperTitle: 'Total Swap Space',
+        helperDescription: 'The total amount of swap space of the host operating system.',
+        content: mbeanMetrics.os?.totalSwapSpaceSize ? (
+          formatBytes(mbeanMetrics.os?.totalSwapSpaceSize)
+        ) : (
+          <EmptyText text="Unknown amount of swap space" />
         ),
       },
     ];
