@@ -21,9 +21,7 @@ export function keyValueEntryTransformer(kv: object): string[] {
   return Object.entries(kv).map(([k, v]) => `${k}=${v}`);
 }
 
-export function valuesEntryTransformer(kv: string[] | object): string[] {
-  return Object.values(kv);
-}
+export const valuesEntryTransformer: (kv: string[] | object) => string[] = Object.values;
 
 export const EntityKeyValues: React.FC<{
   kv: string[] | object;
