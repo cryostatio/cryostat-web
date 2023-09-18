@@ -17,7 +17,7 @@ import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../EmptyText';
 
-export function keyValueEntryTransformer(kv: string[] | object): string[] {
+export function keyValueEntryTransformer(kv: object): string[] {
   return kv ? Object.keys(kv).map((k) => `${k}=${kv[k]}`) : [];
 }
 
