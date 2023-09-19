@@ -1646,6 +1646,7 @@ export interface MBeanMetrics {
     daemonThreadCount?: number;
   };
   os?: {
+    name?: string;
     arch?: string;
     availableProcessors?: number;
     version?: string;
@@ -1654,6 +1655,7 @@ export interface MBeanMetrics {
     processCpuLoad?: number;
     totalPhysicalMemorySize?: number;
     freePhysicalMemorySize?: number;
+    totalSwapSpaceSize?: number;
   };
   memory?: {
     heapMemoryUsage?: MemoryUsage;
@@ -1670,7 +1672,7 @@ export interface MBeanMetrics {
     specName?: string;
     specVendor?: string;
     startTime?: number;
-    // systemProperties?: Object
+    systemProperties?: object;
     uptime?: number;
     vmName?: string;
     vmVendor?: string;

@@ -17,15 +17,22 @@ import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../EmptyText';
 
-export const EntityLabels: React.FC<{ labels?: object; maxDisplay?: number }> = ({ labels, maxDisplay, ...props }) => {
-  const _transformedLabels = React.useMemo(() => {
-    return labels ? Object.keys(labels).map((k) => `${k}=${labels[k]}`) : [];
-  }, [labels]);
+export function keyValueEntryTransformer(kv: object): string[] {
+  return Object.entries(kv).map(([k, v]) => `${k}=${v}`);
+}
 
-  return _transformedLabels.length ? (
-    <div className="entity-overview__displayed-labels-wrapper" {...props}>
+export const valuesEntryTransformer: (kv: string[] | object) => string[] = Object.values;
+
+export const EntityKeyValues: React.FC<{
+  kv?: string[] | object;
+  maxDisplay?: number;
+  transformer?: (o: object) => string[];
+}> = ({ kv, maxDisplay, transformer = valuesEntryTransformer, ...props }) => {
+  const _transformedKv = React.useMemo(() => (kv ? transformer(kv) : []), [kv, transformer]);
+  return _transformedKv.length ? (
+    <div className="entity-overview__displayed-keyvalues-wrapper" {...props}>
       <LabelGroup numLabels={maxDisplay}>
-        {_transformedLabels.map((l) => (
+        {_transformedKv.map((l) => (
           <Label color="blue" key={l} isTruncated>
             {l}
           </Label>
@@ -33,6 +40,6 @@ export const EntityLabels: React.FC<{ labels?: object; maxDisplay?: number }> = 
       </LabelGroup>
     </div>
   ) : (
-    <EmptyText text="No labels." />
+    <EmptyText text="No entries." />
   );
 };

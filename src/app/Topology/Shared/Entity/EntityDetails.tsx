@@ -21,7 +21,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown, NodeAction } from '@app/Topology/Actions/NodeActions';
 import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, portalRoot, splitWordsOnUppercase } from '@app/utils/utils';
+import { formatBytes, hashCode, portalRoot, splitWordsOnUppercase } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -55,7 +55,7 @@ import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
 import { actionFactory, getStatusTargetNode, ListElement, nodeTypeToAbbr, StatusExtra } from '../utils';
 import { EntityAnnotations } from './EntityAnnotations';
-import { EntityLabels } from './EntityLabels';
+import { EntityKeyValues, keyValueEntryTransformer } from './EntityKeyValues';
 import { EntityTitle } from './EntityTitle';
 import {
   DescriptionConfig,
@@ -213,7 +213,7 @@ export const TargetDetails: React.FC<{
           'Target',
           ['labels'],
         ),
-        content: <EntityLabels labels={serviceRef.labels} maxDisplay={3} />,
+        content: <EntityKeyValues kv={serviceRef.labels} maxDisplay={3} transformer={keyValueEntryTransformer} />,
       },
       {
         key: 'Annotations',
@@ -270,11 +270,18 @@ const MBeanDetails: React.FC<{
                     startTime
                     vmVendor
                     vmVersion
+                    classPath
+                    libraryPath
+                    inputArguments
+                    systemProperties
                   }
                   os {
+                    name
                     version
                     arch
                     availableProcessors
+                    totalPhysicalMemorySize
+                    totalSwapSpaceSize
                   }
                 }
               }
@@ -321,6 +328,13 @@ const MBeanDetails: React.FC<{
         content: mbeanMetrics.runtime?.vmVendor || <EmptyText text="Unknown JVM vendor" />,
       },
       {
+        key: 'Operating System Name',
+        title: 'Operating System Name',
+        helperTitle: 'Operating System Name',
+        helperDescription: 'The name of the host system.',
+        content: mbeanMetrics.os?.name || <EmptyText text="Unknown operating system name" />,
+      },
+      {
         key: 'Operating System Architecture',
         title: 'Operating System Architecture',
         helperTitle: 'Operating System Architecture',
@@ -340,6 +354,56 @@ const MBeanDetails: React.FC<{
         helperTitle: 'Available Processors',
         helperDescription: 'The count of total processors available to the JVM process on its host.',
         content: mbeanMetrics.os?.availableProcessors || <EmptyText text="Unknown number of processors" />,
+      },
+      {
+        key: 'Total Physical Memory',
+        title: 'Total Physical Memory',
+        helperTitle: 'Total Physical Memory',
+        helperDescription: 'The total amount of physical memory of the host operating system.',
+        content: mbeanMetrics.os?.totalPhysicalMemorySize ? (
+          formatBytes(mbeanMetrics.os?.totalPhysicalMemorySize)
+        ) : (
+          <EmptyText text="Unknown amount of physical memory" />
+        ),
+      },
+      {
+        key: 'Total Swap Space',
+        title: 'Total Swap Space',
+        helperTitle: 'Total Swap Space',
+        helperDescription: 'The total amount of swap space of the host operating system.',
+        content: mbeanMetrics.os?.totalSwapSpaceSize ? (
+          formatBytes(mbeanMetrics.os?.totalSwapSpaceSize)
+        ) : (
+          <EmptyText text="Unknown amount of swap space" />
+        ),
+      },
+      {
+        key: 'Class Path',
+        title: 'Class Path',
+        helperTitle: 'JVM Class Path',
+        helperDescription: 'The list of class path locations for this JVM',
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.classPath?.split(':')} />,
+      },
+      {
+        key: 'Library Paths',
+        title: 'Library Paths',
+        helperTitle: 'JVM Library Paths',
+        helperDescription: 'The list of library path locations for this JVM',
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.libraryPath?.split(':')} />,
+      },
+      {
+        key: 'Input Arguments',
+        title: 'Input Arguments',
+        helperTitle: 'JVM Input Arguments',
+        helperDescription: 'The arguments passed to this JVM on startup',
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.inputArguments} />,
+      },
+      {
+        key: 'System Properties',
+        title: 'System Properties',
+        helperTitle: 'JVM System Properties',
+        helperDescription: 'The current system properties of this JVM',
+        content: <EntityKeyValues kv={mbeanMetrics.runtime?.systemProperties} transformer={keyValueEntryTransformer} />,
       },
     ];
   }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);
@@ -365,7 +429,7 @@ export const GroupDetails: React.FC<{
         title: 'Labels',
         helperTitle: 'Labels',
         helperDescription: 'Map of string keys and values that can be used to organize and categorize targets.',
-        content: <EntityLabels labels={envNode.labels} />,
+        content: <EntityKeyValues kv={envNode.labels} transformer={keyValueEntryTransformer} />,
       },
     ];
   }, [envNode]);
