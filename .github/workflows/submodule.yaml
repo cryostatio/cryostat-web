@@ -17,7 +17,7 @@ jobs:
     if: ${{ github.repository_owner == 'cryostatio' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: cryostatio/cryostat
         token: "${{ secrets.SUBMODULE_TOKEN }}"
@@ -29,6 +29,13 @@ jobs:
           printf "Expected remote branch %s, found branch %s\n" "${{ github.ref_name }}" "$remote_branch" >&2
           exit 1
         fi
+    - name: Import GPG key
+      uses: crazy-max/ghaction-import-gpg@v6
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+        git_user_signingkey: true
+        git_commit_gpgsign: true
     - name: Update submodule to latest commit
       run: |
         git submodule update --init
