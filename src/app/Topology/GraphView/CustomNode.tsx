@@ -99,7 +99,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 
   const data: TargetNode = element.getData();
 
-  const graphic = data.target.connectUrl.startsWith('http') ? cryostatSvg : openjdkSvg;
+  const graphic = React.useMemo(() => (data.target.connectUrl.startsWith('http') ? cryostatSvg : openjdkSvg), [data]);
 
   const [nodeStatus] = getStatusTargetNode(data);
 
