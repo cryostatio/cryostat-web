@@ -47,7 +47,7 @@ import { RESOURCE_NAME_TRUNCATE_LENGTH } from './UtilsFactory';
 
 export const NODE_ICON_PADDING = 5;
 
-export const renderIcon = (_data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {
+export const renderIcon = (graphic, _data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {
   const { width, height } = element.getDimensions();
 
   const contentSize = Math.min(width, height) - NODE_ICON_PADDING * 2;
@@ -63,7 +63,7 @@ export const renderIcon = (_data: TargetNode, element: Node, useAlt: boolean): R
           <ContainerNodeIcon width={mainContentSize} height={mainContentSize} />
         </g>
       ) : (
-        <image x={trueCx} y={trueCy} width={mainContentSize} height={mainContentSize} xlinkHref={openjdkSvg} />
+        <image x={trueCx} y={trueCy} width={mainContentSize} height={mainContentSize} xlinkHref={graphic} />
       )}
     </>
   );
@@ -98,6 +98,8 @@ const CustomNode: React.FC<CustomNodeProps> = ({
   const labelIcon = React.useMemo(() => <img src={cryostatSvg} />, []);
 
   const data: TargetNode = element.getData();
+
+  const graphic = React.useMemo(() => (data.target.connectUrl.startsWith('http') ? cryostatSvg : openjdkSvg), [data]);
 
   const [nodeStatus] = getStatusTargetNode(data);
 
@@ -138,7 +140,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({
           showLabel
           attachments={nodeDecorators}
         >
-          <g id={'target-node-visual-inner-icon'}>{renderIcon(data, element, !showIcon)}</g>
+          <g id={'target-node-visual-inner-icon'}>{renderIcon(graphic, data, element, !showIcon)}</g>
         </DefaultNode>
       </g>
     </Layer>
