@@ -36,7 +36,7 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -45,6 +45,8 @@ import {
   DrawerContentBody,
   Dropdown,
   KebabToggle,
+  Label,
+  LabelGroup,
   OverflowMenu,
   OverflowMenuContent,
   OverflowMenuControl,
@@ -938,10 +940,17 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
             <Text>Recording Options:</Text>
-            <Text>
-              toDisk = {String(recording.toDisk)} &emsp; maxAge = {recording.maxAge / 1000}s &emsp; maxSize ={' '}
-              {recording.maxSize}B
-            </Text>
+            <LabelGroup>
+              <Label color='blue'>
+                toDisk: {String(recording.toDisk)}
+              </Label>
+              <Label color='blue'>
+                maxAge: {recording.maxAge / 1000}s
+              </Label>
+              <Label color='blue'>
+                maxSize: {formatBytes(recording.maxSize)}
+              </Label>
+            </LabelGroup>
             <br></br>
             <hr></hr>
             <br></br>
