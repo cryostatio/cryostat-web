@@ -42,7 +42,7 @@ import {
   FAILED_REPORT_MESSAGE,
   NO_RECORDINGS_MESSAGE,
   RECORDING_FAILURE_MESSAGE,
-  RuleEvaluation,
+  AnalysisResult,
   TEMPLATE_UNSUPPORTED_MESSAGE,
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -125,7 +125,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const { t } = useTranslation();
 
   const [targetConnectURL, setTargetConnectURL] = React.useState('');
-  const [evaluations, setEvaluations] = React.useState<RuleEvaluation[]>([]);
+  const [results, setResults] = React.useState<AnalysisResult[]>([]);
 
   const [categorizedEvaluation, setCategorizedEvaluation] = React.useState<CategorizedRuleEvaluations[]>([]);
   const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
@@ -155,9 +155,9 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   }) as AutomatedAnalysisGlobalFiltersCategories;
 
   const categorizeEvaluation = React.useCallback(
-    (arr: RuleEvaluation[]) => {
-      setEvaluations(arr);
-      const map = new Map<string, RuleEvaluation[]>();
+    (arr: AnalysisResult[]) => {
+      setResults(arr);
+      const map = new Map<string, AnalysisResult[]>();
       arr.forEach((evaluation) => {
         const topicValue = map.get(evaluation.topic);
         if (topicValue === undefined) {
@@ -170,7 +170,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
       setCategorizedEvaluation(sorted);
     },
-    [setCategorizedEvaluation, setEvaluations],
+    [setCategorizedEvaluation, setResults],
   );
 
   // Will perform analysis on the first ActiveRecording which has
@@ -794,7 +794,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
 
   const headerLabels = React.useMemo(() => {
     if (isLoading || errorMessage) return undefined;
-    const filtered = evaluations.filter((e) => e.score >= AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD);
+    const filtered = results.filter((e) => e.score >= AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD);
     if (filtered.length === 0) return <AutomatedAnalysisHeaderLabel type="ok" />;
     const [warnings, errors] = _.partition(filtered, (e) => e.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD);
     return (
@@ -804,7 +804,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         {warnings.length > 0 && <AutomatedAnalysisHeaderLabel type={'warning'} count={warnings.length} />}
       </LabelGroup>
     );
-  }, [isLoading, errorMessage, evaluations, reportSource]);
+  }, [isLoading, errorMessage, results, reportSource]);
 
   const header = React.useMemo(() => {
     return (

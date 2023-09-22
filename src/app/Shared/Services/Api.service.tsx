@@ -779,7 +779,7 @@ export class ApiService {
         map((response: AssetJwtResponse) => response.data.result.resourceUrl),
       )
       .subscribe((resourceUrl) => {
-        this.downloadFile(resourceUrl, `${recording.name}.report.html`, false);
+        this.downloadFile(resourceUrl, `${recording.name}.report.json`, false);
       });
   }
 

@@ -73,7 +73,6 @@ import { RecordingActions } from './RecordingActions';
 import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
-import { ReportFrame } from './ReportFrame';
 
 export enum PanelContent {
   LABELS,
@@ -941,21 +940,10 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           <ExpandableRowContent>
             <Text>Recording Options:</Text>
             <LabelGroup>
-              <Label color='blue'>
-                toDisk: {String(recording.toDisk)}
-              </Label>
-              <Label color='blue'>
-                maxAge: {recording.maxAge / 1000}s
-              </Label>
-              <Label color='blue'>
-                maxSize: {formatBytes(recording.maxSize)}
-              </Label>
+              <Label color="blue">toDisk: {String(recording.toDisk)}</Label>
+              <Label color="blue">maxAge: {recording.maxAge / 1000}s</Label>
+              <Label color="blue">maxSize: {formatBytes(recording.maxSize)}</Label>
             </LabelGroup>
-            <br></br>
-            <hr></hr>
-            <br></br>
-            <Text>Automated Analysis:</Text>
-            <ReportFrame isExpanded={isExpanded} recording={recording} width="100%" height="640" />
           </ExpandableRowContent>
         </Td>
       </Tr>

@@ -16,7 +16,7 @@
 import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { AnalysisResult } from '@app/Shared/Services/Report.service';
 import {
   Dropdown,
   DropdownItem,
@@ -46,7 +46,7 @@ export interface AutomatedAnalysisGlobalFiltersCategories {
 
 export interface AutomatedAnalysisFiltersProps {
   target: string;
-  evaluations: [string, RuleEvaluation[]][];
+  evaluations: [string, AnalysisResult[]][];
   filters: AutomatedAnalysisFiltersCategories;
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
@@ -187,7 +187,7 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
 };
 
 export const filterAutomatedAnalysis = (
-  topicEvalTuple: [string, RuleEvaluation[]][],
+  topicEvalTuple: [string, AnalysisResult[]][],
   filters: AutomatedAnalysisFiltersCategories,
   globalFilters: AutomatedAnalysisGlobalFiltersCategories,
   showNAScores: boolean,
@@ -202,7 +202,7 @@ export const filterAutomatedAnalysis = (
     filtered = filtered.map(([topic, evaluations]) => {
       return [topic, evaluations.filter((evaluation) => filters.Name.includes(evaluation.name))] as [
         string,
-        RuleEvaluation[],
+        AnalysisResult[],
       ];
     });
   }
@@ -216,12 +216,12 @@ export const filterAutomatedAnalysis = (
           }
           return globalFilters.Score <= evaluation.score;
         }),
-      ] as [string, RuleEvaluation[]];
+      ] as [string, AnalysisResult[]];
     });
   }
   if (filters.Topic != null && !!filters.Topic.length) {
     filtered = filtered.map(([topic, evaluations]) => {
-      return [topic, evaluations.filter((_) => filters.Topic.includes(topic))] as [string, RuleEvaluation[]];
+      return [topic, evaluations.filter((_) => filters.Topic.includes(topic))] as [string, AnalysisResult[]];
     });
   }
 

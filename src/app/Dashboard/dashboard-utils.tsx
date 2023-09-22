@@ -31,6 +31,8 @@ import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAn
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
+import { AnalysisResult } from '@app/Shared/Services/Report.service';
+import _ from 'lodash';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
@@ -403,24 +405,21 @@ export interface DashboardCardTypeProps {
   actions?: JSX.Element[];
 }
 
-export const transformAADescription = (description: string): JSX.Element => {
-  const splitDesc = description.split('\n\n');
-  const boldRegex = /^([^:]+:\s?)/; // match text up to and including the first colon
-
+export const transformAADescription = (result: AnalysisResult): JSX.Element => {
   return (
-    <>
-      {splitDesc.map((item, index) => {
-        const boldMatch = item.match(boldRegex);
-        const boldText = boldMatch ? boldMatch[0] : '';
-        const restOfText = boldMatch ? item.replace(boldRegex, '') : item;
-        const style = index > 0 ? { paddingTop: '0.7rem' } : {};
-        return (
-          <p key={index} style={style}>
-            {boldText && <strong>{boldText}</strong>}
-            {restOfText}
-          </p>
-        );
-      })}
-    </>
+    <p>
+      {Object.entries(result.evaluation || {}).map(([k, v]) =>
+        v ? (
+          <div>
+            <div>
+              <strong>{_.capitalize(k)}</strong>: {result.evaluation[k]}
+            </div>
+            <br />
+          </div>
+        ) : (
+          <div></div>
+        ),
+      )}
+    </p>
   );
 };

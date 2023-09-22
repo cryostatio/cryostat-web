@@ -15,33 +15,33 @@
  */
 
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
-import { RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { AnalysisResult } from '@app/Shared/Services/Report.service';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import { renderDefault } from '../../Common';
 
-const mockRuleEvaluation1: RuleEvaluation = {
+const mockRuleEvaluation1: AnalysisResult = {
   name: 'rule1',
   description: 'rule1 description',
   score: 100,
   topic: 'myTopic',
 };
 
-const mockRuleEvaluation2: RuleEvaluation = {
+const mockRuleEvaluation2: AnalysisResult = {
   name: 'rule2',
   description: 'rule2 description',
   score: 55,
   topic: 'fakeTopic',
 };
 
-const mockRuleEvaluation3: RuleEvaluation = {
+const mockRuleEvaluation3: AnalysisResult = {
   name: 'rule3',
   description: 'rule3 description',
   score: 0,
   topic: 'fakeTopic',
 };
 
-const mockNaRuleEvaluation: RuleEvaluation = {
+const mockNaRuleEvaluation: AnalysisResult = {
   name: 'N/A rule',
   description: 'N/A description',
   score: -1,

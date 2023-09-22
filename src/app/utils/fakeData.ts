@@ -35,7 +35,7 @@ import {
   StoredCredential,
 } from '@app/Shared/Services/Api.service';
 import { LoginService } from '@app/Shared/Services/Login.service';
-import { CachedReportValue, ReportService, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { CachedReportValue, ReportService, AnalysisResult } from '@app/Shared/Services/Report.service';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
@@ -84,7 +84,7 @@ export const fakeAARecording: ActiveRecording = {
   maxAge: 0,
 };
 
-export const fakeEvaluations: RuleEvaluation[] = [
+export const fakeEvaluations: AnalysisResult[] = [
   {
     name: 'Passwords in Environment Variables',
     description: 'The environment variables in the recording may contain passwords.',
@@ -133,7 +133,7 @@ class FakeReportService extends ReportService {
     super(login, notifications);
   }
 
-  reportJson(_recording: Recording, _connectUrl: string): Observable<RuleEvaluation[]> {
+  reportJson(_recording: Recording, _connectUrl: string): Observable<AnalysisResult[]> {
     return of(fakeEvaluations);
   }
 
