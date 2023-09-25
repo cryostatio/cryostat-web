@@ -24,31 +24,57 @@ import renderer, { act } from 'react-test-renderer';
 import '../../Common';
 
 const mockRuleEvaluation1: AnalysisResult = {
-  name: 'rule1',
-  description: 'rule1 description',
-  score: 100,
   topic: 'myTopic',
+  name: 'rule1',
+  score: 100,
+  evaluation: {
+    summary: 'first thing happened',
+    explanation: 'first reason',
+    solution: 'first solution',
+    suggestions: [
+      {
+        setting: 'setting1',
+        name: 'name1',
+        value: 'value1',
+      },
+    ],
+  },
 };
 
 const mockRuleEvaluation2: AnalysisResult = {
-  name: 'rule2',
-  description: 'rule2 description',
-  score: 0,
   topic: 'fakeTopic',
+  name: 'rule2',
+  score: 0,
+  evaluation: {
+    summary: 'second thing happened',
+    explanation: 'second reason',
+    solution: 'second solution',
+    suggestions: [],
+  },
 };
 
 const mockRuleEvaluation3: AnalysisResult = {
-  name: 'rule3',
-  description: 'rule3 description',
-  score: 55,
   topic: 'fakeTopic',
+  name: 'rule3',
+  score: 55,
+  evaluation: {
+    summary: 'third thing happened',
+    explanation: 'third reason',
+    solution: 'third solution',
+    suggestions: [],
+  },
 };
 
 const mockNaRuleEvaluation: AnalysisResult = {
-  name: 'N/A rule',
-  description: 'N/A description',
-  score: -1,
   topic: 'fakeTopic',
+  name: 'N/A rule',
+  score: -1,
+  evaluation: {
+    summary: 'fourth thing happened',
+    explanation: 'fourth reason',
+    solution: 'fourth solution',
+    suggestions: [],
+  },
 };
 
 const mockEvaluations1: AnalysisResult[] = [mockRuleEvaluation1];

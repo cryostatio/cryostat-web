@@ -188,11 +188,47 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p
-              style={Object {}}
-            >
-              
-              rule1 description
+            <p>
+              <div>
+                <div>
+                  <strong>
+                    Summary
+                  </strong>
+                  : 
+                  first thing happened
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Explanation
+                  </strong>
+                  : 
+                  first reason
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Solution
+                  </strong>
+                  : 
+                  first solution
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Suggestions
+                  </strong>
+                  : 
+                  setting1 name1=value1
+                </div>
+                <br />
+              </div>
             </p>
           </td>
         </tr>
@@ -256,11 +292,38 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p
-              style={Object {}}
-            >
-              
-              rule3 description
+            <p>
+              <div>
+                <div>
+                  <strong>
+                    Summary
+                  </strong>
+                  : 
+                  third thing happened
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Explanation
+                  </strong>
+                  : 
+                  third reason
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Solution
+                  </strong>
+                  : 
+                  third solution
+                </div>
+                <br />
+              </div>
+              <div />
             </p>
           </td>
         </tr>
@@ -324,11 +387,38 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p
-              style={Object {}}
-            >
-              
-              rule2 description
+            <p>
+              <div>
+                <div>
+                  <strong>
+                    Summary
+                  </strong>
+                  : 
+                  second thing happened
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Explanation
+                  </strong>
+                  : 
+                  second reason
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Solution
+                  </strong>
+                  : 
+                  second solution
+                </div>
+                <br />
+              </div>
+              <div />
             </p>
           </td>
         </tr>
@@ -392,11 +482,38 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p
-              style={Object {}}
-            >
-              
-              N/A description
+            <p>
+              <div>
+                <div>
+                  <strong>
+                    Summary
+                  </strong>
+                  : 
+                  fourth thing happened
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Explanation
+                  </strong>
+                  : 
+                  fourth reason
+                </div>
+                <br />
+              </div>
+              <div>
+                <div>
+                  <strong>
+                    Solution
+                  </strong>
+                  : 
+                  fourth solution
+                </div>
+                <br />
+              </div>
+              <div />
             </p>
           </td>
         </tr>
