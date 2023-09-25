@@ -1049,7 +1049,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         </Td>
       </Tr>
     );
-  }, [index, isExpanded, loadingAnalysis, analyses]);
+  }, [index, isExpanded, handleLoadAnalysis, loadingAnalysis, analyses]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>
