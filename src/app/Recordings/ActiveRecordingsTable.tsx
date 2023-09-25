@@ -1008,7 +1008,13 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
             <Title headingLevel={'h5'}>
-              <Button variant="plain" isDisabled={loadingAnalysis} onClick={handleLoadAnalysis} icon={<RedoIcon />} />
+              <Button
+                variant="plain"
+                isSmall
+                isDisabled={loadingAnalysis}
+                onClick={handleLoadAnalysis}
+                icon={<RedoIcon />}
+              />
               Automated Analysis
             </Title>
             <Grid>
