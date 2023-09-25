@@ -986,8 +986,10 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
                 <Title headingLevel={'h5'}>Recording Options</Title>
                 <LabelGroup>
                   <Label color="blue">toDisk: {String(recording.toDisk)}</Label>
-                  <Label color="blue">maxAge: {recording.maxAge / 1000}s</Label>
-                  <Label color="blue">maxSize: {formatBytes(recording.maxSize)}</Label>
+                  {recording.maxAge ? <Label color="blue">maxAge: {recording.maxAge / 1000}s</Label> : undefined}
+                  {recording.maxSize ? (
+                    <Label color="blue">maxSize: {formatBytes(recording.maxSize)}</Label>
+                  ) : undefined}
                 </LabelGroup>
               </StackItem>
               <StackItem isFilled>
