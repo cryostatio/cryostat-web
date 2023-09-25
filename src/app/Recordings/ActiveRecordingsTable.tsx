@@ -85,6 +85,7 @@ import {
   clickableAutomatedAnalysisKey,
   ClickableAutomatedAnalysisLabel,
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
+import { RedoIcon } from '@patternfly/react-icons';
 
 export enum PanelContent {
   LABELS,
@@ -875,10 +876,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
   const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
-  React.useEffect(() => {
-    if (!isExpanded) {
-      return;
-    }
+  const handleLoadAnalysis = React.useCallback(() => {
     setLoadingAnalysis(true);
     context.reports
       .reportJson(recording, targetConnectUrl)
@@ -898,7 +896,14 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         setAnalyses(sorted);
         setLoadingAnalysis(false);
       });
-  }, [context.reports, isExpanded, recording, targetConnectUrl, setAnalyses, setLoadingAnalysis]);
+  }, [setLoadingAnalysis, context.reports, recording, targetConnectUrl, setAnalyses]);
+
+  React.useEffect(() => {
+    if (!isExpanded) {
+      return;
+    }
+    handleLoadAnalysis();
+  }, [isExpanded, handleLoadAnalysis]);
 
   const parentRow = React.useMemo(() => {
     const RecordingDuration = (props: { duration: number }) => {
@@ -1002,7 +1007,10 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Title headingLevel={'h5'}>Automated Analysis</Title>
+            <Title headingLevel={'h5'}>
+              <Button variant="plain" isDisabled={loadingAnalysis} onClick={handleLoadAnalysis} icon={<RedoIcon />} />
+              Automated Analysis
+            </Title>
             <Grid>
               {loadingAnalysis ? (
                 <Bullseye>
