@@ -892,12 +892,12 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
               ) : (
                 analyses.map(([topic, evaluations]) => {
                   return (
-                    <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
+                    <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
                       <LabelGroup
                         className="automated-analysis-topic-label-groups"
                         categoryName={topic}
                         isVertical
-                        numLabels={3}
+                        numLabels={2}
                         isCompact
                         key={topic}
                       >
