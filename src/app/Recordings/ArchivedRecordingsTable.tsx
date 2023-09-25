@@ -808,7 +808,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         setAnalyses(sorted);
         setLoadingAnalysis(false);
       });
-  }, [isExpanded, recording, currentSelectedTargetURL, setAnalyses, setLoadingAnalysis]);
+  }, [context.reports, isExpanded, recording, currentSelectedTargetURL, setAnalyses, setLoadingAnalysis]);
 
   const parentRow = React.useMemo(() => {
     return (
@@ -916,7 +916,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         </Td>
       </Tr>
     );
-  }, [recording, index, isExpanded, loadingAnalysis, analyses]);
+  }, [index, isExpanded, loadingAnalysis, analyses]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>

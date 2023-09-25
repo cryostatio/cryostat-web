@@ -894,7 +894,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         setAnalyses(sorted);
         setLoadingAnalysis(false);
       });
-  }, [isExpanded, recording, targetConnectUrl, setAnalyses, setLoadingAnalysis]);
+  }, [context.reports, isExpanded, recording, targetConnectUrl, setAnalyses, setLoadingAnalysis]);
 
   const parentRow = React.useMemo(() => {
     const RecordingDuration = (props: { duration: number }) => {
