@@ -31,7 +31,7 @@ import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAn
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
-import { AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AnalysisResult, Suggestion } from '@app/Shared/Services/Report.service';
 import _ from 'lodash';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
@@ -406,18 +406,27 @@ export interface DashboardCardTypeProps {
 }
 
 export const transformAADescription = (result: AnalysisResult): JSX.Element => {
+  const format = (s) => {
+    if (typeof s === 'string') {
+      return s;
+    }
+    if (Array.isArray(s)) {
+      return s.map((e) => `${e?.setting} ${e?.name}=${e?.value}`).join('\n');
+    }
+    throw `Unrecognized item: ${s}`;
+  };
   return (
     <p>
       {Object.entries(result.evaluation || {}).map(([k, v]) =>
-        v ? (
-          <div>
+        v && v.length ? (
+          <div key={k}>
             <div>
-              <strong>{_.capitalize(k)}</strong>: {result.evaluation[k]}
+              <strong>{_.capitalize(k)}</strong>: {format(result.evaluation[k])}
             </div>
             <br />
           </div>
         ) : (
-          <div></div>
+          <div key={k}></div>
         ),
       )}
     </p>
