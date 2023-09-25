@@ -438,7 +438,7 @@ export const transformAADescription = (result: AnalysisResult): JSX.Element => {
   };
   return (
     <div>
-      {Object.entries(result.evaluation).map(([k, v]) =>
+      {Object.entries(result.evaluation || {}).map(([k, v]) =>
         v && v.length ? (
           <div key={k}>
             <span>
