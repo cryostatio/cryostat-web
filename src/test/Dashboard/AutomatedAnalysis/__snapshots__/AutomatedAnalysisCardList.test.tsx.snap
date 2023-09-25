@@ -188,48 +188,114 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
+            <div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-1"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Summary
-                  </strong>
-                  : 
-                  first thing happened
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-1"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    first thing happened
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-2"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Explanation
-                  </strong>
-                  : 
-                  first reason
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-2"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    first reason
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-3"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Solution
-                  </strong>
-                  : 
-                  first solution
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-3"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    first solution
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-4"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Suggestions
-                  </strong>
-                  : 
-                  setting1 name1=value1
-                </div>
+                  </h5>
+                  <div
+                    className="pf-l-stack"
+                  >
+                    <div
+                      className="pf-l-stack__item"
+                    >
+                      <h6
+                        className="pf-c-title pf-m-md"
+                        data-ouia-component-id="OUIA-Generated-Title-5"
+                        data-ouia-component-type="PF4/Title"
+                        data-ouia-safe={true}
+                      >
+                        setting1
+                      </h6>
+                      <span
+                        className="pf-c-label"
+                      >
+                        <span
+                          className="pf-c-label__content"
+                        >
+                          name1
+                          =
+                          value1
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </span>
                 <br />
               </div>
-            </p>
+            </div>
           </td>
         </tr>
         <tr
@@ -292,39 +358,75 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
+            <div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-6"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Summary
-                  </strong>
-                  : 
-                  third thing happened
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-4"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    third thing happened
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-7"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Explanation
-                  </strong>
-                  : 
-                  third reason
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-5"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    third reason
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-8"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Solution
-                  </strong>
-                  : 
-                  third solution
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-6"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    third solution
+                  </p>
+                </span>
                 <br />
               </div>
               <div />
-            </p>
+            </div>
           </td>
         </tr>
         <tr
@@ -387,39 +489,75 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
+            <div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-9"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Summary
-                  </strong>
-                  : 
-                  second thing happened
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-7"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    second thing happened
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-10"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Explanation
-                  </strong>
-                  : 
-                  second reason
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-8"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    second reason
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-11"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Solution
-                  </strong>
-                  : 
-                  second solution
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-9"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    second solution
+                  </p>
+                </span>
                 <br />
               </div>
               <div />
-            </p>
+            </div>
           </td>
         </tr>
         <tr
@@ -482,39 +620,75 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
             data-label="Description"
             onMouseEnter={[Function]}
           >
-            <p>
+            <div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-12"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Summary
-                  </strong>
-                  : 
-                  fourth thing happened
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-10"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    fourth thing happened
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-13"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Explanation
-                  </strong>
-                  : 
-                  fourth reason
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-11"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    fourth reason
+                  </p>
+                </span>
                 <br />
               </div>
               <div>
-                <div>
-                  <strong>
+                <span>
+                  <h5
+                    className="pf-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-14"
+                    data-ouia-component-type="PF4/Title"
+                    data-ouia-safe={true}
+                  >
                     Solution
-                  </strong>
-                  : 
-                  fourth solution
-                </div>
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-12"
+                    data-ouia-component-type="PF4/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    fourth solution
+                  </p>
+                </span>
                 <br />
               </div>
               <div />
-            </p>
+            </div>
           </td>
         </tr>
       </tbody>
