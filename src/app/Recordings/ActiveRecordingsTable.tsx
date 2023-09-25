@@ -118,6 +118,10 @@ const tableColumns: TableColumn[] = [
     sortable: true,
   },
   {
+    title: 'Options',
+    keyPaths: ['options'],
+  },
+  {
     title: 'Labels',
     keyPaths: ['metadata', 'labels'],
   },
@@ -944,6 +948,23 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           {recording.state}
         </Td>
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
+          <LabelGroup isVertical>
+            <Label color="blue" key="toDisk">
+              toDisk: {String(recording.toDisk)}
+            </Label>
+            {recording.maxAge ? (
+              <Label color="blue" key="maxAge">
+                maxAge: {recording.maxAge / 1000}s
+              </Label>
+            ) : undefined}
+            {recording.maxSize ? (
+              <Label color="blue" key="maxSize">
+                maxSize: {formatBytes(recording.maxSize)}
+              </Label>
+            ) : undefined}
+          </LabelGroup>
+        </Td>
+        <Td key={`active-table-row-${index}_7`} dataLabel={tableColumns[5].title}>
           <LabelCell
             target={currentSelectedTargetURL}
             clickableOptions={{
@@ -981,52 +1002,35 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Stack hasGutter={true}>
-              <StackItem>
-                <Title headingLevel={'h5'}>Recording Options</Title>
-                <LabelGroup>
-                  <Label color="blue">toDisk: {String(recording.toDisk)}</Label>
-                  {recording.maxAge ? <Label color="blue">maxAge: {recording.maxAge / 1000}s</Label> : undefined}
-                  {recording.maxSize ? (
-                    <Label color="blue">maxSize: {formatBytes(recording.maxSize)}</Label>
-                  ) : undefined}
-                </LabelGroup>
-              </StackItem>
-              <StackItem isFilled>
-                <Title headingLevel={'h5'}>Automated Analysis</Title>
-                <Grid>
-                  {loadingAnalysis ? (
-                    <Bullseye>
-                      <Spinner />
-                    </Bullseye>
-                  ) : (
-                    analyses.map(([topic, evaluations]) => {
-                      return (
-                        <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
-                          <LabelGroup
-                            className="automated-analysis-topic-label-groups"
-                            categoryName={topic}
-                            isVertical
-                            numLabels={3}
-                            isCompact
-                            key={topic}
-                          >
-                            {evaluations.map((evaluation) => {
-                              return (
-                                <ClickableAutomatedAnalysisLabel
-                                  label={evaluation}
-                                  key={clickableAutomatedAnalysisKey}
-                                />
-                              );
-                            })}
-                          </LabelGroup>
-                        </GridItem>
-                      );
-                    })
-                  )}
-                </Grid>
-              </StackItem>
-            </Stack>
+            <Title headingLevel={'h5'}>Automated Analysis</Title>
+            <Grid>
+              {loadingAnalysis ? (
+                <Bullseye>
+                  <Spinner />
+                </Bullseye>
+              ) : (
+                analyses.map(([topic, evaluations]) => {
+                  return (
+                    <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
+                      <LabelGroup
+                        className="automated-analysis-topic-label-groups"
+                        categoryName={topic}
+                        isVertical
+                        numLabels={3}
+                        isCompact
+                        key={topic}
+                      >
+                        {evaluations.map((evaluation) => {
+                          return (
+                            <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />
+                          );
+                        })}
+                      </LabelGroup>
+                    </GridItem>
+                  );
+                })
+              )}
+            </Grid>
           </ExpandableRowContent>
         </Td>
       </Tr>
