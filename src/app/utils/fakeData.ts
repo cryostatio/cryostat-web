@@ -87,33 +87,88 @@ export const fakeAARecording: ActiveRecording = {
 export const fakeEvaluations: AnalysisResult[] = [
   {
     name: 'Passwords in Environment Variables',
-    description: 'The environment variables in the recording may contain passwords.',
     score: 100,
     topic: 'environment_variables',
+    evaluation: {
+      summary: 'passwords in env vars',
+      explanation: 'this might not be safe',
+      solution: 'remove passwords from env vars or turn off event that captures',
+      suggestions: [
+        {
+          name: 'fix the JVM flag',
+          setting: '-XX:something',
+          value: 'false',
+        },
+      ],
+    },
   },
   {
+    topic: 'classloading',
     name: 'Class Leak',
-    description: 'No classes with identical names have been loaded more times than the limit.',
     score: 0,
-    topic: 'classloading',
+    evaluation: {
+      summary: 'leaked classes',
+      explanation: 'classes were loaded and leaked',
+      solution: 'patch the hole',
+      suggestions: [
+        {
+          name: 'a setting change',
+          setting: 'setting',
+          value: 'value',
+        },
+      ],
+    },
   },
   {
+    topic: 'classloading',
     name: 'Class Loading Pressure',
-    description: 'No significant time was spent loading new classes during this recording.',
     score: 0,
-    topic: 'classloading',
+    evaluation: {
+      summary: 'too much loading pressure',
+      explanation: 'lots of classloading slowing things down',
+      solution: 'do class load lookups later or less dynamically',
+      suggestions: [
+        {
+          name: 'classloader setting',
+          setting: 'class loader setting',
+          value: 'less pressure',
+        },
+      ],
+    },
   },
   {
-    name: 'Discouraged Management Agent Settings',
-    description: 'Insecure management agent settings: SSL disabled.',
-    score: 50,
     topic: 'jvm_information',
+    name: 'Discouraged Management Agent Settings',
+    score: 50,
+    evaluation: {
+      summary: 'bad settings set',
+      explanation: 'these settings can cause problems',
+      solution: 'set other settings',
+      suggestions: [
+        {
+          name: 'management setting change',
+          setting: 'management',
+          value: 'low',
+        },
+      ],
+    },
   },
   {
-    name: 'Thrown Exceptions',
-    description: 'The program generated 31.8 exceptions per second during 1.006 s starting at 1/23/45, 6:78:90 AM.',
-    score: 0.2,
     topic: 'exceptions',
+    name: 'Thrown Exceptions',
+    score: 0.2,
+    evaluation: {
+      summary: 'many exceptions thrown which is slow',
+      explanation: 'exception processing is slower than normal code execution',
+      solution: 'stop throwing so much',
+      suggestions: [
+        {
+          name: 'rewrite code',
+          setting: 'exceptions',
+          value: 'fewer',
+        },
+      ],
+    },
   },
 ];
 

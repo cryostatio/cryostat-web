@@ -21,31 +21,75 @@ import React from 'react';
 import { renderDefault } from '../../../Common';
 
 const mockRuleEvaluation1: AnalysisResult = {
-  name: 'rule1',
-  description: 'rule1 description',
-  score: 100,
   topic: 'myTopic',
+  name: 'rule1',
+  score: 100,
+  evaluation: {
+    summary: 'rule1 summary',
+    explanation: 'rule1 explanation',
+    solution: 'rule1 solution',
+    suggestions: [
+      {
+        name: 'rule1 suggestion 1 name',
+        setting: 'rule1 suggestion 1 setting',
+        value: 'rule1 suggestion 1 value',
+      },
+    ],
+  },
 };
 
 const mockRuleEvaluation2: AnalysisResult = {
-  name: 'rule2',
-  description: 'rule2 description',
-  score: 0,
   topic: 'fakeTopic',
+  name: 'rule2',
+  score: 0,
+  evaluation: {
+    summary: 'rule2 summary',
+    explanation: 'rule2 explanation',
+    solution: 'rule2 solution',
+    suggestions: [
+      {
+        name: 'rule2 suggestion 1 name',
+        setting: 'rule2 suggestion 1 setting',
+        value: 'rule2 suggestion 1 value',
+      },
+    ],
+  },
 };
 
 const mockRuleEvaluation3: AnalysisResult = {
-  name: 'rule3',
-  description: 'rule3 description',
-  score: 55,
   topic: 'fakeTopic',
+  name: 'rule3',
+  score: 55,
+  evaluation: {
+    summary: 'rule3 summary',
+    explanation: 'rule3 explanation',
+    solution: 'rule3 solution',
+    suggestions: [
+      {
+        name: 'rule3 suggestion 1 name',
+        setting: 'rule3 suggestion 1 setting',
+        value: 'rule3 suggestion 1 value',
+      },
+    ],
+  },
 };
 
 const mockNaRuleEvaluation: AnalysisResult = {
-  name: 'N/A rule',
-  description: 'N/A description',
-  score: -1,
   topic: 'fakeTopic',
+  name: 'N/A rule',
+  score: -1,
+  evaluation: {
+    summary: 'NArule summary',
+    explanation: 'NArule explanation',
+    solution: 'NArule solution',
+    suggestions: [
+      {
+        name: 'NArule suggestion 1 name',
+        setting: 'NArule suggestion 1 setting',
+        value: 'NArule suggestion 1 value',
+      },
+    ],
+  },
 };
 
 const mockEvaluations1: AnalysisResult[] = [mockRuleEvaluation1];
