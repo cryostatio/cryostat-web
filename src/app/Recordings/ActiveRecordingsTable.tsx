@@ -855,6 +855,19 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     return expandedRows.includes(expandedRowId);
   }, [expandedRowId, expandedRows]);
 
+  const parsedLabels = React.useMemo(() => {
+    return parseLabels(recording.metadata.labels);
+  }, [recording]);
+
+  const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
+
+  const handleCheck = React.useCallback(
+    (checked: boolean) => {
+      handleRowCheck(checked, index);
+    },
+    [index, handleRowCheck],
+  );
+
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
   const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
@@ -882,19 +895,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         setLoadingAnalysis(false);
       });
   }, [isExpanded, recording, targetConnectUrl, setAnalyses, setLoadingAnalysis]);
-
-  const parsedLabels = React.useMemo(() => {
-    return parseLabels(recording.metadata.labels);
-  }, [recording]);
-
-  const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
-
-  const handleCheck = React.useCallback(
-    (checked: boolean) => {
-      handleRowCheck(checked, index);
-    },
-    [index, handleRowCheck],
-  );
 
   const parentRow = React.useMemo(() => {
     const RecordingDuration = (props: { duration: number }) => {
