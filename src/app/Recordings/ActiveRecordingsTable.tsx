@@ -38,12 +38,15 @@ import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { formatBytes, sortResources, TableColumn } from '@app/utils/utils';
 import {
+  Bullseye,
   Button,
   Checkbox,
   Drawer,
   DrawerContent,
   DrawerContentBody,
   Dropdown,
+  Grid,
+  GridItem,
   KebabToggle,
   Label,
   LabelGroup,
@@ -53,9 +56,13 @@ import {
   OverflowMenuDropdownItem,
   OverflowMenuGroup,
   OverflowMenuItem,
+  Spinner,
+  Stack,
+  StackItem,
   Text,
   Timestamp,
   TimestampTooltipVariant,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -73,6 +80,11 @@ import { RecordingActions } from './RecordingActions';
 import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
+import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
+import {
+  clickableAutomatedAnalysisKey,
+  ClickableAutomatedAnalysisLabel,
+} from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 
 export enum PanelContent {
   LABELS,
@@ -543,6 +555,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           >
             {filteredRecordings.map((r) => (
               <ActiveRecordingRow
+                targetConnectUrl={targetConnectURL}
                 key={r.name}
                 recording={r}
                 labelFilters={targetRecordingFilters.Label}
@@ -806,6 +819,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
 };
 
 export interface ActiveRecordingRowProps {
+  targetConnectUrl: string;
   recording: ActiveRecording;
   index: number;
   currentSelectedTargetURL: string;
@@ -818,6 +832,7 @@ export interface ActiveRecordingRowProps {
 }
 
 export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
+  targetConnectUrl,
   recording,
   index,
   currentSelectedTargetURL,
@@ -831,20 +846,48 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
 
-  const parsedLabels = React.useMemo(() => {
-    return parseLabels(recording.metadata.labels);
-  }, [recording]);
-
   const expandedRowId = React.useMemo(
     () => `active-table-row-${recording.name}-${recording.startTime}-exp`,
     [recording],
   );
 
-  const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
-
   const isExpanded = React.useMemo(() => {
     return expandedRows.includes(expandedRowId);
   }, [expandedRowId, expandedRows]);
+
+  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
+  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
+
+  React.useEffect(() => {
+    if (!isExpanded) {
+      return;
+    }
+    setLoadingAnalysis(true);
+    context.reports
+      .reportJson(recording, targetConnectUrl)
+      .pipe(first())
+      .subscribe((report) => {
+        const map = new Map<string, AnalysisResult[]>();
+        report.forEach((evaluation) => {
+          const topicValue = map.get(evaluation.topic);
+          if (topicValue === undefined) {
+            map.set(evaluation.topic, [evaluation]);
+          } else {
+            topicValue.push(evaluation);
+            topicValue.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+          }
+        });
+        const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
+        setAnalyses(sorted);
+        setLoadingAnalysis(false);
+      });
+  }, [isExpanded, recording, targetConnectUrl, setAnalyses, setLoadingAnalysis]);
+
+  const parsedLabels = React.useMemo(() => {
+    return parseLabels(recording.metadata.labels);
+  }, [recording]);
+
+  const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
 
   const handleCheck = React.useCallback(
     (checked: boolean) => {
@@ -938,17 +981,55 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Text>Recording Options:</Text>
-            <LabelGroup>
-              <Label color="blue">toDisk: {String(recording.toDisk)}</Label>
-              <Label color="blue">maxAge: {recording.maxAge / 1000}s</Label>
-              <Label color="blue">maxSize: {formatBytes(recording.maxSize)}</Label>
-            </LabelGroup>
+            <Stack hasGutter={true}>
+              <StackItem>
+                <Title headingLevel={'h5'}>Recording Options</Title>
+                <LabelGroup>
+                  <Label color="blue">toDisk: {String(recording.toDisk)}</Label>
+                  <Label color="blue">maxAge: {recording.maxAge / 1000}s</Label>
+                  <Label color="blue">maxSize: {formatBytes(recording.maxSize)}</Label>
+                </LabelGroup>
+              </StackItem>
+              <StackItem isFilled>
+                <Title headingLevel={'h5'}>Automated Analysis</Title>
+                <Grid>
+                  {loadingAnalysis ? (
+                    <Bullseye>
+                      <Spinner />
+                    </Bullseye>
+                  ) : (
+                    analyses.map(([topic, evaluations]) => {
+                      return (
+                        <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
+                          <LabelGroup
+                            className="automated-analysis-topic-label-groups"
+                            categoryName={topic}
+                            isVertical
+                            numLabels={3}
+                            isCompact
+                            key={topic}
+                          >
+                            {evaluations.map((evaluation) => {
+                              return (
+                                <ClickableAutomatedAnalysisLabel
+                                  label={evaluation}
+                                  key={clickableAutomatedAnalysisKey}
+                                />
+                              );
+                            })}
+                          </LabelGroup>
+                        </GridItem>
+                      );
+                    })
+                  )}
+                </Grid>
+              </StackItem>
+            </Stack>
           </ExpandableRowContent>
         </Td>
       </Tr>
     );
-  }, [recording, index, isExpanded]);
+  }, [recording, index, isExpanded, loadingAnalysis, analyses]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>
