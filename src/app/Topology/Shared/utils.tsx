@@ -17,11 +17,18 @@
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { NodeType, EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { DEFAULT_EMPTY_UNIVERSE, isTargetNode } from '@app/Shared/Services/api.utils';
-import { Button, Text, TextVariants } from '@patternfly/react-core';
-import { GraphElement, NodeStatus } from '@patternfly/react-topology';
+import { Button, Text, TextVariants ,
+  DescriptionListTermHelpText,
+  DescriptionListTermHelpTextButton,
+  Popover,
+  TextContent,
+  TextList,
+  TextListItem,
+} from '@patternfly/react-core';
+import { NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { WarningResolverAsCredModal, WarningResolverAsLink } from '../Actions/WarningResolver';
-import { ListElement, StatusExtra } from './types';
+import { GraphElement, ListElement, StatusExtra } from './types';
 
 export const TOPOLOGY_GRAPH_ID = 'cryostat-target-topology-graph';
 
@@ -34,6 +41,66 @@ export const nodeTypeToAbbr = (type: NodeType): string => {
   return (type.replace(/[^A-Z]/g, '') || type.toUpperCase()).slice(0, 4);
 };
 
+const JmxAuthDescription: React.FC<{}> = () => {
+  return (
+    <TextContent>
+      <Text component={TextVariants.p}>
+        JVM applications may be configured to require clients (such as Cryostat) to pass an authentication challenge
+        before establishing a connection.
+      </Text>
+      <Text component={TextVariants.p}>
+        Check your JVM application's deployment configuration for system properties such as:
+      </Text>
+      <TextList>
+        <TextListItem>
+          <Text component={TextVariants.pre}>com.sun.management.jmxremote.authenticate</Text>
+        </TextListItem>
+        <TextListItem>
+          <Text component={TextVariants.pre}>com.sun.management.jmxremote.password.file</Text>
+        </TextListItem>
+        <TextListItem>
+          <Text component={TextVariants.pre}>com.sun.management.jmxremote.login.config</Text>
+        </TextListItem>
+      </TextList>
+    </TextContent>
+  );
+};
+
+const JmxSslDescription: React.FC<{}> = () => {
+  return (
+    <TextContent>
+      <Text component={TextVariants.p}>
+        JVM applications may be configured to present an SSL certificate for incoing JMX connections. Clients (such as
+        Cryostat) should be configured to trust these certificates so that the origin and authenticity of the connection
+        data can be verified.
+      </Text>
+      <Text component={TextVariants.p}>
+        Check your JVM application's deployment configuration for system properties such as:
+      </Text>
+      <TextList>
+        <TextListItem>
+          <Text component={TextVariants.pre}>javax.net.ssl.keyStore</Text>
+        </TextListItem>
+        <TextListItem>
+          <Text component={TextVariants.pre}>javax.net.ssl.keyStorePassword</Text>
+        </TextListItem>
+        <TextListItem>
+          <Text component={TextVariants.pre}>com.sun.management.jmxremote.ssl.need.client.auth</Text>
+        </TextListItem>
+        <TextListItem>
+          <Text component={TextVariants.pre}>javax.net.ssl.trustStore</Text>
+        </TextListItem>
+        <TextListItem>
+          <Text component={TextVariants.pre}>javax.net.ssl.trustStorePassword</Text>
+        </TextListItem>
+        <TextListItem>
+          <Text component={TextVariants.pre}>com.sun.management.jmxremote.registry.ssl</Text>
+        </TextListItem>
+      </TextList>
+    </TextContent>
+  );
+};
+
 export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeStatus?, StatusExtra?] => {
   if (isTargetNode(node)) {
     return node.target.jvmId
@@ -44,23 +111,39 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
             title: 'Failed to compute JVM ID',
             description: (
               <>
-                <Text component={TextVariants.p}>
-                  If target has JMX Authentication enabled, add the credential to Cryostat keyring.
-                </Text>
-                <Text component={TextVariants.p}>
-                  If the target has SSL enabled over JMX, add its certificate to Cryostat truststore.
-                </Text>
+                <Text component={TextVariants.p}></Text>
+                <Text component={TextVariants.p}></Text>
               </>
             ),
             callForAction: [
-              <WarningResolverAsCredModal key={`${node.target.alias}-resolver-as-credential-modal`}>
-                <Button variant="link" isSmall style={{ padding: 0 }}>
-                  Add credentials
-                </Button>
-              </WarningResolverAsCredModal>,
-              <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
-                Add certificates
-              </WarningResolverAsLink>,
+              <Text component={TextVariants.p}>
+                If the target has{' '}
+                <DescriptionListTermHelpText>
+                  <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
+                    <DescriptionListTermHelpTextButton>JMX Authentication</DescriptionListTermHelpTextButton>
+                  </Popover>
+                </DescriptionListTermHelpText>{' '}
+                enabled,{' '}
+                <WarningResolverAsCredModal key={`${node.target.alias}-resolver-as-credential-modal`}>
+                  <Button variant="link" isSmall style={{ padding: 0 }}>
+                    add credentials
+                  </Button>
+                  .
+                </WarningResolverAsCredModal>
+              </Text>,
+              <Text component={TextVariants.p}>
+                If the target has{' '}
+                <DescriptionListTermHelpText>
+                  <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
+                    <DescriptionListTermHelpTextButton>JMX over SSL</DescriptionListTermHelpTextButton>
+                  </Popover>
+                </DescriptionListTermHelpText>{' '}
+                enabled,{' '}
+                <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
+                  add its certificate
+                </WarningResolverAsLink>
+                .
+              </Text>,
             ],
           },
         ];
