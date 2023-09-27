@@ -41,7 +41,7 @@ export const nodeTypeToAbbr = (type: NodeType): string => {
   return (type.replace(/[^A-Z]/g, '') || type.toUpperCase()).slice(0, 4);
 };
 
-const JmxAuthDescription: React.FC<{}> = () => {
+export const JmxAuthDescription: React.FC<{}> = () => {
   return (
     <TextContent>
       <Text component={TextVariants.p}>
@@ -66,7 +66,7 @@ const JmxAuthDescription: React.FC<{}> = () => {
   );
 };
 
-const JmxSslDescription: React.FC<{}> = () => {
+export const JmxSslDescription: React.FC<{}> = () => {
   return (
     <TextContent>
       <Text component={TextVariants.p}>

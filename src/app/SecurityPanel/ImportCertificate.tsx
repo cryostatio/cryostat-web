@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Button } from '@patternfly/react-core';
+import { Button, Icon, Text, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
 import { SecurityCard } from './types';
+import { JmxSslDescription } from '@app/Topology/Shared/utils';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
 export const CertificateImport: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
@@ -37,7 +39,18 @@ export const CertificateImport: React.FC = () => {
 };
 
 export const ImportCertificate: SecurityCard = {
-  title: 'Import SSL Certificates',
-  description: 'The Cryostat server must be restarted in order to reload the certificate store.',
+  key: 'ssl',
+  title: (
+    <Text>
+      Import SSL Certificates{' '}
+      <Tooltip isContentLeftAligned maxWidth="40rem" content={<JmxSslDescription />}>
+        <Icon isInline>
+          <OutlinedQuestionCircleIcon />
+        </Icon>
+      </Tooltip>
+    </Text>
+  ),
+  description:
+    'Add SSL certificates to the Cryostat server truststore. The Cryostat server must be restarted in order to reload the certificate store.',
   content: CertificateImport,
 };

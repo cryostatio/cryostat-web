@@ -31,13 +31,15 @@ import {
   DropdownToggleCheckbox,
   EmptyState,
   EmptyStateIcon,
+  Icon,
   Text,
   Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
+  Tooltip,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -45,6 +47,7 @@ import { forkJoin } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
+import { JmxAuthDescription } from '@app/Topology/Shared/utils';
 
 export const includesCredential = (credentials: StoredCredential[], credential: StoredCredential): boolean => {
   return credentials.some((cred) => cred.id === credential.id);
@@ -516,7 +519,17 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
 };
 
 export const StoreCredentialsCard: SecurityCard = {
-  title: 'Store Credentials',
+  key: 'credentials',
+  title: (
+    <Text>
+      Store Credentials{' '}
+      <Tooltip isContentLeftAligned maxWidth="40rem" content={<JmxAuthDescription />}>
+        <Icon isInline>
+          <OutlinedQuestionCircleIcon />
+        </Icon>
+      </Tooltip>
+    </Text>
+  ),
   description: (
     <Text>
       Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored here. These are
