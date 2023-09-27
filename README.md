@@ -1,6 +1,6 @@
 # cryostat-web
 
-![Build Status](https://github.com/cryostatio/cryostat-web/actions/workflows/ci.yaml/badge.svg)
+[![CI](https://github.com/cryostatio/cryostat-web/actions/workflows/ci.yaml/badge.svg)](https://github.com/cryostatio/cryostat-web/actions/workflows/ci.yaml)
 [![Google Group : Cryostat Development](https://img.shields.io/badge/Google%20Group-Cryostat%20Development-blue.svg)](https://groups.google.com/g/cryostat-development)
 
 Web front-end for [Cryostat](https://github.com/cryostatio/cryostat), providing a graphical user interface for managing JFR on remote JVMs.
@@ -17,7 +17,7 @@ JFR using JDK Mission Control internals.
 for an OpenShift Operator facilitating easy setup of Cryostat in your OpenShift
 cluster as well as exposing the Cryostat API as Kubernetes Custom Resources.
 
-* [cryostat](https://github.com/cryostatio/cryostat) for the JFR management service
+* [cryostat](https://github.com/cryostatio/cryostat) for the JFR management service.
 
 ## REQUIREMENTS
 
