@@ -93,8 +93,6 @@ We can also use Jest as a test runner for Selenium tests. This allows us to writ
 To run the integration tests, you will need to have the preview server running. You can start the preview server by running `yarn start:dev:preview`.
 
 You will also need a WebDriver implementation for the specific browser you want to automate. WebDriver allows Selenium to control the browser and perform actions on web elements. Here is list of currently supported drivers:
-- [Geckodriver v0.33.0 (for Firefox)](https://github.com/mozilla/geckodriver/releases/tag/v0.33.0)
-
 * [Geckodriver v0.33.0 (for Firefox)](https://github.com/mozilla/geckodriver/releases/tag/v0.33.0)
 
 <sub>**Note**: Currently only Geckodriver is supported for `cryostat-web` itests. In the future, there should be support for [ChromeDriver (for Chrome)](https://sites.google.com/chromium.org/driver) and [Edge WebDriver (for Microsoft Edge)](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/).</sub>
