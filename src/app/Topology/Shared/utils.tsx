@@ -108,7 +108,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
       : [
           NodeStatus.warning,
           {
-            title: 'Failed to compute JVM ID',
+            title: 'Failed to generate JVM ID',
             description: (
               <>
                 <Text component={TextVariants.p}></Text>
