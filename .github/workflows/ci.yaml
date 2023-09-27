@@ -90,8 +90,9 @@ jobs:
       with:
         firefox-version: latest
     - name: Download geckodriver
-      # id: 97834079 -> "v0.33.0"
-      run: curl -sL $(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/97834079 | grep  "https.*linux64.tar.gz" | head -n 1 | awk '{print $2}' | sed 's|[\"\,]*||g') | tar xzvf -
+      env: 
+        GECKODRIVER_VERSION: v0.33.0
+      run: curl -sL https://github.com/mozilla/geckodriver/releases/download/${{env.GECKODRIVER_VERSION}}/geckodriver-${{env.GECKODRIVER_VERSION}}-linux64.tar.gz | tar xzvf -
     - name: Add to PATH
       run: sudo mv geckodriver /usr/local/bin
     - run: yarn itest:preview
