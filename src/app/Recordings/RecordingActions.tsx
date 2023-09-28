@@ -76,21 +76,12 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
     context.api.downloadRecording(props.recording);
   }, [context.api, props.recording]);
 
-  const handleViewReport = React.useCallback(() => {
-    context.api.downloadReport(props.recording);
-  }, [context.api, props.recording]);
-
   const actionItems = React.useMemo(() => {
     const actionItems = [
       {
         title: 'Download Recording',
         key: 'download-recording',
         onClick: handleDownloadRecording,
-      },
-      {
-        title: 'View Report ...',
-        key: 'view-report',
-        onClick: handleViewReport,
       },
     ] as RowAction[];
     if (grafanaEnabled) {
@@ -101,7 +92,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
       });
     }
     return actionItems;
-  }, [handleDownloadRecording, handleViewReport, grafanaEnabled, grafanaUpload]);
+  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {

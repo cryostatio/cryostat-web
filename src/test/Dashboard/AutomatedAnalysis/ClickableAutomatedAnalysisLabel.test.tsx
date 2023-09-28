@@ -15,37 +15,81 @@
  */
 
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
-import { RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { AnalysisResult } from '@app/Shared/Services/Report.service';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import { renderDefault } from '../../Common';
 
-const mockRuleEvaluation1: RuleEvaluation = {
-  name: 'rule1',
-  description: 'rule1 description',
-  score: 100,
+const mockRuleEvaluation1: AnalysisResult = {
   topic: 'myTopic',
+  name: 'rule1',
+  score: 100,
+  evaluation: {
+    summary: 'rule1 summary',
+    explanation: 'rule1 explanation',
+    solution: 'rule1 solution',
+    suggestions: [
+      {
+        name: 'rule1 suggestion1',
+        setting: 'setting1',
+        value: 'value1',
+      },
+    ],
+  },
 };
 
-const mockRuleEvaluation2: RuleEvaluation = {
+const mockRuleEvaluation2: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'rule2',
-  description: 'rule2 description',
   score: 55,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'rule2 summary',
+    explanation: 'rule2 explanation',
+    solution: 'rule2 solution',
+    suggestions: [
+      {
+        name: 'rule2 suggestion1',
+        setting: 'setting2',
+        value: 'value2',
+      },
+    ],
+  },
 };
 
-const mockRuleEvaluation3: RuleEvaluation = {
+const mockRuleEvaluation3: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'rule3',
-  description: 'rule3 description',
   score: 0,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'rule3 summary',
+    explanation: 'rule3 explanation',
+    solution: 'rule3 solution',
+    suggestions: [
+      {
+        name: 'rule3 suggestion1',
+        setting: 'setting3',
+        value: 'value3',
+      },
+    ],
+  },
 };
 
-const mockNaRuleEvaluation: RuleEvaluation = {
-  name: 'N/A rule',
-  description: 'N/A description',
-  score: -1,
+const mockNaRuleEvaluation: AnalysisResult = {
   topic: 'fakeTopic',
+  name: 'N/A rule',
+  score: -1,
+  evaluation: {
+    summary: 'rule4 summary',
+    explanation: 'rule4 explanation',
+    solution: 'rule4 solution',
+    suggestions: [
+      {
+        name: 'rule4 suggestion1',
+        setting: 'setting4',
+        value: 'value4',
+      },
+    ],
+  },
 };
 
 describe('<ClickableAutomatedAnalysisLabel />', () => {
@@ -73,8 +117,22 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(closeButton).toBeInTheDocument();
 
     expect(document.getElementsByClassName('pf-m-danger').item(0)).toBeInTheDocument();
-    expect(screen.getByText(mockRuleEvaluation1.description)).toBeInTheDocument();
-    expect(screen.getByText(String(mockRuleEvaluation1.score) + '.0')).toBeInTheDocument();
+
+    const summary = screen.getByText(mockRuleEvaluation1.evaluation.summary);
+    const explanation = screen.getByText(mockRuleEvaluation1.evaluation.explanation);
+    const solution = screen.getByText(mockRuleEvaluation1.evaluation.solution);
+    const setting = screen.getByText(mockRuleEvaluation1.evaluation.suggestions[0].setting);
+    const keyval = screen.getByText(
+      `${mockRuleEvaluation1.evaluation.suggestions[0].name}=${mockRuleEvaluation1.evaluation.suggestions[0].value}`,
+    );
+    const score = screen.getByText(String(mockRuleEvaluation1.score) + '.0');
+
+    expect(summary).toBeInTheDocument();
+    expect(explanation).toBeInTheDocument();
+    expect(solution).toBeInTheDocument();
+    expect(setting).toBeInTheDocument();
+    expect(keyval).toBeInTheDocument();
+    expect(score).toBeInTheDocument();
     const heading = screen.getByRole('heading', {
       name: /danger rule1/i,
     });
@@ -82,8 +140,12 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     await user.click(screen.getAllByText(mockRuleEvaluation1.name)[0]);
 
-    expect(screen.queryByText(mockRuleEvaluation1.description)).not.toBeInTheDocument();
-    expect(screen.queryByText(String(mockRuleEvaluation1.score) + '.0')).not.toBeInTheDocument();
+    expect(summary).not.toBeInTheDocument();
+    expect(explanation).not.toBeInTheDocument();
+    expect(solution).not.toBeInTheDocument();
+    expect(setting).not.toBeInTheDocument();
+    expect(keyval).not.toBeInTheDocument();
+    expect(score).not.toBeInTheDocument();
     expect(closeButton).not.toBeInTheDocument();
   });
 
@@ -103,8 +165,22 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(closeButton).toBeInTheDocument();
 
     expect(document.getElementsByClassName('pf-m-warning').item(0)).toBeInTheDocument();
-    expect(screen.getByText(mockRuleEvaluation2.description)).toBeInTheDocument();
-    expect(screen.getByText(String(mockRuleEvaluation2.score) + '.0')).toBeInTheDocument();
+
+    const summary = screen.getByText(mockRuleEvaluation2.evaluation.summary);
+    const explanation = screen.getByText(mockRuleEvaluation2.evaluation.explanation);
+    const solution = screen.getByText(mockRuleEvaluation2.evaluation.solution);
+    const setting = screen.getByText(mockRuleEvaluation2.evaluation.suggestions[0].setting);
+    const keyval = screen.getByText(
+      `${mockRuleEvaluation2.evaluation.suggestions[0].name}=${mockRuleEvaluation2.evaluation.suggestions[0].value}`,
+    );
+    const score = screen.getByText(String(mockRuleEvaluation2.score) + '.0');
+
+    expect(summary).toBeInTheDocument();
+    expect(explanation).toBeInTheDocument();
+    expect(solution).toBeInTheDocument();
+    expect(setting).toBeInTheDocument();
+    expect(keyval).toBeInTheDocument();
+    expect(score).toBeInTheDocument();
     const heading = screen.getByRole('heading', {
       name: /warning rule2/i,
     });
@@ -112,8 +188,13 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     await user.click(screen.getAllByText(mockRuleEvaluation2.name)[0]);
 
-    expect(screen.queryByText(mockRuleEvaluation2.description)).not.toBeInTheDocument();
-    expect(screen.queryByText(String(mockRuleEvaluation2.score) + '.0')).not.toBeInTheDocument();
+    expect(summary).not.toBeInTheDocument();
+    expect(explanation).not.toBeInTheDocument();
+    expect(solution).not.toBeInTheDocument();
+    expect(setting).not.toBeInTheDocument();
+    expect(keyval).not.toBeInTheDocument();
+    expect(score).not.toBeInTheDocument();
+
     expect(closeButton).not.toBeInTheDocument();
   });
 
@@ -132,8 +213,22 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(closeButton).toBeInTheDocument();
 
     expect(document.getElementsByClassName('pf-m-success').item(0)).toBeInTheDocument();
-    expect(screen.getByText(mockRuleEvaluation3.description)).toBeInTheDocument();
-    expect(screen.getByText(String(mockRuleEvaluation3.score) + '.0')).toBeInTheDocument();
+
+    const summary = screen.getByText(mockRuleEvaluation3.evaluation.summary);
+    const explanation = screen.getByText(mockRuleEvaluation3.evaluation.explanation);
+    const solution = screen.getByText(mockRuleEvaluation3.evaluation.solution);
+    const setting = screen.getByText(mockRuleEvaluation3.evaluation.suggestions[0].setting);
+    const keyval = screen.getByText(
+      `${mockRuleEvaluation3.evaluation.suggestions[0].name}=${mockRuleEvaluation3.evaluation.suggestions[0].value}`,
+    );
+    const score = screen.getByText(String(mockRuleEvaluation3.score) + '.0');
+
+    expect(summary).toBeInTheDocument();
+    expect(explanation).toBeInTheDocument();
+    expect(solution).toBeInTheDocument();
+    expect(setting).toBeInTheDocument();
+    expect(keyval).toBeInTheDocument();
+    expect(score).toBeInTheDocument();
     const heading = screen.getByRole('heading', {
       name: /success rule3/i,
     });
@@ -141,8 +236,13 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     await user.click(screen.getAllByText(mockRuleEvaluation3.name)[0]);
 
-    expect(screen.queryByText(mockRuleEvaluation3.description)).not.toBeInTheDocument();
-    expect(screen.queryByText(String(mockRuleEvaluation3.score) + '.0')).not.toBeInTheDocument();
+    expect(summary).not.toBeInTheDocument();
+    expect(explanation).not.toBeInTheDocument();
+    expect(solution).not.toBeInTheDocument();
+    expect(setting).not.toBeInTheDocument();
+    expect(keyval).not.toBeInTheDocument();
+    expect(score).not.toBeInTheDocument();
+
     expect(closeButton).not.toBeInTheDocument();
   });
 
@@ -160,9 +260,21 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(closeButton).toBeInTheDocument();
 
-    expect(document.getElementsByClassName('pf-m-default').item(0)).toBeInTheDocument();
-    expect(screen.getByText(mockNaRuleEvaluation.description)).toBeInTheDocument();
-    expect(screen.getByText('N/A')).toBeInTheDocument();
+    const summary = screen.getByText(mockNaRuleEvaluation.evaluation.summary);
+    const explanation = screen.getByText(mockNaRuleEvaluation.evaluation.explanation);
+    const solution = screen.getByText(mockNaRuleEvaluation.evaluation.solution);
+    const setting = screen.getByText(mockNaRuleEvaluation.evaluation.suggestions[0].setting);
+    const keyval = screen.getByText(
+      `${mockNaRuleEvaluation.evaluation.suggestions[0].name}=${mockNaRuleEvaluation.evaluation.suggestions[0].value}`,
+    );
+    const score = screen.getByText('N/A');
+
+    expect(summary).toBeInTheDocument();
+    expect(explanation).toBeInTheDocument();
+    expect(solution).toBeInTheDocument();
+    expect(setting).toBeInTheDocument();
+    expect(keyval).toBeInTheDocument();
+    expect(score).toBeInTheDocument();
     const heading = screen.getByRole('heading', {
       name: /default /i,
     });
@@ -170,8 +282,13 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     await user.click(screen.getAllByText(mockNaRuleEvaluation.name)[0]);
 
-    expect(screen.queryByText(mockNaRuleEvaluation.description)).not.toBeInTheDocument();
-    expect(screen.queryByText('N/A')).not.toBeInTheDocument();
+    expect(summary).not.toBeInTheDocument();
+    expect(explanation).not.toBeInTheDocument();
+    expect(solution).not.toBeInTheDocument();
+    expect(setting).not.toBeInTheDocument();
+    expect(keyval).not.toBeInTheDocument();
+    expect(score).not.toBeInTheDocument();
+
     expect(closeButton).not.toBeInTheDocument();
   });
 });

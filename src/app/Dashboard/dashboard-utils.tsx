@@ -19,7 +19,17 @@ import cryostatLogoDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import { dashboardConfigDeleteCardIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { withThemedIcon } from '@app/utils/withThemedIcon';
-import { LabelProps, gridSpans, Button, ButtonVariant } from '@patternfly/react-core';
+import {
+  LabelProps,
+  gridSpans,
+  Button,
+  ButtonVariant,
+  Stack,
+  StackItem,
+  Label,
+  Title,
+  Text,
+} from '@patternfly/react-core';
 import { FileIcon, UnknownIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
 import { TFunction } from 'i18next';
@@ -31,6 +41,8 @@ import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAn
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
+import { AnalysisResult, Suggestion } from '@app/Shared/Services/Report.service';
+import _ from 'lodash';
 
 export const DEFAULT_DASHBOARD_NAME = 'Default';
 export const DRAGGABLE_REF_KLAZZ = `draggable-ref`;
@@ -403,24 +415,42 @@ export interface DashboardCardTypeProps {
   actions?: JSX.Element[];
 }
 
-export const transformAADescription = (description: string): JSX.Element => {
-  const splitDesc = description.split('\n\n');
-  const boldRegex = /^([^:]+:\s?)/; // match text up to and including the first colon
-
+export const transformAADescription = (result: AnalysisResult): JSX.Element => {
+  const format = (s): JSX.Element => {
+    if (typeof s === 'string') {
+      return <Text>{s}</Text>;
+    }
+    if (Array.isArray(s)) {
+      return (
+        <Stack>
+          {s.map((e) => (
+            <StackItem key={e.setting}>
+              <Title headingLevel={'h6'}>{e.setting}</Title>
+              <Label>
+                {e.name}={e.value}
+              </Label>
+            </StackItem>
+          ))}
+        </Stack>
+      );
+    }
+    throw `Unrecognized item: ${s}`;
+  };
   return (
-    <>
-      {splitDesc.map((item, index) => {
-        const boldMatch = item.match(boldRegex);
-        const boldText = boldMatch ? boldMatch[0] : '';
-        const restOfText = boldMatch ? item.replace(boldRegex, '') : item;
-        const style = index > 0 ? { paddingTop: '0.7rem' } : {};
-        return (
-          <p key={index} style={style}>
-            {boldText && <strong>{boldText}</strong>}
-            {restOfText}
-          </p>
-        );
-      })}
-    </>
+    <div>
+      {Object.entries(result.evaluation || {}).map(([k, v]) =>
+        v && v.length ? (
+          <div key={k}>
+            <span>
+              <Title headingLevel={'h5'}>{_.capitalize(k)}</Title>
+              {format(result.evaluation[k])}
+            </span>
+            <br />
+          </div>
+        ) : (
+          <div key={k}></div>
+        ),
+      )}
+    </div>
   );
 };

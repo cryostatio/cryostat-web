@@ -15,42 +15,86 @@
  */
 
 import { AutomatedAnalysisTopicFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisTopicFilter';
-import { CategorizedRuleEvaluations, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { CategorizedRuleEvaluations, AnalysisResult } from '@app/Shared/Services/Report.service';
 import { cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import { renderDefault } from '../../../Common';
 
-const mockRuleEvaluation1: RuleEvaluation = {
-  name: 'rule1',
-  description: 'rule1 description',
-  score: 100,
+const mockRuleEvaluation1: AnalysisResult = {
   topic: 'myTopic',
+  name: 'rule1',
+  score: 100,
+  evaluation: {
+    summary: 'rule1 summary',
+    explanation: 'rule1 explanation',
+    solution: 'rule1 solution',
+    suggestions: [
+      {
+        name: 'rule1 suggestion 1 name',
+        setting: 'rule1 suggestion 1 setting',
+        value: 'rule1 suggestion 1 value',
+      },
+    ],
+  },
 };
 
-const mockRuleEvaluation2: RuleEvaluation = {
+const mockRuleEvaluation2: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'rule2',
-  description: 'rule2 description',
   score: 0,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'rule2 summary',
+    explanation: 'rule2 explanation',
+    solution: 'rule2 solution',
+    suggestions: [
+      {
+        name: 'rule2 suggestion 1 name',
+        setting: 'rule2 suggestion 1 setting',
+        value: 'rule2 suggestion 1 value',
+      },
+    ],
+  },
 };
 
-const mockRuleEvaluation3: RuleEvaluation = {
+const mockRuleEvaluation3: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'rule3',
-  description: 'rule3 description',
   score: 55,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'rule3 summary',
+    explanation: 'rule3 explanation',
+    solution: 'rule3 solution',
+    suggestions: [
+      {
+        name: 'rule3 suggestion 1 name',
+        setting: 'rule3 suggestion 1 setting',
+        value: 'rule3 suggestion 1 value',
+      },
+    ],
+  },
 };
 
-const mockNaRuleEvaluation: RuleEvaluation = {
+const mockNaRuleEvaluation: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'N/A rule',
-  description: 'N/A description',
   score: -1,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'NArule summary',
+    explanation: 'NArule explanation',
+    solution: 'NArule solution',
+    suggestions: [
+      {
+        name: 'NArule suggestion 1 name',
+        setting: 'NArule suggestion 1 setting',
+        value: 'NArule suggestion 1 value',
+      },
+    ],
+  },
 };
 
-const mockEvaluations1: RuleEvaluation[] = [mockRuleEvaluation1];
+const mockEvaluations1: AnalysisResult[] = [mockRuleEvaluation1];
 
-const mockEvaluations2: RuleEvaluation[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
+const mockEvaluations2: AnalysisResult[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
 
 const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
   [mockRuleEvaluation1.topic, mockEvaluations1],

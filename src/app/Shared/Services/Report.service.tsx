@@ -15,10 +15,10 @@
  */
 import { Notifications } from '@app/Notifications/Notifications';
 import { Base64 } from 'js-base64';
-import { Observable, from, of, throwError } from 'rxjs';
+import { Observable, from, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
-import { isActiveRecording, RecordingState, Recording } from './Api.service';
+import { isActiveRecording, Recording } from './Api.service';
 import { LoginService } from './Login.service';
 
 export class ReportService {
@@ -27,70 +27,7 @@ export class ReportService {
     private notifications: Notifications,
   ) {}
 
-  report(recording: Recording): Observable<string> {
-    if (!recording.reportUrl) {
-      return throwError(() => new Error('No recording report URL'));
-    }
-    const stored = sessionStorage.getItem(this.key(recording));
-    if (stored) {
-      return of(stored);
-    }
-    return this.login.getHeaders().pipe(
-      concatMap((headers) =>
-        fromFetch(recording.reportUrl, {
-          method: 'GET',
-          mode: 'cors',
-          credentials: 'include',
-          headers,
-        }),
-      ),
-      concatMap((resp) => {
-        if (resp.ok) {
-          return from(resp.text());
-        } else {
-          const ge: GenerationError = {
-            name: `Report Failure (${recording.name})`,
-            message: resp.statusText,
-            messageDetail: from(resp.text()),
-            status: resp.status,
-          };
-          throw ge;
-        }
-      }),
-      tap({
-        next: (report) => {
-          const isArchived = !isActiveRecording(recording);
-          const isActiveStopped = !isArchived && recording.state === RecordingState.STOPPED;
-          if (isArchived || isActiveStopped) {
-            try {
-              sessionStorage.setItem(this.key(recording), report);
-            } catch (err) {
-              if (isQuotaExceededError(err)) {
-                this.notifications.warning('Report Caching Failed', err.message);
-                this.delete(recording);
-              } else {
-                // see https://mmazzarolo.com/blog/2022-06-25-local-storage-status/
-                this.notifications.warning('Report Caching Failed', 'localStorage is not available');
-                this.delete(recording);
-              }
-            }
-          }
-        },
-        error: (err) => {
-          if (isGenerationError(err) && err.status >= 500) {
-            err.messageDetail.pipe(first()).subscribe((detail) => {
-              this.notifications.warning(`Report generation failure: ${detail}`);
-              sessionStorage.setItem(this.key(recording), `<p>${detail}</p>`);
-            });
-          } else {
-            this.notifications.danger(err.name, err.message);
-          }
-        },
-      }),
-    );
-  }
-
-  reportJson(recording: Recording, connectUrl: string): Observable<RuleEvaluation[]> {
+  reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
     if (!recording.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
@@ -110,7 +47,7 @@ export class ReportService {
             resp
               .text()
               .then(JSON.parse)
-              .then((obj) => Object.values(obj) as RuleEvaluation[]),
+              .then((obj) => Object.values(obj) as AnalysisResult[]),
           );
         } else {
           const ge: GenerationError = {
@@ -192,12 +129,12 @@ export class ReportService {
 }
 
 export interface CachedReportValue {
-  report: RuleEvaluation[];
+  report: AnalysisResult[];
   timestamp: number;
 }
 
 // [topic, { ruleName, score, description, ... }}]
-export type CategorizedRuleEvaluations = [string, RuleEvaluation[]];
+export type CategorizedRuleEvaluations = [string, AnalysisResult[]];
 
 export type GenerationError = Error & {
   status: number;
@@ -229,11 +166,24 @@ export const isQuotaExceededError = (err: unknown): err is DOMException => {
   );
 };
 
-export interface RuleEvaluation {
+export interface AnalysisResult {
   name: string;
-  description: string;
-  score: number;
   topic: string;
+  score: number;
+  evaluation: Evaluation;
+}
+
+export interface Evaluation {
+  summary: string;
+  explanation: string;
+  solution: string;
+  suggestions: Suggestion[];
+}
+
+export interface Suggestion {
+  setting: string;
+  name: string;
+  value: string;
 }
 
 export enum AutomatedAnalysisScore {

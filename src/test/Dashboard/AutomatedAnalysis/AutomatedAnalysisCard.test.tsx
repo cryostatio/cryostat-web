@@ -24,7 +24,7 @@ import {
   CachedReportValue,
   FAILED_REPORT_MESSAGE,
   NO_RECORDINGS_MESSAGE,
-  RuleEvaluation,
+  AnalysisResult,
 } from '@app/Shared/Services/Report.service';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
@@ -50,37 +50,81 @@ const mockEmptyCachedReport: CachedReportValue = {
   timestamp: 0,
 };
 
-const mockRuleEvaluation1: RuleEvaluation = {
-  name: 'rule1',
-  description: 'rule1 description',
-  score: 100,
+const mockRuleEvaluation1: AnalysisResult = {
   topic: 'myTopic',
+  name: 'rule1',
+  score: 100,
+  evaluation: {
+    summary: 'rule1 summary',
+    explanation: 'rule1 explanation',
+    solution: 'rule1 solution',
+    suggestions: [
+      {
+        name: 'rule1 suggestion1 name',
+        setting: 'rule1 suggestion1 setting',
+        value: 'rule1 suggestion1 value',
+      },
+    ],
+  },
 };
 
-const mockRuleEvaluation2: RuleEvaluation = {
+const mockRuleEvaluation2: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'rule2',
-  description: 'rule2 description',
   score: 0,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'rule2 summary',
+    explanation: 'rule2 explanation',
+    solution: 'rule2 solution',
+    suggestions: [
+      {
+        name: 'rule2 suggestion1 name',
+        setting: 'rule2 suggestion1 setting',
+        value: 'rule2 suggestion1 value',
+      },
+    ],
+  },
 };
 
-const mockRuleEvaluation3: RuleEvaluation = {
+const mockRuleEvaluation3: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'rule3',
-  description: 'rule3 description',
   score: 55,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'rule3 summary',
+    explanation: 'rule3 explanation',
+    solution: 'rule3 solution',
+    suggestions: [
+      {
+        name: 'rule3 suggestion1 name',
+        setting: 'rule3 suggestion1 setting',
+        value: 'rule3 suggestion1 value',
+      },
+    ],
+  },
 };
 
-const mockNaRuleEvaluation: RuleEvaluation = {
+const mockNaRuleEvaluation: AnalysisResult = {
+  topic: 'fakeTopic',
   name: 'N/A rule',
-  description: 'N/A description',
   score: -1,
-  topic: 'fakeTopic',
+  evaluation: {
+    summary: 'NArule summary',
+    explanation: 'NArule explanation',
+    solution: 'NArule solution',
+    suggestions: [
+      {
+        name: 'NArule suggestion1 name',
+        setting: 'NArule suggestion1 setting',
+        value: 'NArule suggestion1 value',
+      },
+    ],
+  },
 };
 
-const mockEvaluations: RuleEvaluation[] = [mockRuleEvaluation1];
+const mockEvaluations: AnalysisResult[] = [mockRuleEvaluation1];
 
-const mockFilteredEvaluations: RuleEvaluation[] = [
+const mockFilteredEvaluations: AnalysisResult[] = [
   mockRuleEvaluation1,
   mockRuleEvaluation2,
   mockRuleEvaluation3,

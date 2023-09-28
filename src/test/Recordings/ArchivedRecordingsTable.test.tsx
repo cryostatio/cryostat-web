@@ -392,25 +392,6 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(downloadRequestSpy).toBeCalledWith(mockRecording);
   });
 
-  it('displays the automated analysis report when View Report is clicked', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      },
-    );
-
-    await tlr.act(async () => {
-      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
-    });
-    await user.click(screen.getByText('View Report ...'));
-
-    const reportRequestSpy = jest.spyOn(defaultServices.api, 'downloadReport');
-
-    expect(reportRequestSpy).toHaveBeenCalledTimes(1);
-  });
-
   it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
     const { user } = renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,

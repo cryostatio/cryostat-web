@@ -124,24 +124,24 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
             </Tr>
           </Thead>
           <Tbody>
-            {flatFiltered.map((evaluation) => {
+            {flatFiltered.map((result) => {
               return (
-                <Tr key={evaluation.name}>
+                <Tr key={result.name}>
                   <Td dataLabel={t('NAME', { ns: 'common' })} width={10}>
-                    {evaluation.name}
+                    {result.name}
                   </Td>
                   <Td dataLabel={t('SCORE', { ns: 'common' })} modifier="wrap">
                     <Flex spaceItems={{ default: 'spaceItemsSm' }}>
                       <FlexItem>
-                        {evaluation.score == AutomatedAnalysisScore.NA_SCORE
+                        {result.score == AutomatedAnalysisScore.NA_SCORE
                           ? t('N/A', { ns: 'common' })
-                          : evaluation.score.toFixed(1)}
+                          : result.score.toFixed(1)}
                       </FlexItem>
-                      <FlexItem>{icon(evaluation.score)}</FlexItem>
+                      <FlexItem>{icon(result.score)}</FlexItem>
                     </Flex>
                   </Td>
                   <Td modifier="breakWord" dataLabel={t('DESCRIPTION', { ns: 'common' })}>
-                    {transformAADescription(evaluation.description)}
+                    {transformAADescription(result)}
                   </Td>
                 </Tr>
               );
