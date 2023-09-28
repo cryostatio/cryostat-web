@@ -86,15 +86,16 @@ Where the `-u` flag tells Jest to update the snapshot and the `-t` flag specifie
 
 ## INTEGRATION TESTING
 
+### Overview
+
 We can also use Jest as a test runner for Selenium tests. This allows us to write integration tests that simulate user actions and interactions with the Cryostat Web UI.
 
 To run the integration tests, you will need to have the preview server running. You can start the preview server by running `yarn start:dev:preview`.
 
-You will also need a WebDriver implementation for the specific browser you want to automate. WebDriver allows Selenium to control the browser and perform actions on web elements. Here are the correct download links for Geckodriver, ChromeDriver, and EdgeDriver:
+You will also need a WebDriver implementation for the specific browser you want to automate. WebDriver allows Selenium to control the browser and perform actions on web elements. Here is list of currently supported drivers:
+* [Geckodriver v0.33.0 (for Firefox)](https://github.com/mozilla/geckodriver/releases/tag/v0.33.0)
 
-* [Geckodriver (for Firefox)](https://github.com/mozilla/geckodriver/releases)
-* [ChromeDriver (for Chrome)](https://sites.google.com/chromium.org/driver)
-* [Edge WebDriver (for Microsoft Edge)](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/)
+<sub>**Note**: Currently only Geckodriver is supported for `cryostat-web` itests. In the future, there should be support for [ChromeDriver (for Chrome)](https://sites.google.com/chromium.org/driver) and [Edge WebDriver (for Microsoft Edge)](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/).</sub>
 
 Then, finally we can run `yarn itest` to run the integration tests, which will open up a fresh browser window and run the tests.
 
@@ -103,3 +104,35 @@ Alternatively, you can start the integration tests immediately without the need 
 $ yarn itest:preview
 ```
 This will automatically start a Mirage dev server, run the integration tests on that server, and tear down the server on completion.
+
+### Tips
+* Running the integration tests will open a Firefox browser and simulate any actions that you instruct the browser to perform. That means we must first navigate to the local Cryostat Web page, before performing any useful testing.
+* In our `beforeAll` jest declaration, we setup our web driver with the [default configurations](src/itest/util.ts)), and then use that driver to create our first **Page Object**. A Page Object is an abstraction that acts as an interface to your web pages. For more info on the **Page Object Model** in Selenium, see https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models/.
+```ts
+ beforeAll(async function () {
+    driver = await setupDriver();
+    cryostat = Cryostat.getInstance(driver);
+    dashboard = await cryostat.navigateToDashboard();
+
+    await cryostat.skipTour();
+    await cryostat.selectFakeTarget();
+  });
+```
+In the previous example, we created the Cryostat top level Page Object (PO) by calling `Cryostat.getInstance(driver)` and using the driver we created before. We then call the function `navigateToDashboard` to allow the Cryostat PO to tell the web browser to navigate to the `Dashboard` page, and obtain a `Dashboard` Page Object. Then, we can call more functions on our `Dashboard` object in order to simulate more browser actions.
+
+Add more methods to each PO, to test more actions. The point is, we want to abstract each browser action, so that even if something changes within our code, (e.g. a class tag is renamed, or a button is placed in a different component), all we need is to change the underlying implementation of each function to keep tests consistent.
+
+* Retrieving DOM objects on our webpages to interact with is the tricky part. Sometimes, it's annoying to have to find the "right" query for the object we want to select. For example, take our code for skipping the Cryostat tour:
+
+```ts
+  async skipTour() {
+    const skipButton = await this.driver
+      .wait(until.elementLocated(By.css('button[data-action="skip"]')))
+      .catch(() => null);
+    if (skipButton) await skipButton.click();
+  }
+```
+In the code, we first tell the driver to wait, until an element is located by the css selector ('button[data-action="skip"]'), and assign it to a variable. If not found, we assign null. Then if the variable is non-null, we click it. To find a good query to use, it is recommended to use the [Selenium IDE](https://addons.mozilla.org/en-CA/firefox/addon/selenium-ide/) extension on your browser. The extension allows you to easily see queries that can be used to select an element you want. 
+* Integration tests are found in [src/itest](src/itest).
+* All code is asynchronous which entails the use of the `async/await` pattern.
+* Follow the Selenium testing practices when writing integration tests: https://www.selenium.dev/documentation/test_practices/.
