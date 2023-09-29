@@ -15,8 +15,8 @@
  */
 
 import {
-  clickableAutomatedAnalysisKey,
   ClickableAutomatedAnalysisLabel,
+  clickableAutomatedAnalysisKey,
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { authFailMessage } from '@app/ErrorView/types';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
@@ -33,8 +33,14 @@ import {
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, NotificationCategory, RecordingState, Target } from '@app/Shared/Services/api.types';
-import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
+import {
+  ActiveRecording,
+  AnalysisResult,
+  CategorizedRuleEvaluations,
+  NotificationCategory,
+  RecordingState,
+  Target,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
@@ -555,8 +561,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           >
             {filteredRecordings.map((r) => (
               <ActiveRecordingRow
-                targetConnectUrl={targetConnectURL}
                 key={r.name}
+                targetConnectUrl={targetConnectURL}
                 recording={r}
                 labelFilters={targetRecordingFilters.Label}
                 index={r.id}
@@ -845,6 +851,8 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
 }) => {
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
+  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
+  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   const expandedRowId = React.useMemo(
     () => `active-table-row-${recording.name}-${recording.startTime}-exp`,
@@ -867,9 +875,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     },
     [index, handleRowCheck],
   );
-
-  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
-  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   const handleLoadAnalysis = React.useCallback(() => {
     setLoadingAnalysis(true);
@@ -1031,7 +1036,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
                       >
                         {evaluations.map((evaluation) => {
                           return (
-                            <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />
+                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
                           );
                         })}
                       </LabelGroup>

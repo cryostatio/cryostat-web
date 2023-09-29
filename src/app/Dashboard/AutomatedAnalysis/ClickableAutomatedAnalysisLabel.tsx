@@ -25,12 +25,12 @@ import { useTranslation } from 'react-i18next';
 import { transformAADescription } from './utils';
 
 export interface ClickableAutomatedAnalysisLabelProps {
-  label: AnalysisResult;
+  result: AnalysisResult;
 }
 
 export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label';
 
-export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ label: result }) => {
+export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ result }) => {
   const { t } = useTranslation();
 
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
@@ -83,7 +83,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
 
   return (
     <Popover
-      aria-label={t('ClickableAutomatedAnalysisLabel.ARIA_LABELS.POPOVER')}
+      aria-label={t('ClickableAutomatedAnalysisresult.ARIA_LABELS.POPOVER')}
       isVisible={isDescriptionVisible}
       headerContent={<div className={`${clickableAutomatedAnalysisKey}-popover-header`}>{result.name}</div>}
       alertSeverityVariant={alertPopoverVariant}

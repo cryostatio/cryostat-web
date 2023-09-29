@@ -16,8 +16,8 @@
 
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import {
-  clickableAutomatedAnalysisKey,
   ClickableAutomatedAnalysisLabel,
+  clickableAutomatedAnalysisKey,
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
@@ -41,8 +41,9 @@ import {
   UPLOADS_SUBDIRECTORY,
   NotificationCategory,
   NullableTarget,
+  CategorizedRuleEvaluations,
+  AnalysisResult,
 } from '@app/Shared/Services/api.types';
-import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -768,6 +769,8 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   updateFilters,
 }) => {
   const context = React.useContext(ServiceContext);
+  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
+  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   const parsedLabels = React.useMemo(() => {
     return parseLabels(recording.metadata.labels);
@@ -789,9 +792,6 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     },
     [index, handleRowCheck],
   );
-
-  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
-  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   React.useEffect(() => {
     if (!isExpanded) {
@@ -911,7 +911,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
                       >
                         {evaluations.map((evaluation) => {
                           return (
-                            <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />
+                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
                           );
                         })}
                       </LabelGroup>
@@ -924,7 +924,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         </Td>
       </Tr>
     );
-  }, [index, isExpanded, loadingAnalysis, analyses]);
+  }, [index, isExpanded, analyses, loadingAnalysis]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>

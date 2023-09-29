@@ -17,10 +17,10 @@ import { AutomatedAnalysisCard } from '@app/Dashboard/AutomatedAnalysis/Automate
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   CachedReportValue,
+  AnalysisResult,
   ArchivedRecording,
   FAILED_REPORT_MESSAGE,
   NO_RECORDINGS_MESSAGE,
-  AnalysisResult,
   automatedAnalysisRecordingName,
 } from '@app/Shared/Services/api.types';
 import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
@@ -49,9 +49,9 @@ const mockEmptyCachedReport: CachedReportValue = {
 };
 
 const mockRuleEvaluation1: AnalysisResult = {
-  topic: 'myTopic',
   name: 'rule1',
   score: 100,
+  topic: 'myTopic',
   evaluation: {
     summary: 'rule1 summary',
     explanation: 'rule1 explanation',
@@ -67,9 +67,9 @@ const mockRuleEvaluation1: AnalysisResult = {
 };
 
 const mockRuleEvaluation2: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule2',
   score: 0,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'rule2 summary',
     explanation: 'rule2 explanation',
@@ -85,9 +85,9 @@ const mockRuleEvaluation2: AnalysisResult = {
 };
 
 const mockRuleEvaluation3: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule3',
   score: 55,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'rule3 summary',
     explanation: 'rule3 explanation',
@@ -103,9 +103,9 @@ const mockRuleEvaluation3: AnalysisResult = {
 };
 
 const mockNaRuleEvaluation: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'N/A rule',
   score: -1,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'NArule summary',
     explanation: 'NArule explanation',

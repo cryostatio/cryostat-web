@@ -33,8 +33,8 @@ import {
   NullableTarget,
   EventType,
   CachedReportValue,
-  SimpleResponse,
   AnalysisResult,
+  SimpleResponse,
 } from '@app/Shared/Services/api.types';
 import { LoginService } from '@app/Shared/Services/Login.service';
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
@@ -107,9 +107,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'classloading',
     name: 'Class Leak',
     score: 0,
+    topic: 'classloading',
     evaluation: {
       summary: 'leaked classes',
       explanation: 'classes were loaded and leaked',
@@ -124,9 +124,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'classloading',
     name: 'Class Loading Pressure',
     score: 0,
+    topic: 'classloading',
     evaluation: {
       summary: 'too much loading pressure',
       explanation: 'lots of classloading slowing things down',
@@ -141,9 +141,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'jvm_information',
     name: 'Discouraged Management Agent Settings',
     score: 50,
+    topic: 'jvm_information',
     evaluation: {
       summary: 'bad settings set',
       explanation: 'these settings can cause problems',
@@ -158,9 +158,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'exceptions',
     name: 'Thrown Exceptions',
     score: 0.2,
+    topic: 'exceptions',
     evaluation: {
       summary: 'many exceptions thrown which is slow',
       explanation: 'exception processing is slower than normal code execution',

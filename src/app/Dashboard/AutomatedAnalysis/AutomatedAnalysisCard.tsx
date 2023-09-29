@@ -624,7 +624,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                 key={topic}
               >
                 {evaluations.map((evaluation) => {
-                  return <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />;
+                  return <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />;
                 })}
               </LabelGroup>
             </GridItem>

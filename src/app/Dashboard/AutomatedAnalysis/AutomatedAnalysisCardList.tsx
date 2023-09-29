@@ -43,7 +43,7 @@ export interface AutomatedAnalysisCardListProps {
   evaluations: CategorizedRuleEvaluations[];
 }
 
-export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps> = (props) => {
+export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps> = ({ evaluations }) => {
   const { t } = useTranslation();
 
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
@@ -80,7 +80,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
   );
 
   const flatFiltered = React.useMemo(() => {
-    return props.evaluations
+    return evaluations
       .flatMap(([_, evaluations]) => {
         return evaluations.map((evaluation) => evaluation);
       })
@@ -108,7 +108,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
         }
         return 0;
       });
-  }, [sortBy, props.evaluations]);
+  }, [sortBy, evaluations]);
 
   return (
     <OuterScrollContainer className="automated-analysis-datalist-outerscroll">
