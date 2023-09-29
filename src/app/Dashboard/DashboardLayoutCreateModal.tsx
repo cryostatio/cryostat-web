@@ -36,15 +36,11 @@ import {
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { DEFAULT_DASHBOARD_NAME } from './const';
 import { BlankLayout } from './cryostat-dashboard-templates';
-import {
-  DashboardLayoutNamePattern,
-  DEFAULT_DASHBOARD_NAME,
-  layoutize,
-  LayoutTemplateContext,
-  SelectedLayoutTemplate,
-} from './dashboard-utils';
 import { LayoutTemplatePicker } from './LayoutTemplatePicker';
+import { SelectedLayoutTemplate } from './types';
+import { DashboardLayoutNamePattern, layoutize, LayoutTemplateContext } from './utils';
 
 export interface DashboardLayoutCreateModalProps {
   oldName?: string;

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { ProbeTemplate } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { LoadingProps } from '@app/Shared/Components/types';
+import { ProbeTemplate, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   ActionGroup,
@@ -81,18 +80,18 @@ export interface AgentProbeTemplatesProps {
   agentDetected: boolean;
 }
 
-export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) => {
+export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentDetected }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [templates, setTemplates] = React.useState([] as ProbeTemplate[]);
-  const [filteredTemplates, setFilteredTemplates] = React.useState([] as ProbeTemplate[]);
+  const [templates, setTemplates] = React.useState<ProbeTemplate[]>([]);
+  const [filteredTemplates, setFilteredTemplates] = React.useState<ProbeTemplate[]>([]);
   const [filterText, setFilterText] = React.useState('');
   const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
-  const [sortBy, setSortBy] = React.useState({} as ISortBy);
+  const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const [templateToDelete, setTemplateToDelete] = React.useState(undefined as ProbeTemplate | undefined);
+  const [templateToDelete, setTemplateToDelete] = React.useState<ProbeTemplate | undefined>(undefined);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
   const getSortParams = React.useCallback(
@@ -110,7 +109,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
   );
 
   const handleTemplates = React.useCallback(
-    (templates) => {
+    (templates: ProbeTemplate[]) => {
       setTemplates(templates);
       setIsLoading(false);
       setErrorMessage('');
@@ -267,13 +266,13 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) =
               <AgentTemplateAction
                 template={t}
                 onDelete={handleDeleteAction}
-                onInsert={props.agentDetected ? handleInsertAction : undefined}
+                onInsert={agentDetected ? handleInsertAction : undefined}
               />
             </Td>
           </Tr>
         );
       }),
-    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction],
+    [filteredTemplates, agentDetected, handleInsertAction, handleDeleteAction],
   );
 
   if (errorMessage != '') {
@@ -357,7 +356,7 @@ export interface AgentProbeTemplateUploadModalProps {
   onClose: () => void;
 }
 
-export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadModalProps> = ({ onClose, ...props }) => {
+export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadModalProps> = ({ onClose, isOpen }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -439,14 +438,14 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-probe-template',
         isLoading: uploading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [uploading],
   );
 
   return (
     <Modal
       appendTo={portalRoot}
-      isOpen={props.isOpen}
+      isOpen={isOpen}
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
@@ -496,7 +495,7 @@ export interface AgentTemplateActionProps {
   onDelete: (template: ProbeTemplate) => void;
 }
 
-export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDelete, ...props }) => {
+export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDelete, template }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const actionItems = React.useMemo(() => {
@@ -504,16 +503,16 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
       {
         key: 'insert-template',
         title: 'Insert Probes...',
-        onClick: () => onInsert && onInsert(props.template),
+        onClick: () => onInsert && onInsert(template),
         isDisabled: !onInsert,
       },
       {
         key: 'delete-template',
         title: 'Delete',
-        onClick: () => onDelete(props.template),
+        onClick: () => onDelete(template),
       },
     ];
-  }, [onInsert, onDelete, props.template]);
+  }, [onInsert, onDelete, template]);
 
   return (
     <Dropdown

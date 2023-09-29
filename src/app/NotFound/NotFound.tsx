@@ -15,9 +15,9 @@
  */
 import '@app/app.css';
 import { IAppRoute, routes, flatten } from '@app/routes';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   Button,
   EmptyState,

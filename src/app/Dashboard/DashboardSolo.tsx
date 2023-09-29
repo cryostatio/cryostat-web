@@ -20,11 +20,12 @@ import { MonitoringIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation, withRouter } from 'react-router-dom';
-import { CardConfig, getCardDescriptorByName } from './dashboard-utils';
+import { CardConfig } from './types';
+import { getCardDescriptorByName } from './utils';
 
 export interface DashboardSoloProps {}
 
-const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
+const DashboardSolo: React.FC<DashboardSoloProps> = () => {
   const { search } = useLocation();
   const history = useHistory();
 
@@ -65,7 +66,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
         </Bullseye>
       );
     } else {
-      const { id, name, span, props } = cardConfig;
+      const { name, span, props } = cardConfig;
       return (
         // Use default chart controller
         <TargetView pageTitle={cardConfig.id} breadcrumbs={[{ path: '/', title: 'Dashboard' }]}>
@@ -76,7 +77,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
               isDraggable: false,
               isResizable: false,
               isFullHeight: true,
-              dashboardId: id,
+              dashboardId: 0,
             })}
           </div>
           <></>

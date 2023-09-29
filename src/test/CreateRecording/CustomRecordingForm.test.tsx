@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
-import { authFailMessage } from '@app/ErrorView/ErrorView';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { EventTemplate, RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
+import { authFailMessage } from '@app/ErrorView/types';
+import { EventTemplate, AdvancedRecordingOptions, RecordingAttributes } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
+import { Router } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { renderWithServiceContextAndRouter } from '../Common';
 
 jest.mock('@patternfly/react-core', () => ({
   // Mock out tooltip for snapshot testing
@@ -42,8 +43,7 @@ const mockCustomEventTemplate: EventTemplate = {
   type: 'CUSTOM',
 };
 
-const mockRecordingOptions: RecordingOptions = {
-  toDisk: true,
+const mockRecordingOptions: AdvancedRecordingOptions = {
   maxAge: undefined,
   maxSize: 0,
 };
@@ -87,7 +87,9 @@ describe('<CustomRecordingForm />', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
-            <CustomRecordingForm />
+            <Router history={history}>
+              <CustomRecordingForm />
+            </Router>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>,
       );
@@ -97,7 +99,7 @@ describe('<CustomRecordingForm />', () => {
 
   it('should create recording when form is filled and create is clicked', async () => {
     const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of(mockResponse));
-    const { user } = renderWithServiceContext(<CustomRecordingForm />);
+    const { user } = renderWithServiceContextAndRouter(<CustomRecordingForm />);
 
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
@@ -123,18 +125,18 @@ describe('<CustomRecordingForm />', () => {
       events: 'template=someEventTemplate,type=CUSTOM',
       duration: 30,
       archiveOnStop: true,
-      options: {
-        restart: false,
-        toDisk: true,
+      restart: false,
+      advancedOptions: {
         maxAge: undefined,
         maxSize: 0,
+        toDisk: true,
       },
       metadata: { labels: {} },
     } as RecordingAttributes);
   });
 
   it('should show correct helper texts in metadata label editor', async () => {
-    const { user } = renderWithServiceContext(<CustomRecordingForm />);
+    const { user } = renderWithServiceContextAndRouter(<CustomRecordingForm />);
 
     const metadataEditorToggle = screen.getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();
@@ -157,7 +159,7 @@ describe('<CustomRecordingForm />', () => {
       ...defaultServices,
       target: mockTargetSvc,
     };
-    renderWithServiceContext(<CustomRecordingForm />, { services: services });
+    renderWithServiceContextAndRouter(<CustomRecordingForm />, { services: services });
 
     await doAct(async () => subj.next());
 

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover, Text } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
@@ -26,20 +26,22 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
+import { LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT } from './const';
+import { smallestFeatureLevel } from './LayoutTemplateGroup';
 import {
-  DashboardLayoutNamePattern,
-  LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
   LayoutTemplate,
-  LayoutTemplateContext,
-  LayoutTemplateDescriptionPattern,
-  LayoutTemplateVendor,
-  LayoutTemplateVersion,
   SerialLayoutTemplate,
   mockSerialCardConfig,
+  LayoutTemplateVersion,
+  LayoutTemplateVendor,
+} from './types';
+import {
+  DashboardLayoutNamePattern,
+  LayoutTemplateContext,
+  LayoutTemplateDescriptionPattern,
   mockSerialLayoutTemplate,
   getDashboardCards,
-} from './dashboard-utils';
-import { smallestFeatureLevel } from './LayoutTemplateGroup';
+} from './utils';
 
 export interface LayoutTemplateUploadModalProps {
   visible: boolean;
@@ -222,7 +224,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
         spinnerAriaValueText: t('SUBMITTING', { ns: 'common' }),
         spinnerAriaLabel: 'submitting-layout-templates',
         isLoading: uploading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [t, uploading],
   );
 

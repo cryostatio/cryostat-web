@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { RecordingLabel } from '@app/RecordingMetadata/types';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
@@ -139,7 +139,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-uploaded-recording',
         isLoading: uploading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [uploading],
   );
 

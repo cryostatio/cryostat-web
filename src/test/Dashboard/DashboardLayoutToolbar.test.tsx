@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 import { DashboardLayoutToolbar } from '@app/Dashboard/DashboardLayoutToolbar';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { store } from '@app/Shared/Redux/ReduxStore';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
-import '../Common';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsContext } from '@app/Notifications/Notifications';
 import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { NotificationCategory } from '@app/Shared/Services/api.types';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextArea, TextInput } from '@patternfly/react-core';
@@ -23,12 +23,8 @@ import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  DashboardLayoutNamePattern,
-  LayoutTemplateDescriptionPattern,
-  LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT,
-  templatize,
-} from './dashboard-utils';
+import { LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT } from './const';
+import { DashboardLayoutNamePattern, LayoutTemplateDescriptionPattern, templatize } from './utils';
 
 export interface DashboardLayoutSetAsTemplateModalProps {
   visible: boolean;

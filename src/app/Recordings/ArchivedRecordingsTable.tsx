@@ -15,10 +15,14 @@
  */
 
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
+import {
+  ClickableAutomatedAnalysisLabel,
+  clickableAutomatedAnalysisKey,
+} from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { parseLabels } from '@app/RecordingMetadata/utils';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyArchivedRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
@@ -30,12 +34,19 @@ import {
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
-import { ArchivedRecording, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import {
+  ArchivedRecording,
+  Target,
+  RecordingDirectory,
+  UPLOADS_SUBDIRECTORY,
+  NotificationCategory,
+  NullableTarget,
+  CategorizedRuleEvaluations,
+  AnalysisResult,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
@@ -73,11 +84,6 @@ import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
-import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
-import {
-  clickableAutomatedAnalysisKey,
-  ClickableAutomatedAnalysisLabel,
-} from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 
 const tableColumns: TableColumn[] = [
   {
@@ -100,7 +106,7 @@ const tableColumns: TableColumn[] = [
 ];
 
 export interface ArchivedRecordingsTableProps {
-  target: Observable<Target>;
+  target: Observable<NullableTarget>;
   isUploadsTable: boolean;
   isNestedTable: boolean;
   directory?: RecordingDirectory;
@@ -242,9 +248,9 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       addSubscription(
         propsTarget
           .pipe(
-            filter((target) => target !== NO_TARGET),
+            filter((target) => !!target),
             first(),
-            concatMap((target) => queryTargetRecordings(target.connectUrl)),
+            concatMap((target: Target) => queryTargetRecordings(target.connectUrl)),
             map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
           )
           .subscribe({
@@ -288,8 +294,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   React.useEffect(() => {
     addSubscription(
       propsTarget.subscribe((target) => {
-        setTargetConnectURL(target.connectUrl);
-        dispatch(recordingAddTargetIntent(target.connectUrl));
+        setTargetConnectURL(target?.connectUrl || '');
+        dispatch(recordingAddTargetIntent(target?.connectUrl || ''));
         refreshRecordingList();
       }),
     );
@@ -304,7 +310,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
         ),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) =>
@@ -320,7 +326,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
@@ -335,7 +341,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) =>
@@ -408,6 +414,9 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     } else {
       addSubscription(
         propsTarget.subscribe((t) => {
+          if (!t) {
+            return;
+          }
           filteredRecordings.forEach((r: ArchivedRecording) => {
             if (checkedIndices.includes(hashCode(r.name))) {
               context.reports.delete(r);
@@ -518,7 +527,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       <DrawerContent panelContent={LabelsPanel} className="recordings-table-drawer-content">
         <DrawerContentBody hasPadding>
           <RecordingsTable
-            tableTitle="Archived Flight Recordings"
+            tableTitle="Archived Recordings"
             toolbar={RecordingsToolbar}
             tableColumns={columnConfig}
             tableFooter={
@@ -617,13 +626,13 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
     );
   }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
 
-  const actionLoadingProps = React.useMemo<Record<ArchiveActions, LoadingPropsType>>(
+  const actionLoadingProps = React.useMemo<Record<ArchiveActions, LoadingProps>>(
     () => ({
       DELETE: {
         spinnerAriaValueText: 'Deleting',
         spinnerAriaLabel: 'deleting-archived-recording',
         isLoading: props.actionLoadings['DELETE'],
-      } as LoadingPropsType,
+      } as LoadingProps,
     }),
     [props],
   );
@@ -737,7 +746,7 @@ export interface ArchivedRecordingRowProps {
   index: number;
   propsDirectory?: RecordingDirectory;
   currentSelectedTargetURL: string;
-  sourceTarget: Observable<Target>;
+  sourceTarget: Observable<NullableTarget>;
   expandedRows: string[];
   checkedIndices: number[];
   labelFilters: string[];
@@ -760,6 +769,8 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   updateFilters,
 }) => {
   const context = React.useContext(ServiceContext);
+  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
+  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   const parsedLabels = React.useMemo(() => {
     return parseLabels(recording.metadata.labels);
@@ -781,9 +792,6 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     },
     [index, handleRowCheck],
   );
-
-  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
-  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   React.useEffect(() => {
     if (!isExpanded) {
@@ -903,7 +911,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
                       >
                         {evaluations.map((evaluation) => {
                           return (
-                            <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />
+                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
                           );
                         })}
                       </LabelGroup>
@@ -916,7 +924,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         </Td>
       </Tr>
     );
-  }, [index, isExpanded, loadingAnalysis, analyses]);
+  }, [index, isExpanded, analyses, loadingAnalysis]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>

@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { authFailMessage } from '@app/ErrorView/ErrorView';
+import { authFailMessage } from '@app/ErrorView/types';
 import { EventTemplates } from '@app/Events/EventTemplates';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { EventTemplate } from '@app/Shared/Services/Api.service';
-import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { MessageType, EventTemplate, MessageMeta, NotificationMessage } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';

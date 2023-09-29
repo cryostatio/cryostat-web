@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 import { AuthModal } from '@app/AppLayout/AuthModal';
-import { EventTemplate } from '@app/CreateRecording/CreateRecording';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorForm';
-import {
-  AutomatedAnalysisRecordingConfig,
-  automatedAnalysisRecordingName,
-  isHttpError,
-  TemplateType,
-} from '@app/Shared/Services/Api.service';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
+import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
+import { Target, EventTemplate, automatedAnalysisRecordingName, NullableTarget } from '@app/Shared/Services/api.types';
+import { isHttpError } from '@app/Shared/Services/api.utils';
+import type { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/Shared/TargetSelect';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { TargetSelect } from '@app/TargetView/TargetSelect';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   Button,
   Card,
@@ -61,18 +57,11 @@ import { CloseIcon, PencilAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { first, iif, of, ReplaySubject, take } from 'rxjs';
+import { AutomatedAnalysisConfigFormData } from './types';
 
-interface AutomatedAnalysisConfigFormProps {
+export interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
   inlineForm?: boolean;
-}
-
-interface FormConfig {
-  maxAge: number;
-  maxAgeUnits: number;
-  maxSize: number;
-  maxSizeUnits: number;
-  template: Pick<Partial<EventTemplate>, 'name' | 'type'>;
 }
 
 export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
@@ -83,17 +72,17 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const addSubscription = useSubscriptions();
   const { t } = useTranslation();
 
-  const targetSubjectRef = React.useRef(new ReplaySubject<Target>(1));
+  const targetSubjectRef = React.useRef(new ReplaySubject<NullableTarget>(1));
   const targetSubject = targetSubjectRef.current;
 
   const [recordingConfig, setRecordingConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
     context.settings.automatedAnalysisRecordingConfig(),
   );
-  const [formConfig, setFormConfig] = React.useState<FormConfig>({
+  const [formData, setFormConfig] = React.useState<AutomatedAnalysisConfigFormData>({
     maxAge: context.settings.automatedAnalysisRecordingConfig().maxAge,
-    maxAgeUnits: 1,
+    maxAgeUnit: 1,
     maxSize: context.settings.automatedAnalysisRecordingConfig().maxSize,
-    maxSizeUnits: 1,
+    maxSizeUnit: 1,
     template: context.settings.automatedAnalysisRecordingConfig().template,
   });
 
@@ -102,18 +91,17 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const [isLoading, setIsLoading] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+
   const refreshTemplates = React.useCallback(
-    (target: Target) => {
+    (target?: Target) => {
       setIsLoading(true);
       addSubscription(
         iif(
-          () => {
-            return target === NO_TARGET;
-          },
+          () => !target,
           of([]),
           context.api
             .doGet<EventTemplate[]>(
-              `targets/${encodeURIComponent(target.connectUrl)}/templates`,
+              `targets/${encodeURIComponent(target?.connectUrl || '')}/templates`,
               'v1',
               undefined,
               undefined,
@@ -126,10 +114,10 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             setTemplates(templates);
             setFormConfig((old) => {
               const oldTemplate = old.template;
-              const matched = templates.find((t) => t.name === oldTemplate.name && t.type === t.type);
+              const matched = templates.find((t) => t.name === oldTemplate?.name && t.type === oldTemplate?.type);
               return {
                 ...old,
-                template: matched ? { name: matched.name, type: matched.type } : {},
+                template: matched ? { name: matched.name, type: matched.type } : undefined,
               };
             });
             setIsLoading(false);
@@ -218,14 +206,11 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   );
 
   const handleTemplateChange = React.useCallback(
-    (templateName?: string, templateType?: TemplateType) => {
+    (template) => {
       setFormConfig((old) => {
         return {
           ...old,
-          template: {
-            name: templateName,
-            type: templateType,
-          },
+          template,
         };
       });
     },
@@ -233,26 +218,26 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   );
 
   const handleSubmit = React.useCallback(() => {
-    const { template, maxSize, maxSizeUnits, maxAge, maxAgeUnits } = formConfig;
+    const { template, maxSize, maxSizeUnit, maxAge, maxAgeUnit } = formData;
     setAAConfig({
       template: template as Pick<EventTemplate, 'name' | 'type'>,
-      maxSize: maxSize * maxSizeUnits,
-      maxAge: maxAge * maxAgeUnits,
+      maxSize: maxSize * maxSizeUnit,
+      maxAge: maxAge * maxAgeUnit,
     });
     setEditing(false);
-  }, [setAAConfig, setEditing, formConfig]);
+  }, [setAAConfig, setEditing, formData]);
 
   const authRetry = React.useCallback(() => {
     setIsAuthModalOpen(true);
   }, [setIsAuthModalOpen]);
 
   const selectedSpecifier = React.useMemo(() => {
-    const { name, type } = formConfig.template;
-    if (name && type) {
-      return `${name},${type}`;
+    const { template } = formData;
+    if (template && template.name && template.type) {
+      return `${template.name},${template.type}`;
     }
     return '';
-  }, [formConfig.template]);
+  }, [formData]);
 
   const targetSelect = React.useMemo(() => {
     return editing && <TargetSelect simple onSelect={(target) => targetSubject.next(target)} />;
@@ -271,7 +256,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 <>
                   <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
                     <HelperTextItem>{t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}</HelperTextItem>
-                    {formConfig.template.type == 'TARGET' && errorMessage === '' && (
+                    {formData.template?.type == 'TARGET' && errorMessage === '' && (
                       <HelperTextItem variant="warning">
                         <Text component={TextVariants.p}>
                           {t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}
@@ -308,7 +293,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               <Split hasGutter={true}>
                 <SplitItem isFilled>
                   <TextInput
-                    value={formConfig.maxSize}
+                    value={formData.maxSize}
                     isRequired
                     type="number"
                     id="maxSize"
@@ -319,7 +304,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 </SplitItem>
                 <SplitItem>
                   <FormSelect
-                    value={formConfig.maxSizeUnits}
+                    value={formData.maxSizeUnit}
                     onChange={handleMaxSizeUnitChange}
                     aria-label={t('AriaLabels.MAXIMUM_SIZE_UNITS_INPUT', { ns: 'common' })}
                   >
@@ -340,7 +325,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               <Split hasGutter={true}>
                 <SplitItem isFilled>
                   <TextInput
-                    value={formConfig.maxAge}
+                    value={formData.maxAge}
                     isRequired
                     type="number"
                     id="maxAgeDuration"
@@ -351,7 +336,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 </SplitItem>
                 <SplitItem>
                   <FormSelect
-                    value={formConfig.maxAgeUnits}
+                    value={formData.maxAgeUnit}
                     onChange={handleMaxAgeUnitChange}
                     aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT', { ns: 'common' })}
                   >
@@ -389,7 +374,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     isLoading,
     editing,
     recordingConfig,
-    formConfig,
+    formData,
     templates,
     selectedSpecifier,
     handleTemplateChange,
@@ -407,8 +392,8 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       template: recordingConfig.template,
       maxSize: recordingConfig.maxSize,
       maxAge: recordingConfig.maxAge,
-      maxSizeUnits: 1,
-      maxAgeUnits: 1,
+      maxSizeUnit: 1,
+      maxAgeUnit: 1,
     });
   }, [setEditing, setFormConfig, recordingConfig]);
 
@@ -445,7 +430,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 <Button
                   onClick={handleSubmit}
                   variant={'primary'}
-                  isDisabled={!formConfig.template.name || !formConfig.template.type}
+                  isDisabled={!formData.template?.name || !formData.template?.type}
                 >
                   {t('AutomatedAnalysisConfigForm.SAVE_CHANGES')}
                 </Button>
@@ -469,7 +454,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         {authModal}
       </>
     ),
-    [t, handleSubmit, toggleEdit, formConfig.template, targetSelect, configData, editing, authModal],
+    [t, handleSubmit, toggleEdit, formData.template, targetSelect, configData, editing, authModal],
   );
 
   const formSection = React.useMemo(

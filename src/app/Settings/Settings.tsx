@@ -15,9 +15,9 @@
  */
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { useLogin } from '@app/utils/useLogin';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { useLogin } from '@app/utils/hooks/useLogin';
 import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils';
 import {
   Card,
@@ -38,47 +38,19 @@ import {
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
-import { AutoRefresh } from './AutoRefresh';
-import { ChartCardsConfig } from './ChartCardsConfig';
-import { CredentialsStorage } from './CredentialsStorage';
-import { DatetimeControl } from './DatetimeControl';
-import { DeletionDialogControl } from './DeletionDialogControl';
-import { FeatureLevels } from './FeatureLevels';
-import { Language } from './Language';
-import { NotificationControl } from './NotificationControl';
-import { paramAsTab, SettingTab, tabAsParam, _TransformedUserSetting } from './SettingsUtils';
-import { Theme } from './Theme';
-import { WebSocketDebounce } from './WebSocketDebounce';
-
-export const allSettings = [
-  NotificationControl,
-  AutomatedAnalysisConfig,
-  ChartCardsConfig,
-  CredentialsStorage,
-  DeletionDialogControl,
-  WebSocketDebounce,
-  AutoRefresh,
-  FeatureLevels,
-  Language,
-  DatetimeControl,
-  Theme,
-];
-
-interface SettingGroup {
-  groupLabel: SettingTab;
-  groupKey: string;
-  featureLevel: FeatureLevel;
-  disabled?: boolean;
-  settings: _TransformedUserSetting[];
-}
-
-const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLevel => {
-  if (!settings.length) {
-    return FeatureLevel.DEVELOPMENT;
-  }
-  return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
-};
+import { AutomatedAnalysis } from './Config/AutomatedAnalysis';
+import { AutoRefresh } from './Config/AutoRefresh';
+import { ChartCards } from './Config/ChartCards';
+import { CredentialsStorage } from './Config/CredentialsStorage';
+import { DatetimeControl } from './Config/DatetimeControl';
+import { DeletionDialogControl } from './Config/DeletionDialogControl';
+import { FeatureLevels } from './Config/FeatureLevels';
+import { Language } from './Config/Language';
+import { NotificationControl } from './Config/NotificationControl';
+import { Theme } from './Config/Theme';
+import { WebSocketDebounce } from './Config/WebSocketDebounce';
+import { SettingGroup, SettingTab, _TransformedUserSetting } from './types';
+import { paramAsTab, tabAsParam, getGroupFeatureLevel } from './utils';
 
 export interface SettingsProps {}
 
@@ -88,7 +60,19 @@ export const Settings: React.FC<SettingsProps> = (_) => {
 
   const settings = React.useMemo(
     () =>
-      allSettings
+      [
+        NotificationControl,
+        AutomatedAnalysis,
+        ChartCards,
+        CredentialsStorage,
+        DeletionDialogControl,
+        WebSocketDebounce,
+        AutoRefresh,
+        FeatureLevels,
+        Language,
+        DatetimeControl,
+        Theme,
+      ]
         .filter((s) => !s.authenticated || loggedIn)
         .map(
           (c) =>
@@ -139,7 +123,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         groupLabel: t(cat),
         groupKey: cat,
         settings: panels,
-        featureLevel: _getGroupFeatureLevel(panels),
+        featureLevel: getGroupFeatureLevel(panels),
       };
     }) as SettingGroup[];
   }, [settings, t]);

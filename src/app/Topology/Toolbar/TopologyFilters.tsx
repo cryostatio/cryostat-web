@@ -24,6 +24,8 @@ import {
   topologyUpdateCategoryIntent,
   topologyUpdateCategoryTypeIntent,
 } from '@app/Shared/Redux/ReduxStore';
+import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
+import { flattenTree, getUniqueNodeTypes, isTargetNode } from '@app/Shared/Services/api.utils';
 import { getDisplayFieldName } from '@app/utils/utils';
 import {
   Divider,
@@ -42,8 +44,7 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DiscoveryTreeContext, flattenTree, getUniqueNodeTypes } from '../Shared/utils';
-import { EnvironmentNode, isTargetNode, TargetNode } from '../typings';
+import { DiscoveryTreeContext } from '../Shared/utils';
 
 export interface TopologyFiltersProps {
   breakpoint?: 'md' | 'lg' | 'xl' | '2xl';

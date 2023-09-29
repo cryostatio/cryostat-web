@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { ApiService, MBeanMetrics } from '@app/Shared/Services/Api.service';
+import { ApiService } from '@app/Shared/Services/Api.service';
+import { MBeanMetrics, Target } from '@app/Shared/Services/api.types';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
-import { Target, TargetService } from '@app/Shared/Services/Target.service';
+import { TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
+  catchError,
   concatMap,
   distinctUntilChanged,
   finalize,
@@ -26,6 +28,7 @@ import {
   map,
   merge,
   Observable,
+  of,
   pairwise,
   ReplaySubject,
   Subject,
@@ -121,12 +124,16 @@ export class MBeanMetricsChartController {
       .pipe(
         tap((_) => this._loading$.next(true)),
         concatMap((t) => this._queryMetrics(t)),
+        catchError((_) => of({})),
         tap((_) => this._loading$.next(false)),
       )
       .subscribe((v) => this._state$.next(v));
   }
 
-  private _queryMetrics(target: Target): Observable<MBeanMetrics> {
+  private _queryMetrics(target?: Target): Observable<MBeanMetrics> {
+    if (!target) {
+      return of({});
+    }
     const q: string[] = [];
     const m = new Map<string, Set<string>>();
     this._metrics.forEach((fields, category) => {

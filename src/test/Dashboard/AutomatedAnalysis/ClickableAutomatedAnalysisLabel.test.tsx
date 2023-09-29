@@ -15,15 +15,15 @@
  */
 
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
-import { AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AnalysisResult } from '@app/Shared/Services/api.types';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import { renderDefault } from '../../Common';
 
 const mockRuleEvaluation1: AnalysisResult = {
-  topic: 'myTopic',
   name: 'rule1',
   score: 100,
+  topic: 'myTopic',
   evaluation: {
     summary: 'rule1 summary',
     explanation: 'rule1 explanation',
@@ -39,9 +39,9 @@ const mockRuleEvaluation1: AnalysisResult = {
 };
 
 const mockRuleEvaluation2: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule2',
   score: 55,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'rule2 summary',
     explanation: 'rule2 explanation',
@@ -57,9 +57,9 @@ const mockRuleEvaluation2: AnalysisResult = {
 };
 
 const mockRuleEvaluation3: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule3',
   score: 0,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'rule3 summary',
     explanation: 'rule3 explanation',
@@ -75,9 +75,9 @@ const mockRuleEvaluation3: AnalysisResult = {
 };
 
 const mockNaRuleEvaluation: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'N/A rule',
   score: -1,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'rule4 summary',
     explanation: 'rule4 explanation',
@@ -96,13 +96,13 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
   afterEach(cleanup);
 
   it('displays label', async () => {
-    renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation1} />);
+    renderDefault(<ClickableAutomatedAnalysisLabel result={mockRuleEvaluation1} />);
 
     expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
   });
 
   it('displays popover when critical label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation1} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel result={mockRuleEvaluation1} />);
 
     expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
 
@@ -133,9 +133,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(setting).toBeInTheDocument();
     expect(keyval).toBeInTheDocument();
     expect(score).toBeInTheDocument();
+
     const heading = screen.getByRole('heading', {
       name: /danger rule1/i,
     });
+
     expect(within(heading).getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
 
     await user.click(screen.getAllByText(mockRuleEvaluation1.name)[0]);
@@ -150,7 +152,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
   });
 
   it('displays popover when warning label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation2} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel result={mockRuleEvaluation2} />);
 
     expect(screen.getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
 
@@ -181,9 +183,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(setting).toBeInTheDocument();
     expect(keyval).toBeInTheDocument();
     expect(score).toBeInTheDocument();
+
     const heading = screen.getByRole('heading', {
       name: /warning rule2/i,
     });
+
     expect(within(heading).getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
 
     await user.click(screen.getAllByText(mockRuleEvaluation2.name)[0]);
@@ -194,12 +198,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(setting).not.toBeInTheDocument();
     expect(keyval).not.toBeInTheDocument();
     expect(score).not.toBeInTheDocument();
-
     expect(closeButton).not.toBeInTheDocument();
   });
 
   it('displays popover when ok label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation3} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel result={mockRuleEvaluation3} />);
 
     expect(screen.getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
 
@@ -229,9 +232,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(setting).toBeInTheDocument();
     expect(keyval).toBeInTheDocument();
     expect(score).toBeInTheDocument();
+
     const heading = screen.getByRole('heading', {
       name: /success rule3/i,
     });
+
     expect(within(heading).getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
 
     await user.click(screen.getAllByText(mockRuleEvaluation3.name)[0]);
@@ -242,12 +247,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(setting).not.toBeInTheDocument();
     expect(keyval).not.toBeInTheDocument();
     expect(score).not.toBeInTheDocument();
-
     expect(closeButton).not.toBeInTheDocument();
   });
 
   it('displays popover when N/A label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockNaRuleEvaluation} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel result={mockNaRuleEvaluation} />);
 
     expect(screen.getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
 
@@ -260,6 +264,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(closeButton).toBeInTheDocument();
 
+    expect(document.getElementsByClassName('pf-m-default').item(0)).toBeInTheDocument();
     const summary = screen.getByText(mockNaRuleEvaluation.evaluation.summary);
     const explanation = screen.getByText(mockNaRuleEvaluation.evaluation.explanation);
     const solution = screen.getByText(mockNaRuleEvaluation.evaluation.solution);
@@ -275,9 +280,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(setting).toBeInTheDocument();
     expect(keyval).toBeInTheDocument();
     expect(score).toBeInTheDocument();
+
     const heading = screen.getByRole('heading', {
       name: /default /i,
     });
+
     expect(within(heading).getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
 
     await user.click(screen.getAllByText(mockNaRuleEvaluation.name)[0]);
@@ -288,7 +295,6 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(setting).not.toBeInTheDocument();
     expect(keyval).not.toBeInTheDocument();
     expect(score).not.toBeInTheDocument();
-
     expect(closeButton).not.toBeInTheDocument();
   });
 });

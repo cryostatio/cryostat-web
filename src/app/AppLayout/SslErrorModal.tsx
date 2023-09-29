@@ -23,21 +23,21 @@ export interface SslErrorModalProps {
   onDismiss: () => void;
 }
 
-export const SslErrorModal: React.FC<SslErrorModalProps> = (props) => {
+export const SslErrorModal: React.FC<SslErrorModalProps> = ({ visible, onDismiss }) => {
   const routerHistory = useHistory();
 
   const handleClick = () => {
     routerHistory.push('/security');
-    props.onDismiss();
+    onDismiss();
   };
 
   return (
     <Modal
       appendTo={portalRoot}
-      isOpen={props.visible}
+      isOpen={visible}
       variant={ModalVariant.medium}
       showClose={true}
-      onClose={props.onDismiss}
+      onClose={onDismiss}
       title="SSL Error"
       description="The connection failed because the SSL Certificate for the target is not trusted."
     >

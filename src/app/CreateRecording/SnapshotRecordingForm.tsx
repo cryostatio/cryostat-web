@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { authFailMessage, ErrorView, isAuthFail, missingSSLMessage } from '@app/ErrorView/ErrorView';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -52,7 +53,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
         spinnerAriaValueText: 'Creating',
         spinnerAriaLabel: 'create-snapshot-recording',
         isLoading: loading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [loading],
   );
 

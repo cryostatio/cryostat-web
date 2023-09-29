@@ -17,7 +17,7 @@ import { EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/r
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
-export const ConnectionError = () => (
+export const ConnectionError: React.FC = () => (
   <EmptyState>
     <EmptyStateIcon variant="container" component={ExclamationCircleIcon} />
     <Title size="lg" headingLevel="h4">

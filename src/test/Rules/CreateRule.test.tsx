@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventTemplate } from '@app/CreateRecording/CreateRecording';
+
 import { CreateRule } from '@app/Rules/CreateRule';
-import { Rule } from '@app/Rules/Rules';
+import { Target, EventTemplate, Rule } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
@@ -25,7 +24,7 @@ import * as React from 'react';
 import { of, throwError } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
 
-jest.mock('@app/Shared/MatchExpression/MatchExpressionVisualizer', () => ({
+jest.mock('@app/Shared/Components/MatchExpression/MatchExpressionVisualizer', () => ({
   MatchExpressionVisualizer: () => <>Match Expression Visualizer</>,
 }));
 
@@ -38,7 +37,7 @@ const mockTarget: Target = {
   connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
   annotations: {
-    cryostat: { PORT: 9091 },
+    cryostat: { PORT: '9091' },
     platform: {},
   },
 };

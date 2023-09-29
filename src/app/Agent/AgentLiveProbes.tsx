@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { EventProbe } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { LoadingProps } from '@app/Shared/Components/types';
+import { EventProbe, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { sortResources, TableColumn } from '@app/utils/utils';
 import {
   Button,
@@ -89,10 +89,10 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [probes, setProbes] = React.useState([] as EventProbe[]);
-  const [filteredProbes, setFilteredProbes] = React.useState([] as EventProbe[]);
+  const [probes, setProbes] = React.useState<EventProbe[]>([]);
+  const [filteredProbes, setFilteredProbes] = React.useState<EventProbe[]>([]);
   const [filterText, setFilterText] = React.useState('');
-  const [sortBy, setSortBy] = React.useState({} as ISortBy);
+  const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
@@ -210,7 +210,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied),
       ]).subscribe(([currentTarget, e]) => {
-        if (currentTarget.connectUrl != e.message.targetId) {
+        if (currentTarget?.connectUrl != e.message.targetId) {
           return;
         }
         setProbes((old) => {
@@ -283,13 +283,13 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
     [filteredProbes],
   );
 
-  const actionLoadingProps = React.useMemo<Record<LiveProbeActions, LoadingPropsType>>(
+  const actionLoadingProps = React.useMemo<Record<LiveProbeActions, LoadingProps>>(
     () => ({
       REMOVE: {
         spinnerAriaValueText: 'Removing',
         spinnerAriaLabel: 'removing-all-probes',
         isLoading: actionLoadings['REMOVE'],
-      } as LoadingPropsType,
+      } as LoadingProps,
     }),
     [actionLoadings],
   );

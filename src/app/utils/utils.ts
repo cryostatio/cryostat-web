@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
@@ -28,25 +28,26 @@ const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
 const DAY_MILLIS = 24 * HOUR_MILLIS;
 
-// [     0,    1,    2,    3     ] array
-//       0     1     2     3       indexes
-// {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function move(arr: any[], from: number, gapIndex: number) {
+/**
+ *
+ * [     0,    1,    2,    3     ] array
+ *       0     1     2     3       indexes
+ * {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
+ */
+export const move = <T>(arr: T[], from: number, gapIndex: number): T[] => {
   if (gapIndex > from) {
     gapIndex--;
   }
   arr.splice(gapIndex, 0, arr.splice(from, 1)[0]);
   return arr;
-}
+};
 
-export function swap(arr: any[], from: number, to: number) {
+export const swap = <T>(arr: T[], from: number, to: number): T[] => {
   arr[from] = arr.splice(to, 1, arr[from])[0];
   return arr;
-}
-/* eslint-enable @typescript-eslint/no-explicit-any */
+};
 
-export const openTabForUrl = (url: string) => {
+export const openTabForUrl = (url: string): void => {
   const anchor = document.createElement('a') as HTMLAnchorElement;
   anchor.setAttribute('href', url);
   anchor.setAttribute('target', '_blank');
@@ -63,14 +64,14 @@ export const createBlobURL = (content: string, contentType: string, timeout = 10
   return url;
 };
 
-export function accessibleRouteChangeHandler() {
+export const accessibleRouteChangeHandler = () => {
   return window.setTimeout(() => {
     const mainContainer = document.getElementById('primary-app-container');
     if (mainContainer) {
       mainContainer.focus();
     }
   }, 50);
-}
+};
 
 export const hashCode = (str: string): number => {
   let hash = 0;
@@ -101,7 +102,7 @@ export interface AutomatedAnalysisTimerObject {
 }
 
 export const calculateAnalysisTimer = (reportTime: number): AutomatedAnalysisTimerObject => {
-  let interval, timerQuantity, timerUnits;
+  let interval: number, timerQuantity: number, timerUnits: string;
   const now = Date.now();
   const reportMillis = now - reportTime;
   if (reportMillis < MINUTE_MILLIS) {
@@ -139,7 +140,7 @@ export const splitWordsOnUppercase = (str: string, capitalizeFirst?: boolean): s
 
 const needUppercase = /(url|id|jvm)/i;
 
-export const getDisplayFieldName = (fieldName: string) => {
+export const getDisplayFieldName = (fieldName: string): string => {
   return splitWordsOnUppercase(fieldName)
     .map((word) => {
       if (needUppercase.test(word)) {
@@ -195,8 +196,7 @@ const getTransform = (tableColumns: TableColumn[], index?: number) => {
   return tableColumns[index]?.transform;
 };
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const getValue = (object: any, keyPath: string[]) => {
+export const getValue = <R>(object: R, keyPath: string[]) => {
   return keyPath.reduce((acc, key) => acc[key], object);
 };
 
@@ -219,7 +219,6 @@ export const sortResources = <R>({ index, direction }: ISortBy, resources: R[], 
   return direction === SortByDirection.asc ? sorted : sorted.reverse();
 };
 
-/* eslint-enable @typescript-eslint/no-explicit-any */
 export interface TabConfig {
   tabKey: string;
   tabValue: string;
@@ -285,3 +284,6 @@ export const jvmIdToSubdirectoryName = (jvmId: string): string => {
   }
   return utf8ToBase32(jvmId);
 };
+
+export const includesSubstr = (a: string, b: string): boolean =>
+  !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());

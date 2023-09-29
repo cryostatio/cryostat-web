@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { store } from '@app/Shared/Redux/ReduxStore';
-import { CategorizedRuleEvaluations, AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
-import '../../Common';
 
 const mockRuleEvaluation1: AnalysisResult = {
-  topic: 'myTopic',
   name: 'rule1',
   score: 100,
+  topic: 'myTopic',
   evaluation: {
     summary: 'first thing happened',
     explanation: 'first reason',
@@ -42,9 +41,9 @@ const mockRuleEvaluation1: AnalysisResult = {
 };
 
 const mockRuleEvaluation2: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule2',
   score: 0,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'second thing happened',
     explanation: 'second reason',
@@ -54,9 +53,9 @@ const mockRuleEvaluation2: AnalysisResult = {
 };
 
 const mockRuleEvaluation3: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule3',
   score: 55,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'third thing happened',
     explanation: 'third reason',
@@ -66,9 +65,9 @@ const mockRuleEvaluation3: AnalysisResult = {
 };
 
 const mockNaRuleEvaluation: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'N/A rule',
   score: -1,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'fourth thing happened',
     explanation: 'fourth reason',

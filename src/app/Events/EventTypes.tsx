@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { EventType, Target } from '@app/Shared/Services/api.types';
+import { getCategoryString } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { hashCode, includesSubstr, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -47,32 +49,12 @@ import {
 import * as React from 'react';
 import { concatMap, filter, first } from 'rxjs/operators';
 
-export interface EventType {
-  name: string;
-  typeId: string;
-  description: string;
-  category: string[];
-  options: { [key: string]: OptionDescriptor }[];
-}
-
-export interface OptionDescriptor {
-  name: string;
-  description: string;
-  defaultValue: string;
-}
-
 interface RowData {
   eventType: EventType;
   isExpanded: boolean;
   cellContents: React.ReactNode[];
   children?: React.ReactNode;
 }
-
-const getCategoryString = (eventType: EventType): string => {
-  return eventType.category.join(', ').trim();
-};
-
-const includesSubstr = (a: string, b: string) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
 
 const tableColumns: TableColumn[] = [
   {
@@ -104,7 +86,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   const addSubscription = useSubscriptions();
   const prevPerPage = React.useRef(10);
 
-  const [types, setTypes] = React.useState([] as EventType[]);
+  const [types, setTypes] = React.useState<EventType[]>([]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
   const [openRows, setOpenRows] = React.useState<number[]>([]);
@@ -114,7 +96,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   const [sortBy, getSortParams] = useSort();
 
   const handleTypes = React.useCallback(
-    (types) => {
+    (types: EventType[]) => {
       setTypes(types);
       setIsLoading(false);
       setErrorMessage('');
@@ -123,7 +105,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   );
 
   const handleError = React.useCallback(
-    (error) => {
+    (error: Error) => {
       setIsLoading(false);
       setErrorMessage(error.message);
     },
@@ -136,9 +118,9 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
       context.target
         .target()
         .pipe(
-          filter((target) => target !== NO_TARGET),
+          filter((target) => !!target),
           first(),
-          concatMap((target) =>
+          concatMap((target: Target) =>
             context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`),
           ),
         )
@@ -201,14 +183,14 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   }, [currentPage, perPage, filterTypesByText, openRows]);
 
   const onCurrentPage = React.useCallback(
-    (_, currentPage: number) => {
+    (_: MouseEvent | React.MouseEvent, currentPage: number) => {
       setCurrentPage(currentPage);
     },
     [setCurrentPage],
   );
 
   const onPerPage = React.useCallback(
-    (_, perPage: number) => {
+    (_: MouseEvent | React.MouseEvent, perPage: number) => {
       const offset = (currentPage - 1) * prevPerPage.current;
       prevPerPage.current = perPage;
       setPerPage(perPage);

@@ -15,7 +15,7 @@
  */
 
 import { DurationFilter } from '@app/Recordings/Filters/DurationFilter';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen } from '@testing-library/react';
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';

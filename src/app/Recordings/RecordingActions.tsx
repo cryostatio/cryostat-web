@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { Recording } from '@app/Shared/Services/Api.service';
+import { Recording, Target } from '@app/Shared/Services/api.types';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';

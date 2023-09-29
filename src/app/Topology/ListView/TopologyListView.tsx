@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { Target } from '@app/Shared/Services/api.types';
+import { getAllLeaves } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Divider, Stack, StackItem, TreeView, TreeViewDataItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { Subject, catchError, combineLatest, of, switchMap } from 'rxjs';
-import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
-import { DiscoveryTreeContext, TransformConfig, getAllLeaves, useExprSvc } from '../Shared/utils';
+import { TopologyEmptyState } from '../Shared/Components/TopologyEmptyState';
+import type { TransformConfig } from '../Shared/types';
+import { DiscoveryTreeContext } from '../Shared/utils';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
-import { transformData } from './UtilsFactory';
+import { transformData } from './utils';
 
 export interface TopologyListViewProps {
   transformConfig?: TransformConfig;
@@ -34,7 +37,7 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
   const discoveryTree = React.useContext(DiscoveryTreeContext);
   const svcContext = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const matchExprService = useExprSvc();
+  const matchExprService = useMatchExpressionSvc();
 
   const tSubjectRef = React.useRef(new Subject<Target[]>());
   const tSubject = tSubjectRef.current;

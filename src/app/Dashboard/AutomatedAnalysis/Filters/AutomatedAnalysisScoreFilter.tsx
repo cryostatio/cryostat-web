@@ -15,7 +15,7 @@
  */
 
 import { automatedAnalysisAddGlobalFilterIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { AutomatedAnalysisScore } from '@app/Shared/Services/Report.service';
+import { AutomatedAnalysisScore } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
 import {
   Button,

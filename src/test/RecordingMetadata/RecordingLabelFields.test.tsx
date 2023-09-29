@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { RecordingLabelFields, RecordingLabelFieldsProps } from '@app/RecordingMetadata/RecordingLabelFields';
+import { RecordingLabel } from '@app/RecordingMetadata/types';
 import { ValidatedOptions } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
@@ -254,8 +254,7 @@ describe('<RecordingLabelFields />', () => {
     });
 
     expect(labelUploadInput.files).not.toBe(null);
-    /* eslint-disable  @typescript-eslint/no-non-null-assertion */
-    expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
+    expect(labelUploadInput.files?.item(0)).toStrictEqual(mockMetadataFile);
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
     expect(mockProps.setLabels).toHaveBeenCalledWith([

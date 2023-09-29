@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { RecordingAttributes } from '@app/Shared/Services/Api.service';
-import { RECORDING_FAILURE_MESSAGE, TEMPLATE_UNSUPPORTED_MESSAGE } from '@app/Shared/Services/Report.service';
+
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import {
+  RecordingAttributes,
+  TEMPLATE_UNSUPPORTED_MESSAGE,
+  RECORDING_FAILURE_MESSAGE,
+} from '@app/Shared/Services/api.types';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   Button,
   Drawer,

@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
+import { LoadingProps } from '@app/Shared/Components/types';
+import { Rule } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
-import { isRule, Rule } from './Rules';
+import { isRule } from './utils';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -123,7 +124,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-automated-rule',
         isLoading: uploading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [uploading],
   );
 

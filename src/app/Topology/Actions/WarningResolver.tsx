@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CreateCredentialModal } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
+import { TargetNode } from '@app/Shared/Services/api.types';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { TargetNode } from '../typings';
-import { ActionUtils } from './utils';
+import { ActionUtils } from './types';
 
 export interface WarningResolverAsLinkProps extends React.ComponentProps<Link> {}
 

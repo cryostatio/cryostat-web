@@ -16,9 +16,8 @@
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
@@ -112,7 +111,7 @@ export const AgentTabs: React.FC = () => {
       context.target
         .target()
         .pipe(
-          filter((target) => target !== NO_TARGET),
+          filter((target) => !!target),
           concatMap((_) => context.api.isProbeEnabled()),
         )
         .subscribe(setAgentDetected),

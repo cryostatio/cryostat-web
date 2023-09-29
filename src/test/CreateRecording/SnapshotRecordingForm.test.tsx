@@ -15,8 +15,8 @@
  */
 
 import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
-import { authFailMessage } from '@app/ErrorView/ErrorView';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { authFailMessage } from '@app/ErrorView/types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';

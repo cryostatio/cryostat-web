@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AutoRefresh } from '@app/Settings/AutoRefresh';
+import { AutoRefresh } from '@app/Settings/Config/AutoRefresh';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';

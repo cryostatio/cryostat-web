@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Archives } from '@app/Archives/Archives';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';

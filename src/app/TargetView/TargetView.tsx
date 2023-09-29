@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { BreadcrumbTrail } from '@app/BreadcrumbPage/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import * as React from 'react';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { NoTargetSelected } from './NoTargetSelected';
 import { TargetContextSelector } from './TargetContextSelector';
 
 interface TargetViewProps {
@@ -29,7 +29,7 @@ interface TargetViewProps {
   children: React.ReactNode;
 }
 
-export const TargetView: React.FC<TargetViewProps> = (props) => {
+export const TargetView: React.FC<TargetViewProps> = ({ attachments, pageTitle, breadcrumbs, children }) => {
   const context = React.useContext(ServiceContext);
   const [hasSelection, setHasSelection] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -39,7 +39,7 @@ export const TargetView: React.FC<TargetViewProps> = (props) => {
       context.target
         .target()
         .pipe(
-          map((target) => target !== NO_TARGET),
+          map((target) => !!target),
           distinctUntilChanged(),
         )
         .subscribe(setHasSelection),
@@ -49,9 +49,9 @@ export const TargetView: React.FC<TargetViewProps> = (props) => {
   return (
     <>
       <TargetContextSelector />
-      {props.attachments}
-      <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
-        {hasSelection ? props.children : <NoTargetSelected />}
+      {attachments}
+      <BreadcrumbPage pageTitle={pageTitle} breadcrumbs={breadcrumbs}>
+        {hasSelection ? children : <NoTargetSelected />}
       </BreadcrumbPage>
     </>
   );

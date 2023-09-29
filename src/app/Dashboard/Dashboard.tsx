@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { DashboardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigDeleteCardIntent,
@@ -22,8 +22,8 @@ import {
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { Grid, GridItem } from '@patternfly/react-core';
@@ -32,13 +32,13 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { AddCard } from './AddCard';
-import { ChartContext } from './Charts/ChartContext';
+import { ChartContext } from './Charts/context';
 import { JFRMetricsChartController } from './Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
-import { getCardDescriptorByName, validateCardConfig } from './dashboard-utils';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { DashboardLayoutToolbar } from './DashboardLayoutToolbar';
 import { ErrorCard } from './ErrorCard';
+import { getCardDescriptorByName, validateCardConfig } from './utils';
 
 export interface DashboardComponentProps {}
 
@@ -65,7 +65,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
   }, [dashboardConfigs]);
 
   React.useEffect(() => {
-    const layouts = getFromLocalStorage('DASHBOARD_CFG', {}) as DashboardConfig;
+    const layouts = getFromLocalStorage<Partial<DashboardConfig>>('DASHBOARD_CFG', {});
     if (layouts._version === undefined) {
       dispatch(dashboardConfigFirstRunIntent());
     }

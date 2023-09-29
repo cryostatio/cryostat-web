@@ -18,7 +18,14 @@ import { Card, CardTitle, CardBody, CardFooter } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
-export const NotFoundCard = ({ title, bodyText, linkText, linkPath }) => {
+export interface NotFoundCardProps {
+  title: React.ReactNode;
+  bodyText: React.ReactNode;
+  linkText: React.ReactNode;
+  linkPath: string;
+}
+
+export const NotFoundCard: React.FC<NotFoundCardProps> = ({ title, bodyText, linkText, linkPath }) => {
   return (
     <>
       <Card className="pf-c-card-not-found">

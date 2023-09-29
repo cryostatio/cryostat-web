@@ -17,8 +17,8 @@
 import { getFromLocalStorage, LocalStorageKeyStrings } from '@app/utils/LocalStorage';
 
 export const getPersistedState = <T>(key: LocalStorageKeyStrings, _version: string, defaultConfig: T): T => {
-  const persisted = getFromLocalStorage(key, undefined);
-  if (!persisted || persisted._version !== _version) {
+  const persisted = getFromLocalStorage<T>(key, defaultConfig);
+  if (!persisted || persisted['_version'] !== _version) {
     return {
       ...defaultConfig,
       _version,

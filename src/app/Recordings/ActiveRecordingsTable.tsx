@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { authFailMessage } from '@app/ErrorView/ErrorView';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import {
+  ClickableAutomatedAnalysisLabel,
+  clickableAutomatedAnalysisKey,
+} from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
+import { authFailMessage } from '@app/ErrorView/types';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { parseLabels } from '@app/RecordingMetadata/utils';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
@@ -29,13 +33,18 @@ import {
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import {
+  ActiveRecording,
+  AnalysisResult,
+  CategorizedRuleEvaluations,
+  NotificationCategory,
+  RecordingState,
+  Target,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useDayjs } from '@app/utils/useDayjs';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useDayjs } from '@app/utils/hooks/useDayjs';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
@@ -57,9 +66,6 @@ import {
   OverflowMenuGroup,
   OverflowMenuItem,
   Spinner,
-  Stack,
-  StackItem,
-  Text,
   Timestamp,
   TimestampTooltipVariant,
   Title,
@@ -68,6 +74,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -80,12 +87,6 @@ import { RecordingActions } from './RecordingActions';
 import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
-import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
-import {
-  clickableAutomatedAnalysisKey,
-  ClickableAutomatedAnalysisLabel,
-} from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
-import { RedoIcon } from '@patternfly/react-icons';
 
 export enum PanelContent {
   LABELS,
@@ -218,8 +219,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       context.target
         .target()
         .pipe(
-          filter((target) => target !== NO_TARGET),
-          concatMap((target) =>
+          filter((target) => !!target),
+          concatMap((target: Target) =>
             context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`),
           ),
           first(),
@@ -234,8 +235,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe((target) => {
-        setTargetConnectURL(target.connectUrl);
-        dispatch(recordingAddTargetIntent(target.connectUrl));
+        setTargetConnectURL(target?.connectUrl || '');
+        dispatch(recordingAddTargetIntent(target?.connectUrl || ''));
         refreshRecordingList();
       }),
     );
@@ -250,7 +251,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
         ),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) => old.concat([event.message.recording]));
@@ -267,7 +268,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
         ),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
 
@@ -283,7 +284,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) => {
@@ -314,7 +315,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) =>
@@ -560,8 +561,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           >
             {filteredRecordings.map((r) => (
               <ActiveRecordingRow
-                targetConnectUrl={targetConnectURL}
                 key={r.name}
+                targetConnectUrl={targetConnectURL}
                 recording={r}
                 labelFilters={targetRecordingFilters.Label}
                 index={r.id}
@@ -628,7 +629,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     return !anyRunning;
   }, [props.actionLoadings, props.checkedIndices, props.filteredRecordings]);
 
-  const actionLoadingProps = React.useMemo<Record<ActiveActions, LoadingPropsType>>(
+  const actionLoadingProps = React.useMemo<Record<ActiveActions, LoadingProps>>(
     () => ({
       ARCHIVE: {
         spinnerAriaValueText: 'Archiving',
@@ -850,6 +851,8 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
 }) => {
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
+  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
+  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   const expandedRowId = React.useMemo(
     () => `active-table-row-${recording.name}-${recording.startTime}-exp`,
@@ -872,9 +875,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     },
     [index, handleRowCheck],
   );
-
-  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
-  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   const handleLoadAnalysis = React.useCallback(() => {
     setLoadingAnalysis(true);
@@ -953,7 +953,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           {recording.state}
         </Td>
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
-          <LabelGroup isVertical>
+          <LabelGroup isVertical style={{ padding: '0.2em' }}>
             <Label color="blue" key="toDisk">
               toDisk: {String(recording.toDisk)}
             </Label>
@@ -1036,7 +1036,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
                       >
                         {evaluations.map((evaluation) => {
                           return (
-                            <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />
+                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
                           );
                         })}
                       </LabelGroup>

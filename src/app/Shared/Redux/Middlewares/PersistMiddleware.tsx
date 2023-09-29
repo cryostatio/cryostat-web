@@ -20,7 +20,7 @@ import { enumValues as TopologyConfigActions } from '../Configurations/TopologyC
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { enumValues as TopologyFilterActions } from '../Filters/TopologyFilterSlice';
-import { RootState } from '../ReduxStore';
+import type { RootState } from '../ReduxStore';
 
 /* eslint-disable-next-line  @typescript-eslint/ban-types*/
 export const persistMiddleware: Middleware<{}, RootState> =

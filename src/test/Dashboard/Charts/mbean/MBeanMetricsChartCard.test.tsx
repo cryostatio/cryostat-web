@@ -17,14 +17,14 @@
 jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
 jest.mock('@app/Dashboard/Charts/mbean/MBeanMetricsChartController');
 
-import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
+import { ChartContext } from '@app/Dashboard/Charts/context';
 import { JFRMetricsChartController } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartCard } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { ThemeSetting } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/types';
 import { store } from '@app/Shared/Redux/ReduxStore';
-import { MBeanMetrics } from '@app/Shared/Services/Api.service';
+import { MBeanMetrics } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import '@i18n/config';
 import { defaultDatetimeFormat } from '@i18n/datetime';

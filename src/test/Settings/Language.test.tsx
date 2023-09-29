@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Language } from '@app/Settings/Language';
+import { Language } from '@app/Settings/Config/Language';
 import i18next, { i18nLanguages } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
 import { act, cleanup, screen, within } from '@testing-library/react';

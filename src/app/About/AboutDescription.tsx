@@ -15,7 +15,7 @@
  */
 
 import build from '@app/build.json';
-import { NotificationsContext } from '@app/Notifications/Notifications';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';

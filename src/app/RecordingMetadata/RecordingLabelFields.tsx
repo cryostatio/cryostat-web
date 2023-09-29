@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { parseLabelsFromFile, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
   Button,
@@ -35,6 +34,8 @@ import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon 
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
+import { RecordingLabel } from './types';
+import { matchesLabelSyntax, getValidatedOption, LabelPattern, parseLabelsFromFile } from './utils';
 
 export interface RecordingLabelFieldsProps {
   labels: RecordingLabel[];
@@ -44,17 +45,13 @@ export interface RecordingLabelFieldsProps {
   isDisabled?: boolean;
 }
 
-export const LabelPattern = /^\S+$/;
-
-const getValidatedOption = (isValid: boolean) => {
-  return isValid ? ValidatedOptions.success : ValidatedOptions.error;
-};
-
-const matchesLabelSyntax = (l: RecordingLabel) => {
-  return l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
-};
-
-export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setLabels, setValid, ...props }) => {
+export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
+  labels,
+  setLabels,
+  setValid,
+  isUploadable,
+  isDisabled,
+}) => {
   const inputRef = React.useRef<HTMLInputElement>(null); // Use ref to refer to child component
   const addSubscription = useSubscriptions();
   const { t } = useTranslation();
@@ -63,83 +60,76 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
   const [invalidUploads, setInvalidUploads] = React.useState<string[]>([]);
 
   const handleKeyChange = React.useCallback(
-    (idx, key) => {
-      const updatedLabels = [...props.labels];
+    (idx: number, key: string) => {
+      const updatedLabels = [...labels];
       updatedLabels[idx].key = key;
       setLabels(updatedLabels);
     },
-    [props.labels, setLabels],
+    [labels, setLabels],
   );
 
   const handleValueChange = React.useCallback(
-    (idx, value) => {
-      const updatedLabels = [...props.labels];
+    (idx: number, value: string) => {
+      const updatedLabels = [...labels];
       updatedLabels[idx].value = value;
       setLabels(updatedLabels);
     },
-    [props.labels, setLabels],
+    [labels, setLabels],
   );
 
   const handleAddLabelButtonClick = React.useCallback(() => {
-    setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
-  }, [props.labels, setLabels]);
+    setLabels([...labels, { key: '', value: '' } as RecordingLabel]);
+  }, [labels, setLabels]);
 
   const handleDeleteLabelButtonClick = React.useCallback(
-    (idx) => {
-      const updated = [...props.labels];
+    (idx: number) => {
+      const updated = [...labels];
       updated.splice(idx, 1);
       setLabels(updated);
     },
-    [props.labels, setLabels],
+    [labels, setLabels],
   );
 
-  const isLabelValid = React.useCallback(matchesLabelSyntax, [matchesLabelSyntax]);
-
-  const isDuplicateKey = React.useCallback((key: string, labels: RecordingLabel[]) => {
-    return labels.filter((label) => label.key === key).length > 1;
-  }, []);
-
-  const allLabelsValid = React.useMemo(() => {
-    if (!props.labels.length) {
-      return true;
-    }
-    return props.labels.reduce(
-      (prev, curr) => isLabelValid(curr) && !isDuplicateKey(curr.key, props.labels) && prev,
-      true,
-    );
-  }, [props.labels, isLabelValid, isDuplicateKey]);
+  const isDuplicateKey = React.useCallback(
+    (key: string, labels: RecordingLabel[]) => labels.filter((label) => label.key === key).length > 1,
+    [],
+  );
 
   const validKeys = React.useMemo(() => {
-    const arr = Array(props.labels.length).fill(ValidatedOptions.default);
-    props.labels.forEach((label, index) => {
+    const arr = Array(labels.length).fill(ValidatedOptions.default);
+    labels.forEach((label, index) => {
       if (label.key.length > 0) {
-        arr[index] = getValidatedOption(LabelPattern.test(label.key) && !isDuplicateKey(label.key, props.labels));
+        arr[index] = getValidatedOption(LabelPattern.test(label.key) && !isDuplicateKey(label.key, labels));
       } // Ignore initial empty key inputs
     });
     return arr;
-  }, [props.labels, isDuplicateKey]);
+  }, [labels, isDuplicateKey]);
 
   const validValues = React.useMemo(() => {
-    const arr = Array(props.labels.length).fill(ValidatedOptions.default);
-    props.labels.forEach((label, index) => {
+    const arr = Array(labels.length).fill(ValidatedOptions.default);
+    labels.forEach((label, index) => {
       if (label.value.length > 0) {
         arr[index] = getValidatedOption(LabelPattern.test(label.value));
       } // Ignore initial empty value inputs
     });
     return arr;
-  }, [props.labels]);
+  }, [labels]);
 
   React.useEffect(() => {
-    setValid(getValidatedOption(allLabelsValid));
-  }, [setValid, allLabelsValid]);
+    const valid = labels.reduce(
+      (prev, curr) => matchesLabelSyntax(curr) && !isDuplicateKey(curr.key, labels) && prev,
+      true,
+    );
+    setValid(getValidatedOption(valid));
+  }, [setValid, labels, isDuplicateKey]);
 
   const handleUploadLabel = React.useCallback(
-    (e) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
       if (files && files.length) {
         const tasks: Observable<RecordingLabel[]>[] = [];
         setLoading(true);
-        for (const labelFile of e.target.files) {
+        for (const labelFile of Array.from(files)) {
           tasks.push(
             parseLabelsFromFile(labelFile).pipe(
               catchError((_) => {
@@ -152,13 +142,13 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
         addSubscription(
           zip(tasks).subscribe((labelArrays: RecordingLabel[][]) => {
             setLoading(false);
-            const labels = labelArrays.reduce((acc, next) => acc.concat(next), []);
-            setLabels([...props.labels, ...labels]);
+            const newLabels = labelArrays.reduce((acc, next) => acc.concat(next), []);
+            setLabels([...labels, ...newLabels]);
           }),
         );
       }
     },
-    [setLabels, props.labels, addSubscription, setLoading],
+    [setLabels, addSubscription, setLoading, labels],
   );
 
   const closeWarningPopover = React.useCallback(() => setInvalidUploads([]), [setInvalidUploads]);
@@ -176,11 +166,11 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
         onClick={handleAddLabelButtonClick}
         variant="link"
         icon={<PlusCircleIcon />}
-        isDisabled={props.isDisabled}
+        isDisabled={isDisabled}
       >
         Add Label
       </Button>
-      {props.isUploadable && (
+      {isUploadable && (
         <>
           <Popover
             appendTo={portalRoot}
@@ -211,7 +201,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
               onClick={openLabelFileBrowse}
               variant="link"
               icon={<UploadIcon />}
-              isDisabled={props.isDisabled}
+              isDisabled={isDisabled}
             >
               Upload Labels
             </Button>
@@ -226,7 +216,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
           />
         </>
       )}
-      {props.labels.map((label, idx) => (
+      {labels.map((label, idx) => (
         <Split hasGutter key={idx}>
           <SplitItem isFilled>
             <TextInput
@@ -239,7 +229,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
               value={label.key ?? ''}
               onChange={(key) => handleKeyChange(idx, key)}
               validated={validKeys[idx]}
-              isDisabled={props.isDisabled}
+              isDisabled={isDisabled}
             />
             <Text>Key</Text>
             <FormHelperText
@@ -264,7 +254,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
               value={label.value ?? ''}
               onChange={(value) => handleValueChange(idx, value)}
               validated={validValues[idx]}
-              isDisabled={props.isDisabled}
+              isDisabled={isDisabled}
             />
             <Text>Value</Text>
           </SplitItem>
@@ -273,7 +263,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({ setL
               onClick={() => handleDeleteLabelButtonClick(idx)}
               variant="link"
               aria-label="Remove Label"
-              isDisabled={props.isDisabled}
+              isDisabled={isDisabled}
               icon={<CloseIcon color="gray" size="sm" />}
             />
           </SplitItem>

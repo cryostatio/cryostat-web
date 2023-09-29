@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { EmptyText } from '@app/Shared/Components/EmptyText';
+import QuickSearchIcon from '@app/Shared/Components/QuickSearchIcon';
 import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { EmptyText } from '@app/Topology/Shared/EmptyText';
-import QuickSearchIcon from '@app/Topology/Shared/QuickSearchIcon';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
-import { useFeatureLevel } from '@app/utils/useFeatureLevel';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
@@ -80,20 +80,15 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
-import { ChartContext } from './Charts/ChartContext';
-import {
-  getCardDescriptorByTitle,
-  getDashboardCards,
-  CardConfig,
-  DashboardCardDescriptor,
-  PropControl,
-} from './dashboard-utils';
+import { ChartContext } from './Charts/context';
+import { CardConfig, DashboardCardDescriptor, PropControl } from './types';
+import { getCardDescriptorByTitle, getDashboardCards } from './utils';
 
 interface AddCardProps {
   variant: 'card' | 'icon-button';
 }
 
-export const AddCard: React.FC<AddCardProps> = ({ variant, ..._props }) => {
+export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
   const dispatch = useDispatch<StateDispatch>();
   const { t } = useTranslation();
 

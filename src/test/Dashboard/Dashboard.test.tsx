@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
+
 import { Dashboard } from '@app/Dashboard/Dashboard';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { ThemeSetting } from '@app/Settings/types';
 import { store } from '@app/Shared/Redux/ReduxStore';
+import { Target } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { defaultChartControllerConfig } from '@app/Shared/Services/service.utils';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
+import { defaultDatetimeFormat } from '@i18n/datetime';
+import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import '../Common';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 
@@ -36,27 +43,26 @@ const mockFooTarget: Target = {
 };
 
 jest.mock('@app/TargetView/TargetContextSelector', () => ({
-  TargetContextSelector: (_) => <div>Target Context Selector</div>,
+  TargetContextSelector: () => <div>Target Context Selector</div>,
 }));
 
-jest.mock('@app/Dashboard/AddCard', () => ({
-  AddCard: (_) => <div>Add Card</div>,
+jest.mock('@app/Dashboard/AddCard.tsx', () => ({
+  AddCard: () => <div>Add Card</div>,
 }));
 
 jest.mock('@app/Dashboard/DashboardLayoutToolbar', () => ({
-  DashboardLayoutToolbar: (_) => <div>Dashboard Layout Toolbar</div>,
-}));
-
-// Mock the local storage such that the first run config is not shown
-jest.mock('@app/utils/LocalStorage', () => ({
-  getFromLocalStorage: jest.fn(() => {
-    return {
-      _version: '0',
-    };
-  }),
+  DashboardLayoutToolbar: () => <div>Dashboard Layout Toolbar</div>,
 }));
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
+jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
+jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));
+jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of());
+jest.spyOn(defaultServices.settings, 'chartControllerConfig').mockReturnValue(defaultChartControllerConfig);
+jest.spyOn(defaultServices.api, 'getTargetMBeanMetrics').mockReturnValue(of({}));
+
+const history = createMemoryHistory({ initialEntries: ['/'] });
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {
@@ -66,7 +72,9 @@ describe('<Dashboard />', () => {
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
             <Provider store={store}>
-              <Dashboard />
+              <Router history={history}>
+                <Dashboard />
+              </Router>
             </Provider>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>,

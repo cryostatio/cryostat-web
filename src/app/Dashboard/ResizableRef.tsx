@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { dashboardConfigResizeCardIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { gridSpans } from '@patternfly/react-core';
 import _ from 'lodash';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CardConfig, DashboardCardSizes } from './dashboard-utils';
-import { DashboardCardContext } from './DashboardCard';
+import { DashboardCardContext } from './context';
+import type { CardConfig, DashboardCardSizes } from './types';
 
 export interface ResizableRefProps {
   cardId: number;
   cardSizes: DashboardCardSizes;
 }
 
-function normalizeAsGridSpans(val: number, min: number, max: number, a: gridSpans, b: gridSpans): gridSpans {
+const normalizeAsGridSpans = (val: number, min: number, max: number, a: gridSpans, b: gridSpans): gridSpans => {
   if (val < min) val = min;
   else if (val > max) val = max;
   const ans = Math.round((b - a) * ((val - min) / (max - min)) + a);
   return _.clamp(ans, a, b) as gridSpans;
-}
+};
 
-export function handleDisabledElements(disabled: boolean): void {
+export const handleDisabledElements = (disabled: boolean): void => {
   const disabledElements: HTMLElement[] = Array.from(document.querySelectorAll('.disabled-pointer'));
   disabledElements.forEach((el) => (el.style['pointer-events'] = disabled ? 'none' : 'auto'));
-}
+};
 
 export const ResizableRef: React.FC<ResizableRefProps> = ({
   cardId: dashboardId,

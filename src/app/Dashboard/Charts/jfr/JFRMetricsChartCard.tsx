@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
+import { CustomRecordingFormData } from '@app/CreateRecording/types';
 import {
-  DashboardCardDescriptor,
+  DashboardCardTypeProps,
   DashboardCardFC,
   DashboardCardSizes,
-  DashboardCardTypeProps,
-} from '@app/Dashboard/dashboard-utils';
-import { LoadingView } from '@app/LoadingView/LoadingView';
+  DashboardCardDescriptor,
+} from '@app/Dashboard/types';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { useTheme } from '@app/utils/useTheme';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useTheme } from '@app/utils/hooks/useTheme';
 import {
   Bullseye,
   Button,
@@ -46,7 +46,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
-import { ChartContext } from './../ChartContext';
+import { ChartContext } from '../context';
 import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';
 
 export interface JFRMetricsChartCardProps extends DashboardCardTypeProps {
@@ -207,17 +207,22 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
     history.push({
       pathname: '/recordings/create',
       state: {
-        restartExisting: true,
         name: RECORDING_NAME,
-        templateName: 'Continuous',
-        templateType: 'TARGET',
+        template: {
+          name: 'Continuous',
+          type: 'TARGET',
+        },
+        restart: true,
         labels: [{ key: 'origin', value: RECORDING_NAME }],
         duration: -1,
+        skipDurationCheck: true,
         // TODO these are arbitrary defaults that will be set in the recording creation form.
         // Should these values be inferred in some more intelligent way?
-        maxAge: 120, // seconds
-        maxSize: 100 * 1024 * 1024, // bytes
-      } as CreateRecordingProps,
+        maxAge: 120,
+        maxAgeUnit: 1, // seconds
+        maxSize: 100 * 1024 * 1024,
+        maxSizeUnit: 1, // bytes
+      } as Partial<CustomRecordingFormData>,
     });
   }, [history]);
 

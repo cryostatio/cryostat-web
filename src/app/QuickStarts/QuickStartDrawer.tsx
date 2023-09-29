@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import build from '@app/build.json';
-import { LoadingView } from '@app/LoadingView/LoadingView';
 import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { SessionState } from '@app/Shared/Services/Login.service';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { SessionState } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useFeatureLevel } from '@app/utils/useFeatureLevel';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   QuickStartContext,
   QuickStartDrawer,

@@ -26,25 +26,25 @@ export interface CancelUploadModalProps {
   message: string;
 }
 
-export const CancelUploadModal: React.FC<CancelUploadModalProps> = (props) => {
+export const CancelUploadModal: React.FC<CancelUploadModalProps> = ({ visible, onYes, onNo, title, message }) => {
   return (
     <Modal
       appendTo={portalRoot}
       width={'40%'}
-      isOpen={props.visible}
+      isOpen={visible}
       showClose={true}
-      onClose={props.onNo}
-      title={props.title}
+      onClose={onNo}
+      title={title}
       actions={[
-        <Button key={'Yes'} variant="primary" onClick={props.onYes}>
+        <Button key={'Yes'} variant="primary" onClick={onYes}>
           Yes
         </Button>,
-        <Button key={'No'} variant="secondary" onClick={props.onNo}>
+        <Button key={'No'} variant="secondary" onClick={onNo}>
           No
         </Button>,
       ]}
     >
-      {props.message}
+      {message}
     </Modal>
   );
 };

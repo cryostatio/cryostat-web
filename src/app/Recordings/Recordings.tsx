@@ -15,7 +15,7 @@
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';

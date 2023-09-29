@@ -16,15 +16,15 @@
 
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { Locations } from '@app/Settings/CredentialsStorage';
-import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { isHttpOk } from '@app/Shared/Services/Api.service';
+import { Locations } from '@app/Settings/Config/CredentialsStorage';
+import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
+import { LoadingProps } from '@app/Shared/Components/types';
+import { Target } from '@app/Shared/Services/api.types';
+import { isHttpOk } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import '@app/Topology/styles/base.css';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
   Accordion,
@@ -71,7 +71,7 @@ export interface CreateTargetProps {
   };
 }
 
-export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props }) => {
+export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const history = useHistory();
@@ -103,7 +103,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
         spinnerAriaValueText: 'Creating',
         spinnerAriaLabel: 'creating-custom-target',
         isLoading: loading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [loading],
   );
 

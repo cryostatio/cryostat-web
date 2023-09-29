@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export enum LocalStorageKey {
   ASSET_VERSION,
   FEATURE_LEVEL,
@@ -44,7 +44,7 @@ export enum LocalStorageKey {
 
 export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
 
-export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
+export const getFromLocalStorage = <T>(key: LocalStorageKeyStrings, defaultValue: T): T => {
   if (typeof window === 'undefined') {
     return defaultValue;
   }
@@ -56,7 +56,7 @@ export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: a
   }
 };
 
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
+export const saveToLocalStorage = <T>(key: LocalStorageKeyStrings, value: T, error?: () => void): void => {
   try {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(key, JSON.stringify(value));
@@ -67,7 +67,7 @@ export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, erro
   }
 };
 
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
+export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): void => {
   try {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(key);

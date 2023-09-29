@@ -16,7 +16,7 @@
 
 import { Button, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
-import QuickSearchIcon from '../Shared/QuickSearchIcon';
+import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 
 export interface QuickSearchButtonProps {
   onClick: () => void;

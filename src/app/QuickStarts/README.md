@@ -1,4 +1,3 @@
-# Cryostat quick starts
 ## Adding quick starts
 <!---
 TODO: Fix this section when quick starts are categorized 

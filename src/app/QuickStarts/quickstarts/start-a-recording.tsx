@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import build from '@app/build.json';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
 import { CryostatIcon, conclusion } from '../quickstart-utils';

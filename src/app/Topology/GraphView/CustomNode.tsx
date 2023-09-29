@@ -17,8 +17,10 @@
 import cryostatSvg from '@app/assets/cryostat_icon_rgb_default.svg';
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { includesTarget } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { TargetNode } from '@app/Shared/Services/api.types';
+import { includesTarget } from '@app/Shared/Services/api.utils';
+import { useMatchedTargetsSvc } from '@app/utils/hooks/useMatchedTargetsSvc';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import {
@@ -39,15 +41,11 @@ import {
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { map } from 'rxjs';
-import { getStatusTargetNode, nodeTypeToAbbr, useMatchedTargetsSvc } from '../Shared/utils';
-import { TargetNode } from '../typings';
+import { getStatusTargetNode, nodeTypeToAbbr, TOPOLOGY_GRAPH_ID } from '../Shared/utils';
+import { NODE_BADGE_COLOR, NODE_ICON_PADDING, RESOURCE_NAME_TRUNCATE_LENGTH } from './const';
 import { getNodeDecorators } from './NodeDecorator';
-import { TOPOLOGY_GRAPH_ID } from './TopologyGraphView';
-import { RESOURCE_NAME_TRUNCATE_LENGTH } from './UtilsFactory';
 
-export const NODE_ICON_PADDING = 5;
-
-export const renderIcon = (graphic, _data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {
+export const renderNodeIcon = (graphic: string, _data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {
   const { width, height } = element.getDimensions();
 
   const contentSize = Math.min(width, height) - NODE_ICON_PADDING * 2;
@@ -72,8 +70,6 @@ export const renderIcon = (graphic, _data: TargetNode, element: Node, useAlt: bo
 export interface CustomNodeProps extends Partial<WithSelectionProps & WithDragNodeProps & WithContextMenuProps> {
   element: Node;
 }
-
-export const NODE_BADGE_COLOR = 'var(--pf-global--palette--blue-500)';
 
 const CustomNode: React.FC<CustomNodeProps> = ({
   element,
@@ -140,7 +136,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({
           showLabel
           attachments={nodeDecorators}
         >
-          <g id={'target-node-visual-inner-icon'}>{renderIcon(graphic, data, element, !showIcon)}</g>
+          <g id={'target-node-visual-inner-icon'}>{renderNodeIcon(graphic, data, element, !showIcon)}</g>
         </DefaultNode>
       </g>
     </Layer>

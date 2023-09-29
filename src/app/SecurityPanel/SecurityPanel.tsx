@@ -44,9 +44,3 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
 };
 
 export default SecurityPanel;
-
-export interface SecurityCard {
-  title: string;
-  description: JSX.Element | string;
-  content: React.FC;
-}

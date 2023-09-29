@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
-import { useDayjs } from '@app/utils/useDayjs';
+import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { Timezone } from '@i18n/datetime';
 import {

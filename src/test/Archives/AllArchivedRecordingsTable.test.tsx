@@ -15,9 +15,8 @@
  */
 
 import { AllArchivedRecordingsTable } from '@app/Archives/AllArchivedRecordingsTable';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { NotificationMessage, ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';

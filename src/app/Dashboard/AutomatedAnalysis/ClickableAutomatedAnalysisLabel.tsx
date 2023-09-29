@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AutomatedAnalysisScore, AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AutomatedAnalysisScore, AnalysisResult } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
@@ -22,15 +22,15 @@ import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { transformAADescription } from '../dashboard-utils';
+import { transformAADescription } from './utils';
 
 export interface ClickableAutomatedAnalysisLabelProps {
-  label: AnalysisResult;
+  result: AnalysisResult;
 }
 
 export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label';
 
-export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ label: result }) => {
+export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ result }) => {
   const { t } = useTranslation();
 
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
@@ -83,7 +83,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
 
   return (
     <Popover
-      aria-label={t('ClickableAutomatedAnalysisLabel.ARIA_LABELS.POPOVER')}
+      aria-label={t('ClickableAutomatedAnalysisresult.ARIA_LABELS.POPOVER')}
       isVisible={isDescriptionVisible}
       headerContent={<div className={`${clickableAutomatedAnalysisKey}-popover-header`}>{result.name}</div>}
       alertSeverityVariant={alertPopoverVariant}

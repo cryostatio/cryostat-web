@@ -24,6 +24,8 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { BreadcrumbTrail } from './types';
+import { isItemFilled } from './utils';
 
 interface BreadcrumbPageProps {
   pageTitle: string;
@@ -31,35 +33,24 @@ interface BreadcrumbPageProps {
   children?: React.ReactNode;
 }
 
-export interface BreadcrumbTrail {
-  title: string;
-  path: string;
-}
-
-export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
+export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({ pageTitle, breadcrumbs, children }) => {
   return (
     <PageGroup>
       <PageSection>
         <Breadcrumb>
-          {(props.breadcrumbs || []).map(({ title, path }) => (
+          {(breadcrumbs || []).map(({ title, path }) => (
             <BreadcrumbItem key={path}>
               <Link to={path}>{title}</Link>
             </BreadcrumbItem>
           ))}
-          <BreadcrumbHeading>{props.pageTitle}</BreadcrumbHeading>
+          <BreadcrumbHeading>{pageTitle}</BreadcrumbHeading>
         </Breadcrumb>
         <Stack hasGutter={true}>
-          {React.Children.map(props.children, (child) => (
+          {React.Children.map(children, (child) => (
             <StackItem isFilled={isItemFilled(child)}>{child}</StackItem>
           ))}
         </Stack>
       </PageSection>
     </PageGroup>
   );
-};
-
-export const isItemFilled = (item: React.ReactNode): boolean => {
-  if (!item) return false;
-  const toCheck = item['props'] ? item['props'] : item;
-  return toCheck['isFilled'] || toCheck['isFullHeight'] || toCheck['data-full-height'];
 };

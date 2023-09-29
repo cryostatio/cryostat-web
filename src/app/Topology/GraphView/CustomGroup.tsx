@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { EnvironmentNode, NodeType } from '@app/Shared/Services/api.types';
 import {
   DefaultGroup,
   Node,
@@ -25,12 +27,9 @@ import {
 } from '@patternfly/react-topology';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { EnvironmentNode, NodeType } from '../typings';
-import { NODE_ICON_PADDING } from './CustomNode';
+import { DEFAULT_NODE_COLLAPSED_DIAMETER, NODE_ICON_PADDING } from './const';
 
-const DEFAULT_NODE_COLLAPSED_DIAMETER = 100;
-
-export const renderIcon = (width: number, height: number): React.ReactNode => {
+export const renderGroupIcon = (width: number, height: number): React.ReactNode => {
   const contentSize = Math.min(width, height) - NODE_ICON_PADDING * 2;
   const mainContentSize = contentSize * 0.8;
   const [cx, cy] = [width / 2, height / 2];
@@ -73,7 +72,7 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
   const { badge: showBadge } = displayOptions.show;
 
   const collapsedContent = React.useMemo(
-    () => <g id={'topology-visual-collapsed-icon'}>{renderIcon(collapsedWidth, collapsedHeight)}</g>,
+    () => <g id={'topology-visual-collapsed-icon'}>{renderGroupIcon(collapsedWidth, collapsedHeight)}</g>,
     [collapsedWidth, collapsedHeight],
   );
 

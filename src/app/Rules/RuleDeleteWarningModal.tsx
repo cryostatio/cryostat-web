@@ -19,12 +19,12 @@ import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly
 import * as React from 'react';
 import { useState } from 'react';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
-import { getFromWarningMap } from '../Modal/DeleteWarningUtils';
+import { getFromWarningMap } from '../Modal/utils';
 
 export interface RuleDeleteWarningProps extends DeleteWarningProps {
   ruleName?: string;
   clean: boolean;
-  setClean: React.Dispatch<React.SetStateAction<boolean>>;
+  setClean: (clean: boolean) => void;
 }
 
 export const RuleDeleteWarningModal = ({

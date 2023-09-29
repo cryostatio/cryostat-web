@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AutomatedAnalysisScore, CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
+import { CategorizedRuleEvaluations, AutomatedAnalysisScore } from '@app/Shared/Services/api.types';
 import { Flex, FlexItem } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
@@ -37,13 +37,13 @@ import {
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { transformAADescription } from '../dashboard-utils';
+import { transformAADescription } from './utils';
 
 export interface AutomatedAnalysisCardListProps {
   evaluations: CategorizedRuleEvaluations[];
 }
 
-export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps> = (props) => {
+export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps> = ({ evaluations }) => {
   const { t } = useTranslation();
 
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
@@ -80,7 +80,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
   );
 
   const flatFiltered = React.useMemo(() => {
-    return props.evaluations
+    return evaluations
       .flatMap(([_, evaluations]) => {
         return evaluations.map((evaluation) => evaluation);
       })
@@ -108,7 +108,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
         }
         return 0;
       });
-  }, [sortBy, props.evaluations]);
+  }, [sortBy, evaluations]);
 
   return (
     <OuterScrollContainer className="automated-analysis-datalist-outerscroll">

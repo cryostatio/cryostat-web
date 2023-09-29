@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Language } from '@app/Settings/Language';
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { AuthMethod } from '@app/Shared/Services/Login.service';
+import { Language } from '@app/Settings/Config/Language';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { AuthMethod, FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   Card,
   CardActions,
@@ -30,7 +29,7 @@ import {
   Text,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { NotificationsContext } from '../Notifications/Notifications';
+import { NotificationsContext } from '../Shared/Services/Notifications.service';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { ConnectionError } from './ConnectionError';
 import { NoopAuthForm } from './NoopAuthForm';

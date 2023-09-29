@@ -18,15 +18,16 @@ import cryostatLogoDark from '@app/assets/cryostat_logo_vert_rgb_reverse.svg';
 import build from '@app/build.json';
 import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import JoyrideTooltip from '@app/Joyride/JoyrideTooltip';
-import { ThemeSetting } from '@app/Settings/SettingsUtils';
-import { useTheme } from '@app/utils/useTheme';
+import { ThemeSetting } from '@app/Settings/types';
+import { useTheme } from '@app/utils/hooks/useTheme';
 import React from 'react';
 import ReactJoyride, { CallBackProps, ACTIONS, EVENTS, STATUS } from 'react-joyride';
+
 interface CryostatJoyrideProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
+const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
   const {
     setState,
     state: { run, stepIndex, steps },
@@ -265,7 +266,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           },
         }}
       />
-      {props.children}
+      {children}
     </>
   );
 };

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import openjdkSvg from '@app/assets/openjdk.svg';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import * as React from 'react';
-import { QuickSearchItem } from '../utils';
+import { QuickSearchItem } from '../types';
 
 const _CustomTargetSearchItem: QuickSearchItem = {
   id: 'custom-target',

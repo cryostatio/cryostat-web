@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RecordingState } from '@app/Shared/Services/Api.service';
+import { RecordingState } from '@app/Shared/Services/api.types';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import React from 'react';
 

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ThemeSetting } from '@app/Settings/SettingsUtils';
-import { useTheme } from '@app/utils/useTheme';
+import { ThemeSetting } from '@app/Settings/types';
+import { useTheme } from '@app/utils/hooks/useTheme';
 import React from 'react';
 
 export const withThemedIcon = (icon: string, darkIcon: string, alt: string): React.FC => {

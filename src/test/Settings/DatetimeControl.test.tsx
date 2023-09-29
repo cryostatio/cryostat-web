@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DatetimeControl } from '@app/Settings/DatetimeControl';
+import { DatetimeControl } from '@app/Settings/Config/DatetimeControl';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat, locales } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';

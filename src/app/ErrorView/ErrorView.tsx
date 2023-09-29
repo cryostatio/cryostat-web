@@ -17,37 +17,32 @@ import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title, StackItem, S
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
-export const authFailMessage = 'Authentication failure';
-
-export const missingSSLMessage = 'Bad Gateway';
-
-export const isAuthFail = (message: string) => message === authFailMessage;
 export interface ErrorViewProps {
-  title: string | React.ReactNode;
-  message: string | React.ReactNode;
+  title: React.ReactNode;
+  message: React.ReactNode;
   retryButtonMessage?: string;
   retry?: () => void;
 }
 
-export const ErrorView: React.FC<ErrorViewProps> = (props) => {
+export const ErrorView: React.FC<ErrorViewProps> = ({ title, message, retryButtonMessage = 'Retry', retry }) => {
   return (
     <>
       <EmptyState>
         <EmptyStateIcon icon={ExclamationCircleIcon} color={'#a30000'} />
         <Title headingLevel="h4" size="lg">
-          {props.title}
+          {title}
         </Title>
         <EmptyStateBody>
           <>
             <Stack>
-              <StackItem>{props.message}</StackItem>
-              {props.retry && (
+              <StackItem>{message}</StackItem>
+              {retry ? (
                 <StackItem>
-                  <Button variant="link" onClick={props.retry}>
-                    {props.retryButtonMessage || 'Retry'}
+                  <Button variant="link" onClick={retry}>
+                    {retryButtonMessage}
                   </Button>
                 </StackItem>
-              )}
+              ) : null}
             </Stack>
           </>
         </EmptyStateBody>

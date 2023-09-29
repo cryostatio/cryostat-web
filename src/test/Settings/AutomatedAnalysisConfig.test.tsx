@@ -15,8 +15,8 @@
  */
 
 /* eslint @typescript-eslint/no-explicit-any: 0 */
-import { AutomatedAnalysisConfig } from '@app/Settings/AutomatedAnalysisConfig';
-import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Api.service';
+import { AutomatedAnalysis } from '@app/Settings/Config/AutomatedAnalysis';
+import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
@@ -25,7 +25,7 @@ jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm', () => 
   AutomatedAnalysisConfigForm: (_: any) => <>Automated Analysis Configuration Form</>,
 }));
 
-jest.mock('@app/Shared/TargetSelect', () => ({
+jest.mock('@app/TargetView/TargetSelect', () => ({
   TargetSelect: (_: any) => <>Target Select</>,
 }));
 
@@ -39,7 +39,7 @@ describe('<AutomatedAnalysisConfig/>', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          {React.createElement(AutomatedAnalysisConfig.content, null)}
+          {React.createElement(AutomatedAnalysis.content, null)}
         </ServiceContext.Provider>,
       );
     });

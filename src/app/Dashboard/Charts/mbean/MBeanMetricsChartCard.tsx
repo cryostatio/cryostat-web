@@ -15,18 +15,18 @@
  */
 
 import {
-  DashboardCardDescriptor,
+  DashboardCardTypeProps,
   DashboardCardFC,
   DashboardCardSizes,
-  DashboardCardTypeProps,
-} from '@app/Dashboard/dashboard-utils';
-import { ThemeSetting, ThemeType } from '@app/Settings/SettingsUtils';
-import { MBeanMetrics } from '@app/Shared/Services/Api.service';
+  DashboardCardDescriptor,
+} from '@app/Dashboard/types';
+import { ThemeType, ThemeSetting } from '@app/Settings/types';
+import { MBeanMetrics } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import useDayjs from '@app/utils/useDayjs';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { useTheme } from '@app/utils/useTheme';
+import useDayjs from '@app/utils/hooks/useDayjs';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useTheme } from '@app/utils/hooks/useTheme';
 import {
   Chart,
   ChartArea,
@@ -46,7 +46,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
-import { ChartContext } from './../ChartContext';
+import { ChartContext } from '../context';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardTypeProps {
   themeColor: string;

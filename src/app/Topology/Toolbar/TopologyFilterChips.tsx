@@ -19,11 +19,11 @@ import {
   topologyDeleteCategoryFiltersIntent,
   topologyDeleteFilterIntent,
 } from '@app/Shared/Redux/ReduxStore';
+import { NodeType } from '@app/Shared/Services/api.types';
 import { getDisplayFieldName } from '@app/utils/utils';
 import { Chip, ChipGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NodeType } from '../typings';
 
 export interface TopologyFilterChipsProps {
   className?: string;

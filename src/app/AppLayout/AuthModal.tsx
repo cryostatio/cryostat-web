@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -26,10 +26,10 @@ export interface AuthModalProps {
   visible: boolean;
   onDismiss: () => void;
   onSave: () => void;
-  targetObs: Observable<Target>;
+  targetObs: Observable<NullableTarget>;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onPropsSave, targetObs, ...props }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onPropsSave, targetObs, visible }) => {
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -40,9 +40,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
       addSubscription(
         targetObs
           .pipe(
-            filter((target) => target !== NO_TARGET),
+            filter((target) => !!target),
             first(),
-            map((target) => target.connectUrl),
+            map((target: Target) => target.connectUrl),
             mergeMap((connectUrl) => context.authCredentials.setCredential(connectUrl, username, password)),
           )
           .subscribe((ok) => {
@@ -58,7 +58,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
 
   return (
     <Modal
-      isOpen={props.visible}
+      isOpen={visible}
       variant={ModalVariant.large}
       showClose={!loading}
       onClose={onDismiss}

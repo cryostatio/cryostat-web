@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { Recordings } from '@app/Recordings/Recordings';
+import { Target } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { createMemoryHistory } from 'history';

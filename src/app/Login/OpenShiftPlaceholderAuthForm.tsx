@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { AuthMethod, SessionState } from '@app/Shared/Services/Login.service';
+
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { AuthMethod, SessionState } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
 import { LockIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
-import { FormProps } from './FormProps';
+import { FormProps } from './types';
 
 export const OpenShiftPlaceholderAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
   const context = React.useContext(ServiceContext);
@@ -76,7 +77,7 @@ export const OpenShiftPlaceholderAuthForm: React.FC<FormProps> = ({ onSubmit }) 
   return <>{showPermissionDenied && permissionDenied}</>;
 };
 
-export const OpenShiftAuthDescriptionText = () => {
+export const OpenShiftAuthDescriptionText: React.FC = () => {
   return (
     <Text component={TextVariants.p}>The Cryostat server is configured to use OpenShift OAuth authentication.</Text>
   );

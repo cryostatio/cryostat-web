@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { parseLabels, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { Recording } from '@app/Shared/Services/Api.service';
+import { parseLabels, getLabelDisplay } from '@app/RecordingMetadata/utils';
+import { Recording } from '@app/Shared/Services/api.types';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import React from 'react';
 
@@ -24,8 +24,6 @@ export interface LabelFilterProps {
   filteredLabels: string[];
   onSubmit: (inputLabel: string) => void;
 }
-
-export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
 
 export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLabels, onSubmit }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);

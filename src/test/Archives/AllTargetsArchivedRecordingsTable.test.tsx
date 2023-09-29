@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { Target, NotificationMessage } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
@@ -277,7 +276,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
 
     await user.type(search, 'asdasdjhj');
-    expect(screen.getByText('No Targets')).toBeInTheDocument();
+    expect(screen.getByText('No Archived Recordings')).toBeInTheDocument();
     expect(screen.queryByLabelText('all-targets-table')).not.toBeInTheDocument();
 
     await user.clear(search);

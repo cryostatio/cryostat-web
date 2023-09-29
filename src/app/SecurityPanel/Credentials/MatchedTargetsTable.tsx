@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { TargetDiscoveryEvent, Target, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';

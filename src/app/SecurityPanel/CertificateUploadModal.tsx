@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
 import * as React from 'react';
@@ -109,7 +109,7 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-ssl-certificates',
         isLoading: uploading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [uploading],
   );
 

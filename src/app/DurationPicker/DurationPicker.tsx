@@ -24,28 +24,34 @@ export interface DurationPickerProps {
   enabled: boolean;
 }
 
-export const DurationPicker: React.FC<DurationPickerProps> = (props) => {
+export const DurationPicker: React.FC<DurationPickerProps> = ({
+  onPeriodChange,
+  onUnitScalarChange,
+  period,
+  unitScalar,
+  enabled,
+}) => {
   return (
     <>
       <Split hasGutter={true}>
         <SplitItem isFilled>
           <TextInput
-            value={props.period}
+            value={period}
             isRequired
             type="number"
             id="duration-picker-period"
             aria-label="Duration Picker Period Input"
-            onChange={(v) => props.onPeriodChange(Number(v))}
-            isDisabled={!props.enabled}
+            onChange={(v) => onPeriodChange(Number(v))}
+            isDisabled={!enabled}
             min="0"
           />
         </SplitItem>
         <SplitItem>
           <FormSelect
-            value={props.unitScalar}
-            onChange={(v) => props.onUnitScalarChange(Number(v))}
+            value={unitScalar}
+            onChange={(v) => onUnitScalarChange(Number(v))}
             aria-label="Duration Picker Units Input"
-            isDisabled={!props.enabled}
+            isDisabled={!enabled}
           >
             <FormSelectOption key="1" value={1 * 1000} label="Seconds" />
             <FormSelectOption key="2" value={60 * 1000} label="Minutes" />

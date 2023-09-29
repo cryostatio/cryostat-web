@@ -15,7 +15,7 @@
  */
 import i18n from '@app/../i18n/config';
 import { About } from '@app/About/About';
-import { ThemeSetting } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';

@@ -15,7 +15,7 @@
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 import { PficonTemplateIcon } from '@patternfly/react-icons';
 import React from 'react';

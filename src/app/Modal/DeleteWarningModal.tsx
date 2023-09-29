@@ -18,7 +18,8 @@ import { portalRoot } from '@app/utils/utils';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
 import { useState } from 'react';
-import { DeleteOrDisableWarningType, getFromWarningMap } from './DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from './types';
+import { getFromWarningMap } from './utils';
 
 export interface DeleteWarningProps {
   warningType: DeleteOrDisableWarningType;
@@ -32,12 +33,13 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
   onAccept,
   onClose,
   acceptButtonText = 'Delete',
-  ...props
+  warningType,
+  visible,
 }) => {
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
-  const realWarningType = getFromWarningMap(props.warningType);
+  const realWarningType = getFromWarningMap(warningType);
 
   const onAcceptClose = React.useCallback(
     (ev: React.MouseEvent) => {
@@ -67,7 +69,7 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
       aria-label={realWarningType?.ariaLabel}
       titleIconVariant="warning"
       variant={ModalVariant.medium}
-      isOpen={props.visible}
+      isOpen={visible}
       showClose
       onClose={onInnerClose}
       actions={[

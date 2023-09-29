@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import { AutomatedAnalysisRecordingConfig, EventTemplate } from '@app/Shared/Services/Api.service';
+import { EventTemplate } from '@app/Shared/Services/api.types';
+import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';

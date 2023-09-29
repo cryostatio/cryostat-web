@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import {
   defaultAutomatedAnalysisFilters,
   defaultDashboardConfigs,
@@ -24,13 +23,13 @@ import {
   RootState,
   setupStore,
 } from '@app/Shared/Redux/ReduxStore';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { t, TOptions } from 'i18next';
 import React, { PropsWithChildren } from 'react';
-import '@i18n/config';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 

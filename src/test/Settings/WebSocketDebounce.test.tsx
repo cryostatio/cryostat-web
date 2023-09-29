@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { WebSocketDebounce } from '@app/Settings/WebSocketDebounce';
+import { WebSocketDebounce } from '@app/Settings/Config/WebSocketDebounce';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';

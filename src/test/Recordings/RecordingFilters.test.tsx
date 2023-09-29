@@ -26,9 +26,8 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { Target, ActiveRecording, RecordingState, ArchivedRecording } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Toolbar, ToolbarContent } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
@@ -41,8 +40,8 @@ const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
   annotations: {
-    cryostat: new Map(),
-    platform: new Map(),
+    cryostat: {},
+    platform: {},
   },
 };
 

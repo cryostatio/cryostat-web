@@ -135,3 +135,16 @@ The extraction tool is [`i18next-parser`](https://www.npmjs.com/package/i18next-
 To workaround this, specify static values in `i18n.ts` file under any top-level directory below `src/app`. For example, `src/app/Settings/i18n.ts`.
 
 Refer to [LOCALIZATION.md](LOCALIZATION.md) for more details about our localization framework.
+
+## CONTRIBUTING
+
+### Code consistency
+
+- `[*].types.ts(x)`: Define type definitions, including types and enums.
+- `[*].utils.ts(x)`: Define utility functions. These might contain constants (usually tightly coupled with the utility functions).
+- `[*].const.ts`: Define constants. These constants are purely for UI rendering.
+- `[*].context.tsx`: Define React contexts. These can be defined in util files.
+
+### Code contribution
+
+See [CONTRIBUTING.md](https://github.com/cryostatio/cryostat/blob/main/CONTRIBUTING.md).

@@ -16,29 +16,33 @@
 
 import { JFRMetricsChartController } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
-import { EventType } from '@app/Events/EventTypes';
-import { Notifications, NotificationsInstance } from '@app/Notifications/Notifications';
-import { Rule } from '@app/Rules/Rules';
+import { ApiService } from '@app/Shared/Services/Api.service';
 import {
+  Target,
   ActiveRecording,
-  ActiveRecordingFilterInput,
-  ApiService,
-  ArchivedRecording,
-  ChartControllerConfig,
-  EventProbe,
-  EventTemplate,
-  MBeanMetrics,
-  Recording,
-  RecordingAttributes,
   RecordingState,
-  SimpleResponse,
+  Recording,
+  MBeanMetrics,
+  ActiveRecordingFilterInput,
+  ArchivedRecording,
+  EventTemplate,
+  EventProbe,
+  Rule,
   StoredCredential,
-} from '@app/Shared/Services/Api.service';
+  RecordingAttributes,
+  NullableTarget,
+  EventType,
+  CachedReportValue,
+  AnalysisResult,
+  SimpleResponse,
+} from '@app/Shared/Services/api.types';
 import { LoginService } from '@app/Shared/Services/Login.service';
-import { CachedReportValue, ReportService, AnalysisResult } from '@app/Shared/Services/Report.service';
+import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
+import { ReportService } from '@app/Shared/Services/Report.service';
+import { ChartControllerConfig } from '@app/Shared/Services/service.types';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
-import { Target, TargetService } from '@app/Shared/Services/Target.service';
+import { TargetService } from '@app/Shared/Services/Target.service';
 import { Observable, of } from 'rxjs';
 
 export const fakeTarget: Target = {
@@ -103,9 +107,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'classloading',
     name: 'Class Leak',
     score: 0,
+    topic: 'classloading',
     evaluation: {
       summary: 'leaked classes',
       explanation: 'classes were loaded and leaked',
@@ -120,9 +124,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'classloading',
     name: 'Class Loading Pressure',
     score: 0,
+    topic: 'classloading',
     evaluation: {
       summary: 'too much loading pressure',
       explanation: 'lots of classloading slowing things down',
@@ -137,9 +141,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'jvm_information',
     name: 'Discouraged Management Agent Settings',
     score: 50,
+    topic: 'jvm_information',
     evaluation: {
       summary: 'bad settings set',
       explanation: 'these settings can cause problems',
@@ -154,9 +158,9 @@ export const fakeEvaluations: AnalysisResult[] = [
     },
   },
   {
-    topic: 'exceptions',
     name: 'Thrown Exceptions',
     score: 0.2,
+    topic: 'exceptions',
     evaluation: {
       summary: 'many exceptions thrown which is slow',
       explanation: 'exception processing is slower than normal code execution',
@@ -178,13 +182,13 @@ export const fakeCachedReport: CachedReportValue = {
 };
 
 class FakeTargetService extends TargetService {
-  target(): Observable<Target> {
+  target(): Observable<NullableTarget> {
     return of(fakeTarget);
   }
 }
 
 class FakeReportService extends ReportService {
-  constructor(notifications: Notifications, login: LoginService) {
+  constructor(notifications: NotificationService, login: LoginService) {
     super(login, notifications);
   }
 
@@ -210,7 +214,7 @@ class FakeSetting extends SettingsService {
 }
 
 class FakeApiService extends ApiService {
-  constructor(target: TargetService, notifications: Notifications, login: LoginService) {
+  constructor(target: TargetService, notifications: NotificationService, login: LoginService) {
     super(target, notifications, login);
   }
 

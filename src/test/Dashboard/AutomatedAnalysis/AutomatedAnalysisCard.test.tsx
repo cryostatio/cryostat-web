@@ -16,18 +16,16 @@
 import { AutomatedAnalysisCard } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import {
-  ArchivedRecording,
-  automatedAnalysisRecordingName,
-  defaultAutomatedAnalysisRecordingConfig,
-} from '@app/Shared/Services/Api.service';
-import {
   CachedReportValue,
+  AnalysisResult,
+  ArchivedRecording,
   FAILED_REPORT_MESSAGE,
   NO_RECORDINGS_MESSAGE,
-  AnalysisResult,
-} from '@app/Shared/Services/Report.service';
+  automatedAnalysisRecordingName,
+} from '@app/Shared/Services/api.types';
+import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/service.utils';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
@@ -51,9 +49,9 @@ const mockEmptyCachedReport: CachedReportValue = {
 };
 
 const mockRuleEvaluation1: AnalysisResult = {
-  topic: 'myTopic',
   name: 'rule1',
   score: 100,
+  topic: 'myTopic',
   evaluation: {
     summary: 'rule1 summary',
     explanation: 'rule1 explanation',
@@ -69,9 +67,9 @@ const mockRuleEvaluation1: AnalysisResult = {
 };
 
 const mockRuleEvaluation2: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule2',
   score: 0,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'rule2 summary',
     explanation: 'rule2 explanation',
@@ -87,9 +85,9 @@ const mockRuleEvaluation2: AnalysisResult = {
 };
 
 const mockRuleEvaluation3: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'rule3',
   score: 55,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'rule3 summary',
     explanation: 'rule3 explanation',
@@ -105,9 +103,9 @@ const mockRuleEvaluation3: AnalysisResult = {
 };
 
 const mockNaRuleEvaluation: AnalysisResult = {
-  topic: 'fakeTopic',
   name: 'N/A rule',
   score: -1,
+  topic: 'fakeTopic',
   evaluation: {
     summary: 'NArule summary',
     explanation: 'NArule explanation',
@@ -196,6 +194,9 @@ const mockEmptyArchivedRecordingsResponse = {
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
+jest
+  .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')
+  .mockReturnValue(defaultAutomatedAnalysisRecordingConfig);
 
 describe('<AutomatedAnalysisCard />', () => {
   let preloadedState: RootState;
@@ -239,12 +240,10 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.reports, 'getCachedAnalysisReport').mockReturnValueOnce(mockEmptyCachedReport);
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyArchivedRecordingsResponse));
 
-    jest.spyOn(defaultServices.api, 'createRecording').mockReturnValueOnce(of());
+    const requestSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValueOnce(of());
     const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
-
-    const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
     expect(screen.getByText(NO_RECORDINGS_MESSAGE)).toBeInTheDocument(); // Error message
