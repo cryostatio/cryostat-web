@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
+import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { NodeType, EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { DEFAULT_EMPTY_UNIVERSE, isTargetNode } from '@app/Shared/Services/api.utils';
-import { Button, Text, TextVariants ,
+import {
+  Button,
+  Text,
+  TextVariants,
   DescriptionListTermHelpText,
   DescriptionListTermHelpTextButton,
   Popover,
-  TextContent,
-  TextList,
-  TextListItem,
 } from '@patternfly/react-core';
 import { NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
@@ -41,72 +43,6 @@ export const nodeTypeToAbbr = (type: NodeType): string => {
   return (type.replace(/[^A-Z]/g, '') || type.toUpperCase()).slice(0, 4);
 };
 
-export type DescriptionProps = {
-  children?: React.ReactNode;
-};
-
-export const JmxAuthDescription: React.FC<React.PropsWithChildren<DescriptionProps>> = ({ children }) => {
-  return (
-    <TextContent>
-      {children}
-      <Text component={TextVariants.p}>
-        JVM applications may be configured to require clients, such as Cryostat, to pass a challenge based
-        authentication before establishing a connection.
-      </Text>
-      <Text component={TextVariants.p}>
-        Check the deployment configuration of your JVM application for system properties such as:
-      </Text>
-      <TextList>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.authenticate</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.password.file</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.login.config</Text>
-        </TextListItem>
-      </TextList>
-    </TextContent>
-  );
-};
-
-export const JmxSslDescription: React.FC<React.PropsWithChildren<DescriptionProps>> = ({ children }) => {
-  return (
-    <TextContent>
-      {children}
-      <Text component={TextVariants.p}>
-        JVM applications can be configured to present an SSL certificate for incoming JMX connections. Clients, such as
-        Cryostat, should be configured to trust these certificates so that the origin and authenticity of the connection
-        data can be verified.
-      </Text>
-      <Text component={TextVariants.p}>
-        Check the deployment configuration of your JVM application for system properties such as:
-      </Text>
-      <TextList>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.keyStore</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.keyStorePassword</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.ssl.need.client.auth</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.trustStore</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.trustStorePassword</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.registry.ssl</Text>
-        </TextListItem>
-      </TextList>
-    </TextContent>
-  );
-};
-
 export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeStatus?, StatusExtra?] => {
   if (isTargetNode(node)) {
     return node.target.jvmId
@@ -121,7 +57,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
               </>
             ),
             callForAction: [
-              <Text component={TextVariants.p}>
+              <Text key="jmx-auth" component={TextVariants.p}>
                 If the target has{' '}
                 <DescriptionListTermHelpText>
                   <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
@@ -136,7 +72,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                   .
                 </WarningResolverAsCredModal>
               </Text>,
-              <Text component={TextVariants.p}>
+              <Text key="jmx-ssl" component={TextVariants.p}>
                 If the target has{' '}
                 <DescriptionListTermHelpText>
                   <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>

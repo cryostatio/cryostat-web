@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
 import { Button, Icon, Text, TextVariants, Tooltip } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
 import { SecurityCard } from './types';
-import { JmxSslDescription } from '@app/Topology/Shared/utils';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
 export const CertificateImport: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);

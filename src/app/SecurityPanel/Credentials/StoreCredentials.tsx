@@ -15,6 +15,7 @@
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { StoredCredential, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -48,7 +49,6 @@ import { forkJoin } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
-import { JmxAuthDescription } from '@app/Topology/Shared/utils';
 
 export const includesCredential = (credentials: StoredCredential[], credential: StoredCredential): boolean => {
   return credentials.some((cred) => cred.id === credential.id);
