@@ -111,8 +111,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
             title: 'Failed to generate JVM ID',
             description: (
               <>
-                <Text component={TextVariants.p}></Text>
-                <Text component={TextVariants.p}></Text>
+                <Text component={TextVariants.p}>Check the target authentication settings:</Text>
               </>
             ),
             callForAction: [
@@ -140,7 +139,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                 </DescriptionListTermHelpText>{' '}
                 enabled,{' '}
                 <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
-                  add its certificate
+                  add the SSL certificate
                 </WarningResolverAsLink>
                 .
               </Text>,
