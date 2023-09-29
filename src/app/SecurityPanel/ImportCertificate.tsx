@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Button, Icon, Text, Tooltip } from '@patternfly/react-core';
+import { Button, Icon, Text, TextVariants, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
 import { SecurityCard } from './types';
@@ -43,7 +43,15 @@ export const ImportCertificate: SecurityCard = {
   title: (
     <Text>
       Import SSL Certificates{' '}
-      <Tooltip isContentLeftAligned maxWidth="40rem" content={<JmxSslDescription />}>
+      <Tooltip
+        isContentLeftAligned
+        maxWidth="40rem"
+        content={
+          <JmxSslDescription>
+            <Text component={TextVariants.h3}>JMX over SSL</Text>
+          </JmxSslDescription>
+        }
+      >
         <Icon isInline>
           <OutlinedQuestionCircleIcon />
         </Icon>

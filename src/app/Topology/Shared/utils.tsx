@@ -41,9 +41,14 @@ export const nodeTypeToAbbr = (type: NodeType): string => {
   return (type.replace(/[^A-Z]/g, '') || type.toUpperCase()).slice(0, 4);
 };
 
-export const JmxAuthDescription: React.FC<{}> = () => {
+export type DescriptionProps = {
+  children?: React.ReactNode;
+};
+
+export const JmxAuthDescription: React.FC<React.PropsWithChildren<DescriptionProps>> = ({ children }) => {
   return (
     <TextContent>
+      {children}
       <Text component={TextVariants.p}>
         JVM applications may be configured to require clients (such as Cryostat) to pass an authentication challenge
         before establishing a connection.
@@ -66,9 +71,10 @@ export const JmxAuthDescription: React.FC<{}> = () => {
   );
 };
 
-export const JmxSslDescription: React.FC<{}> = () => {
+export const JmxSslDescription: React.FC<React.PropsWithChildren<DescriptionProps>> = ({ children }) => {
   return (
     <TextContent>
+      {children}
       <Text component={TextVariants.p}>
         JVM applications may be configured to present an SSL certificate for incoming JMX connections. Clients (such as
         Cryostat) should be configured to trust these certificates so that the origin and authenticity of the connection

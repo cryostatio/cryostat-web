@@ -33,6 +33,7 @@ import {
   EmptyStateIcon,
   Icon,
   Text,
+  TextVariants,
   Title,
   Toolbar,
   ToolbarContent,
@@ -523,7 +524,15 @@ export const StoreCredentialsCard: SecurityCard = {
   title: (
     <Text>
       Store Credentials{' '}
-      <Tooltip isContentLeftAligned maxWidth="40rem" content={<JmxAuthDescription />}>
+      <Tooltip
+        isContentLeftAligned
+        maxWidth="40rem"
+        content={
+          <JmxAuthDescription>
+            <Text component={TextVariants.h3}>JMX Authentication</Text>
+          </JmxAuthDescription>
+        }
+      >
         <Icon isInline>
           <OutlinedQuestionCircleIcon />
         </Icon>
