@@ -13,51 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { TemplateType } from '@app/Shared/Services/Api.service';
+
 import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
 import * as React from 'react';
-import { StaticContext } from 'react-router';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
-export interface CreateRecordingProps {
-  restartExisting?: boolean;
-  name?: string;
-  templateName?: string;
-  templateType?: TemplateType;
-  labels?: RecordingLabel[];
-  duration?: number;
-  maxAge?: number;
-  maxSize?: number;
-}
-
-export interface EventTemplate {
-  name: string;
-  description: string;
-  provider: string;
-  type: TemplateType;
-}
-
-const Comp: React.FC<RouteComponentProps<Record<string, never>, StaticContext, CreateRecordingProps>> = (props) => {
+export const CreateRecording: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState(0);
 
-  const onTabSelect = React.useCallback((evt, idx) => setActiveTab(Number(idx)), [setActiveTab]);
-
-  const prefilled = React.useMemo(
-    () => ({
-      restartExisting: props.location?.state?.restartExisting,
-      name: props.location?.state?.name,
-      templateName: props.location?.state?.templateName,
-      templateType: props.location?.state?.templateType,
-      labels: props.location?.state?.labels,
-      duration: props.location?.state?.duration,
-      maxAge: props.location?.state?.maxAge,
-      maxSize: props.location?.state?.maxSize,
-    }),
-    [props.location],
+  const onTabSelect = React.useCallback(
+    (_evt: MouseEvent | React.MouseEvent, idx: string | number) => setActiveTab(Number(idx)),
+    [setActiveTab],
   );
 
   return (
@@ -66,7 +34,7 @@ const Comp: React.FC<RouteComponentProps<Record<string, never>, StaticContext, C
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={onTabSelect}>
             <Tab eventKey={0} title="Custom Flight Recording">
-              <CustomRecordingForm prefilled={prefilled} />
+              <CustomRecordingForm />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
               <SnapshotRecordingForm />
@@ -78,5 +46,4 @@ const Comp: React.FC<RouteComponentProps<Record<string, never>, StaticContext, C
   );
 };
 
-export const CreateRecording = withRouter(Comp);
 export default CreateRecording;

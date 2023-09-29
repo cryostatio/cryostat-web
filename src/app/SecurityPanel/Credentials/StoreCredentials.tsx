@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { StoredCredential } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { StoredCredential, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
 import {
   Badge,
@@ -43,7 +42,7 @@ import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from 
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
-import { SecurityCard } from '../SecurityPanel';
+import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 

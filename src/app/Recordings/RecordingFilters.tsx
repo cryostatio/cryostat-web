@@ -20,8 +20,8 @@ import {
   allowedArchivedRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
-import { useDayjs } from '@app/utils/useDayjs';
+import { Recording, RecordingState } from '@app/Shared/Services/api.types';
+import { useDayjs } from '@app/utils/hooks/useDayjs';
 import dayjs from '@i18n/datetime';
 import {
   Dropdown,

@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-import { Notifications } from '@app/Notifications/Notifications';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { Observable, BehaviorSubject, of, EMPTY } from 'rxjs';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
-import { LoginService, SessionState } from './Login.service';
-import { NotificationCategory, NotificationChannel } from './NotificationChannel.service';
-import { Target } from './Target.service';
-
-export interface TargetDiscoveryEvent {
-  kind: 'LOST' | 'FOUND' | 'MODIFIED';
-  serviceRef: Target;
-}
+import { Target, NotificationCategory, TargetDiscoveryEvent } from './api.types';
+import { LoginService } from './Login.service';
+import { NotificationChannel } from './NotificationChannel.service';
+import { NotificationService } from './Notifications.service';
+import { SessionState } from './service.types';
 
 export class TargetsService {
-  private readonly _targets$: BehaviorSubject<Target[]> = new BehaviorSubject<Target[]>([] as Target[]);
+  private readonly _targets$: BehaviorSubject<Target[]> = new BehaviorSubject<Target[]>([]);
 
   constructor(
     private readonly api: ApiService,
-    private readonly notifications: Notifications,
+    private readonly notifications: NotificationService,
     login: LoginService,
     notificationChannel: NotificationChannel,
   ) {

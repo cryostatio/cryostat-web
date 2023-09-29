@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
-import { DeleteActiveProbes } from '@app/Modal/DeleteWarningUtils';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { EventProbe } from '@app/Shared/Services/Api.service';
+import { DeleteActiveProbes } from '@app/Modal/types';
 import {
-  MessageMeta,
   MessageType,
+  EventProbe,
   NotificationCategory,
+  MessageMeta,
   NotificationMessage,
-} from '@app/Shared/Services/NotificationChannel.service';
+} from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';

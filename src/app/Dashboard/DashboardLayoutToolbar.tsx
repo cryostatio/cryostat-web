@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import {
   dashboardConfigCreateLayoutIntent,
   dashboardConfigDeleteLayoutIntent,
@@ -59,17 +59,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddCard } from './AddCard';
+import { DEFAULT_DASHBOARD_NAME } from './const';
 import { BlankLayout } from './cryostat-dashboard-templates';
-import {
-  DashboardLayout,
-  DEFAULT_DASHBOARD_NAME,
-  getUniqueIncrementingName,
-  LayoutTemplateContext,
-  SelectedLayoutTemplate,
-} from './dashboard-utils';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutSetAsTemplateModal } from './DashboardLayoutSetAsTemplateModal';
 import { LayoutTemplateUploadModal } from './LayoutTemplateUploadModal';
+import { SelectedLayoutTemplate, DashboardLayout } from './types';
+import { getUniqueIncrementingName, LayoutTemplateContext } from './utils';
 
 export interface DashboardLayoutToolbarProps {
   children?: React.ReactNode;

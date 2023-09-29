@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { ApiV2Response } from '@app/Shared/Services/Api.service';
+import { ApiV2Response } from '@app/Shared/Services/api.types';
 import { AuthCredentials } from '@app/Shared/Services/AuthCredentials.service';
-import { AuthMethod, LoginService, SessionState } from '@app/Shared/Services/Login.service';
+import { LoginService } from '@app/Shared/Services/Login.service';
+import { AuthMethod, SessionState } from '@app/Shared/Services/service.types';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { firstValueFrom, of, timeout } from 'rxjs';

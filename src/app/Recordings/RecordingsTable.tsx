@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { isAuthFail } from '@app/ErrorView/types';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Title,

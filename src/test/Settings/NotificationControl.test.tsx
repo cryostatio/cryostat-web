@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationControl } from '@app/Settings/NotificationControl';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { NotificationControl } from '@app/Settings/Config/NotificationControl';
+import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
 import * as React from 'react';

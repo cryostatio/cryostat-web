@@ -16,7 +16,7 @@
 import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AnalysisResult } from '@app/Shared/Services/api.types';
 import {
   Dropdown,
   DropdownItem,

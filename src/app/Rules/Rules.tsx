@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
 import {
   Button,
@@ -55,41 +55,7 @@ import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
-
-export interface Rule {
-  name: string;
-  description: string;
-  matchExpression: string;
-  enabled: boolean;
-  eventSpecifier: string;
-  archivalPeriodSeconds: number;
-  initialDelaySeconds: number;
-  preservedArchives: number;
-  maxAgeSeconds: number;
-  maxSizeBytes: number;
-}
-
-export const ruleObjKeys = [
-  'name',
-  'description',
-  'matchExpression',
-  'enabled',
-  'eventSpecifier',
-  'archivalPeriodSeconds',
-  'initialDelaySeconds',
-  'preservedArchives',
-  'maxAgeSeconds',
-  'maxSizeBytes',
-];
-
-export const isRule = (obj: object): boolean => {
-  for (const key of ruleObjKeys) {
-    if (!Object.prototype.hasOwnProperty.call(obj, key)) {
-      return false;
-    }
-  } // Ignore unknown fields
-  return true;
-};
+import { RuleToDeleteOrDisable } from './types';
 
 const tableColumns: TableColumn[] = [
   {
@@ -148,14 +114,9 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-export interface RuleToDeleteOrDisable {
-  rule: Rule;
-  type: 'DELETE' | 'DISABLE';
-}
+export interface RulesTableProps {}
 
-export interface RulesProps {}
-
-export const Rules: React.FC<RulesProps> = (_) => {
+export const RulesTable: React.FC<RulesTableProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
   const addSubscription = useSubscriptions();
@@ -505,4 +466,4 @@ export const Rules: React.FC<RulesProps> = (_) => {
   );
 };
 
-export default Rules;
+export default RulesTable;

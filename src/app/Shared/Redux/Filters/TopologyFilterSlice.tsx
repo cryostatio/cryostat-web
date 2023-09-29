@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EnvironmentNode, NodeType, TargetNode } from '@app/Topology/typings';
+import { NodeType, EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { ReducerWithInitialState } from '@reduxjs/toolkit/dist/createReducer';
 import { getPersistedState } from '../utils';

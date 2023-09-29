@@ -17,9 +17,9 @@
 import { Button } from '@patternfly/react-core';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
-import { SecurityCard } from './SecurityPanel';
+import { SecurityCard } from './types';
 
-const Component = () => {
+export const CertificateImport: React.FC = () => {
   const [showModal, setShowModal] = React.useState(false);
 
   const handleModalClose = () => {
@@ -39,5 +39,5 @@ const Component = () => {
 export const ImportCertificate: SecurityCard = {
   title: 'Import SSL Certificates',
   description: 'The Cryostat server must be restarted in order to reload the certificate store.',
-  content: Component,
+  content: CertificateImport,
 };

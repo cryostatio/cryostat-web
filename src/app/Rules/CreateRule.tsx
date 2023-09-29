@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { EventTemplate } from '@app/CreateRecording/CreateRecording';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpressionHint';
-import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorForm';
-import { TemplateType } from '@app/Shared/Services/Api.service';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { BreadcrumbTrail } from '@app/BreadcrumbPage/types';
+import { EventTemplateIdentifier } from '@app/CreateRecording/types';
+import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
+import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
+import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
+import { LoadingProps } from '@app/Shared/Components/types';
+import { EventTemplate, Target, Rule } from '@app/Shared/Services/api.types';
+import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
@@ -51,121 +53,178 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useHistory, withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
-import { Rule } from './Rules';
+import { RuleFormData } from './types';
+import { isRuleNameValid } from './utils';
 
-// FIXME check if this is correct/matches backend name validation
-export const RuleNamePattern = /^[\w_]+$/;
+export interface CreateRuleFormProps {}
 
-interface CreateRuleFormProps {}
-
-const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
+export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
-  // Do not use useSearchExpression hook for display.
-  // This causes the cursor to jump to the end due to async updates.
-  const matchExprService = useExprSvc();
-  // Use this for displaying match expression input
-  const [matchExpressionInput, setMatchExpressionInput] = React.useState('');
+  // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
+  const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
 
-  const [name, setName] = React.useState('');
-  const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
-  const [description, setDescription] = React.useState('');
-  const [enabled, setEnabled] = React.useState(true);
-  const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
+  const [formData, setFormData] = React.useState<RuleFormData>({
+    name: '',
+    nameValid: ValidatedOptions.default,
+    enabled: true,
+    description: '',
+    matchExpression: '', // Use this for displaying match expression input
+    matchExpressionValid: ValidatedOptions.default,
+    maxAge: 0,
+    maxAgeUnit: 1,
+    maxSize: 0,
+    maxSizeUnit: 1,
+    archivalPeriod: 0,
+    archivalPeriodUnit: 1,
+    initialDelay: 0,
+    initialDelayUnit: 1,
+    preservedArchives: 0,
+  });
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
-  const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>({});
-  const [maxAge, setMaxAge] = React.useState(0);
-  const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
-  const [maxSize, setMaxSize] = React.useState(0);
-  const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
-  const [archivalPeriod, setArchivalPeriod] = React.useState(0);
-  const [archivalPeriodUnits, setArchivalPeriodUnits] = React.useState(1);
-  const [initialDelay, setInitialDelay] = React.useState(0);
-  const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
-  const [preservedArchives, setPreservedArchives] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   const [evaluating, setEvaluating] = React.useState(false);
   const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
   const matchedTargetsRef = React.useRef(new Subject<Target[]>());
 
-  const handleNameChange = React.useCallback(
-    (name) => {
-      setNameValid(RuleNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
-      setName(name);
-    },
-    [setNameValid, setName],
-  );
-
   const eventSpecifierString = React.useMemo(() => {
     let str = '';
-    const { name, type } = template;
-    if (name) {
-      str += `template=${name}`;
+    const { template } = formData;
+    if (template && template.name) {
+      str += `template=${template.name}`;
     }
-    if (type) {
-      str += `,type=${type}`;
+    if (template && template.type) {
+      str += `,type=${template.type}`;
     }
     return str;
-  }, [template]);
+  }, [formData]);
+
+  const createButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'creating-automated-rule',
+        isLoading: loading,
+      }) as LoadingProps,
+    [loading],
+  );
+
+  const selectedSpecifier = React.useMemo(() => {
+    const { template } = formData;
+    if (template && template.name && template.type) {
+      return `${template.name},${template.type}`;
+    }
+    return '';
+  }, [formData]);
+
+  const handleNameChange = React.useCallback(
+    (name: string) =>
+      setFormData((old) => ({
+        ...old,
+        name,
+        nameValid: !name
+          ? ValidatedOptions.default
+          : isRuleNameValid(name)
+          ? ValidatedOptions.success
+          : ValidatedOptions.error,
+      })),
+    [setFormData],
+  );
+
+  const handleDescriptionChange = React.useCallback(
+    (description: string) => setFormData((old) => ({ ...old, description })),
+    [setFormData],
+  );
+
+  const handleMatchExpressionChange = React.useCallback(
+    (matchExpression: string) => {
+      matchExprService.setSearchExpression(matchExpression);
+      setFormData((old) => ({ ...old, matchExpression }));
+    },
+    [setFormData, matchExprService],
+  );
 
   const handleTemplateChange = React.useCallback(
-    (templateName?: string, templateType?: TemplateType) => {
-      setTemplate({
-        name: templateName,
-        type: templateType,
-      });
-    },
-    [setTemplate],
+    (template: EventTemplateIdentifier) => setFormData((old) => ({ ...old, template })),
+    [setFormData],
   );
 
-  const handleMaxAgeChange = React.useCallback((maxAge) => setMaxAge(Number(maxAge)), [setMaxAge]);
+  const handleEnabledChange = React.useCallback(
+    (enabled: boolean) => setFormData((old) => ({ ...old, enabled })),
+    [setFormData],
+  );
+
+  const handleMaxAgeChange = React.useCallback(
+    (maxAge: string) => setFormData((old) => ({ ...old, maxAge: Number(maxAge) })),
+    [setFormData],
+  );
 
   const handleMaxAgeUnitChange = React.useCallback(
-    (maxAgeUnit) => setMaxAgeUnits(Number(maxAgeUnit)),
-    [setMaxAgeUnits],
+    (maxAgeUnit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(maxAgeUnit) })),
+    [setFormData],
   );
 
-  const handleMaxSizeChange = React.useCallback((maxSize) => setMaxSize(Number(maxSize)), [setMaxSize]);
+  const handleMaxSizeChange = React.useCallback(
+    (maxSize: string) => setFormData((old) => ({ ...old, maxSize: Number(maxSize) })),
+    [setFormData],
+  );
 
   const handleMaxSizeUnitChange = React.useCallback(
-    (maxSizeUnit) => setMaxSizeUnits(Number(maxSizeUnit)),
-    [setMaxSizeUnits],
+    (maxSizeUnit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(maxSizeUnit) })),
+    [setFormData],
   );
 
   const handleArchivalPeriodChange = React.useCallback(
-    (archivalPeriod) => setArchivalPeriod(Number(archivalPeriod)),
-    [setArchivalPeriod],
+    (archivalPeriod: string) => setFormData((old) => ({ ...old, archivalPeriod: Number(archivalPeriod) })),
+    [setFormData],
   );
 
   const handleArchivalPeriodUnitsChange = React.useCallback(
-    (evt) => setArchivalPeriodUnits(Number(evt)),
-    [setArchivalPeriodUnits],
+    (archivalPeriodUnit: string) => setFormData((old) => ({ ...old, archivalPeriodUnit: Number(archivalPeriodUnit) })),
+    [setFormData],
   );
 
   const handleInitialDelayChange = React.useCallback(
-    (initialDelay) => setInitialDelay(Number(initialDelay)),
-    [setInitialDelay],
+    (initialDelay: string) => setFormData((old) => ({ ...old, initialDelay: Number(initialDelay) })),
+    [setFormData],
   );
 
   const handleInitialDelayUnitsChanged = React.useCallback(
-    (initialDelayUnit) => setInitialDelayUnits(Number(initialDelayUnit)),
-    [setInitialDelayUnits],
+    (initialDelayUnit: string) => setFormData((old) => ({ ...old, initialDelayUnit: Number(initialDelayUnit) })),
+    [setFormData],
   );
 
   const handlePreservedArchivesChange = React.useCallback(
-    (preservedArchives) => setPreservedArchives(Number(preservedArchives)),
-    [setPreservedArchives],
+    (preservedArchives: string) => setFormData((old) => ({ ...old, preservedArchives: Number(preservedArchives) })),
+    [setFormData],
   );
 
+  const exitForm = React.useCallback(() => history.push('/rules'), [history]);
+
   const handleSubmit = React.useCallback((): void => {
-    setLoading(true);
     const notificationMessages: string[] = [];
+    const {
+      name,
+      nameValid,
+      description,
+      enabled,
+      matchExpression,
+      preservedArchives,
+      archivalPeriod,
+      archivalPeriodUnit,
+      initialDelay,
+      initialDelayUnit,
+      maxAge,
+      maxAgeUnit,
+      maxSize,
+      maxSizeUnit,
+    } = formData;
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Rule name ${name} is invalid`);
     }
@@ -178,44 +237,24 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
       name,
       description,
       enabled,
-      matchExpression: matchExpressionInput,
+      matchExpression: matchExpression,
       eventSpecifier: eventSpecifierString,
-      archivalPeriodSeconds: archivalPeriod * archivalPeriodUnits,
-      initialDelaySeconds: initialDelay * initialDelayUnits,
+      archivalPeriodSeconds: archivalPeriod * archivalPeriodUnit,
+      initialDelaySeconds: initialDelay * initialDelayUnit,
       preservedArchives,
-      maxAgeSeconds: maxAge * maxAgeUnits,
-      maxSizeBytes: maxSize * maxSizeUnits,
+      maxAgeSeconds: maxAge * maxAgeUnit,
+      maxSizeBytes: maxSize * maxSizeUnit,
     };
+    setLoading(true);
     addSubscription(
       context.api.createRule(rule).subscribe((success) => {
         setLoading(false);
         if (success) {
-          history.push('/rules');
+          exitForm();
         }
       }),
     );
-  }, [
-    setLoading,
-    addSubscription,
-    context.api,
-    history,
-    notifications,
-    name,
-    nameValid,
-    description,
-    enabled,
-    matchExpressionInput,
-    eventSpecifierString,
-    archivalPeriod,
-    archivalPeriodUnits,
-    initialDelay,
-    initialDelayUnits,
-    preservedArchives,
-    maxAge,
-    maxAgeUnits,
-    maxSize,
-    maxSizeUnits,
-  ]);
+  }, [setLoading, addSubscription, exitForm, context.api, notifications, formData, eventSpecifierString]);
 
   React.useEffect(() => {
     const matchedTargets = matchedTargetsRef.current;
@@ -252,11 +291,11 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
             ),
           ),
         )
-        .subscribe((templates) => {
+        .subscribe((templates: EventTemplate[]) => {
           setTemplates(templates);
-          setTemplate((old) => {
-            const matched = templates.find((t) => t.name === old.name && t.type === old.type);
-            return matched ? { name: matched.name, type: matched.type } : {};
+          setFormData((old) => {
+            const matched = templates.find((t) => t.name === old.template?.name && t.type === old.template?.type);
+            return { ...old, template: matched ? { name: matched.name, type: matched.type } : undefined };
           });
         }),
     );
@@ -269,7 +308,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         matchExprService.searchExpression({
           immediateFn: () => {
             setEvaluating(true);
-            setMatchExpressionValid(ValidatedOptions.default);
+            setFormData((old) => ({ ...old, matchExpressionValid: ValidatedOptions.default }));
           },
         }),
         context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
@@ -286,48 +325,23 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         )
         .subscribe(([ts, err]) => {
           setEvaluating(false);
-          setMatchExpressionValid(
-            err
+          setFormData((old) => ({
+            ...old,
+            matchExpressionValid: err
               ? ValidatedOptions.error
               : !ts
               ? ValidatedOptions.default
               : ts.length
               ? ValidatedOptions.success
               : ValidatedOptions.warning,
-          );
+          }));
           matchedTargets.next(ts || []);
         }),
     );
-  }, [
-    matchExprService,
-    context.api,
-    context.targets,
-    setSampleTarget,
-    setMatchExpressionValid,
-    setEvaluating,
-    addSubscription,
-  ]);
-
-  const createButtonLoadingProps = React.useMemo(
-    () =>
-      ({
-        spinnerAriaValueText: 'Creating',
-        spinnerAriaLabel: 'creating-automated-rule',
-        isLoading: loading,
-      }) as LoadingPropsType,
-    [loading],
-  );
-
-  const selectedSpecifier = React.useMemo(() => {
-    const { name, type } = template;
-    if (name && type) {
-      return `${name},${type}`;
-    }
-    return '';
-  }, [template]);
+  }, [matchExprService, context.api, context.targets, setSampleTarget, setFormData, setEvaluating, addSubscription]);
 
   return (
-    <Form {...props}>
+    <Form>
       <Text component={TextVariants.small}>
         Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
         applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
@@ -340,18 +354,18 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         fieldId="rule-name"
         helperText="Enter a rule name."
         helperTextInvalid="A rule name can contain only letters, numbers, and underscores."
-        validated={nameValid}
+        validated={formData.nameValid}
         data-quickstart-id="rule-name"
       >
         <TextInput
-          value={name}
+          value={formData.name}
           isDisabled={loading}
           isRequired
           type="text"
           id="rule-name"
           aria-describedby="rule-name-helper"
           onChange={handleNameChange}
-          validated={nameValid}
+          validated={formData.nameValid}
         />
       </FormGroup>
       <FormGroup
@@ -361,14 +375,14 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         data-quickstart-id="rule-description"
       >
         <TextArea
-          value={description}
+          value={formData.description}
           isDisabled={loading}
           type="text"
           id="rule-description"
           aria-describedby="rule-description-helper"
           resizeOrientation="vertical"
           autoResize
-          onChange={setDescription}
+          onChange={handleDescriptionChange}
         />
       </FormGroup>
       <FormGroup
@@ -401,18 +415,18 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         helperText={
           evaluating
             ? 'Evaluating match expression...'
-            : matchExpressionValid === ValidatedOptions.warning
+            : formData.matchExpressionValid === ValidatedOptions.warning
             ? `Warning: Match expression matches no targets.`
             : `
   Enter a match expression. This is a Java-like code snippet that is evaluated against each target
   application to determine whether the rule should be applied.`
         }
         helperTextInvalid="The expression matching failed."
-        validated={matchExpressionValid}
+        validated={formData.matchExpressionValid}
         data-quickstart-id="rule-matchexpr"
       >
         <TextArea
-          value={matchExpressionInput}
+          value={formData.matchExpression}
           isDisabled={loading}
           isRequired
           type="text"
@@ -420,11 +434,8 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
           aria-describedby="rule-matchexpr-helper"
           resizeOrientation="vertical"
           autoResize
-          onChange={(value) => {
-            setMatchExpressionInput(value);
-            matchExprService.setSearchExpression(value);
-          }}
-          validated={matchExpressionValid}
+          onChange={handleMatchExpressionChange}
+          validated={formData.matchExpressionValid}
         />
       </FormGroup>
       <FormGroup
@@ -440,15 +451,15 @@ enabled in the future.`}
           id="rule-enabled"
           isDisabled={loading}
           aria-label="Apply this rule to matching targets"
-          isChecked={enabled}
-          onChange={setEnabled}
+          isChecked={formData.enabled}
+          onChange={handleEnabledChange}
         />
       </FormGroup>
       <FormGroup
         label="Template"
         isRequired
         fieldId="recording-template"
-        validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
+        validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
         helperText="The Event Template to be applied by this Rule against matching target applications."
         helperTextInvalid="A Template must be selected"
         data-quickstart-id="rule-evt-template"
@@ -456,7 +467,7 @@ enabled in the future.`}
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           disabled={loading}
-          validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
+          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
           templates={templates}
           onSelect={handleTemplateChange}
         />
@@ -470,7 +481,7 @@ enabled in the future.`}
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
-              value={maxSize}
+              value={formData.maxSize}
               isDisabled={loading}
               isRequired
               type="number"
@@ -482,7 +493,7 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
-              value={maxSizeUnits}
+              value={formData.maxSizeUnit}
               isDisabled={loading}
               onChange={handleMaxSizeUnitChange}
               aria-label="Max size units input"
@@ -503,7 +514,7 @@ enabled in the future.`}
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
-              value={maxAge}
+              value={formData.maxAge}
               isDisabled={loading}
               isRequired
               type="number"
@@ -515,7 +526,7 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
-              value={maxAgeUnits}
+              value={formData.maxAgeUnit}
               isDisabled={loading}
               onChange={handleMaxAgeUnitChange}
               aria-label="Max Age units Input"
@@ -536,7 +547,7 @@ enabled in the future.`}
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
-              value={archivalPeriod}
+              value={formData.archivalPeriod}
               isDisabled={loading}
               isRequired
               type="number"
@@ -548,7 +559,7 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
-              value={archivalPeriodUnits}
+              value={formData.archivalPeriodUnit}
               isDisabled={loading}
               onChange={handleArchivalPeriodUnitsChange}
               aria-label="archival period units input"
@@ -569,7 +580,7 @@ enabled in the future.`}
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
-              value={initialDelay}
+              value={formData.initialDelay}
               isDisabled={loading}
               isRequired
               type="number"
@@ -581,7 +592,7 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
-              value={initialDelayUnits}
+              value={formData.initialDelayUnit}
               isDisabled={loading}
               onChange={handleInitialDelayUnitsChanged}
               aria-label="initial delay units input"
@@ -600,7 +611,7 @@ enabled in the future.`}
         data-quickstart-id="rule-preserved-archives"
       >
         <TextInput
-          value={preservedArchives}
+          value={formData.preservedArchives}
           isDisabled={loading}
           isRequired
           type="number"
@@ -616,10 +627,10 @@ enabled in the future.`}
           onClick={handleSubmit}
           isDisabled={
             loading ||
-            nameValid !== ValidatedOptions.success ||
-            !template.name ||
-            !template.type ||
-            !matchExpressionInput
+            formData.nameValid !== ValidatedOptions.success ||
+            !formData.template?.name ||
+            !formData.template?.type ||
+            !formData.matchExpression
           }
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}
@@ -634,8 +645,9 @@ enabled in the future.`}
   );
 };
 
-const Comp: React.FC = () => {
-  const matchExpreRef = React.useRef(new SearchExprService());
+export const CreateRule: React.FC = () => {
+  const matchExpreRef = React.useRef(new MatchExpressionService());
+
   const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
     () => [
       {
@@ -678,7 +690,5 @@ const Comp: React.FC = () => {
     </BreadcrumbPage>
   );
 };
-
-export const CreateRule = withRouter(Comp);
 
 export default CreateRule;

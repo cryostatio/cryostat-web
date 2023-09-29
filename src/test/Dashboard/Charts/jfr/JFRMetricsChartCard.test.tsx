@@ -16,13 +16,13 @@
 
 jest.mock('@app/Dashboard/Charts/jfr/JFRMetricsChartController');
 
-import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
+import { ChartContext } from '@app/Dashboard/Charts/context';
 import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/jfr/JFRMetricsChartCard';
 import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { ThemeSetting } from '@app/Settings/SettingsUtils';
+import { ThemeSetting } from '@app/Settings/types';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -153,19 +153,19 @@ describe('<JFRMetricsChartCard />', () => {
     await user.click(screen.getByRole('button', { name: /create/i }));
     expect(history.location.pathname).toBe('/recordings/create');
     expect(history.location.state).toEqual({
-      duration: -1,
-      labels: [
-        {
-          key: 'origin',
-          value: 'dashboard_metrics',
-        },
-      ],
-      maxAge: 120,
-      maxSize: 100 * 1024 * 1024,
       name: 'dashboard_metrics',
-      restartExisting: true,
-      templateName: 'Continuous',
-      templateType: 'TARGET',
+      template: {
+        name: 'Continuous',
+        type: 'TARGET',
+      },
+      restart: true,
+      labels: [{ key: 'origin', value: 'dashboard_metrics' }],
+      duration: -1,
+      skipDurationCheck: true,
+      maxAge: 120,
+      maxAgeUnit: 1,
+      maxSize: 100 * 1024 * 1024,
+      maxSizeUnit: 1,
     });
   });
 

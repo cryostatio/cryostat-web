@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /* eslint @typescript-eslint/no-explicit-any: 0 */
-import { CredentialsStorage, Locations } from '@app/Settings/CredentialsStorage';
+import { CredentialsStorage, Locations } from '@app/Settings/Config/CredentialsStorage';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import * as React from 'react';

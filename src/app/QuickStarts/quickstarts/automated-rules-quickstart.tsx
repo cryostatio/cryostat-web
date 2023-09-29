@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 import React from 'react';
 import { CryostatIcon, conclusion } from '../quickstart-utils';

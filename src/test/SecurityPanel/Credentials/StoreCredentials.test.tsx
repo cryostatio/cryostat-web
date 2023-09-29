@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DeleteCredentials, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteCredentials, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { CreateCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
 import { StoreCredentials } from '@app/SecurityPanel/Credentials/StoreCredentials';
-import { MatchedCredential, StoredCredential } from '@app/Shared/Services/Api.service';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { StoredCredential, Target, MatchedCredential, NotificationMessage } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';

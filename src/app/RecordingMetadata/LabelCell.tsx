@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { Label, Text } from '@patternfly/react-core';
 import React from 'react';
 import { ClickableLabel } from './ClickableLabel';
-import { RecordingLabel } from './RecordingLabel';
+import { RecordingLabel } from './types';
+import { getLabelDisplay } from './utils';
 
 export interface LabelCellProps {
   target: string;
   labels: RecordingLabel[];
+  // If undefined, labels are not clickable (i.e. display only) and only displayed in grey.
   clickableOptions?: {
-    // If undefined, labels are not clickable (i.e. display only) and only displayed in grey.
     labelFilters: string[];
     updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
   };
 }
 
-export const LabelCell: React.FC<LabelCellProps> = (props) => {
+export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableOptions }) => {
   const isLabelSelected = React.useCallback(
     (label: RecordingLabel) => {
-      if (props.clickableOptions) {
-        const labelFilterSet = new Set(props.clickableOptions.labelFilters);
+      if (clickableOptions) {
+        const labelFilterSet = new Set(clickableOptions.labelFilters);
         return labelFilterSet.has(getLabelDisplay(label));
       }
       return false;
     },
-    [props.clickableOptions],
+    [clickableOptions],
   );
 
   const getLabelColor = React.useCallback(
@@ -49,22 +49,22 @@ export const LabelCell: React.FC<LabelCellProps> = (props) => {
   );
   const onLabelSelectToggle = React.useCallback(
     (clickedLabel: RecordingLabel) => {
-      if (props.clickableOptions) {
-        props.clickableOptions.updateFilters(props.target, {
+      if (clickableOptions) {
+        clickableOptions.updateFilters(target, {
           filterKey: 'Label',
           filterValue: getLabelDisplay(clickedLabel),
           deleted: isLabelSelected(clickedLabel),
         });
       }
     },
-    [isLabelSelected, props.clickableOptions, props.target],
+    [isLabelSelected, clickableOptions, target],
   );
 
   return (
     <>
-      {!!props.labels && props.labels.length ? (
-        props.labels.map((label) =>
-          props.clickableOptions ? (
+      {!!labels && labels.length ? (
+        labels.map((label) =>
+          clickableOptions ? (
             <ClickableLabel
               key={label.key}
               label={label}

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ThemeSetting } from '@app/Settings/SettingsUtils';
-import { Theme } from '@app/Settings/Theme';
+
+import { Theme } from '@app/Settings/Config/Theme';
+import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, act, within } from '@testing-library/react';
 import * as React from 'react';

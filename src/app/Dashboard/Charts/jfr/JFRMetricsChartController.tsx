@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { ApiService, RecordingState } from '@app/Shared/Services/Api.service';
-import { NotificationCategory, NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
+import { ApiService } from '@app/Shared/Services/Api.service';
+import { NotificationCategory, Target, RecordingState } from '@app/Shared/Services/api.types';
+import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
-import { NO_TARGET, Target, TargetService } from '@app/Shared/Services/Target.service';
+import { TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
   concatMap,
@@ -124,8 +125,8 @@ export class JFRMetricsChartController {
       });
   }
 
-  private _hasRecording(target: Target): Observable<boolean> {
-    if (target === NO_TARGET) {
+  private _hasRecording(target?: Target): Observable<boolean> {
+    if (!target) {
       return of(false);
     }
     return this._api.targetHasRecording(target, {

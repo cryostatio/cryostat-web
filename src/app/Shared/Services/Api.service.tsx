@@ -14,59 +14,59 @@
  * limitations under the License.
  */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/dashboard-utils';
-import { EventType } from '@app/Events/EventTypes';
-import { Notifications } from '@app/Notifications/Notifications';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { Rule } from '@app/Rules/Rules';
-import { EnvironmentNode } from '@app/Topology/typings';
+import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
+import { RecordingLabel } from '@app/RecordingMetadata/types';
 import { createBlobURL, jvmIdToSubdirectoryName } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { AuthMethod, LoginService, SessionState } from './Login.service';
-import { NotificationCategory } from './NotificationChannel.service';
-import { NO_TARGET, Target, TargetService, includesTarget } from './Target.service';
-
-type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
-
-export class HttpError extends Error {
-  readonly httpResponse: Response;
-
-  constructor(httpResponse: Response) {
-    super(httpResponse.statusText);
-    this.httpResponse = httpResponse;
-  }
-}
-
-export class XMLHttpError extends Error {
-  readonly xmlHttpResponse: XMLHttpResponse;
-
-  constructor(xmlHttpResponse: XMLHttpResponse) {
-    super(xmlHttpResponse.statusText);
-    this.xmlHttpResponse = xmlHttpResponse;
-  }
-}
-
-export const isHttpError = (err: unknown): err is HttpError => {
-  if (!(err instanceof Error)) {
-    return false;
-  }
-  return (err as HttpError).httpResponse !== undefined;
-};
-
-export const isXMLHttpError = (err: unknown): err is XMLHttpError => {
-  if (!(err instanceof Error)) {
-    return false;
-  }
-  return (err as XMLHttpError).xmlHttpResponse !== undefined;
-};
-
-export const isHttpOk = (statusCode: number) => {
-  return statusCode >= 200 && statusCode < 300;
-};
+import {
+  GrafanaDatasourceUrlGetResponse,
+  GrafanaDashboardUrlGetResponse,
+  HealthGetResponse,
+  Target,
+  Rule,
+  RecordingAttributes,
+  ActiveRecording,
+  RecordingResponse,
+  ApiVersion,
+  ProbeTemplate,
+  ProbeTemplateResponse,
+  EventProbe,
+  EventProbesResponse,
+  Recording,
+  AssetJwtResponse,
+  EventTemplate,
+  RuleResponse,
+  ArchivedRecording,
+  UPLOADS_SUBDIRECTORY,
+  MatchedCredential,
+  CredentialResponse,
+  StoredCredential,
+  CredentialsResponse,
+  RulesResponse,
+  EnvironmentNode,
+  DiscoveryResponse,
+  ActiveRecordingFilterInput,
+  RecordingCountResponse,
+  MBeanMetrics,
+  MBeanMetricsResponse,
+  EventType,
+  NotificationCategory,
+  NullableTarget,
+  HttpError,
+  SimpleResponse,
+  XMLHttpError,
+  XMLHttpRequestConfig,
+  XMLHttpResponse,
+} from './api.types';
+import { isHttpError, isActiveRecording, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
+import { LoginService } from './Login.service';
+import { NotificationService } from './Notifications.service';
+import { SessionState, AuthMethod } from './service.types';
+import { TargetService } from './Target.service';
 
 export class ApiService {
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
@@ -76,7 +76,7 @@ export class ApiService {
 
   constructor(
     private readonly target: TargetService,
-    private readonly notifications: Notifications,
+    private readonly notifications: NotificationService,
     private readonly login: LoginService,
   ) {
     // show recording archives when recordings available
@@ -293,46 +293,52 @@ export class ApiService {
     );
   }
 
-  createRecording(recordingAttributes: RecordingAttributes): Observable<SimpleResponse | undefined> {
+  createRecording({
+    name,
+    events,
+    duration,
+    restart,
+    archiveOnStop,
+    metadata,
+    advancedOptions,
+  }: RecordingAttributes): Observable<SimpleResponse | undefined> {
     const form = new window.FormData();
-    form.append('recordingName', recordingAttributes.name);
-    form.append('events', recordingAttributes.events);
-    if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
-      form.append('duration', String(recordingAttributes.duration));
+    form.append('recordingName', name);
+    form.append('events', events);
+    if (duration && duration > 0) {
+      form.append('duration', String(duration));
     }
-    if (recordingAttributes.archiveOnStop != null) {
-      form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
+    if (archiveOnStop != undefined) {
+      form.append('archiveOnStop', String(archiveOnStop));
     }
-    if (recordingAttributes.options) {
-      if (recordingAttributes.options.restart) {
-        form.append('restart', String(recordingAttributes.options.restart));
-      }
-      if (recordingAttributes.options.toDisk != null) {
-        form.append('toDisk', String(recordingAttributes.options.toDisk));
-      }
-      if (!!recordingAttributes.options.maxAge && recordingAttributes.options.maxAge >= 0) {
-        form.append('maxAge', String(recordingAttributes.options.maxAge));
-      }
-      if (!!recordingAttributes.options.maxSize && recordingAttributes.options.maxSize >= 0) {
-        form.append('maxSize', String(recordingAttributes.options.maxSize));
-      }
+    if (metadata) {
+      form.append('metadata', JSON.stringify(metadata));
     }
-    if (recordingAttributes.metadata) {
-      form.append('metadata', JSON.stringify(recordingAttributes.metadata));
+    if (restart != undefined) {
+      form.append('restart', String(restart));
+    }
+    if (advancedOptions) {
+      if (advancedOptions.toDisk != undefined) {
+        form.append('toDisk', String(advancedOptions.toDisk));
+      }
+      if (advancedOptions.maxAge && advancedOptions.maxAge >= 0) {
+        form.append('maxAge', String(advancedOptions.maxAge));
+      }
+      if (advancedOptions.maxSize && advancedOptions.maxSize >= 0) {
+        form.append('maxSize', String(advancedOptions.maxSize));
+      }
     }
 
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
+        this.sendRequest('v1', `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings`, {
           method: 'POST',
           body: form,
         }).pipe(
-          map((resp) => {
-            return {
-              ok: resp.ok,
-              status: resp.status,
-            };
-          }),
+          map((resp) => ({
+            ok: resp.ok,
+            status: resp.status,
+          })),
           catchError((err) => {
             if (isHttpError(err)) {
               return of({
@@ -352,7 +358,7 @@ export class ApiService {
   createSnapshot(): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
+        this.sendRequest('v1', `targets/${encodeURIComponent(target?.connectUrl || '')}/snapshot`, {
           method: 'POST',
         }).pipe(
           tap((resp) => {
@@ -374,7 +380,7 @@ export class ApiService {
   createSnapshotV2(): Observable<ActiveRecording | undefined> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
+        this.sendRequest('v2', `targets/${encodeURIComponent(target?.connectUrl || '')}/snapshot`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => resp.json() as Promise<RecordingResponse>),
@@ -395,7 +401,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v1',
-          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'PATCH',
             body: 'SAVE',
@@ -413,7 +419,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v1',
-          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'PATCH',
             body: 'STOP',
@@ -431,7 +437,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v1',
-          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'DELETE',
           },
@@ -461,7 +467,9 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v1',
-          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/upload`,
+          `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(
+            recordingName,
+          )}/upload`,
           {
             method: 'POST',
           },
@@ -473,12 +481,15 @@ export class ApiService {
     );
   }
 
-  uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
+  uploadArchivedRecordingToGrafana(
+    sourceTarget: Observable<NullableTarget>,
+    recordingName: string,
+  ): Observable<boolean> {
     return sourceTarget.pipe(
       concatMap((target) =>
         this.sendRequest(
           'beta',
-          `recordings/${encodeURIComponent(target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
+          `recordings/${encodeURIComponent(target?.connectUrl || '')}/${encodeURIComponent(recordingName)}/upload`,
           {
             method: 'POST',
           },
@@ -500,6 +511,7 @@ export class ApiService {
       first(),
     );
   }
+
   deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
     const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
     return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}`, {
@@ -583,7 +595,7 @@ export class ApiService {
   removeProbes(): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
+        this.sendRequest('v2', `targets/${encodeURIComponent(target?.connectUrl || '')}/probes`, {
           method: 'DELETE',
         }).pipe(
           map((resp) => resp.ok),
@@ -599,7 +611,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v2',
-          `targets/${encodeURIComponent(target.connectUrl)}/probes/${encodeURIComponent(templateName)}`,
+          `targets/${encodeURIComponent(target?.connectUrl || '')}/probes/${encodeURIComponent(templateName)}`,
           {
             method: 'POST',
           },
@@ -698,7 +710,7 @@ export class ApiService {
       concatMap((target) =>
         this.sendRequest(
           'v2',
-          `targets/${encodeURIComponent(target.connectUrl)}/probes`,
+          `targets/${encodeURIComponent(target?.connectUrl || '')}/probes`,
           {
             method: 'GET',
           },
@@ -815,7 +827,7 @@ export class ApiService {
         map(
           (target) =>
             `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
-              target.connectUrl,
+              target?.connectUrl || '',
             )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`,
         ),
       )
@@ -919,7 +931,7 @@ export class ApiService {
 
   postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
     return this.target.target().pipe(
-      filter((target) => target !== NO_TARGET),
+      filter((target: Target) => !!target),
       first(),
       concatMap((target) =>
         this.graphql<any>(
@@ -966,9 +978,9 @@ export class ApiService {
 
   postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ActiveRecording[]> {
     return this.target.target().pipe(
-      filter((target) => target !== NO_TARGET),
+      filter((target) => !!target),
       first(),
-      concatMap((target) =>
+      concatMap((target: Target) =>
         this.graphql<any>(
           `
         query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
@@ -1513,328 +1525,3 @@ export class ApiService {
     throw error;
   }
 }
-
-export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
-
-export interface ApiV2Response {
-  meta: {
-    status: string;
-    type: string;
-  };
-  data: object;
-}
-
-interface AssetJwtResponse extends ApiV2Response {
-  data: {
-    result: {
-      resourceUrl: string;
-    };
-  };
-}
-
-interface RecordingResponse extends ApiV2Response {
-  data: {
-    result: ActiveRecording;
-  };
-}
-
-interface CredentialResponse extends ApiV2Response {
-  data: {
-    result: MatchedCredential;
-  };
-}
-
-interface ProbeTemplateResponse extends ApiV2Response {
-  data: {
-    result: ProbeTemplate[];
-  };
-}
-
-interface EventProbesResponse extends ApiV2Response {
-  data: {
-    result: EventProbe[];
-  };
-}
-
-interface CredentialsResponse extends ApiV2Response {
-  data: {
-    result: StoredCredential[];
-  };
-}
-
-interface RuleResponse extends ApiV2Response {
-  data: {
-    result: Rule;
-  };
-}
-
-interface RulesResponse extends ApiV2Response {
-  data: {
-    result: Rule[];
-  };
-}
-
-interface DiscoveryResponse extends ApiV2Response {
-  data: {
-    result: EnvironmentNode;
-  };
-}
-
-interface RecordingCountResponse {
-  data: {
-    targetNodes: {
-      recordings: {
-        active: {
-          aggregate: {
-            count: number;
-          };
-        };
-      };
-    }[];
-  };
-}
-
-interface XMLHttpResponse {
-  body: any;
-  headers: object;
-  respType: XMLHttpRequestResponseType;
-  status: number;
-  statusText: string;
-  ok: boolean;
-  text: () => Promise<string>;
-}
-
-interface XMLHttpRequestConfig {
-  body?: XMLHttpRequestBodyInit;
-  headers: object;
-  method: string;
-  listeners?: {
-    onUploadProgress?: (e: ProgressEvent) => void;
-  };
-  abortSignal?: Observable<void>;
-}
-
-interface GrafanaDashboardUrlGetResponse {
-  grafanaDashboardUrl: string;
-}
-
-interface GrafanaDatasourceUrlGetResponse {
-  grafanaDatasourceUrl: string;
-}
-
-interface HealthGetResponse {
-  // TODO: update HTTP_API.md v1/HealthGetHandler to include cryostatVersion
-  cryostatVersion: string;
-  datasourceConfigured: boolean;
-  datasourceAvailable: boolean;
-  dashboardConfigured: boolean;
-  dashboardAvailable: boolean;
-  reportsConfigured: boolean;
-  reportsAvailable: boolean;
-}
-
-export interface MemoryUsage {
-  init: number;
-  used: number;
-  committed: number;
-  max: number;
-}
-
-export interface MBeanMetrics {
-  thread?: {
-    threadCount?: number;
-    daemonThreadCount?: number;
-  };
-  os?: {
-    name?: string;
-    arch?: string;
-    availableProcessors?: number;
-    version?: string;
-    systemCpuLoad?: number;
-    systemLoadAverage?: number;
-    processCpuLoad?: number;
-    totalPhysicalMemorySize?: number;
-    freePhysicalMemorySize?: number;
-    totalSwapSpaceSize?: number;
-  };
-  memory?: {
-    heapMemoryUsage?: MemoryUsage;
-    nonHeapMemoryUsage?: MemoryUsage;
-    heapMemoryUsagePercent?: number;
-  };
-  runtime?: {
-    bootClassPath?: string;
-    classPath?: string;
-    inputArguments?: string[];
-    libraryPath?: string;
-    managementSpecVersion?: string;
-    name?: string;
-    specName?: string;
-    specVendor?: string;
-    startTime?: number;
-    systemProperties?: object;
-    uptime?: number;
-    vmName?: string;
-    vmVendor?: string;
-    vmVersion?: string;
-    bootClassPathSupported?: boolean;
-  };
-}
-
-export interface MBeanMetricsResponse {
-  data: {
-    targetNodes: {
-      mbeanMetrics: MBeanMetrics;
-    }[];
-  };
-}
-
-export interface RecordingDirectory {
-  connectUrl: string;
-  jvmId: string;
-  recordings: ArchivedRecording[];
-}
-
-export interface ArchivedRecording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-  metadata: Metadata;
-  size: number;
-  archivedTime: number;
-}
-
-export interface ActiveRecording extends Omit<ArchivedRecording, 'size' | 'archivedTime'> {
-  id: number;
-  state: RecordingState;
-  duration: number;
-  startTime: number;
-  continuous: boolean;
-  toDisk: boolean;
-  maxSize: number;
-  maxAge: number;
-}
-
-export enum RecordingState {
-  STOPPED = 'STOPPED',
-  STARTING = 'STARTING',
-  RUNNING = 'RUNNING',
-  STOPPING = 'STOPPING',
-}
-
-export type Recording = ActiveRecording | ArchivedRecording;
-
-export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecording => {
-  return (toCheck as ActiveRecording).state !== undefined;
-};
-
-export const isGraphQLAuthError = (resp: any): boolean => {
-  if (resp.errors !== undefined) {
-    if (resp.errors[0].message.includes('Authentication failed!')) {
-      return true;
-    }
-  }
-  return false;
-};
-
-export type TemplateType = 'TARGET' | 'CUSTOM';
-
-export interface EventTemplate {
-  name: string;
-  description: string;
-  provider: string;
-  type: TemplateType;
-}
-
-export interface RecordingOptions {
-  restart?: boolean;
-  toDisk?: boolean;
-  maxSize?: number;
-  maxAge?: number;
-}
-
-export interface RecordingAttributes {
-  name: string;
-  events: string;
-  duration?: number;
-  archiveOnStop?: boolean;
-  options?: RecordingOptions;
-  metadata?: Metadata;
-}
-
-export interface Metadata {
-  labels: object;
-}
-
-export interface StoredCredential {
-  id: number;
-  matchExpression: string;
-  numMatchingTargets: number;
-}
-
-export interface ProbeTemplate {
-  name: string;
-  xml: string;
-}
-
-export interface EventProbe {
-  id: string;
-  name: string;
-  clazz: string;
-  description: string;
-  path: string;
-  recordStackTrace: boolean;
-  useRethrow: boolean;
-  methodName: string;
-  methodDescriptor: string;
-  location: string;
-  returnValue: string;
-  parameters: string;
-  fields: string;
-}
-
-export interface MatchedCredential {
-  matchExpression: string;
-  targets: Target[];
-}
-
-export interface ActiveRecordingFilterInput {
-  name?: string;
-  state?: string;
-  continuous?: boolean;
-  toDisk?: boolean;
-  durationMsGreaterThanEqual?: number;
-  durationMsLessThanEqual?: number;
-  startTimeMsBeforeEqual?: number;
-  startTimeMsAfterEqual?: number;
-  labels?: string[] | string;
-}
-
-export const automatedAnalysisRecordingName = 'automated-analysis';
-
-export interface AutomatedAnalysisRecordingConfig {
-  template: Pick<EventTemplate, 'name' | 'type'>;
-  maxSize: number;
-  maxAge: number;
-}
-
-export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
-  template: {
-    name: 'Continuous',
-    type: 'TARGET',
-  },
-  maxSize: 1048576,
-  maxAge: 0,
-};
-
-export interface ChartControllerConfig {
-  minRefresh: number;
-}
-
-export const defaultChartControllerConfig: ChartControllerConfig = {
-  minRefresh: 10,
-};
-
-// New target specific archived recording apis now enforce a non-empty target field
-// The placeholder targetId for uploaded (non-target) recordings is "uploads"
-export const UPLOADS_SUBDIRECTORY = 'uploads';

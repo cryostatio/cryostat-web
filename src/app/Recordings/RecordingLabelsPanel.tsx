@@ -15,7 +15,7 @@
  */
 
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
-import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { RecordingDirectory, ArchivedRecording } from '@app/Shared/Services/api.types';
 import {
   DrawerActions,
   DrawerCloseButton,

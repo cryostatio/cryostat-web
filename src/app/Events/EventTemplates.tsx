@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
+
+import { CustomRecordingFormData } from '@app/CreateRecording/types';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { EventTemplate } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { LoadingProps } from '@app/Shared/Components/types';
+import { EventTemplate, NotificationCategory, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import {
   ActionGroup,
@@ -91,12 +91,12 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
-  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventTemplate[]);
+  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
+  const [filteredTemplates, setFilteredTemplates] = React.useState<EventTemplate[]>([]);
   const [filterText, setFilterText] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
-  const [sortBy, setSortBy] = React.useState({} as ISortBy);
+  const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [templateToDelete, setTemplateToDelete] = React.useState<EventTemplate | undefined>(undefined);
@@ -165,9 +165,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
       context.target
         .target()
         .pipe(
-          filter((target) => target !== NO_TARGET),
+          filter((target) => !!target),
           first(),
-          concatMap((target) =>
+          concatMap((target: Target) =>
             context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
           ),
         )
@@ -258,7 +258,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           onClick: () =>
             history.push({
               pathname: '/recordings/create',
-              state: { templateName: t.name, templateType: t.type } as CreateRecordingProps,
+              state: { template: { name: t.name, type: t.type } } as Partial<CustomRecordingFormData>,
             }),
         },
       ] as IAction[];
@@ -499,7 +499,7 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
         spinnerAriaValueText: 'Submitting',
         spinnerAriaLabel: 'submitting-custom-event-template',
         isLoading: uploading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [uploading],
   );
 

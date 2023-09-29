@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import { RecordingState } from '@app/Shared/Services/Api.service';
+import { RecordingState } from '@app/Shared/Services/api.types';
 import { WebDriver } from 'selenium-webdriver';
 import { Cryostat, Recordings, setupDriver, sleep } from './util';
 

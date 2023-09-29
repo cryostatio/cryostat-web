@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording } from '@app/Shared/Services/api.types';
 import { Drawer, DrawerContent } from '@patternfly/react-core';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';

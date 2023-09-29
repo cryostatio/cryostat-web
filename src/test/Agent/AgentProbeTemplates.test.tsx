@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
-import { DeleteProbeTemplates } from '@app/Modal/DeleteWarningUtils';
-import { ProbeTemplate } from '@app/Shared/Services/Api.service';
+import { DeleteProbeTemplates } from '@app/Modal/types';
 import {
-  MessageMeta,
   MessageType,
+  ProbeTemplate,
   NotificationCategory,
+  MessageMeta,
   NotificationMessage,
-} from '@app/Shared/Services/NotificationChannel.service';
+} from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';

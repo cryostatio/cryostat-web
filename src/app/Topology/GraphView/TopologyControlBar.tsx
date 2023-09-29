@@ -22,7 +22,7 @@ import {
   Visualization,
 } from '@patternfly/react-topology';
 import * as React from 'react';
-import { CollapseIcon } from '../Shared/CollapseIcon';
+import { CollapseIcon } from '../Shared/Components/CollapseIcon';
 
 export interface TopologyControlBarProps {
   visualization: Visualization;

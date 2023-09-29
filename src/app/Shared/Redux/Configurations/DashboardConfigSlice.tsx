@@ -15,12 +15,7 @@
  */
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
-import {
-  DashboardLayout,
-  LayoutTemplate,
-  LayoutTemplateRecord,
-  LayoutTemplateVendor,
-} from '@app/Dashboard/dashboard-utils';
+import { DashboardLayout, LayoutTemplate, LayoutTemplateRecord, LayoutTemplateVendor } from '@app/Dashboard/types';
 import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';

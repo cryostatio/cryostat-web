@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DeleteAutomatedRules, DeleteOrDisableWarningType, DisableAutomatedRules } from '@app/Modal/DeleteWarningUtils';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { Rules, Rule } from '@app/Rules/Rules';
-import {
-  NotificationCategory,
-  NotificationChannel,
-  NotificationMessage,
-} from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteAutomatedRules, DeleteOrDisableWarningType, DisableAutomatedRules } from '@app/Modal/types';
+import { RulesTable } from '@app/Rules/Rules';
+import { Rule, NotificationMessage, NotificationCategory } from '@app/Shared/Services/api.types';
+import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act as doAct, cleanup, screen, within } from '@testing-library/react';
@@ -120,7 +117,7 @@ describe('<Rules />', () => {
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
             <Router history={history}>
-              <Rules />
+              <RulesTable />
             </Router>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>,
@@ -130,7 +127,7 @@ describe('<Rules />', () => {
   });
 
   it('opens create rule view when Create is clicked', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     await user.click(screen.getByRole('button', { name: /Create/ }));
 
@@ -138,7 +135,7 @@ describe('<Rules />', () => {
   });
 
   it('opens upload modal when upload icon is clicked', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     await user.click(screen.getByRole('button', { name: 'Upload' }));
 
@@ -156,7 +153,7 @@ describe('<Rules />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the Rule after clicking confirmation Delete', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
@@ -176,7 +173,7 @@ describe('<Rules />', () => {
   });
 
   it('deletes a rule when Delete is clicked w/o popup warning', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
 
@@ -189,7 +186,7 @@ describe('<Rules />', () => {
   });
 
   it('remove a rule when receiving a notification', async () => {
-    renderWithServiceContextAndRouter(<Rules />, { history: history });
+    renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
   });
@@ -203,7 +200,7 @@ describe('<Rules />', () => {
       ...defaultServices,
       notificationChannel: mockNotifications,
     };
-    const { container } = renderWithServiceContextAndRouter(<Rules />, { history: history, services: services });
+    const { container } = renderWithServiceContextAndRouter(<RulesTable />, { history: history, services: services });
 
     expect(await screen.findByText(mockRule.name)).toBeInTheDocument();
 
@@ -223,7 +220,7 @@ describe('<Rules />', () => {
   });
 
   it('downloads a rule when Download is clicked', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     await user.click(screen.getByLabelText('Actions'));
     await user.click(await screen.findByText('Download'));
@@ -233,7 +230,7 @@ describe('<Rules />', () => {
   });
 
   it('updates a rule when the switch is clicked', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
     expect(updateSpy).toHaveBeenCalledTimes(1);
@@ -242,7 +239,7 @@ describe('<Rules />', () => {
 
   it('shows a popup when toggle disables rule and then disable the Rule after clicking confirmation Disable', async () => {
     const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
 
@@ -256,7 +253,7 @@ describe('<Rules />', () => {
   });
 
   it('upload a rule file when Submit is clicked', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+    const { user } = renderWithServiceContextAndRouter(<RulesTable />, { history: history });
 
     await user.click(screen.getByRole('button', { name: 'Upload' }));
 

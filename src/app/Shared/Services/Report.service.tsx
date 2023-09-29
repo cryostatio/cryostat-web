@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Notifications } from '@app/Notifications/Notifications';
 import { Base64 } from 'js-base64';
 import { Observable, from, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
-import { isActiveRecording, Recording } from './Api.service';
-import { LoginService } from './Login.service';
+import { Recording, CachedReportValue, GenerationError, AnalysisResult } from './api.types';
+import { isActiveRecording, isQuotaExceededError, isGenerationError } from './api.utils';
+import type { LoginService } from './Login.service';
+import type { NotificationService } from './Notifications.service';
 
 export class ReportService {
   constructor(
     private login: LoginService,
-    private notifications: Notifications,
+    private notifications: NotificationService,
   ) {}
 
   reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
@@ -127,73 +128,3 @@ export class ReportService {
     return Base64.encode(`${connectUrl}.latestReportTimestamp`);
   }
 }
-
-export interface CachedReportValue {
-  report: AnalysisResult[];
-  timestamp: number;
-}
-
-// [topic, { ruleName, score, description, ... }}]
-export type CategorizedRuleEvaluations = [string, AnalysisResult[]];
-
-export type GenerationError = Error & {
-  status: number;
-  messageDetail: Observable<string>;
-};
-
-export const isGenerationError = (err: unknown): err is GenerationError => {
-  if ((err as GenerationError).name === undefined) {
-    return false;
-  }
-  if ((err as GenerationError).message === undefined) {
-    return false;
-  }
-  if ((err as GenerationError).messageDetail === undefined) {
-    return false;
-  }
-  if ((err as GenerationError).status === undefined) {
-    return false;
-  }
-  return true;
-};
-
-export const isQuotaExceededError = (err: unknown): err is DOMException => {
-  return (
-    err instanceof DOMException &&
-    (err.name === 'QuotaExceededError' ||
-      // Firefox
-      err.name === 'NS_ERROR_DOM_QUOTA_REACHED')
-  );
-};
-
-export interface AnalysisResult {
-  name: string;
-  topic: string;
-  score: number;
-  evaluation: Evaluation;
-}
-
-export interface Evaluation {
-  summary: string;
-  explanation: string;
-  solution: string;
-  suggestions: Suggestion[];
-}
-
-export interface Suggestion {
-  setting: string;
-  name: string;
-  value: string;
-}
-
-export enum AutomatedAnalysisScore {
-  NA_SCORE = -1,
-  ORANGE_SCORE_THRESHOLD = 25,
-  RED_SCORE_THRESHOLD = 75,
-}
-
-export const FAILED_REPORT_MESSAGE =
-  'Failed to load the report from recording because the requested entity is too large.';
-export const NO_RECORDINGS_MESSAGE = 'No active or archived recordings available. Create a new recording for analysis.';
-export const RECORDING_FAILURE_MESSAGE = 'Failed to start recording for analysis.';
-export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this recording is not supported on this JVM.';

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { dashboardConfigReorderCardIntent } from '@app/Shared/Redux/ReduxStore';
 import { clickOutside } from '@app/utils/utils';
 import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { DRAGGABLE_REF_KLAZZ } from './dashboard-utils';
+import { DRAGGABLE_REF_KLAZZ } from './const';
 import { handleDisabledElements } from './ResizableRef';
 
 const getOverlapScales = (dragIndex: number, hoverIndex: number): [number, number] => {

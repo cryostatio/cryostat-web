@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { SelectTemplateSelectorForm } from '@app/Shared/SelectTemplateSelectorForm';
-import { RecordingOptions, RecordingAttributes, TemplateType } from '@app/Shared/Services/Api.service';
+import { RecordingLabel } from '@app/RecordingMetadata/types';
+import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
+import { LoadingProps } from '@app/Shared/Components/types';
+import { EventTemplate, RecordingAttributes, AdvancedRecordingOptions, Target } from '@app/Shared/Services/api.types';
+import { isTargetAgentHttp } from '@app/Shared/Services/api.utils';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { isTargetAgentHttp, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
@@ -47,61 +48,41 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { EventTemplate } from './CreateRecording';
+import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
+import { isDurationValid, isRecordingNameValid } from './utils';
 
-export interface CustomRecordingFormProps {
-  prefilled?: {
-    restartExisting?: boolean;
-    name?: string;
-    templateName?: string;
-    templateType?: TemplateType;
-    labels?: RecordingLabel[];
-    duration?: number;
-    maxAge?: number;
-    maxSize?: number;
-  };
-}
-
-export const RecordingNamePattern = /^[\w_]+$/;
-export const DurationPattern = /^[1-9][0-9]*$/;
-
-export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefilled }) => {
+export const CustomRecordingForm: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
+  const location = useLocation<Partial<CustomRecordingFormData> | undefined>();
 
-  const [recordingName, setRecordingName] = React.useState(prefilled?.name || '');
-  const [nameValid, setNameValid] = React.useState(
-    prefilled?.name
-      ? RecordingNamePattern.test(recordingName)
-        ? ValidatedOptions.success
-        : ValidatedOptions.error
-      : ValidatedOptions.default,
-  );
-  const [restartExisting, setRestartExisting] = React.useState(prefilled?.restartExisting || false);
-  const [continuous, setContinuous] = React.useState((prefilled?.duration || 30) < 1);
-  const [archiveOnStop, setArchiveOnStop] = React.useState(true);
-  const [duration, setDuration] = React.useState(prefilled?.duration || 30);
-  const [durationUnit, setDurationUnit] = React.useState(1000);
-  const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
-  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
-  const [template, setTemplate] = React.useState<Pick<Partial<EventTemplate>, 'name' | 'type'>>({
-    name: prefilled?.templateName,
-    type: prefilled?.templateType,
+  const [formData, setFormData] = React.useState<CustomRecordingFormData>({
+    name: '',
+    labels: [],
+    continuous: false,
+    archiveOnStop: true,
+    restart: false,
+    duration: 30,
+    durationUnit: 1000,
+    maxAge: 0,
+    maxAgeUnit: 1,
+    maxSize: 0,
+    maxSizeUnit: 1,
+    toDisk: true,
+    nameValid: ValidatedOptions.default,
+    labelsValid: ValidatedOptions.default,
+    durationValid: ValidatedOptions.success,
   });
-  const [maxAge, setMaxAge] = React.useState(prefilled?.maxAge || 0);
-  const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
-  const [maxSize, setMaxSize] = React.useState(prefilled?.maxSize || 0);
-  const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
-  const [toDisk, setToDisk] = React.useState(true);
-  const [labels, setLabels] = React.useState(prefilled?.labels || []);
-  const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
+  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+
+  const exitForm = React.useCallback(() => history.goBack(), [history]);
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
@@ -113,137 +94,159 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           .subscribe((resp) => {
             setLoading(false);
             if (resp && resp.ok) {
-              history.goBack();
+              exitForm();
             }
           }),
       );
     },
-    [addSubscription, context.api, history, setLoading],
+    [addSubscription, context.api, exitForm, setLoading],
   );
 
   const handleRestartExistingChange = React.useCallback(
-    (checked) => {
-      setRestartExisting(checked);
-    },
-    [setRestartExisting],
+    (checked: boolean) => setFormData((old) => ({ ...old, restart: checked })),
+    [setFormData],
   );
 
   const handleContinuousChange = React.useCallback(
-    (checked) => {
-      setContinuous(checked);
-      setDuration(0);
-      setDurationValid(checked ? ValidatedOptions.success : ValidatedOptions.error);
-    },
-    [setContinuous, setDuration, setDurationValid],
+    (checked: boolean) =>
+      setFormData((old) => ({
+        ...old,
+        continuous: checked,
+        duration: 0,
+        durationValid: checked ? ValidatedOptions.success : ValidatedOptions.error,
+      })),
+    [setFormData],
   );
 
   const handleDurationChange = React.useCallback(
-    (evt) => {
-      setDuration(Number(evt));
-      setDurationValid(DurationPattern.test(evt) ? ValidatedOptions.success : ValidatedOptions.error);
-    },
-    [setDurationValid, setDuration],
+    (value: number) =>
+      setFormData((old) => ({
+        ...old,
+        duration: value,
+        durationValid: isDurationValid(value) ? ValidatedOptions.success : ValidatedOptions.error,
+      })),
+    [setFormData],
   );
 
   const handleDurationUnitChange = React.useCallback(
-    (evt) => {
-      setDurationUnit(Number(evt));
-    },
-    [setDurationUnit],
+    (unit: number) => setFormData((old) => ({ ...old, durationUnit: unit })),
+    [setFormData],
   );
 
   const handleTemplateChange = React.useCallback(
-    (templateName?: string, templateType?: TemplateType) => {
-      setTemplate({
-        name: templateName,
-        type: templateType,
-      });
-    },
-    [setTemplate],
+    (template: EventTemplateIdentifier) => setFormData((old) => ({ ...old, template })),
+    [setFormData],
   );
 
   const eventSpecifierString = React.useMemo(() => {
     let str = '';
-    const { name, type } = template;
-    if (name) {
-      str += `template=${name}`;
+    const { template } = formData;
+    if (template && template.name) {
+      str += `template=${template.name}`;
     }
-    if (type) {
-      str += `,type=${type}`;
+    if (template && template.type) {
+      str += `,type=${template.type}`;
     }
     return str;
-  }, [template]);
+  }, [formData]);
 
   const getFormattedLabels = React.useCallback(() => {
     const obj = {};
 
-    labels.forEach((l) => {
-      if (!!l.key && !!l.value) {
+    formData.labels.forEach((l) => {
+      if (l.key && l.value) {
         obj[l.key] = l.value;
       }
     });
 
     return obj;
-  }, [labels]);
+  }, [formData]);
 
   const handleRecordingNameChange = React.useCallback(
-    (name) => {
-      setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
-      setRecordingName(name);
-    },
-    [setNameValid, setRecordingName],
+    (name: string) =>
+      setFormData((old) => ({
+        ...old,
+        name: name,
+        nameValid: isRecordingNameValid(name) ? ValidatedOptions.success : ValidatedOptions.error,
+      })),
+    [setFormData],
   );
 
   const handleMaxAgeChange = React.useCallback(
-    (evt) => {
-      setMaxAge(Number(evt));
-    },
-    [setMaxAge],
+    (value: string) => setFormData((old) => ({ ...old, maxAge: Number(value) })),
+    [setFormData],
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
-    (evt) => {
-      setMaxAgeUnits(Number(evt));
-    },
-    [setMaxAgeUnits],
+    (unit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(unit) })),
+    [setFormData],
   );
 
   const handleMaxSizeChange = React.useCallback(
-    (evt) => {
-      setMaxSize(Number(evt));
-    },
-    [setMaxSize],
+    (value: string) => setFormData((old) => ({ ...old, maxSize: Number(value) })),
+    [setFormData],
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
-    (evt) => {
-      setMaxSizeUnits(Number(evt));
-    },
-    [setMaxSizeUnits],
+    (unit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(unit) })),
+    [setFormData],
   );
 
   const handleToDiskChange = React.useCallback(
-    (checked, evt) => {
-      setToDisk(evt.target.checked);
-    },
-    [setToDisk],
+    (toDisk: boolean) => setFormData((old) => ({ ...old, toDisk })),
+    [setFormData],
   );
 
-  const setRecordingOptions = React.useCallback(
-    (options: RecordingOptions) => {
-      // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
-      setMaxAge(prefilled?.maxAge || options.maxAge || 0);
-      setMaxAgeUnits(1);
-      setMaxSize(prefilled?.maxSize || options.maxSize || 0);
-      setMaxSizeUnits(1);
+  const handleLabelsChange = React.useCallback(
+    (labels: RecordingLabel[]) => {
+      setFormData((old) => ({ ...old, labels }));
     },
-    [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits, prefilled],
+    [setFormData],
+  );
+
+  const handleLabelValidationChange = React.useCallback(
+    (labelsValid: ValidatedOptions) => setFormData((old) => ({ ...old, labelsValid })),
+    [setFormData],
+  );
+
+  const handleArchiveOnStopChange = React.useCallback(
+    (archiveOnStop: boolean) => setFormData((old) => ({ ...old, archiveOnStop })),
+    [setFormData],
+  );
+
+  const setAdvancedRecordingOptions = React.useCallback(
+    (options: AdvancedRecordingOptions) => {
+      // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
+      setFormData((old) => ({
+        ...old,
+        maxAge: options.maxAge || 0,
+        maxAgeUnit: 1,
+        maxSize: options.maxSize || 0,
+        maxSizeUnit: 1,
+      }));
+    },
+    [setFormData],
   );
 
   const handleSubmit = React.useCallback(() => {
+    const {
+      name,
+      nameValid,
+      restart,
+      toDisk,
+      continuous,
+      maxAge,
+      maxAgeUnit,
+      maxSize,
+      maxSizeUnit,
+      duration,
+      durationUnit,
+      archiveOnStop,
+    } = formData;
+
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
-      notificationMessages.push(`Recording name ${recordingName} is invalid`);
+      notificationMessages.push(`Recording name ${name} is invalid`);
     }
 
     if (notificationMessages.length > 0) {
@@ -252,101 +255,68 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       return;
     }
 
-    const options: RecordingOptions = {
-      restart: restartExisting,
-      toDisk: toDisk,
-      maxAge: toDisk ? (continuous ? maxAge * maxAgeUnits : undefined) : undefined,
-      maxSize: toDisk ? maxSize * maxSizeUnits : undefined,
-    };
     const recordingAttributes: RecordingAttributes = {
-      name: recordingName,
+      name: name,
       events: eventSpecifierString,
       duration: continuous ? undefined : duration * (durationUnit / 1000),
       archiveOnStop: archiveOnStop && !continuous,
-      options: options,
+      restart: restart,
+      advancedOptions: {
+        toDisk: toDisk,
+        maxAge: toDisk ? (continuous ? maxAge * maxAgeUnit : undefined) : undefined,
+        maxSize: toDisk ? maxSize * maxSizeUnit : undefined,
+      },
       metadata: { labels: getFormattedLabels() },
     };
     handleCreateRecording(recordingAttributes);
-  }, [
-    eventSpecifierString,
-    getFormattedLabels,
-    archiveOnStop,
-    continuous,
-    duration,
-    durationUnit,
-    maxAge,
-    maxAgeUnits,
-    maxSize,
-    maxSizeUnits,
-    nameValid,
-    notifications,
-    recordingName,
-    restartExisting,
-    toDisk,
-    handleCreateRecording,
-  ]);
+  }, [eventSpecifierString, getFormattedLabels, formData, notifications, handleCreateRecording]);
 
   const refreshFormOptions = React.useCallback(
     (target: Target) => {
-      if (target === NO_TARGET) {
+      if (!target) {
         return;
       }
       addSubscription(
         forkJoin({
           templates: context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
-          recordingOptions: context.api.doGet<RecordingOptions>(
+          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(
             `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`,
           ),
         }).subscribe({
           next: ({ templates, recordingOptions }) => {
             setErrorMessage('');
             setTemplates(templates);
-            setTemplate((old) => {
-              const matched = templates.find((t) => t.name === old.name && t.type === t.type);
-              return matched ? { name: matched.name, type: matched.type } : {};
+            setFormData((old) => {
+              const matched = templates.find((t) => t.name === old.template?.name && t.type === old.template?.type);
+              return { ...old, template: matched ? { name: matched.name, type: matched.type } : undefined };
             });
-            setRecordingOptions(recordingOptions);
+            setAdvancedRecordingOptions(recordingOptions);
           },
           error: (error) => {
-            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create recordings' : error.message); // If both throw, first error will be shown
+            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create recordings' : error.message);
             setTemplates([]);
-            setTemplate({});
-            setRecordingOptions({});
+            setFormData((old) => ({ ...old, template: undefined }));
+            setAdvancedRecordingOptions({});
           },
         }),
       );
     },
-    [addSubscription, context.api, setTemplates, setTemplate, setRecordingOptions, setErrorMessage],
+    [addSubscription, context.api, setTemplates, setFormData, setAdvancedRecordingOptions, setErrorMessage],
   );
-
-  React.useEffect(() => {
-    addSubscription(
-      context.target.authFailure().subscribe(() => {
-        setErrorMessage(authFailMessage);
-        setTemplates([]);
-        setTemplate({});
-        setRecordingOptions({});
-      }),
-    );
-  }, [context.target, setErrorMessage, addSubscription, setTemplates, setTemplate, setRecordingOptions]);
-
-  React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshFormOptions));
-  }, [addSubscription, context.target, refreshFormOptions]);
 
   const isFormInvalid: boolean = React.useMemo(() => {
     return (
-      nameValid !== ValidatedOptions.success ||
-      durationValid !== ValidatedOptions.success ||
-      !template.name ||
-      !template.type ||
-      labelsValid !== ValidatedOptions.success
+      formData.nameValid !== ValidatedOptions.success ||
+      formData.durationValid !== ValidatedOptions.success ||
+      !formData.template?.name ||
+      !formData.template?.type ||
+      formData.labelsValid !== ValidatedOptions.success
     );
-  }, [nameValid, durationValid, template, labelsValid]);
+  }, [formData]);
 
   const hasReservedLabels = React.useMemo(
-    () => labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
-    [labels],
+    () => formData.labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
+    [formData],
   );
 
   const createButtonLoadingProps = React.useMemo(
@@ -355,21 +325,75 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
         spinnerAriaValueText: 'Creating',
         spinnerAriaLabel: 'create-active-recording',
         isLoading: loading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [loading],
   );
 
   const selectedSpecifier = React.useMemo(() => {
-    const { name, type } = template;
-    if (name && type) {
-      return `${name},${type}`;
+    const { template } = formData;
+    if (template && template.name && template.type) {
+      return `${template.name},${template.type}`;
     }
     return '';
-  }, [template]);
+  }, [formData]);
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+        setTemplates([]);
+        setFormData((old) => ({ ...old, template: undefined }));
+        setAdvancedRecordingOptions({});
+      }),
+    );
+  }, [context.target, setErrorMessage, addSubscription, setTemplates, setFormData, setAdvancedRecordingOptions]);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(refreshFormOptions));
+  }, [addSubscription, context.target, refreshFormOptions]);
+
+  React.useEffect(() => {
+    const {
+      name,
+      restart,
+      template,
+      labels,
+      duration,
+      durationUnit,
+      maxAge,
+      maxAgeUnit,
+      maxSize,
+      maxSizeUnit,
+      continuous,
+      skipDurationCheck,
+    } = location.state || {};
+    setFormData((old) => ({
+      ...old,
+      name: name ?? '',
+      nameValid: !name
+        ? ValidatedOptions.default
+        : isRecordingNameValid(name)
+        ? ValidatedOptions.success
+        : ValidatedOptions.error,
+      template,
+      restart: restart ?? false,
+      continuous: continuous || false,
+      labels: labels ?? [],
+      labelsValid: ValidatedOptions.default, // RecordingLabelFields component handles validating
+      duration: continuous ? 0 : duration ?? 30,
+      durationUnit: durationUnit ?? 1000,
+      durationValid:
+        skipDurationCheck || continuous || (duration ?? 30) > 0 ? ValidatedOptions.success : ValidatedOptions.error,
+      maxAge: maxAge ?? 0,
+      maxAgeUnit: maxAgeUnit ?? 1,
+      maxSize: maxSize ?? 0,
+      maxSizeUnit: maxSizeUnit ?? 1,
+    }));
+  }, [location, setFormData]);
 
   if (errorMessage != '') {
     return (
@@ -380,6 +404,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       />
     );
   }
+
   return (
     <>
       <Text component={TextVariants.small}>
@@ -393,22 +418,22 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           fieldId="recording-name"
           helperText="Enter a recording name. This will be unique within the target JVM."
           helperTextInvalid="A recording name can contain only letters, numbers, and underscores."
-          validated={nameValid}
+          validated={formData.nameValid}
         >
           <TextInput
-            value={recordingName}
+            value={formData.name}
             isRequired
             isDisabled={loading}
             type="text"
             id="recording-name"
             aria-describedby="recording-name-helper"
             onChange={handleRecordingNameChange}
-            validated={nameValid}
+            validated={formData.nameValid}
             data-quickstart-id="crf-name"
           />
           <Checkbox
             label="Restart if recording already exists"
-            isChecked={restartExisting}
+            isChecked={formData.restart}
             isDisabled={loading}
             onChange={handleRestartExistingChange}
             aria-label="restartExisting checkbox"
@@ -420,11 +445,11 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           label="Duration"
           isRequired
           fieldId="recording-duration"
-          validated={durationValid}
+          validated={formData.durationValid}
           helperText={
-            continuous
+            formData.continuous
               ? 'A continuous recording will never be automatically stopped.'
-              : archiveOnStop
+              : formData.archiveOnStop
               ? 'Time before the recording is automatically stopped and copied to archive.'
               : 'Time before the recording is automatically stopped.'
           }
@@ -435,7 +460,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             <SplitItem>
               <Checkbox
                 label="Continuous"
-                isChecked={continuous}
+                isChecked={formData.continuous}
                 isDisabled={loading}
                 onChange={handleContinuousChange}
                 aria-label="Continuous checkbox"
@@ -446,9 +471,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             <SplitItem>
               <Checkbox
                 label="Archive on Stop"
-                isDisabled={continuous || loading}
-                isChecked={archiveOnStop && !continuous}
-                onChange={setArchiveOnStop}
+                isDisabled={formData.continuous || loading}
+                isChecked={formData.archiveOnStop && !formData.continuous}
+                onChange={handleArchiveOnStopChange}
                 aria-label="ArchiveOnStop checkbox"
                 id="recording-archive-on-stop"
                 name="recording-archive-on-stop"
@@ -456,10 +481,10 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             </SplitItem>
           </Split>
           <DurationPicker
-            enabled={!continuous && !loading}
-            period={duration}
+            enabled={!formData.continuous && !loading}
+            period={formData.duration}
             onPeriodChange={handleDurationChange}
-            unitScalar={durationUnit}
+            unitScalar={formData.durationUnit}
             onUnitScalarChange={handleDurationUnitChange}
           />
         </FormGroup>
@@ -467,14 +492,14 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           label="Template"
           isRequired
           fieldId="recording-template"
-          validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
+          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
           helperText={'The Event Template to be applied in this recording'}
           helperTextInvalid="A Template must be selected"
         >
           <SelectTemplateSelectorForm
             selected={selectedSpecifier}
             templates={templates}
-            validated={!template.name ? ValidatedOptions.default : ValidatedOptions.success}
+            validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
             disabled={loading}
             onSelect={handleTemplateChange}
           />
@@ -510,9 +535,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             }
           >
             <RecordingLabelFields
-              labels={labels}
-              setLabels={setLabels}
-              setValid={setLabelsValid}
+              labels={formData.labels}
+              setLabels={handleLabelsChange}
+              setValid={handleLabelValidationChange}
               isDisabled={loading}
             />
           </FormGroup>
@@ -530,7 +555,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             <Checkbox
               label="To Disk"
               id="toDisk-checkbox"
-              isChecked={toDisk}
+              isChecked={formData.toDisk}
               onChange={handleToDiskChange}
               isDisabled={loading}
             />
@@ -543,22 +568,22 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput
-                  value={maxSize}
+                  value={formData.maxSize}
                   isRequired
                   type="number"
                   id="maxSize"
                   aria-label="max size value"
                   onChange={handleMaxSizeChange}
                   min="0"
-                  isDisabled={!toDisk || loading}
+                  isDisabled={!formData.toDisk || loading}
                 />
               </SplitItem>
               <SplitItem>
                 <FormSelect
-                  value={maxSizeUnits}
+                  value={formData.maxSizeUnit}
                   onChange={handleMaxSizeUnitChange}
                   aria-label="Max size units input"
-                  isDisabled={!toDisk || loading}
+                  isDisabled={!formData.toDisk || loading}
                 >
                   <FormSelectOption key="1" value="1" label="B" />
                   <FormSelectOption key="2" value={1024} label="KiB" />
@@ -571,22 +596,22 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput
-                  value={maxAge}
+                  value={formData.maxAge}
                   isRequired
                   type="number"
                   id="maxAgeDuration"
                   aria-label="Max age duration"
                   onChange={handleMaxAgeChange}
                   min="0"
-                  isDisabled={!continuous || !toDisk || loading}
+                  isDisabled={!formData.continuous || !formData.toDisk || loading}
                 />
               </SplitItem>
               <SplitItem>
                 <FormSelect
-                  value={maxAgeUnits}
+                  value={formData.maxAgeUnit}
                   onChange={handleMaxAgeUnitChange}
                   aria-label="Max Age units Input"
-                  isDisabled={!continuous || !toDisk || loading}
+                  isDisabled={!formData.continuous || !formData.toDisk || loading}
                 >
                   <FormSelectOption key="1" value="1" label="Seconds" />
                   <FormSelectOption key="2" value={60} label="Minutes" />

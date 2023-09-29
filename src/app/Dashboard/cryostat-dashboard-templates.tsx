@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LayoutTemplate, LayoutTemplateVendor, LayoutTemplateVersion } from './dashboard-utils';
+import { LayoutTemplate, LayoutTemplateVendor, LayoutTemplateVersion } from './types';
 
-const CURR_VERSION: LayoutTemplateVersion = LayoutTemplateVersion['v2.3'];
+const CURR_VERSION: LayoutTemplateVersion = LayoutTemplateVersion['v2.4'];
 
 export const BlankLayout: LayoutTemplate = {
   name: 'Blank',

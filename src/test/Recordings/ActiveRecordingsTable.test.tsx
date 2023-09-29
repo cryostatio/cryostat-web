@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
-import { authFailMessage } from '@app/ErrorView/ErrorView';
-import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { authFailMessage } from '@app/ErrorView/types';
+import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import {
   emptyActiveRecordingFilters,
@@ -23,8 +23,7 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ActiveRecording, RecordingState, NotificationMessage } from '@app/Shared/Services/api.types';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';

@@ -16,7 +16,7 @@
 
 import { Label } from '@patternfly/react-core';
 import React from 'react';
-import { RecordingLabel } from './RecordingLabel';
+import { RecordingLabel } from './types';
 
 export interface ClickableLabelCellProps {
   label: RecordingLabel;
@@ -24,9 +24,9 @@ export interface ClickableLabelCellProps {
   onLabelClick: (label: RecordingLabel) => void;
 }
 
-export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ onLabelClick, ...props }) => {
+export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSelected, onLabelClick }) => {
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
-  const labelColor = React.useMemo(() => (props.isSelected ? 'blue' : 'grey'), [props.isSelected]);
+  const labelColor = React.useMemo(() => (isSelected ? 'blue' : 'grey'), [isSelected]);
 
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
@@ -34,29 +34,29 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ onLabelClick
   const style = React.useMemo(() => {
     if (isHoveredOrFocused) {
       const defaultStyle = { cursor: 'pointer', '--pf-c-label__content--before--BorderWidth': '2.5px' };
-      if (props.isSelected) {
+      if (isSelected) {
         return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#06c' };
       }
       return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#8a8d90' };
     }
     return {};
-  }, [props.isSelected, isHoveredOrFocused]);
+  }, [isSelected, isHoveredOrFocused]);
 
-  const handleLabelClicked = React.useCallback(() => onLabelClick(props.label), [props.label, onLabelClick]);
+  const handleLabelClicked = React.useCallback(() => onLabelClick(label), [label, onLabelClick]);
 
   return (
     <>
       <Label
-        aria-label={`${props.label.key}: ${props.label.value}`}
+        aria-label={`${label.key}: ${label.value}`}
         style={style}
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
         onClick={handleLabelClicked}
-        key={props.label.key}
+        key={label.key}
         color={labelColor}
       >
-        {`${props.label.key}: ${props.label.value}`}
+        {`${label.key}: ${label.value}`}
       </Label>
     </>
   );

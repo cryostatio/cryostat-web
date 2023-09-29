@@ -22,7 +22,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { QuickSearchModal } from '../Actions/QuickSearchPanel';
-import Shortcuts, { ShortcutCommand } from '../Shared/Shortcuts';
+import Shortcuts, { ShortcutCommand } from '../Shared/Components/Shortcuts';
 import { DisplayOptions } from './DisplayOptions';
 import { FindByMatchExpression } from './FindByMatchExpression';
 import { HelpButton } from './HelpButton';

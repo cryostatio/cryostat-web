@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Locations } from '@app/Settings/CredentialsStorage';
+import { Locations } from '@app/Settings/Config/CredentialsStorage';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { Observable, of } from 'rxjs';
-import { ApiService } from './Api.service';
-
-export interface Credential {
-  username: string;
-  password: string;
-}
+import type { ApiService } from './Api.service';
+import { Credential } from './service.types';
 
 export class AuthCredentials {
   // TODO replace with Redux?

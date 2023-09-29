@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
+import { CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import React from 'react';

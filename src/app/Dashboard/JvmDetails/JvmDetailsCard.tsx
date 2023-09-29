@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
+import { NodeType, Target } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { Target } from '@app/Shared/Services/Target.service';
-import { NodeAction } from '@app/Topology/Actions/NodeActions';
-import EntityDetails from '@app/Topology/Shared/Entity/EntityDetails';
-import { NodeType } from '@app/Topology/typings';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { NodeAction } from '@app/Topology/Actions/types';
+import EntityDetails from '@app/Topology/Entity/EntityDetails';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import {
-  DashboardCardDescriptor,
-  DashboardCardFC,
-  DashboardCardSizes,
-  DashboardCardTypeProps,
-} from '../dashboard-utils';
 import { DashboardCard } from '../DashboardCard';
+import { DashboardCardDescriptor, DashboardCardFC, DashboardCardSizes, DashboardCardTypeProps } from '../types';
 import '@app/Topology/styles/base.css';
 
 export interface JvmDetailsCardProps extends DashboardCardTypeProps {}

@@ -16,27 +16,29 @@
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
+import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { ViewMode } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { NotificationCategory } from '@app/Shared/Services/api.types';
+import { DEFAULT_EMPTY_UNIVERSE } from '@app/Shared/Services/api.utils';
+import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
+import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Bullseye, Card, CardBody } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
-import { DiscoveryTreeContext, SearchExprService, SearchExprServiceContext } from './Shared/utils';
-import { DEFAULT_EMPTY_UNIVERSE } from './typings';
+import { DiscoveryTreeContext } from './Shared/utils';
 
 export interface TopologyProps {}
 
 export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const matchExpreRef = React.useRef(new SearchExprService());
+  const matchExpreRef = React.useRef(new MatchExpressionService());
   const firstFetchRef = React.useRef(false);
   const firstFetched = firstFetchRef.current;
 

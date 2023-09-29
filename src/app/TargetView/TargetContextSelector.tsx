@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
+import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
+import { Target } from '@app/Shared/Services/api.types';
+import { isEqualTarget, getTargetRepresentation } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { getTargetRepresentation, isEqualTarget, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Divider, Select, SelectGroup, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
-export const TargetContextSelector: React.FC<{ className?: string }> = ({ className, ...props }) => {
+export interface TargetContextSelectorProps {
+  className?: string;
+}
+
+export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ className, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
   const [targets, setTargets] = React.useState<Target[]>([]);
-  const [selectedTarget, setSelectedTarget] = React.useState<Target>(NO_TARGET);
+  const [selectedTarget, setSelectedTarget] = React.useState<Target>();
   const [favorites, setFavorites] = React.useState<string[]>(getFromLocalStorage('TARGET_FAVORITES', []));
   const [isTargetOpen, setIsTargetOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
@@ -37,7 +42,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
   const handleTargetSelect = React.useCallback(
     (_, { target }, isPlaceholder) => {
       setIsTargetOpen(false);
-      const toSelect: Target = isPlaceholder ? NO_TARGET : target;
+      const toSelect: Target = isPlaceholder ? undefined : target;
       if (!isEqualTarget(toSelect, selectedTarget)) {
         context.target.setTarget(toSelect);
       }
@@ -49,7 +54,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
     addSubscription(
       context.target.target().subscribe((target) => {
         setSelectedTarget(target);
-        if (target !== NO_TARGET) {
+        if (target) {
           // Only save to local storage when target is valid
           // NO_TARGET will clear storage
           saveToLocalStorage('TARGET', target.connectUrl);
@@ -66,13 +71,13 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
     if (!targets.length) {
       return;
     }
-    const cachedTargetUrl = getFromLocalStorage('TARGET', NO_TARGET);
+    const cachedTargetUrl = getFromLocalStorage('TARGET', '');
     const matchedTarget = targets.find((t) => t.connectUrl === cachedTargetUrl);
 
     if (matchedTarget) {
       context.target.setTarget(matchedTarget);
     } else {
-      context.target.setTarget(NO_TARGET);
+      context.target.setTarget(undefined);
       removeFromLocalStorage('TARGET');
     }
     setFavorites((old) => old.filter((f) => targets.some((t) => t.connectUrl === f)));
@@ -192,7 +197,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
   );
 
   const selectionPrefix = React.useMemo(
-    () => (selectedTarget !== NO_TARGET ? <span style={{ fontWeight: 700 }}>Target:</span> : undefined),
+    () => (!selectedTarget ? undefined : <span style={{ fontWeight: 700 }}>Target:</span>),
     [selectedTarget],
   );
 
@@ -229,13 +234,13 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
             onFilter={handleTargetFilter}
             isGrouped={!noOptions}
             selections={
-              selectedTarget !== NO_TARGET
-                ? {
+              !selectedTarget
+                ? undefined
+                : {
                     toString: () => getTargetRepresentation(selectedTarget),
                     compareTo: (other) => other.target.connectUrl === selectedTarget.connectUrl,
                     ...{ target: selectedTarget },
                   }
-                : undefined
             }
             footer={selectFooter}
             favorites={favorites}

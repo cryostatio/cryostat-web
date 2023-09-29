@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FeatureLevels } from '@app/Settings/FeatureLevels';
+import { FeatureLevels } from '@app/Settings/Config/FeatureLevels';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { cleanup, screen, act } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';

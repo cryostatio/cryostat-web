@@ -15,9 +15,9 @@
  */
 
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { RecordingLabel } from '@app/RecordingMetadata/types';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import { Target } from '@app/Shared/Services/Target.service';
+import { Target } from '@app/Shared/Services/api.types';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -29,8 +29,8 @@ const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
   annotations: {
-    cryostat: new Map(),
-    platform: new Map(),
+    cryostat: {},
+    platform: {},
   },
 };
 

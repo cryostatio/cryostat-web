@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
+
+import { TargetNode, ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
 import { Tooltip } from '@patternfly/react-core';
 import { InProgressIcon, RunningIcon, WarningTriangleIcon } from '@patternfly/react-icons';
@@ -26,9 +27,8 @@ import {
   TopologyQuadrant,
 } from '@patternfly/react-topology';
 import * as React from 'react';
-import { useResources } from '../Shared/Entity/utils';
+import { useResources } from '../Entity/utils';
 import { getStatusTargetNode } from '../Shared/utils';
-import { TargetNode } from '../typings';
 
 export const getNodeDecorators = (element: Node) => {
   return (

@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Toolbar,
@@ -50,7 +48,7 @@ import {
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
-import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
+import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './utils';
 
 const tableColumns: TableColumn[] = [
   {

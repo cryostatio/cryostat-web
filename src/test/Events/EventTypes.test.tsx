@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { authFailMessage } from '@app/ErrorView/ErrorView';
-import { EventType, EventTypes } from '@app/Events/EventTypes';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { authFailMessage } from '@app/ErrorView/types';
+import { EventTypes } from '@app/Events/EventTypes';
+import { EventType } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { act as doAct, cleanup, screen } from '@testing-library/react';

@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AuthMethod } from '@app/Shared/Services/Login.service';
+
+import { AuthMethod } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
 import { Base64 } from 'js-base64';
 import * as React from 'react';
 import { map } from 'rxjs/operators';
-import { FormProps } from './FormProps';
+import { FormProps } from './types';
 
 export const BasicAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
   const context = React.useContext(ServiceContext);
@@ -118,6 +119,6 @@ export const BasicAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
   );
 };
 
-export const BasicAuthDescriptionText = () => {
+export const BasicAuthDescriptionText: React.FC = () => {
   return <Text component={TextVariants.p}>The Cryostat server is configured with Basic authentication.</Text>;
 };

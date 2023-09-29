@@ -17,14 +17,9 @@ import { AuthCredential } from '@app/AppLayout/CredentialAuthForm';
 import { StreamOf } from '@app/utils/utils';
 import * as React from 'react';
 import { debounceTime, Subscription } from 'rxjs';
+import { TestRequest } from './types';
 
 export const CredentialContext = React.createContext(new StreamOf<AuthCredential>({ username: '', password: '' }));
-
-export interface TestRequest {
-  id: string;
-  targetUrl: string;
-  data?: unknown;
-}
 
 // Each test request registers itself to test pool when initiated. When completed, remove itself from pool.
 // Auth form will poll this pool for a set time to determine if form should is disabled.

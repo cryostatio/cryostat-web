@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { DeletionDialogControl } from '@app/Settings/DeletionDialogControl';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { DeletionDialogControl } from '@app/Settings/Config/DeletionDialogControl';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';

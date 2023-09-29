@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AutomatedAnalysisScore, AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AutomatedAnalysisScore, AnalysisResult } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
@@ -22,7 +22,7 @@ import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { transformAADescription } from '../dashboard-utils';
+import { transformAADescription } from './utils';
 
 export interface ClickableAutomatedAnalysisLabelProps {
   label: AnalysisResult;

@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { Target, TargetDiscoveryEvent, NotificationCategory } from '@app/Shared/Services/api.types';
+import { isEqualTarget, indexOfTarget, includesTarget } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Shared/Services/Target.service';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Toolbar,
@@ -383,7 +382,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         <EmptyState>
           <EmptyStateIcon icon={SearchIcon} />
           <Title headingLevel="h4" size="lg">
-            No Targets
+            No Archived Recordings
           </Title>
         </EmptyState>
       </>

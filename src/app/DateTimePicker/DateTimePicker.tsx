@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TimePicker } from '@app/DateTimePicker/TimePicker';
-import { useDayjs } from '@app/utils/useDayjs';
+import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { Timezone, defaultDatetimeFormat } from '@i18n/datetime';
 import { isHourIn24hAM } from '@i18n/datetimeUtils';
 import {
@@ -51,7 +51,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
   const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone); // Not affected by user preferences
 
   const handleTabSelect = React.useCallback(
-    (_, key: string | number) => setActiveTab(`${key}` as _TabKey),
+    (_: MouseEvent | React.MouseEvent, key: string | number) => setActiveTab(`${key}` as _TabKey),
     [setActiveTab],
   );
 

@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
-import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import {
+  ArchivedRecording,
+  ActiveRecording,
+  RecordingState,
+  NotificationMessage,
+} from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';

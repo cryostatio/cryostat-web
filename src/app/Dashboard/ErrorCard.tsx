@@ -31,14 +31,8 @@ import {
 import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  CardConfig,
-  CardValidationResult,
-  DashboardCardFC,
-  DashboardCardSizes,
-  DashboardCardTypeProps,
-} from './dashboard-utils';
 import { DashboardCard } from './DashboardCard';
+import { CardConfig, CardValidationResult, DashboardCardFC, DashboardCardSizes, DashboardCardTypeProps } from './types';
 
 export interface ErrorCardProps extends DashboardCardTypeProps {
   validationResult: CardValidationResult;

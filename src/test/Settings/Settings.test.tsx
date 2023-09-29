@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-// Must import before @app/Settings/Settings (circular deps)
-/* eslint import/order: 0*/
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Settings } from '@app/Settings/Settings';
+import { UserSetting } from '@app/Settings/types';
+import { FeatureLevel, SessionState } from '@app/Shared/Services/service.types';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
-import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
 import * as React from 'react';
+import { Router } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { renderWithServiceContextAndRouter, testT } from '../Common';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
-import { UserSetting } from '@app/Settings/SettingsUtils';
-import { SessionState } from '@app/Shared/Services/Login.service';
 
-jest.mock('@app/Settings/NotificationControl', () => ({
+jest.mock('@app/Settings/Config/NotificationControl', () => ({
   NotificationControl: {
     titleKey: 'SETTINGS.NOTIFICATION_CONTROL.TITLE',
     descConstruct: 'SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION',
@@ -41,8 +37,8 @@ jest.mock('@app/Settings/NotificationControl', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/AutomatedAnalysisConfig', () => ({
-  AutomatedAnalysisConfig: {
+jest.mock('@app/Settings/Config/AutomatedAnalysis', () => ({
+  AutomatedAnalysis: {
     titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
     descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.DASHBOARD',
@@ -51,8 +47,8 @@ jest.mock('@app/Settings/AutomatedAnalysisConfig', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/ChartCardsConfig', () => ({
-  ChartCardsConfig: {
+jest.mock('@app/Settings/Config/ChartCards', () => ({
+  ChartCards: {
     titleKey: 'SETTINGS.CHARTS_CONFIG.TITLE',
     descConstruct: 'SETTINGS.CHARTS_CONFIG.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.DASHBOARD',
@@ -60,7 +56,7 @@ jest.mock('@app/Settings/ChartCardsConfig', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/CredentialsStorage', () => ({
+jest.mock('@app/Settings/Config/CredentialsStorage', () => ({
   CredentialsStorage: {
     titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',
     descConstruct: {
@@ -72,7 +68,7 @@ jest.mock('@app/Settings/CredentialsStorage', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/DeletionDialogControl', () => ({
+jest.mock('@app/Settings/Config/DeletionDialogControl', () => ({
   DeletionDialogControl: {
     titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',
     descConstruct: 'SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION',
@@ -81,7 +77,7 @@ jest.mock('@app/Settings/DeletionDialogControl', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/WebSocketDebounce', () => ({
+jest.mock('@app/Settings/Config/WebSocketDebounce', () => ({
   WebSocketDebounce: {
     titleKey: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE',
     descConstruct: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION',
@@ -90,7 +86,7 @@ jest.mock('@app/Settings/WebSocketDebounce', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/AutoRefresh', () => ({
+jest.mock('@app/Settings/Config/AutoRefresh', () => ({
   AutoRefresh: {
     titleKey: 'SETTINGS.AUTO_REFRESH.TITLE',
     descConstruct: 'SETTINGS.AUTO_REFRESH.DESCRIPTION',
@@ -99,7 +95,7 @@ jest.mock('@app/Settings/AutoRefresh', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/FeatureLevels', () => ({
+jest.mock('@app/Settings/Config/FeatureLevels', () => ({
   FeatureLevels: {
     titleKey: 'SETTINGS.FEATURE_LEVEL.TITLE',
     descConstruct: 'SETTINGS.FEATURE_LEVEL.DESCRIPTION',
@@ -108,33 +104,31 @@ jest.mock('@app/Settings/FeatureLevels', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/Language', () => ({
+jest.mock('@app/Settings/Config/Language', () => ({
   Language: {
     titleKey: 'SETTINGS.LANGUAGE.TITLE',
     descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.GENERAL',
-    featureLevel: FeatureLevel.BETA,
+    featureLevel: 1,
     orderInGroup: 1,
     content: () => <Text>Language Component</Text>,
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/DatetimeControl', () => ({
+jest.mock('@app/Settings/Config/DatetimeControl', () => ({
   DatetimeControl: {
     titleKey: 'SETTINGS.DATETIME_CONTROL.TITLE',
     descConstruct: 'SETTINGS.DATETIME_CONTROL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.GENERAL',
-    featureLevel: FeatureLevel.PRODUCTION,
     content: () => <Text>DatetimeControl Component</Text>,
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/Theme', () => ({
+jest.mock('@app/Settings/Config/Theme', () => ({
   Theme: {
     titleKey: 'SETTINGS.THEME.TITLE',
     descConstruct: 'SETTINGS.THEME.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.GENERAL',
-    featureLevel: FeatureLevel.PRODUCTION,
     content: () => <Text>Theme Component</Text>,
   } as UserSetting,
 }));

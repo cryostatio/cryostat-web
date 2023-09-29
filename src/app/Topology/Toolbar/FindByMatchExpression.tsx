@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { SearchInput } from '@patternfly/react-core';
 import * as React from 'react';
-import { useExprSvc } from '../Shared/utils';
 
 export interface FindByMatchExpressionProps {
   isDisabled?: boolean;
 }
 
 export const FindByMatchExpression: React.FC<FindByMatchExpressionProps> = ({ isDisabled, ...props }) => {
-  const matchExprService = useExprSvc();
+  const matchExprService = useMatchExpressionSvc();
   const [expression, setExpression] = React.useState('');
 
   return (

@@ -14,47 +14,20 @@
  * limitations under the License.
  */
 
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { ThemeSetting } from '@app/Settings/SettingsUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { ThemeSetting } from '@app/Settings/types';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, fromEvent, Observable, startWith } from 'rxjs';
+import { NotificationCategory } from './api.types';
 import {
   AutomatedAnalysisRecordingConfig,
-  automatedAnalysisRecordingName,
-  ChartControllerConfig,
+  FeatureLevel,
   defaultAutomatedAnalysisRecordingConfig,
-  defaultChartControllerConfig,
-  RecordingAttributes,
-} from './Api.service';
-import { NotificationCategory } from './NotificationChannel.service';
+  ChartControllerConfig,
+} from './service.types';
+import { defaultChartControllerConfig } from './service.utils';
 
-export enum FeatureLevel {
-  DEVELOPMENT = 0,
-  BETA = 1,
-  PRODUCTION = 2,
-}
-
-export const automatedAnalysisConfigToRecordingAttributes = (
-  config: AutomatedAnalysisRecordingConfig,
-): RecordingAttributes => {
-  return {
-    name: automatedAnalysisRecordingName,
-    events: `template=${config.template.name},type=${config.template.type}`,
-    duration: undefined,
-    archiveOnStop: false,
-    options: {
-      toDisk: true,
-      maxAge: config.maxAge,
-      maxSize: config.maxSize,
-    },
-    metadata: {
-      labels: {
-        origin: automatedAnalysisRecordingName,
-      },
-    },
-  } as RecordingAttributes;
-};
 export class SettingsService {
   private readonly _featureLevel$ = new BehaviorSubject<FeatureLevel>(
     getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION),
@@ -109,7 +82,7 @@ export class SettingsService {
   }
 
   autoRefreshEnabled(): boolean {
-    return getFromLocalStorage('AUTO_REFRESH_ENABLED', 'false') === 'true';
+    return getFromLocalStorage<string>('AUTO_REFRESH_ENABLED', 'false') === 'true';
   }
 
   setAutoRefreshEnabled(enabled: boolean): void {
@@ -202,7 +175,8 @@ export class SettingsService {
   }
 
   notificationsEnabled(): Map<NotificationCategory, boolean> {
-    const value = getFromLocalStorage('NOTIFICATIONS_ENABLED', undefined);
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    const value = getFromLocalStorage<any>('NOTIFICATIONS_ENABLED', undefined);
     if (typeof value === 'object') {
       const res = new Map<NotificationCategory, boolean>();
       value.forEach((v: [NotificationCategory, boolean]) => {

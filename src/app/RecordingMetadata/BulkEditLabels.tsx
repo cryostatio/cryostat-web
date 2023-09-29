@@ -15,25 +15,26 @@
  */
 import { uploadAsTarget } from '@app/Archives/Archives';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { LoadingProps } from '@app/Shared/Components/types';
 import {
-  ActiveRecording,
+  RecordingDirectory,
   ArchivedRecording,
   Recording,
-  RecordingDirectory,
+  ActiveRecording,
   UPLOADS_SUBDIRECTORY,
-} from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+  NotificationCategory,
+  Target,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot } from '@app/utils/utils';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
-import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
 import { RecordingLabelFields } from './RecordingLabelFields';
+import { RecordingLabel } from './types';
+import { includesLabel, parseLabels } from './utils';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -43,7 +44,13 @@ export interface BulkEditLabelsProps {
   directoryRecordings?: ArchivedRecording[];
 }
 
-export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
+export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
+  isTargetRecording,
+  isUploadsTable,
+  checkedIndices,
+  directory,
+  directoryRecordings,
+}) => {
   const context = React.useContext(ServiceContext);
   const [recordings, setRecordings] = React.useState([] as Recording[]);
   const [editing, setEditing] = React.useState(false);
@@ -54,8 +61,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
   const addSubscription = useSubscriptions();
 
   const getIdxFromRecording = React.useCallback(
-    (r: Recording): number => (props.isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
-    [props.isTargetRecording],
+    (r: Recording): number => (isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
+    [isTargetRecording],
   );
 
   const handlePostUpdate = React.useCallback(() => {
@@ -70,19 +77,17 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
 
     recordings.forEach((r: Recording) => {
       const idx = getIdxFromRecording(r);
-      if (props.checkedIndices.includes(idx)) {
+      if (checkedIndices.includes(idx)) {
         let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
         updatedLabels = updatedLabels.filter((label) => {
           return !includesLabel(toDelete, label);
         });
-        if (props.directory) {
-          tasks.push(
-            context.api.postRecordingMetadataFromPath(props.directory.jvmId, r.name, updatedLabels).pipe(first()),
-          );
+        if (directory) {
+          tasks.push(context.api.postRecordingMetadataFromPath(directory.jvmId, r.name, updatedLabels).pipe(first()));
         }
-        if (props.isTargetRecording) {
+        if (isTargetRecording) {
           tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first()));
-        } else if (props.isUploadsTable) {
+        } else if (isUploadsTable) {
           tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
         } else {
           tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first()));
@@ -103,10 +108,10 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
     commonLabels,
     savedCommonLabels,
     recordings,
-    props.checkedIndices,
-    props.isTargetRecording,
-    props.isUploadsTable,
-    props.directory,
+    checkedIndices,
+    isTargetRecording,
+    isUploadsTable,
+    directory,
   ]);
 
   const handleEditLabels = React.useCallback(() => {
@@ -124,7 +129,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
 
       recordings.forEach((r: Recording) => {
         const idx = getIdxFromRecording(r);
-        if (props.checkedIndices.includes(idx)) {
+        if (checkedIndices.includes(idx)) {
           allRecordingLabels.push(parseLabels(r.metadata.labels));
         }
       });
@@ -139,24 +144,24 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
 
       setLabels(updatedCommonLabels);
     },
-    [recordings, getIdxFromRecording, props.checkedIndices],
+    [recordings, getIdxFromRecording, checkedIndices],
   );
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const refreshRecordingList = React.useCallback(() => {
     let observable: Observable<Recording[]>;
-    if (props.directoryRecordings) {
-      observable = of(props.directoryRecordings);
-    } else if (props.isTargetRecording) {
+    if (directoryRecordings) {
+      observable = of(directoryRecordings);
+    } else if (isTargetRecording) {
       observable = context.target.target().pipe(
-        filter((target) => target !== NO_TARGET),
-        concatMap((target) =>
+        filter((target) => !!target),
+        concatMap((target: Target) =>
           context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`),
         ),
         first(),
       );
     } else {
-      observable = props.isUploadsTable
+      observable = isUploadsTable
         ? context.api
             .graphql<any>(
               `query GetUploadedRecordings($filter: ArchivedRecordingFilterInput) {
@@ -178,8 +183,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
               first(),
             )
         : context.target.target().pipe(
-            filter((target) => target !== NO_TARGET),
-            concatMap((target) =>
+            filter((target) => !!target),
+            concatMap((target: Target) =>
               context.api.graphql<any>(
                 `query ArchivedRecordingsForTarget($connectUrl: String) {
                 targetNodes(filter: { name: $connectUrl }) {
@@ -208,9 +213,9 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
     addSubscription(observable.subscribe((value) => setRecordings(value)));
   }, [
     addSubscription,
-    props.isTargetRecording,
-    props.isUploadsTable,
-    props.directoryRecordings,
+    isTargetRecording,
+    isUploadsTable,
+    directoryRecordings,
     context.target,
     context.api,
     setRecordings,
@@ -223,7 +228,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
         spinnerAriaValueText: 'Saving',
         spinnerAriaLabel: 'saving-recording-labels',
         isLoading: loading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [loading],
   );
 
@@ -236,12 +241,12 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        props.isUploadsTable ? of(uploadAsTarget) : context.target.target(),
+        isUploadsTable ? of(uploadAsTarget) : context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target) {
           return;
         }
         setRecordings((old) =>
@@ -251,7 +256,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
         );
       }),
     );
-  }, [addSubscription, context.target, context.notificationChannel, setRecordings, props.isUploadsTable]);
+  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
@@ -263,10 +268,10 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
   }, [editing, recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels, setEditing]);
 
   React.useEffect(() => {
-    if (!props.checkedIndices.length) {
+    if (!checkedIndices.length) {
       setEditing(false);
     }
-  }, [props.checkedIndices, setEditing]);
+  }, [checkedIndices, setEditing]);
 
   return (
     <>
@@ -327,7 +332,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = (props) => {
               aria-label="Edit Labels"
               variant="secondary"
               onClick={handleEditLabels}
-              isDisabled={!props.checkedIndices.length}
+              isDisabled={!checkedIndices.length}
             >
               Edit
             </Button>

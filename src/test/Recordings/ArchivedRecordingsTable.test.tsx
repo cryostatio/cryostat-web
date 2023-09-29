@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import {
   emptyActiveRecordingFilters,
@@ -21,8 +21,7 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { UPLOADS_SUBDIRECTORY, ArchivedRecording, NotificationMessage } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';

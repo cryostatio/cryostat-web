@@ -17,11 +17,11 @@
 import { Card, CardProps } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { DRAGGABLE_REF_KLAZZ, DashboardCardSizes } from './dashboard-utils';
+import { DRAGGABLE_REF_KLAZZ } from './const';
+import { DashboardCardContext } from './context';
 import { DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
-
-export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
+import { DashboardCardSizes } from './types';
 
 export interface DashboardCardProps extends CardProps {
   dashboardId: number;
@@ -93,4 +93,5 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   return <DashboardCardContext.Provider value={cardRef}>{content}</DashboardCardContext.Provider>;
 };
+
 DashboardCard.displayName = 'DashboardCard';

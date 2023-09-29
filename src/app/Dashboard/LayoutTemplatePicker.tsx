@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { RootState, dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
-import { useFeatureLevel } from '@app/utils/useFeatureLevel';
+import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
@@ -75,20 +75,17 @@ import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-ta
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { ChartContext } from './Charts/ChartContext';
+import { ChartContext } from './Charts/context';
 import { CryostatLayoutTemplates, BlankLayout } from './cryostat-dashboard-templates';
+import { LayoutTemplateGroup, smallestFeatureLevel } from './LayoutTemplateGroup';
+import { SearchAutocomplete } from './SearchAutocomplete';
+import { LayoutTemplate, LayoutTemplateFilter, LayoutTemplateRecord, SelectedLayoutTemplate } from './types';
 import {
   getCardDescriptorByName,
   hasCardDescriptorByName,
-  LayoutTemplate,
   LayoutTemplateContext,
-  LayoutTemplateFilter,
-  LayoutTemplateRecord,
-  SelectedLayoutTemplate,
   recordToLayoutTemplate,
-} from './dashboard-utils';
-import { LayoutTemplateGroup, smallestFeatureLevel } from './LayoutTemplateGroup';
-import { SearchAutocomplete } from './SearchAutocomplete';
+} from './utils';
 
 export enum LayoutTemplateSort {
   NAME = 'Name',

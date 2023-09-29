@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useDayjs } from '@app/utils/useDayjs';
+import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
@@ -22,9 +22,9 @@ import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const DEFAULT_NUM_OPTIONS = 10;
+const DEFAULT_NUM_OPTIONS = 10;
 
-export const OPTION_INCREMENT = 15;
+const OPTION_INCREMENT = 15;
 
 export interface TimezonePickerProps {
   isFlipEnabled?: boolean;

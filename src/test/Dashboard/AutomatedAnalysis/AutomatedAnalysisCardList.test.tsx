@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { store } from '@app/Shared/Redux/ReduxStore';
-import { CategorizedRuleEvaluations, AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
+import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
-import '../../Common';
 
 const mockRuleEvaluation1: AnalysisResult = {
   topic: 'myTopic',

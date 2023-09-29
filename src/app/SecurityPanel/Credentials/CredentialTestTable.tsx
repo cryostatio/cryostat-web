@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
+import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { useExprSvc } from '@app/Topology/Shared/utils';
-import { useSort } from '@app/utils/useSort';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
+import { useSort } from '@app/utils/hooks/useSort';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   Bullseye,
@@ -80,7 +80,7 @@ export interface CredentialTestTableProps {}
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const matchExprService = useExprSvc();
+  const matchExprService = useMatchExpressionSvc();
   const [sortBy, getSortParams] = useSort();
 
   const [matchedExpr, setMatchExpr] = React.useState('');

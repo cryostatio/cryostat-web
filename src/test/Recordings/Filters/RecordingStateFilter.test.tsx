@@ -15,7 +15,7 @@
  */
 
 import { RecordingStateFilter } from '@app/Recordings/Filters/RecordingStateFilter';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';

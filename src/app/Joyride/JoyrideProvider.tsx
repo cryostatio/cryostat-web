@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import useSetState from '@app/utils/useSetState';
+import useSetState from '@app/utils/hooks/useSetState';
 import React from 'react';
 import { Step } from 'react-joyride';
 
@@ -23,7 +23,7 @@ export interface JoyrideState {
   steps: Step[];
 }
 
-const defaultState = {
+const defaultState: JoyrideState = {
   run: false,
   stepIndex: 0,
   steps: [] as Step[],
@@ -31,30 +31,33 @@ const defaultState = {
 
 export interface JoyrideContextType {
   state: JoyrideState;
-  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => void;
   isNavBarOpen: boolean;
-  setIsNavBarOpen: (isOpen: React.SetStateAction<boolean>) => void;
+  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => void;
+  setIsNavBarOpen: (patch: boolean | ((prev: boolean) => boolean)) => void;
 }
 
-/* eslint-disable @typescript-eslint/no-empty-function */
 export const JoyrideContext = React.createContext<JoyrideContextType>({
   state: defaultState,
   setState: () => undefined,
   isNavBarOpen: true,
   setIsNavBarOpen: () => undefined,
 });
-/* eslint-enable @typescript-eslint/no-empty-function */
 
-export const JoyrideProvider: React.FC<{ children }> = (props) => {
+export interface JoyrideProviderProps {
+  children?: React.ReactNode;
+}
+
+export const JoyrideProvider: React.FC<JoyrideProviderProps> = ({ children, ...props }) => {
   const [state, setState] = useSetState(defaultState);
   const [isNavBarOpen, setIsNavBarOpen] = React.useState(true);
-  const value = React.useMemo(
+
+  const value = React.useMemo<JoyrideContextType>(
     () => ({ state, setState, isNavBarOpen, setIsNavBarOpen }),
     [state, setState, isNavBarOpen, setIsNavBarOpen],
   );
   return (
     <JoyrideContext.Provider value={value} {...props}>
-      {props.children}
+      {children}
     </JoyrideContext.Provider>
   );
 };

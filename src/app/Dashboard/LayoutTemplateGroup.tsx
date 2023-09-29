@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { portalRoot } from '@app/utils/utils';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
 import {
@@ -33,16 +33,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
-  CardConfig,
-  iconify,
-  LayoutTemplate,
-  LayoutTemplateContext,
   LayoutTemplateFilter,
-  LayoutTemplateVendor,
+  LayoutTemplate,
   SelectedLayoutTemplate,
   SerialCardConfig,
-  getCardDescriptorByName,
-} from './dashboard-utils';
+  CardConfig,
+  LayoutTemplateVendor,
+} from './types';
+import { getCardDescriptorByName, iconify, LayoutTemplateContext } from './utils';
 
 export interface LayoutTemplateGroupProps {
   title: LayoutTemplateFilter;

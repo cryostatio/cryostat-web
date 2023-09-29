@@ -15,7 +15,7 @@
  */
 
 import { AutomatedAnalysisTopicFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisTopicFilter';
-import { CategorizedRuleEvaluations, AnalysisResult } from '@app/Shared/Services/Report.service';
+import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import { renderDefault } from '../../../Common';

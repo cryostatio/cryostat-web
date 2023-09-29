@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
+
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
+import { LoadingView } from '@app/Shared/Components/LoadingView';
 import {
-  automatedAnalysisAddGlobalFilterIntent,
   emptyAutomatedAnalysisFilters,
   TargetAutomatedAnalysisFilters,
 } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
@@ -27,28 +28,28 @@ import {
   automatedAnalysisDeleteAllFiltersIntent,
   automatedAnalysisDeleteCategoryFiltersIntent,
   automatedAnalysisDeleteFilterIntent,
+  automatedAnalysisAddGlobalFilterIntent,
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
 import {
   ArchivedRecording,
-  automatedAnalysisRecordingName,
-  isGraphQLAuthError,
   Recording,
-} from '@app/Shared/Services/Api.service';
-import {
-  AutomatedAnalysisScore,
+  Target,
   CategorizedRuleEvaluations,
-  FAILED_REPORT_MESSAGE,
+  automatedAnalysisRecordingName,
   NO_RECORDINGS_MESSAGE,
-  RECORDING_FAILURE_MESSAGE,
-  AnalysisResult,
+  FAILED_REPORT_MESSAGE,
   TEMPLATE_UNSUPPORTED_MESSAGE,
-} from '@app/Shared/Services/Report.service';
+  RECORDING_FAILURE_MESSAGE,
+  AutomatedAnalysisScore,
+  AnalysisResult,
+} from '@app/Shared/Services/api.types';
+import { isGraphQLAuthError } from '@app/Shared/Services/api.utils';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { automatedAnalysisConfigToRecordingAttributes, FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { calculateAnalysisTimer, portalRoot } from '@app/utils/utils';
 import {
   Button,
@@ -97,13 +98,8 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
-import {
-  DashboardCardDescriptor,
-  DashboardCardFC,
-  DashboardCardSizes,
-  DashboardCardTypeProps,
-} from '../dashboard-utils';
 import { DashboardCard } from '../DashboardCard';
+import { DashboardCardDescriptor, DashboardCardFC, DashboardCardSizes, DashboardCardTypeProps } from '../types';
 import { AutomatedAnalysisCardList } from './AutomatedAnalysisCardList';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
@@ -257,10 +253,10 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         context.target
           .target()
           .pipe(
-            filter((target) => target !== NO_TARGET),
+            filter((target) => !!target),
             first(),
           )
-          .subscribe((target) => {
+          .subscribe((target: Target) => {
             context.reports
               .reportJson(freshestRecording, target.connectUrl)
               .pipe(first())
@@ -344,10 +340,10 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       context.target
         .target()
         .pipe(
-          filter((target) => target !== NO_TARGET),
+          filter((target) => !!target),
           first(),
         )
-        .subscribe((target) => {
+        .subscribe((target: Target) => {
           addSubscription(
             queryActiveRecordings(target.connectUrl)
               .pipe(
@@ -457,8 +453,8 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
 
   React.useEffect(() => {
     context.target.target().subscribe((target) => {
-      setTargetConnectURL(target.connectUrl);
-      dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
+      setTargetConnectURL(target?.connectUrl || '');
+      dispatch(automatedAnalysisAddTargetIntent(target?.connectUrl || ''));
       generateReport();
     });
   }, [context.target, generateReport, setTargetConnectURL, dispatch]);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
 
@@ -69,7 +69,7 @@ export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({
         spinnerAriaValueText: 'Saving',
         spinnerAriaLabel: 'saving-credentials',
         isLoading: loading,
-      }) as LoadingPropsType,
+      }) as LoadingProps,
     [loading],
   );
 

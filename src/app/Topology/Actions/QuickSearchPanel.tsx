@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsContext } from '@app/Notifications/Notifications';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { useFeatureLevel } from '@app/utils/useFeatureLevel';
+import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
@@ -49,9 +49,9 @@ import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import QuickSearchIcon from '../Shared/QuickSearchIcon';
+import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 import quickSearches, { QuickSearchId, quickSearchIds } from './quicksearches/all-quick-searches';
-import { QuickSearchItem } from './utils';
+import { QuickSearchItem } from './types';
 
 export const QuickSearchTabContent: React.FC<{ item?: QuickSearchItem }> = ({ item, ...props }) => {
   const history = useHistory();

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { MatchedTargetsServiceContext } from '@app/Shared/Services/service.utils';
+import { useMatchedTargetsSvcSource } from '@app/utils/hooks/useMatchedTargetsSvcSource';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Divider, Stack, StackItem } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
@@ -38,26 +40,20 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { QuickSearchContextMenu } from '../Actions/QuickSearchPanel';
-import EntityDetails from '../Shared/Entity/EntityDetails';
-import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
-import { TopologyExceedLimitState } from '../Shared/TopologyExceedLimitState';
-import {
-  DiscoveryTreeContext,
-  MatchedTargetsServiceContext,
-  TransformConfig,
-  useMatchedTargetsSvcSource,
-} from '../Shared/utils';
+import EntityDetails from '../Entity/EntityDetails';
+import { TopologyEmptyState } from '../Shared/Components/TopologyEmptyState';
+import { TopologyExceedLimitState } from '../Shared/Components/TopologyExceedLimitState';
+import type { TransformConfig } from '../Shared/types';
+import { DiscoveryTreeContext, TOPOLOGY_GRAPH_ID } from '../Shared/utils';
 import { TopologySideBar } from '../SideBar/TopologySideBar';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
 import { TopologyControlBar } from './TopologyControlBar';
-import { componentFactory, getNodeById, layoutFactory, transformData } from './UtilsFactory';
+import { componentFactory, getNodeById, layoutFactory, transformData } from './utils';
 
 export const MAX_NODE_LIMIT = 100;
 
 export const DEFAULT_SIZEBAR_SIZE = 500;
 export const MIN_SIZEBAR_SIZE = 400;
-
-export const TOPOLOGY_GRAPH_ID = 'cryostat-target-topology-graph';
 
 export type SavedGraphPosition = {
   id?: string;

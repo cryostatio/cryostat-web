@@ -27,16 +27,16 @@ import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
 import CreateRule from './Rules/CreateRule';
-import Rules from './Rules/Rules';
+import RulesTable from './Rules/Rules';
 import SecurityPanel from './SecurityPanel/SecurityPanel';
 import Settings from './Settings/Settings';
-import { DefaultFallBack, ErrorBoundary } from './Shared/ErrorBoundary';
-import { FeatureLevel } from './Shared/Services/Settings.service';
+import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
+import { FeatureLevel } from './Shared/Services/service.types';
 import CreateTarget from './Topology/Actions/CreateTarget';
 import Topology from './Topology/Topology';
-import { useDocumentTitle } from './utils/useDocumentTitle';
-import { useFeatureLevel } from './utils/useFeatureLevel';
-import { useLogin } from './utils/useLogin';
+import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
+import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
+import { useLogin } from './utils/hooks/useLogin';
 import { accessibleRouteChangeHandler } from './utils/utils';
 
 let routeFocusTimer: number;
@@ -111,7 +111,7 @@ const routes: IAppRoute[] = [
     ],
   },
   {
-    component: Rules,
+    component: RulesTable,
     exact: true,
     label: 'Automated Rules',
     path: '/rules',

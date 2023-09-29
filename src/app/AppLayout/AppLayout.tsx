@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
+import { AuthModal } from '@app/AppLayout/AuthModal';
+import { NotificationCenter } from '@app/AppLayout/NotificationCenter';
+import { SslErrorModal } from '@app/AppLayout/SslErrorModal';
 import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import build from '@app/build.json';
+import CryostatJoyride from '@app/Joyride/CryostatJoyride';
 import { useJoyride } from '@app/Joyride/JoyrideProvider';
-import { NotificationCenter } from '@app/Notifications/NotificationCenter';
-import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
+import { GlobalQuickStartDrawer } from '@app/QuickStarts/QuickStartDrawer';
 import { IAppRoute, navGroups, routes } from '@app/routes';
-import { selectTab, SettingTab, tabAsParam, ThemeSetting } from '@app/Settings/SettingsUtils';
-import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ThemeSetting, SettingTab } from '@app/Settings/types';
+import { selectTab, tabAsParam } from '@app/Settings/utils';
+import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useLogin } from '@app/utils/hooks/useLogin';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useTheme } from '@app/utils/hooks/useTheme';
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
-import { useLogin } from '@app/utils/useLogin';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { useTheme } from '@app/utils/useTheme';
 import { cleanDataId, isAssetNew, openTabForUrl, portalRoot } from '@app/utils/utils';
 import {
   Alert,
@@ -78,15 +83,12 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
-import CryostatJoyride from '../Joyride/CryostatJoyride';
-import { GlobalQuickStartDrawer } from '../QuickStarts/QuickStartDrawer';
-import { AuthModal } from './AuthModal';
-import { SslErrorModal } from './SslErrorModal';
-interface AppLayoutProps {
-  children: React.ReactNode;
+
+export interface AppLayoutProps {
+  children?: React.ReactNode;
 }
 
-const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
@@ -608,5 +610,3 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     </GlobalQuickStartDrawer>
   );
 };
-
-export { AppLayout };

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { AutomatedAnalysisConfigDrawer } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigDrawer';
-import { defaultAutomatedAnalysisRecordingConfig, SimpleResponse } from '@app/Shared/Services/Api.service';
+import { SimpleResponse } from '@app/Shared/Services/api.types';
+import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';

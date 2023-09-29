@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationsInstance } from '@app/Notifications/Notifications';
 import * as React from 'react';
 import { ApiService } from './Api.service';
 import { AuthCredentials } from './AuthCredentials.service';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
+import { NotificationsInstance } from './Notifications.service';
 import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
-import { TargetService, TargetInstance } from './Target.service';
+import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
 
 export interface Services {
@@ -35,16 +35,17 @@ export interface Services {
   login: LoginService;
 }
 
+const target = new TargetService();
 const settings = new SettingsService();
 const authCredentials = new AuthCredentials(() => api);
-const login = new LoginService(TargetInstance, authCredentials, settings);
-const api = new ApiService(TargetInstance, NotificationsInstance, login);
+const login = new LoginService(target, authCredentials, settings);
+const api = new ApiService(target, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(login, NotificationsInstance);
 const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
 
 const defaultServices: Services = {
-  target: TargetInstance,
+  target,
   targets,
   api,
   authCredentials,

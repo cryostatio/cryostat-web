@@ -17,24 +17,12 @@ import { Base64 } from 'js-base64';
 import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
-import { ApiV2Response } from './Api.service';
-import { Credential, AuthCredentials } from './AuthCredentials.service';
-import { isQuotaExceededError } from './Report.service';
-import { SettingsService } from './Settings.service';
-import { TargetService } from './Target.service';
-
-export enum SessionState {
-  NO_USER_SESSION,
-  CREATING_USER_SESSION,
-  USER_SESSION,
-}
-
-export enum AuthMethod {
-  BASIC = 'Basic',
-  BEARER = 'Bearer',
-  NONE = 'None',
-  UNKNOWN = '',
-}
+import { AuthV2Response } from './api.types';
+import { isQuotaExceededError } from './api.utils';
+import type { AuthCredentials } from './AuthCredentials.service';
+import { AuthMethod, Credential, SessionState } from './service.types';
+import type { SettingsService } from './Settings.service';
+import type { TargetService } from './Target.service';
 
 export class LoginService {
   private readonly TOKEN_KEY: string = 'token';
@@ -135,7 +123,7 @@ export class LoginService {
       this.getToken(),
       this.getAuthMethod(),
       this.target.target().pipe(
-        map((target) => target.connectUrl),
+        map((target) => target?.connectUrl || ''),
         concatMap((connect) => this.authCredentials.getCredential(connect)),
       ),
     ]).pipe(
@@ -346,12 +334,4 @@ export class LoginService {
   private removeCacheItem(key: string): void {
     sessionStorage.removeItem(key);
   }
-}
-
-interface AuthV2Response extends ApiV2Response {
-  data: {
-    result: {
-      username: string;
-    };
-  };
 }

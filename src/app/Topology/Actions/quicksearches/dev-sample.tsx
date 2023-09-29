@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { QuickSearchItem } from '../utils';
+import { QuickSearchItem } from '../types';
 
 const _DevSampleSearchItem: QuickSearchItem = {
   id: 'dev-sample',

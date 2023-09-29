@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import { AuthCredential, CredentialAuthForm } from '@app/AppLayout/CredentialAuthForm';
-import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpressionHint';
-import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
+import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
+import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
+import { Target } from '@app/Shared/Services/api.types';
+import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
+import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { SearchExprService, SearchExprServiceContext, useExprSvc } from '@app/Topology/Shared/utils';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, StreamOf } from '@app/utils/utils';
 import {
   Button,
@@ -42,7 +44,8 @@ import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { catchError, combineLatest, distinctUntilChanged, interval, map, of, switchMap, tap } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
-import { CredentialContext, TestPoolContext, TestRequest, useAuthCredential } from './utils';
+import { TestRequest } from './types';
+import { CredentialContext, TestPoolContext, useAuthCredential } from './utils';
 
 export interface CreateCredentialModalProps {
   visible: boolean;
@@ -56,7 +59,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
   onPropsSave,
   ...props
 }) => {
-  const matchExpreRef = React.useRef(new SearchExprService());
+  const matchExpreRef = React.useRef(new MatchExpressionService());
   const loadingRef = React.useRef(new StreamOf(false));
   const credentialRef = React.useRef(new StreamOf<AuthCredential>({ username: '', password: '' }));
   const testPoolRef = React.useRef(new Set<TestRequest>());
@@ -118,7 +121,7 @@ interface AuthFormProps extends Omit<CreateCredentialModalProps, 'visible'> {
 export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, progressChange, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const matchExprService = useExprSvc();
+  const matchExprService = useMatchExpressionSvc();
   const [matchExpressionInput, setMatchExpressionInput] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [_, setCredential] = useAuthCredential(true);
