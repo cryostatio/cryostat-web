@@ -50,11 +50,11 @@ export const JmxAuthDescription: React.FC<React.PropsWithChildren<DescriptionPro
     <TextContent>
       {children}
       <Text component={TextVariants.p}>
-        JVM applications may be configured to require clients (such as Cryostat) to pass an authentication challenge
-        before establishing a connection.
+        JVM applications may be configured to require clients, such as Cryostat, to pass a challenge based
+        authentication before establishing a connection.
       </Text>
       <Text component={TextVariants.p}>
-        Check your JVM application's deployment configuration for system properties such as:
+        Check the deployment configuration of your JVM application for system properties such as:
       </Text>
       <TextList>
         <TextListItem>
@@ -76,12 +76,12 @@ export const JmxSslDescription: React.FC<React.PropsWithChildren<DescriptionProp
     <TextContent>
       {children}
       <Text component={TextVariants.p}>
-        JVM applications may be configured to present an SSL certificate for incoming JMX connections. Clients (such as
-        Cryostat) should be configured to trust these certificates so that the origin and authenticity of the connection
+        JVM applications can be configured to present an SSL certificate for incoming JMX connections. Clients, such as
+        Cryostat, should be configured to trust these certificates so that the origin and authenticity of the connection
         data can be verified.
       </Text>
       <Text component={TextVariants.p}>
-        Check your JVM application's deployment configuration for system properties such as:
+        Check the deployment configuration of your JVM application for system properties such as:
       </Text>
       <TextList>
         <TextListItem>
