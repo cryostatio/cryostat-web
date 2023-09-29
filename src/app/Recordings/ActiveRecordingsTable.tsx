@@ -953,7 +953,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           {recording.state}
         </Td>
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
-          <LabelGroup isVertical>
+          <LabelGroup isVertical style={{ padding: '0.2em' }}>
             <Label color="blue" key="toDisk">
               toDisk: {String(recording.toDisk)}
             </Label>
