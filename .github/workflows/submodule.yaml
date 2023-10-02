@@ -41,10 +41,7 @@ jobs:
         git submodule update --init
         git submodule update --remote
     - name: Commit and push submodule
-      # User info comes from: https://github.community/t/github-actions-bot-email-address/17204/5
       run: |
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config user.name "github-actions[bot]"
         git add --all
         git_hash="$(git rev-parse --short :web-client)"
         git commit -S -m "build(web-client): update submodule to $git_hash" || echo "No changes to commit"
