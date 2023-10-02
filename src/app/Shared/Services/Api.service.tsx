@@ -503,8 +503,7 @@ export class ApiService {
 
   // from file system path functions
   uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
-    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/upload`, {
+    return this.sendRequest('beta', `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}/upload`, {
       method: 'POST',
     }).pipe(
       map((resp) => resp.ok),
@@ -513,8 +512,7 @@ export class ApiService {
   }
 
   deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
-    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}`, {
+    return this.sendRequest('beta', `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -531,10 +529,9 @@ export class ApiService {
   }
 
   postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
-    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
     return this.sendRequest(
       'beta',
-      `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/metadata/labels`,
+      `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}/metadata/labels`,
       {
         method: 'POST',
         body: this.transformAndStringifyToRawLabels(labels),
