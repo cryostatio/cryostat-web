@@ -16,7 +16,7 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { RecordingLabel } from '@app/RecordingMetadata/types';
-import { createBlobURL, jvmIdToSubdirectoryName } from '@app/utils/utils';
+import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';

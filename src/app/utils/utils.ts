@@ -248,42 +248,5 @@ export const isAssetNew = (currVer: string) => {
   return !semverValid(oldVer) || semverGt(currVer, oldVer);
 };
 
-export const utf8ToBase32 = (str: string): string => {
-  const encoder = new TextEncoder();
-  const byteArray = encoder.encode(str);
-  const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  let bits = 0;
-  let value = 0;
-  let base32 = '';
-
-  for (let i = 0; i < byteArray.length; i++) {
-    value = (value << 8) | byteArray[i];
-    bits += 8;
-    while (bits >= 5) {
-      bits -= 5;
-      base32 += BASE32_ALPHABET[(value >>> bits) & 0x1f];
-    }
-  }
-
-  if (bits > 0) {
-    value <<= 5 - bits;
-    base32 += BASE32_ALPHABET[value & 0x1f];
-  }
-
-  const paddingLength = base32.length % 8 !== 0 ? 8 - (base32.length % 8) : 0;
-  for (let i = 0; i < paddingLength; i++) {
-    base32 += '=';
-  }
-
-  return base32;
-};
-
-export const jvmIdToSubdirectoryName = (jvmId: string): string => {
-  if (jvmId === UPLOADS_SUBDIRECTORY || jvmId === 'lost') {
-    return jvmId;
-  }
-  return utf8ToBase32(jvmId);
-};
-
 export const includesSubstr = (a: string, b: string): boolean =>
   !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
