@@ -529,14 +529,10 @@ export class ApiService {
   }
 
   postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
-    return this.sendRequest(
-      'beta',
-      `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}/metadata/labels`,
-      {
-        method: 'POST',
-        body: this.transformAndStringifyToRawLabels(labels),
-      },
-    ).pipe(
+    return this.sendRequest('beta', `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}/metadata/labels`, {
+      method: 'POST',
+      body: this.transformAndStringifyToRawLabels(labels),
+    }).pipe(
       map((resp) => resp.ok),
       first(),
     );
