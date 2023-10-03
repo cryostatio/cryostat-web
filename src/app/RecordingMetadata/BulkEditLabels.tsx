@@ -246,7 +246,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
-        if ((currentTarget?.connectUrl != event.message.target) && (currentTarget?.jvmId != event.message.jvmId)) {
+        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) =>
