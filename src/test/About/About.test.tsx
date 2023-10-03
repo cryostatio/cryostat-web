@@ -19,7 +19,6 @@ import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import * as React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';

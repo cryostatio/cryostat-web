@@ -18,7 +18,6 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetView/TargetSelect';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
 

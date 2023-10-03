@@ -15,7 +15,6 @@
  */
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import * as React from 'react';
 import { SettingTab, UserSetting } from '../types';
 
 const Component = () => {

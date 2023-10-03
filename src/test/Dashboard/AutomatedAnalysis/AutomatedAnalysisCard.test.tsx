@@ -28,7 +28,6 @@ import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Servic
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
-import * as React from 'react';
 import { of } from 'rxjs';
 import { basePreloadedState, renderWithServiceContextAndReduxStore, testT } from '../../Common';
 

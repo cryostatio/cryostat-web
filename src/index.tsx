@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { App } from '@app/index';
-import React from 'react';
+import * as React from 'react';
 import ReactDOM from 'react-dom';
 
 if (process.env.NODE_ENV !== 'production') {

@@ -16,7 +16,6 @@
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
-import React from 'react';
 import { CryostatIcon, conclusion } from '../quickstart-utils';
 
 const displayName = 'Get started with the Dashboard';

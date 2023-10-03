@@ -55,7 +55,7 @@ import {
   TrashIcon,
   UploadIcon,
 } from '@patternfly/react-icons';
-import React from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddCard } from './AddCard';

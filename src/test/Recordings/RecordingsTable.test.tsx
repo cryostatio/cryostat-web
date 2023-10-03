@@ -18,7 +18,6 @@ import { Button, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@pat
 import { Tbody, Tr, Td } from '@patternfly/react-table';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import * as React from 'react';
 import { renderDefault } from '../Common';
 
 const FakeToolbar = () => {

@@ -15,7 +15,7 @@
  */
 import { portalRoot } from '@app/utils/utils';
 import { Menu, MenuContent, MenuItem, MenuList, Popper, SearchInput } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 
 export interface SearchAutocompleteProps {
   values: string[];

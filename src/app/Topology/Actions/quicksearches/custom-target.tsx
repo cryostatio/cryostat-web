@@ -15,7 +15,6 @@
  */
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import * as React from 'react';
 import { QuickSearchItem } from '../types';
 
 const _CustomTargetSearchItem: QuickSearchItem = {

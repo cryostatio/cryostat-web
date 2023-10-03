@@ -15,7 +15,7 @@
  */
 import { ThemeSetting } from '@app/Settings/types';
 import { useTheme } from '@app/utils/hooks/useTheme';
-import React from 'react';
+import * as React from 'react';
 
 export const withThemedIcon = (icon: string, darkIcon: string, alt: string): React.FC => {
   const WithThemedIcon: React.FC = () => {

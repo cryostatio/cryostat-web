@@ -21,7 +21,6 @@ import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
 import { renderWithServiceContext } from '../Common';

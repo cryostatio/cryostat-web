@@ -18,7 +18,6 @@ import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { defaultServices } from '@app/Shared/Services/Services';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { cleanup, screen, within } from '@testing-library/react';
-import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContext, testT } from '../Common';
 

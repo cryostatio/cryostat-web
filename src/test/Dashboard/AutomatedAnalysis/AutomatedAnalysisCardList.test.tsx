@@ -18,7 +18,6 @@ import { store } from '@app/Shared/Redux/ReduxStore';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 

@@ -20,7 +20,7 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import JoyrideTooltip from '@app/Joyride/JoyrideTooltip';
 import { ThemeSetting } from '@app/Settings/types';
 import { useTheme } from '@app/utils/hooks/useTheme';
-import React from 'react';
+import * as React from 'react';
 import ReactJoyride, { CallBackProps, ACTIONS, EVENTS, STATUS } from 'react-joyride';
 
 interface CryostatJoyrideProps {

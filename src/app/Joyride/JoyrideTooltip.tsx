@@ -27,7 +27,7 @@ import {
   Text,
   TextContent,
 } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 import { TooltipRenderProps } from 'react-joyride';
 
 const JoyrideTooltip: React.FC<TooltipRenderProps> = ({

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import useSetState from '@app/utils/hooks/useSetState';
-import React from 'react';
+import * as React from 'react';
 import { Step } from 'react-joyride';
 
 export interface JoyrideState {

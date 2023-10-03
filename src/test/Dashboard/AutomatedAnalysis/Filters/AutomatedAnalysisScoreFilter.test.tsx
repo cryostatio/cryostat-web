@@ -18,7 +18,6 @@ import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/F
 
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { cleanup, screen } from '@testing-library/react';
-import React from 'react';
 import { basePreloadedState, renderWithReduxStore } from '../../../Common';
 
 const onlyShowingText = (value: number) => `Only showing analysis results with severity scores ≥ ${value}:`;

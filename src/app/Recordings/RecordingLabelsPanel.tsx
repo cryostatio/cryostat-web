@@ -23,7 +23,7 @@ import {
   DrawerPanelBody,
   DrawerPanelContent,
 } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 
 export interface RecordingLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;

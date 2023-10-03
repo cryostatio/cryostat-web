@@ -17,7 +17,7 @@
 import { dashboardConfigReorderCardIntent } from '@app/Shared/Redux/ReduxStore';
 import { clickOutside } from '@app/utils/utils';
 import { css } from '@patternfly/react-styles';
-import React from 'react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { DRAGGABLE_REF_KLAZZ } from './const';
 import { handleDisabledElements } from './ResizableRef';

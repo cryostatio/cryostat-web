@@ -23,7 +23,7 @@ import {
   MultipleFileUploadStatusItem,
 } from '@patternfly/react-core';
 import { InProgressIcon, UploadIcon } from '@patternfly/react-icons';
-import React from 'react';
+import * as React from 'react';
 import { Prompt } from 'react-router-dom';
 import { Subject } from 'rxjs';
 

@@ -25,7 +25,6 @@ import { defaultChartControllerConfig } from '@app/Shared/Services/service.utils
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { createMemoryHistory } from 'history';
-import React from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';

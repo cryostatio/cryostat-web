@@ -34,7 +34,7 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
-import React from 'react';
+import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimeFilter } from './Filters/DatetimeFilter';
 import { DurationFilter } from './Filters/DurationFilter';

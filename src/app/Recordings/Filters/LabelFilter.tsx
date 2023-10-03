@@ -17,7 +17,7 @@
 import { parseLabels, getLabelDisplay } from '@app/RecordingMetadata/utils';
 import { Recording } from '@app/Shared/Services/api.types';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 
 export interface LabelFilterProps {
   recordings: Recording[];

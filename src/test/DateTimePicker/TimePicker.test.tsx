@@ -16,7 +16,6 @@
 
 import { format2Digit } from '@i18n/datetimeUtils';
 import { cleanup, screen, within } from '@testing-library/react';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { TimePicker } from '../../app/DateTimePicker/TimePicker';
 import { renderDefault, testT } from '../Common';

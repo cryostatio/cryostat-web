@@ -16,7 +16,7 @@
 
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { Label, Text } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 import { ClickableLabel } from './ClickableLabel';
 import { RecordingLabel } from './types';
 import { getLabelDisplay } from './utils';

@@ -15,7 +15,6 @@
  */
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
-import * as React from 'react';
 import { QuickSearchItem } from '../types';
 
 const _DevSampleSearchItem: QuickSearchItem = {

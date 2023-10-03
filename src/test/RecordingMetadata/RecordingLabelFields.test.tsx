@@ -19,7 +19,6 @@ import { ValidatedOptions } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
 import { cleanup, screen } from '@testing-library/react';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 

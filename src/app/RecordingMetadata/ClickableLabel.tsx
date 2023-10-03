@@ -15,7 +15,7 @@
  */
 
 import { Label } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 import { RecordingLabel } from './types';
 
 export interface ClickableLabelCellProps {

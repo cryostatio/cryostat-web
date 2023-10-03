@@ -17,7 +17,6 @@
 import { AutomatedAnalysisNameFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisNameFilter';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
-import React from 'react';
 import { renderDefault } from '../../../Common';
 
 const mockRuleEvaluation1: AnalysisResult = {

@@ -30,7 +30,6 @@ import '@i18n/config';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { mockMediaQueryList } from '@test/Common';
 import { cleanup } from '@testing-library/react';
-import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { from, of } from 'rxjs';

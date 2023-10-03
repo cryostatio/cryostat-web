@@ -28,7 +28,6 @@ import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
 import { screen, within, cleanup } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import * as React from 'react';
 import { of, Subject } from 'rxjs';
 import {
   basePreloadedState,

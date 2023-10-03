@@ -29,7 +29,6 @@ import { TargetService } from '@app/Shared/Services/Target.service';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import * as React from 'react';
 import { of, Subject } from 'rxjs';
 import {
   basePreloadedState,
