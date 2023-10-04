@@ -16,7 +16,6 @@
 
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { cleanup, render, screen } from '@testing-library/react';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 
 describe('<LoadingView />', () => {

@@ -21,7 +21,6 @@ import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import { cleanup, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import * as React from 'react';
 import { Router } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';

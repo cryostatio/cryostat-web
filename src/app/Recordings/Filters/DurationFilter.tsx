@@ -15,7 +15,7 @@
  */
 
 import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 
 export interface DurationFilterProps {
   durations: string[] | undefined;

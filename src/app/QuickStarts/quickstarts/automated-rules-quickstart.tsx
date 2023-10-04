@@ -15,7 +15,6 @@
  */
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
-import React from 'react';
 import { CryostatIcon, conclusion } from '../quickstart-utils';
 
 const displayName = 'Get started with Automated Rules';

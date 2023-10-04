@@ -22,7 +22,6 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import '@testing-library/jest-dom';
 import { act as doAct, cleanup, screen, within } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import * as React from 'react';
 import { Router } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';

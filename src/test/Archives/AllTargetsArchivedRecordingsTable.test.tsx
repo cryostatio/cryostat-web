@@ -19,7 +19,6 @@ import { NotificationsContext, NotificationsInstance } from '@app/Shared/Service
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';

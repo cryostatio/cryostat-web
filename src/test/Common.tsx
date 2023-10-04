@@ -29,7 +29,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { t, TOptions } from 'i18next';
-import React, { PropsWithChildren } from 'react';
+import * as React from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 
@@ -44,7 +44,7 @@ export const renderDefault = (
     ...renderOptions
   } = {},
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>;
   };
   return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
@@ -60,7 +60,7 @@ export const renderWithReduxStore = (
     ...renderOptions
   } = {},
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
         <Provider store={store}>{children}</Provider>
@@ -79,7 +79,7 @@ export const renderWithServiceContext = (
     ...renderOptions
   } = {},
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>
@@ -98,7 +98,7 @@ export const renderWithRouter = (
     ...renderOptions
   } = {},
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
         <Router history={history}>{children}</Router>
@@ -119,7 +119,7 @@ export const renderWithServiceContextAndReduxStore = (
     ...renderOptions
   } = {},
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
@@ -141,7 +141,7 @@ export const renderWithServiceContextAndRouter = (
     ...renderOptions
   } = {},
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
@@ -165,7 +165,7 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
     ...renderOptions
   } = {},
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
@@ -188,7 +188,7 @@ export const renderWithProvidersAndRedux = (
   if (providers.length < 1) {
     throw new Error('At least one provider must be specified');
   }
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+  const Wrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     let els = children;
     for (let i = 0; i < providers.length; i++) {
       const provider = providers[i];

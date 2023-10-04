@@ -16,7 +16,7 @@
 
 import { Recording } from '@app/Shared/Services/api.types';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 
 export interface NameFilterProps {
   recordings: Recording[];

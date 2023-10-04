@@ -20,7 +20,6 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import * as React from 'react';
 import { of, throwError } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
 

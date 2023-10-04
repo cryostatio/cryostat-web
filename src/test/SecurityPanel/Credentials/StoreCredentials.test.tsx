@@ -20,7 +20,6 @@ import { StoredCredential, Target, MatchedCredential, NotificationMessage } from
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
-import * as React from 'react';
 import { of, throwError } from 'rxjs';
 
 import { renderWithServiceContext } from '../../Common';

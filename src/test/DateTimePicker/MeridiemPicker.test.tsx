@@ -16,7 +16,6 @@
 
 import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { cleanup, screen } from '@testing-library/react';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { renderDefault, testT } from '../Common';
 

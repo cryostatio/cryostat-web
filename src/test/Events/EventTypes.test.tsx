@@ -21,7 +21,6 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
 import { renderWithServiceContext } from '../Common';

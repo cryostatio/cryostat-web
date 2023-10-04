@@ -17,7 +17,6 @@
 import { conclusion, CryostatIcon } from '@app/QuickStarts/quickstart-utils';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
-import * as React from 'react';
 
 const GroupStartRecordingQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',

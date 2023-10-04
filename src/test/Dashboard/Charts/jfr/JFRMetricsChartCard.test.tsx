@@ -27,7 +27,7 @@ import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
+import * as React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';

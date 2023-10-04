@@ -15,7 +15,7 @@
  */
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import _ from 'lodash';
-import React from 'react';
+import * as React from 'react';
 
 export interface PropertyPathProps {
   kind: string;

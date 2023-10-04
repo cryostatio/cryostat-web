@@ -17,7 +17,6 @@
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { AnalysisResult } from '@app/Shared/Services/api.types';
 import { act, cleanup, screen, within } from '@testing-library/react';
-import React from 'react';
 import { renderDefault } from '../../Common';
 
 const mockRuleEvaluation1: AnalysisResult = {

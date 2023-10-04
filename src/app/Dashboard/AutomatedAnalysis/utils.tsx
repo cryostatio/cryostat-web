@@ -16,7 +16,6 @@
 import { AnalysisResult, Evaluation } from '@app/Shared/Services/api.types';
 import { Stack, StackItem, Label, Title, Text } from '@patternfly/react-core';
 import _ from 'lodash';
-import * as React from 'react';
 
 export const transformAADescription = (result: AnalysisResult): JSX.Element => {
   const format = (s: Evaluation): JSX.Element => {

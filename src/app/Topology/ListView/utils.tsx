@@ -23,7 +23,6 @@ import {
   isTargetNode,
 } from '@app/Shared/Services/api.utils';
 import { Badge, Flex, FlexItem, Label, LabelGroup, TreeViewDataItem } from '@patternfly/react-core';
-import * as React from 'react';
 import { ActionDropdown } from '../Actions/NodeActions';
 import { actionFactory } from '../Actions/utils';
 import EntityDetails from '../Entity/EntityDetails';

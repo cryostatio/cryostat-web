@@ -25,7 +25,6 @@ import {
 import { getAllLeaves, isTargetNode } from '@app/Shared/Services/api.utils';
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
 import { ContextMenuSeparator } from '@patternfly/react-topology';
-import * as React from 'react';
 import { merge, filter, map, debounceTime } from 'rxjs';
 import { getConnectUrlFromEvent } from '../Entity/utils';
 import { GraphElement, ListElement } from '../Shared/types';

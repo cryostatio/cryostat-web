@@ -19,7 +19,6 @@ import { DateTimeFilter } from '@app/Recordings/Filters/DatetimeFilter';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
-import React from 'react';
 import { of } from 'rxjs';
 import { renderDefault, testT } from '../../Common';
 

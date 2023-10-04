@@ -17,7 +17,6 @@ import { ClickableLabel } from '@app/RecordingMetadata/ClickableLabel';
 import { RecordingLabel } from '@app/RecordingMetadata/types';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 

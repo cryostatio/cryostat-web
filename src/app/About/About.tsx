@@ -21,7 +21,7 @@ import build from '@app/build.json';
 import { ThemeSetting } from '@app/Settings/types';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
-import React from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AboutDescription } from './AboutDescription';
 

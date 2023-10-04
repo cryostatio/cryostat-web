@@ -17,7 +17,6 @@ import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { defaultServices } from '@app/Shared/Services/Services';
 import dayjs, { defaultDatetimeFormat, supportedTimezones, Timezone } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
-import * as React from 'react';
 import { of } from 'rxjs';
 import { renderDefault, testT } from '../Common';
 

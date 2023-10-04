@@ -25,7 +25,6 @@ import {
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
-import * as React from 'react';
 import { of, Subject } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
 

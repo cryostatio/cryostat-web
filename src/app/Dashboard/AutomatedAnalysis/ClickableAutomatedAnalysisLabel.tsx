@@ -20,7 +20,7 @@ import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
-import React from 'react';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { transformAADescription } from './utils';
 

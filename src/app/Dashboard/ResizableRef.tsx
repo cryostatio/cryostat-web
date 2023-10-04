@@ -17,7 +17,7 @@
 import { dashboardConfigResizeCardIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { gridSpans } from '@patternfly/react-core';
 import _ from 'lodash';
-import React from 'react';
+import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DashboardCardContext } from './context';
 import type { CardConfig, DashboardCardSizes } from './types';

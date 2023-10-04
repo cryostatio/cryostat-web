@@ -18,7 +18,6 @@ import { ArchivedRecording } from '@app/Shared/Services/api.types';
 import { Drawer, DrawerContent } from '@patternfly/react-core';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 

@@ -19,7 +19,6 @@ import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.t
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContext, testT } from '../../Common';
 

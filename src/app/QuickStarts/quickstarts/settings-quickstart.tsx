@@ -16,7 +16,6 @@
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
-import React from 'react';
 import { conclusion } from '../quickstart-utils';
 
 const displayName = 'Using Settings';

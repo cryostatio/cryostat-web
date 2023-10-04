@@ -3182,13 +3182,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:^3.5.0":
-  version: 3.5.6
-  resolution: "axe-core@npm:3.5.6"
-  checksum: 000777d2b6bf1f390beb1fb4b8714ed9127797c021c345b032db0c144e07320dbbe8cb0bcb7688b90b79cfbd3cdc1f27a4dc857804e3c61d7e0defb34deeb830
-  languageName: node
-  linkType: hard
-
 "axios@npm:^0.27.2":
   version: 0.27.2
   resolution: "axios@npm:0.27.2"
@@ -4150,7 +4143,6 @@ __metadata:
     prop-types: ^15.7.2
     raw-loader: ^4.0.2
     react: ^17.0.2
-    react-axe: ^3.4.1
     react-dom: ^17.0.2
     react-i18next: ^12.3.1
     react-joyride: ^2.5.3
@@ -11189,16 +11181,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-axe@npm:^3.4.1":
-  version: 3.5.4
-  resolution: "react-axe@npm:3.5.4"
-  dependencies:
-    axe-core: ^3.5.0
-    requestidlecallback: ^0.3.0
-  checksum: d3f3bc6de6670911ce98d2c80e40ffe71dc798df7b4a7912c1727895886837c3d13dded64dc0387b1db77d55c487365b94cf17e761d0f0f48097b1a6321f09cf
-  languageName: node
-  linkType: hard
-
 "react-dom@npm:^17.0.2":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
@@ -11623,13 +11605,6 @@ __metadata:
   version: 2.0.0
   resolution: "replace-ext@npm:2.0.0"
   checksum: ed640ac90d24cce4be977642847d138908d430049cc097633be33b072143515cc7d29699675a0c35f6dc3c3c73cb529ed352d59649cf15931740eb31ae083c1e
-  languageName: node
-  linkType: hard
-
-"requestidlecallback@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "requestidlecallback@npm:0.3.0"
-  checksum: 2405aef711b516e326ff18849b24ad2c0e623d2b60397bdc7919fa40d8575fce0a16a563a53f94ec89d255325a99e5deee952e6024584a5179cbbabb4469f0e8
   languageName: node
   linkType: hard
 
