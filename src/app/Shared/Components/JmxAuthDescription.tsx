@@ -22,7 +22,7 @@ export const JmxAuthDescription: React.FC<React.PropsWithChildren<DescriptionPro
     <TextContent>
       {children}
       <Text component={TextVariants.p}>
-        JVM applications may be configured to require clients, such as Cryostat, to pass a challenge based
+        JVM applications can be configured to require clients, such as Cryostat, to pass a challenge based
         authentication before establishing a connection.
       </Text>
       <Text component={TextVariants.p}>
