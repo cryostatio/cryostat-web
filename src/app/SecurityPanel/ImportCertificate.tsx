@@ -61,9 +61,7 @@ export const ImportCertificate: SecurityCard = {
   description: (
     <TextContent>
       <Text component={TextVariants.small}>Add SSL certificates to the Cryostat server truststore.</Text>
-      <Text component={TextVariants.small}>
-        The Cryostat server must be restarted in order to reload the certificate store.
-      </Text>
+      <Text component={TextVariants.small}>You must restart the Cryostat server to reload the certificate store.</Text>
     </TextContent>
   ),
   content: CertificateImport,
