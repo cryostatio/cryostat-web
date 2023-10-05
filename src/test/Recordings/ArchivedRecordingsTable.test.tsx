@@ -31,7 +31,8 @@ import { of, Subject } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockJvmId = 'id';
+const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
 const mockUploadsTarget = { connectUrl: UPLOADS_SUBDIRECTORY, alias: '' };
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -66,16 +67,17 @@ const mockArchivedRecordingsResponse = {
 
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
 const mockCreateNotification = {
-  message: { target: mockConnectUrl, recording: mockAnotherRecording },
+  message: { target: mockConnectUrl, recording: mockAnotherRecording, jvmId: mockJvmId },
 } as NotificationMessage;
 const mockLabelsNotification = {
   message: {
     target: mockConnectUrl,
     recordingName: 'someRecording',
+    jvmId: mockJvmId,
     metadata: { labels: { someLabel: 'someUpdatedValue' } },
   },
 } as NotificationMessage;
-const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
+const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId } } as NotificationMessage;
 
 const mockFileName = 'mock.jfr';
 const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFileName, { type: 'jfr' });
