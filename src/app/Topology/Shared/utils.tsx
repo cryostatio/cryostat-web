@@ -58,13 +58,13 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
             ),
             callForAction: [
               <Text key="jmx-auth" component={TextVariants.p}>
-                If the target has{' '}
+                If{' '}
                 <DescriptionListTermHelpText>
                   <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
                     <DescriptionListTermHelpTextButton>JMX Authentication</DescriptionListTermHelpTextButton>
                   </Popover>
                 </DescriptionListTermHelpText>{' '}
-                enabled,{' '}
+                is enabled,{' '}
                 <WarningResolverAsCredModal key={`${node.target.alias}-resolver-as-credential-modal`}>
                   <Button variant="link" isSmall style={{ padding: 0 }}>
                     add credentials
@@ -73,13 +73,13 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                 </WarningResolverAsCredModal>
               </Text>,
               <Text key="jmx-ssl" component={TextVariants.p}>
-                If the target has{' '}
+                If{' '}
                 <DescriptionListTermHelpText>
                   <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
                     <DescriptionListTermHelpTextButton>JMX over SSL</DescriptionListTermHelpTextButton>
                   </Popover>
                 </DescriptionListTermHelpText>{' '}
-                enabled,{' '}
+                is enabled,{' '}
                 <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
                   add the SSL certificate
                 </WarningResolverAsLink>
