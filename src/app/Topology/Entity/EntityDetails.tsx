@@ -191,7 +191,7 @@ export const TargetDetails: React.FC<{
           <>
             <span style={{ marginRight: '0.5em' }}>JVM ID</span>
             {!serviceRef.jvmId && (
-              <Tooltip content={'Failed to generate JVM ID'}>
+              <Tooltip content={'Failed to generate the JVM identifier'}>
                 <ExclamationTriangleIcon color="orange" />
               </Tooltip>
             )}
@@ -201,7 +201,7 @@ export const TargetDetails: React.FC<{
           <>
             <span style={{ marginRight: '0.5em' }}>JVM ID</span>
             {!serviceRef.jvmId && (
-              <Tooltip content={'Failed to generate JVM ID'}>
+              <Tooltip content={'Failed to generate the JVM identifier'}>
                 <ExclamationTriangleIcon color="orange" />
               </Tooltip>
             )}

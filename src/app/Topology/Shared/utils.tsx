@@ -50,7 +50,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
       : [
           NodeStatus.warning,
           {
-            title: 'Failed to generate JVM ID',
+            title: 'Failed to generate the JVM identifier',
             description: (
               <>
                 <Text component={TextVariants.p}>Check the target authentication settings:</Text>
