@@ -35,7 +35,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
         <Card key={s.key}>
           <CardTitle>
             <Text component={TextVariants.h1}>{s.title}</Text>
-            <Text component={TextVariants.small}>{s.description}</Text>
+            {s.description}
           </CardTitle>
           <CardBody>{s.element}</CardBody>
         </Card>

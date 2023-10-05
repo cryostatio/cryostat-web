@@ -15,7 +15,7 @@
  */
 
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
-import { Button, Icon, Text, TextVariants, Tooltip } from '@patternfly/react-core';
+import { Button, Icon, Text, TextContent, TextVariants, Tooltip } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
@@ -58,7 +58,13 @@ export const ImportCertificate: SecurityCard = {
       </Tooltip>
     </Text>
   ),
-  description:
-    'Add SSL certificates to the Cryostat server truststore. The Cryostat server must be restarted in order to reload the certificate store.',
+  description: (
+    <TextContent>
+      <Text component={TextVariants.small}>Add SSL certificates to the Cryostat server truststore.</Text>
+      <Text component={TextVariants.small}>
+        The Cryostat server must be restarted in order to reload the certificate store.
+      </Text>
+    </TextContent>
+  ),
   content: CertificateImport,
 };
