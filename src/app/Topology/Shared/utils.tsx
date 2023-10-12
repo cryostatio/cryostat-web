@@ -76,10 +76,10 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                 If{' '}
                 <DescriptionListTermHelpText>
                   <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
-                    <DescriptionListTermHelpTextButton>JMX over SSL</DescriptionListTermHelpTextButton>
+                    <DescriptionListTermHelpTextButton>SSL is enabled</DescriptionListTermHelpTextButton>
                   </Popover>
                 </DescriptionListTermHelpText>{' '}
-                is enabled,{' '}
+                for JMX,{' '}
                 <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
                   add the SSL certificate
                 </WarningResolverAsLink>
