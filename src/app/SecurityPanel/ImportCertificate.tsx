@@ -15,7 +15,7 @@
  */
 
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
-import { Button, Icon, Text, TextContent, TextVariants, Tooltip } from '@patternfly/react-core';
+import { Button, Icon, Popover, Text, TextContent, TextVariants, Tooltip } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
@@ -38,35 +38,16 @@ export const CertificateImport: React.FC = () => {
   );
 };
 
-const CertificateTooltip: React.FC<{}> = () => {
-  const [visible, setVisible] = React.useState(false);
-
-  return (
-    <Tooltip
-      aria="none"
-      aria-live="polite"
-      trigger="manual"
-      isVisible={visible}
-      isContentLeftAligned
-      maxWidth="40rem"
-      content={
-        <JmxSslDescription>
-          <Text component={TextVariants.h3}>JMX over SSL</Text>
-        </JmxSslDescription>
-      }
-    >
-      <Button variant="plain" onClick={() => setVisible((v) => !v)}>
-        <OutlinedQuestionCircleIcon />
-      </Button>
-    </Tooltip>
-  );
-};
-
 export const ImportCertificate: SecurityCard = {
   key: 'ssl',
   title: (
     <Text>
-      Import SSL Certificates <CertificateTooltip />
+      Import SSL Certificates
+      <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
+        <Button variant="plain">
+          <OutlinedQuestionCircleIcon />
+        </Button>
+      </Popover>
     </Text>
   ),
   description: (
