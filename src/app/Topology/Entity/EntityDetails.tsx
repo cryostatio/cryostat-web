@@ -666,15 +666,17 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
           actionClose={<AlertActionCloseButton onClose={() => setShowBanner(false)} />}
         >
           <Stack hasGutter>
-            <StackItem key={'alert-description'}>{extra?.description}</StackItem>
             {extra?.callForAction && !alertOptions.hideActions ? (
-              <StackItem key={'alert-call-for-action'}>
-                <Flex>
-                  {extra.callForAction.map((action, index) => (
-                    <FlexItem key={index}>{action}</FlexItem>
-                  ))}
-                </Flex>
-              </StackItem>
+              <>
+                <StackItem key={'alert-description'}>{extra?.description}</StackItem>
+                <StackItem key={'alert-call-for-action'}>
+                  <Flex>
+                    {extra.callForAction.map((action, index) => (
+                      <FlexItem key={index}>{action}</FlexItem>
+                    ))}
+                  </Flex>
+                </StackItem>
+              </>
             ) : null}
           </Stack>
         </Alert>
