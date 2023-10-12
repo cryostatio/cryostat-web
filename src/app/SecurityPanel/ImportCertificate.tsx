@@ -38,24 +38,35 @@ export const CertificateImport: React.FC = () => {
   );
 };
 
+const CertificateTooltip: React.FC<{}> = () => {
+  const [visible, setVisible] = React.useState(false);
+
+  return (
+    <Tooltip
+      aria="none"
+      aria-live="polite"
+      trigger="manual"
+      isVisible={visible}
+      isContentLeftAligned
+      maxWidth="40rem"
+      content={
+        <JmxSslDescription>
+          <Text component={TextVariants.h3}>JMX over SSL</Text>
+        </JmxSslDescription>
+      }
+    >
+      <Button variant="plain" onClick={() => setVisible((v) => !v)}>
+        <OutlinedQuestionCircleIcon />
+      </Button>
+    </Tooltip>
+  );
+};
+
 export const ImportCertificate: SecurityCard = {
   key: 'ssl',
   title: (
     <Text>
-      Import SSL Certificates{' '}
-      <Tooltip
-        isContentLeftAligned
-        maxWidth="40rem"
-        content={
-          <JmxSslDescription>
-            <Text component={TextVariants.h3}>JMX over SSL</Text>
-          </JmxSslDescription>
-        }
-      >
-        <Icon isInline>
-          <OutlinedQuestionCircleIcon />
-        </Icon>
-      </Tooltip>
+      Import SSL Certificates <CertificateTooltip />
     </Text>
   ),
   description: (

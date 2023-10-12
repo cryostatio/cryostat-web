@@ -520,24 +520,35 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   );
 };
 
+const CredentialsTooltip: React.FC<{}> = () => {
+  const [visible, setVisible] = React.useState(false);
+
+  return (
+    <Tooltip
+      aria="none"
+      aria-live="polite"
+      trigger="manual"
+      isVisible={visible}
+      isContentLeftAligned
+      maxWidth="40rem"
+      content={
+        <JmxAuthDescription>
+          <Text component={TextVariants.h3}>JMX Authentication</Text>
+        </JmxAuthDescription>
+      }
+    >
+      <Button variant="plain" onClick={() => setVisible((v) => !v)}>
+        <OutlinedQuestionCircleIcon />
+      </Button>
+    </Tooltip>
+  );
+};
+
 export const StoreCredentialsCard: SecurityCard = {
   key: 'credentials',
   title: (
     <Text>
-      Store Credentials{' '}
-      <Tooltip
-        isContentLeftAligned
-        maxWidth="40rem"
-        content={
-          <JmxAuthDescription>
-            <Text component={TextVariants.h3}>JMX Authentication</Text>
-          </JmxAuthDescription>
-        }
-      >
-        <Icon isInline>
-          <OutlinedQuestionCircleIcon />
-        </Icon>
-      </Tooltip>
+      Store Credentials <CredentialsTooltip />
     </Text>
   ),
   description: (
