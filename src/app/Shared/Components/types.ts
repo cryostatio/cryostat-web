@@ -20,3 +20,7 @@ export interface LoadingProps {
   spinnerAriaLabel?: string; // Accessible label for the spinner to describe what is loading
   isLoading: boolean;
 }
+
+export type DescriptionProps = {
+  children?: React.ReactNode;
+};

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Button } from '@patternfly/react-core';
+import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
+import { Button, Icon, Popover, Text, TextContent, TextVariants, Tooltip } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
 import { SecurityCard } from './types';
@@ -37,7 +39,22 @@ export const CertificateImport: React.FC = () => {
 };
 
 export const ImportCertificate: SecurityCard = {
-  title: 'Import SSL Certificates',
-  description: 'The Cryostat server must be restarted in order to reload the certificate store.',
+  key: 'ssl',
+  title: (
+    <Text>
+      Import SSL Certificates
+      <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
+        <Button variant="plain">
+          <OutlinedQuestionCircleIcon />
+        </Button>
+      </Popover>
+    </Text>
+  ),
+  description: (
+    <TextContent>
+      <Text component={TextVariants.small}>Add SSL certificates to the Cryostat server truststore.</Text>
+      <Text component={TextVariants.small}>You must restart the Cryostat server to reload the certificate store.</Text>
+    </TextContent>
+  ),
   content: CertificateImport,
 };

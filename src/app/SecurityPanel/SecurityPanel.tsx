@@ -23,6 +23,7 @@ export interface SecurityPanelProps {}
 
 export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
   const securityCards = [ImportCertificate, StoreCredentialsCard].map((c) => ({
+    key: c.key,
     title: c.title,
     description: c.description,
     element: React.createElement(c.content, null),
@@ -31,10 +32,10 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
   return (
     <BreadcrumbPage pageTitle="Security">
       {securityCards.map((s) => (
-        <Card key={s.title}>
+        <Card key={s.key}>
           <CardTitle>
             <Text component={TextVariants.h1}>{s.title}</Text>
-            <Text component={TextVariants.small}>{s.description}</Text>
+            {s.description}
           </CardTitle>
           <CardBody>{s.element}</CardBody>
         </Card>
