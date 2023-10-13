@@ -191,7 +191,7 @@ export const TargetDetails: React.FC<{
           <>
             <span style={{ marginRight: '0.5em' }}>JVM ID</span>
             {!serviceRef.jvmId && (
-              <Tooltip content={'Failed to compute JVM ID'}>
+              <Tooltip content={'Failed to generate the JVM identifier'}>
                 <ExclamationTriangleIcon color="orange" />
               </Tooltip>
             )}
@@ -201,7 +201,7 @@ export const TargetDetails: React.FC<{
           <>
             <span style={{ marginRight: '0.5em' }}>JVM ID</span>
             {!serviceRef.jvmId && (
-              <Tooltip content={'Failed to compute JVM ID'}>
+              <Tooltip content={'Failed to generate the JVM identifier'}>
                 <ExclamationTriangleIcon color="orange" />
               </Tooltip>
             )}
@@ -666,15 +666,17 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
           actionClose={<AlertActionCloseButton onClose={() => setShowBanner(false)} />}
         >
           <Stack hasGutter>
-            <StackItem key={'alert-description'}>{extra?.description}</StackItem>
             {extra?.callForAction && !alertOptions.hideActions ? (
-              <StackItem key={'alert-call-for-action'}>
-                <Flex>
-                  {extra.callForAction.map((action, index) => (
-                    <FlexItem key={index}>{action}</FlexItem>
-                  ))}
-                </Flex>
-              </StackItem>
+              <>
+                <StackItem key={'alert-description'}>{extra?.description}</StackItem>
+                <StackItem key={'alert-call-for-action'}>
+                  <Flex>
+                    {extra.callForAction.map((action, index) => (
+                      <FlexItem key={index}>{action}</FlexItem>
+                    ))}
+                  </Flex>
+                </StackItem>
+              </>
             ) : null}
           </Stack>
         </Alert>

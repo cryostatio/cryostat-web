@@ -276,7 +276,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
       >
         <MultipleFileUploadMain
           titleIcon={titleIcon || <UploadIcon />}
-          titleText={titleText || 'Drag and drop files here'}
+          titleText={titleText || 'Drag a file here'}
           titleTextSeparator={titleTextSeparator || 'or'}
           infoText={infoText || `Accepted file types: ${displayAccepts.join(', ')}`}
         />

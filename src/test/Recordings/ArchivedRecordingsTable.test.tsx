@@ -460,7 +460,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    const dropZoneText = within(modal).getByText('Drag a file here');
     expect(dropZoneText).toBeInTheDocument();
     expect(dropZoneText).toBeVisible();
 
@@ -520,7 +520,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    const dropZoneText = within(modal).getByText('Drag a file here');
     expect(dropZoneText).toBeInTheDocument();
     expect(dropZoneText).toBeVisible();
 
@@ -608,7 +608,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    const dropZoneText = within(modal).getByText('Drag a file here');
     expect(dropZoneText).toBeInTheDocument();
     expect(dropZoneText).toBeVisible();
 
@@ -692,7 +692,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    const dropZoneText = within(modal).getByText('Drag a file here');
     expect(dropZoneText).toBeInTheDocument();
     expect(dropZoneText).toBeVisible();
 

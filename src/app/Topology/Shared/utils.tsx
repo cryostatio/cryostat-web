@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
+import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
+import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { NodeType, EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { DEFAULT_EMPTY_UNIVERSE, isTargetNode } from '@app/Shared/Services/api.utils';
-import { Button, Text, TextVariants } from '@patternfly/react-core';
-import { GraphElement, NodeStatus } from '@patternfly/react-topology';
+import {
+  Button,
+  Text,
+  TextVariants,
+  DescriptionListTermHelpText,
+  DescriptionListTermHelpTextButton,
+  Popover,
+} from '@patternfly/react-core';
+import { NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { WarningResolverAsCredModal, WarningResolverAsLink } from '../Actions/WarningResolver';
-import { ListElement, StatusExtra } from './types';
+import { GraphElement, ListElement, StatusExtra } from './types';
 
 export const TOPOLOGY_GRAPH_ID = 'cryostat-target-topology-graph';
 
@@ -41,26 +50,41 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
       : [
           NodeStatus.warning,
           {
-            title: 'Failed to compute JVM ID',
+            title: 'Failed to generate the JVM identifier',
             description: (
               <>
-                <Text component={TextVariants.p}>
-                  If target has JMX Authentication enabled, add the credential to Cryostat keyring.
-                </Text>
-                <Text component={TextVariants.p}>
-                  If the target has SSL enabled over JMX, add its certificate to Cryostat truststore.
-                </Text>
+                <Text component={TextVariants.p}>Check the target authentication settings:</Text>
               </>
             ),
             callForAction: [
-              <WarningResolverAsCredModal key={`${node.target.alias}-resolver-as-credential-modal`}>
-                <Button variant="link" isSmall style={{ padding: 0 }}>
-                  Add credentials
-                </Button>
-              </WarningResolverAsCredModal>,
-              <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
-                Add certificates
-              </WarningResolverAsLink>,
+              <Text key="jmx-auth" component={TextVariants.p}>
+                If{' '}
+                <DescriptionListTermHelpText>
+                  <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
+                    <DescriptionListTermHelpTextButton>JMX Authentication</DescriptionListTermHelpTextButton>
+                  </Popover>
+                </DescriptionListTermHelpText>{' '}
+                is enabled,{' '}
+                <WarningResolverAsCredModal key={`${node.target.alias}-resolver-as-credential-modal`}>
+                  <Button variant="link" isSmall style={{ padding: 0 }}>
+                    add credentials
+                  </Button>
+                  .
+                </WarningResolverAsCredModal>
+              </Text>,
+              <Text key="jmx-ssl" component={TextVariants.p}>
+                If{' '}
+                <DescriptionListTermHelpText>
+                  <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
+                    <DescriptionListTermHelpTextButton>SSL is enabled</DescriptionListTermHelpTextButton>
+                  </Popover>
+                </DescriptionListTermHelpText>{' '}
+                for JMX,{' '}
+                <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
+                  add the SSL certificate
+                </WarningResolverAsLink>
+                .
+              </Text>,
             ],
           },
         ];

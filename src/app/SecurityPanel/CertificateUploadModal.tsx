@@ -121,7 +121,7 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
       showClose={true}
       onClose={handleClose}
       title="Upload SSL certificate"
-      description="Select a certificate file to upload. Certificates must be DER-encoded (can be binary or base64) and can have .der or .cer extensions."
+      description="Select a certificate file to upload. Certificates must be DER-encoded (can be binary or base64) and should have .der or .cer extensions."
     >
       <Form>
         <FormGroup label="Certificate File" isRequired fieldId="file">

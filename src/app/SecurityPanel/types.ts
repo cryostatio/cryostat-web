@@ -15,7 +15,8 @@
  */
 
 export interface SecurityCard {
-  title: string;
-  description: JSX.Element | string;
+  key: string;
+  title: JSX.Element;
+  description: JSX.Element;
   content: React.FC;
 }
