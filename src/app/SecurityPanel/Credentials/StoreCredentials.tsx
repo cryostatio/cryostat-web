@@ -15,6 +15,7 @@
  */
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { StoredCredential, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -31,13 +32,18 @@ import {
   DropdownToggleCheckbox,
   EmptyState,
   EmptyStateIcon,
+  Icon,
+  Popover,
   Text,
+  TextContent,
+  TextVariants,
   Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
+  Tooltip,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -516,15 +522,27 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
 };
 
 export const StoreCredentialsCard: SecurityCard = {
-  title: 'Store Credentials',
-  description: (
+  key: 'credentials',
+  title: (
     <Text>
-      Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored here. These are
-      stored in encrypted storage managed by the Cryostat backend. These credentials may be used for manually managing
-      recordings and event templates on target JVMs, as well as for Automated Rules which run in the background and open
-      unattended target connections. Any locally-stored client credentials held by your browser session are not
-      displayed here. See <Link to="/settings">Settings</Link> to configure locally-stored credentials.
+      Store Credentials
+      <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
+        <Button variant="plain">
+          <OutlinedQuestionCircleIcon />
+        </Button>
+      </Popover>
     </Text>
+  ),
+  description: (
+    <TextContent>
+      <Text component={TextVariants.small}>
+        Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored here. These are
+        stored in encrypted storage managed by the Cryostat backend. These credentials may be used for manually managing
+        recordings and event templates on target JVMs, as well as for Automated Rules which run in the background and
+        open unattended target connections. Any locally-stored client credentials held by your browser session are not
+        displayed here. See <Link to="/settings">Settings</Link> to configure locally-stored credentials.
+      </Text>
+    </TextContent>
   ),
   content: StoreCredentials,
 };

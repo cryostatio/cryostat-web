@@ -147,7 +147,7 @@ describe('<Rules />', () => {
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
-    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    const dropZoneText = within(modal).getByText('Drag a file here');
     expect(dropZoneText).toBeInTheDocument();
     expect(dropZoneText).toBeVisible();
   });
@@ -265,7 +265,7 @@ describe('<Rules />', () => {
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
-    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    const dropZoneText = within(modal).getByText('Drag a file here');
     expect(dropZoneText).toBeInTheDocument();
     expect(dropZoneText).toBeVisible();
 
