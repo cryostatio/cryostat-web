@@ -63,7 +63,9 @@ const mockLabelsNotification = {
     metadata: { labels: { someLabel: 'someUpdatedValue' } },
   },
 } as NotificationMessage;
-const mockStopNotification = { message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId } } as NotificationMessage;
+const mockStopNotification = {
+  message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId },
+} as NotificationMessage;
 const mockDeleteNotification = mockStopNotification;
 
 jest.mock('@app/Recordings/RecordingFilters', () => {

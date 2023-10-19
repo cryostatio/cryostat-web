@@ -77,7 +77,9 @@ const mockLabelsNotification = {
     metadata: { labels: { someLabel: 'someUpdatedValue' } },
   },
 } as NotificationMessage;
-const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId } } as NotificationMessage;
+const mockDeleteNotification = {
+  message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId },
+} as NotificationMessage;
 
 const mockFileName = 'mock.jfr';
 const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFileName, { type: 'jfr' });
