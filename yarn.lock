@@ -738,6 +738,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gilbarbara/deep-equal@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@gilbarbara/deep-equal@npm:0.2.0"
+  checksum: 77297f2ca4d3aba000e5dea3ab1aadbb4015e78f1e2ddfc75f341505d3a2e501b904767b9501b4caf7ac4779f7e6d048000d2022807b81550eeb6dae8b3574e7
+  languageName: node
+  linkType: hard
+
+"@gilbarbara/helpers@npm:^0.8.6":
+  version: 0.8.7
+  resolution: "@gilbarbara/helpers@npm:0.8.7"
+  dependencies:
+    "@gilbarbara/types": ^0.2.2
+    is-lite: ^0.9.3
+  checksum: 2747a8e4066dca97a14920cfdc589fbd092da0ef3d87ec4e0803db2f93da9fa9d6960eac15c48f9b8b14cff870702220c5bce146e294474b68c75a34498e915c
+  languageName: node
+  linkType: hard
+
+"@gilbarbara/types@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@gilbarbara/types@npm:0.2.2"
+  dependencies:
+    type-fest: ^4.1.0
+  checksum: 0c348410efa59a653f0f4f9342950fce08bd86ccc600488fe81ae20b5c040675637569fa9eef9c36d9ed62932c2fa7a996a7ca54b5d40ecbf9738876e269d9d4
+  languageName: node
+  linkType: hard
+
 "@hapi/hoek@npm:^9.0.0":
   version: 9.3.0
   resolution: "@hapi/hoek@npm:9.3.0"
@@ -4171,7 +4197,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-i18next: ^12.3.1
-    react-joyride: ^2.5.3
+    react-joyride: ^2.6.1
     react-redux: ^8.0.5
     react-router-dom: ^5.3.4
     react-test-renderer: ^17.0.2
@@ -4925,6 +4951,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deep-diff@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "deep-diff@npm:1.0.2"
+  checksum: 9de8b5eedc1957116e1b47e4c3c4e3dbe23cb741abefc5ec8829a12e77958c689ac46888a3c35320f976cf42fb6de2b016e158facdb24d894ab5b5fdabad9b34
+  languageName: node
+  linkType: hard
+
 "deep-equal@npm:^2.0.5":
   version: 2.2.0
   resolution: "deep-equal@npm:2.2.0"
@@ -4961,6 +4994,13 @@ __metadata:
   version: 4.3.0
   resolution: "deepmerge@npm:4.3.0"
   checksum: c7980eb5c5be040b371f1df0d566473875cfabed9f672ccc177b81ba8eee5686ce2478de2f1d0076391621cbe729e5eacda397179a59ef0f68901849647db126
+  languageName: node
+  linkType: hard
+
+"deepmerge@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "deepmerge@npm:4.3.1"
+  checksum: 2024c6a980a1b7128084170c4cf56b0fd58a63f2da1660dcfe977415f27b17dbe5888668b59d0b063753f3220719d5e400b7f113609489c90160bb9a5518d052
   languageName: node
   linkType: hard
 
@@ -7645,6 +7685,13 @@ __metadata:
   version: 0.9.2
   resolution: "is-lite@npm:0.9.2"
   checksum: 8c4d2c58cf99a8289715925c0c3175dadf63e5ad293ad395ce650430ce90afe533a84ad0ffdeed0ce277dabdae63acdd3dac5d9b629bd61c3c0c620e2376f26e
+  languageName: node
+  linkType: hard
+
+"is-lite@npm:^0.9.3":
+  version: 0.9.3
+  resolution: "is-lite@npm:0.9.3"
+  checksum: 4e4316da35e8c0205c607a240fcfb2737d6fe267390a99d051a9c72adf7b096b69bdd4e98df723efb05ebeb16879c4e30cc4f4120482f3ebf431c0e623186d0a
   languageName: node
   linkType: hard
 
@@ -11123,6 +11170,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-innertext@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "react-innertext@npm:1.1.5"
+  peerDependencies:
+    "@types/react": ">=0.0.0 <=99"
+    react: ">=0.0.0 <=99"
+  checksum: 01c9c8a5a471f03965b9d69c8bee02d420fd3a607b678004f0bdee098c9bccb3e2eae8460c90b1d180d2a8d544a3ddb09b8c2a11e5aa8b3a077733e2d9c25c2c
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.12.0 || ^17.0.0 || ^18.0.0, react-is@npm:^18.0.0":
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
@@ -11144,23 +11201,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-joyride@npm:^2.5.3":
-  version: 2.5.3
-  resolution: "react-joyride@npm:2.5.3"
+"react-joyride@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "react-joyride@npm:2.6.1"
   dependencies:
-    deepmerge: ^4.2.2
-    exenv: ^1.2.2
-    is-lite: ^0.9.2
-    prop-types: ^15.8.1
+    "@gilbarbara/deep-equal": ^0.2.0
+    "@gilbarbara/helpers": ^0.8.6
+    deep-diff: ^1.0.2
+    deepmerge: ^4.3.1
+    is-lite: ^0.9.3
     react-floater: ^0.7.6
+    react-innertext: ^1.1.5
     react-is: ^16.13.1
     scroll: ^3.0.1
-    scrollparent: ^2.0.1
-    tree-changes: ^0.9.2
+    scrollparent: ^2.1.0
+    tree-changes: ^0.10.0
   peerDependencies:
     react: 15 - 18
     react-dom: 15 - 18
-  checksum: 696b1bbf5583c95dac4f26968752c2ea249abcc600730b2087c3d6f6e6873e0aa2af26d222fce8a4c4442fdf92ce58d6588b68b4fdded15aa5faa3fb1f087c34
+  checksum: b27e5838993d4b1599622c93f50291ad8a06550fa8617f9037e390ead56c9411ae1856a01e8593aaf8172fc61f80145bd23af8a8adfb3ca91053c3e3db118dc2
   languageName: node
   linkType: hard
 
@@ -11827,10 +11886,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scrollparent@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "scrollparent@npm:2.0.1"
-  checksum: 9ff2b29c1233431ebd0910e5f8db4a058836ee0292d1bb18042fbb4d2175c3ed73fa28a71a96074ac6848173185238ad1139bdefc3863be4808df981175cb807
+"scrollparent@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "scrollparent@npm:2.1.0"
+  checksum: 646cfdaf981f94b52f1020cc26b18ff1a751c2fa4e40777f6dfac314500d365b4db3fec39fd06be7b683f0a1dbd29df8ce1629db50381e9072433465b2f446fa
   languageName: node
   linkType: hard
 
@@ -12975,7 +13034,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tree-changes@npm:^0.9.1, tree-changes@npm:^0.9.2":
+"tree-changes@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "tree-changes@npm:0.10.0"
+  dependencies:
+    "@gilbarbara/deep-equal": ^0.1.1
+    is-lite: ^0.9.2
+  checksum: 75d5641563fedd4f2fc382606479d85be7fbbe77cc3588629541820e3ab2ad34dbf8887ba10bfed87bbde14f7c0cefa9c6dfddeee8c96101586864dd4816ae3c
+  languageName: node
+  linkType: hard
+
+"tree-changes@npm:^0.9.1":
   version: 0.9.3
   resolution: "tree-changes@npm:0.9.3"
   dependencies:
@@ -13135,6 +13204,13 @@ __metadata:
   version: 0.21.3
   resolution: "type-fest@npm:0.21.3"
   checksum: e6b32a3b3877f04339bae01c193b273c62ba7bfc9e325b8703c4ee1b32dc8fe4ef5dfa54bf78265e069f7667d058e360ae0f37be5af9f153b22382cd55a9afe0
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.1.0":
+  version: 4.5.0
+  resolution: "type-fest@npm:4.5.0"
+  checksum: cddc3900f19671e16ec49080e5c06c197d5554a75a1b758ff6d07af1089925ade4bcc9d1af080bd4a4a4fdf973a90ad4a83229203c854a444c511f8a3daeb56d
   languageName: node
   linkType: hard
 
