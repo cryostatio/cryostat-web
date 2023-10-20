@@ -39,9 +39,6 @@ module.exports = {
   // The test environment that will be used for testing.
   testEnvironment: "jsdom",
 
-  // A list of paths to snapshot serializer modules Jest should use for snapshot testing
-  snapshotSerializers: ['enzyme-to-json/serializer'],
-
   // The glob patterns Jest uses to detect test files
   testMatch: [
     "<rootDir>/src/test/**/*.test.(ts|tsx)"

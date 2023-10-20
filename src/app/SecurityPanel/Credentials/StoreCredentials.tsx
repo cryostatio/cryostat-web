@@ -32,7 +32,6 @@ import {
   DropdownToggleCheckbox,
   EmptyState,
   EmptyStateIcon,
-  Icon,
   Popover,
   Text,
   TextContent,
@@ -41,7 +40,6 @@ import {
   Toolbar,
   ToolbarContent,
   ToolbarItem,
-  Tooltip,
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
