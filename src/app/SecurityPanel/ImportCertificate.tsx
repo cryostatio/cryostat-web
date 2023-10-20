@@ -15,7 +15,7 @@
  */
 
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
-import { Button, Icon, Popover, Text, TextContent, TextVariants, Tooltip } from '@patternfly/react-core';
+import { Button, Popover, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
