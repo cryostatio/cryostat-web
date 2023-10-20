@@ -503,7 +503,7 @@ export class ApiService {
 
   // from file system path functions
   uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest('beta', `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}/upload`, {
+    return this.sendRequest('beta', `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}/upload`, {
       method: 'POST',
     }).pipe(
       map((resp) => resp.ok),
@@ -512,7 +512,7 @@ export class ApiService {
   }
 
   deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest('beta', `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}`, {
+    return this.sendRequest('beta', `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -529,7 +529,7 @@ export class ApiService {
   }
 
   postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
-    return this.sendRequest('beta', `fs/recordings/${jvmId}/${encodeURIComponent(recordingName)}/metadata/labels`, {
+    return this.sendRequest('beta', `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}/metadata/labels`, {
       method: 'POST',
       body: this.transformAndStringifyToRawLabels(labels),
     }).pipe(
