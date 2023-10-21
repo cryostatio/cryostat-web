@@ -20,13 +20,13 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs';
 
 export interface SnapshotRecordingFormProps {}
 
 export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
@@ -41,11 +41,11 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
         .subscribe((success) => {
           setLoading(false);
           if (success) {
-            history.push('/recordings');
+            navigate('/recordings');
           }
         }),
     );
-  }, [addSubscription, context.api, history, setLoading]);
+  }, [addSubscription, context.api, navigate, setLoading]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -117,7 +117,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
           <Button variant="primary" onClick={handleCreateSnapshot} isDisabled={loading} {...createButtonLoadingProps}>
             {loading ? 'Creating' : 'Create'}
           </Button>
-          <Button variant="secondary" onClick={history.goBack} isDisabled={loading}>
+          <Button variant="secondary" onClick={() => navigate(-1)} isDisabled={loading}>
             Cancel
           </Button>
         </ActionGroup>

@@ -17,7 +17,7 @@
 import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
-import { useHistory } from 'react-router-dom';
+import { NavigateFunction } from 'react-router-dom-v5-compat';
 import { BehaviorSubject, Observable } from 'rxjs';
 import semverGt from 'semver/functions/gt';
 import semverValid from 'semver/functions/valid';
@@ -225,14 +225,14 @@ export interface TabConfig {
 }
 
 export const switchTab = (
-  history: ReturnType<typeof useHistory>,
+  navigate: NavigateFunction,
   pathname: string,
   search: string,
   { tabKey, tabValue }: TabConfig,
 ) => {
   const query = new URLSearchParams(search);
   query.set(tabKey, tabValue);
-  history.push(`${pathname}?${query.toString()}`);
+  navigate(`${pathname}?${query.toString()}`);
 };
 
 export const getActiveTab = <T>(search: string, key: string, supportedTabs: T[], defaultTab: T) => {

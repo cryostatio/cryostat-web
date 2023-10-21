@@ -58,7 +58,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
 
@@ -89,7 +89,7 @@ export interface EventTemplatesProps {}
 
 export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
   const context = React.useContext(ServiceContext);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [filteredTemplates, setFilteredTemplates] = React.useState<EventTemplate[]>([]);
@@ -256,8 +256,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
         {
           title: 'Create Recording...',
           onClick: () =>
-            history.push({
-              pathname: '/recordings/create',
+            navigate('/recordings/create', {
               state: { template: { name: t.name, type: t.type } } as Partial<CustomRecordingFormData>,
             }),
         },
@@ -284,7 +283,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
       }
       return actions;
     },
-    [context.api, history, handleDeleteButton],
+    [context.api, navigate, handleDeleteButton],
   );
 
   const handleUploadModalClose = React.useCallback(() => {

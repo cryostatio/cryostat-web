@@ -37,7 +37,8 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { AutomatedAnalysis } from './Config/AutomatedAnalysis';
 import { AutoRefresh } from './Config/AutoRefresh';
 import { ChartCards } from './Config/ChartCards';
@@ -96,7 +97,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
     [t, loggedIn],
   );
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { search, pathname } = useLocation();
 
   const activeTab = React.useMemo(() => {
@@ -112,8 +113,8 @@ export const Settings: React.FC<SettingsProps> = (_) => {
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
-      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${tabAsParam(key as SettingTab)}` }),
-    [history, pathname, search],
+      switchTab(navigate, pathname, search, { tabKey: 'tab', tabValue: `${tabAsParam(key as SettingTab)}` }),
+    [navigate, pathname, search],
   );
 
   const settingGroups = React.useMemo(() => {

@@ -51,7 +51,8 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
-import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
@@ -118,10 +119,9 @@ export interface RulesTableProps {}
 
 export const RulesTable: React.FC<RulesTableProps> = (_) => {
   const context = React.useContext(ServiceContext);
-  const routerHistory = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
 
-  const { url } = useRouteMatch();
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
@@ -202,8 +202,8 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
   }, [context.settings, refreshRules]);
 
   const handleCreateRule = React.useCallback(() => {
-    routerHistory.push(`${url}/create`);
-  }, [routerHistory, url]);
+    navigate('/rules/create');
+  }, [navigate]);
 
   const handleUploadRule = React.useCallback(() => {
     setIsUploadModalOpen(true);

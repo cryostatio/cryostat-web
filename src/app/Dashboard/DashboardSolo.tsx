@@ -19,7 +19,8 @@ import { Bullseye, Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title } f
 import { MonitoringIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory, useLocation, withRouter } from 'react-router-dom';
+import { useLocation, withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { CardConfig } from './types';
 import { getCardDescriptorByName } from './utils';
 
@@ -27,7 +28,7 @@ export interface DashboardSoloProps {}
 
 const DashboardSolo: React.FC<DashboardSoloProps> = () => {
   const { search } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
 
@@ -59,7 +60,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = () => {
             <EmptyStateBody>
               Provide valid <code>layout</code> and <code>cardId</code> query parameters and try again.
             </EmptyStateBody>
-            <Button variant="primary" onClick={() => history.push('/')}>
+            <Button variant="primary" onClick={() => navigate('/')}>
               Back to Dashboard
             </Button>
           </EmptyState>
@@ -84,7 +85,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = () => {
         </TargetView>
       );
     }
-  }, [cardConfig, history]);
+  }, [cardConfig, navigate]);
 
   return content;
 };

@@ -48,19 +48,20 @@ import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
 import * as React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 import quickSearches, { QuickSearchId, quickSearchIds } from './quicksearches/all-quick-searches';
 import { QuickSearchItem } from './types';
 
 export const QuickSearchTabContent: React.FC<{ item?: QuickSearchItem }> = ({ item, ...props }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
 
   const handleActionClick = React.useCallback(() => {
-    item?.createAction && item.createAction({ history, services, notifications });
-  }, [item, history, services, notifications]);
+    item?.createAction && item.createAction({ navigate, services, notifications });
+  }, [item, navigate, services, notifications]);
 
   return item ? (
     <Stack {...props} hasGutter className={css('topology__quicksearch__tab-content')}>
@@ -285,7 +286,7 @@ export interface QuickSearchFlyoutMenuProps {
 }
 
 export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ isShow, ...props }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const activeLevel = useFeatureLevel();
@@ -307,12 +308,12 @@ export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ is
             <Bullseye>{icon}</Bullseye>
           </div>
         }
-        onClick={() => createAction({ history, services, notifications })}
+        onClick={() => createAction({ navigate, services, notifications })}
       >
         {name}
       </MenuItem>
     ));
-  }, [filteredQuicksearches, history, services, notifications]);
+  }, [filteredQuicksearches, navigate, services, notifications]);
 
   return isShow || hover ? (
     <Menu

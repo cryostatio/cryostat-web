@@ -64,42 +64,42 @@ export const isQuickRecordingExist = (group: EnvironmentNode, { services }: Acti
 export const nodeActions: NodeAction[] = [
   {
     key: 'VIEW_DASHBOARD',
-    action: (element, { history, services }) => {
+    action: (element, { navigate, services }) => {
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      history.push('/');
+      navigate('/');
     },
     title: 'View Dashboard',
   },
   {
     key: 'VIEW_RECORDINGS',
-    action: (element, { history, services }) => {
+    action: (element, { navigate, services }) => {
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      history.push('/recordings');
+      navigate('/recordings');
     },
     title: 'View Recordings',
   },
   { key: '', isSeparator: true },
   {
     key: 'CREATE_RECORDINGS',
-    action: (element, { history, services }) => {
+    action: (element, { navigate, services }) => {
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      history.push('/recordings/create');
+      navigate('/recordings/create');
     },
     title: 'Create Recordings',
   },
   {
     key: 'CREATE_RULES',
-    action: (element, { history, services }) => {
+    action: (element, { navigate, services }) => {
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      history.push('/rules/create');
+      navigate('/rules/create');
     },
     title: 'Create Automated Rules',
   },

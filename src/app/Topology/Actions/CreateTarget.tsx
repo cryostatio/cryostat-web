@@ -58,7 +58,7 @@ import { CheckCircleIcon, ExclamationCircleIcon, PendingIcon, SyncAltIcon } from
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);
 
@@ -74,7 +74,7 @@ export interface CreateTargetProps {
 export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [t] = useTranslation();
 
   const [example, setExample] = React.useState('');
@@ -184,7 +184,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           setLoading(false);
           const option = isHttpOk(status) ? ValidatedOptions.success : ValidatedOptions.error;
           if (option === ValidatedOptions.success) {
-            history.push('/topology');
+            navigate('/topology');
           } else {
             setValidation({
               option: option,
@@ -193,7 +193,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           }
         }),
     );
-  }, [setLoading, setValidation, addSubscription, context.api, connectUrl, alias, history, credentials]);
+  }, [setLoading, setValidation, addSubscription, context.api, connectUrl, alias, navigate, credentials]);
 
   const testTarget = React.useCallback(() => {
     if (!isValidTargetConnectURL(connectUrl)) {
@@ -223,7 +223,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
     resetTestState();
   }, [connectUrl, alias, credentials, addSubscription, context.api, resetTestState, setTesting]);
 
-  const handleCancel = React.useCallback(() => history.goBack(), [history]);
+  const handleCancel = React.useCallback(() => navigate(-1), [navigate]);
 
   React.useEffect(() => {
     if (prefilled) {

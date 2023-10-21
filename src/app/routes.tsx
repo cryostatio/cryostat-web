@@ -15,7 +15,8 @@
  */
 
 import * as React from 'react';
-import { Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
+import { RouteComponentProps, Switch, useLocation } from 'react-router-dom';
+import { CompatRoute } from 'react-router-dom-v5-compat';
 import About from './About/About';
 import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
@@ -232,12 +233,12 @@ const RouteWithTitleUpdates = ({ component: Component, title, path, ...rest }: I
     );
   }
 
-  return <Route render={routeWithTitle} path={path} />;
+  return <CompatRoute render={routeWithTitle} path={path} />;
 };
 
 const PageNotFound = ({ title }: { title: string }) => {
   useDocumentTitle(title);
-  return <Route component={NotFound} />;
+  return <CompatRoute component={NotFound} />;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

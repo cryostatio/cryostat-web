@@ -21,12 +21,12 @@ import { Services } from '@app/Shared/Services/Services';
 import { DropdownItemProps, LabelProps } from '@patternfly/react-core';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { NavigateFunction } from 'react-router-dom-v5-compat';
 import { Observable } from 'rxjs';
 import type { GraphElement, ListElement } from '../Shared/types';
 
 export interface ActionUtils {
-  history: ReturnType<typeof useHistory>;
+  navigate: NavigateFunction;
   services: Services;
   notifications: NotificationService;
 }
