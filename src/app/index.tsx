@@ -29,17 +29,20 @@ import * as React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { JoyrideProvider } from './Joyride/JoyrideProvider';
+import { CompatRouter } from 'react-router-dom-v5-compat';
 
 export const App: React.FC = () => (
   <ServiceContext.Provider value={defaultServices}>
     <NotificationsContext.Provider value={NotificationsInstance}>
       <Provider store={store}>
         <Router>
-          <JoyrideProvider>
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
-          </JoyrideProvider>
+          <CompatRouter>
+            <JoyrideProvider>
+              <AppLayout>
+                <AppRoutes />
+              </AppLayout>
+            </JoyrideProvider>
+          </CompatRouter>
         </Router>
       </Provider>
     </NotificationsContext.Provider>
