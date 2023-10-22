@@ -42,7 +42,7 @@ describe('<EventTypes />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -52,7 +52,7 @@ describe('<EventTypes />', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should show error view if failing to retrieve event types', async () => {

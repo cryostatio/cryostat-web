@@ -30,11 +30,18 @@ jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'sslFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 describe('<SnapshotRecordingForm />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -45,12 +52,12 @@ describe('<SnapshotRecordingForm />', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should create recording when create is clicked', async () => {
     const onCreateSpy = jest.spyOn(defaultServices.api, 'createSnapshot').mockReturnValue(of(true));
-    const { user, router } = render({
+    const { user } = render({
       routerConfigs: {
         routes: [
           {
@@ -69,7 +76,7 @@ describe('<SnapshotRecordingForm />', () => {
     await user.click(createButton);
 
     expect(onCreateSpy).toHaveBeenCalledTimes(1);
-    expect(router.state.location.pathname).toEqual('/recordings');
+    expect(mockNavigate).toHaveBeenCalledWith('/recordings');
   });
 
   it('should show error view if failing to retrieve templates or recording options', async () => {

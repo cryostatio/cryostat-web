@@ -157,10 +157,10 @@ describe('<AllArchivedRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('shows no recordings when empty', async () => {

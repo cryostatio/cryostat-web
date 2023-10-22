@@ -114,8 +114,10 @@ describe('<AgentLiveProbes />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
-    expect(tree.toJSON()).toMatchSnapshot();
+    const tree = await renderSnapshot({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] },
+    });
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should disable remove button if there is no probe', async () => {

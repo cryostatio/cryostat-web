@@ -59,7 +59,7 @@ describe('<RecordingLabelsPanel />', () => {
   };
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -73,7 +73,7 @@ describe('<RecordingLabelsPanel />', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('displays the bulk labels editor within the resizeable drawer panel', async () => {

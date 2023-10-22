@@ -1,96 +1,306 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Settings/> renders correctly 1`] = `
-Array [
-  <h2>
-    Unexpected Application Error!
-  </h2>,
-  <h3
-    style={
-      Object {
-        "fontStyle": "italic",
-      }
-    }
+<div
+  className="pf-c-page__main-group"
+>
+  <section
+    className="pf-c-page__main-section"
   >
-    Cannot read properties of undefined (reading 'location')
-  </h3>,
-  <pre
-    style={
-      Object {
-        "backgroundColor": "rgba(200,200,200, 0.5)",
-        "padding": "0.5rem",
-      }
-    }
-  >
-    TypeError: Cannot read properties of undefined (reading 'location')
-    at useLocation (/home/thvo/workspace/cryostat-web/node_modules/react-router-dom/node_modules/react-router/modules/hooks.js:29:10)
-    at Settings (/home/thvo/workspace/cryostat-web/src/app/Settings/Settings.tsx:101:43)
-    at renderWithHooks (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6016:18)
-    at mountIndeterminateComponent (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8744:13)
-    at beginWork (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:9966:16)
-    at performUnitOfWork (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13800:12)
-    at workLoopSync (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13728:5)
-    at renderRootSync (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13691:7)
-    at performSyncWorkOnRoot (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13404:18)
-    at /home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2537:26
-    at unstable_runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/scheduler/cjs/scheduler.development.js:468:12)
-    at runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2486:10)
-    at flushSyncCallbackQueueImpl (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2532:9)
-    at flushSyncCallbackQueue (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2519:3)
-    at scheduleUpdateOnFiber (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13004:9)
-    at updateContainer (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16454:3)
-    at Object.create (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:17149:3)
-    at renderSnapshot (/home/thvo/workspace/cryostat-web/src/test/utils.tsx:101:19)
-    at /home/thvo/workspace/cryostat-web/src/test/Settings/Settings.test.tsx:143:32
-    at step (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:195:27)
-    at Object.next (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:176:57)
-    at /home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:169:75
-    at new Promise (&lt;anonymous&gt;)
-    at Object.__awaiter (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:165:16)
-    at Object.&lt;anonymous&gt; (/home/thvo/workspace/cryostat-web/src/test/Settings/Settings.test.tsx:142:27)
-    at Promise.then.completed (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/utils.js:391:28)
-    at new Promise (&lt;anonymous&gt;)
-    at callAsyncCircusFn (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/utils.js:316:10)
-    at _callCircusTest (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:218:40)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at _runTest (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:155:3)
-    at _runTestsForDescribeBlock (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:66:9)
-    at _runTestsForDescribeBlock (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:60:9)
-    at run (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:25:3)
-    at runAndTransformResultsToJestFormat (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
-    at jestAdapter (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
-    at runTestInternal (/home/thvo/workspace/cryostat-web/node_modules/jest-runner/build/runTest.js:389:16)
-    at runTest (/home/thvo/workspace/cryostat-web/node_modules/jest-runner/build/runTest.js:475:34)
-    at Object.worker (/home/thvo/workspace/cryostat-web/node_modules/jest-runner/build/testWorker.js:133:12)
-  </pre>,
-  <p>
-    💿 Hey developer 👋
-  </p>,
-  <p>
-    You can provide a way better UX than this when your app throws errors by providing your own 
-    <code
-      style={
-        Object {
-          "backgroundColor": "rgba(200,200,200, 0.5)",
-          "padding": "2px 4px",
-        }
-      }
+    <nav
+      aria-label="Breadcrumb"
+      className="pf-c-breadcrumb"
+      data-ouia-component-id="OUIA-Generated-Breadcrumb-1"
+      data-ouia-component-type="PF4/Breadcrumb"
+      data-ouia-safe={true}
     >
-      ErrorBoundary
-    </code>
-     or
-     
-    <code
-      style={
-        Object {
-          "backgroundColor": "rgba(200,200,200, 0.5)",
-          "padding": "2px 4px",
-        }
-      }
+      <ol
+        className="pf-c-breadcrumb__list"
+      >
+        <li
+          className="pf-c-breadcrumb__item"
+        >
+          <h1
+            className="pf-c-breadcrumb__heading"
+          >
+            Settings
+          </h1>
+        </li>
+      </ol>
+    </nav>
+    <div
+      className="pf-l-stack pf-m-gutter"
     >
-      errorElement
-    </code>
-     prop on your route.
-  </p>,
-]
+      <div
+        className="pf-l-stack__item pf-m-fill"
+      >
+        <article
+          className="pf-c-card pf-m-full-height"
+          data-ouia-component-id="OUIA-Generated-Card-1"
+          data-ouia-component-type="PF4/Card"
+          data-ouia-safe={true}
+          id=""
+        >
+          <div
+            className="pf-c-sidebar"
+            tabIndex={0}
+          >
+            <div
+              className="pf-c-sidebar__main"
+            >
+              <div
+                className="pf-c-sidebar__panel"
+              >
+                <div
+                  aria-label="Select setting category"
+                  className="pf-c-tabs pf-m-vertical"
+                  data-ouia-component-id="OUIA-Generated-Tabs-1"
+                  data-ouia-component-type="PF4/Tabs"
+                  data-ouia-safe={true}
+                  onSelect={[Function]}
+                >
+                  <ul
+                    className="pf-c-tabs__list"
+                    onScroll={[Function]}
+                    role="tablist"
+                  >
+                    <li
+                      className="pf-c-tabs__item pf-m-current"
+                      role="presentation"
+                    >
+                      <button
+                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.GENERAL--445403487"
+                        aria-selected={true}
+                        className="pf-c-tabs__link"
+                        data-ouia-component-type="PF4/TabButton"
+                        data-ouia-safe={true}
+                        data-quickstart-id="settings-general-tab"
+                        id="pf-tab-SETTINGS.CATEGORIES.GENERAL--445403487"
+                        onClick={[Function]}
+                        role="tab"
+                        type="button"
+                      >
+                        <span
+                          className="pf-c-tabs__item-text"
+                        >
+                          General
+                        </span>
+                      </button>
+                    </li>
+                    <li
+                      className="pf-c-tabs__item"
+                      role="presentation"
+                    >
+                      <button
+                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.CONNECTIVITY--1507428482"
+                        aria-selected={false}
+                        className="pf-c-tabs__link"
+                        data-ouia-component-type="PF4/TabButton"
+                        data-ouia-safe={true}
+                        data-quickstart-id="settings-connectivity-tab"
+                        id="pf-tab-SETTINGS.CATEGORIES.CONNECTIVITY--1507428482"
+                        onClick={[Function]}
+                        role="tab"
+                        type="button"
+                      >
+                        <span
+                          className="pf-c-tabs__item-text"
+                        >
+                          Connectivity
+                        </span>
+                      </button>
+                    </li>
+                    <li
+                      className="pf-c-tabs__item"
+                      role="presentation"
+                    >
+                      <button
+                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE-719517530"
+                        aria-selected={false}
+                        className="pf-c-tabs__link"
+                        data-ouia-component-type="PF4/TabButton"
+                        data-ouia-safe={true}
+                        data-quickstart-id="settings-notifications&messages-tab"
+                        id="pf-tab-SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE-719517530"
+                        onClick={[Function]}
+                        role="tab"
+                        type="button"
+                      >
+                        <span
+                          className="pf-c-tabs__item-text"
+                        >
+                          Notifications & Messages
+                        </span>
+                      </button>
+                    </li>
+                    <li
+                      className="pf-c-tabs__item"
+                      role="presentation"
+                    >
+                      <button
+                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.DASHBOARD-129171981"
+                        aria-selected={false}
+                        className="pf-c-tabs__link"
+                        data-ouia-component-type="PF4/TabButton"
+                        data-ouia-safe={true}
+                        data-quickstart-id="settings-dashboard-tab"
+                        id="pf-tab-SETTINGS.CATEGORIES.DASHBOARD-129171981"
+                        onClick={[Function]}
+                        role="tab"
+                        type="button"
+                      >
+                        <span
+                          className="pf-c-tabs__item-text"
+                        >
+                          Dashboard
+                        </span>
+                      </button>
+                    </li>
+                    <li
+                      className="pf-c-tabs__item"
+                      role="presentation"
+                    >
+                      <button
+                        aria-controls="pf-tab-section-SETTINGS.CATEGORIES.ADVANCED-843151721"
+                        aria-selected={false}
+                        className="pf-c-tabs__link"
+                        data-ouia-component-type="PF4/TabButton"
+                        data-ouia-safe={true}
+                        data-quickstart-id="settings-advanced-tab"
+                        id="pf-tab-SETTINGS.CATEGORIES.ADVANCED-843151721"
+                        onClick={[Function]}
+                        role="tab"
+                        type="button"
+                      >
+                        <span
+                          className="pf-c-tabs__item-text"
+                        >
+                          Advanced
+                        </span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                className="pf-c-sidebar__content"
+              >
+                <form
+                  className="pf-c-form settings__content"
+                  noValidate={true}
+                >
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-1"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            Date & Time
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-1"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        DatetimeControl Component
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-2"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            Theme
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            Set the current theme for web console.
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-2"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        Theme Component
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div
+        className="pf-l-stack__item"
+      />
+    </div>
+  </section>
+</div>
 `;

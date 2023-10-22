@@ -37,16 +37,15 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
             className="pf-c-card__actions"
           >
             <button
-              aria-disabled={true}
+              aria-disabled={false}
               aria-label="Synchronize Process CPU Load chart"
-              className="pf-c-button pf-m-plain pf-m-disabled"
+              className="pf-c-button pf-m-plain"
               data-ouia-component-id="OUIA-Generated-Button-plain-1"
               data-ouia-component-type="PF4/Button"
               data-ouia-safe={true}
-              disabled={true}
+              disabled={false}
               onClick={[Function]}
               role={null}
-              tabIndex={null}
               type="button"
             >
               <svg
@@ -218,7 +217,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
+                        "fill": "var(--pf-global--palette--black-200)",
                         "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
                         "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
@@ -1265,16 +1264,15 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
             className="pf-c-card__actions"
           >
             <button
-              aria-disabled={true}
+              aria-disabled={false}
               aria-label="Synchronize System CPU Load chart"
-              className="pf-c-button pf-m-plain pf-m-disabled"
+              className="pf-c-button pf-m-plain"
               data-ouia-component-id="OUIA-Generated-Button-plain-3"
               data-ouia-component-type="PF4/Button"
               data-ouia-safe={true}
-              disabled={true}
+              disabled={false}
               onClick={[Function]}
               role={null}
-              tabIndex={null}
               type="button"
             >
               <svg
@@ -1446,7 +1444,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
+                        "fill": "var(--pf-global--palette--black-200)",
                         "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
                         "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
@@ -2520,16 +2518,15 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
             className="pf-c-card__actions"
           >
             <button
-              aria-disabled={true}
+              aria-disabled={false}
               aria-label="Synchronize Heap Memory Usage chart"
-              className="pf-c-button pf-m-plain pf-m-disabled"
+              className="pf-c-button pf-m-plain"
               data-ouia-component-id="OUIA-Generated-Button-plain-5"
               data-ouia-component-type="PF4/Button"
               data-ouia-safe={true}
-              disabled={true}
+              disabled={false}
               onClick={[Function]}
               role={null}
-              tabIndex={null}
               type="button"
             >
               <svg
@@ -2701,7 +2698,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
+                        "fill": "var(--pf-global--palette--black-200)",
                         "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
                         "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
@@ -3359,16 +3356,15 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
             className="pf-c-card__actions"
           >
             <button
-              aria-disabled={true}
+              aria-disabled={false}
               aria-label="Synchronize Non-Heap Memory Usage chart"
-              className="pf-c-button pf-m-plain pf-m-disabled"
+              className="pf-c-button pf-m-plain"
               data-ouia-component-id="OUIA-Generated-Button-plain-7"
               data-ouia-component-type="PF4/Button"
               data-ouia-safe={true}
-              disabled={true}
+              disabled={false}
               onClick={[Function]}
               role={null}
-              tabIndex={null}
               type="button"
             >
               <svg
@@ -3540,7 +3536,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
+                        "fill": "var(--pf-global--palette--black-200)",
                         "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
                         "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
@@ -4379,7 +4375,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-chart-global--label--Fill, #151515)",
+                        "fill": "var(--pf-global--palette--black-200)",
                         "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
                         "fontSize": 14,
                         "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",

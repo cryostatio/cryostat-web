@@ -45,11 +45,16 @@ Array [
     at runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2486:10)
     at flushSyncCallbackQueueImpl (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2532:9)
     at flushSyncCallbackQueue (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2519:3)
-    at scheduleUpdateOnFiber (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13004:9)
-    at updateContainer (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16454:3)
-    at Object.create (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:17149:3)
-    at renderSnapshot (/home/thvo/workspace/cryostat-web/src/test/utils.tsx:101:19)
-    at /home/thvo/workspace/cryostat-web/src/test/Dashboard/DashboardLayoutToolbar.test.tsx:24:32
+    at batchedUpdates (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13459:7)
+    at act (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15280:14)
+    at /home/thvo/workspace/cryostat-web/src/test/utils.tsx:102:12
+    at step (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:195:27)
+    at Object.next (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:176:57)
+    at /home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:169:75
+    at new Promise (&lt;anonymous&gt;)
+    at Object.__awaiter (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:165:16)
+    at renderSnapshot (/home/thvo/workspace/cryostat-web/src/test/utils.tsx:99:60)
+    at /home/thvo/workspace/cryostat-web/src/test/Dashboard/DashboardLayoutToolbar.test.tsx:24:38
     at step (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:195:27)
     at Object.next (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:176:57)
     at /home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:169:75

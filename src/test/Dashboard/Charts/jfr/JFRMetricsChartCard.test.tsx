@@ -23,7 +23,6 @@ import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMe
 import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
-import * as React from 'react';
 import { of } from 'rxjs';
 import { mockMediaQueryList, render, renderSnapshot } from '../../../utils';
 
@@ -52,13 +51,23 @@ const mockChartContext = {
   mbeanController: mockMbeanController,
 };
 
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 describe('<JFRMetricsChartCard />', () => {
+  beforeEach(() => {
+    jest.mocked(mockNavigate).mockClear();
+  });
   afterEach(cleanup);
 
   it('renders correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -69,13 +78,13 @@ describe('<JFRMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('renders loading state correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.UNKNOWN));
 
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -86,13 +95,13 @@ describe('<JFRMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('renders empty state correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -103,7 +112,7 @@ describe('<JFRMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('renders empty state with information and action button', async () => {
@@ -129,11 +138,10 @@ describe('<JFRMetricsChartCard />', () => {
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });
 
-  // TODO: Use RouterProvider
   it('navigates to recording creation with prefilled state when empty state button clicked', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
-    const { user, router } = render({
+    const { user } = render({
       routerConfigs: {
         routes: [
           {
@@ -145,23 +153,23 @@ describe('<JFRMetricsChartCard />', () => {
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
 
-    expect(router.state.location.pathname).toBe('/');
     await user.click(screen.getByRole('button', { name: /create/i }));
-    expect(router.state.location.pathname).toBe('/recordings/create');
-    expect(router.state.location.state).toEqual({
-      name: 'dashboard_metrics',
-      template: {
-        name: 'Continuous',
-        type: 'TARGET',
+    expect(mockNavigate).toHaveBeenCalledWith('/recordings/create', {
+      state: {
+        name: 'dashboard_metrics',
+        template: {
+          name: 'Continuous',
+          type: 'TARGET',
+        },
+        restart: true,
+        labels: [{ key: 'origin', value: 'dashboard_metrics' }],
+        duration: -1,
+        skipDurationCheck: true,
+        maxAge: 120,
+        maxAgeUnit: 1,
+        maxSize: 100 * 1024 * 1024,
+        maxSizeUnit: 1,
       },
-      restart: true,
-      labels: [{ key: 'origin', value: 'dashboard_metrics' }],
-      duration: -1,
-      skipDurationCheck: true,
-      maxAge: 120,
-      maxAgeUnit: 1,
-      maxSize: 100 * 1024 * 1024,
-      maxSizeUnit: 1,
     });
   });
 

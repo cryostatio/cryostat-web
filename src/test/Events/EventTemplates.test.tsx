@@ -88,7 +88,7 @@ describe('<EventTemplates />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -98,7 +98,7 @@ describe('<EventTemplates />', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('adds a recording after receiving a notification', async () => {

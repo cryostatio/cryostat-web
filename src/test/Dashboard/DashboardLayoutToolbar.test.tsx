@@ -21,7 +21,9 @@ jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValu
 
 describe('<DashboardLayoutToolbar />', () => {
   it('renders correctly', async () => {
-    const tree = renderSnapshot({ routerConfigs: { routes: [{ path: '/', element: <DashboardLayoutToolbar /> }] } });
-    expect(tree.toJSON()).toMatchSnapshot();
+    const tree = await renderSnapshot({
+      routerConfigs: { routes: [{ path: '/', element: <DashboardLayoutToolbar /> }] },
+    });
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 });

@@ -28,6 +28,13 @@ jest.mock('@patternfly/react-core', () => ({
   Tooltip: ({ children }) => <>{children}</>,
 }));
 
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
 
@@ -65,10 +72,10 @@ describe('<CustomRecordingForm />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: { routes: [{ path: '/recordings/create', element: <CustomRecordingForm /> }] },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should create recording when form is filled and create is clicked', async () => {

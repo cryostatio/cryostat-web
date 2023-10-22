@@ -69,7 +69,7 @@ describe('<RecordingLabelFields />', () => {
   });
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {

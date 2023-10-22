@@ -32,7 +32,7 @@ import { t, TOptions } from 'i18next';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import renderer from 'react-test-renderer';
+import renderer, { act } from 'react-test-renderer';
 
 export interface ProviderInstance<T> {
   kind: React.Provider<T>;
@@ -96,13 +96,17 @@ export const setupRenderEnv = ({
   return { store, router, user, Wrapper: Wrapper };
 };
 
-export const renderSnapshot = (options: RenderOptions) => {
+export const renderSnapshot = async (options: RenderOptions) => {
   const { router, Wrapper } = setupRenderEnv(options);
-  return renderer.create(
-    <Wrapper>
-      <RouterProvider router={router} />
-    </Wrapper>,
-  );
+  let tree: renderer.ReactTestRenderer | undefined;
+  await act(async () => {
+    tree = renderer.create(
+      <Wrapper>
+        <RouterProvider router={router} />
+      </Wrapper>,
+    );
+  });
+  return tree;
 };
 
 export const render = (options: RenderOptions) => {

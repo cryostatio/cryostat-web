@@ -46,7 +46,7 @@ describe('<TimePicker/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -63,7 +63,7 @@ describe('<TimePicker/>', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should render correctly in 12hr mode', async () => {

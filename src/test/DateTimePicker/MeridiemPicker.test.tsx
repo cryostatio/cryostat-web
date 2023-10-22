@@ -28,7 +28,7 @@ describe('<MeridiemPicker/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -38,7 +38,7 @@ describe('<MeridiemPicker/>', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should select a meridiem when click', async () => {

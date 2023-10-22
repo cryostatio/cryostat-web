@@ -58,7 +58,7 @@ jest.spyOn(defaultServices.api, 'getTargetMBeanMetrics').mockReturnValue(of({}))
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {
-    const tree = renderSnapshot({ routerConfigs: { routes: [{ path: '/', element: <Dashboard /> }] } });
-    expect(tree.toJSON()).toMatchSnapshot();
+    const tree = await renderSnapshot({ routerConfigs: { routes: [{ path: '/', element: <Dashboard /> }] } });
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 });

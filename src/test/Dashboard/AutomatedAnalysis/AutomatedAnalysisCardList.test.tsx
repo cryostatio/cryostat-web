@@ -82,7 +82,7 @@ const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
 
 describe('<AutomatedAnalysisCardList />', () => {
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -92,6 +92,6 @@ describe('<AutomatedAnalysisCardList />', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 });

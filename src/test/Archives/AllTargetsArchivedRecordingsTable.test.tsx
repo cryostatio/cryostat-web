@@ -202,10 +202,10 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('has the correct table elements', async () => {

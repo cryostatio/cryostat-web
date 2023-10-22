@@ -27,7 +27,7 @@ export interface DisplayOptionsProps {
 export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
   isDisabled = false,
   isGraph: isGraphView = true,
-  ...props
+  ..._props
 }) => {
   const [open, setOpen] = React.useState(false);
   const { show, groupings } = useSelector((state: RootState) => state.topologyConfigs.displayOptions);

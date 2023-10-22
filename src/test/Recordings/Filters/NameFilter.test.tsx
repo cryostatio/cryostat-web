@@ -55,11 +55,11 @@ describe('<NameFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
-            path: 'recordings',
+            path: '/recordings',
             element: (
               <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
             ),
@@ -67,7 +67,7 @@ describe('<NameFilter />', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('display name selections when text input is clicked', async () => {
@@ -75,7 +75,7 @@ describe('<NameFilter />', () => {
       routerConfigs: {
         routes: [
           {
-            path: 'recordings',
+            path: '/recordings',
             element: (
               <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
             ),
@@ -105,7 +105,7 @@ describe('<NameFilter />', () => {
       routerConfigs: {
         routes: [
           {
-            path: 'recordings',
+            path: '/recordings',
             element: (
               <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
             ),
@@ -135,7 +135,7 @@ describe('<NameFilter />', () => {
       routerConfigs: {
         routes: [
           {
-            path: 'recordings',
+            path: '/recordings',
             element: (
               <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
             ),
@@ -170,7 +170,7 @@ describe('<NameFilter />', () => {
       routerConfigs: {
         routes: [
           {
-            path: 'recordings',
+            path: '/recordings',
             element: (
               <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
             ),
@@ -205,7 +205,7 @@ describe('<NameFilter />', () => {
       routerConfigs: {
         routes: [
           {
-            path: 'recordings',
+            path: '/recordings',
             element: <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={filteredNames} />,
           },
         ],
@@ -233,7 +233,7 @@ describe('<NameFilter />', () => {
       routerConfigs: {
         routes: [
           {
-            path: 'recordings',
+            path: '/recordings',
             element: (
               <NameFilter
                 recordings={mockRecordingList}

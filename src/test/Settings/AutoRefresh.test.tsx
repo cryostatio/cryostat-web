@@ -34,7 +34,7 @@ describe('<AutoRefresh/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -44,7 +44,7 @@ describe('<AutoRefresh/>', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should default to have auto-refresh disabled', async () => {

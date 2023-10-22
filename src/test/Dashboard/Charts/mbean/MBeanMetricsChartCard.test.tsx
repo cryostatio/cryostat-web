@@ -113,7 +113,7 @@ describe('<MBeanMetricsChartCard />', () => {
     jest.spyOn(mockMbeanController, 'attach').mockReturnValue(from(metrics));
     jest.spyOn(mockMbeanController, 'loading').mockReturnValue(of(false));
 
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -133,7 +133,7 @@ describe('<MBeanMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree.toJSON()).toMatchSnapshot('with-content');
+    expect(tree?.toJSON()).toMatchSnapshot('with-content');
   });
 
   it('renders loading state correctly', async () => {
@@ -141,7 +141,7 @@ describe('<MBeanMetricsChartCard />', () => {
     jest.spyOn(mockMbeanController, 'attach').mockReturnValue(of(metrics));
     jest.spyOn(mockMbeanController, 'loading').mockReturnValue(of(true));
 
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -161,6 +161,6 @@ describe('<MBeanMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree.toJSON()).toMatchSnapshot('loading-view');
+    expect(tree?.toJSON()).toMatchSnapshot('loading-view');
   });
 });

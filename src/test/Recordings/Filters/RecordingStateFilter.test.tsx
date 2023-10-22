@@ -58,7 +58,7 @@ describe('<RecordingStateFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -68,7 +68,7 @@ describe('<RecordingStateFilter />', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should display state selections when dropdown is clicked', async () => {

@@ -32,7 +32,7 @@ describe('<WebSocketDebounce/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = renderSnapshot({
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -42,7 +42,7 @@ describe('<WebSocketDebounce/>', () => {
         ],
       },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should set correct default period', async () => {

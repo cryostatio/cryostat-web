@@ -89,7 +89,9 @@ describe('<TimezonePicker/>', () => {
         routes: [
           {
             path: '/recordings',
-            element: <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />,
+            element: (
+              <TimezonePicker isCompact selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />
+            ),
           },
         ],
       },
@@ -106,7 +108,9 @@ describe('<TimezonePicker/>', () => {
         routes: [
           {
             path: '/recordings',
-            element: <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />,
+            element: (
+              <TimezonePicker isCompact selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />
+            ),
           },
         ],
       },
