@@ -29,7 +29,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
-import { basePreloadedState, renderWithServiceContextAndReduxStore, testT } from '../../Common';
+import { basePreloadedState, render, testT } from '../../utils';
 
 jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
   return {
@@ -223,8 +223,16 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders report generation error view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of());
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
-      preloadState: preloadedState,
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCard dashboardId={0} span={0} />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
@@ -240,8 +248,16 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyArchivedRecordingsResponse));
 
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValueOnce(of());
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
-      preloadState: preloadedState,
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCard dashboardId={0} span={0} />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
@@ -263,8 +279,16 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
-      preloadState: preloadedState,
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCard dashboardId={0} span={0} />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
@@ -313,8 +337,16 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
-      preloadState: preloadedState,
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCard dashboardId={0} span={0} />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
@@ -367,6 +399,7 @@ describe('<AutomatedAnalysisCard />', () => {
     const newPreloadedState = {
       ...preloadedState,
       automatedAnalysisFilters: {
+        _version: '0',
         targetFilters: [],
         globalFilters: {
           filters: {
@@ -376,8 +409,16 @@ describe('<AutomatedAnalysisCard />', () => {
       },
     };
 
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
-      preloadState: newPreloadedState,
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCard dashboardId={0} span={0} />,
+          },
+        ],
+      },
+      preloadedState: newPreloadedState,
     });
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
@@ -422,8 +463,16 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
-      preloadState: preloadedState, // Filter score default = 100
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCard dashboardId={0} span={0} />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
 
     expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument(); // Score: 100
@@ -481,8 +530,17 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders list view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
-      preloadState: preloadedState, // Filter score default = 100
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCard dashboardId={0} span={0} />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
 
     const listViewSwitch = screen.getByRole('checkbox', {

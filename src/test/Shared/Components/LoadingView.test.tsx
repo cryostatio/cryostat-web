@@ -15,22 +15,37 @@
  */
 
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { cleanup, render, screen } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
+import { render, renderSnapshot } from '@test/utils';
+import { cleanup, screen } from '@testing-library/react';
 
 describe('<LoadingView />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<LoadingView />);
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <LoadingView />,
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should show spinner and title', async () => {
-    render(<LoadingView title="Progressing" />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <LoadingView title="Progressing" />,
+          },
+        ],
+      },
+    });
 
     const title = screen.getByText('Progressing');
     expect(title).toBeInTheDocument();

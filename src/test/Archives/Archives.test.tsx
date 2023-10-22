@@ -18,11 +18,10 @@ import { NotificationsContext, NotificationsInstance } from '@app/Shared/Service
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom-v5-compat';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndRouter } from '../Common';
+import { render } from '../utils';
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -55,26 +54,24 @@ jest
   .mockReturnValueOnce(of(false)) // Test archives disabled case
   .mockReturnValue(of(true));
 
-const history = createMemoryHistory({ initialEntries: ['/archives'] });
-
 describe('<Archives />', () => {
   afterEach(cleanup);
 
   it('has the correct page title', async () => {
-    renderWithServiceContextAndRouter(<Archives />, { history: history });
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
     expect(screen.getByText('Archives')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is enabled', async () => {
-    renderWithServiceContextAndRouter(<Archives />, { history: history });
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
     expect(screen.getByText('All Targets')).toBeInTheDocument();
     expect(screen.getByText('Uploads')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is disabled', async () => {
-    renderWithServiceContextAndRouter(<Archives />, { history: history });
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
     expect(screen.queryByText('All Targets')).not.toBeInTheDocument();
     expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
@@ -82,7 +79,7 @@ describe('<Archives />', () => {
   });
 
   it('handles changing tabs', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Archives />, { history: history });
+    const { user } = render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
     // Assert that the All Targets tab is currently selected (default behaviour)
     let tabsList = screen.getAllByRole('tab');
@@ -124,9 +121,9 @@ describe('<Archives />', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
-            <Router history={history}>
+            <MemoryRouter initialEntries={['/archives']}>
               <Archives />
-            </Router>
+            </MemoryRouter>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>,
       );

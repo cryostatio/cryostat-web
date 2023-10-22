@@ -18,7 +18,7 @@ import { Button, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@pat
 import { Tbody, Tr, Td } from '@patternfly/react-table';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import { renderDefault } from '../Common';
+import { render } from '../utils';
 
 const FakeToolbar = () => {
   return (
@@ -74,41 +74,59 @@ describe('<RecordingsTable />', () => {
   afterEach(cleanup);
 
   it('correctly displays the toolbar prop', async () => {
-    renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={false}
-        isLoading={false}
-        isNestedTable={false}
-        errorMessage=""
-        isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={false}
+                isLoading={false}
+                isNestedTable={false}
+                errorMessage=""
+                isHeaderChecked={false}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText('Fake Button')).toBeInTheDocument();
   });
 
   it('handles a non-nested table', async () => {
-    renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={false}
-        isLoading={false}
-        isNestedTable={false}
-        errorMessage=""
-        isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={false}
+                isLoading={false}
+                isNestedTable={false}
+                errorMessage=""
+                isHeaderChecked={false}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     expect(screen.getByLabelText('Test Table')).toBeInTheDocument();
     expect(screen.getByText(fakeColumnConfig.columns[0].title)).toBeInTheDocument();
@@ -120,21 +138,30 @@ describe('<RecordingsTable />', () => {
   });
 
   it('handles a nested table with sticky header', async () => {
-    const { container } = renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={false}
-        isLoading={false}
-        isNestedTable={true}
-        errorMessage=""
-        isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    const { container } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={false}
+                isLoading={false}
+                isNestedTable={true}
+                errorMessage=""
+                isHeaderChecked={false}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     const table = screen.getByLabelText('Test Table');
     expect(table).toHaveClass('pf-m-sticky-header');
@@ -143,82 +170,118 @@ describe('<RecordingsTable />', () => {
   });
 
   it('handles the case where an error occurs', async () => {
-    renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={false}
-        isLoading={false}
-        isNestedTable={false}
-        errorMessage="some error"
-        isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={false}
+                isLoading={false}
+                isNestedTable={false}
+                errorMessage="some error"
+                isHeaderChecked={false}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText('some error')).toBeInTheDocument();
   });
 
   it('renders correctly when table data is still loading', async () => {
-    renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={false}
-        isLoading={true}
-        isNestedTable={false}
-        errorMessage=""
-        isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={false}
+                isLoading={true}
+                isNestedTable={false}
+                errorMessage=""
+                isHeaderChecked={false}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     const spinner = screen.getByRole('progressbar');
     expect(spinner).toHaveAttribute('aria-valuetext', 'Loading...');
   });
 
   it('handles an empty table', async () => {
-    renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={true}
-        isLoading={false}
-        isNestedTable={false}
-        errorMessage=""
-        isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={true}
+                isLoading={false}
+                isNestedTable={false}
+                errorMessage=""
+                isHeaderChecked={false}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText(`No ${fakeTableTitle}`)).toBeInTheDocument();
   });
 
   it('handles the header checkbox callback correctly', async () => {
-    const { user } = renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={false}
-        isLoading={false}
-        isNestedTable={false}
-        errorMessage=""
-        isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={false}
+                isLoading={false}
+                isNestedTable={false}
+                errorMessage=""
+                isHeaderChecked={false}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     const headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).not.toHaveAttribute('checked');
@@ -227,21 +290,30 @@ describe('<RecordingsTable />', () => {
   });
 
   it('renders the header checkbox as checked if props.isHeaderChecked == true', async () => {
-    renderDefault(
-      <RecordingsTable
-        toolbar={<FakeToolbar />}
-        tableColumns={fakeColumnConfig}
-        tableTitle={fakeTableTitle}
-        isEmpty={false}
-        isLoading={false}
-        isNestedTable={false}
-        errorMessage=""
-        isHeaderChecked={true}
-        onHeaderCheck={mockHeaderCheckCallback}
-      >
-        {fakeTableRows}
-      </RecordingsTable>,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingsTable
+                toolbar={<FakeToolbar />}
+                tableColumns={fakeColumnConfig}
+                tableTitle={fakeTableTitle}
+                isEmpty={false}
+                isLoading={false}
+                isNestedTable={false}
+                errorMessage=""
+                isHeaderChecked={true}
+                onHeaderCheck={mockHeaderCheckCallback}
+              >
+                {fakeTableRows}
+              </RecordingsTable>
+            ),
+          },
+        ],
+      },
+    });
 
     const headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).toHaveAttribute('checked');

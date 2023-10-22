@@ -20,7 +20,7 @@ import { defaultDatetimeFormat, locales } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContext, testT } from '../Common';
+import { render, testT } from '../utils';
 
 jest.mock('@app/DateTimePicker/TimezonePicker', () => ({
   TimezonePicker: (_) => <>TimezonePicker</>,
@@ -37,7 +37,16 @@ describe('<DatetimeControl/>', () => {
   afterEach(cleanup);
 
   it('should show selections correctly', async () => {
-    renderWithServiceContext(React.createElement(DatetimeControl.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(DatetimeControl.content, null),
+          },
+        ],
+      },
+    });
 
     const selectedLocale = screen.getByText(defaultDatetimeFormat.dateLocale.name);
     expect(selectedLocale).toBeInTheDocument();
@@ -49,7 +58,16 @@ describe('<DatetimeControl/>', () => {
   });
 
   it('should show correct list of locales', async () => {
-    const { user } = renderWithServiceContext(React.createElement(DatetimeControl.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(DatetimeControl.content, null),
+          },
+        ],
+      },
+    });
 
     const optionMenu = screen.getByLabelText('Options menu');
     expect(optionMenu).toBeInTheDocument();
@@ -71,7 +89,16 @@ describe('<DatetimeControl/>', () => {
   });
 
   it('should update datetime format and load locale when locale is selected', async () => {
-    const { user } = renderWithServiceContext(React.createElement(DatetimeControl.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(DatetimeControl.content, null),
+          },
+        ],
+      },
+    });
 
     const optionMenu = screen.getByLabelText('Options menu');
     expect(optionMenu).toBeInTheDocument();

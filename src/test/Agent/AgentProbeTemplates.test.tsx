@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContextAndRouter } from '../Common';
+import { render } from '../utils';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -94,7 +94,7 @@ describe('<AgentProbeTemplates />', () => {
   afterEach(cleanup);
 
   it('should add a probe template after receiving a notification', async () => {
-    renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    render({ routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] } });
 
     const addTemplateName = screen.getByText('anotherProbeTemplate');
     expect(addTemplateName).toBeInTheDocument();
@@ -102,13 +102,13 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should remove a probe template after receiving a notification', async () => {
-    renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    render({ routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] } });
 
     expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
   });
 
   it('should display the column header fields', async () => {
-    renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    render({ routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] } });
 
     const nameHeader = screen.getByText('Name');
     expect(nameHeader).toBeInTheDocument();
@@ -120,7 +120,9 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should show modal when uploading', async () => {
-    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+    });
 
     const uploadButton = screen.getByRole('button', { name: 'Upload' });
     expect(uploadButton).toBeInTheDocument();
@@ -138,7 +140,9 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should upload a probe template when form is filled and Submit is clicked', async () => {
-    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+    });
 
     const uploadButton = screen.getByRole('button', { name: 'Upload' });
     expect(uploadButton).toBeInTheDocument();
@@ -189,7 +193,9 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should delete a probe template when Delete is clicked', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
-    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+    });
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -205,7 +211,9 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should show warning modal and delete a probe template when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
-    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+    });
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -235,7 +243,9 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should insert probes if agent is enabled', async () => {
     const insertProbesSpy = jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
-    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+    });
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -251,7 +261,9 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should disable inserting probes if agent is not enabled', async () => {
-    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={false} />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={false} /> }] },
+    });
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -262,7 +274,9 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should shown empty state when table is empty', async () => {
-    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+    });
 
     const filterInput = screen.getByLabelText('Probe template filter');
     expect(filterInput).toBeInTheDocument();

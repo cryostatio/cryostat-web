@@ -21,24 +21,11 @@ import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/jfr/JFRMetr
 import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
 import { ThemeSetting } from '@app/Settings/types';
-import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { createMemoryHistory, MemoryHistory } from 'history';
 import * as React from 'react';
-import { Provider } from 'react-redux';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { mockMediaQueryList, renderWithProvidersAndRedux } from '../../../Common';
-
-let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: history.location.pathname }),
-  useHistory: () => history,
-}));
+import { mockMediaQueryList, render, renderSnapshot } from '../../../utils';
 
 const mockDashboardUrl = 'http://localhost:3000';
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDashboardUrl));
@@ -66,25 +53,21 @@ const mockChartContext = {
 };
 
 describe('<JFRMetricsChartCard />', () => {
-  beforeEach(() => (history = createMemoryHistory({ initialEntries: ['/'] })));
   afterEach(cleanup);
 
   it('renders correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <ChartContext.Provider value={mockChartContext}>
-              <Provider store={store}>
-                <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
-              </Provider>
-            </ChartContext.Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />,
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
@@ -92,19 +75,16 @@ describe('<JFRMetricsChartCard />', () => {
   it('renders loading state correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.UNKNOWN));
 
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <ChartContext.Provider value={mockChartContext}>
-              <Provider store={store}>
-                <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
-              </Provider>
-            </ChartContext.Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />,
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
@@ -112,19 +92,16 @@ describe('<JFRMetricsChartCard />', () => {
   it('renders empty state correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <ChartContext.Provider value={mockChartContext}>
-              <Provider store={store}>
-                <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
-              </Provider>
-            </ChartContext.Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />,
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
@@ -132,7 +109,17 @@ describe('<JFRMetricsChartCard />', () => {
   it('renders empty state with information and action button', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
-    renderChartCard(<JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />,
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
+    });
 
     expect(screen.getByText('CPU Load (last 120s, every 10s)')).toBeInTheDocument();
     expect(screen.getByText('No source recording')).toBeInTheDocument();
@@ -142,17 +129,26 @@ describe('<JFRMetricsChartCard />', () => {
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });
 
+  // TODO: Use RouterProvider
   it('navigates to recording creation with prefilled state when empty state button clicked', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
-    const { user } = renderChartCard(
-      <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />,
-    );
+    const { user, router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <JFRMetricsChartCard chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />,
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
+    });
 
-    expect(history.location.pathname).toBe('/');
+    expect(router.state.location.pathname).toBe('/');
     await user.click(screen.getByRole('button', { name: /create/i }));
-    expect(history.location.pathname).toBe('/recordings/create');
-    expect(history.location.state).toEqual({
+    expect(router.state.location.pathname).toBe('/recordings/create');
+    expect(router.state.location.state).toEqual({
       name: 'dashboard_metrics',
       template: {
         name: 'Continuous',
@@ -177,9 +173,19 @@ describe('<JFRMetricsChartCard />', () => {
   ])('renders iframe', async (chartKind: string, duration: number, period: number) => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
-    const { container } = renderChartCard(
-      <JFRMetricsChartCard chartKind={chartKind} duration={duration} period={period} span={6} dashboardId={0} />,
-    );
+    const { container } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <JFRMetricsChartCard chartKind={chartKind} duration={duration} period={period} span={6} dashboardId={0} />
+            ),
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
+    });
 
     const iframe = container.querySelector('iframe');
     expect(iframe).toBeTruthy();
@@ -195,39 +201,3 @@ describe('<JFRMetricsChartCard />', () => {
     expect(u.searchParams.toString()).toEqual(params.toString());
   });
 });
-
-const renderChartCard = (
-  ui: React.ReactElement,
-  {
-    services = defaultServices,
-    notifications = NotificationsInstance,
-    chartContext = mockChartContext,
-    preloadState = {},
-    store = setupStore(preloadState),
-    user = userEvent.setup(),
-    ...renderOptions
-  } = {},
-) => {
-  return renderWithProvidersAndRedux(
-    ui,
-    [
-      {
-        kind: ChartContext.Provider,
-        instance: chartContext,
-      },
-      {
-        kind: NotificationsContext.Provider,
-        instance: notifications,
-      },
-      {
-        kind: ServiceContext.Provider,
-        instance: services,
-      },
-    ],
-    {
-      store,
-      user,
-      ...renderOptions,
-    },
-  );
-};

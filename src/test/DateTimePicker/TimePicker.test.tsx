@@ -16,9 +16,8 @@
 
 import { format2Digit } from '@i18n/datetimeUtils';
 import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
 import { TimePicker } from '../../app/DateTimePicker/TimePicker';
-import { renderDefault, testT } from '../Common';
+import { render, renderSnapshot, testT } from '../utils';
 
 const onHourSelect = jest.fn((_) => undefined);
 const onMinuteSelect = jest.fn((_) => undefined);
@@ -47,29 +46,44 @@ describe('<TimePicker/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <TimePicker
-          selected={mockSelected}
-          onHourSelect={onHourSelect}
-          onMinuteSelect={onMinuteSelect}
-          onSecondSelect={onSecondSelect}
-        />,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <TimePicker
+                selected={mockSelected}
+                onHourSelect={onHourSelect}
+                onMinuteSelect={onMinuteSelect}
+                onSecondSelect={onSecondSelect}
+              />
+            ),
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should render correctly in 12hr mode', async () => {
-    const { user } = renderDefault(
-      <TimePicker
-        selected={mockSelected}
-        onHourSelect={onHourSelect}
-        onMinuteSelect={onMinuteSelect}
-        onSecondSelect={onSecondSelect}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <TimePicker
+                selected={mockSelected}
+                onHourSelect={onHourSelect}
+                onMinuteSelect={onMinuteSelect}
+                onSecondSelect={onSecondSelect}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const switchenable24h = screen.getByLabelText(testT('TimePicker.24HOUR'));
     expect(switchenable24h).toBeInTheDocument();
@@ -106,14 +120,23 @@ describe('<TimePicker/>', () => {
   });
 
   it('should update time when increment/decrement buttons are clicked', async () => {
-    const { user } = renderDefault(
-      <TimePicker
-        selected={mockSelected}
-        onHourSelect={onHourSelect}
-        onMinuteSelect={onMinuteSelect}
-        onSecondSelect={onSecondSelect}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <TimePicker
+                selected={mockSelected}
+                onHourSelect={onHourSelect}
+                onMinuteSelect={onMinuteSelect}
+                onSecondSelect={onSecondSelect}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const upHour = within(screen.getByLabelText(testT('HOUR', { ns: 'common' }))).getByLabelText(
       testT('TimeSpinner.INCREMENT_HOUR24_VALUE'),
@@ -183,14 +206,23 @@ describe('<TimePicker/>', () => {
   });
 
   it('should update time when time input is changed', async () => {
-    const { user } = renderDefault(
-      <TimePicker
-        selected={mockSelected}
-        onHourSelect={onHourSelect}
-        onMinuteSelect={onMinuteSelect}
-        onSecondSelect={onSecondSelect}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <TimePicker
+                selected={mockSelected}
+                onHourSelect={onHourSelect}
+                onMinuteSelect={onMinuteSelect}
+                onSecondSelect={onSecondSelect}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const hInput = within(screen.getByLabelText(testT('HOUR', { ns: 'common' }))).getByLabelText(
       testT('TimeSpinner.INPUT_HOUR24_VALUE'),

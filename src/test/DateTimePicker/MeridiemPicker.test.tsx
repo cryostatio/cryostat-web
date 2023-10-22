@@ -16,8 +16,7 @@
 
 import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { cleanup, screen } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault, testT } from '../Common';
+import { render, renderSnapshot, testT } from '../utils';
 
 const onSelect = jest.fn((_: boolean) => undefined);
 
@@ -29,15 +28,30 @@ describe('<MeridiemPicker/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<MeridiemPicker onSelect={onSelect} />);
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <MeridiemPicker onSelect={onSelect} />,
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should select a meridiem when click', async () => {
-    const { user } = renderDefault(<MeridiemPicker onSelect={onSelect} />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <MeridiemPicker onSelect={onSelect} />,
+          },
+        ],
+      },
+    });
 
     const pm = screen.getByText(testT('MERIDIEM_PM', { ns: 'common' }));
     expect(pm).toBeInTheDocument();

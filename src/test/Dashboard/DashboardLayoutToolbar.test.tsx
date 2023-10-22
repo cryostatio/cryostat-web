@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 import { DashboardLayoutToolbar } from '@app/Dashboard/DashboardLayoutToolbar';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { Provider } from 'react-redux';
-import renderer, { act } from 'react-test-renderer';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { renderSnapshot } from '@test/utils';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 
 describe('<DashboardLayoutToolbar />', () => {
-  it.skip('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Provider store={store}>
-              <DashboardLayoutToolbar />
-            </Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
-    });
+  it('renders correctly', async () => {
+    const tree = renderSnapshot({ routerConfigs: { routes: [{ path: '/', element: <DashboardLayoutToolbar /> }] } });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 });

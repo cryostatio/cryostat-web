@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderWithServiceContext, testT } from '../../Common';
+import { render, testT } from '../../utils';
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
@@ -71,7 +71,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   afterEach(cleanup);
 
   it('renders default view correctly', async () => {
-    renderWithServiceContext(<AutomatedAnalysisConfigForm />);
+    render({
+      routerConfigs: {
+        routes: [{ path: '/', element: <AutomatedAnalysisConfigForm /> }],
+      },
+    });
 
     expect(screen.getByText(/Current Configuration/i)).toBeInTheDocument();
     expect(screen.getByText('Template')).toBeInTheDocument();
@@ -80,7 +84,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   });
 
   it('renders editing drawer view correctly', async () => {
-    const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm useTitle />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [{ path: '/', element: <AutomatedAnalysisConfigForm useTitle /> }],
+      },
+    });
 
     expect(screen.getByText(/profiling recording configuration/i)).toBeInTheDocument(); // Form title
 
@@ -101,7 +109,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   });
 
   it('renders editing settings view correctly', async () => {
-    const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm inlineForm />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [{ path: '/', element: <AutomatedAnalysisConfigForm inlineForm /> }],
+      },
+    });
 
     expect(screen.queryByText(/profiling recording configuration/i)).not.toBeInTheDocument(); // Form title
 
@@ -119,7 +131,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
 
   it('saves configuration', async () => {
     const setConfigRequestSpy = jest.spyOn(defaultServices.settings, 'setAutomatedAnalysisRecordingConfig');
-    const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [{ path: '/', element: <AutomatedAnalysisConfigForm /> }],
+      },
+    });
 
     await user.click(
       screen.getByRole('button', {

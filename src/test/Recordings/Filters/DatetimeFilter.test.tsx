@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderDefault, testT } from '../../Common';
+import { render, testT } from '../../utils';
 
 jest.mock('@app/DateTimePicker/DateTimePicker', () => ({
   DateTimePicker: (_: DateTimePickerProps) => <>DateTimePicker</>,
@@ -38,7 +38,16 @@ describe('<DatetimeFilter/>', () => {
   afterEach(cleanup);
 
   it('should toggle calendar when calendar icon is clicked', async () => {
-    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimeFilter onSubmit={onDateTimeSelect} />,
+          },
+        ],
+      },
+    });
 
     const calendarIcon = screen.getByRole('button', {
       name: testT('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR'),
@@ -66,7 +75,16 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should disable search icon when no date is entered', async () => {
-    renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimeFilter onSubmit={onDateTimeSelect} />,
+          },
+        ],
+      },
+    });
 
     const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
@@ -75,7 +93,16 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should enable search icon when a valid date is entered', async () => {
-    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimeFilter onSubmit={onDateTimeSelect} />,
+          },
+        ],
+      },
+    });
 
     const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
     expect(dateInput).toBeInTheDocument();
@@ -92,7 +119,16 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should show error when an invalid date is entered', async () => {
-    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimeFilter onSubmit={onDateTimeSelect} />,
+          },
+        ],
+      },
+    });
 
     const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
     expect(dateInput).toBeInTheDocument();
@@ -113,7 +149,16 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should update date time when date is entered and search icon is clicked', async () => {
-    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimeFilter onSubmit={onDateTimeSelect} />,
+          },
+        ],
+      },
+    });
 
     const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
     expect(dateInput).toBeInTheDocument();

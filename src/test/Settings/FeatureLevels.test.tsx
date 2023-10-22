@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, act } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContext, testT } from '../Common';
+import { render, testT } from '../utils';
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
@@ -31,7 +31,16 @@ describe('<FeatureLevels/>', () => {
   afterEach(cleanup);
 
   it('should show PRODUCTION as default', async () => {
-    renderWithServiceContext(React.createElement(FeatureLevels.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(FeatureLevels.content, null),
+          },
+        ],
+      },
+    });
 
     const productionOption = screen.getByText(testT(FeatureLevel[FeatureLevel.PRODUCTION], { ns: 'common' }));
     expect(productionOption).toBeInTheDocument();
@@ -39,7 +48,16 @@ describe('<FeatureLevels/>', () => {
   });
 
   it('should set value to local storage when configured', async () => {
-    const { user } = renderWithServiceContext(React.createElement(FeatureLevels.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(FeatureLevels.content, null),
+          },
+        ],
+      },
+    });
 
     const featureLevelSelect = screen.getByLabelText('Options menu');
     expect(featureLevelSelect).toBeInTheDocument();

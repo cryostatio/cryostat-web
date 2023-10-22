@@ -18,8 +18,7 @@ import { ArchivedRecording } from '@app/Shared/Services/api.types';
 import { Drawer, DrawerContent } from '@patternfly/react-core';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
@@ -60,23 +59,38 @@ describe('<RecordingLabelsPanel />', () => {
   };
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <Drawer isExpanded={true} isInline>
-          <DrawerContent panelContent={<RecordingLabelsPanel {...props} />} />
-        </Drawer>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Drawer isExpanded={true} isInline>
+                <DrawerContent panelContent={<RecordingLabelsPanel {...props} />} />
+              </Drawer>
+            ),
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('displays the bulk labels editor within the resizeable drawer panel', async () => {
-    renderDefault(
-      <Drawer isExpanded={true} isInline>
-        <DrawerContent panelContent={<RecordingLabelsPanel {...props} />} />
-      </Drawer>,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Drawer isExpanded={true} isInline>
+                <DrawerContent panelContent={<RecordingLabelsPanel {...props} />} />
+              </Drawer>
+            ),
+          },
+        ],
+      },
+    });
     expect(screen.getByText('Bulk Edit Labels')).toBeInTheDocument();
     expect(screen.getAllByLabelText('Resize').length).toBe(1);
     expect(screen.getAllByLabelText('hide table actions panel').length).toBe(1);

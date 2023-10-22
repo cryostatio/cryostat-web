@@ -19,7 +19,7 @@ import { TargetSelect } from '@app/TargetView/TargetSelect';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { render } from '../utils';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
@@ -58,14 +58,32 @@ describe('<TargetSelect />', () => {
   afterEach(cleanup);
 
   it('contains the correct information', async () => {
-    renderWithServiceContext(<TargetSelect />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <TargetSelect />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
     expect(screen.getByText(`Select a target`)).toBeInTheDocument();
   });
 
   it('renders empty state when expanded', async () => {
-    const { container, user } = renderWithServiceContext(<TargetSelect />);
+    const { container, user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <TargetSelect />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText('Select a target')).toBeInTheDocument();
 
@@ -82,7 +100,16 @@ describe('<TargetSelect />', () => {
   });
 
   it('renders serialized target when expanded', async () => {
-    const { container, user } = renderWithServiceContext(<TargetSelect />);
+    const { container, user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <TargetSelect />,
+          },
+        ],
+      },
+    });
 
     // Select a target first
     await user.click(screen.getByLabelText('Options menu'));
@@ -101,7 +128,16 @@ describe('<TargetSelect />', () => {
   });
 
   it('renders dropdown of multiple discovered targets', async () => {
-    const { user } = renderWithServiceContext(<TargetSelect />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <TargetSelect />,
+          },
+        ],
+      },
+    });
 
     await user.click(screen.getByLabelText('Options menu'));
 

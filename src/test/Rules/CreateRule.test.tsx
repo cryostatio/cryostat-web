@@ -19,17 +19,12 @@ import { Target, EventTemplate, Rule } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import { of, throwError } from 'rxjs';
-import { renderWithServiceContextAndRouter } from '../Common';
+import { escapeKeyboardInput, render } from '../utils';
 
 jest.mock('@app/Shared/Components/MatchExpression/MatchExpressionVisualizer', () => ({
   MatchExpressionVisualizer: () => <>Match Expression Visualizer</>,
 }));
-
-const escapeKeyboardInput = (value: string) => {
-  return value.replace(/[{[]/g, '$&$&');
-};
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget: Target = {
@@ -60,14 +55,6 @@ const mockRule: Rule = {
   maxSizeBytes: 0,
 };
 
-const history = createMemoryHistory({ initialEntries: ['/rules/create'] });
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: jest.fn(() => ({ url: history.location.pathname })),
-  useHistory: jest.fn(() => history),
-}));
-
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
@@ -85,14 +72,26 @@ const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(
 
 describe('<CreateRule />', () => {
   beforeEach(() => {
-    history.go(-history.length);
     jest.clearAllMocks();
   });
 
   afterEach(cleanup);
 
   it('should show error helper text when name input is invalid', async () => {
-    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/rules',
+            element: <>Rules</>,
+          },
+          {
+            path: '/rules/create',
+            element: <CreateRule />,
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
@@ -106,8 +105,20 @@ describe('<CreateRule />', () => {
   });
 
   it('should show error helper text when match expression input is invalid', async () => {
-    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
-
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/rules',
+            element: <>Rules</>,
+          },
+          {
+            path: '/rules/create',
+            element: <CreateRule />,
+          },
+        ],
+      },
+    });
     const matchExpressionInput = screen.getByLabelText('Match Expression *');
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
@@ -120,8 +131,20 @@ describe('<CreateRule />', () => {
   });
 
   it('should show warning text when match expression matches no target', async () => {
-    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
-
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/rules',
+            element: <>Rules</>,
+          },
+          {
+            path: '/rules/create',
+            element: <CreateRule />,
+          },
+        ],
+      },
+    });
     const matchExpressionInput = screen.getByLabelText('Match Expression *');
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
@@ -134,8 +157,20 @@ describe('<CreateRule />', () => {
   });
 
   it('should update template selection when template list updates', async () => {
-    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
-
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/rules',
+            element: <>Rules</>,
+          },
+          {
+            path: '/rules/create',
+            element: <CreateRule />,
+          },
+        ],
+      },
+    });
     const matchExpressionInput = screen.getByLabelText('Match Expression *');
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
@@ -165,8 +200,20 @@ describe('<CreateRule />', () => {
   });
 
   it('should submit form when form input is valid and create button is clicked', async () => {
-    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
-
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/rules',
+            element: <>Rules</>,
+          },
+          {
+            path: '/rules/create',
+            element: <CreateRule />,
+          },
+        ],
+      },
+    });
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();

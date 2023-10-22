@@ -18,7 +18,7 @@ import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/F
 
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { cleanup, screen } from '@testing-library/react';
-import { basePreloadedState, renderWithReduxStore } from '../../../Common';
+import { basePreloadedState, render } from '../../../utils';
 
 const onlyShowingText = (value: number) => `Only showing analysis results with severity scores ≥ ${value}:`;
 
@@ -43,9 +43,18 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
   afterEach(cleanup);
 
   it('resets to 0 and 100 when clicking reset buttons', async () => {
-    const { user } = renderWithReduxStore(<AutomatedAnalysisScoreFilter />, {
-      preloadState: preloadedState,
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisScoreFilter />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
+
     const resetTo0Button = screen.getByRole('button', {
       name: /reset score to 0/i,
     });
@@ -66,9 +75,18 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
   });
 
   it('responds to score filter changes', async () => {
-    const { user } = renderWithReduxStore(<AutomatedAnalysisScoreFilter />, {
-      preloadState: preloadedState,
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisScoreFilter />,
+          },
+        ],
+      },
+      preloadedState: preloadedState,
     });
+
     const sliderValue = screen.getByRole('spinbutton', {
       name: /slider value input/i,
     });

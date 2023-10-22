@@ -17,9 +17,9 @@
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { AutomatedAnalysis } from '@app/Settings/Config/AutomatedAnalysis';
 import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { renderSnapshot } from '@test/utils';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
 
 jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm', () => ({
   AutomatedAnalysisConfigForm: (_: any) => <>Automated Analysis Configuration Form</>,
@@ -35,13 +35,15 @@ jest
 
 describe('<AutomatedAnalysisConfig/>', () => {
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          {React.createElement(AutomatedAnalysis.content, null)}
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(AutomatedAnalysis.content, null),
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });

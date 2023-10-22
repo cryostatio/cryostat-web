@@ -31,9 +31,8 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Toolbar, ToolbarContent } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
-import { basePreloadedState, renderWithReduxStore } from '../Common';
+import { basePreloadedState, render } from '../utils';
 
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
@@ -142,22 +141,29 @@ describe('<RecordingFilters />', () => {
   afterAll(jest.useRealTimers);
 
   it('should display currently selected category for active recordings', async () => {
-    renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={false}
-            recordings={mockActiveRecordingList}
-            filters={activeRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: preloadedState,
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={false}
+                    recordings={mockActiveRecordingList}
+                    filters={activeRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: preloadedState,
+    });
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
     expect(categoryDropDown).toBeInTheDocument();
@@ -169,23 +175,29 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display currently selected category for archived recordings', async () => {
-    renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={true}
-            recordings={mockArchivedRecordingList}
-            filters={archivedRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={true}
+                    recordings={mockArchivedRecordingList}
+                    filters={archivedRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: preloadedState,
+    });
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
     expect(categoryDropDown).toBeInTheDocument();
@@ -197,23 +209,30 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display category menu for active recordings when clicked', async () => {
-    const { user } = renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={false}
-            recordings={mockActiveRecordingList}
-            filters={activeRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={false}
+                    recordings={mockActiveRecordingList}
+                    filters={activeRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: preloadedState,
+      userConfigs: { advanceTimers: jest.advanceTimersByTime },
+    });
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
     expect(categoryDropDown).toBeInTheDocument();
@@ -237,23 +256,30 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display category menu for archived recordings when clicked', async () => {
-    const { user } = renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={true}
-            recordings={mockArchivedRecordingList}
-            filters={archivedRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={true}
+                    recordings={mockArchivedRecordingList}
+                    filters={archivedRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: preloadedState,
+      userConfigs: { advanceTimers: jest.advanceTimersByTime },
+    });
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
     expect(categoryDropDown).toBeInTheDocument();
@@ -285,23 +311,30 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should close category menu when toggled', async () => {
-    const { user } = renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={false}
-            recordings={mockActiveRecordingList}
-            filters={activeRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={false}
+                    recordings={mockActiveRecordingList}
+                    filters={activeRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: preloadedState,
+      userConfigs: { advanceTimers: jest.advanceTimersByTime },
+    });
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
     expect(categoryDropDown).toBeInTheDocument();
@@ -323,23 +356,30 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should switch filter input if a category is selected ', async () => {
-    const { user } = renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={false}
-            recordings={mockActiveRecordingList}
-            filters={activeRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={false}
+                    recordings={mockActiveRecordingList}
+                    filters={activeRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: preloadedState,
+      userConfigs: { advanceTimers: jest.advanceTimersByTime },
+    });
 
     const categoryDropDown = screen.getByLabelText('Category Dropdown');
     expect(categoryDropDown).toBeInTheDocument();
@@ -376,23 +416,30 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should approriate chips for filtered categories', async () => {
-    renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={false}
-            recordings={mockActiveRecordingList}
-            filters={activeRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={false}
+                    recordings={mockActiveRecordingList}
+                    filters={activeRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: preloadedState,
+      userConfigs: { advanceTimers: jest.advanceTimersByTime },
+    });
 
     // Label group
     let chipGroup = screen.getByRole('group', { name: 'Label' });
@@ -424,6 +471,7 @@ describe('<RecordingFilters />', () => {
   it('should not display chips when no filters are selected', async () => {
     const emptyPreloadedState = {
       recordingFilters: {
+        _version: '0',
         list: [
           {
             target: mockFooTarget.connectUrl,
@@ -439,23 +487,30 @@ describe('<RecordingFilters />', () => {
         ],
       },
     };
-    renderWithReduxStore(
-      <Toolbar>
-        <ToolbarContent>
-          <RecordingFilters
-            target={mockFooTarget.connectUrl}
-            isArchived={false}
-            recordings={mockActiveRecordingList}
-            filters={emptyActiveRecordingFilters}
-            updateFilters={updateFilters}
-          />
-        </ToolbarContent>
-      </Toolbar>,
-      {
-        preloadState: emptyPreloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <Toolbar>
+                <ToolbarContent>
+                  <RecordingFilters
+                    target={mockFooTarget.connectUrl}
+                    isArchived={false}
+                    recordings={mockActiveRecordingList}
+                    filters={emptyActiveRecordingFilters}
+                    updateFilters={updateFilters}
+                  />
+                </ToolbarContent>
+              </Toolbar>
+            ),
+          },
+        ],
       },
-    );
+      preloadedState: emptyPreloadedState,
+      userConfigs: { advanceTimers: jest.advanceTimersByTime },
+    });
 
     activeCategoryOptions.forEach((category) => {
       const chipGroup = screen.queryByRole('group', { name: category });

@@ -17,14 +17,11 @@
 import { Settings } from '@app/Settings/Settings';
 import { UserSetting } from '@app/Settings/types';
 import { FeatureLevel, SessionState } from '@app/Shared/Services/service.types';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import { cleanup, screen } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndRouter, testT } from '../Common';
+import { renderSnapshot, render, testT } from '../utils';
 
 jest.mock('@app/Settings/Config/NotificationControl', () => ({
   NotificationControl: {
@@ -139,27 +136,34 @@ jest
   .mockReturnValueOnce(of(SessionState.NO_USER_SESSION)) // should not show settings that require authentication when the user is logged out
   .mockReturnValue(of(SessionState.USER_SESSION));
 
-const history = createMemoryHistory({ initialEntries: ['/settings'] });
-
 describe('<Settings/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router history={history}>
-            <Settings />
-          </Router>
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: <Settings />,
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should not show setting that requires authentication when the user is logged out', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Settings />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: <Settings />,
+          },
+        ],
+      },
+    });
 
     const dashboardTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.DASHBOARD') });
     expect(dashboardTab).toBeInTheDocument();
@@ -176,14 +180,32 @@ describe('<Settings/>', () => {
 
   // Currently, no tab is lower than PRODUCTION
   it.skip('should not show tabs with featureLevel lower than current', async () => {
-    renderWithServiceContextAndRouter(<Settings />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: <Settings />,
+          },
+        ],
+      },
+    });
 
     const hiddenTab = screen.queryByText(testT('SETTINGS.CATEGORIES.GENERAL'));
     expect(hiddenTab).not.toBeInTheDocument();
   });
 
   it('should select General tab as default', async () => {
-    renderWithServiceContextAndRouter(<Settings />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: <Settings />,
+          },
+        ],
+      },
+    });
 
     const generalTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.GENERAL') });
     expect(generalTab).toBeInTheDocument();
@@ -192,7 +214,16 @@ describe('<Settings/>', () => {
   });
 
   it('should update setting content when a tab is selected', async () => {
-    const { user } = renderWithServiceContextAndRouter(<Settings />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: <Settings />,
+          },
+        ],
+      },
+    });
 
     const dashboardTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.DASHBOARD') });
     expect(dashboardTab).toBeInTheDocument();

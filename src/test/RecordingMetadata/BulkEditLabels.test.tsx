@@ -20,13 +20,11 @@ import {
   RecordingState,
   NotificationMessage,
 } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { renderSnapshot, render } from '../utils';
 
 jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
@@ -123,21 +121,30 @@ describe('<BulkEditLabels />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should display read-only labels from selected recordings', async () => {
-    renderWithServiceContext(<BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+          },
+        ],
+      },
+    });
 
     const label = screen.getByLabelText('someLabel: someValue');
     expect(label).toBeInTheDocument();
@@ -154,7 +161,16 @@ describe('<BulkEditLabels />', () => {
   });
 
   it('should not display labels for unchecked recordings', async () => {
-    renderWithServiceContext(<BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} />,
+          },
+        ],
+      },
+    });
 
     expect(screen.queryByText('someLabel')).not.toBeInTheDocument();
     expect(screen.queryByText('someValue')).not.toBeInTheDocument();
@@ -165,9 +181,16 @@ describe('<BulkEditLabels />', () => {
   });
 
   it('should display editable labels form when in edit mode', async () => {
-    const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+          },
+        ],
+      },
+    });
 
     const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
@@ -201,7 +224,16 @@ describe('<BulkEditLabels />', () => {
   });
 
   it('should update the target recording labels after receiving a notification', async () => {
-    renderWithServiceContext(<BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+          },
+        ],
+      },
+    });
 
     const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
     expect(newLabel).toBeInTheDocument();
@@ -213,7 +245,16 @@ describe('<BulkEditLabels />', () => {
   });
 
   it('should update the archived recording labels after receiving a notification', async () => {
-    renderWithServiceContext(<BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
+          },
+        ],
+      },
+    });
 
     const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
     expect(newLabel).toBeInTheDocument();
@@ -225,9 +266,16 @@ describe('<BulkEditLabels />', () => {
   });
 
   it('should return to read-only view when edited labels are cancelled', async () => {
-    const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
+          },
+        ],
+      },
+    });
 
     let editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
@@ -271,9 +319,16 @@ describe('<BulkEditLabels />', () => {
     const saveRequestSpy = jest
       .spyOn(defaultServices.api, 'postTargetRecordingMetadata')
       .mockReturnValue(of([mockActiveRecording]));
-    const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={true} />,
+          },
+        ],
+      },
+    });
 
     const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
@@ -314,9 +369,16 @@ describe('<BulkEditLabels />', () => {
     const saveRequestSpy = jest
       .spyOn(defaultServices.api, 'postRecordingMetadata')
       .mockReturnValue(of([mockArchivedRecording]));
-    const { user } = renderWithServiceContext(
-      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={false} />,
+          },
+        ],
+      },
+    });
 
     const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();

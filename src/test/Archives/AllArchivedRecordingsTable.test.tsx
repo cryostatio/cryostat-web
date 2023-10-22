@@ -16,13 +16,11 @@
 
 import { AllArchivedRecordingsTable } from '@app/Archives/AllArchivedRecordingsTable';
 import { NotificationMessage, ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockJvmId1 = 'fooJvmId1';
@@ -159,27 +157,20 @@ describe('<AllArchivedRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <AllArchivedRecordingsTable />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('shows no recordings when empty', async () => {
-    renderWithServiceContext(<AllArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] } });
 
     expect(screen.getByText('No Archived Recordings')).toBeInTheDocument();
   });
 
   it('has the correct table elements', async () => {
-    renderWithServiceContext(<AllArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] } });
 
     expect(screen.getByLabelText('all-archives-table')).toBeInTheDocument();
     expect(screen.getByText('Directory')).toBeInTheDocument();
@@ -189,7 +180,9 @@ describe('<AllArchivedRecordingsTable />', () => {
   });
 
   it('correctly handles the search function', async () => {
-    const { user } = renderWithServiceContext(<AllArchivedRecordingsTable />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
+    });
 
     const search = screen.getByLabelText('Search input');
 
@@ -216,7 +209,9 @@ describe('<AllArchivedRecordingsTable />', () => {
   });
 
   it('expands targets to show their <ArchivedRecordingsTable />', async () => {
-    const { user } = renderWithServiceContext(<AllArchivedRecordingsTable />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
+    });
 
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
 
@@ -243,7 +238,7 @@ describe('<AllArchivedRecordingsTable />', () => {
   });
 
   it('increments the count when an archived recording is saved', async () => {
-    renderWithServiceContext(<AllArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] } });
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
     const rows = within(tableBody).getAllByRole('row');
@@ -255,7 +250,7 @@ describe('<AllArchivedRecordingsTable />', () => {
   });
 
   it('decrements the count when an archived recording is deleted', async () => {
-    renderWithServiceContext(<AllArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] } });
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
     const rows = within(tableBody).getAllByRole('row');

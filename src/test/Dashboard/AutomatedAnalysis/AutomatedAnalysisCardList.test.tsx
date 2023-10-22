@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
-import { store } from '@app/Shared/Redux/ReduxStore';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { Provider } from 'react-redux';
-import renderer, { act } from 'react-test-renderer';
+import { renderSnapshot } from '@test/utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
   name: 'rule1',
@@ -86,17 +82,15 @@ const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
 
 describe('<AutomatedAnalysisCardList />', () => {
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Provider store={store}>
-              <AutomatedAnalysisCardList evaluations={mockCategorizedEvaluations} />
-            </Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: <AutomatedAnalysisCardList evaluations={mockCategorizedEvaluations} />,
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });

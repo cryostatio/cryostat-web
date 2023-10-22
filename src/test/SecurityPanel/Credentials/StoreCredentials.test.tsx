@@ -21,8 +21,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of, throwError } from 'rxjs';
-
-import { renderWithServiceContext } from '../../Common';
+import { render } from '../../utils';
 
 const mockCredential: StoredCredential = {
   id: 0,
@@ -181,7 +180,16 @@ describe('<StoreCredentials />', () => {
   afterEach(cleanup);
 
   it('adds the correct table entry when a stored notification is received', async () => {
-    renderWithServiceContext(<StoreCredentials />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();
@@ -189,7 +197,16 @@ describe('<StoreCredentials />', () => {
   });
 
   it('removes the correct table entry when a deletion notification is received', async () => {
-    renderWithServiceContext(<StoreCredentials />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.queryByText(mockCredential.numMatchingTargets)).not.toBeInTheDocument();
@@ -200,7 +217,16 @@ describe('<StoreCredentials />', () => {
 
   it('renders an empty table after receiving deletion notifications for all credentials', async () => {
     const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
-    renderWithServiceContext(<StoreCredentials />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.queryByText(mockCredential.numMatchingTargets)).not.toBeInTheDocument();
@@ -211,7 +237,16 @@ describe('<StoreCredentials />', () => {
   });
 
   it('expands to show the correct nested targets', async () => {
-    const { user } = renderWithServiceContext(<StoreCredentials />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     const targets = [mockTarget, mockAnotherTarget, mockAnotherMatchingTarget];
     targets.forEach(({ alias, connectUrl }) => {
@@ -242,7 +277,16 @@ describe('<StoreCredentials />', () => {
   });
 
   it('decrements the correct count and updates the correct nested table when a lost target notification is received', async () => {
-    const { user } = renderWithServiceContext(<StoreCredentials />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     // both counts should now be equal to 1
     const counts = screen.getAllByText('1');
@@ -264,7 +308,16 @@ describe('<StoreCredentials />', () => {
   });
 
   it('increments the correct count and updates the correct nested table when a found target notification is received', async () => {
-    const { user } = renderWithServiceContext(<StoreCredentials />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();
     expect(screen.getByText(mockAnotherCredential.numMatchingTargets + 1)).toBeInTheDocument();
@@ -288,7 +341,16 @@ describe('<StoreCredentials />', () => {
   });
 
   it('opens the auth modal when Add is clicked', async () => {
-    const { user } = renderWithServiceContext(<StoreCredentials />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     await user.click(screen.getByText('Add'));
     expect(screen.getByText('CreateCredentialModal')).toBeInTheDocument();
@@ -299,7 +361,16 @@ describe('<StoreCredentials />', () => {
 
   it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
-    const { user } = renderWithServiceContext(<StoreCredentials />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
@@ -321,7 +392,16 @@ describe('<StoreCredentials />', () => {
 
   it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
-    const { user } = renderWithServiceContext(<StoreCredentials />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/security',
+            element: <StoreCredentials />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();

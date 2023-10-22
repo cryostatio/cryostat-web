@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<CustomRecordingForm /> renders correctly 1`] = `
+exports[`<DashboardLayoutToolbar /> renders correctly 1`] = `
 Array [
   <h2>
     Unexpected Application Error!
@@ -12,7 +12,7 @@ Array [
       }
     }
   >
-    Cannot read properties of undefined (reading 'location')
+    element.addEventListener is not a function
   </h3>,
   <pre
     style={
@@ -22,16 +22,24 @@ Array [
       }
     }
   >
-    TypeError: Cannot read properties of undefined (reading 'location')
-    at useLocation (/home/thvo/workspace/cryostat-web/node_modules/react-router-dom/node_modules/react-router/modules/hooks.js:29:10)
-    at CustomRecordingForm (/home/thvo/workspace/cryostat-web/src/app/CreateRecording/CustomRecordingForm.tsx:63:31)
-    at renderWithHooks (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6016:18)
-    at mountIndeterminateComponent (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8744:13)
-    at beginWork (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:9966:16)
-    at performUnitOfWork (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13800:12)
-    at workLoopSync (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13728:5)
-    at renderRootSync (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13691:7)
-    at performSyncWorkOnRoot (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13404:18)
+    TypeError: element.addEventListener is not a function
+    at addEventListener (/home/thvo/workspace/cryostat-web/node_modules/@patternfly/react-core/dist/js/helpers/Popper/Popper.js:61:21)
+    at /home/thvo/workspace/cryostat-web/node_modules/@patternfly/react-core/dist/js/helpers/Popper/Popper.js:70:9
+    at invokePassiveEffectCreate (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14504:20)
+    at HTMLUnknownElement.callCallback (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11391:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:338:25)
+    at invokeEventListeners (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:274:3)
+    at HTMLUnknownElementImpl._dispatch (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:221:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:94:17)
+    at HTMLUnknownElement.dispatchEvent (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:231:34)
+    at Object.invokeGuardedCallbackDev (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11440:16)
+    at invokeGuardedCallback (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11499:31)
+    at flushPassiveEffectsImpl (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14591:9)
+    at unstable_runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/scheduler/cjs/scheduler.development.js:468:12)
+    at runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2486:10)
+    at flushPassiveEffects (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14464:14)
+    at performSyncWorkOnRoot (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13380:3)
     at /home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2537:26
     at unstable_runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/scheduler/cjs/scheduler.development.js:468:12)
     at runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2486:10)
@@ -41,13 +49,13 @@ Array [
     at updateContainer (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16454:3)
     at Object.create (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:17149:3)
     at renderSnapshot (/home/thvo/workspace/cryostat-web/src/test/utils.tsx:101:19)
-    at /home/thvo/workspace/cryostat-web/src/test/CreateRecording/CustomRecordingForm.test.tsx:68:32
+    at /home/thvo/workspace/cryostat-web/src/test/Dashboard/DashboardLayoutToolbar.test.tsx:24:32
     at step (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:195:27)
     at Object.next (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:176:57)
     at /home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:169:75
     at new Promise (&lt;anonymous&gt;)
     at Object.__awaiter (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:165:16)
-    at Object.&lt;anonymous&gt; (/home/thvo/workspace/cryostat-web/src/test/CreateRecording/CustomRecordingForm.test.tsx:67:27)
+    at Object.&lt;anonymous&gt; (/home/thvo/workspace/cryostat-web/src/test/Dashboard/DashboardLayoutToolbar.test.tsx:23:27)
     at Promise.then.completed (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/utils.js:391:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/utils.js:316:10)

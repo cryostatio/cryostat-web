@@ -15,11 +15,10 @@
  */
 
 import { WebSocketDebounce } from '@app/Settings/Config/WebSocketDebounce';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const defaultValue = 100;
 
@@ -33,19 +32,30 @@ describe('<WebSocketDebounce/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          {React.createElement(WebSocketDebounce.content, null)}
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(WebSocketDebounce.content, null),
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should set correct default period', async () => {
-    renderDefault(React.createElement(WebSocketDebounce.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(WebSocketDebounce.content, null),
+          },
+        ],
+      },
+    });
 
     const webSocketDebounceInput = document.querySelector("input[type='number']") as HTMLInputElement;
     expect(webSocketDebounceInput).toBeInTheDocument();
@@ -54,7 +64,16 @@ describe('<WebSocketDebounce/>', () => {
   });
 
   it('should save to local storage when config is changed', async () => {
-    const { user } = renderDefault(React.createElement(WebSocketDebounce.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(WebSocketDebounce.content, null),
+          },
+        ],
+      },
+    });
 
     const webSocketDebounceInput = document.querySelector("input[type='number']") as HTMLInputElement;
     expect(webSocketDebounceInput).toBeInTheDocument();

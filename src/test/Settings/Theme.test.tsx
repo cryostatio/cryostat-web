@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, act, within } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { mockMediaQueryList, renderWithServiceContext, testT } from '../Common';
+import { mockMediaQueryList, render, testT } from '../utils';
 
 jest
   .spyOn(defaultServices.settings, 'themeSetting')
@@ -37,7 +37,16 @@ describe('<Theme/>', () => {
   afterEach(cleanup);
 
   it('should show LIGHT as default', async () => {
-    renderWithServiceContext(React.createElement(Theme.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(Theme.content, null),
+          },
+        ],
+      },
+    });
 
     const lightOption = screen.getByText(testT('SETTINGS.THEME.LIGHT'));
     expect(lightOption).toBeInTheDocument();
@@ -45,7 +54,16 @@ describe('<Theme/>', () => {
   });
 
   it('should set value to local storage when configured', async () => {
-    const { user } = renderWithServiceContext(React.createElement(Theme.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(Theme.content, null),
+          },
+        ],
+      },
+    });
 
     const themeSelect = screen.getByLabelText('Options menu');
     expect(themeSelect).toBeInTheDocument();

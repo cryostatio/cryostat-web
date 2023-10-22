@@ -15,11 +15,10 @@
  */
 
 import { AutoRefresh } from '@app/Settings/Config/AutoRefresh';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { renderWithServiceContext, testT } from '../Common';
+import { render, renderSnapshot, testT } from '../utils';
 
 jest.spyOn(defaultServices.settings, 'autoRefreshEnabled').mockReturnValue(false);
 jest.spyOn(defaultServices.settings, 'autoRefreshPeriod').mockReturnValue(30);
@@ -35,19 +34,30 @@ describe('<AutoRefresh/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          {React.createElement(AutoRefresh.content, null)}
-        </ServiceContext.Provider>,
-      );
+    const tree = renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(AutoRefresh.content, null),
+          },
+        ],
+      },
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should default to have auto-refresh disabled', async () => {
-    renderWithServiceContext(React.createElement(AutoRefresh.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(AutoRefresh.content, null),
+          },
+        ],
+      },
+    });
 
     const enableCheckbox = screen.getByLabelText('Enabled');
     expect(enableCheckbox).toBeInTheDocument();
@@ -56,7 +66,16 @@ describe('<AutoRefresh/>', () => {
   });
 
   it('should enable selections if checkbox is checked', async () => {
-    const { user } = renderWithServiceContext(React.createElement(AutoRefresh.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(AutoRefresh.content, null),
+          },
+        ],
+      },
+    });
 
     const enableCheckbox = screen.getByLabelText(testT('SETTINGS.AUTO_REFRESH.CHECKBOX_LABEL'));
     expect(enableCheckbox).toBeInTheDocument();
@@ -78,7 +97,16 @@ describe('<AutoRefresh/>', () => {
   });
 
   it('should set value to local storage when congfigured', async () => {
-    const { user } = renderWithServiceContext(React.createElement(AutoRefresh.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(AutoRefresh.content, null),
+          },
+        ],
+      },
+    });
 
     const periodInput = screen.getByLabelText('Duration Picker Period Input');
     expect(periodInput).toBeInTheDocument();

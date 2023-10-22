@@ -22,13 +22,11 @@ import {
   MessageMeta,
   NotificationMessage,
 } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -116,21 +114,12 @@ describe('<AgentLiveProbes />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <AgentLiveProbes />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
-    });
+    const tree = renderSnapshot({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should disable remove button if there is no probe', async () => {
-    renderWithServiceContext(<AgentLiveProbes />);
+    render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
     const removeButton = screen.getByText('Remove All Probes');
     expect(removeButton).toBeInTheDocument();
@@ -139,7 +128,7 @@ describe('<AgentLiveProbes />', () => {
   });
 
   it('should add a probe after receiving a notification', async () => {
-    renderWithServiceContext(<AgentLiveProbes />);
+    render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
     const addTemplateName = screen.getByText('another_name');
     expect(addTemplateName).toBeInTheDocument();
@@ -147,14 +136,14 @@ describe('<AgentLiveProbes />', () => {
   });
 
   it('should remove all probes after receiving a notification', async () => {
-    renderWithServiceContext(<AgentLiveProbes />);
+    render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
     expect(screen.queryByText('some_name')).not.toBeInTheDocument();
     expect(screen.queryByText('another_name')).not.toBeInTheDocument();
   });
 
   it('should display the column header fields', async () => {
-    renderWithServiceContext(<AgentLiveProbes />);
+    render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
     const headers = ['ID', 'Name', 'Class', 'Description', 'Method'];
     headers.forEach((header) => {
@@ -166,7 +155,7 @@ describe('<AgentLiveProbes />', () => {
 
   it('should remove all probes when Remove All Probe is clicked', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
-    const { user } = renderWithServiceContext(<AgentLiveProbes />);
+    const { user } = render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
     const removeButton = screen.getByText('Remove All Probes');
     expect(removeButton).toBeInTheDocument();
@@ -179,7 +168,7 @@ describe('<AgentLiveProbes />', () => {
 
   it('should show warning modal and remove all probes when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
-    const { user } = renderWithServiceContext(<AgentLiveProbes />);
+    const { user } = render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
     const removeButton = screen.getByText('Remove All Probes');
     expect(removeButton).toBeInTheDocument();
@@ -205,7 +194,7 @@ describe('<AgentLiveProbes />', () => {
   });
 
   it('should shown empty state when table is empty', async () => {
-    const { user } = renderWithServiceContext(<AgentLiveProbes />);
+    const { user } = render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
     const filterInput = screen.getByLabelText('Active probe filter');
     expect(filterInput).toBeInTheDocument();
