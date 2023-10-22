@@ -17,7 +17,7 @@
 import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
-import { NavigateFunction } from 'react-router-dom-v5-compat';
+import { NavigateFunction } from 'react-router-dom';
 import { BehaviorSubject, Observable } from 'rxjs';
 import semverGt from 'semver/functions/gt';
 import semverValid from 'semver/functions/valid';

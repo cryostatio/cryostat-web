@@ -21,7 +21,7 @@ import { Services } from '@app/Shared/Services/Services';
 import { DropdownItemProps, LabelProps } from '@patternfly/react-core';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';
-import { NavigateFunction } from 'react-router-dom-v5-compat';
+import { NavigateFunction } from 'react-router-dom';
 import { Observable } from 'rxjs';
 import type { GraphElement, ListElement } from '../Shared/types';
 

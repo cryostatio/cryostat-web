@@ -20,7 +20,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { first } from 'rxjs';
 
 export interface SnapshotRecordingFormProps {}

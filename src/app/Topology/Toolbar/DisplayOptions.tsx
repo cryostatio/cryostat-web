@@ -97,7 +97,6 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
 
   return (
     <Select
-      {...props}
       menuAppendTo={'parent'}
       onToggle={handleToggle}
       isDisabled={isDisabled}

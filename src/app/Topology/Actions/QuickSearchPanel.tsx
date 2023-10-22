@@ -48,7 +48,7 @@ import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
 import * as React from 'react';
-import { Link , useNavigate } from 'react-router-dom-v5-compat';
+import { Link, useNavigate } from 'react-router-dom';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 import quickSearches, { QuickSearchId, quickSearchIds } from './quicksearches/all-quick-searches';
 import { QuickSearchItem } from './types';

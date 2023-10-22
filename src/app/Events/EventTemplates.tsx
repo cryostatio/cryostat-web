@@ -58,7 +58,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
 

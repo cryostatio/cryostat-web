@@ -19,7 +19,7 @@ import { Bullseye, Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title } f
 import { MonitoringIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { CardConfig } from './types';
 import { getCardDescriptorByName } from './utils';
 

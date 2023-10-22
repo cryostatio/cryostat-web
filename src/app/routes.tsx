@@ -15,8 +15,7 @@
  */
 
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
-import { useLocation , CompatRoute, Routes } from 'react-router-dom-v5-compat';
+import { useLocation, Route, Routes } from 'react-router-dom';
 import About from './About/About';
 import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
@@ -48,10 +47,7 @@ const navGroups = [OVERVIEW, CONSOLE];
 export interface IAppRoute {
   anonymous?: boolean;
   label?: string;
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
-  /* eslint-enable @typescript-eslint/no-explicit-any */
-  exact?: boolean;
+  component: React.ComponentType;
   path: string;
   title: string;
   description?: string; // non-empty description is used to filter routes for the NotFound page
@@ -63,7 +59,6 @@ export interface IAppRoute {
 const routes: IAppRoute[] = [
   {
     component: About,
-    exact: true,
     label: 'About',
     path: '/about',
     title: 'About',
@@ -73,7 +68,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: Dashboard,
-    exact: true,
+
     label: 'Dashboard',
     path: '/',
     title: 'Dashboard',
@@ -81,7 +76,7 @@ const routes: IAppRoute[] = [
     children: [
       {
         component: DashboardSolo,
-        exact: true,
+
         path: '/d-solo',
         title: 'Dashboard',
       },
@@ -89,7 +84,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: QuickStarts,
-    exact: true,
+
     label: 'Quick Starts',
     path: '/quickstarts',
     title: 'Quick Starts',
@@ -97,7 +92,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: Topology,
-    exact: true,
+
     label: 'Topology',
     path: '/topology',
     title: 'Topology',
@@ -105,7 +100,7 @@ const routes: IAppRoute[] = [
     children: [
       {
         component: CreateTarget,
-        exact: true,
+
         path: '/topology/create-custom-target',
         title: 'Create Custom Target',
       },
@@ -113,7 +108,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: RulesTable,
-    exact: true,
+
     label: 'Automated Rules',
     path: '/rules',
     title: 'Automated Rules',
@@ -123,7 +118,7 @@ const routes: IAppRoute[] = [
     children: [
       {
         component: CreateRule,
-        exact: true,
+
         path: '/rules/create',
         title: 'Create Automated Rule',
       },
@@ -131,7 +126,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: Recordings,
-    exact: true,
+
     label: 'Recordings',
     path: '/recordings',
     title: 'Recordings',
@@ -140,7 +135,7 @@ const routes: IAppRoute[] = [
     children: [
       {
         component: CreateRecording,
-        exact: true,
+
         path: '/recordings/create',
         title: 'Create Recording',
       },
@@ -148,7 +143,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: Archives,
-    exact: true,
+
     label: 'Archives',
     path: '/archives',
     title: 'Archives',
@@ -158,7 +153,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: Events,
-    exact: true,
+
     label: 'Events',
     path: '/events',
     title: 'Events',
@@ -167,7 +162,7 @@ const routes: IAppRoute[] = [
   },
   {
     component: SecurityPanel,
-    exact: true,
+
     label: 'Security',
     path: '/security',
     title: 'Security',
@@ -177,7 +172,7 @@ const routes: IAppRoute[] = [
   {
     anonymous: true,
     component: Settings,
-    exact: true,
+
     path: '/settings',
     title: 'Settings',
     description: 'View or modify Cryostat web-client application settings.',
@@ -186,7 +181,6 @@ const routes: IAppRoute[] = [
     anonymous: true,
     component: Login,
     // this is only displayed if the user is not logged in and is the last route matched against the current path, so it will always match
-    exact: false,
     path: '/',
     title: 'Cryostat',
     description: 'Log in to Cryostat',
@@ -217,7 +211,7 @@ const useA11yRouteChange = () => {
   }, [pathname]);
 };
 
-const RouteWithTitleUpdates = ({ component: Component, title, path, ...rest }: IAppRoute) => {
+const RouteComponentTitleUpdates = ({ children, title }: { children?: React.ReactNode; title: string }) => {
   useA11yRouteChange();
   useDocumentTitle(title);
 
@@ -225,20 +219,12 @@ const RouteWithTitleUpdates = ({ component: Component, title, path, ...rest }: I
     return <DefaultFallBack error={error} />;
   }, []);
 
-  function routeWithTitle(routeProps: RouteComponentProps) {
-    return (
-      <ErrorBoundary renderFallback={renderFallback}>
-        <Component {...rest} {...routeProps} />
-      </ErrorBoundary>
-    );
-  }
-
-  return <CompatRoute render={routeWithTitle} path={path} />;
+  return <ErrorBoundary renderFallback={renderFallback}>{children}</ErrorBoundary>;
 };
 
-const PageNotFound = ({ title }: { title: string }) => {
-  useDocumentTitle(title);
-  return <CompatRoute component={NotFound} />;
+const PageNotFound = () => {
+  useDocumentTitle('404 Page Not Found');
+  return <NotFound />;
 };
 
 export interface AppRoutesProps {}
@@ -252,10 +238,15 @@ const AppRoutes: React.FC<AppRoutesProps> = (_) => {
       {flatten(routes)
         .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
         .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
-        .map(({ path, exact, component, title }, idx) => (
-          <RouteWithTitleUpdates path={path} exact={exact} component={component} key={idx} title={title} />
-      ))}
-      <PageNotFound title="404 Page Not Found" />
+        .map(({ path, component: Component, title }) => {
+          const content = (
+            <RouteComponentTitleUpdates title={title}>
+              <Component />
+            </RouteComponentTitleUpdates>
+          );
+          return <Route key={path} path={path} element={content} />;
+        })}
+      <Route key={'not-found'} element={<PageNotFound />} />
     </Routes>
   );
 };

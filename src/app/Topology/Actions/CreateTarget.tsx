@@ -58,7 +58,7 @@ import { CheckCircleIcon, ExclamationCircleIcon, PendingIcon, SyncAltIcon } from
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);
 

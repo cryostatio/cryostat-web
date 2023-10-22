@@ -19,7 +19,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link , LinkProps, useNavigate } from 'react-router-dom-v5-compat';
+import { Link, LinkProps, useNavigate } from 'react-router-dom';
 import { ActionUtils } from './types';
 
 export interface WarningResolverAsLinkProps extends LinkProps {}

@@ -21,7 +21,7 @@ import { Dropdown, DropdownItem, DropdownProps, DropdownToggle } from '@patternf
 import { css } from '@patternfly/react-styles';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { Observable, Subject, switchMap } from 'rxjs';
 import { GraphElement, ListElement } from '../Shared/types';
 import { ActionUtils, MenuItemComponent, MenuItemVariant, NodeActionFunction } from './types';

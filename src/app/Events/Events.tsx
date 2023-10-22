@@ -21,7 +21,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
-import { useLocation , useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { concatMap, filter } from 'rxjs';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';

@@ -35,7 +35,7 @@ import {
   Popover,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { LinkProps } from 'react-router-dom-v5-compat';
+import { LinkProps } from 'react-router-dom';
 import {
   catchError,
   combineLatest,

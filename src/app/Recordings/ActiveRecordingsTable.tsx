@@ -78,7 +78,7 @@ import { RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';

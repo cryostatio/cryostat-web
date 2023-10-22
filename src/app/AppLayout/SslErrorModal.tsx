@@ -16,7 +16,7 @@
 import { portalRoot } from '@app/utils/utils';
 import { Button, Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 
 export interface SslErrorModalProps {
   visible: boolean;

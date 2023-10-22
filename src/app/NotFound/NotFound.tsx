@@ -28,7 +28,7 @@ import {
 } from '@patternfly/react-core';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
+import { Link } from 'react-router-dom';
 import { NotFoundCard } from './NotFoundCard';
 
 export interface NotFoundProps {}

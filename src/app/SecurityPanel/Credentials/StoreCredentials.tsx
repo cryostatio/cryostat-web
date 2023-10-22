@@ -44,7 +44,7 @@ import {
 import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
+import { Link } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';

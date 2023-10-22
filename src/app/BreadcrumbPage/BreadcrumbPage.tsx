@@ -23,7 +23,7 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
+import { Link } from 'react-router-dom';
 import { BreadcrumbTrail } from './types';
 import { isItemFilled } from './utils';
 

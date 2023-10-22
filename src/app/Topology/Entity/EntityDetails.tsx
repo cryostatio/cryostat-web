@@ -48,7 +48,7 @@ import { css } from '@patternfly/react-styles';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
+import { Link } from 'react-router-dom';
 import { catchError, concatMap, map, of } from 'rxjs';
 import { EmptyText } from '../../Shared/Components/EmptyText';
 import { NodeAction } from '../Actions/types';

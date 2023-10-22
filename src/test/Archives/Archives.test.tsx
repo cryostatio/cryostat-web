@@ -18,7 +18,7 @@ import { NotificationsContext, NotificationsInstance } from '@app/Shared/Service
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { MemoryRouter } from 'react-router-dom-v5-compat';
+import { MemoryRouter } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { render } from '../utils';

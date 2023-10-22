@@ -31,7 +31,7 @@ import userEvent from '@testing-library/user-event';
 import { t, TOptions } from 'i18next';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom-v5-compat';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import renderer from 'react-test-renderer';
 
 export interface ProviderInstance<T> {
