@@ -21,7 +21,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Button, Divider, Select, SelectGroup, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom-v5-compat';
 
 export interface TargetContextSelectorProps {
   className?: string;

@@ -51,8 +51,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { Link , useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';

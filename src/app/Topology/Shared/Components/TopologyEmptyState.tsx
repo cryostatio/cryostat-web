@@ -29,7 +29,7 @@ import {
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom-v5-compat';
 import { DiscoveryTreeContext } from '../utils';
 
 export interface TopologyEmptyStateProps {}

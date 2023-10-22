@@ -15,8 +15,8 @@
  */
 
 import * as React from 'react';
-import { RouteComponentProps, Switch, useLocation } from 'react-router-dom';
-import { CompatRoute } from 'react-router-dom-v5-compat';
+import { RouteComponentProps } from 'react-router-dom';
+import { useLocation , CompatRoute, Routes } from 'react-router-dom-v5-compat';
 import About from './About/About';
 import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
@@ -241,7 +241,6 @@ const PageNotFound = ({ title }: { title: string }) => {
   return <CompatRoute component={NotFound} />;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AppRoutesProps {}
 
 const AppRoutes: React.FC<AppRoutesProps> = (_) => {
@@ -249,15 +248,15 @@ const AppRoutes: React.FC<AppRoutesProps> = (_) => {
   const activeLevel = useFeatureLevel();
 
   return (
-    <Switch>
+    <Routes>
       {flatten(routes)
         .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
         .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
         .map(({ path, exact, component, title }, idx) => (
           <RouteWithTitleUpdates path={path} exact={exact} component={component} key={idx} title={title} />
-        ))}
+      ))}
       <PageNotFound title="404 Page Not Found" />
-    </Switch>
+    </Routes>
   );
 };
 

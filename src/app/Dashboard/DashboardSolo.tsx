@@ -19,8 +19,7 @@ import { Bullseye, Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title } f
 import { MonitoringIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation, withRouter } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { CardConfig } from './types';
 import { getCardDescriptorByName } from './utils';
 
@@ -90,4 +89,4 @@ const DashboardSolo: React.FC<DashboardSoloProps> = () => {
   return content;
 };
 
-export default withRouter(DashboardSolo);
+export default DashboardSolo;
