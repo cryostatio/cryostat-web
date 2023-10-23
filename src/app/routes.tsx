@@ -211,7 +211,7 @@ const useA11yRouteChange = () => {
   }, [pathname]);
 };
 
-const RouteComponentTitleUpdates = ({ children, title }: { children?: React.ReactNode; title: string }) => {
+const WithTitleUpdates = ({ children, title }: { children?: React.ReactNode; title: string }) => {
   useA11yRouteChange();
   useDocumentTitle(title);
 
@@ -240,9 +240,9 @@ const AppRoutes: React.FC<AppRoutesProps> = (_) => {
         .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
         .map(({ path, component: Component, title }) => {
           const content = (
-            <RouteComponentTitleUpdates title={title}>
+            <WithTitleUpdates title={title}>
               <Component />
-            </RouteComponentTitleUpdates>
+            </WithTitleUpdates>
           );
           return <Route key={path} path={path} element={content} />;
         })
