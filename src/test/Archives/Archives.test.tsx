@@ -21,7 +21,7 @@ import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { render } from '../utils';
+import { render, renderSnapshot } from '../utils';
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -116,18 +116,7 @@ describe('<Archives />', () => {
   });
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <MemoryRouter initialEntries={['/archives']}>
-              <Archives />
-            </MemoryRouter>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
-    });
+    const tree = await renderSnapshot({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 });
