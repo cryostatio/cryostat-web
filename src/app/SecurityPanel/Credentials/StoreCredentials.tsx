@@ -534,11 +534,12 @@ export const StoreCredentialsCard: SecurityCard = {
   description: (
     <TextContent>
       <Text component={TextVariants.small}>
-        Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored here. These are
-        stored in encrypted storage managed by the Cryostat backend. These credentials may be used for manually managing
-        recordings and event templates on target JVMs, as well as for Automated Rules which run in the background and
-        open unattended target connections. Any locally-stored client credentials held by your browser session are not
-        displayed here. See <Link to="/settings">Settings</Link> to configure locally-stored credentials.
+        Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored in encrypted
+        storage.
+      </Text>
+      <Text component={TextVariants.small}>
+        The locally-stored client credentials held by your browser session are not displayed here. See{' '}
+        <Link to="/settings?tab=advanced">Settings</Link> to configure locally-stored credentials.
       </Text>
     </TextContent>
   ),
