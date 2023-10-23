@@ -19,6 +19,11 @@ import { renderSnapshot } from '@test/utils';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 
+jest.mock('@patternfly/react-core', () => ({
+  ...jest.requireActual('@patternfly/react-core'),
+  Tooltip: ({ t }) => <>{t}</>,
+}));
+
 describe('<DashboardLayoutToolbar />', () => {
   it('renders correctly', async () => {
     const tree = await renderSnapshot({
