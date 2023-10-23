@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 import { Archives } from '@app/Archives/Archives';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { MemoryRouter } from 'react-router-dom';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
