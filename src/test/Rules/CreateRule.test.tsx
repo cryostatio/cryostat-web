@@ -278,5 +278,7 @@ describe('<CreateRule />', () => {
 
     expect(createSpy).toHaveBeenCalledTimes(1);
     expect(createSpy).toHaveBeenCalledWith(mockRule);
+
+    expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
 });

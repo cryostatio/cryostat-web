@@ -185,7 +185,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate('/recordings/create');
+    navigate('create', { relative: 'path' });
   }, [navigate]);
 
   const handleEditLabels = React.useCallback(() => {

@@ -32,6 +32,8 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
+  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+
   const handleCreateSnapshot = React.useCallback(() => {
     setLoading(true);
     addSubscription(
@@ -41,11 +43,11 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
         .subscribe((success) => {
           setLoading(false);
           if (success) {
-            navigate('/recordings');
+            exitForm();
           }
         }),
     );
-  }, [addSubscription, context.api, navigate, setLoading]);
+  }, [addSubscription, context.api, exitForm, setLoading]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -117,7 +119,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
           <Button variant="primary" onClick={handleCreateSnapshot} isDisabled={loading} {...createButtonLoadingProps}>
             {loading ? 'Creating' : 'Create'}
           </Button>
-          <Button variant="secondary" onClick={() => navigate(-1)} isDisabled={loading}>
+          <Button variant="secondary" onClick={exitForm} isDisabled={loading}>
             Cancel
           </Button>
         </ActionGroup>

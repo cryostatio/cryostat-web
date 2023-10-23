@@ -69,6 +69,10 @@ jest
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 describe('<CustomRecordingForm />', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterEach(cleanup);
 
   it('renders correctly', async () => {
@@ -116,6 +120,7 @@ describe('<CustomRecordingForm />', () => {
       },
       metadata: { labels: {} },
     } as RecordingAttributes);
+    expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
 
   it('should show correct helper texts in metadata label editor', async () => {

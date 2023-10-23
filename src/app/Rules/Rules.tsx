@@ -201,7 +201,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
   }, [context.settings, refreshRules]);
 
   const handleCreateRule = React.useCallback(() => {
-    navigate('/rules/create');
+    navigate('create', { relative: 'path' });
   }, [navigate]);
 
   const handleUploadRule = React.useCallback(() => {

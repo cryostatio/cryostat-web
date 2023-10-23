@@ -205,7 +205,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     [setFormData],
   );
 
-  const exitForm = React.useCallback(() => navigate('/rules'), [navigate]);
+  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
 
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
@@ -637,7 +637,7 @@ enabled in the future.`}
         >
           {loading ? 'Creating' : 'Create'}
         </Button>
-        <Button variant="secondary" onClick={() => navigate(-1)} isAriaDisabled={loading}>
+        <Button variant="secondary" onClick={exitForm} isAriaDisabled={loading}>
           Cancel
         </Button>
       </ActionGroup>

@@ -82,7 +82,7 @@ export const CustomRecordingForm: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => navigate(-1), [navigate]);
+  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {

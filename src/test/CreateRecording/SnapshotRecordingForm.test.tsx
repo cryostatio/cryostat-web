@@ -38,6 +38,10 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('<SnapshotRecordingForm />', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterEach(cleanup);
 
   it('renders correctly', async () => {
@@ -76,7 +80,7 @@ describe('<SnapshotRecordingForm />', () => {
     await user.click(createButton);
 
     expect(onCreateSpy).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith('/recordings');
+    expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
 
   it('should show error view if failing to retrieve templates or recording options', async () => {
