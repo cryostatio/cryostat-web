@@ -237,7 +237,6 @@ export const getResourceListPatchFn = (
   }
 };
 
-// TODO: Revisit when updating to react-router v6
 export const getLinkPropsForTargetResource = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
 ): LinkProps => {
