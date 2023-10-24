@@ -246,7 +246,7 @@ const AppRoutes: React.FC<AppRoutesProps> = (_) => {
           );
           return <Route key={path} path={path} element={content} />;
         })
-        .concat([<Route key={'not-found'} path={'*'} element={<PageNotFound />} />])}
+        .concat([<Route key={'not-found'} path={'*'} element={loggedIn ? <PageNotFound /> : <Login />} />])}
     </Routes>
   );
 };
