@@ -16,7 +16,7 @@
 import { portalRoot } from '@app/utils/utils';
 import { Button, Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export interface SslErrorModalProps {
   visible: boolean;
@@ -24,12 +24,12 @@ export interface SslErrorModalProps {
 }
 
 export const SslErrorModal: React.FC<SslErrorModalProps> = ({ visible, onDismiss }) => {
-  const routerHistory = useHistory();
+  const navigate = useNavigate();
 
-  const handleClick = () => {
-    routerHistory.push('/security');
+  const handleClick = React.useCallback(() => {
+    navigate('/security');
     onDismiss();
-  };
+  }, [navigate, onDismiss]);
 
   return (
     <Modal

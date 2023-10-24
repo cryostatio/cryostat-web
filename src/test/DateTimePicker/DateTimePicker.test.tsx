@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderWithServiceContext, testT } from '../Common';
+import { render, testT } from '../utils';
 
 const onSelect = jest.fn((_: Date) => undefined);
 const onDismiss = jest.fn();
@@ -37,9 +37,16 @@ describe('<DateTimePicker/>', () => {
   afterEach(cleanup);
 
   it('should show date tab as default', async () => {
-    renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
+          },
+        ],
+      },
+    });
 
     const dateTab = screen.getByRole('tab', { name: testT('DATE', { ns: 'common' }) });
     expect(dateTab).toBeInTheDocument();
@@ -48,9 +55,16 @@ describe('<DateTimePicker/>', () => {
   });
 
   it('should render currently selected date in calendar', async () => {
-    renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
+          },
+        ],
+      },
+    });
 
     const selectedDate = screen.getByLabelText('14 September 2022');
     expect(selectedDate).toBeInTheDocument();
@@ -58,9 +72,16 @@ describe('<DateTimePicker/>', () => {
   });
 
   it('should render currently selected datetime', async () => {
-    renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
+          },
+        ],
+      },
+    });
 
     const display = screen.getByLabelText(testT('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
     expect(display).toBeInTheDocument();
@@ -73,9 +94,16 @@ describe('<DateTimePicker/>', () => {
   });
 
   it('should switch to time tab when a date is selected', async () => {
-    const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
+          },
+        ],
+      },
+    });
 
     const selectedDate = screen.getByLabelText('14 September 2022');
     expect(selectedDate).toBeInTheDocument();
@@ -90,9 +118,17 @@ describe('<DateTimePicker/>', () => {
   });
 
   it('should update selected datetime when date or time is seleted', async () => {
-    const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
+          },
+        ],
+      },
+    });
+
     const selectedDate = screen.getByLabelText('13 September 2022');
     expect(selectedDate).toBeInTheDocument();
     expect(selectedDate).toBeVisible();
@@ -115,9 +151,16 @@ describe('<DateTimePicker/>', () => {
   });
 
   it('should submit when select button is clicked', async () => {
-    const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
+          },
+        ],
+      },
+    });
 
     const submitButton = screen.getByText(testT('SELECT', { ns: 'common' }));
     expect(submitButton).toBeInTheDocument();
@@ -130,9 +173,16 @@ describe('<DateTimePicker/>', () => {
   });
 
   it('shoud dismiss the modal when cancel button is clicked', async () => {
-    const { user } = renderWithServiceContext(
-      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
+          },
+        ],
+      },
+    });
 
     const dismissButton = screen.getByText(testT('CANCEL', { ns: 'common' }));
     expect(dismissButton).toBeInTheDocument();

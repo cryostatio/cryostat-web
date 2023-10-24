@@ -17,7 +17,7 @@
 import { AutomatedAnalysisNameFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisNameFilter';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
-import { renderDefault } from '../../../Common';
+import { render } from '../../../utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
   name: 'rule1',
@@ -118,13 +118,22 @@ describe('<AutomatedAnalysisNameFilter />', () => {
   afterEach(cleanup);
 
   it('display name selections when text input is clicked', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisNameFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onNameInput}
-        filteredNames={emptyFilteredNames}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisNameFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onNameInput}
+                filteredNames={emptyFilteredNames}
+              />
+            ),
+          },
+        ],
+      },
+    });
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
@@ -143,13 +152,22 @@ describe('<AutomatedAnalysisNameFilter />', () => {
   });
 
   it('display name selections when dropdown arrow is clicked', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisNameFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onNameInput}
-        filteredNames={emptyFilteredNames}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisNameFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onNameInput}
+                filteredNames={emptyFilteredNames}
+              />
+            ),
+          },
+        ],
+      },
+    });
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
@@ -168,13 +186,22 @@ describe('<AutomatedAnalysisNameFilter />', () => {
   });
 
   it('should close selection menu when toggled with dropdown arrow', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisNameFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onNameInput}
-        filteredNames={emptyFilteredNames}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisNameFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onNameInput}
+                filteredNames={emptyFilteredNames}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
@@ -198,13 +225,22 @@ describe('<AutomatedAnalysisNameFilter />', () => {
   });
 
   it('should close selection menu when toggled with text input', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisNameFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onNameInput}
-        filteredNames={emptyFilteredNames}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisNameFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onNameInput}
+                filteredNames={emptyFilteredNames}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
@@ -228,13 +264,22 @@ describe('<AutomatedAnalysisNameFilter />', () => {
   });
 
   it('should not display selected names', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisNameFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onNameInput}
-        filteredNames={filteredNames}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisNameFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onNameInput}
+                filteredNames={filteredNames}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
@@ -253,13 +298,22 @@ describe('<AutomatedAnalysisNameFilter />', () => {
   it('should select a name when a name option is clicked', async () => {
     const submitNameInput = jest.fn((nameInput) => emptyFilteredNames.push(nameInput));
 
-    const { user } = renderDefault(
-      <AutomatedAnalysisNameFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={submitNameInput}
-        filteredNames={emptyFilteredNames}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisNameFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={submitNameInput}
+                filteredNames={emptyFilteredNames}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();

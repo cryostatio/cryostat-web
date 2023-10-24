@@ -78,7 +78,7 @@ import { RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -136,9 +136,7 @@ export interface ActiveRecordingsTableProps {
 
 export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
-
-  const routerHistory = useHistory();
-  const { url } = useRouteMatch();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
@@ -187,8 +185,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const handleCreateRecording = React.useCallback(() => {
-    routerHistory.push(`${url}/create`);
-  }, [routerHistory, url]);
+    navigate('create', { relative: 'path' });
+  }, [navigate]);
 
   const handleEditLabels = React.useCallback(() => {
     setShowDetailsPanel(true);

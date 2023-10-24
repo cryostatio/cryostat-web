@@ -58,7 +58,7 @@ import { CheckCircleIcon, ExclamationCircleIcon, PendingIcon, SyncAltIcon } from
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);
 
@@ -74,7 +74,7 @@ export interface CreateTargetProps {
 export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [t] = useTranslation();
 
   const [example, setExample] = React.useState('');
@@ -166,6 +166,8 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
     [setFormData, resetTestState],
   );
 
+  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+
   const handleSubmit = React.useCallback(() => {
     setLoading(true);
     // Get storage location
@@ -184,7 +186,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           setLoading(false);
           const option = isHttpOk(status) ? ValidatedOptions.success : ValidatedOptions.error;
           if (option === ValidatedOptions.success) {
-            history.push('/topology');
+            exitForm();
           } else {
             setValidation({
               option: option,
@@ -193,7 +195,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           }
         }),
     );
-  }, [setLoading, setValidation, addSubscription, context.api, connectUrl, alias, history, credentials]);
+  }, [setLoading, setValidation, addSubscription, context.api, connectUrl, alias, exitForm, credentials]);
 
   const testTarget = React.useCallback(() => {
     if (!isValidTargetConnectURL(connectUrl)) {
@@ -222,8 +224,6 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
     setTesting(true);
     resetTestState();
   }, [connectUrl, alias, credentials, addSubscription, context.api, resetTestState, setTesting]);
-
-  const handleCancel = React.useCallback(() => history.goBack(), [history]);
 
   React.useEffect(() => {
     if (prefilled) {
@@ -413,7 +413,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
               >
                 {loading ? t('CREATING', { ns: 'common' }) : t('CREATE', { ns: 'common' })}
               </Button>
-              <Button variant="secondary" onClick={handleCancel}>
+              <Button variant="secondary" onClick={exitForm}>
                 {t('CANCEL', { ns: 'common' })}
               </Button>
             </ActionGroup>

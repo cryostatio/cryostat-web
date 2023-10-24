@@ -53,7 +53,7 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { RuleFormData } from './types';
@@ -64,7 +64,7 @@ export interface CreateRuleFormProps {}
 export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
@@ -205,7 +205,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     [setFormData],
   );
 
-  const exitForm = React.useCallback(() => history.push('/rules'), [history]);
+  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
 
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
@@ -637,7 +637,7 @@ enabled in the future.`}
         >
           {loading ? 'Creating' : 'Create'}
         </Button>
-        <Button variant="secondary" onClick={history.goBack} isAriaDisabled={loading}>
+        <Button variant="secondary" onClick={exitForm} isAriaDisabled={loading}>
           Cancel
         </Button>
       </ActionGroup>

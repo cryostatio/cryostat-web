@@ -81,7 +81,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
+import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 
 export interface AppLayoutProps {
@@ -92,7 +92,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
-  const routerHistory = useHistory();
   const { t } = useTranslation();
   const {
     setState: setJoyState,
@@ -117,6 +116,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
   const location = useLocation();
+  const navigate = useNavigate();
   const [theme] = useTheme();
 
   React.useEffect(() => {
@@ -251,10 +251,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [isMobileView, setIsNavOpen],
   );
 
-  const handleSettingsButtonClick = React.useCallback(() => {
-    routerHistory.push('/settings');
-  }, [routerHistory]);
-
   const handleNotificationCenterToggle = React.useCallback(() => {
     notificationsContext.setDrawerState(!isNotificationDrawerExpanded);
   }, [isNotificationDrawerExpanded, notificationsContext]);
@@ -272,13 +268,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, [serviceContext.login, addSubscription]);
 
   const handleLanguagePref = React.useCallback(() => {
-    if (routerHistory.location.pathname === '/settings') {
+    if (location.pathname === '/settings') {
       selectTab(SettingTab.GENERAL);
     } else {
-      const query = new URLSearchParams({ tab: tabAsParam(SettingTab.GENERAL) });
-      routerHistory.push(`/settings?${query}`);
+      navigate(`/settings?${new URLSearchParams({ tab: tabAsParam(SettingTab.GENERAL) })}`);
     }
-  }, [routerHistory]);
+  }, [location, navigate]);
 
   const handleUserInfoToggle = React.useCallback(() => setShowUserInfoDropdown((v) => !v), [setShowUserInfoDropdown]);
 
@@ -400,13 +395,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </ToolbarItem>
                 <ToolbarItem>
                   <Button
-                    onClick={handleSettingsButtonClick}
                     variant="plain"
-                    icon={<CogIcon size="sm" />}
                     aria-label="Settings"
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
-                  />
+                    component={(props) => <Link {...props} to="/settings" />}
+                  >
+                    <CogIcon size="sm" />
+                  </Button>
                 </ToolbarItem>
                 <ToolbarItem>
                   <ApplicationLauncher
@@ -441,7 +437,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       unreadNotificationsCount,
       errorNotificationsCount,
       handleNotificationCenterToggle,
-      handleSettingsButtonClick,
       handleHelpToggle,
       setShowUserInfoDropdown,
       showUserIcon,
@@ -489,7 +484,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const isActiveRoute = React.useCallback(
     (route: IAppRoute): boolean => {
       const match = matchPath(location.pathname, route.path);
-      if (match && match.isExact) {
+      if (match) {
         return true;
       } else if (route.children) {
         let childMatch = false;
@@ -521,9 +516,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                         isActive={isActiveRoute(route)}
                       >
                         <NavLink
-                          exact
+                          end
                           to={route.path}
-                          activeClassName="pf-m-current"
+                          className={(active) => (active ? 'pf-m-current' : undefined)}
                           data-quickstart-id={`nav-${cleanDataId(route.label)}-tab`}
                           data-tour-id={`${cleanDataId(route.label)}`}
                         >

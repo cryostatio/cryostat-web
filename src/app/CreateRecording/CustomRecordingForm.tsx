@@ -48,7 +48,7 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
@@ -57,9 +57,9 @@ import { isDurationValid, isRecordingNameValid } from './utils';
 export const CustomRecordingForm: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
-  const location = useLocation<Partial<CustomRecordingFormData> | undefined>();
+  const location = useLocation();
 
   const [formData, setFormData] = React.useState<CustomRecordingFormData>({
     name: '',
@@ -82,7 +82,7 @@ export const CustomRecordingForm: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => history.goBack(), [history]);
+  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
@@ -357,6 +357,7 @@ export const CustomRecordingForm: React.FC = () => {
   }, [addSubscription, context.target, refreshFormOptions]);
 
   React.useEffect(() => {
+    const prefilled: Partial<CustomRecordingFormData> = location.state || {};
     const {
       name,
       restart,
@@ -370,7 +371,7 @@ export const CustomRecordingForm: React.FC = () => {
       maxSizeUnit,
       continuous,
       skipDurationCheck,
-    } = location.state || {};
+    } = prefilled;
     setFormData((old) => ({
       ...old,
       name: name ?? '',
@@ -631,7 +632,7 @@ export const CustomRecordingForm: React.FC = () => {
           >
             {loading ? 'Creating' : 'Create'}
           </Button>
-          <Button variant="secondary" onClick={history.goBack} isDisabled={loading}>
+          <Button variant="secondary" onClick={exitForm} isDisabled={loading}>
             Cancel
           </Button>
         </ActionGroup>

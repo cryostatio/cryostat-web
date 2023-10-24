@@ -16,14 +16,12 @@
 import { authFailMessage } from '@app/ErrorView/types';
 import { EventTypes } from '@app/Events/EventTypes';
 import { EventType } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -44,17 +42,17 @@ describe('<EventTypes />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <EventTypes />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTypes />,
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should show error view if failing to retrieve event types', async () => {
@@ -68,7 +66,17 @@ describe('<EventTypes />', () => {
       target: mockTargetSvc,
     };
 
-    renderWithServiceContext(<EventTypes />, { services: services });
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTypes />,
+          },
+        ],
+      },
+      providers: [{ kind: ServiceContext.Provider, instance: services }],
+    });
 
     await doAct(async () => subj.next());
 
@@ -86,7 +94,16 @@ describe('<EventTypes />', () => {
   });
 
   it('should shown empty state when table is empty', async () => {
-    const { user } = renderWithServiceContext(<EventTypes />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTypes />,
+          },
+        ],
+      },
+    });
 
     const filterInput = screen.getByLabelText('Event filter');
     expect(filterInput).toBeInTheDocument();

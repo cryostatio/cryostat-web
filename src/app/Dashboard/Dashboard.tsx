@@ -30,7 +30,7 @@ import { Grid, GridItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AddCard } from './AddCard';
 import { ChartContext } from './Charts/context';
 import { JFRMetricsChartController } from './Charts/jfr/JFRMetricsChartController';
@@ -43,7 +43,7 @@ import { getCardDescriptorByName, validateCardConfig } from './utils';
 export interface DashboardComponentProps {}
 
 export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const { t } = useTranslation();
@@ -130,7 +130,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
                       key={`${cfg.name}-actions`}
                       onRemove={() => handleRemove(idx)}
                       onResetSize={() => handleResetSize(idx)}
-                      onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
+                      onView={() => navigate(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
                     />,
                   ],
                 })

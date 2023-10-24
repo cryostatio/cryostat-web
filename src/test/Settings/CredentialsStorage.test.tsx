@@ -18,7 +18,7 @@ import { CredentialsStorage, Locations } from '@app/Settings/Config/CredentialsS
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import * as React from 'react';
-import { renderDefault, testT } from '../Common';
+import { render, testT } from '../utils';
 
 jest.mock('@app/utils/LocalStorage', () => {
   const map = new Map<any, any>();
@@ -42,7 +42,16 @@ describe('<CredentialsStorage/>', () => {
   afterEach(cleanup);
 
   it('defaults to Backend storage', async () => {
-    renderDefault(React.createElement(CredentialsStorage.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(CredentialsStorage.content, null),
+          },
+        ],
+      },
+    });
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
@@ -53,7 +62,16 @@ describe('<CredentialsStorage/>', () => {
   });
 
   it.skip('sets value to local storage when dropdown is clicked', async () => {
-    const { user } = renderDefault(React.createElement(CredentialsStorage.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(CredentialsStorage.content, null),
+          },
+        ],
+      },
+    });
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);

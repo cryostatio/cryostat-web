@@ -19,7 +19,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
-import { useHistory, useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 
@@ -32,7 +32,7 @@ export interface RecordingsProps {}
 
 export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
   const { search, pathname } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -48,8 +48,8 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
-      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
-    [history, pathname, search],
+      switchTab(navigate, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [navigate, pathname, search],
   );
 
   const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);

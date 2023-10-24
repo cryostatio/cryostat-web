@@ -19,7 +19,7 @@ import i18next, { i18nLanguages } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
-import { renderDefault, testT } from '../Common';
+import { render, testT } from '../utils';
 
 describe('<Language/>', () => {
   let detectedLanguage: string;
@@ -37,7 +37,16 @@ describe('<Language/>', () => {
   it('should default to detected language if supported', async () => {
     i18next.changeLanguage('en');
 
-    renderDefault(React.createElement(Language.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(Language.content, null),
+          },
+        ],
+      },
+    });
 
     const defaultLocale = screen.getByText(localeReadable('en'));
     expect(defaultLocale).toBeInTheDocument();
@@ -47,7 +56,16 @@ describe('<Language/>', () => {
   it('should default to en if language is not supported', async () => {
     i18next.changeLanguage('en-unknow-variant');
 
-    renderDefault(React.createElement(Language.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(Language.content, null),
+          },
+        ],
+      },
+    });
 
     const defaultLocale = screen.getByText(localeReadable('en'));
     expect(defaultLocale).toBeInTheDocument();
@@ -55,7 +73,16 @@ describe('<Language/>', () => {
   });
 
   it('should display supported language', async () => {
-    const { user } = renderDefault(React.createElement(Language.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(Language.content, null),
+          },
+        ],
+      },
+    });
 
     const optionMenu = screen.getByLabelText('Options menu');
     expect(optionMenu).toBeInTheDocument();
@@ -78,7 +105,16 @@ describe('<Language/>', () => {
 
   // Unskip this test when more languages are supported
   it.skip('should change language when select', async () => {
-    const { user } = renderDefault(React.createElement(Language.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(Language.content, null),
+          },
+        ],
+      },
+    });
 
     const optionMenu = screen.getByLabelText('Options menu');
     expect(optionMenu).toBeInTheDocument();

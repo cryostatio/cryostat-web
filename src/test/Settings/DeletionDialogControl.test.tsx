@@ -16,11 +16,10 @@
 
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { DeletionDialogControl } from '@app/Settings/Config/DeletionDialogControl';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { renderWithServiceContext, testT } from '../Common';
+import { render, renderSnapshot, testT } from '../utils';
 
 const defaults = new Map<DeleteOrDisableWarningType, boolean>();
 for (const cat in DeleteOrDisableWarningType) {
@@ -37,19 +36,30 @@ describe('<DeletionDialogControl/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          {React.createElement(DeletionDialogControl.content, null)}
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(DeletionDialogControl.content, null),
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should default to enable all deletion dialog', async () => {
-    renderWithServiceContext(React.createElement(DeletionDialogControl.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(DeletionDialogControl.content, null),
+          },
+        ],
+      },
+    });
 
     const enableSwitch = screen.getByLabelText(testT('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
@@ -58,7 +68,16 @@ describe('<DeletionDialogControl/>', () => {
   });
 
   it('should disable all deletion dialog if switch is off', async () => {
-    const { user } = renderWithServiceContext(React.createElement(DeletionDialogControl.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(DeletionDialogControl.content, null),
+          },
+        ],
+      },
+    });
 
     const enableSwitch = screen.getByLabelText(testT('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
@@ -77,7 +96,16 @@ describe('<DeletionDialogControl/>', () => {
   });
 
   it('should turn off switch if any child switch is turned off', async () => {
-    const { user } = renderWithServiceContext(React.createElement(DeletionDialogControl.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(DeletionDialogControl.content, null),
+          },
+        ],
+      },
+    });
 
     const enableSwitch = screen.getByLabelText(testT('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();

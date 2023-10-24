@@ -15,13 +15,11 @@
  */
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
 import { Target, NotificationMessage } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
@@ -204,21 +202,14 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <AllTargetsArchivedRecordingsTable />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('has the correct table elements', async () => {
-    renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] } });
 
     expect(screen.getByLabelText('all-targets-table')).toBeInTheDocument();
     expect(screen.getByText('Target')).toBeInTheDocument();
@@ -233,7 +224,9 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   });
 
   it('hides targets with zero recordings', async () => {
-    const { user } = renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
+    });
 
     // By default targets with zero recordings are hidden so the only rows
     // in the table should be mockTarget1 (mockCount1 == 1) and mockTarget2 (mockCount2 == 3)
@@ -259,7 +252,9 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   });
 
   it('correctly handles the search function', async () => {
-    const { user } = renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
+    });
     const search = screen.getByLabelText('Search input');
 
     let tableBody = screen.getAllByRole('rowgroup')[1];
@@ -285,7 +280,9 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   });
 
   it('expands targets to show their <ArchivedRecordingsTable />', async () => {
-    const { user } = renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
+    });
 
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
 
@@ -312,21 +309,21 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   });
 
   it('adds a target upon receiving a notification', async () => {
-    renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] } });
 
     expect(screen.getByText(`${mockNewAlias} (${mockNewConnectUrl})`)).toBeInTheDocument();
     expect(screen.getByText(`${mockNewCount}`)).toBeInTheDocument();
   });
 
   it('removes a target upon receiving a notification', async () => {
-    renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] } });
 
     expect(screen.queryByText(`${mockAlias1} (${mockConnectUrl1})`)).not.toBeInTheDocument();
     expect(screen.queryByText(`${mockCount1}`)).not.toBeInTheDocument();
   });
 
   it('increments the count when an archived recording is saved', async () => {
-    renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] } });
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
     const rows = within(tableBody).getAllByRole('row');
@@ -337,7 +334,9 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   });
 
   it('decrements the count when an archived recording is deleted', async () => {
-    const { user } = renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
+    });
 
     const checkbox = screen.getByLabelText('all-targets-hide-check');
     await user.click(checkbox);

@@ -17,7 +17,7 @@
 import { AutomatedAnalysisTopicFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisTopicFilter';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
-import { renderDefault } from '../../../Common';
+import { render } from '../../../utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
   name: 'rule1',
@@ -118,13 +118,22 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   afterEach(cleanup);
 
   it('display topic selections when text input is clicked', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisTopicFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onTopicInput}
-        filteredTopics={emptyFilteredTopics}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisTopicFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onTopicInput}
+                filteredTopics={emptyFilteredTopics}
+              />
+            ),
+          },
+        ],
+      },
+    });
     const nameInput = screen.getByLabelText('Filter by topic...');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
@@ -143,13 +152,22 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   });
 
   it('display topic selections when dropdown arrow is clicked', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisTopicFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onTopicInput}
-        filteredTopics={emptyFilteredTopics}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisTopicFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onTopicInput}
+                filteredTopics={emptyFilteredTopics}
+              />
+            ),
+          },
+        ],
+      },
+    });
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
@@ -168,13 +186,22 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   });
 
   it('should close selection menu when toggled with dropdown arrow', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisTopicFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onTopicInput}
-        filteredTopics={emptyFilteredTopics}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisTopicFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onTopicInput}
+                filteredTopics={emptyFilteredTopics}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
@@ -198,13 +225,22 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   });
 
   it('should close selection menu when toggled with text input', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisTopicFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onTopicInput}
-        filteredTopics={emptyFilteredTopics}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisTopicFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onTopicInput}
+                filteredTopics={emptyFilteredTopics}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by topic...');
     expect(nameInput).toBeInTheDocument();
@@ -228,13 +264,22 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   });
 
   it('should not display selected topics', async () => {
-    const { user } = renderDefault(
-      <AutomatedAnalysisTopicFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={onTopicInput}
-        filteredTopics={filteredTopics}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisTopicFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={onTopicInput}
+                filteredTopics={filteredTopics}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by topic...');
     expect(nameInput).toBeInTheDocument();
@@ -253,13 +298,22 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   it('should select a topic when a topic option is clicked', async () => {
     const submitNameInput = jest.fn((nameInput) => emptyFilteredTopics.push(nameInput));
 
-    const { user } = renderDefault(
-      <AutomatedAnalysisTopicFilter
-        evaluations={mockCategorizedEvaluations}
-        onSubmit={submitNameInput}
-        filteredTopics={emptyFilteredTopics}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisTopicFilter
+                evaluations={mockCategorizedEvaluations}
+                onSubmit={submitNameInput}
+                filteredTopics={emptyFilteredTopics}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by topic...');
     expect(nameInput).toBeInTheDocument();

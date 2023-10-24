@@ -17,8 +17,7 @@
 import { LabelFilter } from '@app/Recordings/Filters/LabelFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../../Common';
+import { render, renderSnapshot } from '../../utils';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -70,19 +69,42 @@ describe('<LabelFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <LabelFilter recordings={mockRecordingList} filteredLabels={emptyFilteredLabels} onSubmit={onLabelInput} />,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelFilter
+                recordings={mockRecordingList}
+                filteredLabels={emptyFilteredLabels}
+                onSubmit={onLabelInput}
+              />
+            ),
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('display label selections when text input is clicked', async () => {
-    const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelFilter
+                recordings={mockRecordingList}
+                onSubmit={onLabelInput}
+                filteredLabels={emptyFilteredLabels}
+              />
+            ),
+          },
+        ],
+      },
+    });
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
@@ -101,9 +123,22 @@ describe('<LabelFilter />', () => {
   });
 
   it('display label selections when dropdown arrow is clicked', async () => {
-    const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelFilter
+                recordings={mockRecordingList}
+                onSubmit={onLabelInput}
+                filteredLabels={emptyFilteredLabels}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
@@ -123,9 +158,22 @@ describe('<LabelFilter />', () => {
   });
 
   it('should close selection menu when toggled with dropdown arrow', async () => {
-    const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelFilter
+                recordings={mockRecordingList}
+                onSubmit={onLabelInput}
+                filteredLabels={emptyFilteredLabels}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
@@ -149,9 +197,22 @@ describe('<LabelFilter />', () => {
   });
 
   it('should close selection menu when toggled with text input', async () => {
-    const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelFilter
+                recordings={mockRecordingList}
+                onSubmit={onLabelInput}
+                filteredLabels={emptyFilteredLabels}
+              />
+            ),
+          },
+        ],
+      },
+    });
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
@@ -174,9 +235,18 @@ describe('<LabelFilter />', () => {
   });
 
   it('should not display selected labels', async () => {
-    const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={filteredLabels} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={filteredLabels} />
+            ),
+          },
+        ],
+      },
+    });
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
@@ -194,9 +264,22 @@ describe('<LabelFilter />', () => {
   it('should select a name when a name option is clicked', async () => {
     const submitLabelInput = jest.fn((labelInput) => emptyFilteredLabels.push(labelInput));
 
-    const { user } = renderDefault(
-      <LabelFilter recordings={mockRecordingList} onSubmit={submitLabelInput} filteredLabels={emptyFilteredLabels} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelFilter
+                recordings={mockRecordingList}
+                onSubmit={submitLabelInput}
+                filteredLabels={emptyFilteredLabels}
+              />
+            ),
+          },
+        ],
+      },
+    });
     const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();

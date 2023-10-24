@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../../Common';
+import { render } from '../../utils';
 
 const drawerContent = <div>Drawer Content</div>;
 
@@ -44,14 +44,23 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
   });
 
   it('renders default view correctly', async () => {
-    renderWithServiceContext(
-      <AutomatedAnalysisConfigDrawer
-        drawerContent={drawerContent}
-        isContentAbove={false}
-        onCreate={() => undefined}
-        onError={() => undefined}
-      />,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisConfigDrawer
+                drawerContent={drawerContent}
+                isContentAbove={false}
+                onCreate={() => undefined}
+                onError={() => undefined}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
     const createRecording = screen.queryByRole('button', {
@@ -65,14 +74,23 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
   });
 
   it('opens drawer when button clicked', async () => {
-    const { user } = renderWithServiceContext(
-      <AutomatedAnalysisConfigDrawer
-        drawerContent={drawerContent}
-        isContentAbove={false}
-        onCreate={() => undefined}
-        onError={() => undefined}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisConfigDrawer
+                drawerContent={drawerContent}
+                isContentAbove={false}
+                onCreate={() => undefined}
+                onError={() => undefined}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
     const recordingActions = screen.getByRole('button', {
@@ -86,14 +104,23 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
   it('creates a recording when Create Recording is clicked', async () => {
     const onCreateFunction = jest.fn();
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
-    const { user } = renderWithServiceContext(
-      <AutomatedAnalysisConfigDrawer
-        drawerContent={drawerContent}
-        isContentAbove={false}
-        onCreate={onCreateFunction}
-        onError={() => undefined}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <AutomatedAnalysisConfigDrawer
+                drawerContent={drawerContent}
+                isContentAbove={false}
+                onCreate={onCreateFunction}
+                onError={() => undefined}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const createRecording = screen.getByRole('button', {
       name: /create recording/i,

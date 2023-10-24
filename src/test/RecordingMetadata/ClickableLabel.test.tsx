@@ -17,8 +17,7 @@ import { ClickableLabel } from '@app/RecordingMetadata/ClickableLabel';
 import { RecordingLabel } from '@app/RecordingMetadata/types';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockLabel = {
   key: 'someLabel',
@@ -37,17 +36,30 @@ describe('<ClickableLabel />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should display blue when the label is currently selected', async () => {
-    renderDefault(<ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
 
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
@@ -57,7 +69,16 @@ describe('<ClickableLabel />', () => {
   });
 
   it('should display grey when the label is currently not selected', async () => {
-    renderDefault(<ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
 
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
@@ -67,9 +88,16 @@ describe('<ClickableLabel />', () => {
   });
 
   it('should display hover effect when hovered and is selected', async () => {
-    const { user } = renderDefault(
-      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
 
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
@@ -86,9 +114,16 @@ describe('<ClickableLabel />', () => {
   });
 
   it('should display hover effect when hovered and is not selected', async () => {
-    const { user } = renderDefault(
-      <ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
 
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
@@ -105,9 +140,16 @@ describe('<ClickableLabel />', () => {
   });
 
   it('should update label filters when clicked', async () => {
-    const { user } = renderDefault(
-      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick} />,
+          },
+        ],
+      },
+    });
 
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();

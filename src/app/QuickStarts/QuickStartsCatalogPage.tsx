@@ -16,7 +16,6 @@
 import { QuickStartCatalogPage } from '@patternfly/quickstarts';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
 
 export interface QuickStartsCatalogPageProps {}
 
@@ -36,4 +35,4 @@ const QuickStartsCatalogPage: React.FC<QuickStartsCatalogPageProps> = (_) => {
   );
 };
 
-export default withRouter(QuickStartsCatalogPage);
+export default QuickStartsCatalogPage;

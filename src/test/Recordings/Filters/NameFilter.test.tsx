@@ -17,8 +17,7 @@
 import { NameFilter } from '@app/Recordings/Filters/NameFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../../Common';
+import { render, renderSnapshot } from '../../utils';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -56,19 +55,34 @@ describe('<NameFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+            ),
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('display name selections when text input is clicked', async () => {
-    const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+            ),
+          },
+        ],
+      },
+    });
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
@@ -87,9 +101,18 @@ describe('<NameFilter />', () => {
   });
 
   it('display name selections when dropdown arrow is clicked', async () => {
-    const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+            ),
+          },
+        ],
+      },
+    });
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
@@ -108,9 +131,18 @@ describe('<NameFilter />', () => {
   });
 
   it('should close selection menu when toggled with dropdown arrow', async () => {
-    const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+            ),
+          },
+        ],
+      },
+    });
 
     const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
@@ -134,9 +166,18 @@ describe('<NameFilter />', () => {
   });
 
   it('should close selection menu when toggled with text input', async () => {
-    const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
@@ -160,9 +201,16 @@ describe('<NameFilter />', () => {
   });
 
   it('should not display selected names', async () => {
-    const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={filteredNames} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={filteredNames} />,
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
@@ -181,9 +229,22 @@ describe('<NameFilter />', () => {
   it('should select a name when a name option is clicked', async () => {
     const submitNameInput = jest.fn((nameInput) => emptyFilteredNames.push(nameInput));
 
-    const { user } = renderDefault(
-      <NameFilter recordings={mockRecordingList} onSubmit={submitNameInput} filteredNames={emptyFilteredNames} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <NameFilter
+                recordings={mockRecordingList}
+                onSubmit={submitNameInput}
+                filteredNames={emptyFilteredNames}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();

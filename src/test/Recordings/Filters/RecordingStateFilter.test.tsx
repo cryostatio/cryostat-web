@@ -17,8 +17,7 @@
 import { RecordingStateFilter } from '@app/Recordings/Filters/RecordingStateFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../../Common';
+import { render, renderSnapshot } from '../../utils';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -59,19 +58,30 @@ describe('<RecordingStateFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should display state selections when dropdown is clicked', async () => {
-    const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
+          },
+        ],
+      },
+    });
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
@@ -91,9 +101,16 @@ describe('<RecordingStateFilter />', () => {
   });
 
   it('should close state selections when dropdown is toggled', async () => {
-    const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />,
+          },
+        ],
+      },
+    });
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
@@ -117,9 +134,16 @@ describe('<RecordingStateFilter />', () => {
   });
 
   it('should display filtered states as checked', async () => {
-    const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onStateSelectToggle} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onStateSelectToggle} />,
+          },
+        ],
+      },
+    });
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
@@ -152,9 +176,18 @@ describe('<RecordingStateFilter />', () => {
       emptyFilteredStates.push(state);
     });
 
-    const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onRecordingStateToggle} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onRecordingStateToggle} />
+            ),
+          },
+        ],
+      },
+    });
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
@@ -193,9 +226,16 @@ describe('<RecordingStateFilter />', () => {
       filteredStates = filteredStates.filter((rs) => state !== rs);
     });
 
-    const { user } = renderDefault(
-      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onRecordingStateToggle} />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onRecordingStateToggle} />,
+          },
+        ],
+      },
+    });
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();

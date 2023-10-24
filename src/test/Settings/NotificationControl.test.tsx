@@ -15,12 +15,11 @@
  */
 import { NotificationControl } from '@app/Settings/Config/NotificationControl';
 import { NotificationCategory } from '@app/Shared/Services/api.types';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
 import { BehaviorSubject } from 'rxjs';
-import { renderWithServiceContext, testT } from '../Common';
+import { render, renderSnapshot, testT } from '../utils';
 
 const defaultNumOfNotifications = 5;
 const defaults = new Map<NotificationCategory, boolean>();
@@ -46,19 +45,30 @@ describe('<NotificationControl/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          {React.createElement(NotificationControl.content, null)}
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(NotificationControl.content, null),
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should default to enable all notifications', async () => {
-    renderWithServiceContext(React.createElement(NotificationControl.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(NotificationControl.content, null),
+          },
+        ],
+      },
+    });
 
     const enableSwitch = screen.getByLabelText(testT('SETTINGS.NOTIFICATION_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
@@ -67,7 +77,16 @@ describe('<NotificationControl/>', () => {
   });
 
   it('should default to correct max number of notification alerts', async () => {
-    renderWithServiceContext(React.createElement(NotificationControl.content, null));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(NotificationControl.content, null),
+          },
+        ],
+      },
+    });
 
     const maxInput = document.querySelector("input[type='number']");
     expect(maxInput).toBeInTheDocument();
@@ -77,7 +96,16 @@ describe('<NotificationControl/>', () => {
   });
 
   it('should save to local storage when max number of alerts is changed', async () => {
-    const { user } = renderWithServiceContext(React.createElement(NotificationControl.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(NotificationControl.content, null),
+          },
+        ],
+      },
+    });
 
     const maxInput = document.querySelector("input[type='number']");
     expect(maxInput).toBeInTheDocument();
@@ -97,7 +125,16 @@ describe('<NotificationControl/>', () => {
   });
 
   it('should turn off enable-all switch if any child switch is off', async () => {
-    const { user } = renderWithServiceContext(React.createElement(NotificationControl.content, null));
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: React.createElement(NotificationControl.content, null),
+          },
+        ],
+      },
+    });
 
     const enableSwitch = screen.getByLabelText(testT('SETTINGS.NOTIFICATION_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();

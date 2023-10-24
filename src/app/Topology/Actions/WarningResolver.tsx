@@ -19,10 +19,10 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, LinkProps, useNavigate } from 'react-router-dom';
 import { ActionUtils } from './types';
 
-export interface WarningResolverAsLinkProps extends React.ComponentProps<Link> {}
+export interface WarningResolverAsLinkProps extends LinkProps {}
 
 export const WarningResolverAsLink: React.FC<WarningResolverAsLinkProps> = ({ to, children, ...props }) => {
   return (
@@ -43,13 +43,13 @@ export const WarningResolverAsActionButton: React.FC<WarningResolverAsActionButt
   children,
   ...props
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
 
   const handleClick = React.useCallback(() => {
-    onClick && onClick(targetNode, { history, services, notifications });
-  }, [onClick, targetNode, history, services, notifications]);
+    onClick && onClick(targetNode, { navigate, services, notifications });
+  }, [onClick, targetNode, navigate, services, notifications]);
 
   return (
     <Button {...props} onClick={handleClick}>

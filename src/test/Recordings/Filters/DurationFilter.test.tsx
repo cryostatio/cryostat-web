@@ -17,8 +17,7 @@
 import { DurationFilter } from '@app/Recordings/Filters/DurationFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../../Common';
+import { render, renderSnapshot } from '../../utils';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -55,27 +54,42 @@ describe('<DurationFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <DurationFilter
-          durations={emptyFilteredDuration}
-          onContinuousDurationSelect={onContinuousSelect}
-          onDurationInput={onDurationInput}
-        />,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <DurationFilter
+                durations={emptyFilteredDuration}
+                onContinuousDurationSelect={onContinuousSelect}
+                onDurationInput={onDurationInput}
+              />
+            ),
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should check continous box if continous is in filter', async () => {
-    renderDefault(
-      <DurationFilter
-        durations={filteredDurationsWithCont}
-        onContinuousDurationSelect={onContinuousSelect}
-        onDurationInput={onDurationInput}
-      />,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <DurationFilter
+                durations={filteredDurationsWithCont}
+                onContinuousDurationSelect={onContinuousSelect}
+                onDurationInput={onDurationInput}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
@@ -84,13 +98,22 @@ describe('<DurationFilter />', () => {
   });
 
   it('should not check continous box if continous is in filter', async () => {
-    renderDefault(
-      <DurationFilter
-        durations={filteredDurationsWithoutCont}
-        onContinuousDurationSelect={onContinuousSelect}
-        onDurationInput={onDurationInput}
-      />,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <DurationFilter
+                durations={filteredDurationsWithoutCont}
+                onContinuousDurationSelect={onContinuousSelect}
+                onDurationInput={onDurationInput}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
@@ -103,13 +126,22 @@ describe('<DurationFilter />', () => {
       filteredDurationsWithoutCont.push('continuous');
     });
 
-    const { user } = renderDefault(
-      <DurationFilter
-        durations={filteredDurationsWithoutCont}
-        onContinuousDurationSelect={submitContinuous}
-        onDurationInput={onDurationInput}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <DurationFilter
+                durations={filteredDurationsWithoutCont}
+                onContinuousDurationSelect={submitContinuous}
+                onDurationInput={onDurationInput}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
@@ -129,13 +161,22 @@ describe('<DurationFilter />', () => {
       filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== 'continuous');
     });
 
-    const { user } = renderDefault(
-      <DurationFilter
-        durations={filteredDurationsWithCont}
-        onContinuousDurationSelect={submitContinuous}
-        onDurationInput={onDurationInput}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <DurationFilter
+                durations={filteredDurationsWithCont}
+                onContinuousDurationSelect={submitContinuous}
+                onDurationInput={onDurationInput}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
@@ -154,13 +195,22 @@ describe('<DurationFilter />', () => {
       emptyFilteredDuration.push(duration);
     });
 
-    const { user } = renderDefault(
-      <DurationFilter
-        durations={emptyFilteredDuration}
-        onContinuousDurationSelect={onContinuousSelect}
-        onDurationInput={submitDuration}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <DurationFilter
+                durations={emptyFilteredDuration}
+                onContinuousDurationSelect={onContinuousSelect}
+                onDurationInput={submitDuration}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const durationInput = screen.getByLabelText('duration filter');
     expect(durationInput).toBeInTheDocument();
@@ -182,13 +232,22 @@ describe('<DurationFilter />', () => {
       emptyFilteredDuration.push(duration);
     });
 
-    const { user } = renderDefault(
-      <DurationFilter
-        durations={emptyFilteredDuration}
-        onContinuousDurationSelect={onContinuousSelect}
-        onDurationInput={submitDuration}
-      />,
-    );
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <DurationFilter
+                durations={emptyFilteredDuration}
+                onContinuousDurationSelect={onContinuousSelect}
+                onDurationInput={submitDuration}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     const durationInput = screen.getByLabelText('duration filter');
     expect(durationInput).toBeInTheDocument();

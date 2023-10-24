@@ -17,17 +17,12 @@ jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'))
 
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { ThemeSetting } from '@app/Settings/types';
-import { store } from '@app/Shared/Redux/ReduxStore';
 import { Target } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultChartControllerConfig } from '@app/Shared/Services/service.utils';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { createMemoryHistory } from 'history';
-import { Provider } from 'react-redux';
-import { Router } from 'react-router-dom';
-import renderer, { act } from 'react-test-renderer';
+import { renderSnapshot } from '@test/utils';
 import { of } from 'rxjs';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
@@ -61,24 +56,9 @@ jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of());
 jest.spyOn(defaultServices.settings, 'chartControllerConfig').mockReturnValue(defaultChartControllerConfig);
 jest.spyOn(defaultServices.api, 'getTargetMBeanMetrics').mockReturnValue(of({}));
 
-const history = createMemoryHistory({ initialEntries: ['/'] });
-
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Provider store={store}>
-              <Router history={history}>
-                <Dashboard />
-              </Router>
-            </Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
+    const tree = await renderSnapshot({ routerConfigs: { routes: [{ path: '/', element: <Dashboard /> }] } });
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 });

@@ -21,7 +21,7 @@ import { Dropdown, DropdownItem, DropdownProps, DropdownToggle } from '@patternf
 import { css } from '@patternfly/react-styles';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Observable, Subject, switchMap } from 'rxjs';
 import { GraphElement, ListElement } from '../Shared/types';
 import { ActionUtils, MenuItemComponent, MenuItemVariant, NodeActionFunction } from './types';
@@ -45,7 +45,7 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   isDisabled,
   ...props
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const services = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
@@ -57,9 +57,9 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   const handleOnclick = React.useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
-      onClick && onClick(element, { history, services, notifications });
+      onClick && onClick(element, { navigate, services, notifications });
     },
-    [onClick, history, services, notifications, element],
+    [onClick, navigate, services, notifications, element],
   );
 
   React.useEffect(() => {
@@ -69,13 +69,13 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
           .pipe(
             switchMap((element) => {
               setDisabled(true);
-              return isDisabled(element, { services, notifications, history });
+              return isDisabled(element, { services, notifications, navigate });
             }),
           )
           .subscribe(setDisabled),
       );
     }
-  }, [addSubscription, elementSubj, isDisabled, setDisabled, services, notifications, history]);
+  }, [addSubscription, elementSubj, isDisabled, setDisabled, services, notifications, navigate]);
 
   React.useEffect(() => {
     elementSubj.next(element);

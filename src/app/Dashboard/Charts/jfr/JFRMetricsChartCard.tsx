@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CustomRecordingFormData } from '@app/CreateRecording/types';
 import {
   DashboardCardTypeProps,
   DashboardCardFC,
@@ -43,7 +42,7 @@ import {
 import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from '../context';
@@ -91,7 +90,7 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
   const [t] = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const [theme] = useTheme();
   const [controllerState, setControllerState] = React.useState(ControllerState.NO_DATA);
@@ -204,8 +203,7 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
   }, [props.actions, props.chartKind, props.duration, props.period, t, controllerState, actions]);
 
   const handleCreateRecording = React.useCallback(() => {
-    history.push({
-      pathname: '/recordings/create',
+    navigate('/recordings/create', {
       state: {
         name: RECORDING_NAME,
         template: {
@@ -222,9 +220,9 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
         maxAgeUnit: 1, // seconds
         maxSize: 100 * 1024 * 1024,
         maxSizeUnit: 1, // bytes
-      } as Partial<CustomRecordingFormData>,
+      },
     });
-  }, [history]);
+  }, [navigate]);
 
   return (
     <DashboardCard

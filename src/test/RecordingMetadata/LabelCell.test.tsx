@@ -21,8 +21,7 @@ import { Target } from '@app/Shared/Services/api.types';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
@@ -54,21 +53,36 @@ describe('<LabelCell />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <LabelCell
-          target={mockFooTarget.connectUrl}
-          labels={mockLabelList}
-          clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
-        />,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelCell
+                target={mockFooTarget.connectUrl}
+                labels={mockLabelList}
+                clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
+              />
+            ),
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should display read-only labels', async () => {
-    renderDefault(<LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />,
+          },
+        ],
+      },
+    });
 
     for (const labelAsString of mockLabelStringDisplayList) {
       const displayedLabel = screen.getByLabelText(labelAsString);
@@ -84,13 +98,22 @@ describe('<LabelCell />', () => {
   });
 
   it('should display clickable labels', async () => {
-    renderDefault(
-      <LabelCell
-        target={mockFooTarget.connectUrl}
-        labels={mockLabelList}
-        clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
-      />,
-    );
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <LabelCell
+                target={mockFooTarget.connectUrl}
+                labels={mockLabelList}
+                clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
+              />
+            ),
+          },
+        ],
+      },
+    });
 
     let count = 0;
     let index = 0;
@@ -113,7 +136,16 @@ describe('<LabelCell />', () => {
   });
 
   it('should display placeholder when there is no label', async () => {
-    renderDefault(<LabelCell target={mockFooTarget.connectUrl} labels={[]} />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <LabelCell target={mockFooTarget.connectUrl} labels={[]} />,
+          },
+        ],
+      },
+    });
 
     const placeHolder = screen.getByText('-');
     expect(placeHolder).toBeInTheDocument();

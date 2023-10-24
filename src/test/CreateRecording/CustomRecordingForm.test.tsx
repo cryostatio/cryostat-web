@@ -16,20 +16,23 @@
 import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
 import { authFailMessage } from '@app/ErrorView/types';
 import { EventTemplate, AdvancedRecordingOptions, RecordingAttributes } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
-import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContextAndRouter } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 jest.mock('@patternfly/react-core', () => ({
   // Mock out tooltip for snapshot testing
   ...jest.requireActual('@patternfly/react-core'),
   Tooltip: ({ children }) => <>{children}</>,
+}));
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
 }));
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
@@ -65,40 +68,25 @@ jest
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
-const history = createMemoryHistory({ initialEntries: ['/recordings/create'] });
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: history.location.pathname }),
-  useHistory: () => history,
-}));
-
 describe('<CustomRecordingForm />', () => {
   beforeEach(() => {
-    history.go(-history.length);
+    jest.clearAllMocks();
   });
 
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Router history={history}>
-              <CustomRecordingForm />
-            </Router>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: { routes: [{ path: '/recordings/create', element: <CustomRecordingForm /> }] },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should create recording when form is filled and create is clicked', async () => {
     const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of(mockResponse));
-    const { user } = renderWithServiceContextAndRouter(<CustomRecordingForm />);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/recordings/create', element: <CustomRecordingForm /> }] },
+    });
 
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
@@ -132,10 +120,21 @@ describe('<CustomRecordingForm />', () => {
       },
       metadata: { labels: {} },
     } as RecordingAttributes);
+    expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
 
   it('should show correct helper texts in metadata label editor', async () => {
-    const { user } = renderWithServiceContextAndRouter(<CustomRecordingForm />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <>Recordings</>,
+          },
+          { path: '/recordings/create', element: <CustomRecordingForm /> },
+        ],
+      },
+    });
 
     const metadataEditorToggle = screen.getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();
@@ -158,7 +157,18 @@ describe('<CustomRecordingForm />', () => {
       ...defaultServices,
       target: mockTargetSvc,
     };
-    renderWithServiceContextAndRouter(<CustomRecordingForm />, { services: services });
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <>Recordings</>,
+          },
+          { path: '/recordings/create', element: <CustomRecordingForm /> },
+        ],
+      },
+      providers: [{ kind: ServiceContext.Provider, instance: services }],
+    });
 
     await doAct(async () => subj.next());
 

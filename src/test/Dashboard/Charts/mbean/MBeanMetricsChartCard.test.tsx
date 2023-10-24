@@ -22,16 +22,12 @@ import { JFRMetricsChartController } from '@app/Dashboard/Charts/jfr/JFRMetricsC
 import { MBeanMetricsChartCard } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
 import { ThemeSetting } from '@app/Settings/types';
-import { store } from '@app/Shared/Redux/ReduxStore';
 import { MBeanMetrics } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import '@i18n/config';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { mockMediaQueryList } from '@test/Common';
+import { mockMediaQueryList, renderSnapshot } from '@test/utils';
 import { cleanup } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import renderer, { act } from 'react-test-renderer';
 import { from, of } from 'rxjs';
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
@@ -117,12 +113,12 @@ describe('<MBeanMetricsChartCard />', () => {
     jest.spyOn(mockMbeanController, 'attach').mockReturnValue(from(metrics));
     jest.spyOn(mockMbeanController, 'loading').mockReturnValue(of(false));
 
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <ChartContext.Provider value={mockChartContext}>
-            <Provider store={store}>
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
               <MBeanMetricsChartCard
                 chartKind={chartKind}
                 duration={120}
@@ -131,12 +127,13 @@ describe('<MBeanMetricsChartCard />', () => {
                 dashboardId={0}
                 themeColor={'blue'}
               />
-            </Provider>
-          </ChartContext.Provider>
-        </ServiceContext.Provider>,
-      );
+            ),
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree.toJSON()).toMatchSnapshot('with-content');
+    expect(tree?.toJSON()).toMatchSnapshot('with-content');
   });
 
   it('renders loading state correctly', async () => {
@@ -144,27 +141,26 @@ describe('<MBeanMetricsChartCard />', () => {
     jest.spyOn(mockMbeanController, 'attach').mockReturnValue(of(metrics));
     jest.spyOn(mockMbeanController, 'loading').mockReturnValue(of(true));
 
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <ChartContext.Provider value={mockChartContext}>
-              <Provider store={store}>
-                <MBeanMetricsChartCard
-                  themeColor={'blue'}
-                  chartKind={'Process CPU Load'}
-                  duration={120}
-                  period={10}
-                  span={6}
-                  dashboardId={0}
-                />
-              </Provider>
-            </ChartContext.Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/',
+            element: (
+              <MBeanMetricsChartCard
+                themeColor={'blue'}
+                chartKind={'Process CPU Load'}
+                duration={120}
+                period={10}
+                span={6}
+                dashboardId={0}
+              />
+            ),
+          },
+        ],
+      },
+      providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree.toJSON()).toMatchSnapshot('loading-view');
+    expect(tree?.toJSON()).toMatchSnapshot('loading-view');
   });
 });

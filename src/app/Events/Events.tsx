@@ -21,7 +21,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { concatMap, filter } from 'rxjs';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
@@ -58,7 +58,7 @@ enum EventTab {
 
 export const EventTabs: React.FC = () => {
   const { search, pathname } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'eventTab', Object.values(EventTab), EventTab.EVENT_TEMPLATE);
@@ -66,8 +66,8 @@ export const EventTabs: React.FC = () => {
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
-      switchTab(history, pathname, search, { tabKey: 'eventTab', tabValue: `${key}` }),
-    [history, pathname, search],
+      switchTab(navigate, pathname, search, { tabKey: 'eventTab', tabValue: `${key}` }),
+    [navigate, pathname, search],
   );
 
   return (
@@ -92,7 +92,7 @@ export const AgentTabs: React.FC = () => {
   const addSubscription = useSubscriptions();
 
   const { search, pathname } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'agentTab', Object.values(AgentTab), AgentTab.AGENT_TEMPLATE);
@@ -102,8 +102,8 @@ export const AgentTabs: React.FC = () => {
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
-      switchTab(history, pathname, search, { tabKey: 'agentTab', tabValue: `${key}` }),
-    [history, pathname, search],
+      switchTab(navigate, pathname, search, { tabKey: 'agentTab', tabValue: `${key}` }),
+    [navigate, pathname, search],
   );
 
   React.useEffect(() => {

@@ -27,7 +27,7 @@ export interface DisplayOptionsProps {
 export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
   isDisabled = false,
   isGraph: isGraphView = true,
-  ...props
+  ..._props
 }) => {
   const [open, setOpen] = React.useState(false);
   const { show, groupings } = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
@@ -97,7 +97,6 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
 
   return (
     <Select
-      {...props}
       menuAppendTo={'parent'}
       onToggle={handleToggle}
       isDisabled={isDisabled}

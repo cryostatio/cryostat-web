@@ -35,7 +35,7 @@ import {
   Popover,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { LinkProps } from 'react-router-dom';
 import {
   catchError,
   combineLatest,
@@ -237,10 +237,9 @@ export const getResourceListPatchFn = (
   }
 };
 
-// TODO: Revisit when updating to react-router v6
 export const getLinkPropsForTargetResource = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
-): React.ComponentProps<Link> => {
+): LinkProps => {
   switch (resourceType) {
     case 'activeRecordings':
       return { to: { pathname: '/recordings', search: '?tab=active-recording' } };

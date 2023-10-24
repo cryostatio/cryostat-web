@@ -28,7 +28,6 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Bullseye, Card, CardBody } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
 import { DiscoveryTreeContext } from './Shared/utils';
@@ -160,4 +159,4 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   );
 };
 
-export default withRouter(Topology);
+export default Topology;

@@ -22,7 +22,7 @@ import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, TabTitleText, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { of } from 'rxjs';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
@@ -48,7 +48,7 @@ export interface ArchivesProps {}
 
 export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   const { search, pathname } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -64,8 +64,8 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
-      switchTab(history, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
-    [history, pathname, search],
+      switchTab(navigate, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [navigate, pathname, search],
   );
 
   const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);

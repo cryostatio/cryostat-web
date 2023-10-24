@@ -24,7 +24,6 @@ import {
 } from '@patternfly/react-core';
 import { InProgressIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Prompt } from 'react-router-dom';
 import { Subject } from 'rxjs';
 
 export type ProgressVariant = 'success' | 'danger' | 'warning';
@@ -258,7 +257,11 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
 
   return (
     <>
-      <Prompt when={uploading} message="Are you sure you wish to cancel the file upload?" />
+      {/* 
+        TODO: Add back when supported 
+        Reference: https://reactrouter.com/en/main/upgrading/v5#prompt-is-not-currently-supported
+        <Prompt when={uploading} message="Are you sure you wish to cancel the file upload?" /> 
+      */}
       <CancelUploadModal
         visible={showCancelPrompt}
         title="Upload in Progress"

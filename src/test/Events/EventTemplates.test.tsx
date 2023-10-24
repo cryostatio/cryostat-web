@@ -17,14 +17,12 @@ import { authFailMessage } from '@app/ErrorView/types';
 import { EventTemplates } from '@app/Events/EventTemplates';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { MessageType, EventTemplate, MessageMeta, NotificationMessage } from '@app/Shared/Services/api.types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';
 import { act as doAct, cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContextAndRouter } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -60,16 +58,6 @@ const mockDeleteTemplateNotification = {
 const mockEventTemplateContent = '<some><other><xml></xml></dummy></some>';
 const mockFileUpload = new File([mockEventTemplateContent], 'mockEventTemplate.xml', { type: 'xml' });
 
-const mockHistoryPush = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: '/baseUrl' }),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
-}));
-
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true) // show deletion warning
@@ -100,34 +88,61 @@ describe('<EventTemplates />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <EventTemplates />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('adds a recording after receiving a notification', async () => {
-    renderWithServiceContextAndRouter(<EventTemplates />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
     expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
   });
 
   it('removes a recording after receiving a notification', async () => {
-    renderWithServiceContextAndRouter(<EventTemplates />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     expect(screen.queryByText('anotherEventTemplate')).not.toBeInTheDocument();
   });
 
   it('displays the column header fields', async () => {
-    renderWithServiceContextAndRouter(<EventTemplates />);
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     expect(screen.getByText('Name')).toBeInTheDocument();
     expect(screen.getByText('Description')).toBeInTheDocument();
@@ -136,7 +151,16 @@ describe('<EventTemplates />', () => {
   });
 
   it('shows a popup when uploading', async () => {
-    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     expect(screen.queryByLabelText('Create Custom Event Template')).not.toBeInTheDocument();
 
@@ -148,7 +172,16 @@ describe('<EventTemplates />', () => {
   });
 
   it('downloads an event template when Download is clicked on template action bar', async () => {
-    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     await user.click(screen.getByLabelText('Actions'));
     await user.click(screen.getByText('Download'));
@@ -160,7 +193,16 @@ describe('<EventTemplates />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the template after clicking confirmation Delete', async () => {
-    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -185,7 +227,16 @@ describe('<EventTemplates />', () => {
   });
 
   it('deletes the template when Delete is clicked w/o popup warning', async () => {
-    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -212,7 +263,17 @@ describe('<EventTemplates />', () => {
       target: mockTargetSvc,
     };
 
-    renderWithServiceContextAndRouter(<EventTemplates />, { services: services });
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+      providers: [{ kind: ServiceContext.Provider, instance: services }],
+    });
 
     await doAct(async () => subj.next());
 
@@ -230,7 +291,16 @@ describe('<EventTemplates />', () => {
   });
 
   it('should shown empty state when table is empty', async () => {
-    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     const filterInput = screen.getByLabelText('Event template filter');
     expect(filterInput).toBeInTheDocument();
@@ -247,7 +317,16 @@ describe('<EventTemplates />', () => {
 
   it('should upload event template when submit button is clicked', async () => {
     const createSpy = jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValueOnce(of(true));
-    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/events',
+            element: <EventTemplates />,
+          },
+        ],
+      },
+    });
 
     const uploadButton = screen.getByRole('button', { name: 'Upload' });
     expect(uploadButton).toBeInTheDocument();

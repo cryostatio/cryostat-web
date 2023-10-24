@@ -16,55 +16,62 @@
 
 import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
 import { authFailMessage } from '@app/ErrorView/types';
-import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
-import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
-
-const history = createMemoryHistory({ initialEntries: ['/recordings/create'] });
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: history.location.pathname }),
-  useHistory: () => history,
-}));
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'sslFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 describe('<SnapshotRecordingForm />', () => {
   beforeEach(() => {
-    history.go(-history.length);
+    jest.clearAllMocks();
   });
 
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <SnapshotRecordingForm />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>,
-      );
+    const tree = await renderSnapshot({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <>Recordings</>,
+          },
+          { path: '/recordings/create', element: <SnapshotRecordingForm /> },
+        ],
+      },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('should create recording when create is clicked', async () => {
     const onCreateSpy = jest.spyOn(defaultServices.api, 'createSnapshot').mockReturnValue(of(true));
-    const { user } = renderWithServiceContext(<SnapshotRecordingForm />);
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <>Recordings</>,
+          },
+          { path: '/recordings/create', element: <SnapshotRecordingForm /> },
+        ],
+      },
+    });
 
     const createButton = screen.getByText('Create');
     expect(createButton).toBeInTheDocument();
@@ -73,7 +80,7 @@ describe('<SnapshotRecordingForm />', () => {
     await user.click(createButton);
 
     expect(onCreateSpy).toHaveBeenCalledTimes(1);
-    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/recordings/create', '/recordings']);
+    expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
 
   it('should show error view if failing to retrieve templates or recording options', async () => {
@@ -86,7 +93,18 @@ describe('<SnapshotRecordingForm />', () => {
       ...defaultServices,
       target: mockTargetSvc,
     };
-    renderWithServiceContext(<SnapshotRecordingForm />, { services: services });
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <>Recordings</>,
+          },
+          { path: '/recordings/create', element: <SnapshotRecordingForm /> },
+        ],
+      },
+      providers: [{ kind: ServiceContext.Provider, instance: services }],
+    });
 
     await doAct(async () => authSubj.next());
 

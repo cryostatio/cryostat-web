@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import i18n from '@app/../i18n/config';
 import { About } from '@app/About/About';
 import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { I18nextProvider } from 'react-i18next';
-import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { mockMediaQueryList, renderDefault, testT } from '../Common';
+import { mockMediaQueryList, render, renderSnapshot, testT } from '../utils';
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
     BreadcrumbPage: jest.fn((props) => {
@@ -52,19 +49,16 @@ describe('<About />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<About />);
+    const tree = await renderSnapshot({
+      routerConfigs: { routes: [{ path: '/about', element: <About /> }] },
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 
   it('contains the correct information', async () => {
-    renderDefault(
-      <I18nextProvider i18n={i18n}>
-        <About />
-      </I18nextProvider>,
-    );
+    render({
+      routerConfigs: { routes: [{ path: '/about', element: <About /> }] },
+    });
 
     expect(screen.getByText('About')).toBeInTheDocument();
     const logo = screen.getByRole('img');
