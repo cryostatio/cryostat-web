@@ -36,10 +36,13 @@ import {
   CardTitle,
   Form,
   FormGroup,
+  FormHelperText,
   FormSelect,
   FormSelectOption,
   Grid,
   GridItem,
+  HelperText,
+  HelperTextItem,
   Popover,
   Split,
   SplitItem,
@@ -124,7 +127,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   }, [formData]);
 
   const handleNameChange = React.useCallback(
-    (name: string) =>
+    (_, name: string) =>
       setFormData((old) => ({
         ...old,
         name,
@@ -138,12 +141,12 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 
   const handleDescriptionChange = React.useCallback(
-    (description: string) => setFormData((old) => ({ ...old, description })),
+    (_, description: string) => setFormData((old) => ({ ...old, description })),
     [setFormData],
   );
 
   const handleMatchExpressionChange = React.useCallback(
-    (matchExpression: string) => {
+    (_, matchExpression: string) => {
       matchExprService.setSearchExpression(matchExpression);
       setFormData((old) => ({ ...old, matchExpression }));
     },
@@ -156,52 +159,53 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 
   const handleEnabledChange = React.useCallback(
-    (enabled: boolean) => setFormData((old) => ({ ...old, enabled })),
+    (_, enabled: boolean) => setFormData((old) => ({ ...old, enabled })),
     [setFormData],
   );
 
   const handleMaxAgeChange = React.useCallback(
-    (maxAge: string) => setFormData((old) => ({ ...old, maxAge: Number(maxAge) })),
+    (_, maxAge: string) => setFormData((old) => ({ ...old, maxAge: Number(maxAge) })),
     [setFormData],
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
-    (maxAgeUnit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(maxAgeUnit) })),
+    (_, maxAgeUnit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(maxAgeUnit) })),
     [setFormData],
   );
 
   const handleMaxSizeChange = React.useCallback(
-    (maxSize: string) => setFormData((old) => ({ ...old, maxSize: Number(maxSize) })),
+    (_, maxSize: string) => setFormData((old) => ({ ...old, maxSize: Number(maxSize) })),
     [setFormData],
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
-    (maxSizeUnit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(maxSizeUnit) })),
+    (_, maxSizeUnit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(maxSizeUnit) })),
     [setFormData],
   );
 
   const handleArchivalPeriodChange = React.useCallback(
-    (archivalPeriod: string) => setFormData((old) => ({ ...old, archivalPeriod: Number(archivalPeriod) })),
+    (_, archivalPeriod: string) => setFormData((old) => ({ ...old, archivalPeriod: Number(archivalPeriod) })),
     [setFormData],
   );
 
   const handleArchivalPeriodUnitsChange = React.useCallback(
-    (archivalPeriodUnit: string) => setFormData((old) => ({ ...old, archivalPeriodUnit: Number(archivalPeriodUnit) })),
+    (_, archivalPeriodUnit: string) =>
+      setFormData((old) => ({ ...old, archivalPeriodUnit: Number(archivalPeriodUnit) })),
     [setFormData],
   );
 
   const handleInitialDelayChange = React.useCallback(
-    (initialDelay: string) => setFormData((old) => ({ ...old, initialDelay: Number(initialDelay) })),
+    (_, initialDelay: string) => setFormData((old) => ({ ...old, initialDelay: Number(initialDelay) })),
     [setFormData],
   );
 
   const handleInitialDelayUnitsChanged = React.useCallback(
-    (initialDelayUnit: string) => setFormData((old) => ({ ...old, initialDelayUnit: Number(initialDelayUnit) })),
+    (_, initialDelayUnit: string) => setFormData((old) => ({ ...old, initialDelayUnit: Number(initialDelayUnit) })),
     [setFormData],
   );
 
   const handlePreservedArchivesChange = React.useCallback(
-    (preservedArchives: string) => setFormData((old) => ({ ...old, preservedArchives: Number(preservedArchives) })),
+    (_, preservedArchives: string) => setFormData((old) => ({ ...old, preservedArchives: Number(preservedArchives) })),
     [setFormData],
   );
 
@@ -348,15 +352,16 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording
         buffer into Cryostat&apos;s own archived storage.
       </Text>
-      <FormGroup
-        label="Name"
-        isRequired
-        fieldId="rule-name"
-        helperText="Enter a rule name."
-        helperTextInvalid="A rule name can contain only letters, numbers, and underscores."
-        validated={formData.nameValid}
-        data-quickstart-id="rule-name"
-      >
+      <FormGroup label="Name" isRequired fieldId="rule-name" data-quickstart-id="rule-name">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={formData.nameValid}>
+              {formData.nameValid === ValidatedOptions.error
+                ? 'A rule name can contain only letters, numbers, and underscores.'
+                : 'Enter a rule name.'}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <TextInput
           value={formData.name}
           isDisabled={loading}
@@ -368,12 +373,15 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           validated={formData.nameValid}
         />
       </FormGroup>
-      <FormGroup
-        label="Description"
-        fieldId="rule-description"
-        helperText="Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions."
-        data-quickstart-id="rule-description"
-      >
+      <FormGroup label="Description" fieldId="rule-description" data-quickstart-id="rule-description">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              Enter a rule description. This is only used for display purposes to aid in identifying rules and their
+              intentions.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <TextArea
           value={formData.description}
           isDisabled={loading}
@@ -412,19 +420,23 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         }
         isRequired
         fieldId="rule-matchexpr"
-        helperText={
-          evaluating
-            ? 'Evaluating Match Expression...'
-            : formData.matchExpressionValid === ValidatedOptions.warning
-            ? `Warning: Match Expression matches no targets.`
-            : `
-  Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
-  application to determine whether the rule should be applied.`
-        }
-        helperTextInvalid="The expression matching failed."
-        validated={formData.matchExpressionValid}
         data-quickstart-id="rule-matchexpr"
       >
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={formData.matchExpressionValid}>
+              {evaluating
+                ? 'Evaluating Match Expression...'
+                : formData.matchExpressionValid === ValidatedOptions.warning
+                ? `Warning: Match Expression matches no targets.`
+                : formData.matchExpressionValid === ValidatedOptions.error
+                ? 'The expression matching failed.'
+                : `
+      Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
+      application to determine whether the rule should be applied.`}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <TextArea
           value={formData.matchExpression}
           isDisabled={loading}
@@ -438,15 +450,16 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           validated={formData.matchExpressionValid}
         />
       </FormGroup>
-      <FormGroup
-        label="Enabled"
-        isRequired
-        fieldId="rule-enabled"
-        helperText={`Rules take effect when created if enabled and will be matched against all
-discovered target applications immediately. When new target applications appear they are
-checked against all enabled rules. Disabled rules have no effect but are available to be
-enabled in the future.`}
-      >
+      <FormGroup label="Enabled" isRequired fieldId="rule-enabled">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              Rules take effect when created if enabled and will be matched against all discovered target applications
+              immediately. When new target applications appear they are checked against all enabled rules. Disabled
+              rules have no effect but are available to be enabled in the future.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <Switch
           id="rule-enabled"
           isDisabled={loading}
@@ -455,15 +468,16 @@ enabled in the future.`}
           onChange={handleEnabledChange}
         />
       </FormGroup>
-      <FormGroup
-        label="Template"
-        isRequired
-        fieldId="recording-template"
-        validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
-        helperText="The Event Template to be applied by this Rule against matching target applications."
-        helperTextInvalid="A Template must be selected"
-        data-quickstart-id="rule-evt-template"
-      >
+      <FormGroup label="Template" isRequired fieldId="recording-template" data-quickstart-id="rule-evt-template">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
+              {!formData.template?.name
+                ? 'A Template must be selected'
+                : 'The Event Template to be applied by this Rule against matching target applications.'}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           disabled={loading}
@@ -472,12 +486,14 @@ enabled in the future.`}
           onSelect={handleTemplateChange}
         />
       </FormGroup>
-      <FormGroup
-        label="Maximum size"
-        fieldId="maxSize"
-        helperText="The maximum size of Recording data retained in the target application's Recording buffer."
-        data-quickstart-id="rule-max-size"
-      >
+      <FormGroup label="Maximum Size" fieldId="maxSize" data-quickstart-id="rule-max-size">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              {"The maximum size of Recording data retained in the target application's Recording buffer."}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -505,12 +521,14 @@ enabled in the future.`}
           </SplitItem>
         </Split>
       </FormGroup>
-      <FormGroup
-        label="Maximum age"
-        fieldId="maxAge"
-        helperText="The maximum age of Recording data retained in the target application's Recording buffer."
-        data-quickstart-id="rule-max-age"
-      >
+      <FormGroup label="Maximum Age" fieldId="maxAge" data-quickstart-id="rule-max-age">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              {"The maximum age of Recording data retained in the target application's Recording buffer."}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -538,12 +556,14 @@ enabled in the future.`}
           </SplitItem>
         </Split>
       </FormGroup>
-      <FormGroup
-        label="Archival period"
-        fieldId="archivalPeriod"
-        helperText="Time between copies of active Recording data being pulled into Cryostat archive storage."
-        data-quickstart-id="rule-archival-period"
-      >
+      <FormGroup label="Archival Period" fieldId="archivalPeriod" data-quickstart-id="rule-archival-period">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              Time between copies of active Recording data being pulled into Cryostat archive storage.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -571,12 +591,15 @@ enabled in the future.`}
           </SplitItem>
         </Split>
       </FormGroup>
-      <FormGroup
-        label="Initial delay"
-        fieldId="initialDelay"
-        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later."
-        data-quickstart-id="rule-initial-delay"
-      >
+      <FormGroup label="Initial Delay" fieldId="initialDelay" data-quickstart-id="rule-initial-delay">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+            Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started.
+            The second archived copy will occur one Archival period later.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -604,12 +627,14 @@ enabled in the future.`}
           </SplitItem>
         </Split>
       </FormGroup>
-      <FormGroup
-        label="Preserved archives"
-        fieldId="preservedArchives"
-        helperText="The number of Archived Recording copies to preserve in archives for each target application affected by this rule."
-        data-quickstart-id="rule-preserved-archives"
-      >
+      <FormGroup label="Preserved Archives" fieldId="preservedArchives" data-quickstart-id="rule-preserved-archives">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+            The number of Archived Recording copies to preserve in archives for each target application affected by this rule.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <TextInput
           value={formData.preservedArchives}
           isDisabled={loading}

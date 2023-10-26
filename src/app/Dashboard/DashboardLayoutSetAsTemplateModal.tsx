@@ -18,7 +18,19 @@ import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextArea, TextInput } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  Form,
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  Modal,
+  ModalVariant,
+  TextArea,
+  TextInput,
+} from '@patternfly/react-core';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +66,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
   const handleClose = React.useCallback(
-    (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    (ev?: KeyboardEvent | React.MouseEvent<Element, MouseEvent>) => {
       ev && ev.stopPropagation();
       setName('');
       setDescription('');
@@ -93,7 +105,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
   );
 
   const handleNameChange = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       setName(value);
       if (value.length === 0) {
         setNameValidated(ValidatedOptions.error);
@@ -115,7 +127,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
   );
 
   const handleDescriptionChange = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       setDescription(value);
       if (value.length === 0) {
         setDescriptionValidated(ValidatedOptions.default);
@@ -153,14 +165,16 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
       }
     >
       <Form onSubmit={(e) => e.preventDefault()}>
-        <FormGroup
-          label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')}
-          fieldId="name"
-          helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
-          helperTextInvalid={nameErrorMessage}
-          isRequired
-          validated={nameValidated}
-        >
+        <FormGroup label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.LABEL')} fieldId="name" isRequired>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={nameValidated}>
+                {nameValidated === ValidatedOptions.error
+                  ? nameErrorMessage
+                  : t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.NAME.HELPER_TEXT')}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
           <TextInput
             isRequired
             type="text"
@@ -175,13 +189,16 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
             placeholder={currLayout.name}
           />
         </FormGroup>
-        <FormGroup
-          label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')}
-          fieldId="description"
-          helperText={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
-          helperTextInvalid={descriptionErrorMessage}
-          validated={descriptionValidated}
-        >
+        <FormGroup label={t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.LABEL')} fieldId="description">
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={descriptionValidated}>
+                {descriptionValidated === ValidatedOptions.error
+                  ? descriptionErrorMessage
+                  : t('DashboardLayoutSetAsTemplateModal.FORM_GROUP.DESCRIPTION.HELPER_TEXT')}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
           <TextArea
             type="text"
             id="description"

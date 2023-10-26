@@ -32,22 +32,13 @@ import {
   EmptyState,
   EmptyStateIcon,
   Text,
-  Title,
   Tooltip,
   Split,
   SplitItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { HelpIcon, SearchIcon } from '@patternfly/react-icons';
-import {
-  TableComposable,
-  Th,
-  Thead,
-  Tbody,
-  Tr,
-  Td,
-  ExpandableRowContent,
-  SortByDirection,
-} from '@patternfly/react-table';
+import { Table, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './utils';
@@ -112,7 +103,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts, handleError]);
 
   const handleSearchInput = React.useCallback(
-    (searchInput: string) => {
+    (_, searchInput: string) => {
       setSearchText(searchInput);
     },
     [setSearchText],
@@ -316,17 +307,18 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     view = (
       <>
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No Archived Recordings
-          </Title>
+          <EmptyStateHeader
+            titleText="No Archived Recordings"
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
         </EmptyState>
       </>
     );
   } else {
     view = (
       <>
-        <TableComposable aria-label="all-archives-table">
+        <Table aria-label="all-archives-table">
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
@@ -342,7 +334,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
             </Tr>
           </Thead>
           <Tbody>{rowPairs}</Tbody>
-        </TableComposable>
+        </Table>
       </>
     );
   }

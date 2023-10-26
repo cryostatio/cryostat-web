@@ -71,7 +71,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
   );
 
   const handleTemplateSelect = React.useCallback(
-    (selected: string) => {
+    (_, selected: string) => {
       if (!selected.length) {
         onSelect(undefined);
       } else {

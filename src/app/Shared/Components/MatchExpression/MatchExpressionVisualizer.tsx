@@ -39,14 +39,15 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateSecondaryActions,
   EmptyStateVariant,
   Flex,
   FlexItem,
   Radio,
   Stack,
   StackItem,
-  Title,
+  EmptyStateActions,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -346,15 +347,18 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
       return (
         <Bullseye>
           <EmptyState variant={EmptyStateVariant.full}>
-            <EmptyStateIcon variant="container" component={SearchIcon} />
-            <Title headingLevel="h3" size="lg">
-              No Targets Matched
-            </Title>
-            <EmptyStateSecondaryActions>
-              <EmptyStateBody>{`${
-                matchedExpr === '' ? 'Enter another' : 'Clear'
-              } Match Expression and try again.`}</EmptyStateBody>
-            </EmptyStateSecondaryActions>
+            <EmptyStateHeader
+              titleText="No Targets Matched"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h3"
+            />
+            <EmptyStateFooter>
+              <EmptyStateActions>
+                <EmptyStateBody>{`${
+                  matchedExpr === '' ? 'Enter another' : 'Clear'
+                } Match Expression and try again.`}</EmptyStateBody>
+              </EmptyStateActions>
+            </EmptyStateFooter>
           </EmptyState>
         </Bullseye>
       );

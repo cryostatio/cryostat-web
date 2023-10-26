@@ -48,10 +48,6 @@ import {
   List,
   ListItem,
   ListVariant,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
   Stack,
   StackItem,
   Title,
@@ -61,6 +57,13 @@ import {
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  EmptyStateHeader,
+  SelectList,
+  Select,
+  SelectOption,
+  Badge,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
 import {
   ArrowsAltVIcon,
@@ -229,14 +232,9 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   );
 
   const onFilterSelect = React.useCallback(
-    (
-      _ev: React.MouseEvent | React.ChangeEvent,
-      selection: string | SelectOptionObject,
-      isPlaceholder: boolean | undefined,
-    ) => {
-      const selected = selection as LayoutTemplateFilter;
+    (_ev: React.MouseEvent<Element, MouseEvent>, selected: LayoutTemplateFilter) => {
       setSelectedFilters((prev) => {
-        if (isPlaceholder) {
+        if (selected) {
           return [];
         }
         if (prev.includes(selected)) {
@@ -248,37 +246,21 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     [setSelectedFilters],
   );
 
-  const onFilterSelectToggle = React.useCallback(
-    (isExpanded: boolean) => {
-      setIsFilterSelectOpen(isExpanded);
-    },
-    [setIsFilterSelectOpen],
-  );
+  const onFilterSelectToggle = React.useCallback(() => {
+    setIsFilterSelectOpen((isExpanded) => !isExpanded);
+  }, [setIsFilterSelectOpen]);
 
   const onClearAllFilters = React.useCallback(() => {
     setSelectedFilters([]);
   }, [setSelectedFilters]);
 
-  const onSortSelectToggle = React.useCallback(
-    (isExpanded: boolean) => {
-      setIsSortSelectOpen(isExpanded);
-    },
-    [setIsSortSelectOpen],
-  );
+  const onSortSelectToggle = React.useCallback(() => {
+    setIsSortSelectOpen((isExpanded) => !isExpanded);
+  }, [setIsSortSelectOpen]);
 
   const onSortSelect = React.useCallback(
-    (
-      _ev: React.MouseEvent | React.ChangeEvent,
-      selection: string | SelectOptionObject,
-      isPlaceholder: boolean | undefined,
-    ) => {
-      const selected = selection.valueOf() as LayoutTemplateSort;
-      setSelectedSort((_prev) => {
-        if (isPlaceholder) {
-          return undefined;
-        }
-        return selected;
-      });
+    (_ev: React.MouseEvent<Element, MouseEvent>, selected: LayoutTemplateSort) => {
+      setSelectedSort(selected);
       setIsSortSelectOpen(false);
     },
     [setSelectedSort, setIsSortSelectOpen],
@@ -433,10 +415,11 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
           ) : (
             <Bullseye>
               <EmptyState variant={EmptyStateVariant.full}>
-                <EmptyStateIcon icon={InfoCircleIcon} />
-                <Title headingLevel="h5" size="lg">
-                  No template selected
-                </Title>
+                <EmptyStateHeader
+                  titleText="No template selected"
+                  icon={<EmptyStateIcon icon={InfoCircleIcon} />}
+                  headingLevel="h5"
+                />
               </EmptyState>
             </Bullseye>
           )}
@@ -538,18 +521,35 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                       </ToolbarItem>
                       <ToolbarFilter chips={selectedFilters} deleteChip={onDeleteChip} categoryName="Category">
                         <Select
-                          menuAppendTo={portalRoot}
-                          variant={SelectVariant.checkbox}
+                          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                            <MenuToggle ref={toggleRef} onClick={onFilterSelectToggle} isExpanded={isFilterSelectOpen}>
+                              Template Type
+                              {selectedFilters.length ? <Badge isRead>{selectedFilters.length}</Badge> : null}
+                            </MenuToggle>
+                          )}
+                          popperProps={{
+                            appendTo: portalRoot,
+                          }}
                           aria-label="Select template category"
-                          onToggle={onFilterSelectToggle}
                           onSelect={onFilterSelect}
-                          selections={selectedFilters}
+                          selected={selectedFilters}
                           isOpen={isFilterSelectOpen}
-                          placeholderText="Template Type"
                         >
-                          <SelectOption key="suggested" value={t('SUGGESTED', { ns: 'common' })} />
-                          <SelectOption key="cryostat" value="Cryostat" />
-                          <SelectOption key="user-submitted" value={t('USER_SUBMITTED', { ns: 'common' })} />
+                          <SelectList>
+                            <SelectOption key="suggested" value={t('SUGGESTED', { ns: 'common' })} hasCheckbox>
+                              {t('SUGGESTED', { ns: 'common' })}
+                            </SelectOption>
+                            <SelectOption key="cryostat" value="Cryostat" hasCheckbox>
+                              Cryostat
+                            </SelectOption>
+                            <SelectOption
+                              key="user-submitted"
+                              value={t('USER_SUBMITTED', { ns: 'common' })}
+                              hasCheckbox
+                            >
+                              {t('USER_SUBMITTED', { ns: 'common' })}
+                            </SelectOption>
+                          </SelectList>
                         </Select>
                       </ToolbarFilter>
                     </ToolbarGroup>
@@ -557,32 +557,27 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                   <ToolbarGroup variant="icon-button-group">
                     <ToolbarItem>
                       <Select
-                        menuAppendTo={portalRoot}
+                        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                          <MenuToggle ref={toggleRef} onClick={onSortSelectToggle} isExpanded={isSortSelectOpen}>
+                            {selectedSort ?? t('LayoutTemplatePicker.SORT_BY.PLACEHOLDER')}
+                          </MenuToggle>
+                        )}
+                        popperProps={{
+                          appendTo: portalRoot,
+                        }}
                         aria-label="Select sorting category"
-                        onToggle={onSortSelectToggle}
                         onSelect={onSortSelect}
-                        selections={selectedSort}
+                        selected={selectedSort}
                         isOpen={isSortSelectOpen}
-                        placeholderText={t('LayoutTemplatePicker.SORT_BY.PLACEHOLDER') as string}
                       >
-                        <SelectOption
-                          key={LayoutTemplateSort.NAME}
-                          value={
-                            {
-                              toString: () => `${t('LayoutTemplatePicker.SORT_BY.NAME')}`,
-                              valueOf: () => LayoutTemplateSort.NAME,
-                            } as SelectOptionObject
-                          }
-                        />
-                        <SelectOption
-                          key={LayoutTemplateSort.CARD_COUNT}
-                          value={
-                            {
-                              toString: () => `${t('LayoutTemplatePicker.SORT_BY.CARD_COUNT')}`,
-                              valueOf: () => LayoutTemplateSort.CARD_COUNT,
-                            } as SelectOptionObject
-                          }
-                        />
+                        <SelectList>
+                          <SelectOption key={LayoutTemplateSort.NAME} value={LayoutTemplateSort.NAME}>
+                            {t('LayoutTemplatePicker.SORT_BY.NAME')}
+                          </SelectOption>
+                          <SelectOption key={LayoutTemplateSort.CARD_COUNT} value={LayoutTemplateSort.CARD_COUNT}>
+                            {t('LayoutTemplatePicker.SORT_BY.CARD_COUNT')}
+                          </SelectOption>
+                        </SelectList>
                       </Select>
                     </ToolbarItem>
                     <ToolbarItem>
@@ -617,10 +612,11 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 ) : (
                   <StackItem>
                     <EmptyState>
-                      <EmptyStateIcon icon={PficonTemplateIcon} />
-                      <Title size="lg" headingLevel="h4">
-                        No templates found
-                      </Title>
+                      <EmptyStateHeader
+                        titleText="No templates found"
+                        icon={<EmptyStateIcon icon={PficonTemplateIcon} />}
+                        headingLevel="h4"
+                      />
                       <EmptyStateBody>Upload a template and try again.</EmptyStateBody>
                     </EmptyState>
                   </StackItem>

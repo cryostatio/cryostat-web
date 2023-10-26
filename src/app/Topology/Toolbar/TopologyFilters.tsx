@@ -28,23 +28,36 @@ import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { flattenTree, getUniqueNodeTypes, isTargetNode } from '@app/Shared/Services/api.utils';
 import { getDisplayFieldName } from '@app/utils/utils';
 import {
+  Button,
   Divider,
   Label,
+  MenuToggle,
+  MenuToggleElement,
   Select,
   SelectGroup,
+  SelectList,
   SelectOption,
   SelectProps,
-  SelectVariant,
   Switch,
+  TextInputGroup,
+  TextInputGroupMain,
+  TextInputGroupUtilities,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { FilterIcon } from '@patternfly/react-icons';
+import { FilterIcon, TimesIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DiscoveryTreeContext } from '../Shared/utils';
+import {
+  fieldValueToStrings,
+  isAnnotation,
+  isLabelOrAnnotation,
+  TopologyFilterGroupOption,
+  TopologyFilterSelectOption,
+} from './utils';
 
 export interface TopologyFiltersProps {
   breakpoint?: 'md' | 'lg' | 'xl' | '2xl';
@@ -64,16 +77,19 @@ export const TopologyFilters: React.FC<TopologyFiltersProps> = ({ breakpoint = '
   );
 };
 
-export const TopologyFilterCategorySelect: React.FC<{ isDisabled?: boolean }> = ({ isDisabled, ...props }) => {
+export interface TopologyFilterCategorySelectProps {
+  isDisabled?: boolean;
+}
+
+export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelectProps> = ({ isDisabled }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const dispatch = useDispatch();
 
   const { isGroup, groupFilters, targetFilters } = useSelector((state: RootState) => state.topologyFilters);
 
   const handleSelect = React.useCallback(
-    (_, value, placeholder: boolean) => {
-      if (!placeholder) {
-        const { category } = value;
+    (_, category: string) => {
+      if (category) {
         dispatch(topologyUpdateCategoryIntent(isGroup, category));
       }
     },
@@ -81,7 +97,7 @@ export const TopologyFilterCategorySelect: React.FC<{ isDisabled?: boolean }> = 
   );
 
   const handleCategoryTypeChange = React.useCallback(
-    (isChecked: boolean) => {
+    (_, isChecked: boolean) => {
       dispatch(topologyUpdateCategoryTypeIntent(isChecked));
     },
     [dispatch],
@@ -95,7 +111,7 @@ export const TopologyFilterCategorySelect: React.FC<{ isDisabled?: boolean }> = 
     const categories = isGroup ? allowedGroupFilters : allowedTargetFilters;
     return [
       <SelectGroup label="Category Type" key={'category-type'}>
-        <SelectOption isPlaceholder key={'switch'} value={''}>
+        <SelectOption key={'switch'}>
           <Switch
             id={'category-type-switch'}
             label={'Groupings'}
@@ -107,16 +123,7 @@ export const TopologyFilterCategorySelect: React.FC<{ isDisabled?: boolean }> = 
       <Divider key={'divider'} />,
       <SelectGroup label="Categories" key={'categories'}>
         {categories.map((cat) => (
-          <SelectOption
-            key={cat}
-            value={{
-              toString: () => getDisplayFieldName(cat),
-              compareTo: (other) => other.category === cat,
-              ...{
-                category: cat,
-              },
-            }}
-          >
+          <SelectOption key={cat} value={cat}>
             {getDisplayFieldName(cat)}
           </SelectOption>
         ))}
@@ -124,31 +131,41 @@ export const TopologyFilterCategorySelect: React.FC<{ isDisabled?: boolean }> = 
     ];
   }, [isGroup, handleCategoryTypeChange]);
 
+  const handleToggle = React.useCallback(() => setIsOpen((open) => !open), [setIsOpen]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={handleToggle}
+        isExpanded={isOpen}
+        isDisabled={isDisabled}
+        placeholder={'Select a category'}
+      >
+        {`${isGroup ? 'Group' : 'Target'}: ${getDisplayFieldName(selected)}`}
+      </MenuToggle>
+    ),
+    [handleToggle, selected, isDisabled, isGroup, isOpen],
+  );
+
   return (
     <Select
-      {...props}
-      variant={SelectVariant.single}
-      onToggle={setIsOpen}
+      toggle={toggle}
       onSelect={handleSelect}
-      isDisabled={isDisabled}
       isOpen={isOpen}
-      selections={{
-        toString: () => `${isGroup ? 'Group' : 'Target'}: ${getDisplayFieldName(selected)}`,
-        compareTo: (other) => other.category === selected,
-        ...{
-          category: selected,
-        },
-      }}
+      selected={selected}
       aria-label={'Filter Categories'}
-      placeholderText={'Select a category'}
-      isGrouped
     >
-      {options}
+      <SelectList>{options}</SelectList>
     </Select>
   );
 };
 
-export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled, ...props }) => {
+export interface TopologyFilterProps {
+  isDisabled?: boolean;
+}
+
+export const TopologyFilter: React.FC<TopologyFilterProps> = ({ isDisabled }) => {
   const dispatch = useDispatch();
   const { isGroup, groupFilters, targetFilters } = useSelector((state: RootState) => state.topologyFilters);
   const discoveryTree = React.useContext(DiscoveryTreeContext);
@@ -160,11 +177,9 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
     [flattenedTree],
   );
 
-  const generateOnSelect = React.useCallback(
-    (isGroup: boolean) => {
-      return (_, { value, nodeType, category }) => {
-        dispatch(topologyAddFilterIntent(isGroup, nodeType, category, value));
-      };
+  const onSelect = React.useCallback(
+    (_: React.MouseEvent<Element, MouseEvent> | undefined, { isGroup, value, nodeType, category }) => {
+      dispatch(topologyAddFilterIntent(isGroup, nodeType, category, value));
     },
     [dispatch],
   );
@@ -174,9 +189,10 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
       const isShown = isGroup && groupFilters.category === cat;
       const ariaLabel = `Filter by ${getDisplayFieldName(cat)}...`;
 
-      const optionGroup = groupNodeTypes
-        .map((type) => ({
+      const selectOptions = groupNodeTypes
+        .map<TopologyFilterGroupOption>((type) => ({
           groupLabel: type,
+          category: cat,
           options: Array.from(
             new Set(
               flattenedTree
@@ -184,40 +200,21 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
                 .map((groupNode: EnvironmentNode) => fieldValueToStrings(groupNode[categoryToNodeField(cat)]))
                 .reduce((acc, curr) => acc.concat(curr), [])
                 .filter((val) => {
-                  const filters = groupFilters.filters[type] || {};
+                  const filters = groupFilters.filters[type];
                   if (filters) {
-                    const criteria = filters[cat] || [];
+                    const criteria = filters[cat];
                     return !criteria || !criteria.includes(val);
                   }
                   return true;
-                }),
+                })
+                .map<TopologyFilterSelectOption>((val) => ({
+                  value: val,
+                  render: () => (isLabelOrAnnotation(cat) ? <Label color="grey">{val}</Label> : val),
+                })),
             ),
           ),
         }))
         .filter((group) => group.options && group.options.length); // Do show show empty groups
-
-      const selectOptions = optionGroup.map(({ options, groupLabel }) => {
-        return (
-          <SelectGroup key={groupLabel} label={groupLabel}>
-            {options.map((opt) => (
-              <SelectOption
-                key={opt}
-                value={{
-                  toString: () => opt,
-                  compareTo: (other) => other.value === opt,
-                  ...{
-                    nodeType: groupLabel,
-                    value: opt,
-                    category: cat,
-                  },
-                }}
-              >
-                {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
-              </SelectOption>
-            ))}
-          </SelectGroup>
-        );
-      });
 
       return (
         <ToolbarFilter
@@ -227,65 +224,48 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
         >
           <TopologyFilterSelect
             isDisabled={isDisabled}
-            placeholderText={ariaLabel}
+            placeHolder={ariaLabel}
             aria-label={ariaLabel}
-            typeAheadAriaLabel={ariaLabel}
-            maxHeight="16em"
-            isGrouped
-            onSelect={generateOnSelect(isGroup)}
-          >
-            {selectOptions}
-          </TopologyFilterSelect>
+            options={selectOptions}
+            onSelect={onSelect}
+          />
         </ToolbarFilter>
       );
     });
-  }, [isGroup, groupFilters, flattenedTree, groupNodeTypes, isDisabled, generateOnSelect]);
+  }, [isGroup, groupFilters, flattenedTree, groupNodeTypes, isDisabled, onSelect]);
 
   const targetInputs = React.useMemo(() => {
     return allowedTargetFilters.map((cat) => {
       const isShown = !isGroup && targetFilters.category === cat;
       const ariaLabel = `Filter by ${getDisplayFieldName(cat)}...`;
 
-      const options = Array.from(
-        new Set(
-          flattenedTree
-            .filter((n) => isTargetNode(n))
-            .map(({ target }: TargetNode) => {
-              const value = target[categoryToNodeField(cat)];
-              if (isAnnotation(cat)) {
-                return [...fieldValueToStrings(value['platform']), ...fieldValueToStrings(value['cryostat'])];
-              }
-              return fieldValueToStrings(value);
-            })
-            .reduce((acc, curr) => acc.concat(curr), [])
-            .filter((val) => {
-              const criteria: string[] = targetFilters.filters[cat];
-              return !criteria || !criteria.includes(val);
-            }),
-        ),
-      );
-
-      const selectOptions = options.map((opt) => {
-        return (
-          <SelectOption
-            key={opt}
-            value={{
-              toString: () => opt,
-              compareTo: (other) => {
-                const regex = new RegExp(typeof other === 'string' ? other : other.value, 'i');
-                return regex.test(opt);
-              },
-              ...{
-                nodeType: 'Target', // Ignored by reducer
-                value: opt,
-                category: cat,
-              },
-            }}
-          >
-            {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
-          </SelectOption>
-        );
-      });
+      const options: TopologyFilterGroupOption[] = [
+        {
+          category: cat,
+          options: Array.from(
+            new Set(
+              flattenedTree
+                .filter((n) => isTargetNode(n))
+                .map(({ target }: TargetNode) => {
+                  const value = target[categoryToNodeField(cat)];
+                  if (isAnnotation(cat)) {
+                    return [...fieldValueToStrings(value['platform']), ...fieldValueToStrings(value['cryostat'])];
+                  }
+                  return fieldValueToStrings(value);
+                })
+                .reduce((acc, curr) => acc.concat(curr), [])
+                .filter((val) => {
+                  const criteria: string[] = targetFilters.filters[cat];
+                  return !criteria || !criteria.includes(val);
+                })
+                .map<TopologyFilterSelectOption>((val) => ({
+                  value: val,
+                  render: () => (isLabelOrAnnotation(cat) ? <Label color="grey">{val}</Label> : val),
+                })),
+            ),
+          ),
+        },
+      ];
 
       return (
         <ToolbarFilter
@@ -295,69 +275,119 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
         >
           <TopologyFilterSelect
             isDisabled={isDisabled}
-            placeholderText={ariaLabel}
+            placeHolder={ariaLabel}
             aria-label={ariaLabel}
-            typeAheadAriaLabel={ariaLabel}
-            maxHeight="16em"
-            onSelect={generateOnSelect(false)}
-          >
-            {selectOptions}
-          </TopologyFilterSelect>
+            options={options}
+            onSelect={onSelect}
+          />
         </ToolbarFilter>
       );
     });
-  }, [isGroup, targetFilters, flattenedTree, isDisabled, generateOnSelect]);
+  }, [isGroup, targetFilters, flattenedTree, isDisabled, onSelect]);
 
   return (
-    <div {...props}>
+    <>
       {groupInputs}
       {targetInputs}
-    </div>
+    </>
   );
 };
 
-export const TopologyFilterSelect: React.FC<Omit<SelectProps, 'onToggle' | 'selections' | 'variant'>> = ({
-  children: options,
-  onSelect,
+export interface TopologyFilterSelectProps extends Omit<SelectProps, 'toggle' | 'onSelect'> {
+  isDisabled?: boolean;
+  placeHolder?: string;
+  options: TopologyFilterGroupOption[];
+  onSelect: (_: React.MouseEvent<Element, MouseEvent> | undefined, { isGroup, value, nodeType, category }) => void;
+}
+
+export const TopologyFilterSelect: React.FC<TopologyFilterSelectProps> = ({
   isDisabled,
-  placeholderText,
+  placeHolder,
+  options = [],
+  onSelect,
   ...props
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [filterValue, setFilterValue] = React.useState('');
+
+  const handleToggle = React.useCallback(() => setIsExpanded((open) => !open), [setIsExpanded]);
+
+  const onInputChange = React.useCallback((_, value: string) => setFilterValue(value), [setFilterValue]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        variant="typeahead"
+        onClick={handleToggle}
+        isExpanded={isExpanded}
+        isFullWidth
+        isDisabled={isDisabled}
+      >
+        <TextInputGroup isPlain>
+          <TextInputGroupMain
+            value={filterValue}
+            onClick={handleToggle}
+            onChange={onInputChange}
+            autoComplete="off"
+            placeholder={placeHolder}
+            isExpanded={isExpanded}
+            role="combobox"
+          />
+          <TextInputGroupUtilities>
+            {filterValue ? (
+              <Button
+                variant="plain"
+                onClick={() => {
+                  setFilterValue('');
+                }}
+                aria-label="Clear input value"
+              >
+                <TimesIcon aria-hidden />
+              </Button>
+            ) : null}
+          </TextInputGroupUtilities>
+        </TextInputGroup>
+      </MenuToggle>
+    ),
+    [handleToggle, isExpanded, filterValue, onInputChange, setFilterValue, placeHolder, isDisabled],
+  );
+
+  const selectOptions = React.useMemo(() => {
+    return options.map(({ groupLabel, category, options }) => {
+      const _opts = options.map(({ value, render = () => undefined }) => (
+        <SelectOption
+          key={value}
+          value={value}
+          onClick={(e) => {
+            onSelect(e, { isGroup: !!groupLabel, nodeType: groupLabel, category: category, value: value });
+          }}
+        >
+          {render()}
+        </SelectOption>
+      ));
+
+      if (groupLabel) {
+        return (
+          <SelectGroup key={groupLabel} label={groupLabel}>
+            {_opts}
+          </SelectGroup>
+        );
+      }
+      return _opts;
+    });
+  }, [onSelect, options]);
 
   return (
     <Select
       {...props}
-      variant={SelectVariant.typeahead}
-      isOpen={isOpen}
-      onToggle={setIsOpen}
-      onSelect={(...args) => {
-        setIsOpen(false);
-        onSelect && onSelect(...args);
+      isOpen={isExpanded}
+      toggle={toggle}
+      onSelect={() => {
+        setIsExpanded(false);
       }}
-      isDisabled={isDisabled}
-      placeholderText={placeholderText}
     >
-      {options}
+      <SelectList>{selectOptions}</SelectList>
     </Select>
   );
 };
-
-export const fieldValueToStrings = (value: unknown): string[] => {
-  if (value === undefined || value === null) {
-    return [];
-  }
-  if (typeof value === 'object') {
-    if (Array.isArray(value)) {
-      return value.map((v) => `${v}`);
-    } else {
-      return Object.entries(value as object).map(([k, v]) => `${k}=${v}`);
-    }
-  } else {
-    return [`${value}`];
-  }
-};
-
-export const isLabelOrAnnotation = (category: string) => /(label|annotation)/i.test(category);
-
-export const isAnnotation = (category: string) => /annotation/i.test(category);

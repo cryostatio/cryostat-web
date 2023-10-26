@@ -31,14 +31,14 @@ import {
   TextInput,
   EmptyState,
   EmptyStateIcon,
-  Title,
   Text,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
-  TableComposable,
+  Table,
   TableVariant,
   Tbody,
   Td,
@@ -213,7 +213,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   );
 
   const onFilterTextChange = React.useCallback(
-    (filterText: string) => {
+    (_, filterText: string) => {
       setFilterText(filterText);
       setCurrentPage(1);
     },
@@ -292,7 +292,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         </Toolbar>
         {typeRowPairs.length ? (
           // TODO replace table with data list so collapsed event options can be custom formatted
-          <TableComposable aria-label="Event types table" variant={TableVariant.compact}>
+          <Table aria-label="Event types Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 <Th />
@@ -304,13 +304,14 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
               </Tr>
             </Thead>
             {typeRowPairs}
-          </TableComposable>
+          </Table>
         ) : (
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No event types
-            </Title>
+            <EmptyStateHeader
+              titleText="No Event types"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
           </EmptyState>
         )}
       </>

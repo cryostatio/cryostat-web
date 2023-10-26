@@ -2,13 +2,13 @@
 
 exports[`<SnapshotRecordingForm /> renders correctly 1`] = `
 <form
-  className="pf-c-form pf-m-horizontal"
+  className="pf-v5-c-form pf-m-horizontal"
   noValidate={true}
 >
   <p
     className=""
     data-ouia-component-id="OUIA-Generated-Text-1"
-    data-ouia-component-type="PF4/Text"
+    data-ouia-component-type="PF5/Text"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -19,20 +19,20 @@ exports[`<SnapshotRecordingForm /> renders correctly 1`] = `
      Recordings. Snapshots do not themselves define which events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the moment it is created.
   </p>
   <div
-    className="pf-c-form__group pf-m-action"
+    className="pf-v5-c-form__group pf-m-action"
   >
     <div
-      className="pf-c-form__group-control"
+      className="pf-v5-c-form__group-control"
     >
       <div
-        className="pf-c-form__actions"
+        className="pf-v5-c-form__actions"
       >
         <button
           aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-primary pf-m-progress"
+          className="pf-v5-c-button pf-m-primary pf-m-progress"
           data-ouia-component-id="OUIA-Generated-Button-primary-1"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF5/Button"
           data-ouia-safe={true}
           disabled={false}
           onClick={[Function]}
@@ -44,9 +44,9 @@ exports[`<SnapshotRecordingForm /> renders correctly 1`] = `
         <button
           aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-secondary"
+          className="pf-v5-c-button pf-m-secondary"
           data-ouia-component-id="OUIA-Generated-Button-secondary-1"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF5/Button"
           data-ouia-safe={true}
           disabled={false}
           onClick={[Function]}

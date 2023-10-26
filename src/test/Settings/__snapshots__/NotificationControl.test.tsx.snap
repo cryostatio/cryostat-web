@@ -2,34 +2,34 @@
 
 exports[`<NotificationControl/> renders correctly 1`] = `
 <div
-  className="pf-l-stack pf-m-gutter"
+  className="pf-v5-l-stack pf-m-gutter"
 >
   <div
-    className="pf-l-stack__item"
+    className="pf-v5-l-stack__item"
   >
     <div
-      className="pf-c-form__group"
+      className="pf-v5-c-form__group"
     >
       <div
-        className="pf-c-form__group-control"
+        className="pf-v5-c-form__group-control"
       >
         <div
-          className="pf-c-helper-text"
+          className="pf-v5-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item"
+            className="pf-v5-c-helper-text__item"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v5-c-helper-text__item-text"
             >
               Enable or disable all notifications.
             </span>
           </div>
         </div>
         <label
-          className="pf-c-switch"
+          className="pf-v5-c-switch"
           data-ouia-component-id="OUIA-Generated-Switch-1"
-          data-ouia-component-type="PF4/Switch"
+          data-ouia-component-type="PF5/Switch"
           data-ouia-safe={true}
           htmlFor="all-notifications"
         >
@@ -37,181 +37,184 @@ exports[`<NotificationControl/> renders correctly 1`] = `
             aria-label=""
             aria-labelledby="all-notifications-on"
             checked={true}
-            className="pf-c-switch__input"
+            className="pf-v5-c-switch__input"
             disabled={false}
             id="all-notifications"
             onChange={[Function]}
             type="checkbox"
           />
           <span
-            className="pf-c-switch__toggle"
+            className="pf-v5-c-switch__toggle"
           />
           <span
             aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
+            className="pf-v5-c-switch__label pf-m-on"
             id="all-notifications-on"
           >
             All notifications
           </span>
           <span
             aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
+            className="pf-v5-c-switch__label pf-m-off"
             id="all-notifications-off"
           >
             All notifications
           </span>
         </label>
-        
       </div>
     </div>
   </div>
   <div
-    className="pf-l-stack__item"
+    className="pf-v5-l-stack__item"
   >
     <div
-      className="pf-c-form__group"
+      className="pf-v5-c-form__group"
     >
       <div
-        className="pf-c-form__group-control"
+        className="pf-v5-c-form__group-control"
       >
         <div
-          className="pf-c-helper-text"
+          className="pf-v5-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item"
+            className="pf-v5-c-helper-text__item"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v5-c-helper-text__item-text"
             >
               Control the maximum number of notification alerts that appear at once.
             </span>
           </div>
         </div>
         <div
-          className="pf-c-number-input"
+          className="pf-v5-c-number-input"
         >
           <div
-            className="pf-c-input-group"
+            className="pf-v5-c-input-group"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Minus"
-              className="pf-c-button pf-m-control"
-              data-ouia-component-id="OUIA-Generated-Button-control-1"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-input-group__item"
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Minus"
+                className="pf-v5-c-button pf-m-control"
+                data-ouia-component-id="OUIA-Generated-Button-control-1"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <span
+                  className="pf-v5-c-number-input__icon"
+                >
+                  <svg
+                    aria-hidden="true"
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 448 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
+            <div
+              className="pf-v5-c-input-group__item"
             >
               <span
-                className="pf-c-number-input__icon"
+                className="pf-v5-c-form-control"
               >
-                <svg
-                  aria-hidden="true"
-                  aria-labelledby={null}
-                  fill="currentColor"
-                  height="1em"
-                  role="img"
-                  style={
-                    Object {
-                      "verticalAlign": "-0.125em",
-                    }
-                  }
-                  viewBox="0 0 448 512"
-                  width="1em"
-                >
-                  <path
-                    d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                  />
-                </svg>
+                <input
+                  aria-invalid={false}
+                  aria-label="Input"
+                  data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+                  data-ouia-component-type="PF5/TextInput"
+                  data-ouia-safe={true}
+                  disabled={false}
+                  name="alert count"
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onFocus={[Function]}
+                  onKeyDown={[Function]}
+                  required={false}
+                  type="number"
+                  value={5}
+                />
               </span>
-            </button>
-            <input
-              aria-invalid={false}
-              aria-label="Input"
-              className="pf-c-form-control"
-              data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-              data-ouia-component-type="PF4/TextInput"
-              data-ouia-safe={true}
-              disabled={false}
-              name="alert count"
-              onBlur={[Function]}
-              onChange={[Function]}
-              onFocus={[Function]}
-              onKeyDown={[Function]}
-              required={false}
-              type="number"
-              value={5}
-            />
-            <button
-              aria-disabled={false}
-              aria-label="Plus"
-              className="pf-c-button pf-m-control"
-              data-ouia-component-id="OUIA-Generated-Button-control-2"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            </div>
+            <div
+              className="pf-v5-c-input-group__item"
             >
-              <span
-                className="pf-c-number-input__icon"
+              <button
+                aria-disabled={false}
+                aria-label="Plus"
+                className="pf-v5-c-button pf-m-control"
+                data-ouia-component-id="OUIA-Generated-Button-control-2"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
               >
-                <svg
-                  aria-hidden="true"
-                  aria-labelledby={null}
-                  fill="currentColor"
-                  height="1em"
-                  role="img"
-                  style={
-                    Object {
-                      "verticalAlign": "-0.125em",
-                    }
-                  }
-                  viewBox="0 0 448 512"
-                  width="1em"
+                <span
+                  className="pf-v5-c-number-input__icon"
                 >
-                  <path
-                    d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                  />
-                </svg>
-              </span>
-            </button>
+                  <svg
+                    aria-hidden="true"
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 448 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
-        
       </div>
     </div>
   </div>
   <div
-    className="pf-l-stack__item"
+    className="pf-v5-l-stack__item"
   >
     <div
-      className="pf-c-expandable-section"
+      className="pf-v5-c-expandable-section"
     >
       <button
+        aria-controls="expandable-section-content-1717748448129qag9p523vjj"
         aria-expanded={false}
-        className="pf-c-expandable-section__toggle"
+        className="pf-v5-c-expandable-section__toggle"
+        id="expandable-section-toggle-1717748448130xo7znv5n5mo"
         onClick={[Function]}
         type="button"
       >
         <span
-          className="pf-c-expandable-section__toggle-icon"
+          className="pf-v5-c-expandable-section__toggle-icon"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v5-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              Object {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 256 512"
             width="1em"
           >
@@ -221,23 +224,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </svg>
         </span>
         <span
-          className="pf-c-expandable-section__toggle-text"
+          className="pf-v5-c-expandable-section__toggle-text"
         >
           Show more
         </span>
       </button>
       <div
-        className="pf-c-expandable-section__content"
+        aria-labelledby="expandable-section-toggle-1717748448130xo7znv5n5mo"
+        className="pf-v5-c-expandable-section__content"
         hidden={true}
-        id=""
+        id="expandable-section-content-1717748448129qag9p523vjj"
+        role="region"
       >
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-2"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="WsClientActivity"
           >
@@ -245,25 +250,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="WsClientActivity-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="WsClientActivity"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="WsClientActivity-on"
             >
               WebSocket client activity
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="WsClientActivity-off"
             >
               WebSocket client activity
@@ -271,12 +276,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-3"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TargetJvmDiscovery"
           >
@@ -284,25 +289,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="TargetJvmDiscovery-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="TargetJvmDiscovery"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="TargetJvmDiscovery-on"
             >
               Target JVM discovery
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="TargetJvmDiscovery-off"
             >
               Target JVM discovery
@@ -310,12 +315,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-4"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ActiveRecordingCreated"
           >
@@ -323,25 +328,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ActiveRecordingCreated-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ActiveRecordingCreated"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ActiveRecordingCreated-on"
             >
               Recording created
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ActiveRecordingCreated-off"
             >
               Recording created
@@ -349,12 +354,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-5"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ActiveRecordingStopped"
           >
@@ -362,25 +367,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ActiveRecordingStopped-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ActiveRecordingStopped"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ActiveRecordingStopped-on"
             >
               Recording stopped
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ActiveRecordingStopped-off"
             >
               Recording stopped
@@ -388,12 +393,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-6"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ActiveRecordingSaved"
           >
@@ -401,25 +406,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ActiveRecordingSaved-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ActiveRecordingSaved"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ActiveRecordingSaved-on"
             >
               Recording saved
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ActiveRecordingSaved-off"
             >
               Recording saved
@@ -427,12 +432,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-7"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ActiveRecordingDeleted"
           >
@@ -440,25 +445,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ActiveRecordingDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ActiveRecordingDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ActiveRecordingDeleted-on"
             >
               Recording deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ActiveRecordingDeleted-off"
             >
               Recording deleted
@@ -466,12 +471,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-8"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="SnapshotCreated"
           >
@@ -479,25 +484,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="SnapshotCreated-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="SnapshotCreated"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="SnapshotCreated-on"
             >
               Snapshot created
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="SnapshotCreated-off"
             >
               Snapshot created
@@ -505,12 +510,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-9"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="SnapshotDeleted"
           >
@@ -518,25 +523,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="SnapshotDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="SnapshotDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="SnapshotDeleted-on"
             >
               Snapshot deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="SnapshotDeleted-off"
             >
               Snapshot deleted
@@ -544,12 +549,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-10"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ArchivedRecordingCreated"
           >
@@ -557,25 +562,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ArchivedRecordingCreated-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ArchivedRecordingCreated"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ArchivedRecordingCreated-on"
             >
               Archived Recording uploaded
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ArchivedRecordingCreated-off"
             >
               Archived Recording uploaded
@@ -583,12 +588,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-11"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ArchivedRecordingDeleted"
           >
@@ -596,25 +601,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ArchivedRecordingDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ArchivedRecordingDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ArchivedRecordingDeleted-on"
             >
               Archived Recording deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ArchivedRecordingDeleted-off"
             >
               Archived Recording deleted
@@ -622,12 +627,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-12"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TemplateUploaded"
           >
@@ -635,25 +640,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="TemplateUploaded-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="TemplateUploaded"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="TemplateUploaded-on"
             >
               Template created
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="TemplateUploaded-off"
             >
               Template created
@@ -661,12 +666,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-13"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TemplateDeleted"
           >
@@ -674,25 +679,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="TemplateDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="TemplateDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="TemplateDeleted-on"
             >
               Template deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="TemplateDeleted-off"
             >
               Template deleted
@@ -700,12 +705,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-14"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbeTemplateUploaded"
           >
@@ -713,25 +718,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ProbeTemplateUploaded-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ProbeTemplateUploaded"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ProbeTemplateUploaded-on"
             >
               Probe Template created
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ProbeTemplateUploaded-off"
             >
               Probe Template created
@@ -739,12 +744,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-15"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbeTemplateDeleted"
           >
@@ -752,25 +757,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ProbeTemplateDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ProbeTemplateDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ProbeTemplateDeleted-on"
             >
               Probe Template deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ProbeTemplateDeleted-off"
             >
               Probe Template deleted
@@ -778,12 +783,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-16"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbeTemplateApplied"
           >
@@ -791,25 +796,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ProbeTemplateApplied-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ProbeTemplateApplied"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ProbeTemplateApplied-on"
             >
               Probe Template applied
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ProbeTemplateApplied-off"
             >
               Probe Template applied
@@ -817,12 +822,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-17"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbesRemoved"
           >
@@ -830,25 +835,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ProbesRemoved-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ProbesRemoved"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ProbesRemoved-on"
             >
               Probes removed from target
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ProbesRemoved-off"
             >
               Probes removed from target
@@ -856,12 +861,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-18"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RuleCreated"
           >
@@ -869,25 +874,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="RuleCreated-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="RuleCreated"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="RuleCreated-on"
             >
               Automated Rule created
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="RuleCreated-off"
             >
               Automated Rule created
@@ -895,12 +900,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-19"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RuleUpdated"
           >
@@ -908,25 +913,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="RuleUpdated-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="RuleUpdated"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="RuleUpdated-on"
             >
               Automated Rule updated
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="RuleUpdated-off"
             >
               Automated Rule updated
@@ -934,12 +939,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-20"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RuleDeleted"
           >
@@ -947,25 +952,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="RuleDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="RuleDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="RuleDeleted-on"
             >
               Automated Rule deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="RuleDeleted-off"
             >
               Automated Rule deleted
@@ -973,12 +978,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-21"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RecordingMetadataUpdated"
           >
@@ -986,25 +991,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="RecordingMetadataUpdated-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="RecordingMetadataUpdated"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="RecordingMetadataUpdated-on"
             >
               Recording metadata updated
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="RecordingMetadataUpdated-off"
             >
               Recording metadata updated
@@ -1012,12 +1017,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-22"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="GrafanaConfiguration"
           >
@@ -1025,25 +1030,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="GrafanaConfiguration-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="GrafanaConfiguration"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="GrafanaConfiguration-on"
             >
               Grafana configuration
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="GrafanaConfiguration-off"
             >
               Grafana configuration
@@ -1051,12 +1056,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-23"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="LayoutTemplateCreated"
           >
@@ -1064,25 +1069,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="LayoutTemplateCreated-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="LayoutTemplateCreated"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="LayoutTemplateCreated-on"
             >
               Layout Template created
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="LayoutTemplateCreated-off"
             >
               Layout Template created
@@ -1090,12 +1095,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-24"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TargetCredentialsStored"
           >
@@ -1103,25 +1108,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="TargetCredentialsStored-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="TargetCredentialsStored"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="TargetCredentialsStored-on"
             >
               Target Credentials stored
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="TargetCredentialsStored-off"
             >
               Target Credentials stored
@@ -1129,12 +1134,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-25"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TargetCredentialsDeleted"
           >
@@ -1142,25 +1147,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="TargetCredentialsDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="TargetCredentialsDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="TargetCredentialsDeleted-on"
             >
               Target Credentials deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="TargetCredentialsDeleted-off"
             >
               Target Credentials deleted
@@ -1168,12 +1173,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-26"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsStored"
           >
@@ -1181,25 +1186,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="CredentialsStored-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="CredentialsStored"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="CredentialsStored-on"
             >
               Credentials stored
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="CredentialsStored-off"
             >
               Credentials stored
@@ -1207,12 +1212,12 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-27"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsDeleted"
           >
@@ -1220,25 +1225,25 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="CredentialsDeleted-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="CredentialsDeleted"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="CredentialsDeleted-on"
             >
               Credentials deleted
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="CredentialsDeleted-off"
             >
               Credentials deleted

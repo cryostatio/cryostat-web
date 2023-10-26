@@ -17,7 +17,15 @@
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Dropdown, DropdownItem, DropdownProps, DropdownToggle } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  DropdownProps,
+  MenuToggle,
+  MenuToggleElement,
+} from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';
@@ -107,24 +115,39 @@ export interface ActionDropdownProps extends Omit<DropdownProps, 'isOpen' | 'onS
 export const ActionDropdown: React.FC<ActionDropdownProps> = ({
   className,
   actions,
-  position,
-  menuAppendTo,
+  popperProps = {
+    position: 'right',
+    appendTo: portalRoot,
+  },
   ...props
 }) => {
   const [actionOpen, setActionOpen] = React.useState(false);
+
   const handleClose = React.useCallback(() => setActionOpen(false), [setActionOpen]);
+
+  const handleToggle = React.useCallback(() => setActionOpen((open) => !open), [setActionOpen]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={actionOpen}>
+        Actions
+      </MenuToggle>
+    ),
+    [handleToggle, actionOpen],
+  );
+
   return (
     <Dropdown
       {...props}
       className={css(className)}
       aria-label={'entity-action-menu'}
-      position={position || 'right'}
-      menuAppendTo={menuAppendTo || document.body}
       onSelect={handleClose}
       isOpen={actionOpen}
       onClick={(e) => e.stopPropagation()}
-      toggle={<DropdownToggle onToggle={setActionOpen}>Actions</DropdownToggle>}
-      dropdownItems={actions}
-    />
+      toggle={toggle}
+      popperProps={popperProps}
+    >
+      <DropdownList>{actions}</DropdownList>
+    </Dropdown>
   );
 };

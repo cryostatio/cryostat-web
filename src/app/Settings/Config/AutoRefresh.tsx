@@ -28,7 +28,7 @@ const defaultPreferences = {
 };
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(defaultPreferences);
 
