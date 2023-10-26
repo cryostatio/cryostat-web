@@ -17,17 +17,8 @@ import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/Autom
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { AnalysisResult } from '@app/Shared/Services/api.types';
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
-  DropdownToggle,
-  ToolbarChipGroup,
-  ToolbarFilter,
-  ToolbarGroup,
-  ToolbarItem,
-  ToolbarToggleGroup,
-} from '@patternfly/react-core';
+import { ToolbarChipGroup, ToolbarFilter, ToolbarGroup, ToolbarItem, ToolbarToggleGroup } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownPosition, DropdownToggle } from '@patternfly/react-core/deprecated';
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';

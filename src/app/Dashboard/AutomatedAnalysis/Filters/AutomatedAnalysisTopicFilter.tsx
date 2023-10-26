@@ -16,7 +16,7 @@
 
 import { CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 
 export interface AutomatedAnalysisTopicFilterProps {

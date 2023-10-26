@@ -26,7 +26,6 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   Button,
   Card,
-  CardActions,
   CardBody,
   CardHeader,
   CardTitle,
@@ -36,6 +35,7 @@ import {
   DescriptionListTerm,
   Form,
   FormGroup,
+  FormHelperText,
   FormSection,
   FormSelect,
   FormSelectOption,
@@ -248,25 +248,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       return (
         <Grid hasGutter lg={4} md={12}>
           <GridItem>
-            <FormGroup
-              label={t(`TEMPLATE`, { ns: 'common' })}
-              isRequired
-              fieldId="recording-template"
-              helperText={
-                <>
-                  <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
-                    <HelperTextItem>{t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}</HelperTextItem>
-                    {formData.template?.type == 'TARGET' && errorMessage === '' && (
-                      <HelperTextItem variant="warning">
-                        <Text component={TextVariants.p}>
-                          {t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}
-                        </Text>
-                      </HelperTextItem>
-                    )}
-                  </HelperText>
-                </>
-              }
-            >
+            <FormGroup label={t(`TEMPLATE`, { ns: 'common' })} isRequired fieldId="recording-template">
               {isLoading ? (
                 <Spinner size="md" />
               ) : errorMessage != '' ? (
@@ -282,14 +264,22 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                   selected={selectedSpecifier}
                 />
               )}
+              <FormHelperText>
+                <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
+                  <HelperTextItem>{t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}</HelperTextItem>
+                  {formData.template?.type == 'TARGET' && errorMessage === '' && (
+                    <HelperTextItem variant="warning">
+                      <Text component={TextVariants.p}>
+                        {t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}
+                      </Text>
+                    </HelperTextItem>
+                  )}
+                </HelperText>
+              </FormHelperText>
             </FormGroup>
           </GridItem>
           <GridItem>
-            <FormGroup
-              label={t('MAXIMUM_SIZE', { ns: 'common' })}
-              fieldId="maxSize"
-              helperText={t('MAXIMUM_SIZE_HELPER_TEXT', { ns: 'common' })}
-            >
+            <FormGroup label={t('MAXIMUM_SIZE', { ns: 'common' })} fieldId="maxSize">
               <Split hasGutter={true}>
                 <SplitItem isFilled>
                   <TextInput
@@ -314,14 +304,15 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                   </FormSelect>
                 </SplitItem>
               </Split>
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>{t('MAXIMUM_SIZE_HELPER_TEXT', { ns: 'common' })}</HelperTextItem>
+                </HelperText>
+              </FormHelperText>
             </FormGroup>
           </GridItem>
           <GridItem>
-            <FormGroup
-              label={t('MAXIMUM_AGE', { ns: 'common' })}
-              fieldId="maxAge"
-              helperText={t('MAXIMUM_AGE_HELPER_TEXT', { ns: 'common' })}
-            >
+            <FormGroup label={t('MAXIMUM_AGE', { ns: 'common' })} fieldId="maxAge">
               <Split hasGutter={true}>
                 <SplitItem isFilled>
                   <TextInput
@@ -346,6 +337,12 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                   </FormSelect>
                 </SplitItem>
               </Split>
+
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>{t('MAXIMUM_AGE_HELPER_TEXT', { ns: 'common' })}</HelperTextItem>
+                </HelperText>
+              </FormHelperText>
             </FormGroup>
           </GridItem>
         </Grid>
@@ -419,30 +416,37 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     () => (
       <>
         <Card isFlat style={{ marginTop: '1em' }}>
-          <CardHeader>
+          <CardHeader
+            actions={{
+              actions: (
+                <>
+                  {editing && (
+                    <Button
+                      onClick={handleSubmit}
+                      variant={'primary'}
+                      isDisabled={!formData.template?.name || !formData.template?.type}
+                    >
+                      {t('AutomatedAnalysisConfigForm.SAVE_CHANGES')}
+                    </Button>
+                  )}
+                  <Button
+                    variant="plain"
+                    onClick={toggleEdit}
+                    aria-label={editing ? t('CANCEL', { ns: 'common' }) : t('EDIT', { ns: 'common' })}
+                  >
+                    {editing ? <CloseIcon /> : <PencilAltIcon />}
+                  </Button>
+                </>
+              ),
+              hasNoOffset: false,
+              className: undefined,
+            }}
+          >
             <CardTitle>
               <Title headingLevel="h3" size="md">
                 {t('AutomatedAnalysisConfigForm.CURRENT_CONFIG')}
               </Title>
             </CardTitle>
-            <CardActions>
-              {editing && (
-                <Button
-                  onClick={handleSubmit}
-                  variant={'primary'}
-                  isDisabled={!formData.template?.name || !formData.template?.type}
-                >
-                  {t('AutomatedAnalysisConfigForm.SAVE_CHANGES')}
-                </Button>
-              )}
-              <Button
-                variant="plain"
-                onClick={toggleEdit}
-                aria-label={editing ? t('CANCEL', { ns: 'common' }) : t('EDIT', { ns: 'common' })}
-              >
-                {editing ? <CloseIcon /> : <PencilAltIcon />}
-              </Button>
-            </CardActions>
           </CardHeader>
           <CardBody>
             <Stack hasGutter>

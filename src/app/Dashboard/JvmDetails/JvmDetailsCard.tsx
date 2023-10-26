@@ -20,7 +20,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NodeAction } from '@app/Topology/Actions/types';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
+import { CardBody, CardHeader } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { DashboardCard } from '../DashboardCard';
@@ -63,9 +63,9 @@ export const JvmDetailsCard: DashboardCardFC<JvmDetailsCardProps> = (props) => {
       cardSizes={JvmDetailsCardSizes}
       isCompact
       cardHeader={
-        <CardHeader>
-          <CardActions>{...props.actions || []}</CardActions>
-        </CardHeader>
+        <CardHeader
+          actions={{ actions: <>{...props.actions || []}</>, hasNoOffset: false, className: undefined }}
+        ></CardHeader>
       }
       style={props.isFullHeight ? {} : { height: '36em' }} // FIXME: Remove after implementing height resizing
       {...props}

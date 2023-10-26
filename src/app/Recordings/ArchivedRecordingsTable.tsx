@@ -55,10 +55,8 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Dropdown,
   Grid,
   GridItem,
-  KebabToggle,
   LabelGroup,
   OverflowMenu,
   OverflowMenuContent,
@@ -73,8 +71,16 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
 import { UploadIcon } from '@patternfly/react-icons';
-import { Tbody, Tr, Td, ExpandableRowContent, TableComposable, SortByDirection } from '@patternfly/react-table';
+import {
+  Tbody,
+  Tr,
+  Td,
+  ExpandableRowContent,
+  Table /* data-codemods */,
+  SortByDirection,
+} from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
@@ -532,7 +538,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             tableColumns={columnConfig}
             tableFooter={
               filteredRecordings.length > 0 && (
-                <TableComposable borders={false}>
+                <Table borders={false}>
                   <Tbody>
                     <Tr>
                       <Td></Td>
@@ -541,7 +547,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
                       </Td>
                     </Tr>
                   </Tbody>
-                </TableComposable>
+                </Table>
               )
             }
             isHeaderChecked={headerChecked}

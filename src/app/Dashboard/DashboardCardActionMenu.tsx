@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { portalRoot } from '@app/utils/utils';
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 

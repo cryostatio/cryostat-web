@@ -42,7 +42,7 @@ import {
   Tab,
   Tabs,
   TabTitleText,
-  Title,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -204,10 +204,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
       ) : (
         <Bullseye>
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No Results
-            </Title>
+            <EmptyStateHeader titleText="No Results" icon={<EmptyStateIcon icon={SearchIcon} />} headingLevel="h4" />
           </EmptyState>
         </Bullseye>
       )}

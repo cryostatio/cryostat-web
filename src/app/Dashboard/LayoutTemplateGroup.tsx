@@ -18,17 +18,8 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  Gallery,
-  KebabToggle,
-  Label,
-  Split,
-  SplitItem,
-  Title,
-} from '@patternfly/react-core';
+import { Button, Gallery, Label, Split, SplitItem, Title } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';

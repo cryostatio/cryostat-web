@@ -26,30 +26,27 @@ import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
   EmptyState,
   EmptyStateIcon,
   Form,
   FormGroup,
-  KebabToggle,
   Modal,
   ModalVariant,
   Stack,
   StackItem,
   TextInput,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
   SortByDirection,
-  TableComposable,
+  Table /* data-codemods */,
   TableVariant,
   Tbody,
   Td,
@@ -164,6 +161,8 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
   const handleUploadModalClose = React.useCallback(() => {
     setUploadModalOpen(false);
   }, [setUploadModalOpen]);
+
+  const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
 
   React.useEffect(() => {
     refreshTemplates();
@@ -302,7 +301,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                       type="search"
                       placeholder="Filter..."
                       aria-label="Probe template filter"
-                      onChange={setFilterText}
+                      onChange={handleFilterTextChange}
                       value={filterText}
                     />
                   </ToolbarItem>
@@ -323,7 +322,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
               </ToolbarContent>
             </Toolbar>
             {templateRows.length ? (
-              <TableComposable aria-label="Probe Templates Table" variant={TableVariant.compact}>
+              <Table aria-label="Probe Templates Table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
                     {tableColumns.map(({ title, sortable }, index) => (
@@ -334,13 +333,14 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                   </Tr>
                 </Thead>
                 <Tbody>{...templateRows}</Tbody>
-              </TableComposable>
+              </Table>
             ) : (
               <EmptyState>
-                <EmptyStateIcon icon={SearchIcon} />
-                <Title headingLevel="h4" size="lg">
-                  No Probe Templates
-                </Title>
+                <EmptyStateHeader
+                  titleText="No Probe Templates"
+                  icon={<EmptyStateIcon icon={SearchIcon} />}
+                  headingLevel="h4"
+                />
               </EmptyState>
             )}
             <AgentProbeTemplateUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
@@ -514,11 +514,13 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
     ];
   }, [onInsert, onDelete, template]);
 
+  const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
+
   return (
     <Dropdown
       isPlain
       isOpen={isOpen}
-      toggle={<KebabToggle id="probe-template-toggle-kebab" onToggle={setIsOpen} />}
+      toggle={<KebabToggle id="probe-template-toggle-kebab" onToggle={handleToggle} />}
       menuAppendTo={document.body}
       position={DropdownPosition.right}
       isFlipEnabled

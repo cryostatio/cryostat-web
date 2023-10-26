@@ -34,7 +34,7 @@ import {
   StackItem,
   EmptyState,
   EmptyStateIcon,
-  Title,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
@@ -42,7 +42,7 @@ import {
   ISortBy,
   SortByDirection,
   ThProps,
-  TableComposable,
+  Table /* data-codemods */,
   Tbody,
   Th,
   Thead,
@@ -175,6 +175,8 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
       handleDeleteAllProbes();
     }
   }, [context.settings, setWarningModalOpen, handleDeleteAllProbes]);
+
+  const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
 
   React.useEffect(() => {
     addSubscription(
@@ -322,7 +324,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
                       type="search"
                       placeholder="Filter..."
                       aria-label="Active probe filter"
-                      onChange={setFilterText}
+                      onChange={handleFilterTextChange}
                     />
                   </ToolbarItem>
                 </ToolbarGroup>
@@ -348,7 +350,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
               />
             </Toolbar>
             {probeRows.length ? (
-              <TableComposable aria-label="Active Probe Table" variant={TableVariant.compact}>
+              <Table aria-label="Active Probe Table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
                     {tableColumns.map(({ title, sortable }, index) => (
@@ -359,13 +361,14 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
                   </Tr>
                 </Thead>
                 <Tbody>{probeRows}</Tbody>
-              </TableComposable>
+              </Table>
             ) : (
               <EmptyState>
-                <EmptyStateIcon icon={SearchIcon} />
-                <Title headingLevel="h4" size="lg">
-                  No Active Probes
-                </Title>
+                <EmptyStateHeader
+                  titleText="No Active Probes"
+                  icon={<EmptyStateIcon icon={SearchIcon} />}
+                  headingLevel="h4"
+                />
               </EmptyState>
             )}
           </StackItem>

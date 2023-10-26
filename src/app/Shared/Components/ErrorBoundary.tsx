@@ -24,7 +24,7 @@ import {
   EmptyStateVariant,
   Text,
   TextVariants,
-  Title,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -79,9 +79,12 @@ export const DefaultFallBack: React.FC<DefaultFallBackProps> = ({ error, ...prop
 
   return (
     <Bullseye {...props}>
-      <EmptyState variant={EmptyStateVariant.large}>
-        <EmptyStateIcon icon={ExclamationCircleIcon} color="red" />
-        <Title headingLevel={'h1'}>{t('SOMETHING_WENT_WRONG', { ns: 'common' })}</Title>
+      <EmptyState variant={EmptyStateVariant.lg}>
+        <EmptyStateHeader
+          titleText={<>{t('SOMETHING_WENT_WRONG', { ns: 'common' })}</>}
+          icon={<EmptyStateIcon icon={ExclamationCircleIcon} color="red" />}
+          headingLevel={'h1'}
+        />
         <EmptyStateBody>
           <p>{t('ERROR_BOUNDARY.ERROR_MESSAGE', { message: error?.message || 'Unknown error.' })}</p>
           <Trans

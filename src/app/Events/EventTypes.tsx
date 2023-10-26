@@ -31,14 +31,14 @@ import {
   TextInput,
   EmptyState,
   EmptyStateIcon,
-  Title,
   Text,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
-  TableComposable,
+  Table /* data-codemods */,
   TableVariant,
   Tbody,
   Td,
@@ -292,7 +292,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         </Toolbar>
         {typeRowPairs.length ? (
           // TODO replace table with data list so collapsed event options can be custom formatted
-          <TableComposable aria-label="Event Types Table" variant={TableVariant.compact}>
+          <Table aria-label="Event Types Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 <Th />
@@ -304,13 +304,14 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
               </Tr>
             </Thead>
             {typeRowPairs}
-          </TableComposable>
+          </Table>
         ) : (
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No Event Types
-            </Title>
+            <EmptyStateHeader
+              titleText="No Event Types"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
           </EmptyState>
         )}
       </>

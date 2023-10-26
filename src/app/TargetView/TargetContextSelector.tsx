@@ -19,7 +19,8 @@ import { isEqualTarget, getTargetRepresentation } from '@app/Shared/Services/api
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { Button, Divider, Select, SelectGroup, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Button, Divider } from '@patternfly/react-core';
+import { Select, SelectGroup, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 

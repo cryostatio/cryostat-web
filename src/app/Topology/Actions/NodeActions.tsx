@@ -17,7 +17,7 @@
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Dropdown, DropdownItem, DropdownProps, DropdownToggle } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownProps, DropdownToggle } from '@patternfly/react-core/deprecated';
 import { css } from '@patternfly/react-styles';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';

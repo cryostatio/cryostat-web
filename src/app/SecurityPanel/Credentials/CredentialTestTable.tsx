@@ -32,23 +32,21 @@ import {
   LabelProps,
   Popover,
   SearchInput,
-  Select,
-  SelectOption,
-  SelectVariant,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   Tooltip,
   ValidatedOptions,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import {
   InnerScrollContainer,
   OuterScrollContainer,
   SortByDirection,
-  TableComposable,
+  Table /* data-codemods */,
   Tbody,
   Td,
   Th,
@@ -137,7 +135,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
     <OuterScrollContainer>
       {toolbar}
       <InnerScrollContainer>
-        <TableComposable {...props}>
+        <Table {...props}>
           <Thead>
             <Tr>
               <Th sort={getSortParams(0)}>Target</Th>
@@ -147,16 +145,17 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
             </Tr>
           </Thead>
           <Tbody>{rows}</Tbody>
-        </TableComposable>
+        </Table>
       </InnerScrollContainer>
     </OuterScrollContainer>
   ) : (
     <Bullseye>
       <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateIcon variant="container" component={SearchIcon} />
-        <Title headingLevel="h3" size="lg">
-          No Targets Matched
-        </Title>
+        <EmptyStateHeader
+          titleText="No Targets Matched"
+          icon={<EmptyStateIcon icon={SearchIcon} />}
+          headingLevel="h3"
+        />
         <EmptyStateBody>{`${
           matchedExpr === '' ? 'Enter another' : 'Clear'
         } Match Expression and try again.`}</EmptyStateBody>

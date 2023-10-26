@@ -15,7 +15,7 @@
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useTheme } from '@app/utils/hooks/useTheme';
-import { Select, SelectOption } from '@patternfly/react-core';
+import { Select, SelectOption } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, ThemeSetting, UserSetting } from '../types';

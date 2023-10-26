@@ -21,17 +21,8 @@ import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { SerializedTarget } from '@app/TargetView/SerializedTarget';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import {
-  Card,
-  CardBody,
-  CardExpandableContent,
-  CardHeader,
-  CardTitle,
-  Select,
-  SelectGroup,
-  SelectOption,
-  SelectVariant,
-} from '@patternfly/react-core';
+import { Card, CardBody, CardExpandableContent, CardHeader, CardTitle } from '@patternfly/react-core';
+import { Select, SelectGroup, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 

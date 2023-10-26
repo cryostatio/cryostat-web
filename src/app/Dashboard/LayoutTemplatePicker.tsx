@@ -48,10 +48,6 @@ import {
   List,
   ListItem,
   ListVariant,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-  SelectVariant,
   Stack,
   StackItem,
   Title,
@@ -61,7 +57,9 @@ import {
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
+import { Select, SelectOption, SelectOptionObject, SelectVariant } from '@patternfly/react-core/deprecated';
 import {
   ArrowsAltVIcon,
   FilterIcon,
@@ -433,10 +431,11 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
           ) : (
             <Bullseye>
               <EmptyState variant={EmptyStateVariant.full}>
-                <EmptyStateIcon icon={InfoCircleIcon} />
-                <Title headingLevel="h5" size="lg">
-                  No template selected
-                </Title>
+                <EmptyStateHeader
+                  titleText="No template selected"
+                  icon={<EmptyStateIcon icon={InfoCircleIcon} />}
+                  headingLevel="h5"
+                />
               </EmptyState>
             </Bullseye>
           )}
@@ -617,10 +616,11 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 ) : (
                   <StackItem>
                     <EmptyState>
-                      <EmptyStateIcon icon={PficonTemplateIcon} />
-                      <Title size="lg" headingLevel="h4">
-                        No templates found
-                      </Title>
+                      <EmptyStateHeader
+                        titleText="No templates found"
+                        icon={<EmptyStateIcon icon={PficonTemplateIcon} />}
+                        headingLevel="h4"
+                      />
                       <EmptyStateBody>Upload a template and try again.</EmptyStateBody>
                     </EmptyState>
                   </StackItem>

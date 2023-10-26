@@ -53,10 +53,8 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Dropdown,
   Grid,
   GridItem,
-  KebabToggle,
   Label,
   LabelGroup,
   OverflowMenu,
@@ -74,6 +72,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
 import { RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
@@ -1008,7 +1007,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             <Title headingLevel={'h5'}>
               <Button
                 variant="plain"
-                isSmall
+                size="sm"
                 isDisabled={loadingAnalysis}
                 onClick={handleLoadAnalysis}
                 icon={<RedoIcon />}

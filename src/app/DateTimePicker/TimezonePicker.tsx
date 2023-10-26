@@ -16,7 +16,7 @@
 
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import { GlobeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';

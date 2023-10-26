@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Bullseye, EmptyState, EmptyStateIcon, Spinner, Title } from '@patternfly/react-core';
+import { Bullseye, EmptyState, EmptyStateIcon, Spinner, EmptyStateHeader } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface LoadingViewProps {
@@ -25,10 +25,7 @@ export const LoadingView: React.FC<LoadingViewProps> = ({ title = 'Loading' }) =
     <>
       <Bullseye>
         <EmptyState>
-          <EmptyStateIcon variant="container" component={Spinner} />
-          <Title size="lg" headingLevel="h2">
-            {title}
-          </Title>
+          <EmptyStateHeader titleText={<>{title}</>} icon={<EmptyStateIcon icon={Spinner} />} headingLevel="h2" />
         </EmptyState>
       </Bullseye>
     </>

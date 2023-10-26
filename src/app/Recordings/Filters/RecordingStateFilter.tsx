@@ -15,7 +15,7 @@
  */
 
 import { RecordingState } from '@app/Shared/Services/api.types';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 
 export interface RecordingStateFilterProps {

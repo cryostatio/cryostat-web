@@ -36,11 +36,11 @@ import {
   Modal,
   ModalVariant,
   TextInput,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -48,7 +48,7 @@ import {
   IAction,
   ISortBy,
   SortByDirection,
-  TableComposable,
+  Table /* data-codemods */,
   TableVariant,
   Tbody,
   Td,
@@ -385,7 +385,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           </ToolbarContent>
         </Toolbar>
         {templateRows.length ? (
-          <TableComposable aria-label="Event Templates Table" variant={TableVariant.compact}>
+          <Table aria-label="Event Templates Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 {tableColumns.map(({ title, sortable }, index) => (
@@ -396,13 +396,14 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
               </Tr>
             </Thead>
             <Tbody>{templateRows}</Tbody>
-          </TableComposable>
+          </Table>
         ) : (
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No Event Templates
-            </Title>
+            <EmptyStateHeader
+              titleText="No Event Templates"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
           </EmptyState>
         )}
         <EventTemplatesUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />

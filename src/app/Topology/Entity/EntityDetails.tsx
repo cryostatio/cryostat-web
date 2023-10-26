@@ -45,7 +45,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationTriangleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
-import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -493,7 +493,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
               <CardTitle>{title}</CardTitle>
             </CardHeader>
             <CardBody>
-              <TableComposable variant="compact" borders={false}>
+              <Table variant="compact" borders={false}>
                 <Thead>
                   <Tr>
                     <Th />
@@ -507,7 +507,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
                 {rowData.map((val) => (
                   <TargetResourceItem key={val} targetNode={targetNode} resourceType={val} />
                 ))}
-              </TableComposable>
+              </Table>
             </CardBody>
           </Card>
         </StackItem>

@@ -28,10 +28,6 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Button,
   Divider,
-  Dropdown as PF4Dropdown,
-  DropdownItem as PF4DropdownItem,
-  DropdownToggle,
-  DropdownToggleAction,
   Menu,
   MenuContent,
   MenuFooter,
@@ -44,8 +40,17 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Dropdown /* data-codemods */,
+  DropdownItem /* data-codemods */,
+  DropdownList /* data-codemods */,
 } from '@patternfly/react-core';
-import { Dropdown, DropdownItem, DropdownList } from '@patternfly/react-core/dist/js/next';
+import {
+  Dropdown as PF4Dropdown,
+  DropdownItem as PF4DropdownItem,
+  DropdownToggle,
+  DropdownToggleAction,
+} from '@patternfly/react-core/deprecated';
+
 import {
   EllipsisVIcon,
   FileIcon,
@@ -298,7 +303,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
             ]}
             toggleVariant="primary"
             splitButtonVariant="action"
-            onToggle={(open) => setIsCreateDropdownOpen(open)}
+            onToggle={(_event, open) => setIsCreateDropdownOpen(open)}
           />
         }
         isOpen={isCreateDropdownOpen}
@@ -352,13 +357,13 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
   const dropdownItems = React.useMemo(() => {
     return (
       <DropdownList>
-        <DropdownItem key="template" itemId={'template'}>
+        <DropdownItem key="template" value={'template'}>
           {t('DashboardLayoutToolbar.SET_AS_TEMPLATE')}
         </DropdownItem>
-        <DropdownItem key="download" itemId={'download'}>
+        <DropdownItem key="download" value={'download'}>
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
-        <DropdownItem key="clearAll" itemId={'clearAll'} isDisabled={currLayout.cards.length < 1}>
+        <DropdownItem key="clearAll" value={'clearAll'} isDisabled={currLayout.cards.length < 1}>
           {t('DashboardLayoutToolbar.CLEAR_LAYOUT')}
         </DropdownItem>
       </DropdownList>
@@ -495,12 +500,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           </MenuToggle>
         )}
       >
-        <Menu
-          aria-label={t('DashboardLayoutToolbar.MENU.LABEL')}
-          isScrollable
-          onSelect={onLayoutSelect}
-          onActionClick={onActionClick}
-        >
+        <Menu isScrollable onSelect={onLayoutSelect} onActionClick={onActionClick}>
           <MenuContent maxMenuHeight="21.5em" id="dashboard-layout-menu-content">
             {menuGroups(t('DashboardLayoutToolbar.MENU.FAVORITES'), true)}
             <Divider />

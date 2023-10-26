@@ -108,7 +108,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
             </LevelItem>
             <LevelItem>
               <Button
-                isSmall
+                size="sm"
                 isInline
                 variant="link"
                 aria-label={t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
@@ -119,7 +119,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
             </LevelItem>
             <LevelItem>
               <Button
-                isSmall
+                size="sm"
                 isInline
                 variant="link"
                 aria-label={t('AutomatedAnalysisScoreFilter.SLIDER.RESET100.LABEL')}

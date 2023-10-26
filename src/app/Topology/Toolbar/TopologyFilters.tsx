@@ -30,17 +30,13 @@ import { getDisplayFieldName } from '@app/utils/utils';
 import {
   Divider,
   Label,
-  Select,
-  SelectGroup,
-  SelectOption,
-  SelectProps,
-  SelectVariant,
   Switch,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
+import { Select, SelectGroup, SelectOption, SelectProps, SelectVariant } from '@patternfly/react-core/deprecated';
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';

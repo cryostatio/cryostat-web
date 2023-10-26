@@ -15,7 +15,7 @@
  */
 
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';

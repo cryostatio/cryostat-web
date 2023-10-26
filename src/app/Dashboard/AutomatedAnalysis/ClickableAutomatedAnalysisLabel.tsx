@@ -40,7 +40,6 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
 
   const alertStyle = {
-    default: popoverStyles.modifiers.default,
     info: popoverStyles.modifiers.info,
     success: popoverStyles.modifiers.success,
     warning: popoverStyles.modifiers.warning,
@@ -61,7 +60,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
 
   const alertPopoverVariant = React.useMemo(() => {
     return result.score == AutomatedAnalysisScore.NA_SCORE
-      ? 'default'
+      ? 'info'
       : result.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
       ? 'success'
       : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD

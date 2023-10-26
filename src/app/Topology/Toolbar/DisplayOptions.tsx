@@ -15,7 +15,8 @@
  */
 import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState, topologyDisplayOptionsSetIntent } from '@app/Shared/Redux/ReduxStore';
-import { Checkbox, Divider, Select, Stack, StackItem, Switch } from '@patternfly/react-core';
+import { Checkbox, Divider, Stack, StackItem, Switch } from '@patternfly/react-core';
+import { Select } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

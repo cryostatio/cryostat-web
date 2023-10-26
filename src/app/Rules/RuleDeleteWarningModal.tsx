@@ -81,7 +81,12 @@ export const RuleDeleteWarningModal = ({
           isChecked={clean}
           onChange={setClean}
         />
-        <Checkbox id="do-not-ask-enabled" label="Don't ask me again" isChecked={doNotAsk} onChange={setDoNotAsk} />
+        <Checkbox
+          id="do-not-ask-enabled"
+          label="Don't ask me again"
+          isChecked={doNotAsk}
+          onChange={(_event, val) => setDoNotAsk(val)}
+        />
       </Stack>
     </Modal>
   );

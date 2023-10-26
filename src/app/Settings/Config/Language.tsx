@@ -16,7 +16,7 @@
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { i18nLanguages, i18nResources } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
-import { Select, SelectOption } from '@patternfly/react-core';
+import { Select, SelectOption } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';

@@ -19,12 +19,12 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
-import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
+import { EmptyState, EmptyStateIcon, EmptyStateHeader } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
   InnerScrollContainer,
   SortByDirection,
-  TableComposable,
+  Table /* data-codemods */,
   Tbody,
   Td,
   Th,
@@ -119,10 +119,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
     view = (
       <>
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No Targets
-          </Title>
+          <EmptyStateHeader titleText="No Targets" icon={<EmptyStateIcon icon={SearchIcon} />} headingLevel="h4" />
         </EmptyState>
       </>
     );
@@ -130,7 +127,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
     view = (
       <>
         <InnerScrollContainer style={{ maxHeight: '24em' }}>
-          <TableComposable aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
+          <Table aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
             <Thead>
               <Tr>
                 {tableColumns.map(({ title }, index) => (
@@ -141,7 +138,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
               </Tr>
             </Thead>
             <Tbody>{targetRows}</Tbody>
-          </TableComposable>
+          </Table>
         </InnerScrollContainer>
       </>
     );

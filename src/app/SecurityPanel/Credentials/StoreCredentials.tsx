@@ -26,23 +26,20 @@ import {
   Badge,
   Button,
   Checkbox,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
-  DropdownToggleCheckbox,
   EmptyState,
   EmptyStateIcon,
   Popover,
   Text,
   TextContent,
   TextVariants,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownToggle, DropdownToggleCheckbox } from '@patternfly/react-core/deprecated';
 import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
-import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
@@ -349,7 +346,7 @@ export const StoreCredentials = () => {
           <Td key={`credentials-table-row-${idx}_1`}>
             <Checkbox
               name={`credentials-table-row-${idx}-check`}
-              onChange={handleRowCheck}
+              onChange={(_event, checked: boolean) => handleRowCheck(checked)}
               isChecked={isChecked}
               id={`credentials-table-row-${idx}-check`}
               aria-label={`credentials-table-row-${idx}-check`}
@@ -412,17 +409,18 @@ export const StoreCredentials = () => {
     content = (
       <>
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No {tableTitle}
-          </Title>
+          <EmptyStateHeader
+            titleText={<>No{tableTitle}</>}
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
         </EmptyState>
       </>
     );
   } else {
     content = (
       <>
-        <TableComposable aria-label={tableTitle}>
+        <Table aria-label={tableTitle}>
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
@@ -446,7 +444,7 @@ export const StoreCredentials = () => {
             </Tr>
           </Thead>
           <Tbody>{rowPairs}</Tbody>
-        </TableComposable>
+        </Table>
       </>
     );
   }

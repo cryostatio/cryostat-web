@@ -292,7 +292,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                   isRequired
                   fieldId="connect-url"
                   helperText={
-                    <FormHelperText isHidden={false} component="div">
+                    <FormHelperText>
                       JMX Service URL.{' '}
                       {example && (
                         <>
@@ -328,9 +328,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                   label="Alias"
                   fieldId="alias"
                   helperText={
-                    <FormHelperText isHidden={false}>
-                      Connection Nickname (same as Connection URL if not specified).
-                    </FormHelperText>
+                    <FormHelperText>Connection Nickname (same as Connection URL if not specified).</FormHelperText>
                   }
                 >
                   <TextInput
@@ -365,7 +363,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                           label={'Username'}
                           fieldId="username"
                           className="expandable-form__form-group"
-                          helperText={<FormHelperText isHidden={false}>Username for JMX connection.</FormHelperText>}
+                          helperText={<FormHelperText>Username for JMX connection.</FormHelperText>}
                         >
                           <TextInput
                             aria-label={'Username'}
@@ -382,7 +380,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                           label={'Password'}
                           fieldId="password"
                           className="expandable-form__form-group"
-                          helperText={<FormHelperText isHidden={false}>Password for JMX connection.</FormHelperText>}
+                          helperText={<FormHelperText>Password for JMX connection.</FormHelperText>}
                         >
                           <TextInput
                             value={password}

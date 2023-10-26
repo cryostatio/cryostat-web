@@ -23,16 +23,8 @@ import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Sh
 import { Recording, RecordingState } from '@app/Shared/Services/api.types';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import dayjs from '@i18n/datetime';
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
-  DropdownToggle,
-  ToolbarFilter,
-  ToolbarGroup,
-  ToolbarItem,
-  ToolbarToggleGroup,
-} from '@patternfly/react-core';
+import { ToolbarFilter, ToolbarGroup, ToolbarItem, ToolbarToggleGroup } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownPosition, DropdownToggle } from '@patternfly/react-core/deprecated';
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';

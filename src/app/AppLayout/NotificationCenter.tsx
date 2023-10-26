@@ -18,10 +18,6 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
-  KebabToggle,
   NotificationDrawer,
   NotificationDrawerBody,
   NotificationDrawerGroup,
@@ -34,6 +30,7 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
 

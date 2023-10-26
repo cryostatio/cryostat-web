@@ -263,7 +263,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           type="text"
           id="rule-matchexpr"
           aria-describedby="rule-matchexpr-helper"
-          onChange={(v) => {
+          onChange={(_event, v) => {
             setMatchExpressionInput(v);
             matchExprService.setSearchExpression(v);
           }}

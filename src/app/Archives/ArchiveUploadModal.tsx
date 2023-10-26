@@ -26,6 +26,7 @@ import {
   ExpandableSection,
   Form,
   FormGroup,
+  Icon,
   Modal,
   ModalVariant,
   Text,
@@ -194,7 +195,9 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
                 content={<Text>Unique key-value pairs containing information about the recording.</Text>}
                 appendTo={portalRoot}
               >
-                <HelpIcon noVerticalAlign />
+                <Icon>
+                  <HelpIcon />
+                </Icon>
               </Tooltip>
             }
           >
