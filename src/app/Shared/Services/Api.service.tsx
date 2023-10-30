@@ -16,7 +16,7 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { RecordingLabel } from '@app/RecordingMetadata/types';
-import { createBlobURL, jvmIdToSubdirectoryName } from '@app/utils/utils';
+import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
@@ -503,18 +503,20 @@ export class ApiService {
 
   // from file system path functions
   uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
-    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/upload`, {
-      method: 'POST',
-    }).pipe(
+    return this.sendRequest(
+      'beta',
+      `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}/upload`,
+      {
+        method: 'POST',
+      },
+    ).pipe(
       map((resp) => resp.ok),
       first(),
     );
   }
 
   deleteArchivedRecordingFromPath(jvmId: string, recordingName: string): Observable<boolean> {
-    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
-    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}`, {
+    return this.sendRequest('beta', `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -531,10 +533,9 @@ export class ApiService {
   }
 
   postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
-    const subdirectoryName = jvmIdToSubdirectoryName(jvmId);
     return this.sendRequest(
       'beta',
-      `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/metadata/labels`,
+      `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}/metadata/labels`,
       {
         method: 'POST',
         body: this.transformAndStringifyToRawLabels(labels),
