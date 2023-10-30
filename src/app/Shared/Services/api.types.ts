@@ -511,7 +511,6 @@ export interface NotificationMessage {
   meta: MessageMeta;
   // Should a message be any type? Try T?
   message: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  serverTime: number;
 }
 
 export interface MessageMeta {

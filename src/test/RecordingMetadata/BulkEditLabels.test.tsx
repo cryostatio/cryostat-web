@@ -32,7 +32,8 @@ jest.mock('@patternfly/react-core', () => ({
 }));
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockJvmId = 'id';
+const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -66,6 +67,7 @@ const mockActiveLabelsNotification = {
   message: {
     target: mockConnectUrl,
     recordingName: 'someActiveRecording',
+    jvmId: mockJvmId,
     metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
   },
 } as NotificationMessage;
@@ -76,6 +78,7 @@ const mockArchivedLabelsNotification = {
   message: {
     target: mockConnectUrl,
     recordingName: 'someArchivedRecording_some_random',
+    jvmId: mockJvmId,
     metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
   },
 } as NotificationMessage;

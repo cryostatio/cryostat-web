@@ -32,7 +32,8 @@ import { of, Subject } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockJvmId = 'id';
+const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
 const mockRecordingLabels = {
   someLabel: 'someValue',
 };
@@ -52,16 +53,19 @@ const mockRecording: ActiveRecording = {
 };
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 1 };
 const mockCreateNotification = {
-  message: { target: mockConnectUrl, recording: mockAnotherRecording },
+  message: { target: mockConnectUrl, recording: mockAnotherRecording, jvmId: mockJvmId },
 } as NotificationMessage;
 const mockLabelsNotification = {
   message: {
     target: mockConnectUrl,
     recordingName: 'someRecording',
+    jvmId: mockJvmId,
     metadata: { labels: { someLabel: 'someUpdatedValue' } },
   },
 } as NotificationMessage;
-const mockStopNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
+const mockStopNotification = {
+  message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId },
+} as NotificationMessage;
 const mockDeleteNotification = mockStopNotification;
 
 jest.mock('@app/Recordings/RecordingFilters', () => {

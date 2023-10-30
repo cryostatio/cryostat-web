@@ -38,7 +38,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               type: 'application',
               subtype: 'json',
             },
-            serverTime: +Date.now(),
           },
           message: {
             '127.0.0.1': 'accepted',
@@ -116,7 +115,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             meta: {
               category: 'TargetJvmDiscovery',
               type: { type: 'application', subType: 'json' },
-              serverTime: +Date.now(),
             },
             message: { event: { serviceRef: target, kind: 'FOUND' } },
           }),
@@ -186,7 +184,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           meta: {
             category: 'ArchivedRecordingDeleted',
             type: { type: 'application', subType: 'json' },
-            serverTime: +Date.now(),
           },
           message: {
             recording: {
@@ -229,7 +226,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             meta: {
               category: 'ActiveRecordingCreated',
               type: { type: 'application', subType: 'json' },
-              serverTime: +Date.now(),
             },
             message: {
               target: request.params.targetId,
@@ -253,7 +249,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           meta: {
             category: 'ActiveRecordingDeleted',
             type: { type: 'application', subType: 'json' },
-            serverTime: +Date.now(),
           },
           message: {
             recording: {
@@ -282,7 +277,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               meta: {
                 category: 'ActiveRecordingStopped',
                 type: { type: 'application', subType: 'json' },
-                serverTime: +Date.now(),
               },
               message: {
                 recording: {
@@ -308,7 +302,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               meta: {
                 category: 'ActiveRecordingSaved',
                 type: { type: 'application', subType: 'json' },
-                serverTime: ts,
               },
               message: {
                 recording: archived,
@@ -426,7 +419,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           meta: {
             category: 'RuleCreated',
             type: { type: 'application', subType: 'json' },
-            serverTime: +Date.now(),
           },
           message: rule,
         };
@@ -453,7 +445,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           meta: {
             category: 'RuleUpdated',
             type: { type: 'application', subType: 'json' },
-            serverTime: +Date.now(),
           },
           message: rule,
         };
@@ -473,7 +464,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           meta: {
             category: 'RuleDeleted',
             type: { type: 'application', subType: 'json' },
-            serverTime: +Date.now(),
           },
           message: rule,
         };
@@ -581,7 +571,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                 meta: {
                   category: 'RecordingMetadataUpdated',
                   type: { type: 'application', subType: 'json' },
-                  serverTime: +Date.now(),
                 },
                 message: {
                   recordingName: variables.recordingName,
@@ -628,7 +617,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                 meta: {
                   category: 'RecordingMetadataUpdated',
                   type: { type: 'application', subType: 'json' },
-                  serverTime: +Date.now(),
                 },
                 message: {
                   recordingName: variables.recordingName,
