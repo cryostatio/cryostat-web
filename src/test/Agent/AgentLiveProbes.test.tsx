@@ -32,7 +32,8 @@ import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockJvmId = 'id';
+const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -66,6 +67,7 @@ const mockApplyTemplateNotification = {
   message: {
     targetId: mockConnectUrl,
     events: [mockAnotherProbe],
+    jvmId: mockJvmId,
   },
 } as NotificationMessage;
 

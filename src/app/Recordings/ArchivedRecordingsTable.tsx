@@ -310,7 +310,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
         ),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) =>
@@ -326,7 +326,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
@@ -341,7 +341,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target) {
+        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) =>
