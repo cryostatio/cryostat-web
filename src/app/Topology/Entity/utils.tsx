@@ -274,6 +274,9 @@ export const getExpandedResourceDetails = (
 export const getConnectUrlFromEvent = (event: NotificationMessage): string | undefined => {
   return event.message.target || event.message.targetId;
 };
+export const getJvmIdFromEvent = (event: NotificationMessage): string | undefined => {
+  return event.message.jvmId;
+};
 
 export const useResources = <R = ResourceTypes,>(
   targetNode: TargetNode,
@@ -344,8 +347,9 @@ export const useResources = <R = ResourceTypes,>(
           )
           .subscribe(([targetNode, event]) => {
             const extractedUrl = getConnectUrlFromEvent(event);
+            const extractedJvmId = getJvmIdFromEvent(event)
             const isOwned = isOwnedResource(resourceType);
-            if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
+            if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl) || (extractedJvmId && extractedJvmId === targetNode.target.jvmId)) {
               setLoading(true);
               setResources((old) => {
                 // Avoid accessing state directly, which
