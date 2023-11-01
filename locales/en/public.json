@@ -258,9 +258,9 @@
     "DESCRIPTION": "Select Dashboard Layout Template configuration file(s) to upload. File(s) must be in valid JSON format.",
     "ERROR": {
       "CONFIG_INVALID": "Card configurations are invalid.",
-      "DESCRIPTION_INVALID": "Template description is invalid.",
+      "DESCRIPTION_INVALID": "Template description is invalid. The description can only include letters, numbers, spaces, and some special characters. It must also be 100 characters or less.",
       "DUPLICATE_UPLOAD": "A previously uploaded file has the same template name as the current file: \"{{name}}\".",
-      "NAME_INVALID": "Template name is invalid.",
+      "NAME_INVALID": "Template name is invalid. The name must be alphanumeric and be 20 characters or less.",
       "NAME_TAKEN": "Template with name \"{{name}}\" already exists.",
       "PARSE": "JSON parse error.",
       "TEMPLATE_INVALID": "Template has an invalid configuration.",
