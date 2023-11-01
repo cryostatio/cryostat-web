@@ -43,6 +43,7 @@ import {
   Dropdown /* data-codemods */,
   DropdownItem /* data-codemods */,
   DropdownList /* data-codemods */,
+  MenuToggleElement,
 } from '@patternfly/react-core';
 import {
   Dropdown as PF4Dropdown,
@@ -409,16 +410,18 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       <Dropdown
         isOpen={isKebabOpen}
         onSelect={onKebabSelect}
-        minWidth="12em"
+        popperProps={{
+          minWidth: '12em',
+        }}
         onOpenChange={(isOpen) => {
           setIsKebabOpen(isOpen);
         }}
-        toggle={(toggleRef) => (
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
             aria-label={t('DashboardLayoutToolbar.MENU.LABEL')}
             variant="plain"
-            onClick={() => setIsKebabOpen(!isKebabOpen)}
+            onClick={() => setIsKebabOpen((isKebabOpen) => !isKebabOpen)}
             isExpanded={isKebabOpen}
             data-quickstart-id="layout-toolbar-kebab-btn"
           >

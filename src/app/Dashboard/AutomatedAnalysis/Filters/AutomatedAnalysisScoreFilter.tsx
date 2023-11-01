@@ -64,7 +64,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
   }, [dispatch]);
 
   const onChange = React.useCallback(
-    (value: number, inputValue: number | undefined) => {
+    (_, value: number, inputValue: number | undefined) => {
       value = Math.round(value * 10) / 10;
       let newValue;
       if (inputValue === undefined) {
@@ -101,7 +101,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
         </Text>
       </Tooltip>
       <Slider
-        leftActions={
+        startActions={
           <Level hasGutter>
             <LevelItem>
               <Text component={TextVariants.small}>{t('RESET', { ns: 'common' })}:</Text>

@@ -637,7 +637,7 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
       selected={selectedConfig}
       popperProps={{
         enableFlip: true,
-        appendTo: portalRoot
+        appendTo: portalRoot,
       }}
       shouldFocusToggleOnSelect
     >
