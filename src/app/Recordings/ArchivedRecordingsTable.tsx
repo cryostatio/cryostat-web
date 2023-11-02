@@ -73,14 +73,7 @@ import {
 } from '@patternfly/react-core';
 import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
 import { UploadIcon } from '@patternfly/react-icons';
-import {
-  Tbody,
-  Tr,
-  Td,
-  ExpandableRowContent,
-  Table /* data-codemods */,
-  SortByDirection,
-} from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';

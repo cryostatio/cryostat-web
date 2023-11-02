@@ -42,7 +42,7 @@ import {
   ISortBy,
   SortByDirection,
   ThProps,
-  Table /* data-codemods */,
+  Table,
   Tbody,
   Th,
   Thead,

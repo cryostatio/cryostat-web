@@ -27,7 +27,7 @@ import {
   InnerScrollContainer,
   ISortBy,
   OuterScrollContainer,
-  Table /* data-codemods */,
+  Table,
   Tbody,
   Td,
   Th,

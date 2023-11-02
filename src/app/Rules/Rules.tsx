@@ -41,7 +41,7 @@ import {
   InnerScrollContainer,
   ISortBy,
   SortByDirection,
-  Table /* data-codemods */,
+  Table,
   TableVariant,
   Tbody,
   Td,

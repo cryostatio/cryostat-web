@@ -38,7 +38,7 @@ import { SearchIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
-  Table /* data-codemods */,
+  Table,
   TableVariant,
   Tbody,
   Td,

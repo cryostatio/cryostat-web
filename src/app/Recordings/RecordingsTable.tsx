@@ -28,15 +28,7 @@ import {
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import {
-  Table /* data-codemods */,
-  Thead,
-  Tr,
-  Th,
-  OuterScrollContainer,
-  InnerScrollContainer,
-  ThProps,
-} from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer, ThProps } from '@patternfly/react-table';
 import * as React from 'react';
 
 export interface ColumnConfig {

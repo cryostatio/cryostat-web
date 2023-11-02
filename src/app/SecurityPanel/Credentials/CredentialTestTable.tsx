@@ -46,7 +46,7 @@ import {
   InnerScrollContainer,
   OuterScrollContainer,
   SortByDirection,
-  Table /* data-codemods */,
+  Table,
   Tbody,
   Td,
   Th,

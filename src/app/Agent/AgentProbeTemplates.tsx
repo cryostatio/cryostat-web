@@ -46,7 +46,7 @@ import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
   SortByDirection,
-  Table /* data-codemods */,
+  Table,
   TableVariant,
   Tbody,
   Td,

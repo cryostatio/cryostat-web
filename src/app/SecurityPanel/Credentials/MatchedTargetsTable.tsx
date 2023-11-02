@@ -21,16 +21,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
 import { EmptyState, EmptyStateIcon, EmptyStateHeader } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import {
-  InnerScrollContainer,
-  SortByDirection,
-  Table /* data-codemods */,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@patternfly/react-table';
+import { InnerScrollContainer, SortByDirection, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 

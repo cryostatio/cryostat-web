@@ -40,9 +40,9 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Dropdown /* data-codemods */,
-  DropdownItem /* data-codemods */,
-  DropdownList /* data-codemods */,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   MenuToggleElement,
 } from '@patternfly/react-core';
 import {

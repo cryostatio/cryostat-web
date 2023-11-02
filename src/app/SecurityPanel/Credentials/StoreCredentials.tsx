@@ -39,7 +39,7 @@ import {
 } from '@patternfly/react-core';
 import { Dropdown, DropdownItem, DropdownToggle, DropdownToggleCheckbox } from '@patternfly/react-core/deprecated';
 import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
-import { ExpandableRowContent, Table /* data-codemods */, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
