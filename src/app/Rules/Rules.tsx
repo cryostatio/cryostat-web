@@ -353,7 +353,9 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
           <ActionsColumn
             items={actionResolver(r)}
-            menuAppendTo={() => document.getElementById('automated-rule-toolbar') || document.body}
+            popperProps={{
+              appendTo: () => document.getElementById('automated-rule-toolbar') || document.body,
+            }}
           />
         </Td>
       </Tr>
