@@ -21,6 +21,7 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  Icon,
   List,
   ListItem,
   Popover,
@@ -261,7 +262,11 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
               variant="link"
               aria-label="Remove Label"
               isDisabled={isDisabled}
-              icon={<CloseIcon color="gray" size="sm" />}
+              icon={
+                <Icon size="sm">
+                  <CloseIcon color="gray" />{' '}
+                </Icon>
+              }
             />
           </SplitItem>
         </Split>

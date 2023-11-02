@@ -867,7 +867,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
 
   const handleCheck = React.useCallback(
-    (checked: boolean) => {
+    (_, checked: boolean) => {
       handleRowCheck(checked, index);
     },
     [index, handleRowCheck],

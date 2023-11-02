@@ -82,7 +82,7 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
   );
 
   const handleTextInput = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       setDatetimeInput((_) => {
         if (value === '') {
           return _emptyDatetimeInput;

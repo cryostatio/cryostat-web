@@ -54,7 +54,7 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
   );
 
   const onInnerClose = React.useCallback(
-    (ev?: React.MouseEvent) => {
+    (ev?: KeyboardEvent | React.MouseEvent<Element, MouseEvent>) => {
       ev && ev.stopPropagation();
       onClose();
     },

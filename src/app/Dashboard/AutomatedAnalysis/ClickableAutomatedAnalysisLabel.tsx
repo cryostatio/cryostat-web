@@ -82,7 +82,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
 
   return (
     <Popover
-      aria-label={t('ClickableAutomatedAnalysisresult.ARIA_LABELS.POPOVER')}
+      aria-label={t('ClickableAutomatedAnalysisLabel.ARIA_LABELS.POPOVER')}
       isVisible={isDescriptionVisible}
       headerContent={<div className={`${clickableAutomatedAnalysisKey}-popover-header`}>{result.name}</div>}
       alertSeverityVariant={alertPopoverVariant}

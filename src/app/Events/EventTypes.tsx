@@ -213,7 +213,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   );
 
   const onFilterTextChange = React.useCallback(
-    (filterText: string) => {
+    (_, filterText: string) => {
       setFilterText(filterText);
       setCurrentPage(1);
     },

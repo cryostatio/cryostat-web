@@ -786,7 +786,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   }, [expandedRowId, expandedRows]);
 
   const handleCheck = React.useCallback(
-    (checked: boolean) => {
+    (_, checked: boolean) => {
       handleRowCheck(checked, index);
     },
     [index, handleRowCheck],
