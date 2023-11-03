@@ -28,7 +28,7 @@ export interface DashboardCardActionProps {
 export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ onRemove, onResetSize, onView }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const [t] = useTranslation();
+  const { t } = useTranslation();
 
   const onSelect = React.useCallback((_) => setIsOpen(false), [setIsOpen]);
 

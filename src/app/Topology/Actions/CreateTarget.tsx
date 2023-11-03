@@ -75,7 +75,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
-  const [t] = useTranslation();
+  const { t } = useTranslation();
 
   const [example, setExample] = React.useState('');
   const [{ connectUrl, alias, validConnectUrl, username, password }, setFormData] = React.useState({

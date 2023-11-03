@@ -51,7 +51,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   selected,
   onTimezoneChange = (_) => undefined,
 }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const [dayjs, _] = useDayjs();
   const [numOfOptions, setNumOfOptions] = React.useState(DEFAULT_NUM_OPTIONS);
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);

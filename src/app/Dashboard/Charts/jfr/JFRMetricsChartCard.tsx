@@ -87,7 +87,7 @@ export function kindToId(kind: string): number {
 }
 
 export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (props) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
   const navigate = useNavigate();

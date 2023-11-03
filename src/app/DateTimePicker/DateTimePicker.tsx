@@ -44,7 +44,7 @@ export interface DateTimePickerProps {
 type _TabKey = 'date' | 'time';
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const [dayjs, _] = useDayjs();
   const [activeTab, setActiveTab] = React.useState<_TabKey>('date');
   const [datetime, setDatetime] = React.useState<Date>(new Date());

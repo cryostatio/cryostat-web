@@ -59,7 +59,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   onMeridiemSelect,
   selected,
 }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const [is24h, setIs24h] = React.useState(true);
 
   const meridiemAM = React.useMemo(() => isHourIn24hAM(selected.hour24), [selected.hour24]);
@@ -143,7 +143,7 @@ interface TimeSpinnerProps {
 }
 
 const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const computedMax = React.useMemo(() => {
     switch (variant) {
       case 'hour12':

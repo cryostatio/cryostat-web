@@ -15,7 +15,8 @@
  */
 
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
+import { portalRoot } from '@app/utils/utils';
+import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -52,7 +53,7 @@ const getLocation = (key: string): Location => {
 };
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const [isExpanded, setExpanded] = React.useState(false);
   const [selection, setSelection] = React.useState(Locations.BACKEND.key);
 
@@ -70,32 +71,34 @@ const Component = () => {
     handleSelect(undefined, { value: getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key) });
   }, [handleSelect]);
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={() => setExpanded((expanded) => !expanded)} isExpanded={isExpanded}>
+        {t(getLocation(selection).titleKey)}
+      </MenuToggle>
+    ),
+    [isExpanded, selection],
+  );
+
   return (
     <>
       <Select
-        variant={SelectVariant.single}
-        isFlipEnabled={true}
-        menuAppendTo="parent"
-        onToggle={setExpanded}
+        popperProps={{
+          enableFlip: true,
+          appendTo: portalRoot,
+        }}
+        toggle={toggle}
         onSelect={handleSelect}
         isOpen={isExpanded}
-        selections={{
-          ...{ value: selection },
-          toString: () => t(getLocation(selection).titleKey),
-          compareTo: (val) => val.value === selection,
-        }}
+        selected={selection}
       >
-        {locations.map(({ key, titleKey, descriptionKey }) => (
-          <SelectOption
-            key={titleKey}
-            value={{
-              ...{ value: key },
-              toString: () => t(titleKey),
-              compareTo: (val) => val.value === key,
-            }}
-            description={t(descriptionKey)}
-          />
-        ))}
+        <SelectList>
+          {locations.map(({ key, titleKey, descriptionKey }) => (
+            <SelectOption key={titleKey} value={key} description={t(descriptionKey)}>
+              {t(titleKey)}
+            </SelectOption>
+          ))}
+        </SelectList>
       </Select>
     </>
   );
