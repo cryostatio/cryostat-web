@@ -299,7 +299,7 @@ interface CredentialToolbarProps {
 
 const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
   onFilter,
-  onSearch,
+  onSearch = () => undefined,
   matchedTargets,
   filters,
   searchText,
@@ -330,7 +330,11 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
     <Toolbar {...props} isSticky id="credential-test-table-toolbar" aria-label="credential-test-table-toolbar">
       <ToolbarContent>
         <ToolbarItem variant="search-filter">
-          <SearchInput aria-label="Items example search input" onChange={onSearch} value={searchText} />
+          <SearchInput
+            aria-label="Items example search input"
+            onChange={(_, value: string) => onSearch(value)}
+            value={searchText}
+          />
         </ToolbarItem>
         <ToolbarGroup variant="filter-group">
           <StatusFilter onChange={onFilter} filters={filters} />

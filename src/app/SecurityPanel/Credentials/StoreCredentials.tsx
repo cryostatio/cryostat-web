@@ -21,7 +21,7 @@ import { StoredCredential, NotificationCategory } from '@app/Shared/Services/api
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, sortResources } from '@app/utils/utils';
+import { TableColumn, sortResources, portalRoot } from '@app/utils/utils';
 import {
   Badge,
   Button,
@@ -36,8 +36,13 @@ import {
   ToolbarContent,
   ToolbarItem,
   EmptyStateHeader,
+  Dropdown,
+  DropdownList,
+  DropdownItem,
+  MenuToggleElement,
+  MenuToggle,
+  MenuToggleCheckbox,
 } from '@patternfly/react-core';
-import { Dropdown, DropdownItem, DropdownToggle, DropdownToggleCheckbox } from '@patternfly/react-core/deprecated';
 import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
@@ -474,11 +479,10 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   onAtLeastOneMatchSelect,
   onSelectAll,
   isSelectAll,
-  ...props
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const handleToggle = React.useCallback(() => setIsOpen((old) => !old), [setIsOpen]);
+  const handleToggle = React.useCallback(() => setIsOpen((isOpen) => !isOpen), [setIsOpen]);
 
   const dropdownItems = React.useMemo(() => {
     return [
@@ -489,31 +493,39 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
     ];
   }, [onNoMatchSelect, onAtLeastOneMatchSelect]);
 
-  return (
-    <Dropdown
-      {...props}
-      onSelect={() => {
-        setIsOpen(false);
-      }}
-      toggle={
-        <DropdownToggle
-          splitButtonItems={[
-            <DropdownToggleCheckbox
-              id="select-all-credentials"
-              key="select-all-credentials"
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        splitButtonOptions={{
+          items: [
+            <MenuToggleCheckbox
+              id={'select-all-credentials'}
+              key={'select-all-credentials'}
               aria-label="Select all"
               isChecked={isSelectAll}
               onChange={onSelectAll}
             />,
-          ]}
-          onToggle={handleToggle}
-          id="select-all-toggle"
-        />
-      }
+          ],
+        }}
+      />
+    ),
+    [handleToggle, isSelectAll, onSelectAll],
+  );
+
+  return (
+    <Dropdown
+      onSelect={() => {
+        setIsOpen(false);
+      }}
+      toggle={toggle}
       isOpen={isOpen}
-      dropdownItems={dropdownItems}
-      menuAppendTo={document.body}
-    />
+      popperProps={{
+        appendTo: portalRoot,
+      }}
+    >
+      <DropdownList>{dropdownItems}</DropdownList>
+    </Dropdown>
   );
 };
 

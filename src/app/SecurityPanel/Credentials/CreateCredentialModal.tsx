@@ -28,8 +28,11 @@ import {
   Card,
   CardBody,
   FormGroup,
+  FormHelperText,
   Grid,
   GridItem,
+  HelperText,
+  HelperTextItem,
   Modal,
   ModalVariant,
   Popover,
@@ -244,17 +247,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         }
         isRequired
         fieldId="match-expression"
-        helperText={
-          evaluating
-            ? 'Evaluating match expression...'
-            : matchExpressionValid === ValidatedOptions.warning
-            ? `Warning: Match expression matches no targets.`
-            : `
-        Enter a match expression. This is a Java-like code snippet that is evaluated against each target
-        application to determine whether the rule should be applied.`
-        }
-        helperTextInvalid="The expression matching failed."
-        validated={matchExpressionValid}
       >
         <TextArea
           value={matchExpressionInput}
@@ -272,6 +264,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           autoResize
           resizeOrientation="vertical"
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={matchExpressionValid}>
+              {evaluating
+                ? 'Evaluating match expression...'
+                : matchExpressionValid === ValidatedOptions.warning
+                ? `Warning: Match expression matches no targets.`
+                : matchExpressionValid === ValidatedOptions.error
+                ? 'The expression matching failed.'
+                : `Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.`}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
     </CredentialAuthForm>
   );
