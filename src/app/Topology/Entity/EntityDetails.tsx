@@ -649,6 +649,12 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
 }) => {
   const [status, extra] = statusContent;
   const [showBanner, setShowBanner] = React.useState(true);
+  const variant = React.useMemo(() => {
+    if (status == NodeStatus.default) {
+      return 'info';
+    }
+    return status;
+  }, [status]);
   return (
     <div className="entity-overview__header" {...props}>
       <Flex>
@@ -659,7 +665,7 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
       </Flex>
       {status && showBanner ? (
         <Alert
-          variant={status}
+          variant={variant}
           isInline
           title={extra?.title}
           className={'entity-overview__alert-banner'}
