@@ -255,7 +255,9 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
-            dropZoneAccepts={['application/json']}
+            dropZoneAccepts={{
+              'application/json': ['.json'],
+            }}
             displayAccepts={['JSON']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}

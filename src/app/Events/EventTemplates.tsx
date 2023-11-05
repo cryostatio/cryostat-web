@@ -519,6 +519,9 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
+            dropZoneAccepts={{
+              'application/xml': ['.xml', '.jfc'],
+            }}
             displayAccepts={['XML', 'JFC']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}

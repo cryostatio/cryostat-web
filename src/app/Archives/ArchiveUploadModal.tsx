@@ -181,6 +181,9 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
+            dropZoneAccepts={{
+              'application/octet-stream': ['.jfr'],
+            }}
             displayAccepts={['JFR']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}

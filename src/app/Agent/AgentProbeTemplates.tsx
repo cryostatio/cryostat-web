@@ -458,6 +458,9 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
+            dropZoneAccepts={{
+              'application/xml': ['.xml'],
+            }}
             displayAccepts={['XML']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}

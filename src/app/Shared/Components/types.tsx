@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import * as React from 'react';
+import { MultipleFileUploadProps } from '@patternfly/react-core';
+
 export interface LoadingProps {
   spinnerAriaValueText?: string; // Text describing that current loading status or progress
   spinnerAriaLabelledBy?: string; // Id of element which describes what is being loaded
@@ -24,3 +27,12 @@ export interface LoadingProps {
 export type DescriptionProps = {
   children?: React.ReactNode;
 };
+
+export type Unpacked<T> = T extends (infer A)[] ? A : T;
+
+// FIXME: React drop-zone types cannot be imported
+export type DropzoneOptions = NonNullable<MultipleFileUploadProps['dropzoneProps']>;
+
+export type FileRejection = Unpacked<Parameters<NonNullable<DropzoneOptions['onDropRejected']>>[0]>;
+
+export type DropzoneAccept = DropzoneOptions['accept'];
