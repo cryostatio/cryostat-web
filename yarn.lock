@@ -2318,12 +2318,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/selenium-webdriver@npm:^4.1.15":
-  version: 4.1.15
-  resolution: "@types/selenium-webdriver@npm:4.1.15"
+"@types/selenium-webdriver@npm:^4.1.20":
+  version: 4.1.20
+  resolution: "@types/selenium-webdriver@npm:4.1.20"
   dependencies:
     "@types/ws": "*"
-  checksum: 810ccb9155ca35cc8a6d25e8ba326b29e738b3afce62109f015ceb2007d30b0e818d9f39ff62a9ce9f5f6207ed9d38081cd5ceb3880ee0f694660085ac0e8631
+  checksum: 822e21af7413ce9e154ae2bb90c43193b305a3730955592489c7e2098831136891bde7c5bd92ce3e551b554c76d6973822e0d7fde1ff47ef342bc0ca43efa934
   languageName: node
   linkType: hard
 
@@ -4130,7 +4130,7 @@ __metadata:
     "@types/lodash": ^4.14.191
     "@types/react": ^17.0.69
     "@types/react-test-renderer": ^17.0.7
-    "@types/selenium-webdriver": ^4.1.15
+    "@types/selenium-webdriver": ^4.1.20
     "@typescript-eslint/eslint-plugin": ^6.7.3
     "@typescript-eslint/parser": ^6.7.3
     concurrently: ^8.2.1
@@ -4172,7 +4172,7 @@ __metadata:
     regenerator-runtime: ^0.13.11
     rimraf: ^4.1.2
     rxjs: ^7.8.0
-    selenium-webdriver: ^4.10.0
+    selenium-webdriver: ^4.15.0
     semver: ^7.5.4
     showdown: ^2.1.0
     style-loader: ^3.3.1
@@ -11812,14 +11812,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:^4.10.0":
-  version: 4.10.0
-  resolution: "selenium-webdriver@npm:4.10.0"
+"selenium-webdriver@npm:^4.15.0":
+  version: 4.15.0
+  resolution: "selenium-webdriver@npm:4.15.0"
   dependencies:
     jszip: ^3.10.1
     tmp: ^0.2.1
-    ws: ">=8.13.0"
-  checksum: fae9bbfa69d28ed1d143234a5ce0350bee7d41178b88f9812c69b2099ac99df8037f3fafee14efb65af3d91356f163e8a43a36151bf48eff1515415ccd17cb75
+    ws: ">=8.14.2"
+  checksum: 81ccce6f0035197063d017c8543975fa2d4e6e948b4bd54264ab98e446b49bfe5851de1e02e3ddecefa151cfa20bcdfbc3e8c936cbb877bc69b92e22ac28710a
   languageName: node
   linkType: hard
 
@@ -14279,9 +14279,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:>=8.13.0":
-  version: 8.13.0
-  resolution: "ws@npm:8.13.0"
+"ws@npm:>=8.14.2, ws@npm:^8.13.0":
+  version: 8.14.2
+  resolution: "ws@npm:8.14.2"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -14290,7 +14290,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 53e991bbf928faf5dc6efac9b8eb9ab6497c69feeb94f963d648b7a3530a720b19ec2e0ec037344257e05a4f35bd9ad04d9de6f289615ffb133282031b18c61c
+  checksum: 3ca0dad26e8cc6515ff392b622a1467430814c463b3368b0258e33696b1d4bed7510bc7030f7b72838b9fdeb8dbd8839cbf808367d6aae2e1d668ce741d4308b
   languageName: node
   linkType: hard
 
@@ -14306,21 +14306,6 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: c3c100a181b731f40b7f2fddf004aa023f79d64f489706a28bc23ff88e87f6a64b3c6651fbec3a84a53960b75159574d7a7385709847a62ddb7ad6af76f49138
-  languageName: node
-  linkType: hard
-
-"ws@npm:^8.13.0":
-  version: 8.14.2
-  resolution: "ws@npm:8.14.2"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 3ca0dad26e8cc6515ff392b622a1467430814c463b3368b0258e33696b1d4bed7510bc7030f7b72838b9fdeb8dbd8839cbf808367d6aae2e1d668ce741d4308b
   languageName: node
   linkType: hard
 
