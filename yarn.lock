@@ -2196,10 +2196,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.191":
-  version: 4.14.191
-  resolution: "@types/lodash@npm:4.14.191"
-  checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
+"@types/lodash@npm:^4.14.201":
+  version: 4.14.201
+  resolution: "@types/lodash@npm:4.14.201"
+  checksum: 484be655298e9b2dc2d218ea934071b2ea31e4a531c561dd220dbda65237e8d08c20dc2d457ac24f29be7fe167415bf7bb9360ea0d80bdb8b0f0ec8d8db92fae
   languageName: node
   linkType: hard
 
@@ -4127,7 +4127,7 @@ __metadata:
     "@testing-library/user-event": ^14.4.3
     "@types/jest": ^27.0.2
     "@types/js-base64": 3.3.1
-    "@types/lodash": ^4.14.191
+    "@types/lodash": ^4.14.201
     "@types/react": ^17.0.69
     "@types/react-test-renderer": ^17.0.7
     "@types/selenium-webdriver": ^4.1.20
