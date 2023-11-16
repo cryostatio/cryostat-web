@@ -79,7 +79,7 @@
     "MAXIMUM_SIZE": "Maximum size ({{unit}})",
     "SAVE_CHANGES": "Save changes",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
-    "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
+    "TEMPLATE_INVALID_WARNING": "WARNING: Setting the Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
   },
   "AutomatedAnalysisScoreFilter": {
     "CURRENT_SCORE_TEXT": "Only showing analysis results with severity scores ≥ {{ val }}:",
