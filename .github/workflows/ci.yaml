@@ -20,6 +20,8 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x, 18.x]
+    permissions:
+      pull-requests: read
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -34,6 +36,8 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x, 18.x]
+    permissions:
+      pull-requests: read
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -62,6 +66,10 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x, 18.x]
+    permissions:
+      statuses: write
+      pull-requests: write
+      packages: read
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -76,6 +84,10 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x, 18.x]
+    permissions:
+      statuses: write
+      pull-requests: write
+      packages: read
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
@@ -90,7 +102,7 @@ jobs:
       with:
         firefox-version: latest
     - name: Download geckodriver
-      env: 
+      env:
         GECKODRIVER_VERSION: v0.33.0
       run: curl -sL https://github.com/mozilla/geckodriver/releases/download/${{env.GECKODRIVER_VERSION}}/geckodriver-${{env.GECKODRIVER_VERSION}}-linux64.tar.gz | tar xzvf -
     - name: Add to PATH
