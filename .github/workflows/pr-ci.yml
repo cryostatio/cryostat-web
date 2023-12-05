@@ -43,7 +43,7 @@ jobs:
               repo,
               comment_id: context.payload.comment.id,
               content: "+1",
-            });  
+            });
 
   checkout-branch:
     runs-on: ubuntu-latest

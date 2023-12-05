@@ -90,7 +90,7 @@ jobs:
       with:
         firefox-version: latest
     - name: Download geckodriver
-      env: 
+      env:
         GECKODRIVER_VERSION: v0.33.0
       run: curl -sL https://github.com/mozilla/geckodriver/releases/download/${{env.GECKODRIVER_VERSION}}/geckodriver-${{env.GECKODRIVER_VERSION}}-linux64.tar.gz | tar xzvf -
     - name: Add to PATH
