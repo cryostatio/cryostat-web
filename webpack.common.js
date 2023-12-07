@@ -153,8 +153,8 @@ module.exports = (env) => {
       chunkFilename: '[id].[contenthash].bundle.js', // lazy-load modules
       hashFunction: "xxhash64",
       path: path.resolve(__dirname, 'dist'),
-      publicPath: './',
-      clean: true,
+      publicPath: 'auto',
+      clean: true
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
