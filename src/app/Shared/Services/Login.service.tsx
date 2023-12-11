@@ -40,7 +40,7 @@ export class LoginService {
     private readonly authCredentials: AuthCredentials,
     private readonly settings: SettingsService,
   ) {
-    this.authority = process.env.CRYOSTAT_AUTHORITY || '';
+    this.authority = process.env.CRYOSTAT_AUTHORITY || '.';
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
     this.authMethod.next(this.getCacheItem(this.AUTH_METHOD_KEY) as AuthMethod);

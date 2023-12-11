@@ -399,7 +399,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         },
       ]);
       this.get('api/v2/probes', () => []);
-      this.post('/api/beta/matchExpressions', (_, request) => {
+      this.post('api/beta/matchExpressions', (_, request) => {
         const attr = JSON.parse(request.requestBody);
         if (!attr.matchExpression || !attr.targets) {
           return new Response(400);

@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const BG_IMAGES_DIRNAME = 'bgimages';
-const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 module.exports = (env) => {
   return {
@@ -154,7 +153,7 @@ module.exports = (env) => {
       chunkFilename: '[id].[contenthash].bundle.js', // lazy-load modules
       hashFunction: "xxhash64",
       path: path.resolve(__dirname, 'dist'),
-      publicPath: ASSET_PATH,
+      publicPath: 'auto',
       clean: true
     },
     resolve: {
