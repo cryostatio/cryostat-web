@@ -18,7 +18,6 @@ import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { RecordingLabel } from '@app/RecordingMetadata/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
-import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
@@ -65,7 +64,7 @@ import {
 import { isHttpError, isActiveRecording, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
-import { SessionState, AuthMethod } from './service.types';
+import { SessionState } from './service.types';
 import { TargetService } from './Target.service';
 
 export class ApiService {
@@ -1361,24 +1360,7 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<Response> {
     const req = () =>
-      this.login.getHeaders().pipe(
-        concatMap((headers) => {
-          const defaultReq = {
-            credentials: 'include',
-            mode: 'cors',
-            headers: headers,
-          } as RequestInit;
-
-          const customizer = (dest: any, src: any) => {
-            if (dest instanceof Headers && src instanceof Headers) {
-              src.forEach((v, k) => dest.set(k, v));
-            }
-            return dest;
-          };
-
-          _.mergeWith(config, defaultReq, customizer);
-          return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, config);
-        }),
+      fromFetch(`${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, config).pipe(
         map((resp) => {
           if (resp.ok) return resp;
           throw new HttpError(resp);
@@ -1396,11 +1378,8 @@ export class ApiService {
   private handleError<T>(error: Error, retry: () => Observable<T>, suppressNotifications = false): ObservableInput<T> {
     if (isHttpError(error)) {
       if (error.httpResponse.status === 427) {
-        const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
-        if (jmxAuthScheme === AuthMethod.BASIC) {
-          this.target.setAuthFailure();
-          return this.target.authRetry().pipe(mergeMap(() => retry()));
-        }
+        this.target.setAuthFailure();
+        return this.target.authRetry().pipe(mergeMap(() => retry()));
       } else if (error.httpResponse.status === 502) {
         this.target.setSslFailure();
       } else {
@@ -1428,61 +1407,57 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<XMLHttpResponse> {
     const req = () =>
-      this.login.getHeaders().pipe(
-        concatMap((defaultHeaders) => {
-          return from(
-            new Promise<XMLHttpResponse>((resolve, reject) => {
-              const xhr = new XMLHttpRequest();
-              xhr.open(method, `${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, true);
+      from(
+        new Promise<XMLHttpResponse>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open(method, `${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, true);
 
-              listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
+          listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
 
-              abortSignal && abortSignal.subscribe(() => xhr.abort()); // Listen to abort signal if any
+          abortSignal && abortSignal.subscribe(() => xhr.abort()); // Listen to abort signal if any
 
-              xhr.addEventListener('readystatechange', () => {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                  if (xhr.status === 0) {
-                    // aborted
-                    reject(new Error('Aborted'));
-                  }
-                  const ok = isHttpOk(xhr.status);
-                  const respHeaders = {};
-                  const arr = xhr
-                    .getAllResponseHeaders()
-                    .trim()
-                    .split(/[\r\n]+/);
-                  arr.forEach((line) => {
-                    const parts = line.split(': ');
-                    const header = parts.shift();
-                    const value = parts.join(': ');
-                    if (header) {
-                      respHeaders[header] = value;
-                    } else {
-                      reject(new Error('Invalid header'));
-                    }
-                  });
-
-                  resolve({
-                    body: xhr.response,
-                    headers: respHeaders,
-                    respType: xhr.responseType,
-                    status: xhr.status,
-                    statusText: xhr.statusText,
-                    ok: ok,
-                  } as XMLHttpResponse);
+          xhr.addEventListener('readystatechange', () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 0) {
+                // aborted
+                reject(new Error('Aborted'));
+              }
+              const ok = isHttpOk(xhr.status);
+              const respHeaders = {};
+              const arr = xhr
+                .getAllResponseHeaders()
+                .trim()
+                .split(/[\r\n]+/);
+              arr.forEach((line) => {
+                const parts = line.split(': ');
+                const header = parts.shift();
+                const value = parts.join(': ');
+                if (header) {
+                  respHeaders[header] = value;
+                } else {
+                  reject(new Error('Invalid header'));
                 }
               });
 
-              // Populate headers
-              defaultHeaders.forEach((v, k) => xhr.setRequestHeader(k, v));
-              headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
-              xhr.withCredentials = true;
+              resolve({
+                body: xhr.response,
+                headers: respHeaders,
+                respType: xhr.responseType,
+                status: xhr.status,
+                statusText: xhr.statusText,
+                ok: ok,
+              } as XMLHttpResponse);
+            }
+          });
 
-              // Send request
-              xhr.send(body);
-            }),
-          );
+          // Populate headers
+          headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
+          xhr.withCredentials = true;
+
+          // Send request
+          xhr.send(body);
         }),
+      ).pipe(
         map((resp) => {
           if (resp.ok) return resp;
           throw new XMLHttpError(resp);
@@ -1504,11 +1479,8 @@ export class ApiService {
   ): ObservableInput<T> {
     if (isXMLHttpError(error)) {
       if (error.xmlHttpResponse.status === 427) {
-        const jmxAuthScheme = error.xmlHttpResponse.headers['X-JMX-Authenticate'];
-        if (jmxAuthScheme === AuthMethod.BASIC) {
-          this.target.setAuthFailure();
-          return this.target.authRetry().pipe(mergeMap(() => retry()));
-        }
+        this.target.setAuthFailure();
+        return this.target.authRetry().pipe(mergeMap(() => retry()));
       } else if (error.xmlHttpResponse.status === 502) {
         this.target.setSslFailure();
       } else {

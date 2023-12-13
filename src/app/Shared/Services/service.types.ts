@@ -59,10 +59,3 @@ export enum SessionState {
   CREATING_USER_SESSION,
   USER_SESSION,
 }
-
-export enum AuthMethod {
-  BASIC = 'Basic',
-  BEARER = 'Bearer',
-  NONE = 'None',
-  UNKNOWN = '',
-}

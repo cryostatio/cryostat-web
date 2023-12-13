@@ -26,5 +26,4 @@ export const AutomatedAnalysis: UserSetting = {
   descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
   content: Component,
   category: SettingTab.DASHBOARD,
-  authenticated: true,
 };

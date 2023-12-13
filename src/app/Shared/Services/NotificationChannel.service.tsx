@@ -29,7 +29,7 @@ import {
 import { messageKeys } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
-import { SessionState, AuthMethod } from './service.types';
+import { SessionState } from './service.types';
 
 export class NotificationChannel {
   private ws: WebSocketSubject<NotificationMessage> | null = null;
@@ -72,7 +72,7 @@ export class NotificationChannel {
         });
       });
 
-    const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`).pipe(
+    const notificationsUrl = fromFetch(`api/v1/notifications_url`).pipe(
       concatMap(async (resp) => {
         if (resp.ok) {
           const body: NotificationsUrlGetResponse = await resp.json();
@@ -84,30 +84,15 @@ export class NotificationChannel {
       }),
     );
 
-    combineLatest([
-      notificationsUrl,
-      this.login.getToken(),
-      this.login.getAuthMethod(),
-      this.login.getSessionState(),
-      timer(0, 5000),
-    ])
+    combineLatest([notificationsUrl, this.login.getSessionState(), timer(0, 5000)])
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
         next: (parts: string[]) => {
           const url = parts[0];
-          const token = parts[1];
-          const authMethod = parts[2];
-          const sessionState = parseInt(parts[3]);
-          let subprotocol: string | undefined = undefined;
+          const sessionState = parseInt(parts[1]);
 
           if (sessionState !== SessionState.CREATING_USER_SESSION) {
             return;
-          }
-
-          if (authMethod === AuthMethod.BEARER) {
-            subprotocol = `base64url.bearer.authorization.cryostat.${token}`;
-          } else if (authMethod === AuthMethod.BASIC) {
-            subprotocol = `basic.authorization.cryostat.${token}`;
           }
 
           if (this.ws) {
@@ -116,7 +101,7 @@ export class NotificationChannel {
 
           this.ws = webSocket({
             url,
-            protocol: subprotocol,
+            protocol: '',
             openObserver: {
               next: () => {
                 this._ready.next({ ready: true });
