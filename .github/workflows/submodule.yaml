@@ -19,12 +19,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+<<<<<<< HEAD
         repository: cryostatio/cryostat
         token: "${{ secrets.SUBMODULE_TOKEN }}"
         ref: "${{ github.ref_name }}"
     - name: Check remote submodule branch
       run: |
         remote_branch="$(git config --get -f .gitmodules submodule.web-client.branch)"
+=======
+        repository: cryostatio/cryostat3
+        token: "${{ secrets.SUBMODULE_TOKEN }}"
+        ref: "${{ github.ref_name }}"
+    - name: Check remote cryostat3 submodule branch
+      run: |
+        remote_branch="$(git config --get -f .gitmodules submodule."src/main/webui".branch)"
+>>>>>>> 58c991a (ci(submodule): remove config for updating old 2.x repo (#1182))
         if [[ "$remote_branch" != "${{ github.ref_name }}" ]]; then
           printf "Expected remote branch %s, found branch %s\n" "${{ github.ref_name }}" "$remote_branch" >&2
           exit 1
@@ -43,6 +52,11 @@ jobs:
     - name: Commit and push submodule
       run: |
         git add --all
+<<<<<<< HEAD
         git_hash="$(git rev-parse --short :web-client)"
         git commit -S -m "build(web-client): update submodule to $git_hash" || echo "No changes to commit"
+=======
+        git_hash="$(git rev-parse --short :src/main/webui)"
+        git commit -S -m "build(webui): update submodule to $git_hash" || echo "No changes to commit"
+>>>>>>> 58c991a (ci(submodule): remove config for updating old 2.x repo (#1182))
         git push
