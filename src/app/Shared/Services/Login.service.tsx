@@ -27,7 +27,7 @@ export class LoginService {
 
   constructor(private readonly settings: SettingsService) {
     this.authority = process.env.CRYOSTAT_AUTHORITY || '.';
-    this.username.next('user' /*TODO get this from X-Forwarded headers: this.getCacheItem(this.USER_KEY)*/);
+    this.username.next('' /*TODO get this from X-Forwarded headers: this.getCacheItem(this.USER_KEY)*/);
     this.sessionState.next(SessionState.CREATING_USER_SESSION);
   }
 
