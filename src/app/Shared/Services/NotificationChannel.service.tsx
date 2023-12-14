@@ -16,16 +16,9 @@
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import {
-  NotificationMessage,
-  ReadyState,
-  CloseStatus,
-  NotificationCategory,
-  NotificationsUrlGetResponse,
-} from './api.types';
+import { NotificationMessage, ReadyState, CloseStatus, NotificationCategory } from './api.types';
 import { messageKeys } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
@@ -72,24 +65,11 @@ export class NotificationChannel {
         });
       });
 
-    const notificationsUrl = fromFetch(`api/v1/notifications_url`).pipe(
-      concatMap(async (resp) => {
-        if (resp.ok) {
-          const body: NotificationsUrlGetResponse = await resp.json();
-          return body.notificationsUrl;
-        } else {
-          const body: string = await resp.text();
-          throw new Error(resp.status + ' ' + body);
-        }
-      }),
-    );
-
-    combineLatest([notificationsUrl, this.login.getSessionState(), timer(0, 5000)])
+    combineLatest([this.login.getSessionState(), timer(0, 5000)])
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
         next: (parts: string[]) => {
-          const url = parts[0];
-          const sessionState = parseInt(parts[1]);
+          const sessionState = parseInt(parts[0]);
 
           if (sessionState !== SessionState.CREATING_USER_SESSION) {
             return;
@@ -99,8 +79,11 @@ export class NotificationChannel {
             this.ws.complete();
           }
 
+          const url = new URL(window.location.href);
+          url.protocol = url.protocol.replace('http', 'ws');
+          url.pathname = '/api/notifications';
           this.ws = webSocket({
-            url,
+            url: url.toString(),
             protocol: '',
             openObserver: {
               next: () => {

@@ -22,7 +22,7 @@ import models from './models';
 import { Resource } from './typings';
 
 export const startMirage = ({ environment = 'development' } = {}) => {
-  const wsUrl = `ws://cryostat.local.preview:8181`;
+  const wsUrl = `ws://localhost:9091/api/notifications`;
   const wsServer = new WSServer(wsUrl);
 
   // Create a mock server socket to send notifications
@@ -74,9 +74,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       }));
       this.get('api/v1/grafana_datasource_url', () => new Response(500));
       this.get('api/v1/grafana_dashboard_url', () => new Response(500));
-      this.get('api/v1/notifications_url', () => ({
-        notificationsUrl: wsUrl,
-      }));
       this.post('api/v2.1/auth', () => {
         return new Response(
           200,

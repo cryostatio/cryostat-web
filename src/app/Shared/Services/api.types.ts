@@ -503,9 +503,6 @@ export interface DiscoveryResponse extends ApiV2Response {
 // ======================================
 // Notification resources
 // ======================================
-export interface NotificationsUrlGetResponse {
-  notificationsUrl: string;
-}
 
 export interface NotificationMessage {
   meta: MessageMeta;
