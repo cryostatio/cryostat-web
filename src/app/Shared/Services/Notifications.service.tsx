@@ -98,7 +98,12 @@ export class NotificationService {
 
   cryostatStatusNotifications(): Observable<Notification[]> {
     return this.notifications().pipe(
-      map((a) => a.filter((n) => this.isJvmDiscovery(n) && !NotificationService.isProblemNotification(n))),
+      map((a) =>
+        a.filter(
+          (n) =>
+            (this.isWsClientActivity(n) || this.isJvmDiscovery(n)) && !NotificationService.isProblemNotification(n),
+        ),
+      ),
     );
   }
 
@@ -148,7 +153,11 @@ export class NotificationService {
   }
 
   private isActionNotification(n: Notification): boolean {
-    return !this.isJvmDiscovery(n) && !NotificationService.isProblemNotification(n);
+    return !this.isWsClientActivity(n) && !this.isJvmDiscovery(n) && !NotificationService.isProblemNotification(n);
+  }
+
+  private isWsClientActivity(n: Notification): boolean {
+    return n.category === NotificationCategory.WsClientActivity;
   }
 
   private isJvmDiscovery(n: Notification): boolean {

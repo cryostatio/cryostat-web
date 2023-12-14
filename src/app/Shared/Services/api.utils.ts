@@ -223,6 +223,19 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.WsClientActivity,
+    {
+      variant: AlertVariant.info,
+      title: 'WebSocket Client Activity',
+      body: (evt) => {
+        const addr = Object.keys(evt.message)[0];
+        const status = evt.message[addr];
+        return `Client at ${addr} ${status}`;
+      },
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.ActiveRecordingCreated,
     {
       variant: AlertVariant.success,

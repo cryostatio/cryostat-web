@@ -147,14 +147,14 @@ describe('<NotificationControl/>', () => {
 
     await user.click(expandButton);
 
-    const targetDiscovery = screen.getByLabelText('Target JVM Discovery');
-    expect(targetDiscovery).toBeInTheDocument();
-    expect(targetDiscovery).toBeVisible();
-    expect(targetDiscovery).toBeChecked();
+    const webSocketAct = screen.getByLabelText('WebSocket Client Activity');
+    expect(webSocketAct).toBeInTheDocument();
+    expect(webSocketAct).toBeVisible();
+    expect(webSocketAct).toBeChecked();
 
-    await user.click(targetDiscovery);
+    await user.click(webSocketAct);
 
-    expect(targetDiscovery).not.toBeChecked();
+    expect(webSocketAct).not.toBeChecked();
     expect(enableSwitch).not.toBeChecked();
   });
 });
