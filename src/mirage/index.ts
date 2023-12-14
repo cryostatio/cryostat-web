@@ -27,25 +27,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
 
   // Create a mock server socket to send notifications
   let websocket: Client;
-  wsServer.on('connection', (socket) => {
-    websocket = socket;
-    socket.on('message', (_) => {
-      socket.send(
-        JSON.stringify({
-          meta: {
-            category: 'WsClientActivity',
-            type: {
-              type: 'application',
-              subtype: 'json',
-            },
-          },
-          message: {
-            '127.0.0.1': 'accepted',
-          },
-        }),
-      );
-    });
-  });
+  wsServer.on('connection', (_) => {});
 
   // Create a MirageJS Server to intercept network requests
   return createServer({

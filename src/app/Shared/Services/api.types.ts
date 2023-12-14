@@ -537,7 +537,6 @@ export interface Notification {
 }
 
 export enum NotificationCategory {
-  WsClientActivity = 'WsClientActivity',
   TargetJvmDiscovery = 'TargetJvmDiscovery',
   ActiveRecordingCreated = 'ActiveRecordingCreated',
   ActiveRecordingStopped = 'ActiveRecordingStopped',

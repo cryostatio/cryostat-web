@@ -127,7 +127,7 @@ export class NotificationChannel {
                 fn.apply(this.notifications, [
                   'WebSocket connection lost',
                   msg,
-                  NotificationCategory.WsClientActivity,
+                  'Client Status',
                   fn === this.notifications.info,
                 ]);
               },
