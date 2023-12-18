@@ -54,7 +54,11 @@ export const AboutDescription: React.FC = () => {
         <Text
           component={TextVariants.a}
           target="_blank"
-          href={cryostatCommitHash ? build.releaseTagUrl.replace('__REPLACE_HASH__', cryostatCommitHash) : build.developmentUrl}
+          href={
+            cryostatCommitHash
+              ? build.releaseTagUrl.replace('__REPLACE_HASH__', cryostatCommitHash)
+              : build.developmentUrl
+          }
         >
           {cryostatVersion}
         </Text>
