@@ -36,7 +36,7 @@ export const AboutDescription: React.FC = () => {
     if (!cryostatVersion) {
       return;
     }
-    const expr = /^(?<tag>v[0-9]+\\.[0-9]+\\.[0-9]+)(?:-snapshot)$/;
+    const expr = /^(?<tag>v[0-9]+\.[0-9]+\.[0-9]+)(?:-snapshot)?$/;
     const result = cryostatVersion.match(expr);
     if (!result) {
       notificationsContext.warning(
