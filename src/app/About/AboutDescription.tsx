@@ -36,25 +36,29 @@ export const AboutDescription: React.FC = () => {
     if (!cryostatVersion) {
       return;
     }
-    const expr = /^(?<describe>[a-zA-Z0-9-_.]+-[0-9]+-[a-z0-9]+)(?:-dirty)?$/;
+    const expr = /^(?<tag>v[0-9]+\.[0-9]+\.[0-9]+)(?:-snapshot)?$/;
     const result = cryostatVersion.match(expr);
     if (!result) {
       notificationsContext.warning(
         'Cryostat Version Parse Failure',
         `Could not parse Cryostat version string '${cryostatVersion}'.`,
       );
-      return 'main';
+      return;
     }
-    return result.groups?.describe || 'main';
+    return result.groups?.tag;
   }, [cryostatVersion, notificationsContext]);
 
   const versionComponent = React.useMemo(() => {
-    if (build.commitHashUrl) {
+    if (build.releaseTagUrl) {
       return (
         <Text
           component={TextVariants.a}
           target="_blank"
-          href={build.commitHashUrl.replace('__REPLACE_HASH__', cryostatCommitHash || '')}
+          href={
+            cryostatCommitHash
+              ? build.releaseTagUrl.replace('__REPLACE_HASH__', cryostatCommitHash)
+              : build.developmentUrl
+          }
         >
           {cryostatVersion}
         </Text>
