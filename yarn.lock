@@ -4197,7 +4197,7 @@ __metadata:
     eslint-webpack-plugin: ^4.0.0
     file-loader: ^6.2.0
     fork-ts-checker-webpack-plugin: ^7.3.0
-    html-webpack-plugin: ^5.5.0
+    html-webpack-plugin: ^5.5.4
     i18next: ^22.4.10
     i18next-browser-languagedetector: ^7.0.1
     i18next-parser: ^7.7.0
@@ -7074,9 +7074,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-webpack-plugin@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "html-webpack-plugin@npm:5.5.0"
+"html-webpack-plugin@npm:^5.5.4":
+  version: 5.5.4
+  resolution: "html-webpack-plugin@npm:5.5.4"
   dependencies:
     "@types/html-minifier-terser": ^6.0.0
     html-minifier-terser: ^6.0.2
@@ -7085,7 +7085,7 @@ __metadata:
     tapable: ^2.0.0
   peerDependencies:
     webpack: ^5.20.0
-  checksum: f3d84d0df71fe2f5bac533cc74dce41ab058558cdcc6ff767d166a2abf1cf6fb8491d54d60ddbb34e95c00394e379ba52e0468e0284d1d0cc6a42987056e8219
+  checksum: b49befb73d67a3716fd0e6f7776b108d2b0b7050fb8221f05cd114cbae13c03150a13b7cdf5e76170be040ce7936a1cf76f7a4bfd9ebe1552b72d7889a74c374
   languageName: node
   linkType: hard
 
