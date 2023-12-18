@@ -1,6 +1,7 @@
 {
   "productName": "Cryostat",
-  "commitHashUrl": "https://github.com/cryostatio/cryostat/commits/__REPLACE_HASH__",
+  "developmentUrl": "https://github.com/cryostatio/cryostat",
+  "releaseTagUrl": "https://github.com/cryostatio/cryostat/releases/tag/__REPLACE_HASH__",
   "homePageUrl": "https://cryostat.io",
   "blogPageUrl": "https://cryostat.io/blog",
   "documentationUrl": "https://cryostat.io/guides",
@@ -12,5 +13,5 @@
   "mailingListName": "Google Groups",
   "mailingListUrl": "https://groups.google.com/g/cryostat-development",
   "licenseUrl": "https://github.com/cryostatio/cryostat/blob/main/LICENSE.txt",
-  "version": "2.5.0-dev"
+  "version": "3.0.0-dev"
 }
