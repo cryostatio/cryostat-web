@@ -4257,7 +4257,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-i18next: ^12.3.1
-    react-joyride: ^2.7.0
+    react-joyride: ^2.7.1
     react-redux: ^8.0.5
     react-router-dom: ^6.17.0
     react-test-renderer: ^17.0.2
@@ -6085,13 +6085,6 @@ __metadata:
     signal-exit: ^3.0.3
     strip-final-newline: ^2.0.0
   checksum: fba9022c8c8c15ed862847e94c252b3d946036d7547af310e344a527e59021fd8b6bb0723883ea87044dc4f0201f949046993124a42ccb0855cae5bf8c786343
-  languageName: node
-  linkType: hard
-
-"exenv@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "exenv@npm:1.2.2"
-  checksum: a894f3b60ab8419e0b6eec99c690a009c8276b4c90655ccaf7d28faba2de3a6b93b3d92210f9dc5efd36058d44f04098f6bbccef99859151104bfd49939904dc
   languageName: node
   linkType: hard
 
@@ -11182,21 +11175,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-floater@npm:^0.7.6":
-  version: 0.7.6
-  resolution: "react-floater@npm:0.7.6"
+"react-floater@npm:^0.7.9":
+  version: 0.7.9
+  resolution: "react-floater@npm:0.7.9"
   dependencies:
-    deepmerge: ^4.2.2
-    exenv: ^1.2.2
+    deepmerge: ^4.3.1
     is-lite: ^0.8.2
     popper.js: ^1.16.0
     prop-types: ^15.8.1
-    react-proptype-conditional-require: ^1.0.4
     tree-changes: ^0.9.1
   peerDependencies:
     react: 15 - 18
     react-dom: 15 - 18
-  checksum: 8268e14fbdf9393b39300f3c90ea2de382782f1d959176579e30841095a73f9240ec05fce3ec89e8b4e58cbc46c9b043b2ad0b338f5c5d3b91168b16a4282ac1
+  checksum: 563884338de7d3a3ee07851ffa4374707239f9dabf279699642756ac788ddc11c090e283d95ef2208ed70615122924a4601bbd09450254b6524329ddabb48913
   languageName: node
   linkType: hard
 
@@ -11249,26 +11240,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-joyride@npm:^2.7.0":
-  version: 2.7.0
-  resolution: "react-joyride@npm:2.7.0"
+"react-joyride@npm:^2.7.1":
+  version: 2.7.1
+  resolution: "react-joyride@npm:2.7.1"
   dependencies:
     "@gilbarbara/deep-equal": ^0.3.1
     "@gilbarbara/helpers": ^0.9.0
     deep-diff: ^1.0.2
     deepmerge: ^4.3.1
     is-lite: ^1.2.0
-    react-floater: ^0.7.6
+    react-floater: ^0.7.9
     react-innertext: ^1.1.5
     react-is: ^16.13.1
     scroll: ^3.0.1
     scrollparent: ^2.1.0
-    tree-changes: ^0.11.1
-    type-fest: ^4.7.1
+    tree-changes: ^0.11.2
+    type-fest: ^4.8.3
   peerDependencies:
     react: 15 - 18
     react-dom: 15 - 18
-  checksum: 87f11b8c5f28ed13f51030c41a6376b80a2585745d976ac7ec99c5147e4572040f1141c593c0de4448f6fb393d87d922bb1c1328090c820361730963e0113f78
+  checksum: ea0eaa93318b29aa6e527509a546bbd52ba7109c4ee54c04796fdbd35de8ebbdd53d8ff9f90863ca8cc7d35536c035fac0421df33d065066f0c1f7094995a8aa
   languageName: node
   linkType: hard
 
@@ -11284,13 +11275,6 @@ __metadata:
     react: ">0.13.0"
     react-dom: ">0.13.0"
   checksum: 75bd3cd74d96f3e83f0a42b8f59e8764e6a5eec994492e077c49a4fea0d0b27775a5154502aff2eee3f6af40650ce2e58ed18ac927a64013b14c9942cc9c4872
-  languageName: node
-  linkType: hard
-
-"react-proptype-conditional-require@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "react-proptype-conditional-require@npm:1.0.4"
-  checksum: 78f82d15b2c77c14fd8fbcbbed279850df3a856984aacd519ee6c2162e034b114b8ac47c00157b84ef7c98c0711d933a0177d9d54555629cf381f54341bb0e8f
   languageName: node
   linkType: hard
 
@@ -13050,13 +13034,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tree-changes@npm:^0.11.1":
-  version: 0.11.1
-  resolution: "tree-changes@npm:0.11.1"
+"tree-changes@npm:^0.11.2":
+  version: 0.11.2
+  resolution: "tree-changes@npm:0.11.2"
   dependencies:
     "@gilbarbara/deep-equal": ^0.3.1
     is-lite: ^1.2.0
-  checksum: 961207a8b8d07bec5c4ad9da23aa8033a19a064f496281aa8eb8e11e93033b9957b23f6c2f170580a6ed9d77dfbeff193fae6c067a0914431d9baa79eca804e8
+  checksum: 9fc7b78a702308d78cc14c27a1dd83207ee3e5327560276f5d17e26be2937f800c0084d64a8be7183cfc43153a1981c4236306e60980801605397e43fde6d948
   languageName: node
   linkType: hard
 
@@ -13223,10 +13207,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.1.0, type-fest@npm:^4.7.1":
+"type-fest@npm:^4.1.0":
   version: 4.7.1
   resolution: "type-fest@npm:4.7.1"
   checksum: 95d31b2421955e8e3d58508515e02061fa7fe05d7097b20feb33fa7ee392959a5a38b302957485895a7a287556d14c8d6721b66bebb71391be151ce128755413
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.8.3":
+  version: 4.8.3
+  resolution: "type-fest@npm:4.8.3"
+  checksum: cd8c9a20a32b9d813f5f6d84bd81e52e22fb779a7ef0ae53974bae5baac427974bc8243269e9832b22ce2b6277d857b44769b3664f97dcac344e600bdd95f186
   languageName: node
   linkType: hard
 
