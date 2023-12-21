@@ -218,9 +218,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         .target()
         .pipe(
           filter((target) => !!target),
-          concatMap((target: Target) =>
-            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`),
-          ),
+          concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
           first(),
         )
         .subscribe({

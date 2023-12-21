@@ -441,6 +441,7 @@ export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this reco
 // Discovery/Target resources
 // ======================================
 export interface Target {
+  id: number;
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   connectUrl: string;
   alias: string;
