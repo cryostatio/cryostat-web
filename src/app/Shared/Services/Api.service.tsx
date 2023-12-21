@@ -181,6 +181,10 @@ export class ApiService {
       });
   }
 
+  getTargets(): Observable<Target[]> {
+    return this.doGet('targets', 'v3');
+  }
+
   createTarget(
     target: TargetStub,
     credentials?: { username?: string; password?: string },
