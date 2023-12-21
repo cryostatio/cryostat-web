@@ -1299,12 +1299,28 @@ export class ApiService {
     return this.doGet(`targets/${target.id}/recordings`, 'v4', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  getTargetEventTemplates(target: TargetStub): Observable<EventTemplate[]> {
-    return this.doGet<EventTemplate[]>(`targets/${target.id}/event_templates`, 'v4', undefined, true, true);
+  getTargetEventTemplates(
+    target: TargetStub,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<EventTemplate[]> {
+    return this.doGet<EventTemplate[]>(
+      `targets/${target.id}/event_templates`,
+      'v4',
+      undefined,
+      suppressNotifications,
+      skipStatusCheck,
+    );
   }
 
-  getTargetEventTypes(target: TargetStub): Observable<EventType[]> {
-    return this.doGet<EventType[]>(`targets/${target.id}/events`, 'v4', undefined, true, true);
+  getTargetEventTypes(target: TargetStub, suppressNotifications = false, skipStatusCheck = false): Observable<EventType[]> {
+    return this.doGet<EventType[]>(
+      `targets/${target.id}/events`,
+      'v4',
+      undefined,
+      suppressNotifications,
+      skipStatusCheck,
+    );
   }
 
   downloadLayoutTemplate(template: LayoutTemplate): void {

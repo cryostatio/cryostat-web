@@ -84,9 +84,9 @@ export const getTargetOwnedResources = (
     case 'archivedRecordings':
       return apiService.getTargetArchivedRecordings(target);
     case 'eventTemplates':
-      return apiService.getTargetEventTemplates(target);
+      return apiService.getTargetEventTemplates(target, true, true);
     case 'eventTypes':
-      return apiService.getTargetEventTypes(target);
+      return apiService.getTargetEventTypes(target, true, true);
     case 'agentProbes':
       return apiService.getActiveProbesForTarget(target, true, true);
     case 'automatedRules':

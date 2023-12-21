@@ -99,13 +99,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     (target?: Target) => {
       setIsLoading(true);
       addSubscription(
-        iif(
-          () => !target,
-          of([]),
-          context.api
-            .doGet<EventTemplate[]>(`targets/${target!.id}/event_templates`, undefined, undefined, true)
-            .pipe(first()),
-        ).subscribe({
+        iif(() => !target, of([]), context.api.getTargetEventTemplates(target!, false, true).pipe(first())).subscribe({
           next: (templates: EventTemplate[]) => {
             setErrorMessage('');
             setTemplates(templates);
