@@ -22,7 +22,6 @@ import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
 import Events from './Events/Events';
-import Login from './Login/Login';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
@@ -36,7 +35,6 @@ import CreateTarget from './Topology/Actions/CreateTarget';
 import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
-import { useLogin } from './utils/hooks/useLogin';
 import { accessibleRouteChangeHandler } from './utils/utils';
 
 let routeFocusTimer: number;
@@ -45,7 +43,6 @@ const CONSOLE = 'Console';
 const navGroups = [OVERVIEW, CONSOLE];
 
 export interface IAppRoute {
-  anonymous?: boolean;
   label?: string;
   component: React.ComponentType;
   path: string;
@@ -64,7 +61,6 @@ const routes: IAppRoute[] = [
     title: 'About',
     description: 'Get information, help, or support for Cryostat.',
     navGroup: OVERVIEW,
-    anonymous: true,
   },
   {
     component: Dashboard,
@@ -170,20 +166,11 @@ const routes: IAppRoute[] = [
     navGroup: CONSOLE,
   },
   {
-    anonymous: true,
     component: Settings,
 
     path: '/settings',
     title: 'Settings',
     description: 'View or modify Cryostat web-client application settings.',
-  },
-  {
-    anonymous: true,
-    component: Login,
-    // this is only displayed if the user is not logged in and is the last route matched against the current path, so it will always match
-    path: '/',
-    title: 'Cryostat',
-    description: 'Log in to Cryostat',
   },
 ];
 
@@ -230,13 +217,11 @@ const PageNotFound = () => {
 export interface AppRoutesProps {}
 
 const AppRoutes: React.FC<AppRoutesProps> = (_) => {
-  const loggedIn = useLogin();
   const activeLevel = useFeatureLevel();
 
   return (
     <Routes>
       {flatten(routes)
-        .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
         .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
         .map(({ path, component: Component, title }) => {
           const content = (
@@ -246,7 +231,7 @@ const AppRoutes: React.FC<AppRoutesProps> = (_) => {
           );
           return <Route key={path} path={path} element={content} />;
         })
-        .concat([<Route key={'not-found'} path={'*'} element={loggedIn ? <PageNotFound /> : <Login />} />])}
+        .concat([<Route key={'not-found'} path={'*'} element={<PageNotFound />} />])}
     </Routes>
   );
 };

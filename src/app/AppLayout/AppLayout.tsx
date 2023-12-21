@@ -30,7 +30,6 @@ import { NotificationCategory, Notification } from '@app/Shared/Services/api.typ
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useLogin } from '@app/utils/hooks/useLogin';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
@@ -106,7 +105,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
-  const showUserIcon = useLogin();
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = React.useState(false);
   const [username, setUsername] = React.useState('');
@@ -417,7 +415,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   />
                 </ToolbarItem>
               </ToolbarGroup>
-              <ToolbarItem visibility={{ default: showUserIcon ? 'visible' : 'hidden' }}>
+              <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
                   isPlain
                   onSelect={() => setShowUserInfoDropdown(false)}
@@ -439,7 +437,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       handleNotificationCenterToggle,
       handleHelpToggle,
       setShowUserInfoDropdown,
-      showUserIcon,
       showUserInfoDropdown,
       showHelpDropdown,
       UserInfoToggle,
@@ -553,11 +550,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   );
 
   React.useEffect(() => {
-    if (showUserIcon && isAssetNew(build.version)) {
+    if (isAssetNew(build.version)) {
       handleOpenGuidedTour();
       saveToLocalStorage('ASSET_VERSION', build.version);
     }
-  }, [handleOpenGuidedTour, showUserIcon]);
+  }, [handleOpenGuidedTour]);
 
   return (
     <GlobalQuickStartDrawer>

@@ -38,7 +38,7 @@ export interface Services {
 const target = new TargetService();
 const settings = new SettingsService();
 const authCredentials = new AuthCredentials(() => api);
-const login = new LoginService(target, authCredentials, settings);
+const login = new LoginService(settings);
 const api = new ApiService(target, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(login, NotificationsInstance);

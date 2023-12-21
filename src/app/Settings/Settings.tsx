@@ -17,7 +17,6 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { useLogin } from '@app/utils/hooks/useLogin';
 import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils';
 import {
   Card,
@@ -56,7 +55,6 @@ export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
   const [t] = useTranslation();
-  const loggedIn = useLogin();
 
   const settings = React.useMemo(
     () =>
@@ -72,28 +70,26 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         Language,
         DatetimeControl,
         Theme,
-      ]
-        .filter((s) => !s.authenticated || loggedIn)
-        .map(
-          (c) =>
-            ({
-              title: t(c.titleKey) || '',
-              description:
-                typeof c.descConstruct === 'string' ? (
-                  t(c.descConstruct)
-                ) : (
-                  // Use children prop to avoid i18n parses body as key
-                  /* eslint react/no-children-prop: 0 */
-                  <Trans i18nKey={c.descConstruct.key} children={c.descConstruct.parts} />
-                ),
-              element: React.createElement(c.content, null),
-              category: c.category,
-              disabled: c.disabled,
-              orderInGroup: c.orderInGroup || -1,
-              featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
-            }) as _TransformedUserSetting,
-        ),
-    [t, loggedIn],
+      ].map(
+        (c) =>
+          ({
+            title: t(c.titleKey) || '',
+            description:
+              typeof c.descConstruct === 'string' ? (
+                t(c.descConstruct)
+              ) : (
+                // Use children prop to avoid i18n parses body as key
+                /* eslint react/no-children-prop: 0 */
+                <Trans i18nKey={c.descConstruct.key} children={c.descConstruct.parts} />
+              ),
+            element: React.createElement(c.content, null),
+            category: c.category,
+            disabled: c.disabled,
+            orderInGroup: c.orderInGroup || -1,
+            featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
+          }) as _TransformedUserSetting,
+      ),
+    [t],
   );
 
   const navigate = useNavigate();

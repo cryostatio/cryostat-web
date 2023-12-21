@@ -32,16 +32,14 @@ export class ReportService {
     if (!recording.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
-    return this.login.getHeaders().pipe(
-      concatMap((headers) => {
-        headers.append('Accept', 'application/json');
-        return fromFetch(recording.reportUrl, {
-          method: 'GET',
-          mode: 'cors',
-          credentials: 'include',
-          headers,
-        });
-      }),
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    return fromFetch(recording.reportUrl, {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
+      headers,
+    }).pipe(
       concatMap((resp) => {
         if (resp.ok) {
           return from(
