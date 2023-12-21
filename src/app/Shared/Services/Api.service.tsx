@@ -1291,8 +1291,12 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
-  getTargetActiveRecordings(target: TargetStub): Observable<ActiveRecording[]> {
-    return this.doGet<ActiveRecording[]>(`targets/${target.id}/recordings`, 'v4', undefined, true, true);
+  getTargetActiveRecordings(
+    target: TargetStub,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<ActiveRecording[]> {
+    return this.doGet(`targets/${target.id}/recordings`, 'v4', undefined, suppressNotifications, skipStatusCheck);
   }
 
   getTargetEventTemplates(target: TargetStub): Observable<EventTemplate[]> {

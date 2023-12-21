@@ -80,7 +80,7 @@ export const getTargetOwnedResources = (
 ): Observable<ResourceTypes[]> => {
   switch (resourceType) {
     case 'activeRecordings':
-      return apiService.getTargetActiveRecordings(target);
+      return apiService.getTargetActiveRecordings(target, true, true);
     case 'archivedRecordings':
       return apiService.getTargetArchivedRecordings(target);
     case 'eventTemplates':
