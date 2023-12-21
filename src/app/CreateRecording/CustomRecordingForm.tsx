@@ -278,7 +278,7 @@ export const CustomRecordingForm: React.FC = () => {
       }
       addSubscription(
         forkJoin({
-          templates: context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
+          templates: context.api.getTargetEventTemplates(target),
           recordingOptions: context.api.doGet<AdvancedRecordingOptions>(
             `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`,
           ),

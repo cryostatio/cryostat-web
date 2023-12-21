@@ -1300,23 +1300,27 @@ export class ApiService {
     return this.doGet(`targets/${target.id}/recordings`, 'v3', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  getTargetEventTemplates(target: Target): Observable<EventTemplate[]> {
+  getTargetEventTemplates(
+    target: Target,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>(
-      `targets/${encodeURIComponent(target.connectUrl)}/templates`,
-      'v1',
+      `targets/${target.id}/templates`,
+      'v3',
       undefined,
-      true,
-      true,
+      suppressNotifications,
+      skipStatusCheck,
     );
   }
 
-  getTargetEventTypes(target: Target): Observable<EventType[]> {
+  getTargetEventTypes(target: Target, suppressNotifications = false, skipStatusCheck = false): Observable<EventType[]> {
     return this.doGet<EventType[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/events`,
-      'v1',
+      'v3',
       undefined,
-      true,
-      true,
+      suppressNotifications,
+      skipStatusCheck,
     );
   }
 
