@@ -143,6 +143,7 @@ jobs:
           -Dquarkus.container-image.tag=pr-${{ env.PR_num }}-${{ env.head_sha }} \
           clean package
         podman images
+        docker images
     - name: Push PR test image to ghcr.io
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
