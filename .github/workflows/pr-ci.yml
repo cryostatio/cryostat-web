@@ -133,9 +133,13 @@ jobs:
         git fetch origin pull/${{ env.PR_num }}/head:pr-${{ env.PR_num }}
         git checkout pr-${{ env.PR_num }}
         popd
-        mvn -B -U -Dmaven.test.skip=true clean package
-    - name: Tag cryostat image
-      run: podman tag cryostat ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ env.PR_num }}-${{ env.head_sha }}
+        mvn -B -U \
+          -Dmaven.test.skip=true \
+          -Dquarkus.container-image.registry=ghcr.io \
+          -Dquarkus.container-image.group=${{ github.repository_owner }} \
+          -Dquarkus.container-image.name=cryostat-web \
+          -Dquarkus.container-image.tag=pr-${{ env.PR_num }}-${{ env.head_sha }} \
+          clean package
     - name: Push PR test image to ghcr.io
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
