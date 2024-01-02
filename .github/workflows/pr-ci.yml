@@ -126,7 +126,9 @@ jobs:
       with:
         name: cryostat-core
         path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
-    - run: |
+    - name: Build Cryostat application image
+      id: build-cryostat-image
+      run: |
         git submodule init
         git submodule update --remote
         pushd src/main/webui
@@ -140,13 +142,14 @@ jobs:
           -Dquarkus.container-image.name=cryostat-web \
           -Dquarkus.container-image.tag=pr-${{ env.PR_num }}-${{ env.head_sha }} \
           clean package
+        podman images
     - name: Push PR test image to ghcr.io
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
       with:
+        registry: ghcr.io/${{ github.repository_owner }}
         image: cryostat-web
         tags: pr-${{ env.PR_num }}-${{ env.head_sha }}
-        registry: ghcr.io/${{ github.repository_owner }}
         username: ${{ github.event.comment.user.login }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Comment test image link
