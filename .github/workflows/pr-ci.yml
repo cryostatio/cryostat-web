@@ -160,6 +160,6 @@ jobs:
         message: |-
           Test image available:
           ```
-          CRYOSTAT_IMAGE=${{ steps.push-to-ghcr.outputs.registry-path }} sh smoketest.sh
+          CRYOSTAT_IMAGE=${{ steps.push-to-ghcr.outputs.registry-path }} bash smoketest.bash # then open http://localhost:8080
           ```
 
