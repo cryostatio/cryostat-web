@@ -144,6 +144,7 @@ jobs:
           clean package
         podman images
         docker images
+        podman pull docker-daemon:ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ env.PR_num }}-${{ env.head_sha }}
     - name: Push PR test image to ghcr.io
       id: push-to-ghcr
       uses: redhat-actions/push-to-registry@v2
