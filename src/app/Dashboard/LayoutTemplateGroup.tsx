@@ -18,8 +18,20 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
 import { CatalogTile } from '@patternfly/react-catalog-view-extension';
-import { Button, Gallery, Label, Split, SplitItem, Title } from '@patternfly/react-core';
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core/deprecated';
+import {
+  Button,
+  Gallery,
+  Label,
+  Split,
+  SplitItem,
+  Title,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
+} from '@patternfly/react-core';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -31,8 +43,8 @@ import {
   CardConfig,
   LayoutTemplateVendor,
 } from './types';
-import { getCardDescriptorByName, iconify, LayoutTemplateContext } from './utils';
 
+import { getCardDescriptorByName, iconify, LayoutTemplateContext } from './utils';
 export interface LayoutTemplateGroupProps {
   title: LayoutTemplateFilter;
   templates: LayoutTemplate[];
@@ -158,12 +170,9 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
-  const onSelect = React.useCallback(
-    (_ev) => {
-      setIsOpen(false);
-    },
-    [setIsOpen],
-  );
+  const onSelect = (_event: React.MouseEvent<Element, MouseEvent> | undefined, _value: string | number | undefined) => {
+    setIsOpen(false);
+  };
 
   const openKebab = React.useCallback(
     (value, e) => {
@@ -202,12 +211,25 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
 
   return (
     <Dropdown
-      menuAppendTo={portalRoot}
+      //menuAppendTo={portalRoot}
       onSelect={onSelect}
-      toggle={<KebabToggle isDisabled={template.vendor !== LayoutTemplateVendor.USER} onToggle={openKebab} />}
-      isOpen={isOpen}
-      isPlain
-      dropdownItems={dropdownItems}
-    />
+      //toggle={<KebabToggle isDisabled={template.vendor !== LayoutTemplateVendor.USER} onToggle={openKebab} />}
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          ref={toggleRef}
+          variant="plain"
+          isDisabled={template.vendor !== LayoutTemplateVendor.USER}
+          onClick={(event: React.MouseEvent)=> openKebab(isOpen, event)}
+          isExpanded={isOpen}
+        >
+          <EllipsisVIcon />
+        </MenuToggle>
+      )}
+      popperProps={{
+      appendTo: {portalRoot},
+    }}
+    >
+      <DropdownList>{dropdownItems}</DropdownList>
+    </Dropdown>
   );
 };
