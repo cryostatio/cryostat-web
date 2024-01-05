@@ -71,7 +71,6 @@ import {
   ToolbarGroup,
   ToolbarItem,
   Dropdown,
-  DropdownItem,
   DropdownList,
   MenuToggle,
   MenuToggleElement,
