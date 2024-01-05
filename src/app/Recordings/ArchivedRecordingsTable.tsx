@@ -70,9 +70,14 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
-import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
-import { UploadIcon } from '@patternfly/react-icons';
+//import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
+import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -712,15 +717,28 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  aria-label={'archive-recording-actions'}
+                  //aria-label={'archive-recording-actions'}
                   isPlain
-                  isFlipEnabled
+                  //isFlipEnabled
                   onSelect={() => setActionToggleOpen(false)}
-                  menuAppendTo={'parent'}
+                  //menuAppendTo={'parent'}
+                  //toggle={<KebabToggle id="archive-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
+                  toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                    <MenuToggle
+                    ref={toggleRef}
+                    onClick={() => handleActionToggle()}
+                    >
+                      <EllipsisVIcon />
+                    </MenuToggle>
+                  )}
                   isOpen={actionToggleOpen}
-                  toggle={<KebabToggle id="archive-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
-                  dropdownItems={buttons.map((b) => b.collapsed)}
-                />
+                  popperProps={{
+                    appendTo: () => document.getElementById('parent'),
+                    enableFlip: true,
+                  }}
+                  >
+                    <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
+                </Dropdown>
               </OverflowMenuControl>
             </OverflowMenu>
           </ToolbarItem>
