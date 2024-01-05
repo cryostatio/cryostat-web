@@ -219,15 +219,15 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
           ref={toggleRef}
           variant="plain"
           isDisabled={template.vendor !== LayoutTemplateVendor.USER}
-          onClick={(event: React.MouseEvent)=> openKebab(isOpen, event)}
+          onClick={(event: React.MouseEvent) => openKebab(isOpen, event)}
           isExpanded={isOpen}
         >
           <EllipsisVIcon />
         </MenuToggle>
       )}
       popperProps={{
-      appendTo: portalRoot,
-    }}
+        appendTo: portalRoot,
+      }}
     >
       <DropdownList>{dropdownItems}</DropdownList>
     </Dropdown>
