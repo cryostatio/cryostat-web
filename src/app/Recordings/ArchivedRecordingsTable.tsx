@@ -47,7 +47,7 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -724,20 +724,17 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
                   //menuAppendTo={'parent'}
                   //toggle={<KebabToggle id="archive-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
                   toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                    <MenuToggle
-                    ref={toggleRef}
-                    onClick={() => handleActionToggle()}
-                    >
+                    <MenuToggle ref={toggleRef} onClick={() => handleActionToggle()}>
                       <EllipsisVIcon />
                     </MenuToggle>
                   )}
                   isOpen={actionToggleOpen}
                   popperProps={{
-                    appendTo: () => document.getElementById('parent'),
+                    appendTo: portalRoot,
                     enableFlip: true,
                   }}
-                  >
-                    <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
+                >
+                  <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
                 </Dropdown>
               </OverflowMenuControl>
             </OverflowMenu>
