@@ -23,9 +23,9 @@ import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Sh
 import { Recording, RecordingState } from '@app/Shared/Services/api.types';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import dayjs from '@i18n/datetime';
-import { ToolbarFilter, ToolbarGroup, ToolbarItem, ToolbarToggleGroup } from '@patternfly/react-core';
-import { Dropdown, DropdownItem, DropdownPosition, DropdownToggle } from '@patternfly/react-core/deprecated';
-import { FilterIcon } from '@patternfly/react-icons';
+import { ToolbarFilter, ToolbarGroup, ToolbarItem, ToolbarToggleGroup, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement} from '@patternfly/react-core';
+//import { Dropdown, DropdownItem, DropdownPosition, DropdownToggle } from '@patternfly/react-core/deprecated';
+import { FilterIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimeFilter } from './Filters/DatetimeFilter';
@@ -151,20 +151,36 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
-        aria-label={'Category Dropdown'}
-        position={DropdownPosition.left}
-        toggle={
+        //aria-label={'Category Dropdown'}
+        //position={DropdownPosition.left}
+        /* toggle={
           <DropdownToggle aria-label={currentCategory} onToggle={onCategoryToggle}>
             <FilterIcon /> {categoriesToDisplayNames[currentCategory]}
           </DropdownToggle>
-        }
+        } */
+        toggle={(toggleRef: React.Ref<MenuToggleElement>)=>(
+          <MenuToggle
+          ref={toggleRef}
+          aria-label={currentCategory}
+          onClick={()=> onCategoryToggle()}
+          >
+            <FilterIcon />
+            {categoriesToDisplayNames[currentCategory]}
+            <EllipsisVIcon />
+          </MenuToggle>
+        )}
         isOpen={isCategoryDropdownOpen}
-        dropdownItems={(!isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map((cat) => (
+        popperProps={{
+          position: 'left',
+        }}
+        >
+        <DropdownList>{(!isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map((cat) => (
           <DropdownItem aria-label={categoriesToDisplayNames[cat]} key={cat} onClick={() => onCategorySelect(cat)}>
             {categoriesToDisplayNames[cat]}
           </DropdownItem>
         ))}
-      />
+        </DropdownList>
+      </Dropdown>
     );
   }, [isArchived, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
 
