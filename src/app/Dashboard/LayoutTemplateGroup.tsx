@@ -226,7 +226,7 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
         </MenuToggle>
       )}
       popperProps={{
-      appendTo: {portalRoot},
+      appendTo: portalRoot,
     }}
     >
       <DropdownList>{dropdownItems}</DropdownList>
