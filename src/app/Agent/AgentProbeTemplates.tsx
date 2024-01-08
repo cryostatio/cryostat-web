@@ -40,9 +40,14 @@ import {
   ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggleElement,
+  MenuToggle
 } from '@patternfly/react-core';
-import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated';
-import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
+//import { Dropdown, DropdownItem, DropdownPosition, KebabToggle } from '@patternfly/react-core/deprecated';
+import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
   SortByDirection,
@@ -519,15 +524,44 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
 
   const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
 
+  const dropdownItems= React.useMemo(() =>
+  actionItems.map((action) => (
+    <DropdownItem
+      key={action.key} onClick={() => {
+      setIsOpen(false);
+      action.onClick();
+      }}
+      isDisabled={action.isDisabled}
+    >
+      {action.title}
+    </DropdownItem>
+  )),
+  [actionItems, setIsOpen]);
+  
+
   return (
     <Dropdown
       isPlain
+      //isOpen={isOpen}
+      //toggle={<KebabToggle id="probe-template-toggle-kebab" onToggle={handleToggle} />}
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+        ref={toggleRef}
+        onClick={(event)=> handleToggle(event,!isOpen)}
+        >
+          <EllipsisVIcon />
+        </MenuToggle>
+      )}
       isOpen={isOpen}
-      toggle={<KebabToggle id="probe-template-toggle-kebab" onToggle={handleToggle} />}
-      menuAppendTo={document.body}
-      position={DropdownPosition.right}
-      isFlipEnabled
-      dropdownItems={actionItems.map((action) => (
+      //menuAppendTo={document.body}
+      //position={DropdownPosition.right}
+      //isFlipEnabled
+      popperProps={{
+        appendTo: document.body,
+        position: 'right',
+        enableFlip: true,
+      }}
+      /* dropdownItems={actionItems.map((action) => (
         <DropdownItem
           key={action.key}
           onClick={() => {
@@ -538,7 +572,9 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
         >
           {action.title}
         </DropdownItem>
-      ))}
-    />
+      ))} */
+      >
+        <DropdownList>{dropdownItems}</DropdownList>
+      </Dropdown>
   );
 };

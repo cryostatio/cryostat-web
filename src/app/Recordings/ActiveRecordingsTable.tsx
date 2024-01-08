@@ -45,7 +45,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
