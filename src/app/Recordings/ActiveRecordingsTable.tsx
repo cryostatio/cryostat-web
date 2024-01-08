@@ -60,6 +60,7 @@ import {
   Dropdown,
   DropdownList,
   MenuToggle,
+  MenuToggleElement,
   OverflowMenu,
   OverflowMenuContent,
   OverflowMenuControl,
