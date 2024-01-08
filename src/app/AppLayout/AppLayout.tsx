@@ -61,20 +61,24 @@ import {
   ToolbarGroup,
   ToolbarItem,
   PageSidebarBody,
-} from '@patternfly/react-core';
-import {
-  ApplicationLauncher,
-  ApplicationLauncherItem,
-  Dropdown,
+  MenuToggleElement,
+  MenuToggle,
+  DropdownList,
   DropdownGroup,
   DropdownItem,
+  Dropdown,
+  ApplicationLauncher,
+  ApplicationLauncherItem,
   DropdownToggle,
-} from '@patternfly/react-core/deprecated';
+  //DropdownToggle,
+} from '@patternfly/react-core';
 import {
   BarsIcon,
   BellIcon,
   CaretDownIcon,
   CogIcon,
+  EllipsisVIcon,
+  //ElloIcon,
   ExternalLinkAltIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
@@ -85,6 +89,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
+//import { TopologyGraphView } from '../Topology/GraphView/TopologyGraphView';
 
 export interface AppLayoutProps {
   children?: React.ReactNode;
@@ -298,13 +303,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const UserInfoToggle = React.useMemo(
     () => (
-      <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-        {username || (
-          <Icon size="sm">
-            <UserIcon color="white" />
-          </Icon>
+      <MenuToggle
+        //onSelect={handleUserInfoToggle}
+        //icon={CaretDownIcon}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
+            {username || (
+              <Icon size="sm">
+                <UserIcon color="white" />
+              </Icon>
+            )}
+            <EllipsisVIcon />
+          </MenuToggle>
         )}
-      </DropdownToggle>
+      ></MenuToggle>
     ),
     [username, handleUserInfoToggle],
   );
@@ -333,28 +345,28 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const helpItems = React.useMemo(() => {
     return [
-      <ApplicationLauncherItem
+      <MenuToggle
         key={'Quickstarts'}
         component={<NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>}
       />,
-      <ApplicationLauncherItem key={'Documentation'} onClick={handleOpenDocumentation}>
+      <MenuToggle key={'Documentation'} onClick={handleOpenDocumentation}>
         <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
+      </MenuToggle>,
+      <MenuToggle key={'Guided tour'} onClick={handleOpenGuidedTour}>
         {t('AppLayout.APP_LAUNCHER.GUIDED_TOUR')}
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'Help'} onClick={handleOpenDiscussion}>
+      </MenuToggle>,
+      <MenuToggle key={'Help'} onClick={handleOpenDiscussion}>
         {t('AppLayout.APP_LAUNCHER.HELP')}
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'About'} onClick={handleOpenAboutModal}>
+      </MenuToggle>,
+      <MenuToggle key={'About'} onClick={handleOpenAboutModal}>
         {t('AppLayout.APP_LAUNCHER.ABOUT')}
-      </ApplicationLauncherItem>,
+      </MenuToggle>,
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
@@ -416,27 +428,40 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   </Button>
                 </ToolbarItem>
                 <ToolbarItem>
-                  <ApplicationLauncher
-                    onSelect={handleHelpToggle}
-                    onToggle={handleHelpToggle}
+                  <Dropdown
+                    onSelect={() => handleHelpToggle()}
+                    className="application-launcher"
+                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle
+                        ref={toggleRef}
+                        icon={<QuestionCircleIcon />}
+                        className="application-launcher"
+                        onClick={() => handleHelpToggle()}
+                      >
+                        <EllipsisVIcon />
+                      </MenuToggle>
+                    )}
                     isOpen={showHelpDropdown}
-                    items={helpItems}
-                    position="right"
-                    toggleIcon={<QuestionCircleIcon />}
-                    data-tour-id="application-launcher"
-                    data-quickstart-id="application-launcher"
-                  />
+                    popperProps={{
+                      position: 'right',
+                    }}
+                  >
+                    <DropdownList>{helpItems}</DropdownList>
+                  </Dropdown>
                 </ToolbarItem>
               </ToolbarGroup>
               <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
                   isPlain
                   onSelect={() => setShowUserInfoDropdown(false)}
-                  isOpen={showUserInfoDropdown}
                   toggle={UserInfoToggle}
-                  position="right"
-                  dropdownItems={userInfoItems}
-                />
+                  isOpen={showUserInfoDropdown}
+                  popperProps={{
+                    position: 'right',
+                  }}
+                >
+                  <DropdownList>{userInfoItems}</DropdownList>
+                </Dropdown>
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
