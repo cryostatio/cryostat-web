@@ -813,8 +813,8 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
                     </MenuToggle>
                   )}
                   isOpen={actionToggleOpen}
-                  popperPops={{
-                    appendTo: portalRoot,
+                  popperProps={{
+                    appendTo: document.body,
                     enableFlip: true,
                   }}
                 >
