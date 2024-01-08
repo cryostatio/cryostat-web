@@ -45,7 +45,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -814,7 +814,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
                   )}
                   isOpen={actionToggleOpen}
                   popperPops={{
-                    appendTo: document.body,
+                    appendTo: portalRoot,
                     enableFlip: true,
                   }}
                 >
