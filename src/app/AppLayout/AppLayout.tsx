@@ -74,7 +74,6 @@ import {
   CaretDownIcon,
   CogIcon,
   EllipsisVIcon,
-  //ElloIcon,
   ExternalLinkAltIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
@@ -85,7 +84,6 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
-//import { TopologyGraphView } from '../Topology/GraphView/TopologyGraphView';
 
 export interface AppLayoutProps {
   children?: React.ReactNode;
