@@ -67,10 +67,6 @@ import {
   DropdownGroup,
   DropdownItem,
   Dropdown,
-  ApplicationLauncher,
-  ApplicationLauncherItem,
-  DropdownToggle,
-  //DropdownToggle,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
@@ -301,22 +297,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [handleLogout, handleLanguagePref],
   );
 
-  const UserInfoToggle = React.useMemo(
-    () => (
-      <MenuToggle
-        //onSelect={handleUserInfoToggle}
-        //icon={CaretDownIcon}
-        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
-            {username || (
-              <Icon size="sm">
-                <UserIcon color="white" />
-              </Icon>
-            )}
-            <EllipsisVIcon />
-          </MenuToggle>
+  const UserInfoToggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
+        {username || (
+          <Icon size="sm">
+            <UserIcon color="white" />
+          </Icon>
         )}
-      ></MenuToggle>
+        <EllipsisVIcon />
+      </MenuToggle>
     ),
     [username, handleUserInfoToggle],
   );
@@ -345,28 +335,27 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const helpItems = React.useMemo(() => {
     return [
-      <MenuToggle
-        key={'Quickstarts'}
-        component={<NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>}
-      />,
-      <MenuToggle key={'Documentation'} onClick={handleOpenDocumentation}>
+      <DropdownItem key={'Quickstarts'}>
+        <NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>
+      </DropdownItem>,
+      <DropdownItem key={'Documentation'} onClick={handleOpenDocumentation}>
         <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </MenuToggle>,
-      <MenuToggle key={'Guided tour'} onClick={handleOpenGuidedTour}>
+      </DropdownItem>,
+      <DropdownItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
         {t('AppLayout.APP_LAUNCHER.GUIDED_TOUR')}
-      </MenuToggle>,
-      <MenuToggle key={'Help'} onClick={handleOpenDiscussion}>
+      </DropdownItem>,
+      <DropdownItem key={'Help'} onClick={handleOpenDiscussion}>
         {t('AppLayout.APP_LAUNCHER.HELP')}
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </MenuToggle>,
-      <MenuToggle key={'About'} onClick={handleOpenAboutModal}>
+      </DropdownItem>,
+      <DropdownItem key={'About'} onClick={handleOpenAboutModal}>
         {t('AppLayout.APP_LAUNCHER.ABOUT')}
-      </MenuToggle>,
+      </DropdownItem>,
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
