@@ -287,11 +287,13 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
     () => (
       <PF5Dropdown
         onSelect={onCreateDropdownSelect}
+        onOpenChange={(open) => setIsCreateDropdownOpen(open)}
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
             className="dashboard-layout-create-dropdown-toggle"
-            splitButton={[
+            splitButtonOptions={{
+              items:[
               <DropdownItem
                 key="action"
                 onClick={(_e) => {
@@ -304,10 +306,11 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
                   {t('DashboardLayoutToolbar.NEW_LAYOUT')}
                 </span>
               </DropdownItem>,
-            ]}
+            ]
+            }}
             variant="primary"
             //splitButtonVariant="action"
-            onToggle={(_event, open) => setIsCreateDropdownOpen(open)}
+            
           >
             <EllipsisVIcon />
           </MenuToggle>

@@ -39,8 +39,11 @@ import {
   Tooltip,
   ValidatedOptions,
   EmptyStateHeader,
+  DropdownList,
+  Select,
+  SelectOption,
 } from '@patternfly/react-core';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
+//import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import {
   InnerScrollContainer,
@@ -371,19 +374,20 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
   return (
     <Select
       {...props}
-      variant={SelectVariant.checkbox}
+      role="menu"
       aria-label="Status"
-      onToggle={handleToggle}
+      toggle={handleToggle}
       onSelect={handleSelect}
-      selections={filters}
+      selected={filters}
       isOpen={isOpen}
-      placeholderText="Status"
     >
-      {Object.values(CredentialTestState).map((state) => (
-        <SelectOption key={state} value={state}>
-          <Label color={getColor(state)}>{state}</Label>
-        </SelectOption>
-      ))}
+      <DropdownList>
+        {Object.values(CredentialTestState).map((state) => (
+          <SelectOption key={state} value={state}>
+            <Label color={getColor(state)}>{state}</Label>
+          </SelectOption>
+        ))}
+      </DropdownList>
     </Select>
   );
 };
