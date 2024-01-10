@@ -61,7 +61,7 @@ import {
   XMLHttpRequestConfig,
   XMLHttpResponse,
 } from './api.types';
-import { isHttpError, isActiveRecording, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
+import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { SessionState } from './service.types';
