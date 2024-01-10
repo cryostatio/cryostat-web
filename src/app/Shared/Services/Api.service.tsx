@@ -775,26 +775,6 @@ export class ApiService {
     );
   }
 
-  downloadReport(recording: Recording): void {
-    const body = new window.FormData();
-    if (isActiveRecording(recording)) {
-      body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
-    } else {
-      body.append('resource', recording.reportUrl.concat('/jwt'));
-    }
-    this.sendRequest('v2.1', 'auth/token', {
-      method: 'POST',
-      body,
-    })
-      .pipe(
-        concatMap((resp) => resp.json()),
-        map((response: AssetJwtResponse) => response.data.result.resourceUrl),
-      )
-      .subscribe((resourceUrl) => {
-        this.downloadFile(resourceUrl, `${recording.name}.report.json`, false);
-      });
-  }
-
   downloadRecording(recording: Recording): void {
     const body = new window.FormData();
     if (isActiveRecording(recording)) {
