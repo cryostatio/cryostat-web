@@ -776,27 +776,11 @@ export class ApiService {
   }
 
   downloadRecording(recording: Recording): void {
-    const body = new window.FormData();
-    if (isActiveRecording(recording)) {
-      body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/v2.1'));
-    } else {
-      body.append('resource', recording.downloadUrl.concat('/jwt'));
-    }
-    this.sendRequest('v2.1', 'auth/token', {
-      method: 'POST',
-      body,
-    })
-      .pipe(
-        concatMap((resp) => resp.json()),
-        map((response: AssetJwtResponse) => response.data.result.resourceUrl),
-      )
-      .subscribe((resourceUrl) => {
-        this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
-        this.downloadFile(
-          createBlobURL(JSON.stringify(recording.metadata), 'application/json'), // Blob for metadata
-          recording.name.replace(/\.jfr$/, '') + '.metadata.json',
-        );
-      });
+    this.downloadFile(recording.downloadUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
+    this.downloadFile(
+      createBlobURL(JSON.stringify(recording.metadata), 'application/json'),
+      recording.name.replace(/\.jfr$/, '') + '.metadata.json',
+    );
   }
 
   downloadTemplate(template: EventTemplate): void {
