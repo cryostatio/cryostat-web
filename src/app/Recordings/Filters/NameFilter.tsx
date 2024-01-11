@@ -27,7 +27,6 @@ import {
   TextInputGroupMain,
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
-import { SelectVariant } from '@patternfly/react-core/deprecated';
 import { TimesIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
