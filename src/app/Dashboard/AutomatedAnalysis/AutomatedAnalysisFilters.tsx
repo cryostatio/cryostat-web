@@ -29,7 +29,6 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
-//import { Dropdown, DropdownItem, DropdownPosition, DropdownToggle } from '@patternfly/react-core/deprecated';
 import { EllipsisVIcon, FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -128,13 +127,6 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
-        //aria-label={'Category Dropdown'}
-        //position={DropdownPosition.left}
-        /* toggle={
-          <DropdownToggle aria-label={currentCategory} onToggle={onCategoryToggle}>
-            <FilterIcon /> {getCategoryDisplay(currentCategory)}
-          </DropdownToggle>
-        } */
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle ref={toggleRef} aria-label={currentCategory} onClick={() => onCategoryToggle()}>
             <FilterIcon />
@@ -145,7 +137,6 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
         isOpen={isCategoryDropdownOpen}
         popperProps={{
           position: 'left',
-          //aria: 'Category Dropdown',
         }}
       >
         <DropdownList>

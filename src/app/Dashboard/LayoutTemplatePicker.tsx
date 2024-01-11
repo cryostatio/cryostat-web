@@ -65,7 +65,6 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
-import { SelectOptionObject } from '@patternfly/react-core/deprecated';
 import {
   ArrowsAltVIcon,
   FilterIcon,

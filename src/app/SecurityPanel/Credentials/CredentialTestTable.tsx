@@ -43,7 +43,6 @@ import {
   Select,
   SelectOption,
 } from '@patternfly/react-core';
-//import { Select, SelectOption, SelectVariant } from '@patternfly/react-core/deprecated';
 import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import {
   InnerScrollContainer,

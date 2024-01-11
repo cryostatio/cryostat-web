@@ -75,7 +75,6 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
-//import { Dropdown, KebabToggle } from '@patternfly/react-core/deprecated';
 import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
@@ -716,12 +715,8 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  //aria-label={'archive-recording-actions'}
                   isPlain
-                  //isFlipEnabled
                   onSelect={() => setActionToggleOpen(false)}
-                  //menuAppendTo={'parent'}
-                  //toggle={<KebabToggle id="archive-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
                   toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                     <MenuToggle ref={toggleRef} onClick={() => handleActionToggle()}>
                       <EllipsisVIcon />

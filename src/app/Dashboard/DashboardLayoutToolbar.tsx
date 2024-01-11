@@ -47,13 +47,6 @@ import {
   Dropdown as PF5Dropdown,
   DropdownItem as PF5DropdownItem,
 } from '@patternfly/react-core';
-/* import {
-  Dropdown as PF4Dropdown,
-  DropdownItem as PF4DropdownItem,
-  DropdownToggle,
-  DropdownToggleAction,
-} from '@patternfly/react-core/deprecated';
- */
 import {
   EllipsisVIcon,
   FileIcon,
@@ -293,24 +286,23 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
             ref={toggleRef}
             className="dashboard-layout-create-dropdown-toggle"
             splitButtonOptions={{
-              items:[
-              <DropdownItem
-                key="action"
-                onClick={(_e) => {
-                  createBlankLayout();
-                  setIsSelectorOpen(false);
-                }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center' }}>
-                  <PlusCircleIcon style={{ marginRight: 'var(--pf-global--spacer--sm)' }} />
-                  {t('DashboardLayoutToolbar.NEW_LAYOUT')}
-                </span>
-              </DropdownItem>,
-            ]
+              items: [
+                <DropdownItem
+                  key="action"
+                  onClick={(_e) => {
+                    createBlankLayout();
+                    setIsSelectorOpen(false);
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <PlusCircleIcon style={{ marginRight: 'var(--pf-global--spacer--sm)' }} />
+                    {t('DashboardLayoutToolbar.NEW_LAYOUT')}
+                  </span>
+                </DropdownItem>,
+              ],
             }}
             variant="primary"
             //splitButtonVariant="action"
-            
           >
             <EllipsisVIcon />
           </MenuToggle>

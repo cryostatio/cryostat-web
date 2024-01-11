@@ -34,7 +34,6 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
-//import { Dropdown, DropdownItem, DropdownPosition, DropdownToggle } from '@patternfly/react-core/deprecated';
 import { FilterIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -161,13 +160,6 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
-        //aria-label={'Category Dropdown'}
-        //position={DropdownPosition.left}
-        /* toggle={
-          <DropdownToggle aria-label={currentCategory} onToggle={onCategoryToggle}>
-            <FilterIcon /> {categoriesToDisplayNames[currentCategory]}
-          </DropdownToggle>
-        } */
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle ref={toggleRef} aria-label={currentCategory} onClick={() => onCategoryToggle()}>
             <FilterIcon />
