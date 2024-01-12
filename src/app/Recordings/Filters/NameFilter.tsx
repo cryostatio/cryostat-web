@@ -67,7 +67,7 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
       return [{ isDisabled: true, children: `No results found for "${filterValue}"`, value: undefined }];
     }
     return filteredNameOptions.map((n) => ({ children: n, value: n }));
-  }, [filteredNameOptions]);
+  }, [filterValue, filteredNameOptions]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
