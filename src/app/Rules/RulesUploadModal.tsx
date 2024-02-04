@@ -36,7 +36,7 @@ export const parseRule = (file: File): Observable<Rule> => {
     file.text().then((content) => {
       const obj = JSON.parse(content);
       if (obj.id) {
-        obj.remove('id')
+        obj.remove('id');
       }
       if (isRule(obj)) {
         return obj;
