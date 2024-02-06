@@ -226,7 +226,7 @@ export class ApiService {
 
     const headers = {};
     headers['Content-Type'] = 'application/json';
-    return this.sendLegacyRequest('v2', 'rules', {
+    return this.sendLegacyRequest('v2', 'rules', 'Rule Upload Failed', {
       method: 'POST',
       body: JSON.stringify(rule),
       headers: headers,
@@ -572,7 +572,7 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('template', file);
-    return this.sendLegacyRequest('v1', 'templates', {
+    return this.sendLegacyRequest('v1', 'templates', 'Template Upload Failed', {
       body: body,
       method: 'POST',
       headers: {},
@@ -641,7 +641,7 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('probeTemplate', file);
-    return this.sendLegacyRequest('v2', `probes/${file.name}`, {
+    return this.sendLegacyRequest('v2', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
       method: 'POST',
       body: body,
       headers: {},
@@ -839,7 +839,7 @@ export class ApiService {
     body.append('recording', file);
     body.append('labels', JSON.stringify(labels));
 
-    return this.sendLegacyRequest('v1', 'recordings', {
+    return this.sendLegacyRequest('v1', 'recordings', 'Recording Upload Failed', {
       method: 'POST',
       body: body,
       headers: {},
@@ -873,7 +873,7 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('cert', file);
-    return this.sendLegacyRequest('v2', 'certificates', {
+    return this.sendLegacyRequest('v2', 'certificates', 'Certificate Upload Failed', {
       method: 'POST',
       body,
       headers: {},
@@ -1365,6 +1365,7 @@ export class ApiService {
     // Used for uploading. Prefer sendRequest for other operations
     apiVersion: ApiVersion,
     path: string,
+    title: string,
     { method = 'GET', body, headers = {}, listeners, abortSignal }: XMLHttpRequestConfig,
     params?: URLSearchParams,
     suppressNotifications = false,
@@ -1430,7 +1431,7 @@ export class ApiService {
           if (skipStatusCheck) {
             throw err;
           }
-          return this.handleLegacyError<XMLHttpResponse>(err, req, suppressNotifications);
+          return this.handleLegacyError<XMLHttpResponse>(err, title, req, suppressNotifications);
         }),
       );
     return req();
@@ -1438,6 +1439,7 @@ export class ApiService {
 
   private handleLegacyError<T>(
     error: Error,
+    title: string,
     retry: () => Observable<T>,
     suppressNotifications = false,
   ): ObservableInput<T> {
@@ -1450,7 +1452,12 @@ export class ApiService {
       } else {
         Promise.resolve(error.xmlHttpResponse.body as string).then((detail) => {
           if (!suppressNotifications) {
-            this.notifications.danger(`Request failed (${error.xmlHttpResponse.status} ${error.message})`, detail);
+            try {
+              const body = JSON.parse(detail).data.reason;
+              this.notifications.danger(title, body);
+            } catch {
+              this.notifications.danger(title, detail);
+            }
           }
         });
       }
