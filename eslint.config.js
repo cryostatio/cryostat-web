@@ -6,6 +6,7 @@ const EslintPluginReact = require("eslint-plugin-react");
 const EslintPluginImport = require("eslint-plugin-import");
 const EslintPluginUnusedImports = require("eslint-plugin-unused-imports");
 const EslintTypeScriptPlugin = require("@typescript-eslint/eslint-plugin");
+const Prettier = require("prettier");
 
 module.exports [
   js.configs.recommended,
@@ -50,6 +51,7 @@ module.exports [
       "eslint-plugin-react-hooks": EslintPluginReactHooks,
       "unused-imports": EslintPluginUnusedImports,
       "import": EslintPluginImport,
+      "prettier": Prettier
     },
     ignores: [
       "src/mirage/**"
