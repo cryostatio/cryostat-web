@@ -791,24 +791,12 @@ export class ApiService {
         map(
           (target) =>
             `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
-              target?.connectUrl || '',
+              target!.connectUrl,
             )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`,
         ),
       )
-      .subscribe((resource) => {
-        const body = new window.FormData();
-        body.append('resource', resource);
-        this.sendRequest('v2.1', 'auth/token', {
-          method: 'POST',
-          body,
-        })
-          .pipe(
-            concatMap((resp) => resp.json()),
-            map((response: AssetJwtResponse) => response.data.result.resourceUrl),
-          )
-          .subscribe((resourceUrl) => {
-            this.downloadFile(resourceUrl, `${template.name}.jfc`);
-          });
+      .subscribe((resourceUrl) => {
+        this.downloadFile(resourceUrl, `${template.name}.jfc`);
       });
   }
 
