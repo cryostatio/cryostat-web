@@ -36,7 +36,6 @@ import {
   EventProbe,
   EventProbesResponse,
   Recording,
-  AssetJwtResponse,
   EventTemplate,
   RuleResponse,
   ArchivedRecording,

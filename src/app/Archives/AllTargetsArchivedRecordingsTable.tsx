@@ -351,7 +351,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             {target.alias == target.connectUrl || !target.alias
               ? `${target.connectUrl}`
               : `${target.alias} (${target.connectUrl})`}
-          </Td>
+          </Td> 
           <Td key={`target-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
             <Badge key={`${idx}_count`}>{archiveCount}</Badge>
           </Td>
@@ -392,16 +392,16 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target]);
-  
+
   const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   if (isError) {
     view = (
       <>
         <ErrorView
-          title={'Error retrieving archived recordings'}
+          title={'Error retrieving archived recordings in target view'}
           message={errorMessage}
-          retry={isAuthFail(errorMessage) ? authRetry : undefined}
+          retry={isAuthFail(errorMessage) ? authRetry : undefined} 
         />
       </>
     );
