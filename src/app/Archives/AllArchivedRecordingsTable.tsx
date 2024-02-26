@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } from '@app/Shared/Services/api.types';
@@ -78,6 +80,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const [directories, setDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [searchText, setSearchText] = React.useState('');
   const [expandedDirectories, setExpandedDirectories] = React.useState<_RecordingDirectory[]>([]);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
@@ -90,12 +93,23 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     [setDirectories, setIsLoading],
   );
 
+  const handleError = React.useCallback(
+    (error) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    },
+    [setIsLoading, setErrorMessage],
+  );
+
   const refreshDirectoriesAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe(handleDirectoriesAndCounts),
+      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe({
+        next: handleDirectoriesAndCounts,
+        error: handleError,
+      }),
     );
-  }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts]);
+  }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts, handleError]);
 
   const handleSearchInput = React.useCallback(
     (searchInput: string) => {
@@ -133,6 +147,14 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       tableColumns,
     );
   }, [directories, searchText, sortBy]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      }),
+    );
+  }, [context, context.target, setErrorMessage, addSubscription]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -262,7 +284,24 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [directoryRows, recordingRows]);
 
   let view: JSX.Element;
-  if (isLoading) {
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target]);
+
+  const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
+
+  if (isError) {
+    view = (
+      <>
+        <ErrorView
+          title={'Error retrieving archived recordings in All Archives View'}
+          message={errorMessage}
+          retry={isAuthFail(errorMessage) ? authRetry : undefined}
+        />
+      </>
+    );
+  } else if (isLoading) {
     view = <LoadingView />;
   } else if (!searchedDirectories.length) {
     view = (

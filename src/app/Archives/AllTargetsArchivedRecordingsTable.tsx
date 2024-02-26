@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { isAuthFail } from '@app/ErrorView/types';
+import { authFailMessage , isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, TargetDiscoveryEvent, NotificationCategory } from '@app/Shared/Services/api.types';
@@ -108,6 +108,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     (targetNodes: any[]) => {
       setIsLoading(false);
+      setErrorMessage('');
       setArchivesForTargets(
         targetNodes.map((node) => {
           const target: Target = {
@@ -122,7 +123,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         }),
       );
     },
-    [setArchivesForTargets, setIsLoading],
+    [setArchivesForTargets, setIsLoading, setErrorMessage],
   );
 
   const handleError = React.useCallback(
@@ -275,6 +276,14 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   }, [searchText, archivesForTargets, sortBy, hideEmptyTargets]);
 
   React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      }),
+    );
+  }, [context, context.target, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
@@ -351,7 +360,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             {target.alias == target.connectUrl || !target.alias
               ? `${target.connectUrl}`
               : `${target.alias} (${target.connectUrl})`}
-          </Td> 
+          </Td>
           <Td key={`target-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
             <Badge key={`${idx}_count`}>{archiveCount}</Badge>
           </Td>
@@ -399,9 +408,9 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     view = (
       <>
         <ErrorView
-          title={'Error retrieving archived recordings in target view'}
+          title={'Error retrieving archived recordings in All Targets View'}
           message={errorMessage}
-          retry={isAuthFail(errorMessage) ? authRetry : undefined} 
+          retry={isAuthFail(errorMessage) ? authRetry : undefined}
         />
       </>
     );
