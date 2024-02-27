@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { authFailMessage , isAuthFail } from '@app/ErrorView/types';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, TargetDiscoveryEvent, NotificationCategory } from '@app/Shared/Services/api.types';
