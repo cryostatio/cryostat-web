@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, TargetDiscoveryEvent, NotificationCategory } from '@app/Shared/Services/api.types';
@@ -82,6 +84,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const [archivesForTargets, setArchivesForTargets] = React.useState<ArchivesForTarget[]>([]);
   const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
   const [hideEmptyTargets, setHideEmptyTargets] = React.useState(true);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
@@ -105,6 +108,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     (targetNodes: any[]) => {
       setIsLoading(false);
+      setErrorMessage('');
       setArchivesForTargets(
         targetNodes.map((node) => {
           const target: Target = {
@@ -119,7 +123,15 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         }),
       );
     },
-    [setArchivesForTargets, setIsLoading],
+    [setArchivesForTargets, setIsLoading, setErrorMessage],
+  );
+
+  const handleError = React.useCallback(
+    (error) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    },
+    [setIsLoading, setErrorMessage],
   );
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -145,9 +157,12 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
              }`,
         )
         .pipe(map((v) => v.data.targetNodes))
-        .subscribe(handleArchivesForTargets),
+        .subscribe({
+          next: handleArchivesForTargets,
+          error: handleError,
+        }),
     );
-  }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets]);
+  }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets, handleError]);
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const getCountForNewTarget = React.useCallback(
@@ -259,6 +274,14 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       tableColumns,
     );
   }, [searchText, archivesForTargets, sortBy, hideEmptyTargets]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      }),
+    );
+  }, [context, context.target, setErrorMessage, addSubscription]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -374,7 +397,24 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   }, [targetRows, recordingRows]);
 
   let view: JSX.Element;
-  if (isLoading) {
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target]);
+
+  const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
+
+  if (isError) {
+    view = (
+      <>
+        <ErrorView
+          title={'Error retrieving archived recordings in All Targets View'}
+          message={errorMessage}
+          retry={isAuthFail(errorMessage) ? authRetry : undefined}
+        />
+      </>
+    );
+  } else if (isLoading) {
     view = <LoadingView />;
   } else if (!searchedArchivesForTargets.length) {
     view = (
