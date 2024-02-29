@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 import { ClickableLabel } from '@app/RecordingMetadata/ClickableLabel';
-import { RecordingLabel } from '@app/RecordingMetadata/types';
 import '@testing-library/jest-dom';
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { cleanup, screen } from '@testing-library/react';
 import { render, renderSnapshot } from '../utils';
 
 const mockLabel = {
   key: 'someLabel',
   value: 'someValue',
-} as RecordingLabel;
+} as KeyValue;
 const mockLabelAsString = 'someLabel: someValue';
 
-const onLabelClick = jest.fn((_label: RecordingLabel) => {
+const onLabelClick = jest.fn((_label: KeyValue) => {
   /**Do nothing. Used for checking renders */
 });
 

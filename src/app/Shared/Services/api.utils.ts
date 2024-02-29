@@ -112,7 +112,7 @@ export const DEFAULT_EMPTY_UNIVERSE: EnvironmentNode = {
   id: 0,
   name: 'Universe',
   nodeType: NodeType.UNIVERSE,
-  labels: {},
+  labels: [],
   children: [],
 };
 

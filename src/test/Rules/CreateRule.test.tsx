@@ -31,8 +31,8 @@ const mockTarget: Target = {
   connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
   annotations: {
-    cryostat: { PORT: '9091' },
-    platform: {},
+    cryostat: [{ key: 'PORT', value: '9091' }],
+    platform: [],
   },
 };
 const mockEventTemplate: EventTemplate = {

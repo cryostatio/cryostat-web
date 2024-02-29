@@ -31,8 +31,8 @@ const mockFooTarget: Target = {
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
   annotations: {
-    cryostat: {},
-    platform: {},
+    cryostat: [],
+    platform: [],
   },
 };
 

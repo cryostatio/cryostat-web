@@ -38,14 +38,17 @@ const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
   annotations: {
-    cryostat: {},
-    platform: {},
+    cryostat: [],
+    platform: [],
   },
 };
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 
 const mockActiveRecording: ActiveRecording = {
   name: 'someRecording',

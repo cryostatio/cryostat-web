@@ -54,8 +54,8 @@ const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
   annotations: {
-    cryostat: {},
-    platform: {},
+    cryostat: [],
+    platform: [],
   },
 };
 

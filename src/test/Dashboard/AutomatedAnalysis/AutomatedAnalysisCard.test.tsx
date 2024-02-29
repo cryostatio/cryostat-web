@@ -136,7 +136,7 @@ const mockArchivedRecording: ArchivedRecording = {
   name: 'someArchivedRecording',
   downloadUrl: '',
   reportUrl: '',
-  metadata: { labels: {} },
+  metadata: { labels: [] },
   size: 0,
   archivedTime: 1663027200000, // 2022-09-13T00:00:00.000Z in milliseconds
 };

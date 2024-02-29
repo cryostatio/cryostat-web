@@ -280,7 +280,10 @@ const MBeanDetails: React.FC<{
                       classPath
                       libraryPath
                       inputArguments
-                      systemProperties
+                      systemProperties {
+                        key
+                        value
+                      }
                     }
                     os {
                       name

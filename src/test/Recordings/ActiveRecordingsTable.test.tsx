@@ -34,9 +34,12 @@ import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 const mockRecording: ActiveRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',

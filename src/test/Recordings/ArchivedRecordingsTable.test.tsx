@@ -34,12 +34,18 @@ const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
 const mockUploadsTarget = { connectUrl: UPLOADS_SUBDIRECTORY, alias: '' };
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
-const mockUploadedRecordingLabels = {
-  someUploaded: 'someUploadedValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
+const mockUploadedRecordingLabels = [
+  {
+    key: 'someUploaded',
+    value: 'someUpdatedValue',
+  },
+];
 const mockMetadataFileName = 'mock.metadata.json';
 const mockMetadataFile = new File(
   [JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })],

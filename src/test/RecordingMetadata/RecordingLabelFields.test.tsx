@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { RecordingLabelFields, RecordingLabelFieldsProps } from '@app/RecordingMetadata/RecordingLabelFields';
-import { RecordingLabel } from '@app/RecordingMetadata/types';
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { ValidatedOptions } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
@@ -37,12 +37,12 @@ mockMetadataFile.text = jest.fn(
 describe('<RecordingLabelFields />', () => {
   // RecordingLabelFields component modifies labels in-place, so we need to reinitialize mocks
   // after every tests.
-  let mockLabels: RecordingLabel[];
+  let mockLabels: KeyValue[];
   let mockValid: ValidatedOptions;
   let mockProps: RecordingLabelFieldsProps;
-  let mockLabel1: RecordingLabel;
-  let mockLabel2: RecordingLabel;
-  let mockEmptyLabel: RecordingLabel;
+  let mockLabel1: KeyValue;
+  let mockLabel2: KeyValue;
+  let mockEmptyLabel: KeyValue;
 
   afterEach(cleanup);
 
@@ -50,20 +50,20 @@ describe('<RecordingLabelFields />', () => {
     mockLabel1 = {
       key: 'someLabel',
       value: 'someValue',
-    } as RecordingLabel;
+    } as KeyValue;
     mockLabel2 = {
       key: 'anotherLabel',
       value: 'anotherValue',
-    } as RecordingLabel;
+    } as KeyValue;
     mockEmptyLabel = {
       key: '',
       value: '',
-    } as RecordingLabel;
+    } as KeyValue;
     mockLabels = [mockLabel1, mockLabel2];
     mockValid = ValidatedOptions.default;
     mockProps = {
       labels: mockLabels,
-      setLabels: jest.fn((labels: RecordingLabel[]) => (mockLabels = labels.slice())),
+      setLabels: jest.fn((labels: KeyValue[]) => (mockLabels = labels.slice())),
       setValid: jest.fn((state: ValidatedOptions) => (mockValid = state)),
     };
   });

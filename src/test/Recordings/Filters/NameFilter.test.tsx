@@ -19,9 +19,12 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types'
 import { cleanup, screen, within } from '@testing-library/react';
 import { render, renderSnapshot } from '../../utils';
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 const mockRecording: ActiveRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',

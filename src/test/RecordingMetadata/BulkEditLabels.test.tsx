@@ -35,9 +35,12 @@ const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 
 const mockArchivedRecording: ArchivedRecording = {
   name: 'someArchivedRecording_some_random',
