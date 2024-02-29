@@ -48,7 +48,7 @@ export const JvmDetailsCard: DashboardCardFC<JvmDetailsCardProps> = (props) => {
         name: target.alias,
         target,
         nodeType: NodeType.JVM,
-        labels: {},
+        labels: [],
       }),
     };
   }, [target]);

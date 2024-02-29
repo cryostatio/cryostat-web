@@ -101,10 +101,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           alias: attrs.get('alias'),
           connectUrl: attrs.get('connectUrl'),
           annotations: {
-            platform: {},
-            cryostat: {
-              REALM: 'Custom Targets',
-            },
+            platform: [],
+            cryostat: [
+              {
+                key: 'REALM',
+                value: 'Custom Targets',
+              },
+            ],
           },
         });
         websocket.send(
@@ -135,11 +138,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             result: {
               name: 'Universe',
               nodeType: 'Universe',
-              labels: {},
+              labels: [],
               children: realmTypes.map((r: string) => ({
                 name: r,
                 nodeType: 'Realm',
-                labels: {},
+                labels: [],
                 id: r,
                 children: models
                   .filter((t) => t.annotations.cryostat['REALM'] === r)
@@ -211,11 +214,17 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           maxSize: attrs.get('maxSize') || 0,
           maxAge: attrs.get('maxAge') || 0,
           metadata: {
-            labels: {
-              ...(attrs.labels || {}),
-              'template.type': 'TARGET',
-              'template.name': 'Demo_Template',
-            },
+            labels: [
+              ...(attrs.labels || []),
+              {
+                key: 'template.type',
+                value: 'TARGET',
+              },
+              {
+                key: 'template.name',
+                value: 'Demo_Template',
+              },
+            ],
           },
         });
         websocket.send(

@@ -55,7 +55,7 @@ const mockAnotherRecording = {
 const mockRecordingWithoutLabel = {
   ...mockRecording,
   name: 'noLabelRecording',
-  metadata: { labels: {} },
+  metadata: { labels: [] },
 } as ActiveRecording;
 const mockRecordingList = [mockRecording, mockAnotherRecording, mockRecordingWithoutLabel];
 
