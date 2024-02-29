@@ -140,7 +140,7 @@ export const getTargetRepresentation = (t: Target) =>
 export const isTargetAgentHttp = (t: Target) => t.connectUrl.startsWith('http');
 
 export const isTargetNode = (node: EnvironmentNode | TargetNode): node is TargetNode => {
-  return node['target'] !== undefined && node['children'] === undefined;
+  return node['target'] !== undefined;
 };
 
 export const getAllLeaves = (root: EnvironmentNode | TargetNode): TargetNode[] => {
