@@ -271,23 +271,25 @@ const MBeanDetails: React.FC<{
             `
             query MBeanMXMetricsForTarget($connectUrl: String) {
               targetNodes(filter: { name: $connectUrl }) {
-                mbeanMetrics {
-                  runtime {
-                    startTime
-                    vmVendor
-                    vmVersion
-                    classPath
-                    libraryPath
-                    inputArguments
-                    systemProperties
-                  }
-                  os {
-                    name
-                    version
-                    arch
-                    availableProcessors
-                    totalPhysicalMemorySize
-                    totalSwapSpaceSize
+                target {
+                  mbeanMetrics {
+                    runtime {
+                      startTime
+                      vmVendor
+                      vmVersion
+                      classPath
+                      libraryPath
+                      inputArguments
+                      systemProperties
+                    }
+                    os {
+                      name
+                      version
+                      arch
+                      availableProcessors
+                      totalPhysicalMemorySize
+                      totalSwapSpaceSize
+                    }
                   }
                 }
               }
@@ -295,7 +297,7 @@ const MBeanDetails: React.FC<{
             { connectUrl },
           )
           .pipe(
-            map((resp) => resp.data.targetNodes[0].mbeanMetrics || {}),
+            map((resp) => resp.data.targetNodes[0].target.mbeanMetrics || {}),
             catchError((_) => of({})),
           )
           .subscribe(setMbeanMetrics),

@@ -173,7 +173,9 @@ export interface MBeanMetrics {
 export interface MBeanMetricsResponse {
   data: {
     targetNodes: {
-      mbeanMetrics: MBeanMetrics;
+      target: {
+        mbeanMetrics: MBeanMetrics;
+      };
     }[];
   };
 }

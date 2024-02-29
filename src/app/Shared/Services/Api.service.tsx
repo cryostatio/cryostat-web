@@ -1206,8 +1206,10 @@ export class ApiService {
       `
         query MBeanMXMetricsForTarget($connectUrl: String) {
           targetNodes(filter: { name: $connectUrl }) {
-            mbeanMetrics {
-              ${queries.join('\n')}
+            target {
+              mbeanMetrics {
+                ${queries.join('\n')}
+              }
             }
           }
         }`,
@@ -1218,7 +1220,7 @@ export class ApiService {
         if (!nodes || nodes.length === 0) {
           return {};
         }
-        return nodes[0]?.mbeanMetrics;
+        return nodes[0]?.target.mbeanMetrics;
       }),
       catchError((_) => of({})),
     );
