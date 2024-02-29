@@ -53,8 +53,15 @@ import {
 import { ActiveRecDetail, Nothing } from './ResourceDetails';
 import { DescriptionConfig, TargetOwnedResourceType, TargetRelatedResourceType, ResourceTypes, PatchFn } from './types';
 
-export const keyValueEntryTransformer = (kv: { key: string; value: string }[]): string[] =>
-  kv.map((k) => `${k.key}=${k.value}`);
+export const keyValueEntryTransformer = (kv: { key: string; value: string }[]): string[] => {
+  if (Array.isArray(kv)) {
+    return kv.map((k) => `${k.key}=${k.value}`);
+  } else if (!!kv && typeof kv === 'object') {
+    return Object.entries(kv).map(([k, v]) => `${k}=${v}`);
+  } else {
+    throw new Error(`Unknown kv of type "${typeof kv}": ${JSON.stringify(kv)}`);
+  }
+};
 
 export const valuesEntryTransformer: (kv: string[] | object) => string[] = Object.values;
 
