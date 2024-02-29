@@ -770,6 +770,14 @@ export class ApiService {
     ).pipe(
       map((resp) => resp.json()),
       concatMap(from),
+      tap((resp) => {
+        if (suppressNotifications || !resp?.errors?.length) {
+          return;
+        }
+        resp.errors.forEach((err) =>
+          this.notifications.danger(`Request failed (${err.extensions.classification})`, err.message),
+        );
+      }),
       first(),
     );
   }
