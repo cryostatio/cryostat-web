@@ -88,6 +88,8 @@ export class XMLHttpError extends Error {
   }
 }
 
+export type CustomTargetStub = Omit<Target, 'jvmId' | 'labels' | 'annotations'>;
+
 // ======================================
 // Health Resources
 // ======================================
@@ -447,8 +449,8 @@ export interface Target {
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   connectUrl: string;
   alias: string;
-  labels?: KeyValue[];
-  annotations?: {
+  labels: KeyValue[];
+  annotations: {
     cryostat: KeyValue[];
     platform: KeyValue[];
   };

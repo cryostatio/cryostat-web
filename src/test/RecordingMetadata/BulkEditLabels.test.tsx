@@ -19,6 +19,7 @@ import {
   ActiveRecording,
   RecordingState,
   NotificationMessage,
+  Target,
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
@@ -33,7 +34,13 @@ jest.mock('@patternfly/react-core', () => ({
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
+const mockTarget: Target = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 const mockRecordingLabels = [
   {

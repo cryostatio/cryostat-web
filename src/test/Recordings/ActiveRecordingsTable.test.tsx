@@ -23,7 +23,7 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, RecordingState, NotificationMessage } from '@app/Shared/Services/api.types';
+import { ActiveRecording, RecordingState, NotificationMessage, Target } from '@app/Shared/Services/api.types';
 import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
@@ -33,7 +33,13 @@ import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
+const mockTarget = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 const mockRecordingLabels = [
   {
     key: 'someLabel',
@@ -530,7 +536,7 @@ describe('<ActiveRecordingsTable />', () => {
   it('should show error view if failing to retrieve recordings', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
-      target: () => of(mockTarget),
+      target: () => of(mockTarget as Target),
       authFailure: () => subj.asObservable(),
     } as TargetService;
     const services: Services = {

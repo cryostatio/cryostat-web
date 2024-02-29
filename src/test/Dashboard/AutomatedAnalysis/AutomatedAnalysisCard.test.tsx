@@ -40,7 +40,13 @@ jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
   };
 });
 
-const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: 'service:jmx:rmi://someUrl',
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 const mockEmptyCachedReport: CachedReportValue = {
   report: [],

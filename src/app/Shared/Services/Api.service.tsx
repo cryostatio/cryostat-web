@@ -59,6 +59,7 @@ import {
   XMLHttpRequestConfig,
   XMLHttpResponse,
   KeyValue,
+  CustomTargetStub,
 } from './api.types';
 import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
 import { LoginService } from './Login.service';
@@ -170,7 +171,7 @@ export class ApiService {
   }
 
   createTarget(
-    target: Target,
+    target: CustomTargetStub,
     credentials?: { username?: string; password?: string },
     storeCredentials = false,
     dryrun = false,

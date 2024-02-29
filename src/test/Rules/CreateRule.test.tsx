@@ -30,6 +30,7 @@ const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget: Target = {
   connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
+  labels: [],
   annotations: {
     cryostat: [{ key: 'PORT', value: '9091' }],
     platform: [],

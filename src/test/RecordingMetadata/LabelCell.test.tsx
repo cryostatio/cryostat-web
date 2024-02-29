@@ -25,6 +25,7 @@ import { render, renderSnapshot } from '../utils';
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
+  labels: [],
   annotations: {
     cryostat: [],
     platform: [],

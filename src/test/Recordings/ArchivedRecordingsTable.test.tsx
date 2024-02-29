@@ -21,7 +21,7 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { UPLOADS_SUBDIRECTORY, ArchivedRecording, NotificationMessage } from '@app/Shared/Services/api.types';
+import { UPLOADS_SUBDIRECTORY, ArchivedRecording, NotificationMessage, Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
@@ -32,8 +32,19 @@ import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
-const mockUploadsTarget = { connectUrl: UPLOADS_SUBDIRECTORY, alias: '' };
+const mockTarget: Target = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
+const mockUploadsTarget = {
+  connectUrl: UPLOADS_SUBDIRECTORY,
+  alias: '',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 const mockRecordingLabels = [
   {
     key: 'someLabel',

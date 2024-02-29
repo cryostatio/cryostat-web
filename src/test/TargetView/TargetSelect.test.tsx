@@ -36,6 +36,7 @@ const mockFooTarget: Target = {
   jvmId: 'abcd',
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
+  labels: [],
   annotations: {
     cryostat: cryostatAnnotation,
     platform: [],
