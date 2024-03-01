@@ -78,7 +78,12 @@ const mockActiveLabelsNotification = {
     target: mockConnectUrl,
     recordingName: 'someActiveRecording',
     jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
+    metadata: {
+      labels: [
+        { key: 'someLabel', value: 'someValue' },
+        { key: 'someNewLabel', value: 'someNewValue' },
+      ],
+    },
   },
 } as NotificationMessage;
 
@@ -89,7 +94,12 @@ const mockArchivedLabelsNotification = {
     target: mockConnectUrl,
     recordingName: 'someArchivedRecording_some_random',
     jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
+    metadata: {
+      labels: [
+        { key: 'someLabel', value: 'someValue' },
+        { key: 'someNewLabel', value: 'someNewValue' },
+      ],
+    },
   },
 } as NotificationMessage;
 

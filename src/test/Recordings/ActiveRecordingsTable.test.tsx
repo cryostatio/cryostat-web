@@ -69,7 +69,7 @@ const mockLabelsNotification = {
     target: mockConnectUrl,
     recordingName: 'someRecording',
     jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someUpdatedValue' } },
+    metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
   },
 } as NotificationMessage;
 const mockStopNotification = {
@@ -242,8 +242,8 @@ describe('<ActiveRecordingsTable />', () => {
     expect(state).toBeInTheDocument();
     expect(state).toBeVisible();
 
-    Object.keys(mockRecordingLabels).forEach((key) => {
-      const label = screen.getByText(`${key}: ${mockRecordingLabels[key]}`);
+    mockRecordingLabels.forEach((entry) => {
+      const label = screen.getByText(`${entry.key}: ${entry.value}`);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     });
