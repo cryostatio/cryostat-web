@@ -198,7 +198,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             downloadUrl
             reportUrl
             metadata {
-              labels
+              labels {
+                key
+                value
+              }
             }
             size
           }
@@ -220,7 +223,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             downloadUrl
             reportUrl
             metadata {
-              labels
+              labels {
+                key
+                value
+              }
             }
             size
           }
