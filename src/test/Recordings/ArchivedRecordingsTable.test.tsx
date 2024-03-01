@@ -21,7 +21,13 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { UPLOADS_SUBDIRECTORY, ArchivedRecording, NotificationMessage, Target } from '@app/Shared/Services/api.types';
+import {
+  UPLOADS_SUBDIRECTORY,
+  ArchivedRecording,
+  NotificationMessage,
+  Target,
+  KeyValue,
+} from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
@@ -57,13 +63,22 @@ const mockUploadedRecordingLabels = [
     value: 'someUpdatedValue',
   },
 ];
+export const convertLabels = (kv: KeyValue[]): object => {
+  const out = {};
+  for (let e of kv) {
+    out[e.key] = e.value;
+  }
+  return out;
+};
 const mockMetadataFileName = 'mock.metadata.json';
 const mockMetadataFile = new File(
-  [JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })],
+  [JSON.stringify({ labels: convertLabels(mockUploadedRecordingLabels) })],
   mockMetadataFileName,
   { type: 'json' },
 );
-mockMetadataFile.text = jest.fn(() => Promise.resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })));
+mockMetadataFile.text = jest.fn(() =>
+  Promise.resolve(JSON.stringify({ labels: convertLabels(mockUploadedRecordingLabels) })),
+);
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
@@ -91,7 +106,7 @@ const mockLabelsNotification = {
     target: mockConnectUrl,
     recordingName: 'someRecording',
     jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someUpdatedValue' } },
+    metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
   },
 } as NotificationMessage;
 const mockDeleteNotification = {
@@ -237,8 +252,8 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(size).toBeInTheDocument();
     expect(size).toBeVisible();
 
-    Object.keys(mockRecordingLabels).forEach((key) => {
-      const label = screen.getByText(`${key}: ${mockRecordingLabels[key]}`);
+    mockRecordingLabels.forEach((entry) => {
+      const label = screen.getByText(`${entry.key}: ${entry.value}`);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     });
@@ -742,7 +757,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadSpy).toHaveBeenCalled();
     expect(uploadSpy).toHaveBeenCalledWith(
       mockFileUpload,
-      mockUploadedRecordingLabels,
+      convertLabels(mockUploadedRecordingLabels),
       expect.any(Function),
       expect.any(Subject),
     );
