@@ -23,12 +23,13 @@ export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'beta
 // Common Resources
 // ======================================
 export interface KeyValue {
-  readonly [key: string]: string;
+  key: string;
+  value: string;
 }
 
 export interface Metadata {
-  labels: KeyValue;
-  annotations?: KeyValue;
+  labels: KeyValue[];
+  annotations?: KeyValue[];
 }
 
 export interface ApiV2Response {
@@ -87,6 +88,8 @@ export class XMLHttpError extends Error {
   }
 }
 
+export type CustomTargetStub = Omit<Target, 'jvmId' | 'labels' | 'annotations'>;
+
 // ======================================
 // Health Resources
 // ======================================
@@ -122,7 +125,7 @@ export interface AuthV2Response extends ApiV2Response {
 // ======================================
 // MBean metric resources
 // ======================================
-export interface MemoryUsage {
+export interface MemoryUtilization {
   init: number;
   used: number;
   committed: number;
@@ -147,8 +150,8 @@ export interface MBeanMetrics {
     totalSwapSpaceSize?: number;
   };
   memory?: {
-    heapMemoryUsage?: MemoryUsage;
-    nonHeapMemoryUsage?: MemoryUsage;
+    heapMemoryUsage?: MemoryUtilization;
+    nonHeapMemoryUsage?: MemoryUtilization;
     heapMemoryUsagePercent?: number;
   };
   runtime?: {
@@ -161,7 +164,7 @@ export interface MBeanMetrics {
     specName?: string;
     specVendor?: string;
     startTime?: number;
-    systemProperties?: object;
+    systemProperties?: KeyValue[];
     uptime?: number;
     vmName?: string;
     vmVendor?: string;
@@ -173,7 +176,9 @@ export interface MBeanMetrics {
 export interface MBeanMetricsResponse {
   data: {
     targetNodes: {
-      mbeanMetrics: MBeanMetrics;
+      target: {
+        mbeanMetrics: MBeanMetrics;
+      };
     }[];
   };
 }
@@ -444,10 +449,10 @@ export interface Target {
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   connectUrl: string;
   alias: string;
-  labels?: KeyValue;
-  annotations?: {
-    cryostat: KeyValue;
-    platform: KeyValue;
+  labels: KeyValue[];
+  annotations: {
+    cryostat: KeyValue[];
+    platform: KeyValue[];
   };
 }
 
@@ -483,7 +488,7 @@ interface _AbstractNode {
   readonly id: number;
   readonly name: string;
   readonly nodeType: NodeType;
-  readonly labels: KeyValue;
+  readonly labels: KeyValue[];
 }
 
 export interface EnvironmentNode extends _AbstractNode {

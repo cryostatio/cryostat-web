@@ -14,33 +14,25 @@
  * limitations under the License.
  */
 
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { ValidatedOptions } from '@patternfly/react-core';
 import { Observable, from } from 'rxjs';
-import { RecordingLabel } from './types';
 
-export const parseLabels = (jsonLabels?: { [key: string]: string }) => {
-  if (!jsonLabels) return [];
-
-  return Object.entries(jsonLabels).map(([k, v]) => {
-    return { key: k, value: v } as RecordingLabel;
-  });
-};
-
-export const isEqualLabel = (a: RecordingLabel, b: RecordingLabel) => {
+export const isEqualLabel = (a: KeyValue, b: KeyValue) => {
   return a.key === b.key && a.value === b.value;
 };
 
-export const includesLabel = (arr: RecordingLabel[], searchLabel: RecordingLabel) => {
+export const includesLabel = (arr: KeyValue[], searchLabel: KeyValue) => {
   return arr.some((l) => isEqualLabel(searchLabel, l));
 };
 
-export const parseLabelsFromFile = (file: File): Observable<RecordingLabel[]> => {
+export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
   return from(
     file
       .text()
       .then(JSON.parse)
       .then((obj) => {
-        const labels: RecordingLabel[] = [];
+        const labels: KeyValue[] = [];
         const labelObj = obj['labels'];
         if (labelObj) {
           Object.keys(labelObj).forEach((key) => {
@@ -56,7 +48,7 @@ export const parseLabelsFromFile = (file: File): Observable<RecordingLabel[]> =>
   );
 };
 
-export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
+export const getLabelDisplay = (label: KeyValue) => `${label.key}:${label.value}`;
 
 export const LabelPattern = /^\S+$/;
 
@@ -64,6 +56,6 @@ export const getValidatedOption = (isValid: boolean) => {
   return isValid ? ValidatedOptions.success : ValidatedOptions.error;
 };
 
-export const matchesLabelSyntax = (l: RecordingLabel) => {
+export const matchesLabelSyntax = (l: KeyValue) => {
   return l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
 };

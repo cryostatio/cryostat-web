@@ -114,6 +114,11 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           const target: Target = {
             connectUrl: node.target.serviceUri,
             alias: node.target.alias,
+            labels: [],
+            annotations: {
+              cryostat: [],
+              platform: [],
+            },
           };
           return {
             target,
@@ -215,6 +220,11 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       const target: Target = {
         connectUrl: evt.serviceRef.connectUrl,
         alias: evt.serviceRef.alias,
+        labels: [],
+        annotations: {
+          cryostat: [],
+          platform: [],
+        },
       };
       if (evt.kind === 'FOUND') {
         getCountForNewTarget(target);

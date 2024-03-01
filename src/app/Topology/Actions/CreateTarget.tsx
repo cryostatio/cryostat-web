@@ -25,7 +25,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { portalRoot } from '@app/utils/utils';
+import { getAnnotation, portalRoot } from '@app/utils/utils';
 import {
   Accordion,
   AccordionContent,
@@ -241,7 +241,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   React.useEffect(() => {
     addSubscription(
       context.targets.targets().subscribe((ts) => {
-        const discoveredTargets = ts.filter((t) => t.annotations?.cryostat['REALM'] !== 'Custom Targets');
+        const discoveredTargets = ts.filter((t) => getAnnotation(t.annotations.cryostat, 'REALM') !== 'Custom Targets');
         if (discoveredTargets.length) {
           setExample(discoveredTargets[0].connectUrl);
         }
@@ -400,7 +400,12 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                 </FormGroup>
               </GridItem>
               <GridItem {...responsiveSpans[1]} order={{ default: '1', lg: '1', xl: '1', md: '1' }}>
-                <SampleNodeDonut target={target} validation={validation} testing={testing} onClick={testTarget} />
+                <SampleNodeDonut
+                  target={{ ...target, labels: [], annotations: { cryostat: [], platform: [] } }}
+                  validation={validation}
+                  testing={testing}
+                  onClick={testTarget}
+                />
               </GridItem>
             </Grid>
             <ActionGroup>

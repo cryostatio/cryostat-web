@@ -24,6 +24,7 @@ import {
   UPLOADS_SUBDIRECTORY,
   NotificationCategory,
   Target,
+  KeyValue,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -33,8 +34,7 @@ import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
 import { RecordingLabelFields } from './RecordingLabelFields';
-import { RecordingLabel } from './types';
-import { includesLabel, parseLabels } from './utils';
+import { includesLabel } from './utils';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -54,8 +54,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   const context = React.useContext(ServiceContext);
   const [recordings, setRecordings] = React.useState([] as Recording[]);
   const [editing, setEditing] = React.useState(false);
-  const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
-  const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as RecordingLabel[]);
+  const [commonLabels, setCommonLabels] = React.useState([] as KeyValue[]);
+  const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as KeyValue[]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -78,7 +78,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     recordings.forEach((r: Recording) => {
       const idx = getIdxFromRecording(r);
       if (checkedIndices.includes(idx)) {
-        let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
+        let updatedLabels = [...r.metadata.labels, ...commonLabels];
         updatedLabels = updatedLabels.filter((label) => {
           return !includesLabel(toDelete, label);
         });
@@ -124,13 +124,13 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   }, [setEditing, setCommonLabels, savedCommonLabels]);
 
   const updateCommonLabels = React.useCallback(
-    (setLabels: (l: RecordingLabel[]) => void) => {
-      const allRecordingLabels = [] as RecordingLabel[][];
+    (setLabels: (l: KeyValue[]) => void) => {
+      const allRecordingLabels = [] as KeyValue[][];
 
       recordings.forEach((r: Recording) => {
         const idx = getIdxFromRecording(r);
         if (checkedIndices.includes(idx)) {
-          allRecordingLabels.push(parseLabels(r.metadata.labels));
+          allRecordingLabels.push(r.metadata.labels);
         }
       });
 
