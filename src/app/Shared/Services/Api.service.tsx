@@ -15,7 +15,6 @@
  */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
-import { RecordingLabel } from '@app/RecordingMetadata/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
@@ -59,6 +58,8 @@ import {
   XMLHttpError,
   XMLHttpRequestConfig,
   XMLHttpResponse,
+  KeyValue,
+  CustomTargetStub,
 } from './api.types';
 import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
 import { LoginService } from './Login.service';
@@ -170,7 +171,7 @@ export class ApiService {
   }
 
   createTarget(
-    target: Target,
+    target: CustomTargetStub,
     credentials?: { username?: string; password?: string },
     storeCredentials = false,
     dryrun = false,
@@ -522,7 +523,7 @@ export class ApiService {
     );
   }
 
-  transformAndStringifyToRawLabels(labels: RecordingLabel[]) {
+  transformAndStringifyToRawLabels(labels: KeyValue[]) {
     const rawLabels = {};
     for (const label of labels) {
       rawLabels[label.key] = label.value;
@@ -530,7 +531,7 @@ export class ApiService {
     return JSON.stringify(rawLabels);
   }
 
-  postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
+  postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
     return this.sendRequest(
       'beta',
       `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}/metadata/labels`,
@@ -888,7 +889,7 @@ export class ApiService {
     );
   }
 
-  postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
+  postRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
     return this.target.target().pipe(
       filter((target: Target) => !!target),
       first(),
@@ -917,7 +918,7 @@ export class ApiService {
     );
   }
 
-  postUploadedRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
+  postUploadedRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
       query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String){
@@ -935,7 +936,7 @@ export class ApiService {
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
-  postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ActiveRecording[]> {
+  postTargetRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ActiveRecording[]> {
     return this.target.target().pipe(
       filter((target) => !!target),
       first(),
@@ -1206,8 +1207,10 @@ export class ApiService {
       `
         query MBeanMXMetricsForTarget($connectUrl: String) {
           targetNodes(filter: { name: $connectUrl }) {
-            mbeanMetrics {
-              ${queries.join('\n')}
+            target {
+              mbeanMetrics {
+                ${queries.join('\n')}
+              }
             }
           }
         }`,
@@ -1218,7 +1221,7 @@ export class ApiService {
         if (!nodes || nodes.length === 0) {
           return {};
         }
-        return nodes[0]?.mbeanMetrics;
+        return nodes[0]?.target.mbeanMetrics;
       }),
       catchError((_) => of({})),
     );
@@ -1306,7 +1309,7 @@ export class ApiService {
     anchor.remove();
   }
 
-  stringifyRecordingLabels(labels: RecordingLabel[]): string {
+  stringifyRecordingLabels(labels: KeyValue[]): string {
     return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
   }
 

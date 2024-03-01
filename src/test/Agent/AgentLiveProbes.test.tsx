@@ -30,7 +30,13 @@ import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
+const mockTarget = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 

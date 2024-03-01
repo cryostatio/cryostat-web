@@ -72,7 +72,7 @@ export const createTargetNode = (target: Target): TargetNode => {
     id: hashCode(JSON.stringify(target)),
     name: target.connectUrl,
     nodeType: NodeType.TARGET,
-    labels: {},
+    labels: [],
     target: target,
   };
 };

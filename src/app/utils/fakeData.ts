@@ -49,19 +49,40 @@ export const fakeTarget: Target = {
   jvmId: 'rpZeYNB9wM_TEnXoJvAFuR0jdcUBXZgvkXiKhjQGFvY=',
   connectUrl: 'service:jmx:rmi:///jndi/rmi://10-128-2-25.my-namespace.pod:9097/jmxrmi',
   alias: 'quarkus-test-77f556586c-25bkv',
-  labels: {
-    'pod-template-hash': '77f556586c',
-    deployment: 'quarkus-test',
-  },
-  annotations: {
-    cryostat: {
-      HOST: '10.128.2.25',
-      PORT: '9097',
-      POD_NAME: 'quarkus-test-77f556586c-25bkv',
-      REALM: 'KubernetesApi',
-      NAMESPACE: 'my-namespace',
+  labels: [
+    {
+      key: 'pod-template-hash',
+      value: '77f556586c',
     },
-    platform: {},
+    {
+      key: 'deployment',
+      value: 'quarkus-test',
+    },
+  ],
+  annotations: {
+    cryostat: [
+      {
+        key: 'HOST',
+        value: '10.128.2.25',
+      },
+      {
+        key: 'PORT',
+        value: '9097',
+      },
+      {
+        key: 'POD_NAME',
+        value: 'quarkus-test-77f556586c-25bkv',
+      },
+      {
+        key: 'REALM',
+        value: 'KubernetesApi',
+      },
+      {
+        key: 'NAMESPACE',
+        value: 'my-namespace',
+      },
+    ],
+    platform: [],
   },
 };
 
@@ -72,11 +93,20 @@ export const fakeAARecording: ActiveRecording = {
   reportUrl:
     'https://clustercryostat-sample-default.apps.ci-ln-25fg5f2-76ef8.origin-ci-int-aws.dev.rhcloud.com:443/api/v1/targets/service:jmx:rmi:%2F%2F%2Fjndi%2Frmi:%2F%2F10-128-2-27.my-namespace.pod:9097%2Fjmxrmi/reports/automated-analysis',
   metadata: {
-    labels: {
-      'template.name': 'Profiling',
-      'template.type': 'TARGET',
-      origin: 'automated-analysis',
-    },
+    labels: [
+      {
+        key: 'template.name',
+        value: 'Profiling',
+      },
+      {
+        key: 'template.type',
+        value: 'TARGET',
+      },
+      {
+        key: 'origin',
+        value: 'automated-analysis',
+      },
+    ],
   },
   startTime: 1680732807,
   id: 0,

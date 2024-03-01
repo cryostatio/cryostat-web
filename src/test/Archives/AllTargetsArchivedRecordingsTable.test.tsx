@@ -26,6 +26,9 @@ const mockAlias1 = 'fooTarget1';
 const mockTarget1: Target = {
   connectUrl: mockConnectUrl1,
   alias: mockAlias1,
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
 const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
@@ -36,6 +39,9 @@ const mockNewAlias = 'newTarget';
 const mockNewTarget: Target = {
   connectUrl: mockNewConnectUrl,
   alias: mockNewAlias,
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
 const mockCount1 = 1;
 const mockCount2 = 3;

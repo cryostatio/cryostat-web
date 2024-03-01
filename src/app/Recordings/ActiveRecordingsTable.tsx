@@ -20,7 +20,6 @@ import {
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { authFailMessage } from '@app/ErrorView/types';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
-import { parseLabels } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
@@ -861,10 +860,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     return expandedRows.includes(expandedRowId);
   }, [expandedRowId, expandedRows]);
 
-  const parsedLabels = React.useMemo(() => {
-    return parseLabels(recording.metadata.labels);
-  }, [recording]);
-
   const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
 
   const handleCheck = React.useCallback(
@@ -974,7 +969,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={parsedLabels}
+            labels={recording.metadata.labels}
           />
         </Td>
         <RecordingActions
@@ -993,7 +988,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     recording,
     labelFilters,
     currentSelectedTargetURL,
-    parsedLabels,
     context.api,
     handleCheck,
     handleToggle,

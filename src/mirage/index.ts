@@ -101,10 +101,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           alias: attrs.get('alias'),
           connectUrl: attrs.get('connectUrl'),
           annotations: {
-            platform: {},
-            cryostat: {
-              REALM: 'Custom Targets',
-            },
+            platform: [],
+            cryostat: [
+              {
+                key: 'REALM',
+                value: 'Custom Targets',
+              },
+            ],
           },
         });
         websocket.send(
@@ -135,11 +138,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             result: {
               name: 'Universe',
               nodeType: 'Universe',
-              labels: {},
+              labels: [],
               children: realmTypes.map((r: string) => ({
                 name: r,
                 nodeType: 'Realm',
-                labels: {},
+                labels: [],
                 id: r,
                 children: models
                   .filter((t) => t.annotations.cryostat['REALM'] === r)
@@ -211,11 +214,17 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           maxSize: attrs.get('maxSize') || 0,
           maxAge: attrs.get('maxAge') || 0,
           metadata: {
-            labels: {
-              ...(attrs.labels || {}),
-              'template.type': 'TARGET',
-              'template.name': 'Demo_Template',
-            },
+            labels: [
+              ...(attrs.labels || []),
+              {
+                key: 'template.type',
+                value: 'TARGET',
+              },
+              {
+                key: 'template.name',
+                value: 'Demo_Template',
+              },
+            ],
           },
         });
         websocket.send(
@@ -630,52 +639,54 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             data = {
               targetNodes: [
                 {
-                  mbeanMetrics: {
-                    thread: {
-                      threadCount: Math.ceil(Math.random() * 5),
-                      daemonThreadCount: Math.ceil(Math.random() * 5),
-                    },
-                    os: {
-                      arch: 'x86_64',
-                      availableProcessors: Math.ceil(Math.random() * 8),
-                      version: '10.0.1',
-                      systemCpuLoad: Math.random(),
-                      systemLoadAverage: Math.random(),
-                      processCpuLoad: Math.random(),
-                      totalPhysicalMemorySize: Math.ceil(Math.random() * 64),
-                      freePhysicalMemorySize: Math.ceil(Math.random() * 64),
-                    },
-                    memory: {
-                      heapMemoryUsage: {
-                        init: Math.ceil(Math.random() * 64),
-                        used: Math.ceil(Math.random() * 64),
-                        committed: Math.ceil(Math.random() * 64),
-                        max: Math.ceil(Math.random() * 64),
+                  target: {
+                    mbeanMetrics: {
+                      thread: {
+                        threadCount: Math.ceil(Math.random() * 5),
+                        daemonThreadCount: Math.ceil(Math.random() * 5),
                       },
-                      nonHeapMemoryUsage: {
-                        init: Math.ceil(Math.random() * 64),
-                        used: Math.ceil(Math.random() * 64),
-                        committed: Math.ceil(Math.random() * 64),
-                        max: Math.ceil(Math.random() * 64),
+                      os: {
+                        arch: 'x86_64',
+                        availableProcessors: Math.ceil(Math.random() * 8),
+                        version: '10.0.1',
+                        systemCpuLoad: Math.random(),
+                        systemLoadAverage: Math.random(),
+                        processCpuLoad: Math.random(),
+                        totalPhysicalMemorySize: Math.ceil(Math.random() * 64),
+                        freePhysicalMemorySize: Math.ceil(Math.random() * 64),
                       },
-                      heapMemoryUsagePercent: Math.random(),
-                    },
-                    runtime: {
-                      bootClassPath: '/path/to/boot/classpath',
-                      classPath: '/path/to/classpath',
-                      inputArguments: ['-Xmx1g', '-Djava.security.policy=...'],
-                      libraryPath: '/path/to/library/path',
-                      managementSpecVersion: '1.0',
-                      name: 'Java Virtual Machine',
-                      specName: 'Java Virtual Machine Specification',
-                      specVendor: 'Oracle Corporation',
-                      startTime: Date.now(),
-                      // systemProperties: {...}
-                      uptime: Date.now(),
-                      vmName: 'Java HotSpot(TM) 64-Bit Server VM',
-                      vmVendor: 'Oracle Corporation',
-                      vmVersion: '25.131-b11',
-                      bootClassPathSupported: true,
+                      memory: {
+                        heapMemoryUsage: {
+                          init: Math.ceil(Math.random() * 64),
+                          used: Math.ceil(Math.random() * 64),
+                          committed: Math.ceil(Math.random() * 64),
+                          max: Math.ceil(Math.random() * 64),
+                        },
+                        nonHeapMemoryUsage: {
+                          init: Math.ceil(Math.random() * 64),
+                          used: Math.ceil(Math.random() * 64),
+                          committed: Math.ceil(Math.random() * 64),
+                          max: Math.ceil(Math.random() * 64),
+                        },
+                        heapMemoryUsagePercent: Math.random(),
+                      },
+                      runtime: {
+                        bootClassPath: '/path/to/boot/classpath',
+                        classPath: '/path/to/classpath',
+                        inputArguments: ['-Xmx1g', '-Djava.security.policy=...'],
+                        libraryPath: '/path/to/library/path',
+                        managementSpecVersion: '1.0',
+                        name: 'Java Virtual Machine',
+                        specName: 'Java Virtual Machine Specification',
+                        specVendor: 'Oracle Corporation',
+                        startTime: Date.now(),
+                        // systemProperties: {...}
+                        uptime: Date.now(),
+                        vmName: 'Java HotSpot(TM) 64-Bit Server VM',
+                        vmVendor: 'Oracle Corporation',
+                        vmVersion: '25.131-b11',
+                        bootClassPathSupported: true,
+                      },
                     },
                   },
                 },
