@@ -15,7 +15,7 @@
  */
 import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
 import { authFailMessage } from '@app/ErrorView/types';
-import { EventTemplate, AdvancedRecordingOptions, RecordingAttributes } from '@app/Shared/Services/api.types';
+import { EventTemplate, AdvancedRecordingOptions, RecordingAttributes, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
@@ -36,7 +36,13 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 const mockCustomEventTemplate: EventTemplate = {
   name: 'someEventTemplate',
@@ -118,7 +124,7 @@ describe('<CustomRecordingForm />', () => {
         maxSize: 0,
         toDisk: true,
       },
-      metadata: { labels: {} },
+      metadata: { labels: [] },
     } as RecordingAttributes);
     expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
@@ -150,7 +156,7 @@ describe('<CustomRecordingForm />', () => {
   it('should show error view if failing to retrieve templates or recording options', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
-      target: () => of(mockTarget),
+      target: () => of(mockTarget as Target),
       authFailure: () => subj.asObservable(),
     } as TargetService;
     const services: Services = {

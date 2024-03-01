@@ -23,7 +23,13 @@ import { of, Subject } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));

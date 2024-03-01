@@ -35,15 +35,29 @@ const mockAnotherCredential: StoredCredential = {
   numMatchingTargets: 2,
 };
 
-const mockTarget: Target = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'someAlias' };
-const mockAnotherTarget: Target = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherAlias' };
+const mockTarget: Target = {
+  connectUrl: 'service:jmx:rmi://someUrl',
+  alias: 'someAlias',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
+const mockAnotherTarget: Target = {
+  connectUrl: 'service:jmx:rmi://anotherUrl',
+  alias: 'anotherAlias',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 const mockAnotherMatchingTarget: Target = {
   connectUrl: 'service:jmx:rmi://anotherMatchUrl',
   alias: 'anotherMatchAlias',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
 const mockYetAnotherMatchingTarget: Target = {
   connectUrl: 'service:jmx:rmi://yetAnotherMatchUrl',
   alias: 'yetAnotherMatchAlias',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
 
 const mockMatchedCredentialResponse: MatchedCredential = {

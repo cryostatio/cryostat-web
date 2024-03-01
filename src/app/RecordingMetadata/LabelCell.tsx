@@ -15,15 +15,15 @@
  */
 
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { Label, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { ClickableLabel } from './ClickableLabel';
-import { RecordingLabel } from './types';
 import { getLabelDisplay } from './utils';
 
 export interface LabelCellProps {
   target: string;
-  labels: RecordingLabel[];
+  labels: KeyValue[];
   // If undefined, labels are not clickable (i.e. display only) and only displayed in grey.
   clickableOptions?: {
     labelFilters: string[];
@@ -33,7 +33,7 @@ export interface LabelCellProps {
 
 export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableOptions }) => {
   const isLabelSelected = React.useCallback(
-    (label: RecordingLabel) => {
+    (label: KeyValue) => {
       if (clickableOptions) {
         const labelFilterSet = new Set(clickableOptions.labelFilters);
         return labelFilterSet.has(getLabelDisplay(label));
@@ -44,11 +44,11 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
   );
 
   const getLabelColor = React.useCallback(
-    (label: RecordingLabel) => (isLabelSelected(label) ? 'blue' : 'grey'),
+    (label: KeyValue) => (isLabelSelected(label) ? 'blue' : 'grey'),
     [isLabelSelected],
   );
   const onLabelSelectToggle = React.useCallback(
-    (clickedLabel: RecordingLabel) => {
+    (clickedLabel: KeyValue) => {
       if (clickableOptions) {
         clickableOptions.updateFilters(target, {
           filterKey: 'Label',

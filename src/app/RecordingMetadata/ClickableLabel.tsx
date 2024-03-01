@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { Label } from '@patternfly/react-core';
 import * as React from 'react';
-import { RecordingLabel } from './types';
 
 export interface ClickableLabelCellProps {
-  label: RecordingLabel;
+  label: KeyValue;
   isSelected: boolean;
-  onLabelClick: (label: RecordingLabel) => void;
+  onLabelClick: (label: KeyValue) => void;
 }
 
 export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSelected, onLabelClick }) => {
