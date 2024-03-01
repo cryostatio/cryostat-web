@@ -65,7 +65,7 @@ const mockUploadedRecordingLabels = [
 ];
 export const convertLabels = (kv: KeyValue[]): object => {
   const out = {};
-  for (let e of kv) {
+  for (const e of kv) {
     out[e.key] = e.value;
   }
   return out;
