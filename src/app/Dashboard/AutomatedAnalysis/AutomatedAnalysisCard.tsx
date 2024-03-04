@@ -366,7 +366,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                     }
                   }
                 }),
-                map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
+                map((v) => v.data.targetNodes[0].target.recordings.active.data[0] as Recording),
                 tap((recording) => {
                   if (recording === null || recording === undefined) {
                     throw new Error(NO_RECORDINGS_MESSAGE);
