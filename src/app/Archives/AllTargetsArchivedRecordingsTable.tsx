@@ -112,7 +112,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       setArchivesForTargets(
         targetNodes.map((node) => {
           const target: Target = {
-            connectUrl: node.target.serviceUri,
+            connectUrl: node.target.connectUrl,
             alias: node.target.alias,
             labels: [],
             annotations: {
@@ -123,7 +123,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           return {
             target,
             targetAsObs: of(target),
-            archiveCount: node.recordings.archived.aggregate.count,
+            archiveCount: node.target.recordings.archived.aggregate.count,
           };
         }),
       );
@@ -148,13 +148,13 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           `query AllTargetsArchives {
                targetNodes {
                  target {
-                   serviceUri
+                   connectUrl
                    alias
-                 }
-                 recordings {
-                   archived {
-                     aggregate {
-                       count
+                   recordings {
+                     archived {
+                       aggregate {
+                         count
+                       }
                      }
                    }
                  }
@@ -178,10 +178,12 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             `
         query ArchiveCountForTarget($connectUrl: String) {
           targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              archived {
-                aggregate {
-                  count
+            target {
+              recordings {
+                archived {
+                  aggregate {
+                    count
+                  }
                 }
               }
             }
@@ -196,7 +198,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 {
                   target: target,
                   targetAsObs: of(target),
-                  archiveCount: v.data.targetNodes[0].recordings.archived.aggregate.count,
+                  archiveCount: v.data.targetNodes[0].target.recordings.archived.aggregate.count,
                 },
               ];
             });
