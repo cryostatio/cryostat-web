@@ -107,9 +107,11 @@ const mockArchivedRecordingsResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          archived: {
-            data: [mockArchivedRecording] as ArchivedRecording[],
+        target: {
+          recordings: {
+            archived: {
+              data: [mockArchivedRecording] as ArchivedRecording[],
+            },
           },
         },
       },

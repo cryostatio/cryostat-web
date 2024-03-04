@@ -205,7 +205,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 { connectUrl: target.connectUrl },
               ),
             ),
-            map((v) => v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
+            map((v) => v.data.targetNodes[0].target.recordings.archived.data as ArchivedRecording[]),
             first(),
           );
     }

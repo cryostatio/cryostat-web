@@ -122,23 +122,23 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query StartRecordingForGroup($filter: EnvironmentNodeFilterInput, $recordingName: String!, $labels: String) {
+            query StartRecordingForGroup($filter: EnvironmentNodesFilterInput!, $recordingName: String!, $metadata: RecordingMetadataInput!) {
               environmentNodes(filter: $filter) {
                 name
                 descendantTargets {
                   name
-                  doStartRecording(recording: {
-                    name: $recordingName,
-                    template: "Continuous",
-                    templateType: "TARGET",
-                    duration: 0,
-                    restart: true,
-                    metadata: {
-                      labels: $labels
-                    },
-                    }) {
-                        name
-                        state
+                  target {
+                    doStartRecording(recording: {
+                      name: $recordingName,
+                      template: "Continuous",
+                      templateType: "TARGET",
+                      duration: 0,
+                      replace: "STOPPED",
+                      metadata: $metadata,
+                      }) {
+                          name
+                          state
+                    }
                   }
                 }
               }
@@ -147,12 +147,9 @@ export const nodeActions: NodeAction[] = [
           {
             filter: { id: group.id },
             recordingName: QUICK_RECORDING_NAME,
-            labels: services.api.stringifyRecordingLabels([
-              {
-                key: QUICK_RECORDING_LABEL_KEY,
-                value: group.name.replace(/[\s+-]/g, '_'),
-              },
-            ]),
+            metadata: {
+              labels: [{ key: QUICK_RECORDING_LABEL_KEY, value: group.name.replace(/[\s+-]/g, '_') }],
+            },
           },
           false,
           true,
@@ -171,12 +168,13 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query DeleteRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
+            query DeleteRecordingForGroup ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
               environmentNodes(filter: $groupFilter) {
                 name
                 descendantTargets {
                   name
-                  recordings {
+                  target {
+                    recordings {
                       active(filter: $recordingFilter) {
                           data {
                             doArchive {
@@ -184,6 +182,7 @@ export const nodeActions: NodeAction[] = [
                             }
                           }
                       }
+                    }
                   }
                 }
               }
@@ -213,20 +212,22 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query StopRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
+            query StopRecordingForGroup ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
               environmentNodes(filter: $groupFilter) {
                 name
                 descendantTargets {
                   name
-                  recordings {
+                  target {
+                    recordings {
                       active(filter: $recordingFilter) {
-                          data {
-                              doStop {
-                                name
-                                state
-                              }
+                        data {
+                          doStop {
+                            name
+                            state
                           }
+                        }
                       }
+                    }
                   }
                 }
               }
@@ -257,12 +258,13 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query DeleteRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
+            query DeleteRecordingForGroup ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
               environmentNodes(filter: $groupFilter) {
                 name
                 descendantTargets {
                   name
-                  recordings {
+                  target {
+                    recordings {
                       active(filter: $recordingFilter) {
                           data {
                               doDelete {
@@ -271,6 +273,7 @@ export const nodeActions: NodeAction[] = [
                               }
                           }
                       }
+                    }
                   }
                 }
               }

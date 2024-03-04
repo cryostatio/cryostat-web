@@ -253,7 +253,7 @@ export const CustomRecordingForm: React.FC = () => {
       events: eventSpecifierString,
       duration: continuous ? undefined : duration * (durationUnit / 1000),
       archiveOnStop: archiveOnStop && !continuous,
-      restart: restart,
+      replace: restart ? 'ALWAYS' : 'NEVER',
       advancedOptions: {
         toDisk: toDisk,
         maxAge: toDisk ? (continuous ? maxAge * maxAgeUnit : undefined) : undefined,
