@@ -76,42 +76,42 @@ const mockTargetsAndCountsResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          archived: {
-            aggregate: {
-              count: mockCount1,
-            },
-          },
-        },
         target: {
           alias: mockAlias1,
-          serviceUri: mockConnectUrl1,
-        },
-      },
-      {
-        recordings: {
-          archived: {
-            aggregate: {
-              count: mockCount2,
+          connectUrl: mockConnectUrl1,
+          recordings: {
+            archived: {
+              aggregate: {
+                count: mockCount1,
+              },
             },
           },
         },
+      },
+      {
         target: {
           alias: mockAlias2,
-          serviceUri: mockConnectUrl2,
-        },
-      },
-      {
-        recordings: {
-          archived: {
-            aggregate: {
-              count: mockCount3,
+          connectUrl: mockConnectUrl2,
+          recordings: {
+            archived: {
+              aggregate: {
+                count: mockCount2,
+              },
             },
           },
         },
+      },
+      {
         target: {
           alias: mockAlias3,
-          serviceUri: mockConnectUrl3,
+          connectUrl: mockConnectUrl3,
+          recordings: {
+            archived: {
+              aggregate: {
+                count: mockCount3,
+              },
+            },
+          },
         },
       },
     ],
@@ -122,10 +122,12 @@ const mockNewTargetCountResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          archived: {
-            aggregate: {
-              count: mockNewCount,
+        target: {
+          recordings: {
+            archived: {
+              aggregate: {
+                count: mockNewCount,
+              },
             },
           },
         },
