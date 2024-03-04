@@ -216,7 +216,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const queryUploadedRecordings = React.useCallback(() => {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     return context.api.graphql<any>(
-      `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
+      `query UploadedRecordings($filter: ArchivedRecordingsFilterInput) {
         archivedRecordings(filter: $filter) {
           data {
             name

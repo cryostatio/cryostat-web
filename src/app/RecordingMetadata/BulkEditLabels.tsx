@@ -164,7 +164,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       observable = isUploadsTable
         ? context.api
             .graphql<any>(
-              `query GetUploadedRecordings($filter: ArchivedRecordingFilterInput) {
+              `query GetUploadedRecordings($filter: ArchivedRecordingsFilterInput) {
                 archivedRecordings(filter: $filter) {
                   data {
                     name
