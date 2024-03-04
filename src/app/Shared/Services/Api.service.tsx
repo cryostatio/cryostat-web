@@ -310,8 +310,16 @@ export class ApiService {
     if (archiveOnStop != undefined) {
       form.append('archiveOnStop', String(archiveOnStop));
     }
+    const transformedMetadata = {
+      labels: {},
+      annotations: {
+        cryostat: {},
+        platform: {},
+      },
+    };
+    metadata?.labels.forEach((label) => (transformedMetadata.labels[label.key] = label.value));
     if (metadata) {
-      form.append('metadata', JSON.stringify(metadata));
+      form.append('metadata', JSON.stringify(transformedMetadata));
     }
     if (restart != undefined) {
       form.append('restart', String(restart));

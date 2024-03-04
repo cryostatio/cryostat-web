@@ -162,7 +162,7 @@ const mockTargetNode = {
 
 const mockActiveRecordingsResponse = {
   data: {
-    targetNodes: [mockTargetNode],
+    targetNodes: [{ target: mockTargetNode }],
   },
 };
 
@@ -170,9 +170,11 @@ const mockEmptyActiveRecordingsResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          active: {
-            data: [],
+        target: {
+          recordings: {
+            active: {
+              data: [],
+            },
           },
         },
       },
