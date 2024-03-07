@@ -145,6 +145,7 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({
       isOpen={actionOpen}
       onClick={(e) => e.stopPropagation()}
       toggle={toggle}
+      popperProps={popperProps}
     >
       <DropdownList>{actions}</DropdownList>
     </Dropdown>

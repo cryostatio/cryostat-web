@@ -68,7 +68,7 @@ export const AutomatedAnalysisTopicFilter: React.FC<AutomatedAnalysisTopicFilter
       return [{ isDisabled: true, children: `No results found for "${filterValue}"`, value: undefined }];
     }
     return filteredTopicOptions.map((n) => ({ children: n, value: n }));
-  }, [filteredTopicOptions]);
+  }, [filteredTopicOptions, filterValue]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (

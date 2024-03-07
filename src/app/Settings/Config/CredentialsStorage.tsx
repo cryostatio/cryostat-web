@@ -77,7 +77,7 @@ const Component = () => {
         {t(getLocation(selection).titleKey)}
       </MenuToggle>
     ),
-    [isExpanded, selection],
+    [isExpanded, selection, t],
   );
 
   return (

@@ -51,7 +51,7 @@ const Component = () => {
         {t(FeatureLevel[featureLevel])}
       </MenuToggle>
     ),
-    [handleToggle, open, featureLevel],
+    [handleToggle, open, featureLevel, t],
   );
 
   return (

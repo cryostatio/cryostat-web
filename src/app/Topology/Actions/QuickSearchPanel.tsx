@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { portalRoot } from '@app/utils/utils';

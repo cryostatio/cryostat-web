@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react';
 import { MultipleFileUploadProps } from '@patternfly/react-core';
+import * as React from 'react';
 
 export interface LoadingProps {
   spinnerAriaValueText?: string; // Text describing that current loading status or progress

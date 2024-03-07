@@ -490,7 +490,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-              The maximum size of recording data retained in the target application's recording buffer.{' '}
+              {"The maximum size of recording data retained in the target application's recording buffer."}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
@@ -525,7 +525,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-              The maximum age of recording data retained in the target application's recording buffer.
+              {"The maximum age of recording data retained in the target application's recording buffer."}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>

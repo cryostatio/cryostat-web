@@ -76,7 +76,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
       return [{ isDisabled: true, children: `No results found for "${filterValue}"`, value: undefined }];
     }
     return filteredLabelOptions.map((l) => ({ children: l, value: l }));
-  }, [filteredLabelOptions]);
+  }, [filteredLabelOptions, filterValue]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (

@@ -15,14 +15,12 @@
  */
 import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState, topologyDisplayOptionsSetIntent } from '@app/Shared/Redux/ReduxStore';
-import { portalRoot } from '@app/utils/utils';
 import {
   Checkbox,
   Divider,
   MenuContainer,
   MenuToggle,
   MenuToggleElement,
-  Select,
   Stack,
   StackItem,
   Switch,
@@ -114,7 +112,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = fal
         placeholder={'Display options'}
       />
     ),
-    [handleToggle, isExpanded, handleToggle, isDisabled],
+    [handleToggle, isExpanded, isDisabled],
   );
 
   return (

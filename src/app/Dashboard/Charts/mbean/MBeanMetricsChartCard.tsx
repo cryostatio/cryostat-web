@@ -38,8 +38,7 @@ import {
   ChartLine,
   ChartVoronoiContainer,
 } from '@patternfly/react-charts';
-import { getResizeObserver } from '@patternfly/react-core';
-import { Button, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
+import { getResizeObserver, Button, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';

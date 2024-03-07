@@ -24,7 +24,7 @@ import {
   topologyUpdateCategoryIntent,
   topologyUpdateCategoryTypeIntent,
 } from '@app/Shared/Redux/ReduxStore';
-import { EnvironmentNode, NodeType, TargetNode } from '@app/Shared/Services/api.types';
+import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { flattenTree, getUniqueNodeTypes, isTargetNode } from '@app/Shared/Services/api.utils';
 import { getDisplayFieldName } from '@app/utils/utils';
 import {
@@ -145,7 +145,7 @@ export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelect
         {`${isGroup ? 'Group' : 'Target'}: ${getDisplayFieldName(selected)}`}
       </MenuToggle>
     ),
-    [handleToggle, setIsOpen, selected, isDisabled],
+    [handleToggle, selected, isDisabled, isGroup, isOpen],
   );
 
   return (

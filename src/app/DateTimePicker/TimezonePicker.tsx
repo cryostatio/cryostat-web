@@ -151,7 +151,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
         </TextInputGroup>
       </MenuToggle>
     ),
-    [onToggle, isTimezoneOpen, filterValue, onInputChange, setFilterValue],
+    [onToggle, isTimezoneOpen, filterValue, onInputChange, setFilterValue, t],
   );
 
   return (

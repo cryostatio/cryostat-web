@@ -127,7 +127,7 @@ const Component = () => {
         </TextInputGroup>
       </MenuToggle>
     ),
-    [onToggle, dateLocaleOpen, filterValue, onInputChange, setFilterValue],
+    [onToggle, dateLocaleOpen, filterValue, onInputChange, setFilterValue, t],
   );
 
   return (

@@ -41,7 +41,7 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
         {filteredStates?.length ? <Badge isRead>{filteredStates.length}</Badge> : null}
       </MenuToggle>
     ),
-    [filteredStates, setIsOpen],
+    [filteredStates, setIsOpen, isOpen],
   );
 
   return (

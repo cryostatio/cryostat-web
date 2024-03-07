@@ -286,7 +286,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
         )}
       </>
     );
-  }, [validConnectUrl]);
+  }, [validConnectUrl, example]);
 
   return (
     <BreadcrumbPage pageTitle={'Create Custom Target'} breadcrumbs={[{ title: 'Topology', path: '/topology' }]}>

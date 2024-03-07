@@ -497,6 +497,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
         ref={toggleRef}
+        onClick={handleToggle}
         splitButtonOptions={{
           items: [
             <MenuToggleCheckbox
