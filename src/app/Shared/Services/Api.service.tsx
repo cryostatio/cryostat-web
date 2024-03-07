@@ -1109,7 +1109,7 @@ export class ApiService {
   groupHasRecording(group: EnvironmentNode, filter: ActiveRecordingsFilterInput): Observable<boolean> {
     return this.graphql<any>(
       `
-    query GroupHasRecording ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput){
+    query GroupHasRecording ($groupFilter: DiscoveryNodeFilterInput, $recordingFilter: ActiveRecordingsFilterInput){
       environmentNodes(filter: $groupFilter) {
         name
         descendantTargets {

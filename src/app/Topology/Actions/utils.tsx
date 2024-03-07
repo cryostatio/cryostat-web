@@ -122,7 +122,7 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query StartRecordingForGroup($filter: EnvironmentNodesFilterInput!, $recordingName: String!, $metadata: RecordingMetadataInput!) {
+            query StartRecordingForGroup($filter: DiscoveryNodeFilterInput!, $recordingName: String!, $metadata: RecordingMetadataInput!) {
               environmentNodes(filter: $filter) {
                 name
                 descendantTargets {
@@ -168,7 +168,7 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query DeleteRecordingForGroup ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
+            query DeleteRecordingForGroup ($groupFilter: DiscoveryNodeFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
               environmentNodes(filter: $groupFilter) {
                 name
                 descendantTargets {
@@ -212,7 +212,7 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query StopRecordingForGroup ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
+            query StopRecordingForGroup ($groupFilter: DiscoveryNodeFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
               environmentNodes(filter: $groupFilter) {
                 name
                 descendantTargets {
@@ -258,7 +258,7 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query DeleteRecordingForGroup ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
+            query DeleteRecordingForGroup ($groupFilter: DiscoveryNodeFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
               environmentNodes(filter: $groupFilter) {
                 name
                 descendantTargets {
