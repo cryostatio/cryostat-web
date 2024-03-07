@@ -20,8 +20,20 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { portalRoot } from '@app/utils/utils';
-import { Button, Divider, MenuFooter, SearchInput, Dropdown, DropdownGroup, MenuToggle, MenuSearch, MenuSearchInput, SelectOption, SelectGroup } from '@patternfly/react-core';
-import { SearchIcon } from "@patternfly/react-icons";
+import {
+  Button,
+  Divider,
+  MenuFooter,
+  SearchInput,
+  Dropdown,
+  DropdownGroup,
+  MenuToggle,
+  MenuSearch,
+  MenuSearchInput,
+  SelectOption,
+  SelectGroup,
+} from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -223,51 +235,42 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             //onToggle={handleSelectToggle}
             //onSelect={handleTargetSelect}
             isPlain
-            placeholder='Select Target'
+            placeholder="Select Target"
             isOpen={isTargetOpen}
             onSelect={handleSelectToggle}
             toggle={(toggleRef) => (
               <MenuToggle
-              aria-label="Select Target"
-              ref={toggleRef}
-              onClick={()=> handleTargetSelect(undefined,{ target: selectedTarget },undefined)}
-              variant = 'plain'
-              icon={selectionPrefix}
+                aria-label="Select Target"
+                ref={toggleRef}
+                onClick={() => handleTargetSelect(undefined, { target: selectedTarget }, undefined)}
+                variant="plain"
+                icon={selectionPrefix}
               >
-              {
-              !selectedTarget
-                ? undefined
-                : {
-                    toString: () => getTargetRepresentation(selectedTarget),
-                    compareTo: (other) => other.target.connectUrl === selectedTarget.connectUrl,
-                    ...{ target: selectedTarget },
-                  }
-              }
+                {!selectedTarget
+                  ? undefined
+                  : {
+                      toString: () => getTargetRepresentation(selectedTarget),
+                      compareTo: (other) => other.target.connectUrl === selectedTarget.connectUrl,
+                      ...{ target: selectedTarget },
+                    }}
               </MenuToggle>
-        )}
-              popperProps={{
-                enableFlip: true,
-                appendTo: portalRoot,
-                //maxHeight: '30em',
-              }}
-            >
-              <MenuSearch>
-                <MenuSearchInput>
-                  <SearchIcon />
-                  <SearchInput
-                  placeholder='Filter by target...'
-                  onSearch={handleTargetFilter}
-                  />
-                </MenuSearchInput>
-                {favorites}
+            )}
+            popperProps={{
+              enableFlip: true,
+              appendTo: portalRoot,
+              //maxHeight: '30em',
+            }}
+          >
+            <MenuSearch>
+              <MenuSearchInput>
+                <SearchIcon />
+                <SearchInput placeholder="Filter by target..." onSearch={handleTargetFilter} />
+              </MenuSearchInput>
+              {favorites}
               {handleFavorite}
-              </MenuSearch>
-              <DropdownGroup label="Target Groups">
-                {selectOptions}
-              </DropdownGroup>
-              <MenuFooter>
-                {selectFooter}
-              </MenuFooter>
+            </MenuSearch>
+            <DropdownGroup label="Target Groups">{selectOptions}</DropdownGroup>
+            <MenuFooter>{selectFooter}</MenuFooter>
           </Dropdown>
         )}
       </div>

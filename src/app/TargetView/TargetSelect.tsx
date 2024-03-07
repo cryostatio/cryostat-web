@@ -22,7 +22,22 @@ import { SerializedTarget } from '@app/TargetView/SerializedTarget';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { portalRoot } from '@app/utils/utils';
-import { Card, CardBody, CardExpandableContent, CardHeader, CardTitle, Dropdown, SelectGroup, SelectOption, SelectList, MenuToggle, SearchInput, MenuSearch, MenuSearchInput, DropdownGroup } from '@patternfly/react-core';
+import {
+  Card,
+  CardBody,
+  CardExpandableContent,
+  CardHeader,
+  CardTitle,
+  Dropdown,
+  SelectGroup,
+  SelectOption,
+  SelectList,
+  MenuToggle,
+  SearchInput,
+  MenuSearch,
+  MenuSearchInput,
+  DropdownGroup,
+} from '@patternfly/react-core';
 import { ContainerNodeIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
@@ -107,13 +122,13 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
           <SelectGroup key={name} label={name}>
             <SelectList>
               {targets
-              .filter((t) => (t.annotations?.cryostat['REALM'] || 'Others') === name)
-              .map((t: Target) => (
-                <SelectOption key={t.connectUrl} value={t}>
-                  {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
-                </SelectOption>
-              ))}
-              </SelectList>
+                .filter((t) => (t.annotations?.cryostat['REALM'] || 'Others') === name)
+                .map((t: Target) => (
+                  <SelectOption key={t.connectUrl} value={t}>
+                    {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
+                  </SelectOption>
+                ))}
+            </SelectList>
           </SelectGroup>
         ))
         .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`)),
@@ -170,14 +185,14 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
             <Dropdown
               isOpen={isDropdownOpen}
               placeholder="Select a target"
-              toggle={(toggleRef)=>(
+              toggle={(toggleRef) => (
                 <MenuToggle
-                aria-label="Select Target"
-                ref={toggleRef}
-                onClick={() => handleSelect(undefined,undefined,true)}
-                isExpanded={isExpanded}
-                icon={<ContainerNodeIcon />}
-                variant='plain'
+                  aria-label="Select Target"
+                  ref={toggleRef}
+                  onClick={() => handleSelect(undefined, undefined, true)}
+                  isExpanded={isExpanded}
+                  icon={<ContainerNodeIcon />}
+                  variant="plain"
                 >
                   {selected?.alias || selected?.connectUrl}
                 </MenuToggle>
@@ -187,19 +202,14 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
                 enableFlip: true,
                 //maxHeight="20em"
               }}
-              >
-                <MenuSearch>
-                  <MenuSearchInput>
-                    <SearchIcon />
-                    <SearchInput
-                    placeholder='Filter by target'
-                    onSearch={handleTargetFilter}
-                    />
-                  </MenuSearchInput>
-                </MenuSearch>
-                <DropdownGroup label="Targets">
-                {selectOptions}
-                </DropdownGroup>
+            >
+              <MenuSearch>
+                <MenuSearchInput>
+                  <SearchIcon />
+                  <SearchInput placeholder="Filter by target" onSearch={handleTargetFilter} />
+                </MenuSearchInput>
+              </MenuSearch>
+              <DropdownGroup label="Targets">{selectOptions}</DropdownGroup>
             </Dropdown>
           </CardBody>
           <CardExpandableContent>

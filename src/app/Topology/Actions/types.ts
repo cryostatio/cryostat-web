@@ -19,7 +19,7 @@ import { NotificationService } from '@app/Shared/Services/Notifications.service'
 import type { FeatureLevel } from '@app/Shared/Services/service.types';
 import { Services } from '@app/Shared/Services/Services';
 import { LabelProps } from '@patternfly/react-core';
-import { DropdownItemProps } from '@patternfly/react-core/deprecated';
+import { DropdownItemProps } from '@patternfly/react-core';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';
 import { NavigateFunction } from 'react-router-dom';
