@@ -930,13 +930,11 @@ export class ApiService {
           `
         query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
           targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              archived(filter: { name: $recordingName }) {
-                data {
-                  doPutMetadata(metadata: { labels: $labels }) {
-                    metadata {
-                      labels
-                    }
+            archivedRecordings(filter: { name: $recordingName }) {
+              data {
+                doPutMetadata(metadata: { labels: $labels }) {
+                  metadata {
+                    labels
                   }
                 }
               }
@@ -946,7 +944,7 @@ export class ApiService {
           { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
         ),
       ),
-      map((v) => v.data.targetNodes[0].target.recordings.archived as ArchivedRecording[]),
+      map((v) => v.data.targetNodes[0].target.archivedRecordings as ArchivedRecording[]),
     );
   }
 
@@ -977,13 +975,11 @@ export class ApiService {
           `
         query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
           targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              active(filter: { name: $recordingName }) {
-                data {
-                  doPutMetadata(metadata: { labels: $labels }) {
-                    metadata {
-                      labels
-                    }
+            activeRecordings(filter: { name: $recordingName }) {
+              data {
+                doPutMetadata(metadata: { labels: $labels }) {
+                  metadata {
+                    labels
                   }
                 }
               }
@@ -993,7 +989,7 @@ export class ApiService {
           { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
         ),
       ),
-      map((v) => v.data.targetNodes[0].target.recordings.active as ActiveRecording[]),
+      map((v) => v.data.targetNodes[0].target.activeRecordings as ActiveRecording[]),
     );
   }
 
@@ -1113,17 +1109,15 @@ export class ApiService {
   groupHasRecording(group: EnvironmentNode, filter: ActiveRecordingsFilterInput): Observable<boolean> {
     return this.graphql<any>(
       `
-    query GetRecordingForGroup ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput){
+    query GroupHasRecording ($groupFilter: EnvironmentNodesFilterInput, $recordingFilter: ActiveRecordingsFilterInput){
       environmentNodes(filter: $groupFilter) {
         name
         descendantTargets {
           name
           target {
-            recordings {
-              active(filter: $recordingFilter) {
-                data {
-                  name
-                }
+            activeRecordings(filter: $recordingFilter) {
+              aggregate {
+                count
               }
             }
           }
@@ -1139,12 +1133,12 @@ export class ApiService {
       first(),
       map((body) =>
         body.data.environmentNodes[0].descendantTargets.reduce(
-          (acc: Partial<ActiveRecording>[], curr) => acc.concat(curr.target.recordings?.active?.data || []),
-          [] as Partial<ActiveRecording>[],
+          (acc: number, curr) => acc + curr.target.activeRecordings.aggregate.count,
+          0,
         ),
       ),
       catchError((_) => of([])),
-      map((recs: Partial<ActiveRecording>[]) => recs.length > 0), // At least one
+      map((acc) => acc > 0), // At least one
     );
   }
 
@@ -1153,11 +1147,9 @@ export class ApiService {
       `
         query ActiveRecordingsForJFRMetrics($connectUrl: String, $recordingFilter: ActiveRecordingsFilterInput) {
           targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              active (filter: $recordingFilter) {
-                aggregate {
-                  count
-                }
+            activeRecordings(filter: $recordingFilter) {
+              aggregate {
+                count
               }
             }
           }
@@ -1174,7 +1166,7 @@ export class ApiService {
         if (nodes.length === 0) {
           return false;
         }
-        const count = nodes[0].target.recordings.active.aggregate.count;
+        const count = nodes[0].target.activeRecordings.aggregate.count;
         return count > 0;
       }),
       catchError((_) => of(false)),
@@ -1263,27 +1255,31 @@ export class ApiService {
   getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-          query ArchivedRecordingsForTarget($connectUrl: String) {
-            archivedRecordings(filter: { sourceTarget: $connectUrl }) {
-              data {
-                name
-                downloadUrl
-                reportUrl
-                metadata {
-                  labels {
-                    key
-                    value
+        query ArchivedRecordingsForTarget($connectUrl: String) {
+          targetNodes(filter: { name: $connectUrl }) {
+            target {
+              archivedRecordings {
+                data {
+                  name
+                  downloadUrl
+                  reportUrl
+                  metadata {
+                    labels {
+                      key
+                      value
+                    }
                   }
+                  size
+                  archivedTime
                 }
-                size
-                archivedTime
               }
             }
-          }`,
+          }
+        }`,
       { connectUrl: target.connectUrl },
       true,
       true,
-    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+    ).pipe(map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]));
   }
 
   getTargetActiveRecordings(target: TargetStub): Observable<ActiveRecording[]> {

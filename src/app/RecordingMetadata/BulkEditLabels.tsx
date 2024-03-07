@@ -188,8 +188,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               context.api.graphql<any>(
                 `query ArchivedRecordingsForTarget($connectUrl: String) {
                 targetNodes(filter: { name: $connectUrl }) {
-                  recordings {
-                    archived {
+                  target {
+                    archivedRecordings {
                       data {
                         name
                         downloadUrl
@@ -205,7 +205,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 { connectUrl: target.connectUrl },
               ),
             ),
-            map((v) => v.data.targetNodes[0].target.recordings.archived.data as ArchivedRecording[]),
+            map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
             first(),
           );
     }

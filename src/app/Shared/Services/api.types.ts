@@ -282,11 +282,9 @@ export interface RecordingCountResponse {
   data: {
     targetNodes: {
       target: {
-        recordings: {
-          active: {
-            aggregate: {
-              count: number;
-            };
+        activeRecordings: {
+          aggregate: {
+            count: number;
           };
         };
       };
