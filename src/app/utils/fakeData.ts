@@ -360,8 +360,10 @@ class FakeApiService extends ApiService {
       data: {
         targetNodes: [
           {
-            activeRecordings: {
-              data: [fakeAARecording],
+            target: {
+              activeRecordings: {
+                data: [fakeAARecording],
+              },
             },
           },
         ],

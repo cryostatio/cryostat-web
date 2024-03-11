@@ -1147,9 +1147,11 @@ export class ApiService {
       `
         query ActiveRecordingsForJFRMetrics($connectUrl: String, $recordingFilter: ActiveRecordingsFilterInput) {
           targetNodes(filter: { name: $connectUrl }) {
-            activeRecordings(filter: $recordingFilter) {
-              aggregate {
-                count
+            target {
+              activeRecordings(filter: $recordingFilter) {
+                aggregate {
+                  count
+                }
               }
             }
           }
