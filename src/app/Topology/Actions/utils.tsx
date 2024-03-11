@@ -176,11 +176,11 @@ export const nodeActions: NodeAction[] = [
                   target {
                     recordings {
                       active(filter: $recordingFilter) {
-                          data {
-                            doArchive {
-                              name
-                            }
+                        data {
+                          doArchive {
+                            name
                           }
+                        }
                       }
                     }
                   }
@@ -266,12 +266,12 @@ export const nodeActions: NodeAction[] = [
                   target {
                     recordings {
                       active(filter: $recordingFilter) {
-                          data {
-                              doDelete {
-                                name
-                                state
-                              }
+                        data {
+                          doDelete {
+                            name
+                            state
                           }
+                        }
                       }
                     }
                   }
