@@ -208,7 +208,7 @@ export const fakeEvaluations: AnalysisResult[] = [
 
 export const fakeCachedReport: CachedReportValue = {
   report: fakeEvaluations,
-  timestamp: 1663027200000,
+  timestamp: Date.now() - (1000 * 60 * 60),
 };
 
 class FakeTargetService extends TargetService {
