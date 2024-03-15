@@ -18,6 +18,8 @@ import { ValidatedOptions } from '@patternfly/react-core';
 
 export type EventTemplateIdentifier = Pick<EventTemplate, 'name' | 'type'>;
 
+export type RecordingReplace = 'ALWAYS' | 'NEVER' | 'STOPPED';
+
 interface _FormBaseData {
   name: string;
   template?: EventTemplateIdentifier;
