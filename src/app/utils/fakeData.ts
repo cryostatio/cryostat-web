@@ -23,7 +23,7 @@ import {
   RecordingState,
   Recording,
   MBeanMetrics,
-  ActiveRecordingFilterInput,
+  ActiveRecordingsFilterInput,
   ArchivedRecording,
   EventTemplate,
   EventProbe,
@@ -208,7 +208,7 @@ export const fakeEvaluations: AnalysisResult[] = [
 
 export const fakeCachedReport: CachedReportValue = {
   report: fakeEvaluations,
-  timestamp: 1663027200000,
+  timestamp: Date.now() - 1000 * 60 * 60,
 };
 
 class FakeTargetService extends TargetService {
@@ -301,7 +301,7 @@ class FakeApiService extends ApiService {
   }
 
   // JFR Metrics card
-  targetHasRecording(_target: Target, _filter?: ActiveRecordingFilterInput): Observable<boolean> {
+  targetHasRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
     return of(true);
   }
 
@@ -347,8 +347,8 @@ class FakeApiService extends ApiService {
     return of([]);
   }
 
-  // Automatic Analysis Card
-  // This fakes the fetch for Automatic Analysis recording to return available.
+  // Automated Analysis Card
+  // This fakes the fetch for Automated Analysis recording to return available.
   // Then subsequent graphql call for archived recording is ignored
   graphql<T>(
     _query: string,
@@ -360,8 +360,8 @@ class FakeApiService extends ApiService {
       data: {
         targetNodes: [
           {
-            recordings: {
-              active: {
+            target: {
+              activeRecordings: {
                 data: [fakeAARecording],
               },
             },

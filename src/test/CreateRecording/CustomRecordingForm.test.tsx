@@ -118,7 +118,7 @@ describe('<CustomRecordingForm />', () => {
       events: 'template=someEventTemplate,type=CUSTOM',
       duration: 30,
       archiveOnStop: true,
-      restart: false,
+      replace: 'NEVER',
       advancedOptions: {
         maxAge: undefined,
         maxSize: 0,

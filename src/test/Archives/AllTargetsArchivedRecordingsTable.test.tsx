@@ -79,11 +79,9 @@ const mockTargetsAndCountsResponse = {
         target: {
           alias: mockAlias1,
           connectUrl: mockConnectUrl1,
-          recordings: {
-            archived: {
-              aggregate: {
-                count: mockCount1,
-              },
+          archivedRecordings: {
+            aggregate: {
+              count: mockCount1,
             },
           },
         },
@@ -92,11 +90,9 @@ const mockTargetsAndCountsResponse = {
         target: {
           alias: mockAlias2,
           connectUrl: mockConnectUrl2,
-          recordings: {
-            archived: {
-              aggregate: {
-                count: mockCount2,
-              },
+          archivedRecordings: {
+            aggregate: {
+              count: mockCount2,
             },
           },
         },
@@ -105,11 +101,9 @@ const mockTargetsAndCountsResponse = {
         target: {
           alias: mockAlias3,
           connectUrl: mockConnectUrl3,
-          recordings: {
-            archived: {
-              aggregate: {
-                count: mockCount3,
-              },
+          archivedRecordings: {
+            aggregate: {
+              count: mockCount3,
             },
           },
         },
@@ -123,11 +117,9 @@ const mockNewTargetCountResponse = {
     targetNodes: [
       {
         target: {
-          recordings: {
-            archived: {
-              aggregate: {
-                count: mockNewCount,
-              },
+          archivedRecordings: {
+            aggregate: {
+              count: mockNewCount,
             },
           },
         },
