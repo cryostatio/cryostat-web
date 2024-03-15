@@ -20,6 +20,7 @@ import { Server as WSServer, Client } from 'mock-socket';
 import factories from './factories';
 import models from './models';
 import { Resource } from './typings';
+import { sizeUnits } from "src/app/utils/utils";
 
 export const startMirage = ({ environment = 'development' } = {}) => {
   const wsUrl = `ws://localhost:9091/api/notifications`;
@@ -126,35 +127,27 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         };
       });
       this.get('api/v1/targets', (schema) => schema.all(Resource.TARGET).models);
-      this.get('api/v2.1/discovery', (schema) => {
+      this.get('api/v3/discovery', (schema) => {
         const models = schema.all(Resource.TARGET).models;
         const realmTypes = models.map((t) => t.annotations.cryostat['REALM']);
         return {
-          meta: {
-            status: 'OK',
-            type: 'application/json',
-          },
-          data: {
-            result: {
-              name: 'Universe',
-              nodeType: 'Universe',
-              labels: [],
-              children: realmTypes.map((r: string) => ({
-                name: r,
-                nodeType: 'Realm',
-                labels: [],
-                id: r,
-                children: models
-                  .filter((t) => t.annotations.cryostat['REALM'] === r)
-                  .map((t) => ({
-                    id: t.alias,
-                    name: t.alias,
-                    nodeType: r === 'Custom Targets' ? 'CustomTarget' : 'JVM',
-                    target: t,
-                  })),
+          name: 'Universe',
+          nodeType: 'Universe',
+          labels: [],
+          children: realmTypes.map((r: string) => ({
+            name: r,
+            nodeType: 'Realm',
+            labels: [],
+            id: r,
+            children: models
+              .filter((t) => t.annotations.cryostat['REALM'] === r)
+              .map((t) => ({
+                id: t.alias,
+                name: t.alias,
+                nodeType: r === 'Custom Targets' ? 'CustomTarget' : 'JVM',
+                target: t,
               })),
-            },
-          },
+          })),
         };
       });
       this.get('api/v1/recordings', (schema) => schema.all(Resource.ARCHIVE).models);
@@ -505,17 +498,23 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           case 'ArchivedRecordingsForTarget':
           case 'UploadedRecordings':
             data = {
-              archivedRecordings: {
-                data: schema.all(Resource.ARCHIVE).models,
-              },
+              targetNodes: [
+                {
+                  target: {
+                    archivedRecordings: {
+                      data: schema.all(Resource.ARCHIVE).models,
+                    },
+                  },
+                },
+              ],
             };
             break;
           case 'ActiveRecordingsForTarget':
             data = {
               targetNodes: [
                 {
-                  recordings: {
-                    archived: {
+                  target: {
+                    archivedRecordings: {
                       data: schema.all(Resource.ARCHIVE).models,
                     },
                   },
@@ -525,17 +524,23 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             break;
           case 'ArchivedRecordingsForAutomatedAnalysis':
             data = {
-              archivedRecordings: {
-                data: schema.all(Resource.ARCHIVE).models,
-              },
+              targetNodes: [
+                {
+                  target: {
+                    archivedRecordings: {
+                      data: schema.all(Resource.ARCHIVE).models,
+                    },
+                  },
+                },
+              ],
             };
             break;
           case 'ActiveRecordingsForAutomatedAnalysis':
             data = {
               targetNodes: [
                 {
-                  recordings: {
-                    active: {
+                  target: {
+                    activeRecordings: {
                       data: schema.all(Resource.RECORDING).models,
                     },
                   },
@@ -544,10 +549,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             };
             break;
           case 'PostRecordingMetadata': {
-            const labels = {};
-            for (const l of eval(variables.labels)) {
-              labels[l.key] = l.value;
-            }
+            const labelsArray = JSON.parse(variables.labels)
+            .map(l => ({ key: l.key, value: l.value }));
+            
             schema.findBy(Resource.ARCHIVE, { name: variables.recordingName })?.update({
               metadata: {
                 labels,
@@ -556,15 +560,17 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             data = {
               targetNodes: [
                 {
-                  recordings: {
-                    archived: {
+                  target: {
+                    archivedRecordings: {
                       data: [
                         {
                           doPutMetadata: {
                             metadata: {
-                              labels,
+                              labels: labelsArray,
                             },
                           },
+                          size
+                          archivedTime
                         },
                       ],
                     },
@@ -582,7 +588,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   recordingName: variables.recordingName,
                   target: variables.connectUrl,
                   metadata: {
-                    labels,
+                    labels: labelsArray,
                   },
                 },
               }),
@@ -590,10 +596,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             break;
           }
           case 'PostActiveRecordingMetadata': {
-            const labels = {};
-            for (const l of eval(variables.labels)) {
-              labels[l.key] = l.value;
-            }
+            const labelsArray = JSON.parse(variables.labels)
+            .map(l => ({ key: l.key, value: l.value }));
+
             schema.findBy(Resource.RECORDING, { name: variables.recordingName })?.update({
               metadata: {
                 labels,
@@ -602,13 +607,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             data = {
               targetNodes: [
                 {
-                  recordings: {
-                    active: {
+                  target: {
+                    activeRecordings: {
                       data: [
                         {
                           doPutMetadata: {
                             metadata: {
-                              labels,
+                              labels: labelsArray,
                             },
                           },
                         },
@@ -628,7 +633,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   recordingName: variables.recordingName,
                   target: variables.connectUrl,
                   metadata: {
-                    labels,
+                    labels: labelsArray,
                   },
                 },
               }),

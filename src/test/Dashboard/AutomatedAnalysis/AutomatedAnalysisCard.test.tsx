@@ -153,10 +153,8 @@ const mockCachedReport: CachedReportValue = {
 };
 
 const mockTargetNode = {
-  recordings: {
-    active: {
-      data: [mockRecording],
-    },
+  activeRecordings: {
+    data: [mockRecording],
   },
 };
 
@@ -171,10 +169,8 @@ const mockEmptyActiveRecordingsResponse = {
     targetNodes: [
       {
         target: {
-          recordings: {
-            active: {
-              data: [],
-            },
+          activeRecordings: {
+            data: [],
           },
         },
       },
@@ -184,17 +180,29 @@ const mockEmptyActiveRecordingsResponse = {
 
 const mockArchivedRecordingsResponse = {
   data: {
-    archivedRecordings: {
-      data: [mockArchivedRecording],
-    },
+    targetNodes: [
+      {
+        target: {
+          archivedRecordings: {
+            data: [mockArchivedRecording],
+          },
+        },
+      },
+    ],
   },
 };
 
 const mockEmptyArchivedRecordingsResponse = {
   data: {
-    archivedRecordings: {
-      data: [],
-    },
+    targetNodes: [
+      {
+        target: {
+          archivedRecordings: {
+            data: [],
+          },
+        },
+      },
+    ],
   },
 };
 

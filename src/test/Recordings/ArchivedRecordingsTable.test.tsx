@@ -91,8 +91,26 @@ const mockRecording: ArchivedRecording = {
 
 const mockArchivedRecordingsResponse = {
   data: {
+    targetNodes: [
+      {
+        target: {
+          archivedRecordings: {
+            data: [mockRecording],
+          },
+        },
+      },
+    ],
+  },
+};
+
+const mockAllArchivedRecordingsResponse = {
+  data: {
     archivedRecordings: {
-      data: [mockRecording] as ArchivedRecording[],
+      data: [mockRecording],
+      aggregate: {
+        count: 1,
+        size: mockRecording.size,
+      },
     },
   },
 };
@@ -135,7 +153,13 @@ jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(tr
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
-jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
+jest.spyOn(defaultServices.api, 'graphql').mockImplementation((query: string) => {
+  if (query.includes('ArchivedRecordingsForTarget')) {
+    return of(mockArchivedRecordingsResponse);
+  } else {
+    return of(mockAllArchivedRecordingsResponse);
+  }
+});
 jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of(true));
 
 jest

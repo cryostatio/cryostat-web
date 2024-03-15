@@ -171,7 +171,10 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                     downloadUrl
                     reportUrl
                     metadata {
-                      labels
+                      labels{
+                        key
+                        value
+                      }
                     }
                   }
                 }
@@ -188,15 +191,19 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               context.api.graphql<any>(
                 `query ArchivedRecordingsForTarget($connectUrl: String) {
                 targetNodes(filter: { name: $connectUrl }) {
-                  recordings {
-                    archived {
+                  target {
+                    archivedRecordings {
                       data {
                         name
                         downloadUrl
                         reportUrl
                         metadata {
-                          labels
+                          labels {
+                            key
+                            value
+                          }
                         }
+                        size
                       }
                     }
                   }
@@ -205,7 +212,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 { connectUrl: target.connectUrl },
               ),
             ),
-            map((v) => v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
+            map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
             first(),
           );
     }
@@ -254,9 +261,10 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
             o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
           ),
         );
+        refreshRecordingList();
       }),
     );
-  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);
+  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable, refreshRecordingList]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);

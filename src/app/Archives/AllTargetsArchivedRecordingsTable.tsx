@@ -123,7 +123,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           return {
             target,
             targetAsObs: of(target),
-            archiveCount: node.target.recordings.archived.aggregate.count,
+            archiveCount: node.target.archivedRecordings.aggregate.count,
           };
         }),
       );
@@ -146,20 +146,18 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       context.api
         .graphql<any>(
           `query AllTargetsArchives {
-               targetNodes {
-                 target {
-                   connectUrl
-                   alias
-                   recordings {
-                     archived {
-                       aggregate {
-                         count
-                       }
-                     }
+             targetNodes {
+               target {
+                 connectUrl
+                 alias
+                 archivedRecordings {
+                   aggregate {
+                     count
                    }
                  }
                }
-             }`,
+             }
+           }`,
         )
         .pipe(map((v) => v.data.targetNodes))
         .subscribe({
@@ -175,20 +173,17 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       addSubscription(
         context.api
           .graphql<any>(
-            `
-        query ArchiveCountForTarget($connectUrl: String) {
-          targetNodes(filter: { name: $connectUrl }) {
-            target {
-              recordings {
-                archived {
-                  aggregate {
-                    count
+            `query ArchiveCountForTarget($connectUrl: String) {
+              targetNodes(filter: { name: $connectUrl }) {
+                target {
+                  archivedRecordings {
+                    aggregate {
+                      count
+                    }
                   }
                 }
               }
-            }
-          }
-        }`,
+            }`,
             { connectUrl: target.connectUrl },
           )
           .subscribe((v) => {
@@ -198,7 +193,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 {
                   target: target,
                   targetAsObs: of(target),
-                  archiveCount: v.data.targetNodes[0].target.recordings.archived.aggregate.count,
+                  archiveCount: v.data.targetNodes[0].target.archivedRecordings.aggregate.count,
                 },
               ];
             });

@@ -320,9 +320,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
             o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
           ),
         );
+        refreshRecordingList();
       }),
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings, refreshRecordingList]);
 
   React.useEffect(() => {
     setFilteredRecordings(

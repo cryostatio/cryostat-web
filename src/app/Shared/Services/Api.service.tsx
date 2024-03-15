@@ -45,21 +45,23 @@ import {
   CredentialsResponse,
   RulesResponse,
   EnvironmentNode,
-  DiscoveryResponse,
-  ActiveRecordingFilterInput,
+  ActiveRecordingsFilterInput,
   RecordingCountResponse,
   MBeanMetrics,
   MBeanMetricsResponse,
   EventType,
   NotificationCategory,
-  NullableTarget,
   HttpError,
   SimpleResponse,
   XMLHttpError,
   XMLHttpRequestConfig,
   XMLHttpResponse,
   KeyValue,
-  CustomTargetStub,
+  TargetStub,
+  TargetForTest,
+  Metadata,
+  TargetMetadata,
+  isTargetMetadata,
 } from './api.types';
 import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
 import { LoginService } from './Login.service';
@@ -171,7 +173,7 @@ export class ApiService {
   }
 
   createTarget(
-    target: CustomTargetStub,
+    target: TargetStub,
     credentials?: { username?: string; password?: string },
     storeCredentials = false,
     dryrun = false,
@@ -207,7 +209,7 @@ export class ApiService {
     );
   }
 
-  deleteTarget(target: Target): Observable<boolean> {
+  deleteTarget(target: TargetStub): Observable<boolean> {
     return this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}`, {
       method: 'DELETE',
     }).pipe(
@@ -296,7 +298,7 @@ export class ApiService {
     name,
     events,
     duration,
-    restart,
+    replace,
     archiveOnStop,
     metadata,
     advancedOptions,
@@ -310,19 +312,11 @@ export class ApiService {
     if (archiveOnStop != undefined) {
       form.append('archiveOnStop', String(archiveOnStop));
     }
-    const transformedMetadata = {
-      labels: {},
-      annotations: {
-        cryostat: {},
-        platform: {},
-      },
-    };
-    metadata?.labels.forEach((label) => (transformedMetadata.labels[label.key] = label.value));
     if (metadata) {
-      form.append('metadata', JSON.stringify(transformedMetadata));
+      form.append('metadata', JSON.stringify(this.transformMetadataToObject(metadata)));
     }
-    if (restart != undefined) {
-      form.append('restart', String(restart));
+    if (replace != undefined) {
+      form.append('replace', String(replace));
     }
     if (advancedOptions) {
       if (advancedOptions.toDisk != undefined) {
@@ -489,7 +483,7 @@ export class ApiService {
   }
 
   uploadArchivedRecordingToGrafana(
-    sourceTarget: Observable<NullableTarget>,
+    sourceTarget: Observable<TargetStub | undefined>,
     recordingName: string,
   ): Observable<boolean> {
     return sourceTarget.pipe(
@@ -531,7 +525,13 @@ export class ApiService {
     );
   }
 
-  transformAndStringifyToRawLabels(labels: KeyValue[]) {
+  // FIXME remove this, all API endpoints that allow us to send labels in the request body should accept it in as-is JSON form
+  stringifyRecordingLabels(labels: KeyValue | KeyValue[]): string {
+    return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
+  }
+
+  // FIXME remove this, all API endpoints that allow us to send labels in the request body should accept it in as-is JSON form
+  transformAndStringifyToRawLabels(labels: KeyValue[]): string {
     const rawLabels = {};
     for (const label of labels) {
       rawLabels[label.key] = label.value;
@@ -539,20 +539,58 @@ export class ApiService {
     return JSON.stringify(rawLabels);
   }
 
-  postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
-    return this.sendRequest(
-      'beta',
-      `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}/metadata/labels`,
-      {
-        method: 'POST',
-        body: this.transformAndStringifyToRawLabels(labels),
-      },
-    ).pipe(
-      map((resp) => resp.ok),
-      first(),
-    );
+  transformMetadataToObject(metadata: Metadata | TargetMetadata): object {
+    if (isTargetMetadata(metadata)) {
+      return {
+        labels: this.transformLabelsToObject(metadata.labels),
+        annotations: {
+          cryostat: this.transformLabelsToObject(metadata?.annotations?.cryostat),
+          platform: this.transformLabelsToObject(metadata?.annotations?.platform),
+        },
+      };
+    } else {
+      return {
+        labels: this.transformLabelsToObject(metadata.labels),
+      };
+    }
   }
 
+  transformLabelsToObject(labels: KeyValue[]): object {
+    const out = {};
+    for (const label of labels) {
+      out[label.key] = label.value;
+    }
+    return out;
+  }
+
+  postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
+    return this.graphql<any>(
+      `
+      query PostRecordingMetadataFromPath($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
+        archivedRecordings(filter: {sourceTarget: $jvmId, name: $recordingName }) {
+          data {
+            doPutMetadata(metadataInput: { labels: $labels }) {
+              metadata {
+                labels{
+                  key
+                  value
+                }
+              }
+              size
+              archivedTime
+            }
+          }
+        }
+      }`,
+      {
+        jvmId,
+        recordingName,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
+      },
+    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+}
+
+  
   isProbeEnabled(): Observable<boolean> {
     return this.getActiveProbes(true).pipe(
       concatMap((_) => of(true)),
@@ -734,7 +772,7 @@ export class ApiService {
   }
 
   getActiveProbesForTarget(
-    target: Target,
+    target: TargetStub,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<EventProbe[]> {
@@ -904,43 +942,61 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
+        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              archived(filter: { name: $recordingName }) {
+            target{
+              archivedRecordings(filter: { name: $recordingName }) {
                 data {
-                  doPutMetadata(metadata: { labels: $labels }) {
+                  doPutMetadata(metadataInput:{labels: $labels }) {
                     metadata {
-                      labels
+                      labels{
+                        key
+                        value
+                      }
                     }
+                    size
+                    archivedTime
                   }
                 }
               }
             }
           }
         }`,
-          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
+          {
+            connectUrl: target.connectUrl,
+            recordingName,
+            labels: labels.map((label) => ({ key: label.key, value: label.value })),
+          },
         ),
       ),
-      map((v) => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+      map((v) => v.data.targetNodes[0].target.archivedRecordings as ArchivedRecording[]),
     );
   }
 
   postUploadedRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-      query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String){
+      query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]){
         archivedRecordings(filter: {sourceTarget: $connectUrl, name: $recordingName }) {
           data {
-            doPutMetadata(metadata: { labels: $labels }) {
+            doPutMetadata(metadataInput: { labels: $labels }) {
               metadata {
-                labels
+                labels{
+                  key
+                  value
+                }
               }
+              size
+              archivedTime
             }
           }
         }
       }`,
-      { connectUrl: UPLOADS_SUBDIRECTORY, recordingName, labels: this.stringifyRecordingLabels(labels) },
+      {
+        connectUrl: UPLOADS_SUBDIRECTORY,
+        recordingName,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
+      },
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
@@ -951,14 +1007,19 @@ export class ApiService {
       concatMap((target: Target) =>
         this.graphql<any>(
           `
-        query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
+        query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              active(filter: { name: $recordingName }) {
+            target{
+              activeRecordings(filter: { name: $recordingName }) {
                 data {
-                  doPutMetadata(metadata: { labels: $labels }) {
+                  doPutMetadata(metadataInput:{labels: $labels}) {
+                    id
+                    name
                     metadata {
-                      labels
+                      labels{
+                        key
+                        value
+                      }
                     }
                   }
                 }
@@ -966,10 +1027,14 @@ export class ApiService {
             }
           }
         }`,
-          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
+          {
+            connectUrl: target.connectUrl,
+            recordingName,
+            labels: labels.map((label) => ({ key: label.key, value: label.value })),
+          },
         ),
       ),
-      map((v) => v.data.targetNodes[0].recordings.active as ActiveRecording[]),
+      map((v) => v.data.targetNodes[0].target.activeRecordings as ActiveRecording[]),
     );
   }
 
@@ -1043,11 +1108,10 @@ export class ApiService {
   }
 
   getDiscoveryTree(): Observable<EnvironmentNode> {
-    return this.sendRequest('v2.1', 'discovery', {
+    return this.sendRequest('v3', 'discovery', {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
-      map((body: DiscoveryResponse) => body.data.result),
       first(),
     );
   }
@@ -1056,7 +1120,7 @@ export class ApiService {
   matchTargetsWithExpr(matchExpression: string, targets: Target[]): Observable<Target[]> {
     const body = JSON.stringify({
       matchExpression,
-      targets,
+      targets: targets.map((t) => this.transformTarget(t)),
     });
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
@@ -1087,20 +1151,20 @@ export class ApiService {
     );
   }
 
-  groupHasRecording(group: EnvironmentNode, filter: ActiveRecordingFilterInput): Observable<boolean> {
+  groupHasRecording(group: EnvironmentNode, filter: ActiveRecordingsFilterInput): Observable<boolean> {
     return this.graphql<any>(
       `
-    query GetRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
+    query GroupHasRecording ($groupFilter: DiscoveryNodeFilterInput, $recordingFilter: ActiveRecordingsFilterInput){
       environmentNodes(filter: $groupFilter) {
         name
         descendantTargets {
           name
-          recordings {
-              active(filter: $recordingFilter) {
-                  data {
-                    name
-                  }
+          target {
+            activeRecordings(filter: $recordingFilter) {
+              aggregate {
+                count
               }
+            }
           }
         }
       }
@@ -1114,22 +1178,22 @@ export class ApiService {
       first(),
       map((body) =>
         body.data.environmentNodes[0].descendantTargets.reduce(
-          (acc: Partial<ActiveRecording>[], curr) => acc.concat(curr.recordings?.active?.data || []),
-          [] as Partial<ActiveRecording>[],
+          (acc: number, curr) => acc + curr.target.activeRecordings.aggregate.count,
+          0,
         ),
       ),
       catchError((_) => of([])),
-      map((recs: Partial<ActiveRecording>[]) => recs.length > 0), // At least one
+      map((acc) => acc > 0), // At least one
     );
   }
 
-  targetHasRecording(target: Target, filter: ActiveRecordingFilterInput = {}): Observable<boolean> {
+  targetHasRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
-        query ActiveRecordingsForJFRMetrics($connectUrl: String, $recordingFilter: ActiveRecordingFilterInput) {
+        query ActiveRecordingsForJFRMetrics($connectUrl: String, $recordingFilter: ActiveRecordingsFilterInput) {
           targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              active (filter: $recordingFilter) {
+            target {
+              activeRecordings(filter: $recordingFilter) {
                 aggregate {
                   count
                 }
@@ -1149,7 +1213,7 @@ export class ApiService {
         if (nodes.length === 0) {
           return false;
         }
-        const count = nodes[0].recordings.active.aggregate.count;
+        const count = nodes[0].target.activeRecordings.aggregate.count;
         return count > 0;
       }),
       catchError((_) => of(false)),
@@ -1157,7 +1221,7 @@ export class ApiService {
   }
 
   checkCredentialForTarget(
-    target: Target,
+    target: TargetStub,
     credentials: { username: string; password: string },
   ): Observable<
     | {
@@ -1210,7 +1274,7 @@ export class ApiService {
     );
   }
 
-  getTargetMBeanMetrics(target: Target, queries: string[]): Observable<MBeanMetrics> {
+  getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
     return this.graphql<MBeanMetricsResponse>(
       `
         query MBeanMXMetricsForTarget($connectUrl: String) {
@@ -1235,30 +1299,37 @@ export class ApiService {
     );
   }
 
-  getTargetArchivedRecordings(target: Target): Observable<ArchivedRecording[]> {
+  getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-          query ArchivedRecordingsForTarget($connectUrl: String) {
-            archivedRecordings(filter: { sourceTarget: $connectUrl }) {
-              data {
-                name
-                downloadUrl
-                reportUrl
-                metadata {
-                  labels
+        query ArchivedRecordingsForTarget($connectUrl: String) {
+          targetNodes(filter: { name: $connectUrl }) {
+            target {
+              archivedRecordings {
+                data {
+                  name
+                  downloadUrl
+                  reportUrl
+                  metadata {
+                    labels {
+                      key
+                      value
+                    }
+                  }
+                  size
+                  archivedTime
                 }
-                size
-                archivedTime
               }
             }
-          }`,
+          }
+        }`,
       { connectUrl: target.connectUrl },
       true,
       true,
-    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+    ).pipe(map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]));
   }
 
-  getTargetActiveRecordings(target: Target): Observable<ActiveRecording[]> {
+  getTargetActiveRecordings(target: TargetStub): Observable<ActiveRecording[]> {
     return this.doGet<ActiveRecording[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/recordings`,
       'v1',
@@ -1268,7 +1339,7 @@ export class ApiService {
     );
   }
 
-  getTargetEventTemplates(target: Target): Observable<EventTemplate[]> {
+  getTargetEventTemplates(target: TargetStub): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/templates`,
       'v1',
@@ -1278,7 +1349,7 @@ export class ApiService {
     );
   }
 
-  getTargetEventTypes(target: Target): Observable<EventType[]> {
+  getTargetEventTypes(target: TargetStub): Observable<EventType[]> {
     return this.doGet<EventType[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/events`,
       'v1',
@@ -1317,8 +1388,22 @@ export class ApiService {
     anchor.remove();
   }
 
-  stringifyRecordingLabels(labels: KeyValue[]): string {
-    return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
+  private transformTarget(target: Target): TargetForTest {
+    const out: TargetForTest = {
+      alias: target.alias,
+      connectUrl: target.connectUrl,
+      labels: {},
+      annotations: { cryostat: {}, platform: {} },
+    };
+    for (const l of target.labels) {
+      out.labels[l.key] = l.value;
+    }
+    for (const s of ['cryostat', 'platform']) {
+      for (const e of out.annotations[s]) {
+        target.annotations[s][e.key] = e.value;
+      }
+    }
+    return out;
   }
 
   private sendRequest(
