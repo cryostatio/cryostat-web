@@ -29,7 +29,13 @@ import { mockMediaQueryList, render, renderSnapshot } from '../../../utils';
 const mockDashboardUrl = 'http://localhost:3000';
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDashboardUrl));
 
-const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: 'service:jmx:rmi://someUrl',
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));

@@ -19,12 +19,18 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types'
 import { cleanup, screen, within } from '@testing-library/react';
 import { render, renderSnapshot } from '../../utils';
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
-const mockAnotherRecordingLabels = {
-  anotherLabel: 'anotherValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
+const mockAnotherRecordingLabels = [
+  {
+    key: 'anotherLabel',
+    value: 'anotherValue',
+  },
+];
 const mockRecordingLabelList = ['someLabel:someValue', 'anotherLabel:anotherValue'];
 
 const mockRecording: ActiveRecording = {
@@ -49,7 +55,7 @@ const mockAnotherRecording = {
 const mockRecordingWithoutLabel = {
   ...mockRecording,
   name: 'noLabelRecording',
-  metadata: { labels: {} },
+  metadata: { labels: [] },
 } as ActiveRecording;
 const mockRecordingList = [mockRecording, mockAnotherRecording, mockRecordingWithoutLabel];
 

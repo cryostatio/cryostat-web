@@ -26,16 +26,20 @@ const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
 
 const CUSTOM_TARGET_REALM = 'Custom Targets';
 
-const cryostatAnnotation = {
-  REALM: CUSTOM_TARGET_REALM,
-};
+const cryostatAnnotation = [
+  {
+    key: 'REALM',
+    value: CUSTOM_TARGET_REALM,
+  },
+];
 const mockFooTarget: Target = {
   jvmId: 'abcd',
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
+  labels: [],
   annotations: {
     cryostat: cryostatAnnotation,
-    platform: {},
+    platform: [],
   },
 };
 const mockBarTarget: Target = { ...mockFooTarget, jvmId: 'efgh', connectUrl: mockBarConnectUrl, alias: 'barTarget' };

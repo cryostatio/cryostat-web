@@ -21,7 +21,6 @@ import {
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
-import { parseLabels } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyArchivedRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
@@ -193,15 +192,22 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       return context.api.graphql<any>(
         `
       query ArchivedRecordingsForTarget($connectUrl: String) {
-        archivedRecordings(filter: { sourceTarget: $connectUrl }) {
-          data {
-            name
-            downloadUrl
-            reportUrl
-            metadata {
-              labels
+        targetNodes(filter: { name: $connectUrl }) {
+          target {
+            archivedRecordings {
+              data {
+                name
+                downloadUrl
+                reportUrl
+                metadata {
+                  labels {
+                    key
+                    value
+                  }
+                }
+                size
+              }
             }
-            size
           }
         }
       }`,
@@ -214,14 +220,17 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const queryUploadedRecordings = React.useCallback(() => {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     return context.api.graphql<any>(
-      `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
+      `query UploadedRecordings($filter: ArchivedRecordingsFilterInput) {
         archivedRecordings(filter: $filter) {
           data {
             name
             downloadUrl
             reportUrl
             metadata {
-              labels
+              labels {
+                key
+                value
+              }
             }
             size
           }
@@ -251,7 +260,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             filter((target) => !!target),
             first(),
             concatMap((target: Target) => queryTargetRecordings(target.connectUrl)),
-            map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
+            map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
           )
           .subscribe({
             next: handleRecordings,
@@ -772,10 +781,6 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
   const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
-  const parsedLabels = React.useMemo(() => {
-    return parseLabels(recording.metadata.labels);
-  }, [recording]);
-
   const expandedRowId = React.useMemo(() => `archived-table-row-${index}-exp`, [index]);
 
   const handleToggle = React.useCallback(() => {
@@ -849,7 +854,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
               updateFilters: updateFilters,
               labelFilters: labelFilters,
             }}
-            labels={parsedLabels}
+            labels={recording.metadata.labels}
           />
         </Td>
         <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1].title}>
@@ -874,7 +879,6 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     index,
     checkedIndices,
     isExpanded,
-    parsedLabels,
     labelFilters,
     currentSelectedTargetURL,
     sourceTarget,

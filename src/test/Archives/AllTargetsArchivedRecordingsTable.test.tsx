@@ -26,6 +26,9 @@ const mockAlias1 = 'fooTarget1';
 const mockTarget1: Target = {
   connectUrl: mockConnectUrl1,
   alias: mockAlias1,
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
 const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
@@ -36,6 +39,9 @@ const mockNewAlias = 'newTarget';
 const mockNewTarget: Target = {
   connectUrl: mockNewConnectUrl,
   alias: mockNewAlias,
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
 const mockCount1 = 1;
 const mockCount2 = 3;
@@ -70,42 +76,36 @@ const mockTargetsAndCountsResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          archived: {
+        target: {
+          alias: mockAlias1,
+          connectUrl: mockConnectUrl1,
+          archivedRecordings: {
             aggregate: {
               count: mockCount1,
             },
           },
         },
-        target: {
-          alias: mockAlias1,
-          serviceUri: mockConnectUrl1,
-        },
       },
       {
-        recordings: {
-          archived: {
+        target: {
+          alias: mockAlias2,
+          connectUrl: mockConnectUrl2,
+          archivedRecordings: {
             aggregate: {
               count: mockCount2,
             },
           },
         },
-        target: {
-          alias: mockAlias2,
-          serviceUri: mockConnectUrl2,
-        },
       },
       {
-        recordings: {
-          archived: {
+        target: {
+          alias: mockAlias3,
+          connectUrl: mockConnectUrl3,
+          archivedRecordings: {
             aggregate: {
               count: mockCount3,
             },
           },
-        },
-        target: {
-          alias: mockAlias3,
-          serviceUri: mockConnectUrl3,
         },
       },
     ],
@@ -116,8 +116,8 @@ const mockNewTargetCountResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          archived: {
+        target: {
+          archivedRecordings: {
             aggregate: {
               count: mockNewCount,
             },

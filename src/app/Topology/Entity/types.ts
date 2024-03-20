@@ -17,6 +17,7 @@ import type {
   EventProbe,
   EventTemplate,
   EventType,
+  KeyValue,
   NotificationMessage,
   Recording,
   Rule,
@@ -47,6 +48,11 @@ export const TargetOwnedResourceTypeAsArray = [
   'eventTypes',
   'agentProbes',
 ] as const;
+
+export type Annotations = {
+  cryostat: KeyValue[];
+  platform: KeyValue[];
+};
 
 export const TargetRelatedResourceTypeAsArray = ['automatedRules', 'credentials'] as const;
 

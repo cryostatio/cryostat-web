@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
@@ -34,12 +35,11 @@ import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon 
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
-import { RecordingLabel } from './types';
 import { matchesLabelSyntax, getValidatedOption, LabelPattern, parseLabelsFromFile } from './utils';
 
 export interface RecordingLabelFieldsProps {
-  labels: RecordingLabel[];
-  setLabels: (labels: RecordingLabel[]) => void;
+  labels: KeyValue[];
+  setLabels: (labels: KeyValue[]) => void;
   setValid: (isValid: ValidatedOptions) => void;
   isUploadable?: boolean;
   isDisabled?: boolean;
@@ -78,7 +78,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
   );
 
   const handleAddLabelButtonClick = React.useCallback(() => {
-    setLabels([...labels, { key: '', value: '' } as RecordingLabel]);
+    setLabels([...labels, { key: '', value: '' } as KeyValue]);
   }, [labels, setLabels]);
 
   const handleDeleteLabelButtonClick = React.useCallback(
@@ -91,7 +91,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
   );
 
   const isDuplicateKey = React.useCallback(
-    (key: string, labels: RecordingLabel[]) => labels.filter((label) => label.key === key).length > 1,
+    (key: string, labels: KeyValue[]) => labels.filter((label) => label.key === key).length > 1,
     [],
   );
 
@@ -127,7 +127,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
       if (files && files.length) {
-        const tasks: Observable<RecordingLabel[]>[] = [];
+        const tasks: Observable<KeyValue[]>[] = [];
         setLoading(true);
         for (const labelFile of Array.from(files)) {
           tasks.push(
@@ -140,7 +140,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
           );
         }
         addSubscription(
-          zip(tasks).subscribe((labelArrays: RecordingLabel[][]) => {
+          zip(tasks).subscribe((labelArrays: KeyValue[][]) => {
             setLoading(false);
             const newLabels = labelArrays.reduce((acc, next) => acc.concat(next), []);
             setLabels([...labels, ...newLabels]);

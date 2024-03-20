@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
 import { NavigateFunction } from 'react-router-dom';
@@ -180,6 +181,18 @@ export interface TableColumn {
   sortable?: boolean;
   width?: number;
 }
+
+export const getAnnotation = (kv: KeyValue[], key: string, def?: string): string | undefined => {
+  if (!kv) {
+    return def;
+  }
+  for (const k of kv) {
+    if (k.key === key) {
+      return k.value;
+    }
+  }
+  return def;
+};
 
 const mapper = (tableColumns: TableColumn[], index?: number) => {
   if (index === undefined) {

@@ -53,7 +53,8 @@ import {
 import { ActiveRecDetail, Nothing } from './ResourceDetails';
 import { DescriptionConfig, TargetOwnedResourceType, TargetRelatedResourceType, ResourceTypes, PatchFn } from './types';
 
-export const keyValueEntryTransformer = (kv: object): string[] => Object.entries(kv).map(([k, v]) => `${k}=${v}`);
+export const keyValueEntryTransformer = (kv: { key: string; value: string }[]): string[] =>
+  kv.map((k) => `${k.key}=${k.value}`);
 
 export const valuesEntryTransformer: (kv: string[] | object) => string[] = Object.values;
 

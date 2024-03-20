@@ -40,7 +40,13 @@ jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
   };
 });
 
-const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: 'service:jmx:rmi://someUrl',
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 const mockEmptyCachedReport: CachedReportValue = {
   report: [],
@@ -136,7 +142,7 @@ const mockArchivedRecording: ArchivedRecording = {
   name: 'someArchivedRecording',
   downloadUrl: '',
   reportUrl: '',
-  metadata: { labels: {} },
+  metadata: { labels: [] },
   size: 0,
   archivedTime: 1663027200000, // 2022-09-13T00:00:00.000Z in milliseconds
 };
@@ -147,16 +153,14 @@ const mockCachedReport: CachedReportValue = {
 };
 
 const mockTargetNode = {
-  recordings: {
-    active: {
-      data: [mockRecording],
-    },
+  activeRecordings: {
+    data: [mockRecording],
   },
 };
 
 const mockActiveRecordingsResponse = {
   data: {
-    targetNodes: [mockTargetNode],
+    targetNodes: [{ target: mockTargetNode }],
   },
 };
 
@@ -164,8 +168,8 @@ const mockEmptyActiveRecordingsResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          active: {
+        target: {
+          activeRecordings: {
             data: [],
           },
         },
@@ -176,17 +180,29 @@ const mockEmptyActiveRecordingsResponse = {
 
 const mockArchivedRecordingsResponse = {
   data: {
-    archivedRecordings: {
-      data: [mockArchivedRecording],
-    },
+    targetNodes: [
+      {
+        target: {
+          archivedRecordings: {
+            data: [mockArchivedRecording],
+          },
+        },
+      },
+    ],
   },
 };
 
 const mockEmptyArchivedRecordingsResponse = {
   data: {
-    archivedRecordings: {
-      data: [],
-    },
+    targetNodes: [
+      {
+        target: {
+          archivedRecordings: {
+            data: [],
+          },
+        },
+      },
+    ],
   },
 };
 

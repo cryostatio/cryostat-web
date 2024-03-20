@@ -36,6 +36,11 @@ import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecording
 export const uploadAsTarget: Target = {
   connectUrl: UPLOADS_SUBDIRECTORY,
   alias: '',
+  labels: [],
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
 };
 
 enum ArchiveTab {

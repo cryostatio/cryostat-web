@@ -33,9 +33,12 @@ jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   };
 });
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',

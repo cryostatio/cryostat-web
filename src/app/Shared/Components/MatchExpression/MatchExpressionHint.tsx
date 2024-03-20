@@ -15,6 +15,7 @@
  */
 
 import { Target } from '@app/Shared/Services/api.types';
+import { getAnnotation } from '@app/utils/utils';
 import { ClipboardCopyButton, CodeBlock, CodeBlockAction, CodeBlockCode } from '@patternfly/react-core';
 import * as React from 'react';
 
@@ -30,7 +31,10 @@ export const MatchExpressionHint: React.FC<MatchExpressionHintProps> = ({ target
     if (!target || !target.alias || !target.connectUrl) {
       body = 'true';
     } else {
-      body = `target.alias == '${target.alias}' || target.annotations.cryostat['PORT'] == ${target.annotations?.cryostat['PORT']}`;
+      body = `target.alias == '${target.alias}' || target.annotations.cryostat['PORT'] == ${getAnnotation(
+        target.annotations.cryostat,
+        'PORT',
+      )}`;
     }
     body = JSON.stringify(body, null, 2);
     body = body.substring(1, body.length - 1);

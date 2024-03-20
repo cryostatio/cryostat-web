@@ -37,15 +37,19 @@ import { basePreloadedState, render } from '../utils';
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
+  labels: [],
   annotations: {
-    cryostat: {},
-    platform: {},
+    cryostat: [],
+    platform: [],
   },
 };
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 
 const mockActiveRecording: ActiveRecording = {
   name: 'someRecording',

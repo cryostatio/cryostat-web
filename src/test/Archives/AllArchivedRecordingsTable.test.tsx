@@ -43,9 +43,12 @@ const mockRecordingDeletedNotification = {
   },
 } as NotificationMessage;
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',

@@ -16,8 +16,9 @@
 import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../../Shared/Components/EmptyText';
+import { Annotations } from './types';
 
-export const EntityAnnotations: React.FC<{ annotations?: object; maxDisplay?: number }> = ({
+export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay?: number }> = ({
   annotations,
   maxDisplay,
   ...props
@@ -26,7 +27,7 @@ export const EntityAnnotations: React.FC<{ annotations?: object; maxDisplay?: nu
     return annotations
       ? Object.keys(annotations).map((groupK) => ({
           groupLabel: groupK,
-          annotations: Object.keys(annotations[groupK]).map((k) => `${k}=${annotations[groupK][k]}`),
+          annotations: annotations[groupK].map((kv) => `${kv.key}=${kv.value}`),
         }))
       : [];
   }, [annotations]);

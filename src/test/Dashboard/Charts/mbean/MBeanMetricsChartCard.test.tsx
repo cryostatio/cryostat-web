@@ -34,7 +34,13 @@ jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaul
 jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.DARK));
 jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
-const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: 'service:jmx:rmi://someUrl',
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 const mockJfrController = new JFRMetricsChartController(

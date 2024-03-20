@@ -53,9 +53,10 @@ jest.mock('@app/TargetView/TargetView', () => {
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
+  labels: [],
   annotations: {
-    cryostat: {},
-    platform: {},
+    cryostat: [],
+    platform: [],
   },
 };
 

@@ -21,6 +21,7 @@ import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { SerializedTarget } from '@app/TargetView/SerializedTarget';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { getAnnotation } from '@app/utils/utils';
 import {
   Card,
   CardBody,
@@ -108,14 +109,14 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
     let options = [] as JSX.Element[];
 
     const groupNames = new Set<string>();
-    targets.forEach((t) => groupNames.add(t.annotations?.cryostat['REALM'] || 'Others'));
+    targets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
 
     options = options.concat(
       Array.from(groupNames)
         .map((name) => (
           <SelectGroup key={name} label={name}>
             {targets
-              .filter((t) => (t.annotations?.cryostat['REALM'] || 'Others') === name)
+              .filter((t) => (getAnnotation(t.annotations.cryostat, 'REALM') || 'Others') === name)
               .map((t: Target) => (
                 <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>
                   {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}

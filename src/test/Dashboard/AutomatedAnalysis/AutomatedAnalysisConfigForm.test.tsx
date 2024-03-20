@@ -22,7 +22,13 @@ import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render, testT } from '../../utils';
 
-const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: 'service:jmx:rmi://someUrl',
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 const mockTemplate1: EventTemplate = {
   name: 'template1',

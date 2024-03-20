@@ -19,6 +19,7 @@ import { isEqualTarget, getTargetRepresentation } from '@app/Shared/Services/api
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { getAnnotation } from '@app/utils/utils';
 import { Button, Divider, Select, SelectGroup, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -113,13 +114,13 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     const favSet = new Set(favorites);
 
     const groupNames = new Set<string>();
-    targets.forEach((t) => groupNames.add(t.annotations?.cryostat['REALM'] || 'Others'));
+    targets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
 
     const options = Array.from(groupNames)
       .map((name) => (
         <SelectGroup key={name} label={name}>
           {targets
-            .filter((t) => (t.annotations?.cryostat['REALM'] || 'Others') === name)
+            .filter((t) => getAnnotation(t.annotations.cryostat, 'REALM') === name)
             .map((t: Target) => (
               <SelectOption
                 isFavorite={favSet.has(t.connectUrl)}

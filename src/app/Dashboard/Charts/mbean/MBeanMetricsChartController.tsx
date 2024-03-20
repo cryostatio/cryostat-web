@@ -147,6 +147,9 @@ export class MBeanMetricsChartController {
       l += '}';
       q.push(l);
     });
+    if (q.length === 0) {
+      return of({});
+    }
     return this._api.getTargetMBeanMetrics(target, q);
   }
 }

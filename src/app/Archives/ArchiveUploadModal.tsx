@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
-import { RecordingLabel } from '@app/RecordingMetadata/types';
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { KeyValue } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
@@ -51,7 +51,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
   const [uploading, setUploading] = React.useState(false);
   const [numOfFiles, setNumOfFiles] = React.useState(0);
   const [allOks, setAllOks] = React.useState(false);
-  const [labels, setLabels] = React.useState([] as RecordingLabel[]);
+  const [labels, setLabels] = React.useState([] as KeyValue[]);
   const [valid, setValid] = React.useState(ValidatedOptions.success);
 
   const getFormattedLabels = React.useCallback(() => {
@@ -66,7 +66,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
 
   const reset = React.useCallback(() => {
     setUploading(false);
-    setLabels([] as RecordingLabel[]);
+    setLabels([] as KeyValue[]);
     setValid(ValidatedOptions.success);
     setNumOfFiles(0);
   }, [setUploading, setLabels, setValid, setNumOfFiles]);

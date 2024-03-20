@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { parseLabels, getLabelDisplay } from '@app/RecordingMetadata/utils';
+import { getLabelDisplay } from '@app/RecordingMetadata/utils';
 import { Recording } from '@app/Shared/Services/api.types';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
@@ -42,7 +42,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
     const labels = new Set<string>();
     recordings.forEach((r) => {
       if (!r || !r.metadata || !r.metadata.labels) return;
-      parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
+      r.metadata.labels.map((label) => labels.add(getLabelDisplay(label)));
     });
     return Array.from(labels)
       .filter((l) => !filteredLabels.includes(l))

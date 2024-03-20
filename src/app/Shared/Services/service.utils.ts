@@ -48,9 +48,12 @@ export const automatedAnalysisConfigToRecordingAttributes = (
       maxSize: config.maxSize,
     },
     metadata: {
-      labels: {
-        origin: automatedAnalysisRecordingName,
-      },
+      labels: [
+        {
+          key: 'origin',
+          value: automatedAnalysisRecordingName,
+        },
+      ],
     },
   };
 };
