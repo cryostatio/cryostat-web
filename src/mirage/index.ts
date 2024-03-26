@@ -554,7 +554,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             
             schema.findBy(Resource.ARCHIVE, { name: variables.recordingName })?.update({
               metadata: {
-                labels,
+                labels: labelsArray,
               },
             });
             data = {
@@ -601,7 +601,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
 
             schema.findBy(Resource.RECORDING, { name: variables.recordingName })?.update({
               metadata: {
-                labels,
+                labels: labelsArray,
               },
             });
             data = {
