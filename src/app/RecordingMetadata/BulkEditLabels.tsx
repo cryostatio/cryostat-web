@@ -204,6 +204,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                           }
                         }
                         size
+                        archivedTime
                       }
                     }
                   }
