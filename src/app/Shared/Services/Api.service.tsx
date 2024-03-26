@@ -942,7 +942,7 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
+        query PostRecordingMetadata($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
             target{
               archivedRecordings(filter: { name: $recordingName }) {
@@ -976,7 +976,7 @@ export class ApiService {
   postUploadedRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-      query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]){
+      query PostUploadedRecordingMetadata($jvmId: String, $recordingName: String, $labels: [Entry_String_StringInput]){
         archivedRecordings(filter: {sourceTarget: $connectUrl, name: $recordingName }) {
           data {
             doPutMetadata(metadataInput: { labels: $labels }) {
