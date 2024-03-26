@@ -36,6 +36,7 @@ import {
   InputGroup,
   Stack,
   StackItem,
+  InputGroupItem,
 } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -124,24 +125,26 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
   const inputGroup = React.useMemo(() => {
     return (
       <InputGroup>
-        <div style={{ margin: 'auto' }}>
-          <Button
-            aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL')}
-            variant="control"
-            onClick={onCogSelect}
-            icon={<CogIcon />}
-          />
-          <Button
-            id={'automated-analysis-config-drawer-create-recording-button'}
-            aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
-            variant="control"
-            onClick={onDefaultRecordingStart}
-          >
-            <span style={{ marginRight: '0.2em' }}>
-              {t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
-            </span>
-          </Button>
-        </div>
+        <InputGroupItem>
+          <div style={{ margin: 'auto' }}>
+            <Button
+              aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL')}
+              variant="control"
+              onClick={onCogSelect}
+              icon={<CogIcon />}
+            />
+            <Button
+              id={'automated-analysis-config-drawer-create-recording-button'}
+              aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
+              variant="control"
+              onClick={onDefaultRecordingStart}
+            >
+              <span style={{ marginRight: '0.2em' }}>
+                {t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
+              </span>
+            </Button>
+          </div>
+        </InputGroupItem>
       </InputGroup>
     );
   }, [t, onCogSelect, onDefaultRecordingStart]);

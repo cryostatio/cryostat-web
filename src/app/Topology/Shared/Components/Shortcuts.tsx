@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TableComposable, Tbody, Td, Tr } from '@patternfly/react-table';
+import { Table, Tbody, Td, Tr } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 
@@ -29,7 +29,7 @@ export interface ShortcutsProps {
 
 export const Shortcuts: React.FC<ShortcutsProps> = ({ shortcuts, ...props }) => {
   return (
-    <TableComposable borders={false} aria-label={'Shortcuts table'} variant={'compact'} {...props}>
+    <Table borders={false} aria-label={'Shortcuts table'} variant={'compact'} {...props}>
       <Tbody>
         {shortcuts.map((sc) => (
           <Tr key={sc.id}>
@@ -38,7 +38,7 @@ export const Shortcuts: React.FC<ShortcutsProps> = ({ shortcuts, ...props }) => 
           </Tr>
         ))}
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 

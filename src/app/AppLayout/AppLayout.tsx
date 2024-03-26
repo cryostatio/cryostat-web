@@ -39,14 +39,8 @@ import {
   AlertActionCloseButton,
   AlertGroup,
   AlertVariant,
-  ApplicationLauncher,
-  ApplicationLauncherItem,
   Brand,
   Button,
-  Dropdown,
-  DropdownGroup,
-  DropdownItem,
-  DropdownToggle,
   Icon,
   Label,
   Masthead,
@@ -66,12 +60,20 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  PageSidebarBody,
+  MenuToggleElement,
+  MenuToggle,
+  DropdownList,
+  DropdownGroup,
+  DropdownItem,
+  Dropdown,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
   BellIcon,
   CaretDownIcon,
   CogIcon,
+  EllipsisVIcon,
   ExternalLinkAltIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
@@ -231,7 +233,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   // prevent page resize to close nav during tour
   const onPageResize = React.useCallback(
-    (props: { mobileView: boolean; windowSize: number }) => {
+    (_, props: { mobileView: boolean; windowSize: number }) => {
       if (joyState.run === false) {
         setIsMobileView(props.mobileView);
         setIsNavOpen(!props.mobileView);
@@ -293,11 +295,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [handleLogout, handleLanguagePref],
   );
 
-  const UserInfoToggle = React.useMemo(
-    () => (
-      <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-        {username || <UserIcon color="white" size="sm" />}
-      </DropdownToggle>
+  const UserInfoToggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
+        {username || (
+          <Icon size="sm">
+            <UserIcon color="white" />
+          </Icon>
+        )}
+        <EllipsisVIcon />
+      </MenuToggle>
     ),
     [username, handleUserInfoToggle],
   );
@@ -326,28 +333,27 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const helpItems = React.useMemo(() => {
     return [
-      <ApplicationLauncherItem
-        key={'Quickstarts'}
-        component={<NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>}
-      />,
-      <ApplicationLauncherItem key={'Documentation'} onClick={handleOpenDocumentation}>
+      <DropdownItem key={'Quickstarts'}>
+        <NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>
+      </DropdownItem>,
+      <DropdownItem key={'Documentation'} onClick={handleOpenDocumentation}>
         <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
+      </DropdownItem>,
+      <DropdownItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
         {t('AppLayout.APP_LAUNCHER.GUIDED_TOUR')}
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'Help'} onClick={handleOpenDiscussion}>
+      </DropdownItem>,
+      <DropdownItem key={'Help'} onClick={handleOpenDiscussion}>
         {t('AppLayout.APP_LAUNCHER.HELP')}
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'About'} onClick={handleOpenAboutModal}>
+      </DropdownItem>,
+      <DropdownItem key={'About'} onClick={handleOpenAboutModal}>
         {t('AppLayout.APP_LAUNCHER.ABOUT')}
-      </ApplicationLauncherItem>,
+      </DropdownItem>,
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
@@ -363,18 +369,22 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     );
   }, []);
 
-  const HeaderToolbar = React.useMemo(
+  const headerToolbar = React.useMemo(
     () => (
       <>
         <Toolbar isFullHeight isStatic>
           <ToolbarContent>
-            <ToolbarGroup variant="icon-button-group" alignment={{ default: 'alignRight' }}>
+            <ToolbarGroup variant="icon-button-group" align={{ default: 'alignRight' }}>
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
                 <ToolbarItem>
                   <Button
                     variant="plain"
                     onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
-                    icon={<PlusCircleIcon size="sm" />}
+                    icon={
+                      <Icon size="sm">
+                        <PlusCircleIcon />
+                      </Icon>
+                    }
                   />
                 </ToolbarItem>
               </FeatureFlag>
@@ -399,31 +409,46 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
                   >
-                    <CogIcon size="sm" />
+                    <Icon size="sm">
+                      <CogIcon />
+                    </Icon>
                   </Button>
                 </ToolbarItem>
                 <ToolbarItem>
-                  <ApplicationLauncher
-                    onSelect={handleHelpToggle}
-                    onToggle={handleHelpToggle}
+                  <Dropdown
+                    onSelect={() => handleHelpToggle()}
+                    className="application-launcher"
+                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle
+                        ref={toggleRef}
+                        icon={<QuestionCircleIcon />}
+                        className="application-launcher"
+                        onClick={() => handleHelpToggle()}
+                      >
+                        <EllipsisVIcon />
+                      </MenuToggle>
+                    )}
                     isOpen={showHelpDropdown}
-                    items={helpItems}
-                    position="right"
-                    toggleIcon={<QuestionCircleIcon />}
-                    data-tour-id="application-launcher"
-                    data-quickstart-id="application-launcher"
-                  />
+                    popperProps={{
+                      position: 'right',
+                    }}
+                  >
+                    <DropdownList>{helpItems}</DropdownList>
+                  </Dropdown>
                 </ToolbarItem>
               </ToolbarGroup>
               <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
                   isPlain
                   onSelect={() => setShowUserInfoDropdown(false)}
-                  isOpen={showUserInfoDropdown}
                   toggle={UserInfoToggle}
-                  position="right"
-                  dropdownItems={userInfoItems}
-                />
+                  isOpen={showUserInfoDropdown}
+                  popperProps={{
+                    position: 'right',
+                  }}
+                >
+                  <DropdownList>{userInfoItems}</DropdownList>
+                </Dropdown>
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
@@ -445,7 +470,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     ],
   );
 
-  const Header = React.useMemo(
+  const header = React.useMemo(
     () => (
       <>
         <Masthead>
@@ -453,8 +478,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             <PageToggleButton
               variant="plain"
               aria-label="Navigation"
-              isNavOpen={isNavOpen}
-              onNavToggle={onNavToggle}
+              isSidebarOpen={isNavOpen}
+              onSidebarToggle={onNavToggle}
               data-quickstart-id="nav-toggle-btn"
               data-tour-id="nav-toggle-btn"
             >
@@ -467,15 +492,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
               </Link>
             </MastheadBrand>
-
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>
-          <MastheadContent>{HeaderToolbar}</MastheadContent>
+          <MastheadContent>{headerToolbar}</MastheadContent>
         </Masthead>
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [isNavOpen, aboutModalOpen, HeaderToolbar, handleCloseAboutModal, onNavToggle, levelBadge],
+    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge],
   );
 
   const isActiveRoute = React.useCallback(
@@ -535,7 +559,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   );
 
   const Sidebar = React.useMemo(
-    () => <PageSidebar theme="dark" nav={Navigation} isNavOpen={isNavOpen} />,
+    () => (
+      <PageSidebar theme="dark" isSidebarOpen={isNavOpen}>
+        <PageSidebarBody>{Navigation}</PageSidebarBody>
+      </PageSidebar>
+    ),
     [Navigation, isNavOpen],
   );
 
@@ -582,7 +610,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </AlertGroup>
         <Page
           mainContainerId="primary-app-container"
-          header={Header}
+          header={header}
           sidebar={Sidebar}
           notificationDrawer={NotificationDrawer}
           isNotificationDrawerExpanded={isNotificationDrawerExpanded}

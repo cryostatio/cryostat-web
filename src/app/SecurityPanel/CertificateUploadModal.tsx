@@ -129,7 +129,10 @@ export const CertificateUploadModal: React.FC<CertificateUploadModalProps> = ({ 
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
-            dropZoneAccepts={['application/x-x509-ca-cert', 'application/pkix-cert']}
+            dropZoneAccepts={{
+              'application/x-x509-ca-cert': ['.der'],
+              'application/pkix-cert': ['.cer'],
+            }}
             displayAccepts={['CER', 'DER']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}

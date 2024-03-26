@@ -19,7 +19,21 @@ import { isEqualTarget, getTargetRepresentation } from '@app/Shared/Services/api
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { Button, Divider, Select, SelectGroup, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import {
+  Button,
+  Divider,
+  MenuFooter,
+  SearchInput,
+  Dropdown,
+  DropdownGroup,
+  MenuToggle,
+  MenuSearch,
+  MenuSearchInput,
+  SelectOption,
+  SelectGroup,
+} from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -104,7 +118,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const selectOptions = React.useMemo(() => {
     if (noOptions) {
       return [
-        <SelectOption key={'no-target-found'} isPlaceholder isDisabled>
+        <SelectOption key={'no-target-found'} isDisabled>
           No target found
         </SelectOption>,
       ];
@@ -122,7 +136,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             .filter((t) => (t.annotations?.cryostat['REALM'] || 'Others') === name)
             .map((t: Target) => (
               <SelectOption
-                isFavorite={favSet.has(t.connectUrl)}
+                isSelected={favSet.has(t.connectUrl)}
                 id={t.connectUrl}
                 key={t.connectUrl}
                 value={{
@@ -144,7 +158,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
               .filter((t) => t !== undefined)
               .map((t: Target) => (
                 <SelectOption
-                  isFavorite
+                  //isFavorite
                   id={t.connectUrl}
                   key={`favorited-${t.connectUrl}`}
                   value={{
@@ -216,38 +230,48 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         {isLoading ? (
           <LinearDotSpinner className="target-context-selector__linear-dot-spinner" />
         ) : (
-          <Select
+          <Dropdown
             className={className}
+            //onToggle={handleSelectToggle}
+            //onSelect={handleTargetSelect}
             isPlain
-            variant={SelectVariant.single}
-            aria-label="Select Target"
-            maxHeight="30em"
-            isFlipEnabled={true}
-            menuAppendTo={'parent'}
-            placeholderText={'Select a target'}
+            placeholder="Select Target"
             isOpen={isTargetOpen}
-            onToggle={handleSelectToggle}
-            onSelect={handleTargetSelect}
-            hasInlineFilter
-            inlineFilterPlaceholderText="Filter by target..."
-            toggleIcon={selectionPrefix}
-            onFilter={handleTargetFilter}
-            isGrouped={!noOptions}
-            selections={
-              !selectedTarget
-                ? undefined
-                : {
-                    toString: () => getTargetRepresentation(selectedTarget),
-                    compareTo: (other) => other.target.connectUrl === selectedTarget.connectUrl,
-                    ...{ target: selectedTarget },
-                  }
-            }
-            footer={selectFooter}
-            favorites={favorites}
-            onFavorite={handleFavorite}
+            onSelect={handleSelectToggle}
+            toggle={(toggleRef) => (
+              <MenuToggle
+                aria-label="Select Target"
+                ref={toggleRef}
+                onClick={() => handleTargetSelect(undefined, { target: selectedTarget }, undefined)}
+                variant="plain"
+                icon={selectionPrefix}
+              >
+                {!selectedTarget
+                  ? undefined
+                  : {
+                      toString: () => getTargetRepresentation(selectedTarget),
+                      compareTo: (other) => other.target.connectUrl === selectedTarget.connectUrl,
+                      ...{ target: selectedTarget },
+                    }}
+              </MenuToggle>
+            )}
+            popperProps={{
+              enableFlip: true,
+              appendTo: portalRoot,
+              //maxHeight: '30em',
+            }}
           >
-            {selectOptions}
-          </Select>
+            <MenuSearch>
+              <MenuSearchInput>
+                <SearchIcon />
+                <SearchInput placeholder="Filter by target..." onSearch={handleTargetFilter} />
+              </MenuSearchInput>
+              {favorites}
+              {handleFavorite}
+            </MenuSearch>
+            <DropdownGroup label="Target Groups">{selectOptions}</DropdownGroup>
+            <MenuFooter>{selectFooter}</MenuFooter>
+          </Dropdown>
         )}
       </div>
       <Divider />

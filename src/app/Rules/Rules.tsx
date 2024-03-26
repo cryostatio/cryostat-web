@@ -28,11 +28,11 @@ import {
   EmptyState,
   EmptyStateIcon,
   Switch,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -41,7 +41,7 @@ import {
   InnerScrollContainer,
   ISortBy,
   SortByDirection,
-  TableComposable,
+  Table,
   TableVariant,
   Tbody,
   Td,
@@ -320,7 +320,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
             aria-label={`${r.name} is enabled`}
             className={'switch-toggle-' + String(r.enabled)}
             isChecked={r.enabled}
-            onChange={(state) => handleToggle(r, state)}
+            onChange={(_event, state) => handleToggle(r, state)}
           />
         </Td>
         <Td key={`automatic-rule-name-${index}`} dataLabel={tableColumns[1].title}>
@@ -353,7 +353,9 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
           <ActionsColumn
             items={actionResolver(r)}
-            menuAppendTo={() => document.getElementById('automated-rule-toolbar') || document.body}
+            popperProps={{
+              appendTo: () => document.getElementById('automated-rule-toolbar') || document.body,
+            }}
           />
         </Td>
       </Tr>
@@ -367,17 +369,18 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
       return (
         <>
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No Automated Rules
-            </Title>
+            <EmptyStateHeader
+              titleText="No Automated Rules"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
           </EmptyState>
         </>
       );
     } else {
       return (
         <InnerScrollContainer>
-          <TableComposable aria-label="Automated Rules Table" variant={TableVariant.compact}>
+          <Table aria-label="Automated Rules Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 {tableColumns.map(({ title, tooltip, sortable }, index) => (
@@ -398,7 +401,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
               </Tr>
             </Thead>
             <Tbody>{ruleRows}</Tbody>
-          </TableComposable>
+          </Table>
         </InnerScrollContainer>
       );
     }

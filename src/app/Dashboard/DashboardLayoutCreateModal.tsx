@@ -26,7 +26,10 @@ import {
   Button,
   Form,
   FormGroup,
+  FormHelperText,
   FormSection,
+  HelperText,
+  HelperTextItem,
   Modal,
   TextInput,
   Title,
@@ -66,7 +69,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   }, [props.oldName]);
 
   const handleNameChange = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       setName(value);
       if (value.length === 0) {
         setNameValidated(ValidatedOptions.error);
@@ -90,7 +93,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   );
 
   const handleClose = React.useCallback(
-    (ev?: React.MouseEvent) => {
+    (ev?: React.MouseEvent<Element, MouseEvent> | KeyboardEvent) => {
       ev && ev.stopPropagation();
       setName(props.oldName || '');
       setNameValidated(ValidatedOptions.default);
@@ -142,20 +145,22 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     return (
       <FormSection>
         {isCreateModal && (
-          <FormGroup label={'Template'} fieldId="template" isRequired height="35em" validated={nameValidated}>
+          <FormGroup label={'Template'} fieldId="template" isRequired height="35em">
             <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '33em' }}>
               <LayoutTemplatePicker onTemplateSelect={onTemplateSelect} />
             </div>
           </FormGroup>
         )}
-        <FormGroup
-          label={t('DashboardLayoutCreateModal.NAME.LABEL')}
-          fieldId="name"
-          helperText={t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
-          helperTextInvalid={errorMessage}
-          isRequired
-          validated={nameValidated}
-        >
+        <FormGroup label={t('DashboardLayoutCreateModal.NAME.LABEL')} fieldId="name" isRequired>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={nameValidated}>
+                {nameValidated === ValidatedOptions.error
+                  ? errorMessage
+                  : t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
           <TextInput
             isRequired
             type="text"

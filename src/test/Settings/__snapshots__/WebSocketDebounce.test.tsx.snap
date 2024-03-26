@@ -2,100 +2,107 @@
 
 exports[`<WebSocketDebounce/> renders correctly 1`] = `
 <div
-  className="pf-c-number-input"
+  className="pf-v5-c-number-input"
 >
   <div
-    className="pf-c-input-group"
+    className="pf-v5-c-input-group"
   >
-    <button
-      aria-disabled={false}
-      aria-label="Minus"
-      className="pf-c-button pf-m-control"
-      data-ouia-component-id="OUIA-Generated-Button-control-1"
-      data-ouia-component-type="PF4/Button"
-      data-ouia-safe={true}
-      disabled={false}
-      onClick={[Function]}
-      role={null}
-      type="button"
+    <div
+      className="pf-v5-c-input-group__item"
+    >
+      <button
+        aria-disabled={false}
+        aria-label="Minus"
+        className="pf-v5-c-button pf-m-control"
+        data-ouia-component-id="OUIA-Generated-Button-control-1"
+        data-ouia-component-type="PF5/Button"
+        data-ouia-safe={true}
+        disabled={false}
+        onClick={[Function]}
+        role={null}
+        type="button"
+      >
+        <span
+          className="pf-v5-c-number-input__icon"
+        >
+          <svg
+            aria-hidden="true"
+            aria-labelledby={null}
+            className="pf-v5-svg"
+            fill="currentColor"
+            height="1em"
+            role="img"
+            viewBox="0 0 448 512"
+            width="1em"
+          >
+            <path
+              d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            />
+          </svg>
+        </span>
+      </button>
+    </div>
+    <div
+      className="pf-v5-c-input-group__item"
     >
       <span
-        className="pf-c-number-input__icon"
+        className="pf-v5-c-form-control"
       >
-        <svg
-          aria-hidden="true"
-          aria-labelledby={null}
-          fill="currentColor"
-          height="1em"
-          role="img"
-          style={
-            Object {
-              "verticalAlign": "-0.125em",
-            }
-          }
-          viewBox="0 0 448 512"
-          width="1em"
-        >
-          <path
-            d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-          />
-        </svg>
+        <input
+          aria-invalid={false}
+          aria-label="Input"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+          data-ouia-component-type="PF5/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          required={false}
+          type="number"
+          value={100}
+        />
       </span>
-    </button>
-    <input
-      aria-invalid={false}
-      aria-label="Input"
-      className="pf-c-form-control"
-      data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-      data-ouia-component-type="PF4/TextInput"
-      data-ouia-safe={true}
-      disabled={false}
-      onBlur={[Function]}
-      onChange={[Function]}
-      onFocus={[Function]}
-      onKeyDown={[Function]}
-      required={false}
-      type="number"
-      value={100}
-    />
-    <button
-      aria-disabled={false}
-      aria-label="Plus"
-      className="pf-c-button pf-m-control"
-      data-ouia-component-id="OUIA-Generated-Button-control-2"
-      data-ouia-component-type="PF4/Button"
-      data-ouia-safe={true}
-      disabled={false}
-      onClick={[Function]}
-      role={null}
-      type="button"
+    </div>
+    <div
+      className="pf-v5-c-input-group__item"
     >
-      <span
-        className="pf-c-number-input__icon"
+      <button
+        aria-disabled={false}
+        aria-label="Plus"
+        className="pf-v5-c-button pf-m-control"
+        data-ouia-component-id="OUIA-Generated-Button-control-2"
+        data-ouia-component-type="PF5/Button"
+        data-ouia-safe={true}
+        disabled={false}
+        onClick={[Function]}
+        role={null}
+        type="button"
       >
-        <svg
-          aria-hidden="true"
-          aria-labelledby={null}
-          fill="currentColor"
-          height="1em"
-          role="img"
-          style={
-            Object {
-              "verticalAlign": "-0.125em",
-            }
-          }
-          viewBox="0 0 448 512"
-          width="1em"
+        <span
+          className="pf-v5-c-number-input__icon"
         >
-          <path
-            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-          />
-        </svg>
-      </span>
-    </button>
+          <svg
+            aria-hidden="true"
+            aria-labelledby={null}
+            className="pf-v5-svg"
+            fill="currentColor"
+            height="1em"
+            role="img"
+            viewBox="0 0 448 512"
+            width="1em"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            />
+          </svg>
+        </span>
+      </button>
+    </div>
   </div>
   <div
-    className="pf-c-number-input__unit"
+    className="pf-v5-c-number-input__unit"
   >
     ms
   </div>

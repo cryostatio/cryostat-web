@@ -30,7 +30,7 @@ export const FindByMatchExpression: React.FC<FindByMatchExpressionProps> = ({ is
       {...props}
       placeholder={'Find by match expression...'}
       value={expression}
-      onChange={(input) => {
+      onChange={(_, input) => {
         setExpression(input);
         matchExprService.setSearchExpression(input);
       }}

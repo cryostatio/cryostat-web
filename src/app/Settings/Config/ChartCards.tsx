@@ -15,7 +15,15 @@
  */
 
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FormGroup, HelperText, HelperTextItem, NumberInput, Stack, StackItem } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  NumberInput,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
@@ -23,7 +31,7 @@ import { SettingTab, UserSetting } from '../types';
 const min = 1;
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
 
   const [minRefresh, setMinRefresh] = React.useState(context.settings.chartControllerConfig().minRefresh);
@@ -55,9 +63,11 @@ const Component = () => {
     <Stack hasGutter>
       <StackItem>
         <FormGroup>
-          <HelperText>
-            <HelperTextItem>{t('SETTINGS.CHARTS_CONFIG.REFRESH_RATE_SETTING')}</HelperTextItem>
-          </HelperText>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{t('SETTINGS.CHARTS_CONFIG.REFRESH_RATE_SETTING')}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
           <NumberInput
             inputName="minRefresh"
             value={minRefresh}
