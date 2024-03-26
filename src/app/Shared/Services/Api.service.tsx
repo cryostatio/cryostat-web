@@ -566,7 +566,7 @@ export class ApiService {
   postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
     return this.graphql<any>(
       `
-      query PostRecordingMetadataFromPath($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
+      query PostRecordingMetadata($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
         archivedRecordings(filter: {sourceTarget: $jvmId, name: $recordingName }) {
           data {
             doPutMetadata(metadataInput: { labels: $labels }) {
@@ -942,7 +942,7 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
+        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
             target{
               archivedRecordings(filter: { name: $recordingName }) {
@@ -976,7 +976,7 @@ export class ApiService {
   postUploadedRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-      query PostUploadedRecordingMetadata($jvmId: String, $recordingName: String, $labels: [Entry_String_StringInput]){
+      query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]){
         archivedRecordings(filter: {sourceTarget: $connectUrl, name: $recordingName }) {
           data {
             doPutMetadata(metadataInput: { labels: $labels }) {
@@ -1302,8 +1302,8 @@ export class ApiService {
   getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-        query ArchivedRecordingsForTarget($jvmId: String) {
-          targetNodes(filter: { name: $jvmId }) {
+        query ArchivedRecordingsForTarget($connectUrl: String) {
+          targetNodes(filter: { name: $connectUrl }) {
             target {
               archivedRecordings {
                 data {
@@ -1323,7 +1323,7 @@ export class ApiService {
             }
           }
         }`,
-      { jvmId: target.jvmId },
+      { connectUrl: target.connectUrl },
       true,
       true,
     ).pipe(map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]));

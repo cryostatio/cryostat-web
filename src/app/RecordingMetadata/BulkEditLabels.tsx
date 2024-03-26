@@ -90,7 +90,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         } else if (isUploadsTable) {
           tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
         } else {
-          tasks.push(context.api.postRecordingMetadata(jvmId, r.name, updatedLabels).pipe(first()));
+          tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first()));
         }
       }
     });
@@ -176,6 +176,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                         value
                       }
                     }
+                    size
+                    archivedTime
                   }
                 }
               }`,
@@ -189,8 +191,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
             filter((target) => !!target),
             concatMap((target: Target) =>
               context.api.graphql<any>(
-                `query ArchivedRecordingsForTarget($jvmId: String) {
-                targetNodes(filter: { name: $jvmId }) {
+                `query ArchivedRecordingsForTarget($connectUrl: String) {
+                targetNodes(filter: { name: $connectUrl }) {
                   target {
                     archivedRecordings {
                       data {
@@ -210,7 +212,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                   }
                 }
               }`,
-                { jvmId: target.jvmId },
+                { connectUrl: target.connectUrl },
               ),
             ),
             map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),

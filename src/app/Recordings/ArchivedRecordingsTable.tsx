@@ -187,11 +187,11 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   );
 
   const queryTargetRecordings = React.useCallback(
-    (jvmId: string) => {
+    (connectUrl: string) => {
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       return context.api.graphql<any>(
         `
-      query ArchivedRecordingsForTarget($jvmId: String) {
+      query ArchivedRecordingsForTarget($connectUrl: String) {
         targetNodes(filter: { name: $connectUrl }) {
           target {
             archivedRecordings {
@@ -212,7 +212,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           }
         }
       }`,
-        { jvmId },
+        { connectUrl },
       );
     },
     [context.api],
