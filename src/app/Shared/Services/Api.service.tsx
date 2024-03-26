@@ -1303,7 +1303,7 @@ export class ApiService {
     return this.graphql<any>(
       `
         query ArchivedRecordingsForTarget($jvmId: String) {
-          targetNodes(filter: { name: $connectUrl }) {
+          targetNodes(filter: { name: $jvmId }) {
             target {
               archivedRecordings {
                 data {

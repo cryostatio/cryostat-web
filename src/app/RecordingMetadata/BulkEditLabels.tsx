@@ -190,7 +190,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
             concatMap((target: Target) =>
               context.api.graphql<any>(
                 `query ArchivedRecordingsForTarget($jvmId: String) {
-                targetNodes(filter: { name: $connectUrl }) {
+                targetNodes(filter: { name: $jvmId }) {
                   target {
                     archivedRecordings {
                       data {
