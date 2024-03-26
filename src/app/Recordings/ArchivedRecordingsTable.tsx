@@ -352,8 +352,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        console.log("++");
+        console.log("starts here ++");
         console.log(event);
+        console.log("ends here ++");
+
         if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
