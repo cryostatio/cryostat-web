@@ -206,6 +206,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
                   }
                 }
                 size
+                archivedTime
               }
             }
           }

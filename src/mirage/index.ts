@@ -495,7 +495,53 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         }
         let data = {};
         switch (name) {
-          case 'ArchivedRecordingsForTarget':
+          case 'ArchivedRecordingsForTarget':{
+            const labelsArray = JSON.parse(variables.labels)
+            .map(l => ({ key: l.key, value: l.value }));
+            
+            schema.findBy(Resource.ARCHIVE, { name: variables.recordingName })?.update({
+              metadata: {
+                labels,
+              },
+            });
+            data = {
+              targetNodes: [
+                {
+                  target: {
+                    archivedRecordings: {
+                      data: [
+                        {
+                          doPutMetadata: {
+                            metadata: {
+                              labels: labelsArray,
+                            },
+                          },
+                          size
+                          archivedTime
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            };
+            websocket.send(
+              JSON.stringify({
+                meta: {
+                  category: 'RecordingMetadataUpdated',
+                  type: { type: 'application', subType: 'json' },
+                },
+                message: {
+                  recordingName: variables.recordingName,
+                  target: variables.connectUrl,
+                  metadata: {
+                    labels: labelsArray,
+                  },
+                },
+              }),
+            );
+            break;
+          }
           case 'UploadedRecordings':
             data = {
               targetNodes: [
