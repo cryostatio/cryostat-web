@@ -1302,7 +1302,7 @@ export class ApiService {
   getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-        query ArchivedRecordingsForTarget($connectUrl: String) {
+        query ArchivedRecordingsForTarget($jvmId: String) {
           targetNodes(filter: { name: $connectUrl }) {
             target {
               archivedRecordings {
@@ -1323,7 +1323,7 @@ export class ApiService {
             }
           }
         }`,
-      { connectUrl: target.connectUrl },
+      { jvmId: target.jvmId },
       true,
       true,
     ).pipe(map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]));
