@@ -312,27 +312,18 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        console.log("Active starts here ++");
-        console.log(event);
-        console.log("Active ends here ++");
-        console.log("++++Current Target:", currentTarget);
-
-        if (currentTarget?.connectUrl != event.message.target || currentTarget?.jvmId != event.message.jvmId) {
+        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
-        setRecordings((old) =>
-          old.map((o) => {
-            if (o.name === event.message.recordingName) {
-              return {
-                ...o,
-                metadata: { labels: event.message.metadata.labels }
-              };
-            }
-          }
-          ),
-        );
-        console.log("+++++2"+ event.message.metadata.labels);
-
+        setRecordings((old) => {
+          return old.map((o) => {
+              if (o.name == event.message.recording.name) {
+                  const updatedRecording = { ...o, metadata: { labels: event.message.recording.metadata.labels } };
+                  return updatedRecording;
+              }
+              return o;
+          });
+      });
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);

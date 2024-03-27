@@ -255,31 +255,36 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         const currentTarget = parts[0];
         const event = parts[1];
         console.log("++++Current Target:", currentTarget);
+        console.log("++++Event:", event);
 
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
-          return;
-        }
+    const isMatch = ((currentTarget?.connectUrl === event.message.target) || (currentTarget?.jvmId === event.message.recording.jvmId))
+
+    console.log("++++is there a Match:", isMatch);
 
     setRecordings((oldRecordings) => {
+      console.log("++++Old recording from Bulk",oldRecordings);
         return oldRecordings.map((recording) => {
-            if (recording.name === event.message.recordingName) {
+          console.log("++++Recording from Bulk",recording);
+            if (isMatch  && recording.name === event.message.recording.name) {
+              console.log("Matching recording found, updating labels for:", recording.name);
                 const updatedRecording = {
                     ...recording,
                     metadata: {
-                        labels: event.message.metadata.labels
+                        labels: event.message.recording.metadata.labels
                     }
                 };
-                console.log("++++")
+              console.log("++++")
               console.log(recording);
               console.log("++++");
               console.log("Updated Recording:", updatedRecording);
               return updatedRecording;
             }
+            return recording;
         });
     });
       }),
     );
-  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable, refreshRecordingList]);
+  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);

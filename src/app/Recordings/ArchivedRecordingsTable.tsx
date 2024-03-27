@@ -350,26 +350,21 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        console.log("starts here ++");
-        console.log(event);
-        console.log("ends here ++");
+        
+        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(label => label.key === "connectUrl");
 
-        if (currentTarget?.connectUrl === event.message.target && currentTarget?.jvmId === event.message.recording.jvmId) {
-          setRecordings((oldRecordings) => {
+        if (currentTarget?.jvmId != event.message.recording.jvmId && currentTarget?.connectUrl != eventConnectUrlLabel?.value) {
+          return;
+        }
+            setRecordings((oldRecordings) => {
               return oldRecordings.map((recording) => {
-                  if (recording.name === event.message.recordingName) {
-                      return {
-                          ...recording,
-                          metadata: {
-                              labels: event.message.metadata.labels
-                          }
-                      };
-                  } else {
-                      return recording;
+                  if (recording.name === event.message.recording.name) {
+                      const updatedRecording = { ...recording, metadata: { labels: event.message.recording.metadata.labels } };
+                      return updatedRecording;
                   }
+                      return recording;
               });
           });
-      }
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, propsTarget]);
