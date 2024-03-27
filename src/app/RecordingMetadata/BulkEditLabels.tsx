@@ -256,17 +256,25 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
-       if (currentTarget?.connectUrl === event.message.target && currentTarget?.jvmId === event.message.recording.jvmId) {
-    // Update recordings
+      if (currentTarget?.recording.connectUrl === event.message.target || currentTarget?.jvmId === event.message.recording.jvmId) {
     setRecordings((oldRecordings) => {
         return oldRecordings.map((recording) => {
             if (recording.name === event.message.recordingName) {
                 return {
                     ...recording,
                     metadata: {
-                        labels: event.message.metadata.labels
+                        labels: event.message.recording.metadata.labels
                     }
                 };
+                console.log("++++")
+              console.log(recording);
+              console.log("++++");
+              console.log("current jvmID"+ currentTarget?.jvmId );
+              console.log("event jvmID"+ event.message.recording.jvmId );
+              console.log("currentTarget?.recording.connectUrl"+currentTarget?.recording.connectUrl);
+              console.log("event.message.recording.connectUrl"+event.message.recording.connectUrl);
+              console.log( "labels: "+event.message.recording.metadata.labels);
+
             } else {
                 return recording;
             }

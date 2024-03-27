@@ -320,7 +320,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         }
         setRecordings((old) =>
           old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
+            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.recording.metadata.labels } } : o,
           ),
         );
       }),
