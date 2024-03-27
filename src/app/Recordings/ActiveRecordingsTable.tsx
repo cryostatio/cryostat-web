@@ -312,6 +312,9 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
+        console.log("Active starts here ++");
+        console.log(event);
+        console.log("Active ends here ++");
         if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
@@ -320,7 +323,6 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
             o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
           ),
         );
-        //refreshRecordingList();
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);

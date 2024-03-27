@@ -256,26 +256,27 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
-        if (currentTarget?.connectUrl === event.message.target || currentTarget?.jvmId === event.message.jvmId) {
-          // Update recordings
-          setRecordings((oldRecordings) => {
-              return oldRecordings.map((recording) => {
-                  if (recording.name === event.message.recordingName) {
-                      return {
-                          ...recording,
-                          metadata: {
-                              labels: event.message.metadata.labels
-                          }
-                      };
-                  } else {
-                      return recording;
-                  }
-              });
-          });
-      }
+       if (currentTarget?.connectUrl === event.message.target && currentTarget?.jvmId === event.message.recording.jvmId) {
+    // Update recordings
+    setRecordings((oldRecordings) => {
+        return oldRecordings.map((recording) => {
+            if (recording.name === event.message.recordingName) {
+                return {
+                    ...recording,
+                    metadata: {
+                        labels: event.message.metadata.labels
+                    }
+                };
+            } else {
+                return recording;
+            }
+        });
+    });
+}
+
       }),
     );
-  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);
+  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable, refreshRecordingList]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
