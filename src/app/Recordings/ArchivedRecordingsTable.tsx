@@ -356,8 +356,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         console.log(event);
         console.log("ends here ++");
 
-        if (currentTarget?.connectUrl === event.message.target && currentTarget?.jvmId === event.message.jvmId) {
-          // Update recordings
+        if (currentTarget?.connectUrl === event.message.target || currentTarget?.jvmId === event.message.jvmId) {
           setRecordings((oldRecordings) => {
               return oldRecordings.map((recording) => {
                   if (recording.name === event.message.recordingName) {
