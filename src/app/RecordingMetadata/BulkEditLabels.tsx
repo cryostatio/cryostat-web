@@ -254,15 +254,29 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
+        console.log("++++Current Target:", currentTarget);
+
         if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
-        setRecordings((old) =>
-          old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
-          ),
-        );
-        refreshRecordingList();
+
+    setRecordings((oldRecordings) => {
+        return oldRecordings.map((recording) => {
+            if (recording.name === event.message.recordingName) {
+                const updatedRecording = {
+                    ...recording,
+                    metadata: {
+                        labels: event.message.metadata.labels
+                    }
+                };
+                console.log("++++")
+              console.log(recording);
+              console.log("++++");
+              console.log("Updated Recording:", updatedRecording);
+              return updatedRecording;
+            }
+        });
+    });
       }),
     );
   }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable, refreshRecordingList]);
