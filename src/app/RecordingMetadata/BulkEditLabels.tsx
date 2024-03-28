@@ -264,7 +264,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
 
     setRecordings((oldRecordings) => {
         return oldRecordings.map((recording) => {
-            if (recording.name === event.message.recording.name) {
+            if (recording.name === event.message.recordingName) {
                 const updatedRecording = {
                     ...recording,
                     metadata: {
