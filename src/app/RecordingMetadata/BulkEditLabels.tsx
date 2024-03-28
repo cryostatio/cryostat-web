@@ -257,10 +257,14 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         const currentTarget = parts[0];
         const event = parts[1];
         console.log("++++Current Target:", currentTarget);
+        console.log("++++Event:", event);
 
         if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
+        console.log("++++Event Message after:", event.message);
+
+        console.log("++++Event Message after:", event.message);
 
     setRecordings((oldRecordings) => {
         return oldRecordings.map((recording) => {
@@ -277,6 +281,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               console.log("Updated Recording:", updatedRecording);
               return updatedRecording;
             }
+            return recording;
         });
     });
       }),
