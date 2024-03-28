@@ -321,13 +321,16 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           return;
         }
         setRecordings((old) =>
-          old.map((o) =>
-            o.name == event.message.recording.name ? { ...o, metadata: { labels: event.message.recording.metadata.labels } } : o,
+          old.map((o) => {
+            if (o.name === event.message.recording.name) {
+              return {
+                ...o,
+                metadata: { ...o.metadata, labels: event.message.recording.metadata.labels }
+              };
+            }
+          }
           ),
         );
-        console.log("+++++111"+ event.message.recording.name);
-
-        console.log("+++++1"+ event.message.metadata.labels);
         console.log("+++++2"+ event.message.recording.metadata.labels);
 
       }),
