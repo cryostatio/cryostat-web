@@ -268,7 +268,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 const updatedRecording = {
                     ...recording,
                     metadata: {
-                        labels: event.message.recording.metadata.labels
+                        labels: event.message.metadata.labels
                     }
                 };
                 console.log("++++")

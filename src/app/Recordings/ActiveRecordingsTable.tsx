@@ -325,7 +325,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
             if (o.name === event.message.recording.name) {
               return {
                 ...o,
-                metadata: { ...o.metadata, labels: event.message.recording.metadata.labels }
+                metadata: { ...o.metadata, labels: event.message.metadata.labels }
               };
             }
           }
