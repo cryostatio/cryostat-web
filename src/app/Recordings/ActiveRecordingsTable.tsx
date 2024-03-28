@@ -317,14 +317,16 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         console.log("Active ends here ++");
         console.log("++++Current Target:", currentTarget);
 
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        if (currentTarget?.connectUrl != event.message.target || currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) =>
           old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.recording.metadata.labels } } : o,
+            o.name == event.message.recording.name ? { ...o, metadata: { labels: event.message.recording.metadata.labels } } : o,
           ),
         );
+        console.log("+++++111"+ event.message.recording.name);
+
         console.log("+++++1"+ event.message.metadata.labels);
         console.log("+++++2"+ event.message.recording.metadata.labels);
 
