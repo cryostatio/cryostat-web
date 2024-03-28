@@ -256,6 +256,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
+        console.log("++++Current Target:", currentTarget);
+
       if (currentTarget?.recording.connectUrl === event.message.target || currentTarget?.jvmId === event.message.recording.jvmId) {
     setRecordings((oldRecordings) => {
         return oldRecordings.map((recording) => {
@@ -268,12 +270,13 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 };
                 console.log("++++")
               console.log(recording);
+              console.log( currentTarget?.jvmId );
+              console.log( event.message.recording.jvmId );
+              console.log(currentTarget?.recording.connectUrl);
+              console.log(event.message.recording.connectUrl);
+              console.log( event.message.recording.metadata.labels);
+              console.log( event.message.metadata.labels);
               console.log("++++");
-              console.log("current jvmID"+ currentTarget?.jvmId );
-              console.log("event jvmID"+ event.message.recording.jvmId );
-              console.log("currentTarget?.recording.connectUrl"+currentTarget?.recording.connectUrl);
-              console.log("event.message.recording.connectUrl"+event.message.recording.connectUrl);
-              console.log( "labels: "+event.message.recording.metadata.labels);
 
             } else {
                 return recording;
