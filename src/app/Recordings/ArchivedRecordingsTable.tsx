@@ -206,6 +206,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
                   }
                 }
                 size
+                archivedTime
               }
             }
           }
@@ -233,6 +234,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
               }
             }
             size
+            archivedTime
           }
         }
       }`,
@@ -350,14 +352,26 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
-          return;
-        }
-        setRecordings((old) =>
-          old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
-          ),
-        );
+        console.log("starts here ++");
+        console.log(event);
+        console.log("ends here ++");
+
+        if (currentTarget?.connectUrl === event.message.target && currentTarget?.jvmId === event.message.recording.jvmId) {
+          setRecordings((oldRecordings) => {
+              return oldRecordings.map((recording) => {
+                  if (recording.name === event.message.recordingName) {
+                      return {
+                          ...recording,
+                          metadata: {
+                              labels: event.message.metadata.labels
+                          }
+                      };
+                  } else {
+                      return recording;
+                  }
+              });
+          });
+      }
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, propsTarget]);

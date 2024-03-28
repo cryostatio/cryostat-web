@@ -564,19 +564,33 @@ export class ApiService {
   }
 
   postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
-    return this.sendRequest(
-      'beta',
-      `fs/recordings/${encodeURIComponent(jvmId)}/${encodeURIComponent(recordingName)}/metadata/labels`,
+    return this.graphql<any>(
+      `
+      query PostRecordingMetadata($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
+        archivedRecordings(filter: {sourceTarget: $jvmId, name: $recordingName }) {
+          data {
+            doPutMetadata(metadataInput: { labels: $labels }) {
+              metadata {
+                labels{
+                  key
+                  value
+                }
+              }
+              size
+              archivedTime
+            }
+          }
+        }
+      }`,
       {
-        method: 'POST',
-        body: this.transformAndStringifyToRawLabels(labels),
+        jvmId,
+        recordingName,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
-    ).pipe(
-      map((resp) => resp.ok),
-      first(),
-    );
-  }
+    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+}
 
+  
   isProbeEnabled(): Observable<boolean> {
     return this.getActiveProbes(true).pipe(
       concatMap((_) => of(true)),
@@ -928,20 +942,31 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
+        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
-            archivedRecordings(filter: { name: $recordingName }) {
-              data {
-                doPutMetadata(metadata: { labels: $labels }) {
-                  metadata {
-                    labels
+            target{
+              archivedRecordings(filter: { name: $recordingName }) {
+                data {
+                  doPutMetadata(metadataInput:{labels: $labels }) {
+                    metadata {
+                      labels{
+                        key
+                        value
+                      }
+                    }
+                    size
+                    archivedTime
                   }
                 }
               }
             }
           }
         }`,
-          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
+          {
+            connectUrl: target.connectUrl,
+            recordingName,
+            labels: labels.map((label) => ({ key: label.key, value: label.value })),
+          },
         ),
       ),
       map((v) => v.data.targetNodes[0].target.archivedRecordings as ArchivedRecording[]),
@@ -951,18 +976,27 @@ export class ApiService {
   postUploadedRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-      query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String){
+      query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]){
         archivedRecordings(filter: {sourceTarget: $connectUrl, name: $recordingName }) {
           data {
-            doPutMetadata(metadata: { labels: $labels }) {
+            doPutMetadata(metadataInput: { labels: $labels }) {
               metadata {
-                labels
+                labels{
+                  key
+                  value
+                }
               }
+              size
+              archivedTime
             }
           }
         }
       }`,
-      { connectUrl: UPLOADS_SUBDIRECTORY, recordingName, labels: this.stringifyRecordingLabels(labels) },
+      {
+        connectUrl: UPLOADS_SUBDIRECTORY,
+        recordingName,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
+      },
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
@@ -973,20 +1007,31 @@ export class ApiService {
       concatMap((target: Target) =>
         this.graphql<any>(
           `
-        query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
+        query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
-            activeRecordings(filter: { name: $recordingName }) {
-              data {
-                doPutMetadata(metadata: { labels: $labels }) {
-                  metadata {
-                    labels
+            target{
+              activeRecordings(filter: { name: $recordingName }) {
+                data {
+                  doPutMetadata(metadataInput:{labels: $labels}) {
+                    id
+                    name
+                    metadata {
+                      labels{
+                        key
+                        value
+                      }
+                    }
                   }
                 }
               }
             }
           }
         }`,
-          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) },
+          {
+            connectUrl: target.connectUrl,
+            recordingName,
+            labels: labels.map((label) => ({ key: label.key, value: label.value })),
+          },
         ),
       ),
       map((v) => v.data.targetNodes[0].target.activeRecordings as ActiveRecording[]),

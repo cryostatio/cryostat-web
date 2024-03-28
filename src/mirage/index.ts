@@ -20,6 +20,7 @@ import { Server as WSServer, Client } from 'mock-socket';
 import factories from './factories';
 import models from './models';
 import { Resource } from './typings';
+import { sizeUnits } from "src/app/utils/utils";
 
 export const startMirage = ({ environment = 'development' } = {}) => {
   const wsUrl = `ws://localhost:9091/api/notifications`;
@@ -548,13 +549,12 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             };
             break;
           case 'PostRecordingMetadata': {
-            const labels = {};
-            for (const l of eval(variables.labels)) {
-              labels[l.key] = l.value;
-            }
+            const labelsArray = JSON.parse(variables.labels)
+            .map(l => ({ key: l.key, value: l.value }));
+            
             schema.findBy(Resource.ARCHIVE, { name: variables.recordingName })?.update({
               metadata: {
-                labels,
+                labels: labelsArray,
               },
             });
             data = {
@@ -566,9 +566,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                         {
                           doPutMetadata: {
                             metadata: {
-                              labels,
+                              labels: labelsArray,
                             },
                           },
+                          size
+                          archivedTime
                         },
                       ],
                     },
@@ -586,7 +588,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   recordingName: variables.recordingName,
                   target: variables.connectUrl,
                   metadata: {
-                    labels,
+                    labels: labelsArray,
                   },
                 },
               }),
@@ -594,13 +596,12 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             break;
           }
           case 'PostActiveRecordingMetadata': {
-            const labels = {};
-            for (const l of eval(variables.labels)) {
-              labels[l.key] = l.value;
-            }
+            const labelsArray = JSON.parse(variables.labels)
+            .map(l => ({ key: l.key, value: l.value }));
+
             schema.findBy(Resource.RECORDING, { name: variables.recordingName })?.update({
               metadata: {
-                labels,
+                labels: labelsArray,
               },
             });
             data = {
@@ -612,7 +613,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                         {
                           doPutMetadata: {
                             metadata: {
-                              labels,
+                              labels: labelsArray,
                             },
                           },
                         },
@@ -632,7 +633,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   recordingName: variables.recordingName,
                   target: variables.connectUrl,
                   metadata: {
-                    labels,
+                    labels: labelsArray,
                   },
                 },
               }),
