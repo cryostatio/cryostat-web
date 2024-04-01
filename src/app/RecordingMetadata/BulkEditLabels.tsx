@@ -254,29 +254,18 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
-        console.log("++++Current Target:", currentTarget);
-        console.log("++++Event:", event);
 
     const isMatch = ((currentTarget?.connectUrl === event.message.target) || (currentTarget?.jvmId === event.message.recording.jvmId))
 
-    console.log("++++is there a Match:", isMatch);
-
     setRecordings((oldRecordings) => {
-      console.log("++++Old recording from Bulk",oldRecordings);
         return oldRecordings.map((recording) => {
-          console.log("++++Recording from Bulk",recording);
             if (isMatch  && recording.name === event.message.recording.name) {
-              console.log("Matching recording found, updating labels for:", recording.name);
                 const updatedRecording = {
                     ...recording,
                     metadata: {
                         labels: event.message.recording.metadata.labels
                     }
                 };
-              console.log("++++")
-              console.log(recording);
-              console.log("++++");
-              console.log("Updated Recording:", updatedRecording);
               return updatedRecording;
             }
             return recording;

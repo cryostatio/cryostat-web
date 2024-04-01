@@ -254,16 +254,24 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export const filterRecordings = (recordings: any[], filters: RecordingFiltersCategories) => {
   if (!recordings || !recordings.length) {
+    console.log("++++No recordings to filter");
     return recordings;
   }
 
   let filtered = recordings;
+  console.log("+++ filtered", filtered);
+  console.log("+++ Initial recordings:", filtered.map(r => r.name));
+
 
   if (filters.Name.length) {
     filtered = filtered.filter((r) => filters.Name.includes(r.name));
+    console.log("+++ After Name filter, count:", filtered.length);
+
   }
   if (!!filters.State && !!filters.State.length) {
     filtered = filtered.filter((r) => !!filters.State && filters.State.includes(r.state));
+    console.log("+++ After State filter, count:", filtered.length);
+
   }
   if (!!filters.DurationSeconds && !!filters.DurationSeconds.length) {
     filtered = filtered.filter((r) => {
@@ -273,6 +281,8 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
         (filters.DurationSeconds.includes('continuous') && r.continuous)
       );
     });
+    console.log("+++ After DurationSeconds filter, count:", filtered.length);
+
   }
   if (!!filters.StartedBeforeDate && !!filters.StartedBeforeDate.length) {
     filtered = filtered.filter((rec) => {
@@ -283,6 +293,8 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
         return dayjs(rec.startTime).isBefore(beforeDate);
       }).length;
     });
+    console.log("+++ Before DurationSeconds filter, count:", filtered.length);
+
   }
   if (!!filters.StartedAfterDate && !!filters.StartedAfterDate.length) {
     filtered = filtered.filter((rec) => {
@@ -292,12 +304,25 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
         return dayjs(rec.startTime).isSame(afterDate) || dayjs(rec.startTime).isAfter(afterDate);
       }).length;
     });
+    console.log("+++ After DurationSeconds filter, count:", filtered.length);
+
   }
-  if (filters.Label.length) {
+  /* if (filters.Label.length) {
     filtered = filtered.filter(
       (r) => Object.entries(r.metadata.labels).filter(([k, v]) => filters.Label.includes(`${k}:${v}`)).length,
     );
+    console.log("+++ After Label filter, count:", filtered.length);
+
+  } */
+
+  if (filters.Label.length) {
+    filtered = filtered.filter(recording => {
+      const recordingLabels = recording.metadata.labels.map(label => `${label.key}:${label.value}`);
+      return filters.Label.some(filterLabel => recordingLabels.includes(filterLabel));
+  });
+  console.log("+++ After Label filter, count:", filtered.length);
   }
 
   return filtered;
+  console.log("+++ After all filters, count:", filtered.length);
 };
