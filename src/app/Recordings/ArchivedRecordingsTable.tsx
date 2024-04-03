@@ -335,7 +335,9 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(label => label.key === "connectUrl");
+
+        if (currentTarget?.jvmId != event.message.recording.jvmId && currentTarget?.connectUrl != eventConnectUrlLabel?.value) {
           return;
         }
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
