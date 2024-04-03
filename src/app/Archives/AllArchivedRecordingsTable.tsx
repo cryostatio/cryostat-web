@@ -170,8 +170,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   /* React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe(() => {
-        refreshDirectoriesAndCounts();
-      }),
+       }),
     );
   }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]); */
 
@@ -186,9 +185,9 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         const newDirectories = currentDirectories.map(directory => ({
           ...directory,
           recordings: directory.recordings.map(recording => {
-            if (recording.name === updatedRecordingInfo.name) {
+            if (recording.name === updatedRecordingInfo.recording.name) {
               console.log(`+++Updating labels for recording: ${recording.name}`);
-              return { ...recording, metadata: { ...recording.metadata, labels: updatedRecordingInfo.metadata.labels }};
+              return { ...recording, metadata: { ...recording.metadata, labels: updatedRecordingInfo.recording.metadata.labels }};
             }
             return recording;
           }),
