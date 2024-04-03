@@ -32,7 +32,6 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
     (_, selection, isPlaceholder) => {
       if (!isPlaceholder) {
         setIsExpanded(false);
-        console.log("++++User selected label: ", selection);
         onSubmit(selection);
       }
     },
@@ -51,10 +50,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
   }, [recordings, filteredLabels]);
 
   React.useEffect(()=>{
-    console.log("++++Received recordings: ",recordings);
   }, [recordings]);
-
-  console.log("++++Filtered labels ready for rendering: ", labels);
 
   return (
     <Select
