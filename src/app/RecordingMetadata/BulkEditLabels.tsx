@@ -83,7 +83,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
           return !includesLabel(toDelete, label);
         });
         if (directory) {
-          tasks.push(context.api.postRecordingMetadataFromPath(directory.jvmId, r.name, updatedLabels).pipe(first()));
+          tasks.push(context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()));
         }
         if (isTargetRecording) {
           tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first()));
@@ -171,7 +171,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                     downloadUrl
                     reportUrl
                     metadata {
-                      labels{
+                      labels {
                         key
                         value
                       }
@@ -255,22 +255,23 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         const currentTarget = parts[0];
         const event = parts[1];
 
-    const isMatch = ((currentTarget?.connectUrl === event.message.target) || (currentTarget?.jvmId === event.message.recording.jvmId))
+        const isMatch =
+          currentTarget?.connectUrl === event.message.target || currentTarget?.jvmId === event.message.recording.jvmId;
 
-    setRecordings((oldRecordings) => {
-        return oldRecordings.map((recording) => {
-            if (isMatch  && recording.name === event.message.recording.name) {
-                const updatedRecording = {
-                    ...recording,
-                    metadata: {
-                        labels: event.message.recording.metadata.labels
-                    }
-                };
+        setRecordings((oldRecordings) => {
+          return oldRecordings.map((recording) => {
+            if (isMatch && recording.name === event.message.recording.name) {
+              const updatedRecording = {
+                ...recording,
+                metadata: {
+                  labels: event.message.recording.metadata.labels,
+                },
+              };
               return updatedRecording;
             }
             return recording;
+          });
         });
-    });
       }),
     );
   }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);

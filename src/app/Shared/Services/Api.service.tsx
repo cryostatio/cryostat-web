@@ -563,15 +563,15 @@ export class ApiService {
     return out;
   }
 
-  postRecordingMetadataFromPath(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
+  postRecordingMetadataForJvmId(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
     return this.graphql<any>(
       `
-      query PostRecordingMetadataFromPath($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
+      query postRecordingMetadataForJvmId($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
         archivedRecordings(filter: {sourceTarget: $jvmId, name: $recordingName }) {
           data {
             doPutMetadata(metadataInput: { labels: $labels }) {
               metadata {
-                labels{
+                labels {
                   key
                   value
                 }
@@ -588,9 +588,8 @@ export class ApiService {
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
-}
+  }
 
-  
   isProbeEnabled(): Observable<boolean> {
     return this.getActiveProbes(true).pipe(
       concatMap((_) => of(true)),
@@ -944,12 +943,12 @@ export class ApiService {
           `
         query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
-            target{
+            target {
               archivedRecordings(filter: { name: $recordingName }) {
                 data {
                   doPutMetadata(metadataInput:{labels: $labels }) {
                     metadata {
-                      labels{
+                      labels {
                         key
                         value
                       }
@@ -981,7 +980,7 @@ export class ApiService {
           data {
             doPutMetadata(metadataInput: { labels: $labels }) {
               metadata {
-                labels{
+                labels {
                   key
                   value
                 }
@@ -1009,14 +1008,14 @@ export class ApiService {
           `
         query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { name: $connectUrl }) {
-            target{
+            target {
               activeRecordings(filter: { name: $recordingName }) {
                 data {
                   doPutMetadata(metadataInput:{labels: $labels}) {
                     id
                     name
                     metadata {
-                      labels{
+                      labels {
                         key
                         value
                       }

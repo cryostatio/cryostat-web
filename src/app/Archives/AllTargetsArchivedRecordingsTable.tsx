@@ -325,13 +325,49 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     );
   }, [addSubscription, context.notificationChannel, updateCount]);
 
-  React.useEffect(() => {
+ /*  React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
         updateCount(v.message.target, -1);
       }),
     );
-  }, [addSubscription, context.notificationChannel, updateCount]);
+  }, [addSubscription, context.notificationChannel, updateCount]); */
+
+  React.useEffect(() => {
+    const subscription = context.notificationChannel
+      .messages(NotificationCategory.ArchivedRecordingDeleted)
+      .subscribe((v) => {
+        const deletedRecordingName = v.message.recording.name;
+        const targetUrl = v.message.target;
+  
+        console.log(`++Deleting recording: ${deletedRecordingName} from target: ${targetUrl}`);
+        
+        setArchivesForTargets((currentTargets) => {
+          console.log('++Current targets before update:', currentTargets);
+
+          return currentTargets.map((target) => {
+            if (target.target.connectUrl === targetUrl) {
+              const updatedArchives = Array.isArray(target.archives)
+                ? target.archives.filter(archive => archive.name !== deletedRecordingName)
+                : [];
+
+              console.log(`++Updated archives for target ${targetUrl}:`, updatedArchives);
+  
+              return {
+                ...target,
+                archives: updatedArchives,
+                archiveCount: Math.max(target.archiveCount - 1, 0),
+              };
+            }
+            return target;
+          });
+        });
+      });
+  
+    return () => subscription.unsubscribe();
+}, [context.notificationChannel, setArchivesForTargets]);
+
+  
 
   const toggleExpanded = React.useCallback(
     (target) => {

@@ -335,9 +335,14 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ]).subscribe(([currentTarget, event]) => {
-        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(label => label.key === "connectUrl");
+        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(
+          (label) => label.key === 'connectUrl',
+        );
 
-        if (currentTarget?.jvmId != event.message.recording.jvmId && currentTarget?.connectUrl != eventConnectUrlLabel?.value) {
+        if (
+          currentTarget?.jvmId != event.message.recording.jvmId &&
+          currentTarget?.connectUrl != eventConnectUrlLabel?.value
+        ) {
           return;
         }
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
@@ -352,21 +357,25 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        
-        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(label => label.key === "connectUrl");
+        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(
+          (label) => label.key === 'connectUrl',
+        );
 
-        if (currentTarget?.jvmId != event.message.recording.jvmId && currentTarget?.connectUrl != eventConnectUrlLabel?.value) {
+        if (
+          currentTarget?.jvmId != event.message.recording.jvmId &&
+          currentTarget?.connectUrl != eventConnectUrlLabel?.value
+        ) {
           return;
         }
-            setRecordings((oldRecordings) => {
-              return oldRecordings.map((recording) => {
-                  if (recording.name === event.message.recording.name) {
-                      const updatedRecording = { ...recording, metadata: { labels: event.message.recording.metadata.labels } };
-                      return updatedRecording;
-                  }
-                      return recording;
-              });
+        setRecordings((oldRecordings) => {
+          return oldRecordings.map((recording) => {
+            if (recording.name === event.message.recording.name) {
+              const updatedRecording = { ...recording, metadata: { labels: event.message.recording.metadata.labels } };
+              return updatedRecording;
+            }
+            return recording;
           });
+        });
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, propsTarget]);

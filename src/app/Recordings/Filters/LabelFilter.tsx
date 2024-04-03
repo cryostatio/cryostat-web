@@ -49,9 +49,6 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
       .sort();
   }, [recordings, filteredLabels]);
 
-  React.useEffect(()=>{
-  }, [recordings]);
-
   return (
     <Select
       variant={SelectVariant.typeahead}

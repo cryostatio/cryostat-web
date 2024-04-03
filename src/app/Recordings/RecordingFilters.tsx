@@ -261,11 +261,9 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
 
   if (filters.Name.length) {
     filtered = filtered.filter((r) => filters.Name.includes(r.name));
-
   }
   if (!!filters.State && !!filters.State.length) {
     filtered = filtered.filter((r) => !!filters.State && filters.State.includes(r.state));
-
   }
   if (!!filters.DurationSeconds && !!filters.DurationSeconds.length) {
     filtered = filtered.filter((r) => {
@@ -279,7 +277,6 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
   if (!!filters.StartedBeforeDate && !!filters.StartedBeforeDate.length) {
     filtered = filtered.filter((rec) => {
       if (!filters.StartedBeforeDate) return true;
-
       return filters.StartedBeforeDate.filter((startedBefore) => {
         const beforeDate = dayjs(startedBefore);
         return dayjs(rec.startTime).isBefore(beforeDate);
@@ -295,12 +292,11 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
       }).length;
     });
   }
-
   if (filters.Label.length) {
-    filtered = filtered.filter(recording => {
-      const recordingLabels = recording.metadata.labels.map(label => `${label.key}:${label.value}`);
-      return filters.Label.some(filterLabel => recordingLabels.includes(filterLabel));
-  });
+    filtered = filtered.filter((recording) => {
+      const recordingLabels = recording.metadata.labels.map((label) => `${label.key}:${label.value}`);
+      return filters.Label.some((filterLabel) => recordingLabels.includes(filterLabel));
+    });
   }
 
   return filtered;
