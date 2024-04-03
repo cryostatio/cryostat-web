@@ -167,38 +167,25 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     return () => window.clearInterval(id);
   }, [context.settings, refreshDirectoriesAndCounts]);
 
-  /* React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe(() => {
-       }),
-    );
-  }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]); */
-
   React.useEffect(() => {
     const subscription = context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe(event => {
-      console.log("Received RecordingMetadataUpdated event:", event);
-  
       const updatedRecordingInfo = event.message;
-      console.log("Updated recording info:", updatedRecordingInfo);
   
       setDirectories(currentDirectories => {
         const newDirectories = currentDirectories.map(directory => ({
           ...directory,
           recordings: directory.recordings.map(recording => {
             if (recording.name === updatedRecordingInfo.recording.name) {
-              console.log(`+++Updating labels for recording: ${recording.name}`);
               return { ...recording, metadata: { ...recording.metadata, labels: updatedRecordingInfo.recording.metadata.labels }};
             }
             return recording;
           }),
         }));
-        console.log("New directories after update:", newDirectories);
         return newDirectories;
       });
     });
   
     return () => {
-      console.log("Unsubscribing from RecordingMetadataUpdated");
       subscription.unsubscribe();
     };
   }, [addSubscription, context.notificationChannel]);
