@@ -20,7 +20,7 @@ import { Server as WSServer, Client } from 'mock-socket';
 import factories from './factories';
 import models from './models';
 import { Resource } from './typings';
-import { sizeUnits } from "src/app/utils/utils";
+import { sizeUnits } from 'src/app/utils/utils';
 
 export const startMirage = ({ environment = 'development' } = {}) => {
   const wsUrl = `ws://localhost:9091/api/notifications`;
@@ -549,9 +549,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             };
             break;
           case 'PostRecordingMetadata': {
-            const labelsArray = JSON.parse(variables.labels)
-            .map(l => ({ key: l.key, value: l.value }));
-            
+            const labelsArray = JSON.parse(variables.labels).map((l) => ({ key: l.key, value: l.value }));
+
             schema.findBy(Resource.ARCHIVE, { name: variables.recordingName })?.update({
               metadata: {
                 labels: labelsArray,
@@ -569,8 +568,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                               labels: labelsArray,
                             },
                           },
-                          size
-                          archivedTime
+                          size,
+                          archivedTime,
                         },
                       ],
                     },
@@ -596,8 +595,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             break;
           }
           case 'PostActiveRecordingMetadata': {
-            const labelsArray = JSON.parse(variables.labels)
-            .map(l => ({ key: l.key, value: l.value }));
+            const labelsArray = JSON.parse(variables.labels).map((l) => ({ key: l.key, value: l.value }));
 
             schema.findBy(Resource.RECORDING, { name: variables.recordingName })?.update({
               metadata: {
