@@ -86,13 +86,6 @@ type ArchivesForTarget = {
   recordings: ArchivedRecording[];
 };
 
-type ArchivesForTarget = {
-  target: Target;
-  targetAsObs: Observable<Target>;
-  archiveCount: number;
-  recordings: ArchivedRecording[];
-};
-
 export interface AllTargetsArchivedRecordingsTableProps {}
 
 export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecordingsTableProps> = () => {
@@ -337,6 +330,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const handleTargetNotification = React.useCallback(
     (evt: TargetDiscoveryEvent) => {
+      console.log('Event object:', evt);
       const target: Target = {
         connectUrl: evt.serviceRef.connectUrl,
         alias: evt.serviceRef.alias,
