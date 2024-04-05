@@ -253,7 +253,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     );
   }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets, handleError]);
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
+ /* eslint-disable @typescript-eslint/no-explicit-any */
   const getCountForNewTarget = React.useCallback(
     (target: Target) => {
       addSubscription(
@@ -283,40 +283,24 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 }
               }
             }`,
+            { connectUrl: target.connectUrl },
           )
-          .pipe(
-            map((v) => {
-              return v.data.targetNodes.map((node) => ({
-                target: {
-                  connectUrl: node.target.connectUrl,
-                  alias: node.target.alias,
-                  labels: [],
-                  annotations: {
-                    cryostat: [],
-                    platform: [],
-                  },
+          .subscribe((v) => {
+            console.log("++v2",v);
+            setArchivesForTargets((old) => {
+              return [
+                ...old,
+                {
+                  target: target,
+                  targetAsObs: of(target),
+                  archiveCount: v.data.targetNodes[0]?.target?.archivedRecordings?.aggregate?.count ?? 0,
                 },
-                targetAsObs: of({
-                  connectUrl: node.target.connectUrl,
-                  alias: node.target.alias,
-                  labels: [],
-                  annotations: {
-                    cryostat: [],
-                    platform: [],
-                  },
-                }),
-                archiveCount: node.target.archivedRecordings.aggregate.count,
-                recordings: node.target.archivedRecordings.data as ArchivedRecording[],
-              }));
-            }),
-          )
-          .subscribe({
-            next: handleArchivesForTargets,
-            error: handleError,
+              ];
+            });
           }),
       );
     },
-    [addSubscription, context.api, setIsLoading, handleArchivesForTargets, handleError],
+    [addSubscription, context.api],
   );
 
   /* eslint-enable @typescript-eslint/no-explicit-any */

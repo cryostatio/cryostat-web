@@ -563,7 +563,7 @@ export class ApiService {
     return out;
   }
 
-  postRecordingMetadataForJvmId(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
+postRecordingMetadataForJvmId(jvmId: string, recordingName: string, labels: KeyValue[]): Observable<boolean> {
     return this.graphql<any>(
       `
       query postRecordingMetadataForJvmId($jvmId: String!, $recordingName: String!, $labels: [Entry_String_StringInput]) {
