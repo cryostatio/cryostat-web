@@ -359,6 +359,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         //console.log('Received metadata update for recording:', updatedRecording);
   
         setArchivesForTargets((prevArchives) => {
+          console.log('Prev archives:', prevArchives);
+
           return prevArchives.map((archive) => {
             const recordings = archive.recordings || [];
             // Find the target that includes the recording needing an update
