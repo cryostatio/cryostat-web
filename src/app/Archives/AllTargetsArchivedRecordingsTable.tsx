@@ -353,21 +353,21 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     const subscription = context.notificationChannel
       .messages(NotificationCategory.RecordingMetadataUpdated)
       .subscribe((event) => {
-        const { recording: updatedRecording } = event.message;
-  
+        //const { recording: updatedRecording } = event.message;
+        console.log('++event',event);
         // Log receiving the update
-        console.log('Received metadata update for recording:', updatedRecording);
+        //console.log('Received metadata update for recording:', updatedRecording);
   
         setArchivesForTargets((prevArchives) => {
           const updatedArchives = prevArchives.map((archive) => {
             // Find the target that includes the recording needing an update
-            if (archive.recordings.some(r => r.name === updatedRecording.name)) {
+            if (archive.recordings.some(r => r.name === event.message.recording.name)) {
               console.log(`Found recording to update within target: ${archive.target.alias || archive.target.connectUrl}`);
               // Map through recordings to update the metadata of the matching recording
               const updatedRecordings = archive.recordings.map((rec) => {
-                if (rec.name === updatedRecording.name) {
-                  console.log('Updating recording metadata from:', rec.metadata, 'to:', updatedRecording.metadata);
-                  return { ...rec, metadata: updatedRecording.metadata };
+                if (rec.name === event.message.recording.name) {
+                  console.log('Updating recording metadata from:', rec.metadata.labels, 'to:', event.message.recording.metadata.labels);
+                  return { ...rec, metadata: event.message.recording.metadata.labels };
                 }
                 return rec;
               });
