@@ -100,8 +100,9 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const [sortBy, getSortParams] = useSort();
 
   const updateCount = React.useCallback(
-    (connectUrl: string, delta: number, labels: KeyValue[] = []) => {
-      console.log(`Updating count for URL: ${connectUrl} with delta: ${delta} and labels:`, labels);
+    (connectUrl: string, delta: number) => {
+      // eslint-disable-next-line no-console
+      console.log(`Updating count for URL: ${connectUrl} with delta: ${delta}`);
 
       setArchivesForTargets((old) => {
         console.log('Current archivesForTargets:', old);
@@ -125,8 +126,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     [setArchivesForTargets],
   );
 
-  const handleArchivesForTargets = React.useCallback(
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const handleArchivesForTargets = React.useCallback(
     (targetNodes: any[]) => {
       setIsLoading(false);
       setErrorMessage('');
@@ -144,7 +145,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           return {
             target,
             targetAsObs: of(target),
-            archiveCount: node.target.archivedRecordings?.aggregate?.count ?? 0,
+            archiveCount: node.target.archivedRecordings.aggregate.count,
           };
         }),
       );
@@ -161,7 +162,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   );
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  /* const refreshArchivesForTargets = React.useCallback(() => {
+  const refreshArchivesForTargets = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
       context.api
@@ -186,74 +187,9 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           error: handleError,
         }),
     );
-  }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets, handleError]); */
-
-  const refreshArchivesForTargets = React.useCallback(() => {
-    setIsLoading(true);
-    addSubscription(
-      context.api
-        .graphql<any>(
-          `query AllTargetsArchives {
-            targetNodes {
-              target {
-                connectUrl
-                alias
-                archivedRecordings {
-                  data {
-                    name
-                    downloadUrl
-                    reportUrl
-                    metadata {
-                      labels {
-                        key
-                        value
-                      }
-                    }
-                    size
-                    archivedTime
-                  }
-                  aggregate {
-                    count
-                  }
-                }
-              }
-            }
-          }`,
-        )
-        .pipe(
-          map((v) => {
-            return v.data.targetNodes.map((node) => ({
-              target: {
-                connectUrl: node.target.connectUrl,
-                alias: node.target.alias,
-                labels: [],
-                annotations: {
-                  cryostat: [],
-                  platform: [],
-                },
-              },
-              targetAsObs: of({
-                connectUrl: node.target.connectUrl,
-                alias: node.target.alias,
-                labels: [],
-                annotations: {
-                  cryostat: [],
-                  platform: [],
-                },
-              }),
-              archiveCount: node.target.archivedRecordings.aggregate.count,
-              recordings: node.target.archivedRecordings.data as ArchivedRecording[],
-            }));
-          }),
-        )
-        .subscribe({
-          next: handleArchivesForTargets,
-          error: handleError,
-        }),
-    );
   }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets, handleError]);
 
- /* eslint-disable @typescript-eslint/no-explicit-any */
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const getCountForNewTarget = React.useCallback(
     (target: Target) => {
       addSubscription(
@@ -263,19 +199,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               targetNodes(filter: { name: $connectUrl }) {
                 target {
                   archivedRecordings {
-                    data {
-                      name
-                      downloadUrl
-                      reportUrl
-                      metadata {
-                        labels {
-                          key
-                          value
-                        }
-                      }
-                      size
-                      archivedTime
-                    }
                     aggregate {
                       count
                     }
@@ -286,14 +209,13 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             { connectUrl: target.connectUrl },
           )
           .subscribe((v) => {
-            console.log("++v2",v);
             setArchivesForTargets((old) => {
               return [
                 ...old,
                 {
                   target: target,
                   targetAsObs: of(target),
-                  archiveCount: v.data.targetNodes[0]?.target?.archivedRecordings?.aggregate?.count ?? 0,
+                  archiveCount: v.data.targetNodes[0].target.archivedRecordings.aggregate.count,
                 },
               ];
             });
