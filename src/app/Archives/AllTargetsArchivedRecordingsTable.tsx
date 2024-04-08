@@ -70,20 +70,10 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-interface ArchivedRecording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-  metadata: Metadata;
-  size: number;
-  archivedTime: number;
-}
-
 type ArchivesForTarget = {
   target: Target;
   targetAsObs: Observable<Target>;
   archiveCount: number;
-  recordings: ArchivedRecording[];
 };
 
 export interface AllTargetsArchivedRecordingsTableProps {}
@@ -101,34 +91,21 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const updateCount = React.useCallback(
     (connectUrl: string, delta: number) => {
-      // eslint-disable-next-line no-console
-      console.log(`Updating count for URL: ${connectUrl} with delta: ${delta}`);
-
       setArchivesForTargets((old) => {
-        console.log('Current archivesForTargets:', old);
-        console.log('connectUrl being searched for:', connectUrl);
-
         const idx = old.findIndex(({ target }) => target.connectUrl === connectUrl);
         if (idx >= 0) {
           const matched = old[idx];
-          
-          console.log('Found target to update:', matched);
-
           old.splice(idx, 1, { ...matched, archiveCount: matched.archiveCount + delta });
-          console.log('New archivesForTargets after update:', [...old]);
-
           return [...old];
         }
-        console.log('Target not found for URL:', connectUrl);
-
         return old;
       });
     },
     [setArchivesForTargets],
   );
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const handleArchivesForTargets = React.useCallback(
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     (targetNodes: any[]) => {
       setIsLoading(false);
       setErrorMessage('');
@@ -147,7 +124,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             target,
             targetAsObs: of(target),
             archiveCount: node.target.archivedRecordings.aggregate.count,
-            recordings:[],
           };
         }),
       );
@@ -170,57 +146,20 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       context.api
         .graphql<any>(
           `query AllTargetsArchives {
-            target {
-              connectUrl
-              alias
-              archivedRecordings {
-                data {
-                  name
-                  downloadUrl
-                  reportUrl
-                  metadata {
-                    labels {
-                      key
-                      value
-                    }
-                  }
-                  size
-                  archivedTime
-                }
-                aggregate {
-                  count
-                  }
-                }
-              }
-            }
-          }`,
+             targetNodes {
+               target {
+                 connectUrl
+                 alias
+                 archivedRecordings {
+                   aggregate {
+                     count
+                   }
+                 }
+               }
+             }
+           }`,
         )
-        .pipe(
-          map((v) => {
-            return v.data.targetNodes.map((node) => ({
-              target: {
-                connectUrl: node.target.connectUrl,
-                alias: node.target.alias,
-                labels: [],
-                annotations: {
-                  cryostat: [],
-                  platform: [],
-                },
-              },
-              targetAsObs: of({
-                connectUrl: node.target.connectUrl,
-                alias: node.target.alias,
-                labels: [],
-                annotations: {
-                  cryostat: [],
-                  platform: [],
-                },
-              }),
-              archiveCount: node.target.archivedRecordings.aggregate.count,
-              recordings: node.target.archivedRecordings.data as ArchivedRecording[],
-            }));
-          }),
-        )
+        .pipe(map((v) => v.data.targetNodes))
         .subscribe({
           next: handleArchivesForTargets,
           error: handleError,
@@ -238,19 +177,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               targetNodes(filter: { name: $connectUrl }) {
                 target {
                   archivedRecordings {
-                    data {
-                      name
-                      downloadUrl
-                      reportUrl
-                      metadata {
-                        labels {
-                          key
-                          value
-                        }
-                      }
-                      size
-                      archivedTime
-                    }
                     aggregate {
                       count
                     }
@@ -406,41 +332,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       }),
     );
   }, [addSubscription, context.notificationChannel, updateCount]);
-
-  React.useEffect(() => {
-    const subscription = context.notificationChannel
-      .messages(NotificationCategory.RecordingMetadataUpdated)
-      .subscribe((event) => {
-        console.log('Received event for metadata update', event);
-        const updatedRecordingInfo = event.message;
-  
-        setArchivesForTargets(prevArchives => {
-          const newArchives = prevArchives.map(archive => {
-            // Clone the recordings array to help React detect changes
-            const recordings = [...archive.recordings];
-  
-            const recordingIndex = recordings.findIndex(rec => rec.name === updatedRecordingInfo.name);
-            if (recordingIndex > -1) {
-              console.log(`Updating metadata for recording: ${updatedRecordingInfo.name}`);
-              const updatedRecording = {
-                ...recordings[recordingIndex],
-                metadata: updatedRecordingInfo.metadata.labels
-              };
-  
-              recordings[recordingIndex] = updatedRecording;
-            }
-  
-            return { ...archive, recordings };
-          });
-  
-          console.log('Archives after update', newArchives);
-          return newArchives;
-        });
-      });
-  
-    return () => subscription.unsubscribe();
-  }, [context.notificationChannel]);
-  
 
   const toggleExpanded = React.useCallback(
     (target) => {
