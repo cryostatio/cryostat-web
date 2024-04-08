@@ -195,7 +195,32 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             }
           }`,
         )
-        .pipe(map((v) => v.data.targetNodes))
+        .pipe(
+          map((v) => {
+            return v.data.targetNodes.map((node) => ({
+              target: {
+                connectUrl: node.target.connectUrl,
+                alias: node.target.alias,
+                labels: [],
+                annotations: {
+                  cryostat: [],
+                  platform: [],
+                },
+              },
+              targetAsObs: of({
+                connectUrl: node.target.connectUrl,
+                alias: node.target.alias,
+                labels: [],
+                annotations: {
+                  cryostat: [],
+                  platform: [],
+                },
+              }),
+              archiveCount: node.target.archivedRecordings.aggregate.count,
+              recordings: node.target.archivedRecordings.data as ArchivedRecording[],
+            }));
+          }),
+        )
         .subscribe({
           next: handleArchivesForTargets,
           error: handleError,
