@@ -138,6 +138,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             target,
             targetAsObs: of(target),
             archiveCount: node.target.archivedRecordings.aggregate.count,
+            recordings:[],
           };
         }),
       );
