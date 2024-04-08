@@ -70,15 +70,6 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-interface ArchivedRecording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-  metadata: Metadata;
-  size: number;
-  archivedTime: number;
-}
-
 type ArchivesForTarget = {
   target: Target;
   targetAsObs: Observable<Target>;
@@ -100,45 +91,32 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const [sortBy, getSortParams] = useSort();
 
   const updateCount = React.useCallback(
-    (connectUrl, delta) => {
+    (connectUrl: string, delta: number) => {
       // eslint-disable-next-line no-console
       console.log(`Updating count for URL: ${connectUrl} with delta: ${delta}`);
-  
+
       setArchivesForTargets((old) => {
         console.log('Current archivesForTargets:', old);
         console.log('connectUrl being searched for:', connectUrl);
-  
+
         const idx = old.findIndex(({ target }) => target.connectUrl === connectUrl);
         if (idx >= 0) {
           const matched = old[idx];
-          const matchedRecordings = matched.recordings;
-          console.log('Recordings in the matched target:', matchedRecordings); // Log all recordings
-  
-          const idxToDelete = matchedRecordings.findIndex(
-            (recording) => recording.name === notification.message.recording.name
-          );
-          console.log('+++recording.name',recording.name);
-          console.log('Recording name to be deleted from notification:', notification.message.recording.name);
-  
-          if (idxToDelete >= 0) {
-            matchedRecordings.splice(idxToDelete, 1);
-            console.log('Recording removed from target:', matchedRecordings[idxToDelete].name);
-          } else {
-            console.log('Recording to be deleted not found in target recordings.');
-          }
-  
-          const updatedArchiveCount = matched.archiveCount + delta;
-          old.splice(idx, 1, { ...matched, archiveCount: updatedArchiveCount });
+          
+          console.log('Found target to update:', matched);
+
+          old.splice(idx, 1, { ...matched, archiveCount: matched.archiveCount + delta });
+          console.log('New archivesForTargets after update:', [...old]);
+
           return [...old];
         }
         console.log('Target not found for URL:', connectUrl);
-  
+
         return old;
       });
     },
     [setArchivesForTargets],
   );
-  
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const handleArchivesForTargets = React.useCallback(
@@ -250,7 +228,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const handleTargetNotification = React.useCallback(
     (evt: TargetDiscoveryEvent) => {
-      console.log('Event object:', evt);
       const target: Target = {
         connectUrl: evt.serviceRef.connectUrl,
         alias: evt.serviceRef.alias,
@@ -370,7 +347,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         updateCount(v.message.target, -1);
       }),
     );
-  }, [addSubscription, context.notificationChannel, updateCount, refreshArchivesForTargets, getCountForNewTarget]);
+  }, [addSubscription, context.notificationChannel, updateCount]);
 
   const toggleExpanded = React.useCallback(
     (target) => {
