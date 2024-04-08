@@ -170,18 +170,30 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       context.api
         .graphql<any>(
           `query AllTargetsArchives {
-             targetNodes {
-               target {
-                 connectUrl
-                 alias
-                 archivedRecordings {
-                   aggregate {
-                     count
-                   }
-                 }
-               }
-             }
-           }`,
+            target {
+              connectUrl
+              alias
+              archivedRecordings {
+                data {
+                  name
+                  downloadUrl
+                  reportUrl
+                  metadata {
+                    labels {
+                      key
+                      value
+                    }
+                  }
+                  size
+                  archivedTime
+                }
+                aggregate {
+                  count
+                  }
+                }
+              }
+            }
+          }`,
         )
         .pipe(map((v) => v.data.targetNodes))
         .subscribe({
@@ -201,6 +213,19 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               targetNodes(filter: { name: $connectUrl }) {
                 target {
                   archivedRecordings {
+                    data {
+                      name
+                      downloadUrl
+                      reportUrl
+                      metadata {
+                        labels {
+                          key
+                          value
+                        }
+                      }
+                      size
+                      archivedTime
+                    }
                     aggregate {
                       count
                     }
@@ -352,8 +377,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
-        console.log('++v', v);
-        console.log('++v', v.message.target);
         updateCount(v.message.target, -1);
       }),
     );
@@ -363,35 +386,36 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     const subscription = context.notificationChannel
       .messages(NotificationCategory.RecordingMetadataUpdated)
       .subscribe((event) => {
-        console.log('++event',event);
+        console.log('Received event for metadata update', event);
+        const updatedRecordingInfo = event.message;
   
-        setArchivesForTargets((prevArchives) => {
-          console.log('Prev archives:', prevArchives);
-
-          return prevArchives.map((archive) => {
-            const recordings = archive.recordings || [];
-            // Find the target that includes the recording needing an update
-            if (recordings.some(r => r.name === event.message.recording.name)) {
-              console.log(`Found recording to update within target: ${archive.target.alias || archive.target.connectUrl}`);
-              // Map through recordings to update the metadata of the matching recording
-              const updatedRecordings = recordings.map((rec) => {
-                if (rec.name === event.message.recording.name) {
-                  console.log('Updating recording metadata from:', rec.metadata.labels, 'to:', event.message.recording.metadata.labels);
-                  return { ...rec, metadata: event.message.recording.metadata.labels };
-                }
-                return rec;
-              });
-              return { ...archive, recordings: updatedRecordings };
+        setArchivesForTargets(prevArchives => {
+          const newArchives = prevArchives.map(archive => {
+            // Clone the recordings array to help React detect changes
+            const recordings = [...archive.recordings];
+  
+            const recordingIndex = recordings.findIndex(rec => rec.name === updatedRecordingInfo.name);
+            if (recordingIndex > -1) {
+              console.log(`Updating metadata for recording: ${updatedRecordingInfo.name}`);
+              const updatedRecording = {
+                ...recordings[recordingIndex],
+                metadata: updatedRecordingInfo.metadata.labels
+              };
+  
+              recordings[recordingIndex] = updatedRecording;
             }
-            return archive;
+  
+            return { ...archive, recordings };
           });
   
-          return updatedArchives;
+          console.log('Archives after update', newArchives);
+          return newArchives;
         });
       });
   
     return () => subscription.unsubscribe();
-  }, [context.notificationChannel, setArchivesForTargets]);
+  }, [context.notificationChannel]);
+  
 
   const toggleExpanded = React.useCallback(
     (target) => {
