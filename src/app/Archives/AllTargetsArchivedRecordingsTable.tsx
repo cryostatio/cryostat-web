@@ -359,12 +359,13 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         //console.log('Received metadata update for recording:', updatedRecording);
   
         setArchivesForTargets((prevArchives) => {
-          const updatedArchives = prevArchives.map((archive) => {
+          return prevArchives.map((archive) => {
+            const recordings = archive.recordings || [];
             // Find the target that includes the recording needing an update
-            if (archive.recordings.some(r => r.name === event.message.recording.name)) {
+            if (recordings.some(r => r.name === event.message.recording.name)) {
               console.log(`Found recording to update within target: ${archive.target.alias || archive.target.connectUrl}`);
               // Map through recordings to update the metadata of the matching recording
-              const updatedRecordings = archive.recordings.map((rec) => {
+              const updatedRecordings = recordings.map((rec) => {
                 if (rec.name === event.message.recording.name) {
                   console.log('Updating recording metadata from:', rec.metadata.labels, 'to:', event.message.recording.metadata.labels);
                   return { ...rec, metadata: event.message.recording.metadata.labels };
