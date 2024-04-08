@@ -70,6 +70,15 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
+interface ArchivedRecording {
+  name: string;
+  downloadUrl: string;
+  reportUrl: string;
+  metadata: Metadata;
+  size: number;
+  archivedTime: number;
+}
+
 type ArchivesForTarget = {
   target: Target;
   targetAsObs: Observable<Target>;
@@ -354,10 +363,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     const subscription = context.notificationChannel
       .messages(NotificationCategory.RecordingMetadataUpdated)
       .subscribe((event) => {
-        //const { recording: updatedRecording } = event.message;
         console.log('++event',event);
-        // Log receiving the update
-        //console.log('Received metadata update for recording:', updatedRecording);
   
         setArchivesForTargets((prevArchives) => {
           console.log('Prev archives:', prevArchives);
