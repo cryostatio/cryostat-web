@@ -144,7 +144,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           return {
             target,
             targetAsObs: of(target),
-            archiveCount: node.target.archivedRecordings.aggregate.count,
+            archiveCount: node.target.archivedRecordings?.aggregate?.count ?? 0,
           };
         }),
       );
