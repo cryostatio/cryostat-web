@@ -125,7 +125,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           console.log('New archivesForTargets after update:', [...old]);
         }
 
-        return old;
+        return [...old];
       });
     },
     [setArchivesForTargets],
