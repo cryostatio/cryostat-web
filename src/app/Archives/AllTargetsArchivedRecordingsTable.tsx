@@ -71,6 +71,7 @@ const tableColumns: TableColumn[] = [
 ];
 
 interface ArchivedRecording {
+  jvmId?: string;
   name: string;
   downloadUrl: string;
   reportUrl: string;
@@ -107,9 +108,9 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         console.log('Current archivesForTargets:', old);
         console.log('connectUrl being searched for:', connectUrl);
 
-        const targetIdx = old.findIndex(({ target }) => target.connectUrl === connectUrl);
-        if (targetIdx >= 0) {
-          const matchedTarget = old[targetIdx];
+        const matchingTargets = old.filter(({ target }) => target.jvmId === recording.jvmId);
+        for (let matchedTarget of matchingTargets) {
+          const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
           console.log('Found target to update:', matchedTarget);
 
           const recordings = [...matchedTarget.recordings];
@@ -122,10 +123,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
           old.splice(targetIdx, 1, { ...matchedTarget, archiveCount: matchedTarget.archiveCount + delta, recordings });
           console.log('New archivesForTargets after update:', [...old]);
-
-          return [...old];
         }
-        console.log('Target not found for URL:', connectUrl);
 
         return old;
       });
@@ -212,6 +210,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 jvmId
                 archivedRecordings {
                   data {
+                    jvmId
                     name
                     downloadUrl
                     reportUrl
