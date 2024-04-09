@@ -146,18 +146,33 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       context.api
         .graphql<any>(
           `query AllTargetsArchives {
-             targetNodes {
-               target {
-                 connectUrl
-                 alias
-                 archivedRecordings {
-                   aggregate {
-                     count
-                   }
-                 }
-               }
-             }
-           }`,
+            targetNodes {
+              target {
+                connectUrl
+                alias
+                archivedRecordings {
+                  data {
+                    name
+                    downloadUrl
+                    reportUrl
+                    jvmId
+                    metadata {
+                      labels {
+                        key
+                        value
+                      }
+                    }
+                    size
+                    archivedTime
+                    }
+                  }
+                  aggregate {
+                    count
+                  }
+                }
+              }
+            }
+          }`,
         )
         .pipe(map((v) => v.data.targetNodes))
         .subscribe({
@@ -332,6 +347,29 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       }),
     );
   }, [addSubscription, context.notificationChannel, updateCount]);
+
+  React.useEffect(() => {
+    const subscription = context.notificationChannel
+      .messages(NotificationCategory.RecordingMetadataUpdated)
+      .subscribe({
+        next: (v) => {
+          setArchivesForTargets((prevArchives) =>
+            prevArchives.map((archive) => {
+              if (archive.target.connectUrl === v.message.connectUrl) {
+                return {
+                  ...archive,
+                  labels: v.message.updatedLabels,
+                };
+              }
+              return archive;
+            }),
+          );
+        },
+      });
+  
+    return () => subscription.unsubscribe();
+  }, [context.notificationChannel]);
+  
 
   const toggleExpanded = React.useCallback(
     (target) => {
