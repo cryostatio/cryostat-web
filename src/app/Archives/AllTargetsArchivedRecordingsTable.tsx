@@ -100,8 +100,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const [sortBy, getSortParams] = useSort();
 
   const updateCount = React.useCallback(
-    (connectUrl: string, delta: number, labels: KeyValue[] = []) => {
-      console.log(`Updating count for URL: ${connectUrl} with delta: ${delta} and labels:`, labels);
+    (connectUrl: string, delta: number) => {
+      console.log(`Updating count for URL: ${connectUrl} with delta: ${delta}`);
 
       setArchivesForTargets((old) => {
         console.log('Current archivesForTargets:', old);
@@ -125,8 +125,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     [setArchivesForTargets],
   );
 
-  const handleArchivesForTargets = React.useCallback(
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const handleArchivesForTargets = React.useCallback(
     (targetNodes: any[]) => {
       setIsLoading(false);
       setErrorMessage('');
@@ -145,6 +145,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             target,
             targetAsObs: of(target),
             archiveCount: node.target.archivedRecordings?.aggregate?.count ?? 0,
+            recordings: node.target.archivedRecordings?.data ?? [],
           };
         }),
       );
@@ -222,6 +223,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         )
         .pipe(
           map((v) => {
+            console.log("++V",v);
             return v.data.targetNodes.map((node) => ({
               target: {
                 connectUrl: node.target.connectUrl,
@@ -284,24 +286,24 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               }
             }`,
             { connectUrl: target.connectUrl },
-            )
-            .subscribe((v) => {
-              console.log('+++v',v);
-              setArchivesForTargets((old) => {
-                return [
-                  ...old,
-                  {
-                    target: target,
-                    targetAsObs: of(target),
-                    archiveCount: v.data.targetNodes[0].target.archivedRecordings.aggregate.count,
-                  },
-                ];
-              });
-            }),
-        );
-      },
-      [addSubscription, context.api],
-    );
+          )
+          .subscribe((v) => {
+            console.log("++v2",v);
+            setArchivesForTargets((old) => {
+              return [
+                ...old,
+                {
+                  target: target,
+                  targetAsObs: of(target),
+                  archiveCount: v.data.targetNodes[0]?.target?.archivedRecordings?.aggregate?.count ?? 0,
+                },
+              ];
+            });
+          }),
+      );
+    },
+    [addSubscription, context.api],
+  );
 
   /* eslint-enable @typescript-eslint/no-explicit-any */
   const handleLostTarget = React.useCallback(
@@ -314,6 +316,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const handleTargetNotification = React.useCallback(
     (evt: TargetDiscoveryEvent) => {
+      console.log('Event object:', evt);
       const target: Target = {
         connectUrl: evt.serviceRef.connectUrl,
         alias: evt.serviceRef.alias,
