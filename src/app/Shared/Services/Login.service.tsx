@@ -15,7 +15,7 @@
  */
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
+import { catchError, concatMap, debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
 import { SessionState } from './service.types';
 import type { SettingsService } from './Settings.service';
 
@@ -64,61 +64,6 @@ export class LoginService {
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
         return of(false);
-      }),
-    );
-  }
-
-  // FIXME either remove this or determine if it's still needed when deployed in openshift and when using the openshift-oauth-proxy
-  private openshiftLogout(logoutUrl: string): Observable<boolean> {
-    // Query the backend auth endpoint. On OpenShift, without providing a
-    // token, this should return a redirect to OpenShift's OAuth login.
-    const resp = fromFetch(`${this.authority}/api/v2.1/auth`, {
-      credentials: 'include',
-      mode: 'cors',
-      method: 'POST',
-      body: null,
-    });
-
-    return resp.pipe(
-      first(),
-      map((response) => {
-        // Fail if we don't get a valid redirect URL for the user to log
-        // back in.
-        const loginUrlString = response.headers.get('X-Location');
-        if (response.status !== 302 || !loginUrlString) {
-          throw new Error('Could not find OAuth login endpoint');
-        }
-
-        const loginUrl = new URL(loginUrlString);
-        if (!loginUrl) {
-          throw new Error(`OAuth login endpoint is invalid: ${loginUrlString}`);
-        }
-        return loginUrl;
-      }),
-      tap(() => {
-        this.resetSessionState();
-      }),
-      map((loginUrl) => {
-        // Create a hidden form to submit to the OAuth server's
-        // logout endpoint. The "then" parameter will redirect back
-        // to the login/authorize endpoint once logged out.
-        const form = document.createElement('form');
-        form.id = 'logoutForm';
-        form.action = logoutUrl;
-        form.method = 'POST';
-
-        const input = document.createElement('input');
-        // The OAuth server is strict about valid redirects. Convert
-        // the result from our auth response into a relative URL.
-        input.value = `${loginUrl.pathname}${loginUrl.search}`;
-        input.name = 'then';
-        input.type = 'hidden';
-
-        form.appendChild(input);
-        document.body.appendChild(form);
-
-        form.submit();
-        return true;
       }),
     );
   }
