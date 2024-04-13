@@ -101,10 +101,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const [sortBy, getSortParams] = useSort();
 
   const handleNotification = React.useCallback(
-    (connectUrl: string, recording: ArchivedRecording, delta: number) => {
+    (_: string, recording: ArchivedRecording, delta: number) => {
       setArchivesForTargets((old) => {
         const matchingTargets = old.filter(({ target }) => target.jvmId === recording.jvmId);
-        for (let matchedTarget of matchingTargets) {
+        for (const matchedTarget of matchingTargets) {
           const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
 
           const recordings = [...matchedTarget.recordings];
@@ -124,8 +124,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     [setArchivesForTargets],
   );
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const handleArchivesForTargets = React.useCallback(
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     (targetNodes: any[]) => {
       setIsLoading(false);
       setErrorMessage('');
@@ -165,6 +165,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     setIsLoading(true);
     addSubscription(
       context.api
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
         .graphql<any>(
           `query AllTargetsArchives {
             targetNodes {
