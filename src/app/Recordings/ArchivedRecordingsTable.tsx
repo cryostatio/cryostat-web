@@ -335,14 +335,35 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(
+          (label) => label.key === 'connectUrl',
+        );
+
+        const matchesUploadsUrlAndJvmId =
+          currentTarget?.connectUrl === 'uploads' && event.message.recording.jvmId === 'uploads';
+
+        if (isUploadsTable && matchesUploadsUrlAndJvmId) {
+          refreshRecordingList();
+        }
+        if (
+          currentTarget?.jvmId != event.message.recording.jvmId &&
+          currentTarget?.connectUrl != eventConnectUrlLabel?.value
+        ) {
           return;
         }
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
         setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(event.message.recording.name)));
       }),
     );
-  }, [addSubscription, context.notificationChannel, setRecordings, setCheckedIndices, propsTarget]);
+  }, [
+    addSubscription,
+    context.notificationChannel,
+    setRecordings,
+    setCheckedIndices,
+    propsTarget,
+    isUploadsTable,
+    refreshRecordingList,
+  ]);
 
   React.useEffect(() => {
     addSubscription(
@@ -350,14 +371,25 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        const eventConnectUrlLabel = event.message.recording.metadata.labels.find(
+          (label) => label.key === 'connectUrl',
+        );
+
+        if (
+          currentTarget?.jvmId != event.message.recording.jvmId &&
+          currentTarget?.connectUrl != eventConnectUrlLabel?.value
+        ) {
           return;
         }
-        setRecordings((old) =>
-          old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
-          ),
-        );
+        setRecordings((oldRecordings) => {
+          return oldRecordings.map((recording) => {
+            if (recording.name === event.message.recording.name) {
+              const updatedRecording = { ...recording, metadata: { labels: event.message.recording.metadata.labels } };
+              return updatedRecording;
+            }
+            return recording;
+          });
+        });
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, propsTarget]);

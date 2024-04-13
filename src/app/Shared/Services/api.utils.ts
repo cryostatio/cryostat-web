@@ -376,7 +376,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Recording Metadata Updated',
-      body: (evt) => `${evt.message.recordingName} metadata was updated`,
+      body: (evt) => `${evt.message.recording.name} metadata was updated`,
     } as NotificationMessageMapper,
   ],
   [

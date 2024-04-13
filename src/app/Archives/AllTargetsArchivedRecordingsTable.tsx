@@ -17,7 +17,7 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { Target, TargetDiscoveryEvent, NotificationCategory } from '@app/Shared/Services/api.types';
+import { Target, TargetDiscoveryEvent, NotificationCategory, Metadata } from '@app/Shared/Services/api.types';
 import { isEqualTarget, indexOfTarget, includesTarget } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
@@ -70,10 +70,21 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
+interface ArchivedRecording {
+  jvmId?: string;
+  name: string;
+  downloadUrl: string;
+  reportUrl: string;
+  metadata: Metadata;
+  size: number;
+  archivedTime: number;
+}
+
 type ArchivesForTarget = {
   target: Target;
   targetAsObs: Observable<Target>;
   archiveCount: number;
+  recordings: ArchivedRecording[];
 };
 
 export interface AllTargetsArchivedRecordingsTableProps {}
@@ -89,16 +100,25 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
 
-  const updateCount = React.useCallback(
-    (connectUrl: string, delta: number) => {
+  const handleNotification = React.useCallback(
+    (_: string, recording: ArchivedRecording, delta: number) => {
       setArchivesForTargets((old) => {
-        const idx = old.findIndex(({ target }) => target.connectUrl === connectUrl);
-        if (idx >= 0) {
-          const matched = old[idx];
-          old.splice(idx, 1, { ...matched, archiveCount: matched.archiveCount + delta });
-          return [...old];
+        const matchingTargets = old.filter(({ target }) => target.jvmId === recording.jvmId);
+        for (const matchedTarget of matchingTargets) {
+          const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
+
+          const recordings = [...matchedTarget.recordings];
+          if (delta === 1) {
+            recordings.push(recording);
+          } else {
+            const recordingIdx = recordings.findIndex((r) => r.name === recording.name);
+            recordings.splice(recordingIdx, 1);
+          }
+
+          old.splice(targetIdx, 1, { ...matchedTarget, archiveCount: matchedTarget.archiveCount + delta, recordings });
         }
-        return old;
+
+        return [...old];
       });
     },
     [setArchivesForTargets],
@@ -112,6 +132,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       setArchivesForTargets(
         targetNodes.map((node) => {
           const target: Target = {
+            jvmId: node.target.jvmId,
             connectUrl: node.target.connectUrl,
             alias: node.target.alias,
             labels: [],
@@ -123,7 +144,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           return {
             target,
             targetAsObs: of(target),
-            archiveCount: node.target.archivedRecordings.aggregate.count,
+            archiveCount: node?.archiveCount ?? 0,
+            recordings: node?.recordings ?? [],
           };
         }),
       );
@@ -139,27 +161,71 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     [setIsLoading, setErrorMessage],
   );
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const refreshArchivesForTargets = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
       context.api
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
         .graphql<any>(
           `query AllTargetsArchives {
-             targetNodes {
-               target {
-                 connectUrl
-                 alias
-                 archivedRecordings {
-                   aggregate {
-                     count
-                   }
-                 }
-               }
-             }
-           }`,
+            targetNodes {
+              target {
+                connectUrl
+                alias
+                jvmId
+                archivedRecordings {
+                  data {
+                    jvmId
+                    name
+                    downloadUrl
+                    reportUrl
+                    metadata {
+                      labels {
+                        key
+                        value
+                      }
+                    }
+                    size
+                    archivedTime
+                  }
+                  aggregate {
+                    count
+                  }
+                }
+              }
+            }
+          }`,
         )
-        .pipe(map((v) => v.data.targetNodes))
+        .pipe(
+          map((v) => {
+            return v.data.targetNodes.map((node) => {
+              return {
+                target: {
+                  jvmId: node.target.jvmId,
+                  connectUrl: node.target.connectUrl,
+                  alias: node.target.alias,
+                  labels: [],
+                  annotations: {
+                    cryostat: [],
+                    platform: [],
+                  },
+                },
+                targetAsObs: of({
+                  jvmId: node.target.jvmId,
+                  connectUrl: node.target.connectUrl,
+                  alias: node.target.alias,
+                  labels: [],
+                  annotations: {
+                    cryostat: [],
+                    platform: [],
+                  },
+                }),
+                archiveCount: node.target.archivedRecordings.aggregate.count,
+                recordings: node.target.archivedRecordings.data as ArchivedRecording[],
+              };
+            });
+          }),
+        )
         .subscribe({
           next: handleArchivesForTargets,
           error: handleError,
@@ -177,6 +243,19 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               targetNodes(filter: { name: $connectUrl }) {
                 target {
                   archivedRecordings {
+                    data {
+                      name
+                      downloadUrl
+                      reportUrl
+                      metadata {
+                        labels {
+                          key
+                          value
+                        }
+                      }
+                      size
+                      archivedTime
+                    }
                     aggregate {
                       count
                     }
@@ -193,7 +272,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 {
                   target: target,
                   targetAsObs: of(target),
-                  archiveCount: v.data.targetNodes[0].target.archivedRecordings.aggregate.count,
+                  archiveCount: v.data.targetNodes[0]?.target?.archivedRecordings?.aggregate?.count ?? 0,
+                  recordings: v.data.targetNodes[0]?.target?.archivedRecordings,
                 },
               ];
             });
@@ -311,27 +391,25 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe((v) => {
-        updateCount(v.message.target, 1);
-      }),
-    );
-  }, [addSubscription, context.notificationChannel, updateCount]);
-
-  React.useEffect(() => {
-    addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe((v) => {
-        updateCount(v.message.target, 1);
+        handleNotification(v.message.target, v.message.recording, 1);
       }),
     );
-  }, [addSubscription, context.notificationChannel, updateCount]);
+  }, [addSubscription, context.notificationChannel, handleNotification]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
-        updateCount(v.message.target, -1);
+        handleNotification(v.message.target, v.message.recording, -1);
       }),
     );
-  }, [addSubscription, context.notificationChannel, updateCount]);
+  }, [
+    addSubscription,
+    context.notificationChannel,
+    handleNotification,
+    refreshArchivesForTargets,
+    getCountForNewTarget,
+  ]);
 
   const toggleExpanded = React.useCallback(
     (target) => {

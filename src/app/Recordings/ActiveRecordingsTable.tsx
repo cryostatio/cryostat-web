@@ -315,11 +315,15 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
-        setRecordings((old) =>
-          old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
-          ),
-        );
+        setRecordings((old) => {
+          return old.map((o) => {
+            if (o.name == event.message.recording.name) {
+              const updatedRecording = { ...o, metadata: { labels: event.message.recording.metadata.labels } };
+              return updatedRecording;
+            }
+            return o;
+          });
+        });
       }),
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);

@@ -83,7 +83,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
           return !includesLabel(toDelete, label);
         });
         if (directory) {
-          tasks.push(context.api.postRecordingMetadataFromPath(directory.jvmId, r.name, updatedLabels).pipe(first()));
+          tasks.push(context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()));
         }
         if (isTargetRecording) {
           tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first()));
@@ -171,7 +171,10 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                     downloadUrl
                     reportUrl
                     metadata {
-                      labels
+                      labels {
+                        key
+                        value
+                      }
                     }
                   }
                 }
@@ -195,8 +198,13 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                         downloadUrl
                         reportUrl
                         metadata {
-                          labels
+                          labels {
+                            key
+                            value
+                          }
                         }
+                        size
+                        archivedTime
                       }
                     }
                   }
@@ -246,14 +254,26 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
-          return;
-        }
-        setRecordings((old) =>
-          old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
-          ),
-        );
+
+        const isMatch =
+          currentTarget?.connectUrl === event.message.target ||
+          currentTarget?.jvmId === event.message.recording.jvmId ||
+          currentTarget?.connectUrl === 'uploads';
+
+        setRecordings((oldRecordings) => {
+          return oldRecordings.map((recording) => {
+            if (isMatch && recording.name === event.message.recording.name) {
+              const updatedRecording = {
+                ...recording,
+                metadata: {
+                  labels: event.message.recording.metadata.labels,
+                },
+              };
+              return updatedRecording;
+            }
+            return recording;
+          });
+        });
       }),
     );
   }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);
