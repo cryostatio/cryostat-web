@@ -339,7 +339,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           (label) => label.key === 'connectUrl',
         );
 
-        const matchesUploadsUrlAndJvmId = currentTarget?.connectUrl === 'uploads' && event.message.recording.jvmId === 'uploads';
+        const matchesUploadsUrlAndJvmId =
+          currentTarget?.connectUrl === 'uploads' && event.message.recording.jvmId === 'uploads';
 
         if (isUploadsTable && matchesUploadsUrlAndJvmId) {
           refreshRecordingList();
@@ -354,7 +355,15 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(event.message.recording.name)));
       }),
     );
-  }, [addSubscription, context.notificationChannel, setRecordings, setCheckedIndices, propsTarget, isUploadsTable, refreshRecordingList]);
+  }, [
+    addSubscription,
+    context.notificationChannel,
+    setRecordings,
+    setCheckedIndices,
+    propsTarget,
+    isUploadsTable,
+    refreshRecordingList,
+  ]);
 
   React.useEffect(() => {
     addSubscription(

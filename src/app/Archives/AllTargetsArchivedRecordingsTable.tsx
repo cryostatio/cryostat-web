@@ -102,9 +102,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const handleNotification = React.useCallback(
     (connectUrl: string, recording: ArchivedRecording, delta: number) => {
-
       setArchivesForTargets((old) => {
-
         const matchingTargets = old.filter(({ target }) => target.jvmId === recording.jvmId);
         for (let matchedTarget of matchingTargets) {
           const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
@@ -126,7 +124,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     [setArchivesForTargets],
   );
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const handleArchivesForTargets = React.useCallback(
     (targetNodes: any[]) => {
       setIsLoading(false);
