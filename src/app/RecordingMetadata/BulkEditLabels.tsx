@@ -256,7 +256,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         const event = parts[1];
 
         const isMatch =
-          currentTarget?.connectUrl === event.message.target || currentTarget?.jvmId === event.message.recording.jvmId;
+          currentTarget?.connectUrl === event.message.target || currentTarget?.jvmId === event.message.recording.jvmId || currentTarget?.connectUrl === 'uploads' ;
 
         setRecordings((oldRecordings) => {
           return oldRecordings.map((recording) => {

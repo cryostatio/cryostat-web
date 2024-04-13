@@ -102,16 +102,12 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const handleNotification = React.useCallback(
     (connectUrl: string, recording: ArchivedRecording, delta: number) => {
-      console.log(`Updating count for URL: ${connectUrl} with delta: ${delta}`);
 
       setArchivesForTargets((old) => {
-        console.log('Current archivesForTargets:', old);
-        console.log('connectUrl being searched for:', connectUrl);
 
         const matchingTargets = old.filter(({ target }) => target.jvmId === recording.jvmId);
         for (let matchedTarget of matchingTargets) {
           const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
-          console.log('Found target to update:', matchedTarget);
 
           const recordings = [...matchedTarget.recordings];
           if (delta === 1) {
@@ -122,7 +118,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           }
 
           old.splice(targetIdx, 1, { ...matchedTarget, archiveCount: matchedTarget.archiveCount + delta, recordings });
-          console.log('New archivesForTargets after update:', [...old]);
         }
 
         return [...old];
@@ -148,7 +143,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
               platform: [],
             },
           };
-          console.log('handleArchivesForTargets', { node, target });
           return {
             target,
             targetAsObs: of(target),
@@ -168,34 +162,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     },
     [setIsLoading, setErrorMessage],
   );
-
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  /* const refreshArchivesForTargets = React.useCallback(() => {
-    setIsLoading(true);
-    addSubscription(
-      context.api
-        .graphql<any>(
-          `query AllTargetsArchives {
-             targetNodes {
-               target {
-                 connectUrl
-                 alias
-                 archivedRecordings {
-                   aggregate {
-                     count
-                   }
-                 }
-               }
-             }
-           }`,
-        )
-        .pipe(map((v) => v.data.targetNodes))
-        .subscribe({
-          next: handleArchivesForTargets,
-          error: handleError,
-        }),
-    );
-  }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets, handleError]); */
 
   const refreshArchivesForTargets = React.useCallback(() => {
     setIsLoading(true);
@@ -233,9 +199,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         )
         .pipe(
           map((v) => {
-            console.log('++V', v);
             return v.data.targetNodes.map((node) => {
-              console.log('++X', node);
               return {
                 target: {
                   jvmId: node.target.jvmId,
@@ -303,7 +267,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             { connectUrl: target.connectUrl },
           )
           .subscribe((v) => {
-            console.log("++v2",v);
             setArchivesForTargets((old) => {
               return [
                 ...old,
@@ -332,7 +295,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const handleTargetNotification = React.useCallback(
     (evt: TargetDiscoveryEvent) => {
-      console.log('Event object:', evt);
       const target: Target = {
         connectUrl: evt.serviceRef.connectUrl,
         alias: evt.serviceRef.alias,
@@ -428,14 +390,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     );
   }, [addSubscription, context.notificationChannel, handleTargetNotification]);
 
-  // React.useEffect(() => {
-  //   addSubscription(
-  //     context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe((v) => {
-  //       updateCount(v.message.target, 1);
-  //     }),
-  //   );
-  // }, [addSubscription, context.notificationChannel, updateCount]);
-
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe((v) => {
@@ -447,8 +401,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
-        console.log('++v', v);
-        console.log('++v', v.message.target);
         handleNotification(v.message.target, v.message.recording, -1);
       }),
     );
