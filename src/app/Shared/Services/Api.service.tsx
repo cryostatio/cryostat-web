@@ -169,6 +169,10 @@ export class ApiService {
       });
   }
 
+  getTargets(): Observable<Target[]> {
+    return this.doGet('targets', 'v3');
+  }
+
   createTarget(
     target: Target,
     credentials?: { username?: string; password?: string },
@@ -1247,33 +1251,35 @@ export class ApiService {
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
-  getTargetActiveRecordings(target: Target): Observable<ActiveRecording[]> {
-    return this.doGet<ActiveRecording[]>(
-      `targets/${encodeURIComponent(target.connectUrl)}/recordings`,
-      'v1',
-      undefined,
-      true,
-      true,
-    );
+  getTargetActiveRecordings(
+    target: Target,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<ActiveRecording[]> {
+    return this.doGet(`targets/${target.id}/recordings`, 'v3', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  getTargetEventTemplates(target: Target): Observable<EventTemplate[]> {
+  getTargetEventTemplates(
+    target: Target,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>(
-      `targets/${encodeURIComponent(target.connectUrl)}/templates`,
-      'v1',
+      `targets/${target.id}/templates`,
+      'v3',
       undefined,
-      true,
-      true,
+      suppressNotifications,
+      skipStatusCheck,
     );
   }
 
-  getTargetEventTypes(target: Target): Observable<EventType[]> {
+  getTargetEventTypes(target: Target, suppressNotifications = false, skipStatusCheck = false): Observable<EventType[]> {
     return this.doGet<EventType[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/events`,
-      'v1',
+      'v3',
       undefined,
-      true,
-      true,
+      suppressNotifications,
+      skipStatusCheck,
     );
   }
 

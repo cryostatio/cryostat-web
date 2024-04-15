@@ -17,7 +17,7 @@
 import { AlertVariant } from '@patternfly/react-core';
 import { Observable } from 'rxjs';
 
-export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'beta';
+export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' | 'beta';
 
 // ======================================
 // Common Resources
@@ -441,6 +441,7 @@ export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this reco
 // Discovery/Target resources
 // ======================================
 export interface Target {
+  id: number;
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   connectUrl: string;
   alias: string;

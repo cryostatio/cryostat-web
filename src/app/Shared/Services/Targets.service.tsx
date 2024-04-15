@@ -64,7 +64,7 @@ export class TargetsService {
   }
 
   queryForTargets(): Observable<void> {
-    return this.api.doGet<Target[]>(`targets`).pipe(
+    return this.api.getTargets().pipe(
       first(),
       tap((targets) => this._targets$.next(targets)),
       map(() => undefined),
