@@ -44,7 +44,6 @@ import {
 import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
@@ -179,7 +178,7 @@ const tableColumns: TableColumn[] = [
 
 const tableTitle = 'Stored Credentials';
 
-export const StoreCredentials = () => {
+export const StoredCredentials = () => {
   const context = React.useContext(ServiceContext);
   const [state, dispatch] = React.useReducer(reducer, {
     credentials: [] as StoredCredential[],
@@ -519,7 +518,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   );
 };
 
-export const StoreCredentialsCard: SecurityCard = {
+export const StoredCredentialsCard: SecurityCard = {
   key: 'credentials',
   title: (
     <Text>
@@ -535,13 +534,9 @@ export const StoreCredentialsCard: SecurityCard = {
     <TextContent>
       <Text component={TextVariants.small}>
         Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored in encrypted
-        storage.
-      </Text>
-      <Text component={TextVariants.small}>
-        The locally-stored client credentials held by your browser session are not displayed here. See{' '}
-        <Link to="/settings?tab=advanced">Settings</Link> to configure locally-stored credentials.
+        storage managed by the Cryostat server.
       </Text>
     </TextContent>
   ),
-  content: StoreCredentials,
+  content: StoredCredentials,
 };
