@@ -15,34 +15,69 @@
  */
 
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
-import { Button, Popover, Text, TextContent, TextVariants } from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import {
+  Button,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateVariant,
+  Label,
+  List,
+  ListItem,
+  Panel,
+  PanelMain,
+  PanelMainBody,
+  Popover,
+  Text,
+  TextContent,
+  TextVariants,
+  Title,
+} from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { CertificateUploadModal } from './CertificateUploadModal';
 import { SecurityCard } from './types';
 
 export const CertificateImport: React.FC = () => {
-  const [showModal, setShowModal] = React.useState(false);
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [certs, setCerts] = React.useState([] as string[]);
 
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
+  React.useEffect(() => {
+    addSubscription(context.api.doGet('tls/certs', 'v3').subscribe(setCerts));
+  }, [addSubscription, context.api, setCerts]);
 
   return (
-    <>
-      <Button variant="primary" aria-label="import" onClick={() => setShowModal(true)}>
-        Upload
-      </Button>
-      <CertificateUploadModal visible={showModal} onClose={handleModalClose} />
-    </>
+    <Panel isScrollable>
+      <PanelMain>
+        <PanelMainBody>
+          {certs.length ? (
+            <List isPlain isBordered>
+              {certs.map((cert) => (
+                <ListItem key={cert}>
+                  <Label>{cert}</Label>
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <EmptyState variant={EmptyStateVariant.xs}>
+              <Title headingLevel="h4" size="md">
+                No certificates
+              </Title>
+              <EmptyStateBody>No additional certificates are loaded.</EmptyStateBody>
+            </EmptyState>
+          )}
+        </PanelMainBody>
+      </PanelMain>
+    </Panel>
   );
 };
 
-export const ImportCertificate: SecurityCard = {
+export const ListCertificates: SecurityCard = {
   key: 'ssl',
   title: (
     <Text>
-      Import SSL Certificates
+      Imported SSL Certificates
       <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
         <Button variant="plain">
           <OutlinedQuestionCircleIcon />
@@ -52,8 +87,11 @@ export const ImportCertificate: SecurityCard = {
   ),
   description: (
     <TextContent>
-      <Text component={TextVariants.small}>Add SSL certificates to the Cryostat server truststore.</Text>
-      <Text component={TextVariants.small}>You must restart the Cryostat server to reload the certificate store.</Text>
+      <Text component={TextVariants.small}>
+        The following certificates are present in Cryostat&apos;s additional trust store. Contact your Cryostat
+        administrator if your application requires a new trusted certificate. You must restart the Cryostat server to
+        reload the certificate store after adding new certificates.
+      </Text>
     </TextContent>
   ),
   content: CertificateImport,
