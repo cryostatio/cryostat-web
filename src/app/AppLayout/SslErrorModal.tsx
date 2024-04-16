@@ -42,7 +42,7 @@ export const SslErrorModal: React.FC<SslErrorModalProps> = ({ visible, onDismiss
       description="The connection failed because the SSL Certificate for the target is not trusted."
     >
       <Text>
-        To add the SSL certificate for this target, go to &nbsp;
+        To view the trusted application certificates, go to &nbsp;
         <Button variant="primary" onClick={handleClick}>
           Security
         </Button>
