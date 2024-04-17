@@ -29,6 +29,7 @@ import {
   PanelMain,
   PanelMainBody,
   Popover,
+  Spinner,
   Text,
   TextContent,
   TextVariants,
@@ -37,21 +38,31 @@ import {
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { SecurityCard } from './types';
+import { tap } from 'rxjs/operators';
 
 export const CertificateImport: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const [loading, setLoading] = React.useState(true);
   const [certs, setCerts] = React.useState([] as string[]);
 
   React.useEffect(() => {
-    addSubscription(context.api.doGet('tls/certs', 'v3').subscribe(setCerts));
-  }, [addSubscription, context.api, setCerts]);
+    setLoading(true);
+    addSubscription(
+      context.api
+        .doGet('tls/certs', 'v3')
+        .pipe(tap((_) => setLoading(false)))
+        .subscribe(setCerts),
+    );
+  }, [setLoading, addSubscription, context.api, setCerts]);
 
   return (
     <Panel isScrollable>
       <PanelMain>
         <PanelMainBody>
-          {certs.length ? (
+          {loading ? (
+            <Spinner />
+          ) : certs.length ? (
             <List isPlain isBordered>
               {certs.map((cert) => (
                 <ListItem key={cert}>
