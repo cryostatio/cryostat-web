@@ -28,33 +28,49 @@ const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockJvmId2 = 'fooJvmId2';
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockJvmId3 = 'fooJvmId3';
+const mockName3 ='someRecording3';
 
 const mockCount1 = 1;
 
 const mockRecordingSavedNotification = {
   message: {
-    target: mockConnectUrl3,
+    recording: {
+      name: mockName3,
+      metadata: {
+        labels: {
+          key: 'someLabel',
+          value: 'someValue',
+        }
+      }
+    }
   },
 } as NotificationMessage;
 
 const mockRecordingDeletedNotification = {
   message: {
-    target: mockConnectUrl1,
+    recording: {
+      name: mockName3,
+    }
   },
 } as NotificationMessage;
 
-const mockRecordingLabels = [
+/* const mockRecordingLabels = [
   {
     key: 'someLabel',
     value: 'someValue',
   },
-];
+]; */
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
-  metadata: { labels: mockRecordingLabels },
+  metadata: {
+    labels: {
+      key: 'someLabel',
+      value: 'someValue',
+    }
+  },
   size: 2048,
   archivedTime: 2048,
 };
@@ -76,17 +92,21 @@ const mockRecordingDirectory3: RecordingDirectory = {
   jvmId: mockJvmId3,
   recordings: [mockRecording, mockRecording, mockRecording],
 };
+console.log("++3",mockRecordingDirectory3);
 
 const mockRecordingDirectory3Removed: RecordingDirectory = {
   ...mockRecordingDirectory3,
   recordings: [mockRecording, mockRecording],
 };
+console.log("++3removed",mockRecordingDirectory3Removed);
 
 const mockRecordingDirectory3Added: RecordingDirectory = {
   connectUrl: mockConnectUrl3,
   jvmId: mockJvmId3,
   recordings: [mockRecording, mockRecording, mockRecording, mockRecording],
 };
+console.log("++3added",mockRecordingDirectory3Added);
+
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -245,11 +265,17 @@ describe('<AllArchivedRecordingsTable />', () => {
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
     const rows = within(tableBody).getAllByRole('row');
+    console.log('++Rows length before adding a recording:', rows.length);  // Log the number of rows
+
     expect(rows).toHaveLength(3);
 
     const thirdTarget = rows[2];
+    console.log('++Details of third target:', thirdTarget);  // Detailed text content of the row
+
     expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
-    expect(within(thirdTarget).getByText(4)).toBeTruthy();
+    await waitFor(() => {
+      expect(within(thirdTarget).getByText('4')).toBeInTheDocument();
+    });
   });
 
   it('decrements the count when an archived recording is deleted', async () => {
