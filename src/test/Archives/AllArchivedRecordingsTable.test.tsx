@@ -18,7 +18,7 @@ import { AllArchivedRecordingsTable } from '@app/Archives/AllArchivedRecordingsT
 import { NotificationMessage, ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen, within, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
