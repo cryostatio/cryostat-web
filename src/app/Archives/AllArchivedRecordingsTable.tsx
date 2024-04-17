@@ -87,6 +87,8 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: RecordingDirectory[]) => {
+      console.log("++API Response Data:", directories);  // Log the fetched data to the console
+
       setDirectories(directories.map((dir) => ({ ...dir, targetAsObs: of(getTargetFromDirectory(dir)) })));
       setIsLoading(false);
     },
@@ -95,6 +97,8 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
   const handleError = React.useCallback(
     (error) => {
+      console.error("++API Error:", error);
+
       setIsLoading(false);
       setErrorMessage(error.message);
     },
@@ -180,12 +184,14 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
               if (recording.name === updatedRecordingInfo.recording.name) {
                 return {
                   ...recording,
-                  metadata: { ...recording.metadata, labels: updatedRecordingInfo.recording.metadata.labels },
+                  metadata: { ...recording.metadata, labels: updatedRecordingInfo?.recording?.metadata?.labels },
                 };
               }
               return recording;
             }),
           }));
+          //console.log("++New directories after update:", newDirectories);  // Log directories after processing the update
+
           return newDirectories;
         });
       });
