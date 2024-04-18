@@ -239,6 +239,7 @@ export interface Recording {
 }
 
 export interface ArchivedRecording extends Recording {
+  jvmId?: string;
   archivedTime: number;
   size: number;
 }
