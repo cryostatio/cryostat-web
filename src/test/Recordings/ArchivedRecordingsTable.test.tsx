@@ -94,8 +94,6 @@ const mockRecording: ArchivedRecording = {
   size: 2048,
   archivedTime: 2048,
 };
-console.log('++mockRecording', mockRecording);
-console.log('++mockRecording Stringify', JSON.stringify(mockRecording, null, 2));
 
 const mockArchivedRecordingsResponse = {
   data: {
@@ -110,7 +108,6 @@ const mockArchivedRecordingsResponse = {
     ],
   },
 };
-console.log('++mockRecording Response', mockArchivedRecordingsResponse);
 
 const mockAllArchivedRecordingsResponse = {
   data: {
@@ -123,7 +120,6 @@ const mockAllArchivedRecordingsResponse = {
     },
   },
 };
-console.log('++mockRecording All archived', mockAllArchivedRecordingsResponse);
 
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
 const mockCreateNotification = {

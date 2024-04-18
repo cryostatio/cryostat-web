@@ -79,7 +79,6 @@ const mockTargetFoundNotification = {
     event: { kind: 'FOUND', serviceRef: mockNewTarget },
   },
 } as NotificationMessage;
-console.log('++FOUND', mockTargetFoundNotification);
 
 const mockRecording = {
   jvmId: mockTarget1.jvmId,
@@ -108,7 +107,6 @@ const mockRecordingNotification = {
     recording: mockRecording,
   },
 } as NotificationMessage;
-console.log('++Recording notifiation', mockRecordingNotification);
 
 const mockTargetsAndCountsResponse = {
   data: {
@@ -194,7 +192,6 @@ const mockNewTargetCountResponse = {
     ],
   },
 };
-console.log('++mock targets and count', JSON.stringify(mockTargetsAndCountsResponse, null, 2));
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {

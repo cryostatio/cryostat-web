@@ -87,20 +87,17 @@ const mockRecordingDirectory3: RecordingDirectory = {
   jvmId: mockJvmId3,
   recordings: [mockRecording, mockRecording, mockRecording],
 };
-console.log('++3', mockRecordingDirectory3);
 
 const mockRecordingDirectory3Removed: RecordingDirectory = {
   ...mockRecordingDirectory3,
   recordings: [mockRecording, mockRecording],
 };
-console.log('++3removed', mockRecordingDirectory3Removed);
 
 const mockRecordingDirectory3Added: RecordingDirectory = {
   connectUrl: mockConnectUrl3,
   jvmId: mockJvmId3,
   recordings: [mockRecording, mockRecording, mockRecording, mockRecording],
 };
-console.log('++3added', mockRecordingDirectory3Added);
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -252,13 +249,9 @@ describe('<AllArchivedRecordingsTable />', () => {
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
     const rows = within(tableBody).getAllByRole('row');
-    console.log('++Rows length before adding a recording:', rows.length); // Log the number of rows
-
     expect(rows).toHaveLength(3);
 
     const thirdTarget = rows[2];
-    console.log('++Details of third target:', thirdTarget); // Detailed text content of the row
-
     expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
     await waitFor(() => {
       expect(within(thirdTarget).getByText('4')).toBeInTheDocument();

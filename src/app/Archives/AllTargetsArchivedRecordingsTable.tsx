@@ -103,32 +103,16 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const handleNotification = React.useCallback(
     (_: string, recording: ArchivedRecording, delta: number) => {
       setArchivesForTargets((old) => {
-        console.log('+++recording', recording);
-        console.log('old2: ', JSON.stringify(old, null, 2));
         const matchingTargets = old.filter(({ target }) => {
-          // logging the two object where the 'cannot read properties of undefined' is occurring
-          // reveals that 'recording' is undefined here, so the recording.jvmId access causes the error.
-          // It must be that a mock Notification object is being handled and it does not contain a recording, or has it at the wrong JSON path
-          console.log({ target, recording });
           return target.jvmId === recording.jvmId;
         });
-        console.log('++Match2: ', matchingTargets);
-        // there is no variable in scope here called 'target'
-        // console.log("+++target.jvmID2: ",target.jvmId);
-        console.log('+++recording.jvmID2: ', recording.jvmId);
         for (const matchedTarget of matchingTargets) {
-          console.log('++Target: ', matchedTarget.target);
-
           const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
-          console.log('+++target.connectUrl2: ', matchedTarget.target.connectUrl);
-          console.log('+++recording.jvmID2: ', recording.jvmId);
           const recordings = [...matchedTarget.recordings];
           if (delta === 1) {
-            console.log('++ADDED2');
             recordings.push(recording);
           } else {
             const recordingIdx = recordings.findIndex((r) => r.name === recording.name);
-            console.log('DELETED2');
             recordings.splice(recordingIdx, 1);
           }
 
@@ -302,9 +286,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           const idx = old.findIndex(({ target: t }) => isEqualTarget(t, evt.serviceRef));
           if (idx >= 0) {
             const matched = old[idx];
-            console.log('+++TTmatched: ', matched);
-            console.log('+++TTTtarget: ', evt.serviceRef);
-            console.log('++matched tTTTarget: ', matched.target.connectUrl);
             if (
               evt.serviceRef.connectUrl === matched.target.connectUrl &&
               evt.serviceRef.alias === matched.target.alias
