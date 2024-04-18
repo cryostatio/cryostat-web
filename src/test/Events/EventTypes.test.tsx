@@ -15,7 +15,7 @@
  */
 import { authFailMessage } from '@app/ErrorView/types';
 import { EventTypes } from '@app/Events/EventTypes';
-import { EventType } from '@app/Shared/Services/api.types';
+import { EventType, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
@@ -24,7 +24,13 @@ import { of, Subject } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockTarget = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
 
 const mockEventType: EventType = {
   name: 'Some Event',
@@ -58,7 +64,7 @@ describe('<EventTypes />', () => {
   it('should show error view if failing to retrieve event types', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
-      target: () => of(mockTarget),
+      target: () => of(mockTarget as Target),
       authFailure: () => subj.asObservable(),
     } as TargetService;
     const services: Services = {

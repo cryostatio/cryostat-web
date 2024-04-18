@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RecordingLabel } from '@app/RecordingMetadata/types';
-import { EventTemplate } from '@app/Shared/Services/api.types';
+import { EventTemplate, KeyValue } from '@app/Shared/Services/api.types';
 import { ValidatedOptions } from '@patternfly/react-core';
 
 export type EventTemplateIdentifier = Pick<EventTemplate, 'name' | 'type'>;
 
+export type RecordingReplace = 'ALWAYS' | 'NEVER' | 'STOPPED';
+
 interface _FormBaseData {
   name: string;
   template?: EventTemplateIdentifier;
-  labels: RecordingLabel[];
+  labels: KeyValue[];
   continuous: boolean;
   archiveOnStop: boolean;
   restart: boolean;

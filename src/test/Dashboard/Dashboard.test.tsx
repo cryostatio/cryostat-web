@@ -30,9 +30,10 @@ const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockFooTarget: Target = {
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
+  labels: [],
   annotations: {
-    cryostat: {},
-    platform: {},
+    cryostat: [],
+    platform: [],
   },
 };
 

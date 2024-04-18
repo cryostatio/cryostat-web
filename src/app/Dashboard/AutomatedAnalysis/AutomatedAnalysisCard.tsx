@@ -179,8 +179,8 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         `
       query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
         targetNodes(filter: { name: $connectUrl }) {
-          recordings {
-            active (filter: {
+          target {
+            activeRecordings(filter: {
               name: "${automatedAnalysisRecordingName}",
               labels: ["origin=${automatedAnalysisRecordingName}"],
             }) {
@@ -190,7 +190,10 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                 downloadUrl
                 reportUrl
                 metadata {
-                  labels
+                  labels {
+                    key
+                    value
+                  }
                 }
               }
             }
@@ -208,18 +211,25 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       return context.api.graphql<any>(
         `query ArchivedRecordingsForAutomatedAnalysis($connectUrl: String) {
-        archivedRecordings(filter: { sourceTarget: $connectUrl }) {
-          data {
-            name
-            downloadUrl
-            reportUrl
-            metadata {
-              labels
+          targetNodes(filter: { name: $connectUrl }) {
+            target {
+              archivedRecordings {
+                data {
+                  name
+                  downloadUrl
+                  reportUrl
+                  metadata {
+                    labels {
+                      key
+                      value
+                    }
+                  }
+                  size
+                  archivedTime
+                }
+              }
             }
-            size
-            archivedTime
           }
-        }
       }`,
         { connectUrl },
       );
@@ -303,7 +313,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           queryArchivedRecordings(connectUrl)
             .pipe(
               first(),
-              map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
+              map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
             )
             .subscribe({
               next: (recordings) => {
@@ -358,7 +368,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                     }
                   }
                 }),
-                map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
+                map((v) => v.data.targetNodes[0].target.activeRecordings.data[0] as Recording),
                 tap((recording) => {
                   if (recording === null || recording === undefined) {
                     throw new Error(NO_RECORDINGS_MESSAGE);

@@ -17,10 +17,15 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
-import { RecordingLabel } from '@app/RecordingMetadata/types';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { EventTemplate, RecordingAttributes, AdvancedRecordingOptions, Target } from '@app/Shared/Services/api.types';
+import {
+  EventTemplate,
+  RecordingAttributes,
+  AdvancedRecordingOptions,
+  Target,
+  KeyValue,
+} from '@app/Shared/Services/api.types';
 import { isTargetAgentHttp } from '@app/Shared/Services/api.utils';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -150,18 +155,6 @@ export const CustomRecordingForm: React.FC = () => {
     return str;
   }, [formData]);
 
-  const getFormattedLabels = React.useCallback(() => {
-    const obj = {};
-
-    formData.labels.forEach((l) => {
-      if (l.key && l.value) {
-        obj[l.key] = l.value;
-      }
-    });
-
-    return obj;
-  }, [formData]);
-
   const handleRecordingNameChange = React.useCallback(
     (name: string) =>
       setFormData((old) => ({
@@ -198,7 +191,7 @@ export const CustomRecordingForm: React.FC = () => {
   );
 
   const handleLabelsChange = React.useCallback(
-    (labels: RecordingLabel[]) => {
+    (labels: KeyValue[]) => {
       setFormData((old) => ({ ...old, labels }));
     },
     [setFormData],
@@ -260,16 +253,16 @@ export const CustomRecordingForm: React.FC = () => {
       events: eventSpecifierString,
       duration: continuous ? undefined : duration * (durationUnit / 1000),
       archiveOnStop: archiveOnStop && !continuous,
-      restart: restart,
+      replace: restart ? 'ALWAYS' : 'NEVER',
       advancedOptions: {
         toDisk: toDisk,
         maxAge: toDisk ? (continuous ? maxAge * maxAgeUnit : undefined) : undefined,
         maxSize: toDisk ? maxSize * maxSizeUnit : undefined,
       },
-      metadata: { labels: getFormattedLabels() },
+      metadata: { labels: formData.labels },
     };
     handleCreateRecording(recordingAttributes);
-  }, [eventSpecifierString, getFormattedLabels, formData, notifications, handleCreateRecording]);
+  }, [eventSpecifierString, formData, notifications, handleCreateRecording]);
 
   const refreshFormOptions = React.useCallback(
     (target: Target) => {

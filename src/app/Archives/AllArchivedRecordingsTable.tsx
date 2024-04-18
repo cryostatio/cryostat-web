@@ -169,19 +169,28 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe(() => {
-        refreshDirectoriesAndCounts();
-      }),
-    );
-  }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe((event) => {
+        const updatedRecordingInfo = event.message;
 
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe(() => {
-        refreshDirectoriesAndCounts();
+        setDirectories((currentDirectories) => {
+          const newDirectories = currentDirectories.map((directory) => ({
+            ...directory,
+            recordings: directory.recordings.map((recording) => {
+              if (recording.name === updatedRecordingInfo.recording.name) {
+                return {
+                  ...recording,
+                  metadata: { ...recording.metadata, labels: updatedRecordingInfo?.recording?.metadata?.labels },
+                };
+              }
+              return recording;
+            }),
+          }));
+
+          return newDirectories;
+        });
       }),
     );
-  }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
+  }, [addSubscription, context.notificationChannel, setDirectories]);
 
   React.useEffect(() => {
     addSubscription(

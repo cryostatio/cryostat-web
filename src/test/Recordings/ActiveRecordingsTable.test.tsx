@@ -23,7 +23,7 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, RecordingState, NotificationMessage } from '@app/Shared/Services/api.types';
+import { ActiveRecording, RecordingState, NotificationMessage, Target } from '@app/Shared/Services/api.types';
 import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
@@ -33,10 +33,19 @@ import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
-const mockRecordingLabels = {
-  someLabel: 'someValue',
+const mockTarget = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 const mockRecording: ActiveRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
@@ -58,9 +67,11 @@ const mockCreateNotification = {
 const mockLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someRecording',
+    recording: {
+      name: 'someRecording',
+      metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
+    },
     jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someUpdatedValue' } },
   },
 } as NotificationMessage;
 const mockStopNotification = {
@@ -233,8 +244,8 @@ describe('<ActiveRecordingsTable />', () => {
     expect(state).toBeInTheDocument();
     expect(state).toBeVisible();
 
-    Object.keys(mockRecordingLabels).forEach((key) => {
-      const label = screen.getByText(`${key}: ${mockRecordingLabels[key]}`);
+    mockRecordingLabels.forEach((entry) => {
+      const label = screen.getByText(`${entry.key}: ${entry.value}`);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     });
@@ -527,7 +538,7 @@ describe('<ActiveRecordingsTable />', () => {
   it('should show error view if failing to retrieve recordings', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
-      target: () => of(mockTarget),
+      target: () => of(mockTarget as Target),
       authFailure: () => subj.asObservable(),
     } as TargetService;
     const services: Services = {

@@ -21,7 +21,13 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { UPLOADS_SUBDIRECTORY, ArchivedRecording, NotificationMessage } from '@app/Shared/Services/api.types';
+import {
+  UPLOADS_SUBDIRECTORY,
+  ArchivedRecording,
+  NotificationMessage,
+  Target,
+  KeyValue,
+} from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
@@ -32,35 +38,85 @@ import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
-const mockUploadsTarget = { connectUrl: UPLOADS_SUBDIRECTORY, alias: '' };
-const mockRecordingLabels = {
-  someLabel: 'someValue',
+const mockTarget: Target = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
-const mockUploadedRecordingLabels = {
-  someUploaded: 'someUploadedValue',
+const mockUploadsTarget = {
+  connectUrl: UPLOADS_SUBDIRECTORY,
+  alias: '',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
+const mockUploadedRecordingLabels = [
+  {
+    key: 'someUploaded',
+    value: 'someUpdatedValue',
+  },
+];
+export const convertLabels = (kv: KeyValue[]): object => {
+  const out = {};
+  for (const e of kv) {
+    out[e.key] = e.value;
+  }
+  return out;
 };
 const mockMetadataFileName = 'mock.metadata.json';
 const mockMetadataFile = new File(
-  [JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })],
+  [JSON.stringify({ labels: convertLabels(mockUploadedRecordingLabels) })],
   mockMetadataFileName,
   { type: 'json' },
 );
-mockMetadataFile.text = jest.fn(() => Promise.resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })));
+mockMetadataFile.text = jest.fn(() =>
+  Promise.resolve(JSON.stringify({ labels: convertLabels(mockUploadedRecordingLabels) })),
+);
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
+  jvmId: mockJvmId,
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
-  metadata: { labels: mockRecordingLabels },
+  metadata: {
+    labels: [
+      { key: 'someLabel', value: 'someValue' },
+      { key: 'connectUrl', value: 'service:jmx:rmi://someUrl' },
+    ],
+  },
   size: 2048,
   archivedTime: 2048,
 };
 
 const mockArchivedRecordingsResponse = {
   data: {
+    targetNodes: [
+      {
+        target: {
+          archivedRecordings: {
+            data: [mockRecording],
+          },
+        },
+      },
+    ],
+  },
+};
+
+const mockAllArchivedRecordingsResponse = {
+  data: {
     archivedRecordings: {
-      data: [mockRecording] as ArchivedRecording[],
+      data: [mockRecording],
+      aggregate: {
+        count: 1,
+        size: mockRecording.size,
+      },
     },
   },
 };
@@ -72,9 +128,11 @@ const mockCreateNotification = {
 const mockLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someRecording',
-    jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someUpdatedValue' } },
+    recording: {
+      name: 'someRecording',
+      jvmId: mockJvmId,
+      metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
+    },
   },
 } as NotificationMessage;
 const mockDeleteNotification = {
@@ -103,7 +161,13 @@ jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(tr
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
-jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
+jest.spyOn(defaultServices.api, 'graphql').mockImplementation((query: string) => {
+  if (query.includes('ArchivedRecordingsForTarget')) {
+    return of(mockArchivedRecordingsResponse);
+  } else {
+    return of(mockAllArchivedRecordingsResponse);
+  }
+});
 jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of(true));
 
 jest
@@ -220,11 +284,17 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(size).toBeInTheDocument();
     expect(size).toBeVisible();
 
-    Object.keys(mockRecordingLabels).forEach((key) => {
-      const label = screen.getByText(`${key}: ${mockRecordingLabels[key]}`);
+    /* mockRecordingLabels.forEach((entry) => {
+      const label = screen.getByText(`${entry.key}: ${entry.value}`);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
-    });
+    }); */
+
+    for (const entry of mockRecordingLabels) {
+      const label = await screen.findByText(`${entry.key}: ${entry.value}`);
+      expect(label).toBeInTheDocument();
+      expect(label).toBeVisible();
+    }
 
     const actionIcon = within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions');
     expect(actionIcon).toBeInTheDocument();
@@ -725,7 +795,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadSpy).toHaveBeenCalled();
     expect(uploadSpy).toHaveBeenCalledWith(
       mockFileUpload,
-      mockUploadedRecordingLabels,
+      convertLabels(mockUploadedRecordingLabels),
       expect.any(Function),
       expect.any(Subject),
     );

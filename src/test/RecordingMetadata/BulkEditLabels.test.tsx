@@ -19,6 +19,7 @@ import {
   ActiveRecording,
   RecordingState,
   NotificationMessage,
+  Target,
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
@@ -33,11 +34,20 @@ jest.mock('@patternfly/react-core', () => ({
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget', jvmId: mockJvmId };
-
-const mockRecordingLabels = {
-  someLabel: 'someValue',
+const mockTarget: Target = {
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
 };
+
+const mockRecordingLabels = [
+  {
+    key: 'someLabel',
+    value: 'someValue',
+  },
+];
 
 const mockArchivedRecording: ArchivedRecording = {
   name: 'someArchivedRecording_some_random',
@@ -66,9 +76,16 @@ const mockActiveRecording: ActiveRecording = {
 const mockActiveLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someActiveRecording',
-    jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
+    recording: {
+      name: 'someActiveRecording',
+      jvmId: mockJvmId,
+      metadata: {
+        labels: [
+          { key: 'someLabel', value: 'someValue' },
+          { key: 'someNewLabel', value: 'someNewValue' },
+        ],
+      },
+    },
   },
 } as NotificationMessage;
 
@@ -77,9 +94,16 @@ const mockActiveRecordingResponse = [mockActiveRecording];
 const mockArchivedLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someArchivedRecording_some_random',
-    jvmId: mockJvmId,
-    metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
+    recording: {
+      name: 'someArchivedRecording_some_random',
+      jvmId: mockJvmId,
+      metadata: {
+        labels: [
+          { key: 'someLabel', value: 'someValue' },
+          { key: 'someNewLabel', value: 'someNewValue' },
+        ],
+      },
+    },
   },
 } as NotificationMessage;
 
@@ -87,8 +111,8 @@ const mockArchivedRecordingsResponse = {
   data: {
     targetNodes: [
       {
-        recordings: {
-          archived: {
+        target: {
+          archivedRecordings: {
             data: [mockArchivedRecording] as ArchivedRecording[],
           },
         },

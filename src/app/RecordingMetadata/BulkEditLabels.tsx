@@ -24,6 +24,7 @@ import {
   UPLOADS_SUBDIRECTORY,
   NotificationCategory,
   Target,
+  KeyValue,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -33,8 +34,7 @@ import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
 import { RecordingLabelFields } from './RecordingLabelFields';
-import { RecordingLabel } from './types';
-import { includesLabel, parseLabels } from './utils';
+import { includesLabel } from './utils';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -54,8 +54,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   const context = React.useContext(ServiceContext);
   const [recordings, setRecordings] = React.useState([] as Recording[]);
   const [editing, setEditing] = React.useState(false);
-  const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
-  const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as RecordingLabel[]);
+  const [commonLabels, setCommonLabels] = React.useState([] as KeyValue[]);
+  const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as KeyValue[]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -78,12 +78,12 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     recordings.forEach((r: Recording) => {
       const idx = getIdxFromRecording(r);
       if (checkedIndices.includes(idx)) {
-        let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
+        let updatedLabels = [...r.metadata.labels, ...commonLabels];
         updatedLabels = updatedLabels.filter((label) => {
           return !includesLabel(toDelete, label);
         });
         if (directory) {
-          tasks.push(context.api.postRecordingMetadataFromPath(directory.jvmId, r.name, updatedLabels).pipe(first()));
+          tasks.push(context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()));
         }
         if (isTargetRecording) {
           tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first()));
@@ -124,13 +124,13 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   }, [setEditing, setCommonLabels, savedCommonLabels]);
 
   const updateCommonLabels = React.useCallback(
-    (setLabels: (l: RecordingLabel[]) => void) => {
-      const allRecordingLabels = [] as RecordingLabel[][];
+    (setLabels: (l: KeyValue[]) => void) => {
+      const allRecordingLabels = [] as KeyValue[][];
 
       recordings.forEach((r: Recording) => {
         const idx = getIdxFromRecording(r);
         if (checkedIndices.includes(idx)) {
-          allRecordingLabels.push(parseLabels(r.metadata.labels));
+          allRecordingLabels.push(r.metadata.labels);
         }
       });
 
@@ -164,14 +164,17 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       observable = isUploadsTable
         ? context.api
             .graphql<any>(
-              `query GetUploadedRecordings($filter: ArchivedRecordingFilterInput) {
+              `query GetUploadedRecordings($filter: ArchivedRecordingsFilterInput) {
                 archivedRecordings(filter: $filter) {
                   data {
                     name
                     downloadUrl
                     reportUrl
                     metadata {
-                      labels
+                      labels {
+                        key
+                        value
+                      }
                     }
                   }
                 }
@@ -188,15 +191,20 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               context.api.graphql<any>(
                 `query ArchivedRecordingsForTarget($connectUrl: String) {
                 targetNodes(filter: { name: $connectUrl }) {
-                  recordings {
-                    archived {
+                  target {
+                    archivedRecordings {
                       data {
                         name
                         downloadUrl
                         reportUrl
                         metadata {
-                          labels
+                          labels {
+                            key
+                            value
+                          }
                         }
+                        size
+                        archivedTime
                       }
                     }
                   }
@@ -205,7 +213,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 { connectUrl: target.connectUrl },
               ),
             ),
-            map((v) => v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
+            map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
             first(),
           );
     }
@@ -246,14 +254,26 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
-          return;
-        }
-        setRecordings((old) =>
-          old.map((o) =>
-            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o,
-          ),
-        );
+
+        const isMatch =
+          currentTarget?.connectUrl === event.message.target ||
+          currentTarget?.jvmId === event.message.recording.jvmId ||
+          currentTarget?.connectUrl === 'uploads';
+
+        setRecordings((oldRecordings) => {
+          return oldRecordings.map((recording) => {
+            if (isMatch && recording.name === event.message.recording.name) {
+              const updatedRecording = {
+                ...recording,
+                metadata: {
+                  labels: event.message.recording.metadata.labels,
+                },
+              };
+              return updatedRecording;
+            }
+            return recording;
+          });
+        });
       }),
     );
   }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);

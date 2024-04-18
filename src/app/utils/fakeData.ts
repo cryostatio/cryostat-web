@@ -23,7 +23,7 @@ import {
   RecordingState,
   Recording,
   MBeanMetrics,
-  ActiveRecordingFilterInput,
+  ActiveRecordingsFilterInput,
   ArchivedRecording,
   EventTemplate,
   EventProbe,
@@ -49,19 +49,40 @@ export const fakeTarget: Target = {
   jvmId: 'rpZeYNB9wM_TEnXoJvAFuR0jdcUBXZgvkXiKhjQGFvY=',
   connectUrl: 'service:jmx:rmi:///jndi/rmi://10-128-2-25.my-namespace.pod:9097/jmxrmi',
   alias: 'quarkus-test-77f556586c-25bkv',
-  labels: {
-    'pod-template-hash': '77f556586c',
-    deployment: 'quarkus-test',
-  },
-  annotations: {
-    cryostat: {
-      HOST: '10.128.2.25',
-      PORT: '9097',
-      POD_NAME: 'quarkus-test-77f556586c-25bkv',
-      REALM: 'KubernetesApi',
-      NAMESPACE: 'my-namespace',
+  labels: [
+    {
+      key: 'pod-template-hash',
+      value: '77f556586c',
     },
-    platform: {},
+    {
+      key: 'deployment',
+      value: 'quarkus-test',
+    },
+  ],
+  annotations: {
+    cryostat: [
+      {
+        key: 'HOST',
+        value: '10.128.2.25',
+      },
+      {
+        key: 'PORT',
+        value: '9097',
+      },
+      {
+        key: 'POD_NAME',
+        value: 'quarkus-test-77f556586c-25bkv',
+      },
+      {
+        key: 'REALM',
+        value: 'KubernetesApi',
+      },
+      {
+        key: 'NAMESPACE',
+        value: 'my-namespace',
+      },
+    ],
+    platform: [],
   },
 };
 
@@ -72,11 +93,20 @@ export const fakeAARecording: ActiveRecording = {
   reportUrl:
     'https://clustercryostat-sample-default.apps.ci-ln-25fg5f2-76ef8.origin-ci-int-aws.dev.rhcloud.com:443/api/v1/targets/service:jmx:rmi:%2F%2F%2Fjndi%2Frmi:%2F%2F10-128-2-27.my-namespace.pod:9097%2Fjmxrmi/reports/automated-analysis',
   metadata: {
-    labels: {
-      'template.name': 'Profiling',
-      'template.type': 'TARGET',
-      origin: 'automated-analysis',
-    },
+    labels: [
+      {
+        key: 'template.name',
+        value: 'Profiling',
+      },
+      {
+        key: 'template.type',
+        value: 'TARGET',
+      },
+      {
+        key: 'origin',
+        value: 'automated-analysis',
+      },
+    ],
   },
   startTime: 1680732807,
   id: 0,
@@ -178,7 +208,7 @@ export const fakeEvaluations: AnalysisResult[] = [
 
 export const fakeCachedReport: CachedReportValue = {
   report: fakeEvaluations,
-  timestamp: 1663027200000,
+  timestamp: Date.now() - 1000 * 60 * 60,
 };
 
 class FakeTargetService extends TargetService {
@@ -271,7 +301,7 @@ class FakeApiService extends ApiService {
   }
 
   // JFR Metrics card
-  targetHasRecording(_target: Target, _filter?: ActiveRecordingFilterInput): Observable<boolean> {
+  targetHasRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
     return of(true);
   }
 
@@ -317,8 +347,8 @@ class FakeApiService extends ApiService {
     return of([]);
   }
 
-  // Automatic Analysis Card
-  // This fakes the fetch for Automatic Analysis recording to return available.
+  // Automated Analysis Card
+  // This fakes the fetch for Automated Analysis recording to return available.
   // Then subsequent graphql call for archived recording is ignored
   graphql<T>(
     _query: string,
@@ -330,8 +360,8 @@ class FakeApiService extends ApiService {
       data: {
         targetNodes: [
           {
-            recordings: {
-              active: {
+            target: {
+              activeRecordings: {
                 data: [fakeAARecording],
               },
             },

@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
+import { RecordingReplace } from '@app/CreateRecording/types';
 import { AlertVariant } from '@patternfly/react-core';
 import { Observable } from 'rxjs';
 
-export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'beta';
+export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' | 'beta';
 
 // ======================================
 // Common Resources
 // ======================================
 export interface KeyValue {
-  readonly [key: string]: string;
+  key: string;
+  value: string;
 }
 
 export interface Metadata {
-  labels: KeyValue;
-  annotations?: KeyValue;
+  labels: KeyValue[];
+}
+
+export type TargetMetadata = Metadata & {
+  annotations: {
+    cryostat: KeyValue[];
+    platform: KeyValue[];
+  };
+};
+
+export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata is TargetMetadata {
+  return (metadata as TargetMetadata).annotations !== undefined;
 }
 
 export interface ApiV2Response {
@@ -87,6 +99,13 @@ export class XMLHttpError extends Error {
   }
 }
 
+export type TargetStub = Omit<Target, 'jvmId' | 'labels' | 'annotations'>;
+
+export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
+  labels: object;
+  annotations: { cryostat: object; platform: object };
+};
+
 // ======================================
 // Health Resources
 // ======================================
@@ -122,7 +141,7 @@ export interface AuthV2Response extends ApiV2Response {
 // ======================================
 // MBean metric resources
 // ======================================
-export interface MemoryUsage {
+export interface MemoryUtilization {
   init: number;
   used: number;
   committed: number;
@@ -147,8 +166,8 @@ export interface MBeanMetrics {
     totalSwapSpaceSize?: number;
   };
   memory?: {
-    heapMemoryUsage?: MemoryUsage;
-    nonHeapMemoryUsage?: MemoryUsage;
+    heapMemoryUsage?: MemoryUtilization;
+    nonHeapMemoryUsage?: MemoryUtilization;
     heapMemoryUsagePercent?: number;
   };
   runtime?: {
@@ -161,7 +180,7 @@ export interface MBeanMetrics {
     specName?: string;
     specVendor?: string;
     startTime?: number;
-    systemProperties?: object;
+    systemProperties?: KeyValue[];
     uptime?: number;
     vmName?: string;
     vmVendor?: string;
@@ -173,7 +192,9 @@ export interface MBeanMetrics {
 export interface MBeanMetricsResponse {
   data: {
     targetNodes: {
-      mbeanMetrics: MBeanMetrics;
+      target: {
+        mbeanMetrics: MBeanMetrics;
+      };
     }[];
   };
 }
@@ -205,7 +226,7 @@ export interface RecordingAttributes {
   events: string;
   duration?: number;
   archiveOnStop?: boolean;
-  restart?: boolean;
+  replace?: RecordingReplace;
   advancedOptions?: AdvancedRecordingOptions;
   metadata?: Metadata;
 }
@@ -218,6 +239,7 @@ export interface Recording {
 }
 
 export interface ArchivedRecording extends Recording {
+  jvmId?: string;
   archivedTime: number;
   size: number;
 }
@@ -233,7 +255,7 @@ export interface ActiveRecording extends Recording {
   maxAge: number;
 }
 
-export interface ActiveRecordingFilterInput {
+export interface ActiveRecordingsFilterInput {
   name?: string;
   state?: string;
   continuous?: boolean;
@@ -260,8 +282,8 @@ export interface RecordingResponse extends ApiV2Response {
 export interface RecordingCountResponse {
   data: {
     targetNodes: {
-      recordings: {
-        active: {
+      target: {
+        activeRecordings: {
           aggregate: {
             count: number;
           };
@@ -441,13 +463,14 @@ export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this reco
 // Discovery/Target resources
 // ======================================
 export interface Target {
+  id?: number; // present in responses but we must not include it in requests to create targets
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   connectUrl: string;
   alias: string;
-  labels?: KeyValue;
-  annotations?: {
-    cryostat: KeyValue;
-    platform: KeyValue;
+  labels: KeyValue[];
+  annotations: {
+    cryostat: KeyValue[];
+    platform: KeyValue[];
   };
 }
 
@@ -483,7 +506,7 @@ interface _AbstractNode {
   readonly id: number;
   readonly name: string;
   readonly nodeType: NodeType;
-  readonly labels: KeyValue;
+  readonly labels: KeyValue[];
 }
 
 export interface EnvironmentNode extends _AbstractNode {
@@ -492,12 +515,6 @@ export interface EnvironmentNode extends _AbstractNode {
 
 export interface TargetNode extends _AbstractNode {
   readonly target: Target;
-}
-
-export interface DiscoveryResponse extends ApiV2Response {
-  data: {
-    result: EnvironmentNode;
-  };
 }
 
 // ======================================

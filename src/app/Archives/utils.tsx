@@ -34,5 +34,10 @@ export const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
   return {
     connectUrl: dir.connectUrl,
     alias: dir.jvmId,
+    labels: [],
+    annotations: {
+      cryostat: [],
+      platform: [],
+    },
   };
 };
