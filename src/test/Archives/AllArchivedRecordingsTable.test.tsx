@@ -18,7 +18,7 @@ import { AllArchivedRecordingsTable } from '@app/Archives/AllArchivedRecordingsT
 import { NotificationMessage, ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen, within, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
@@ -28,33 +28,44 @@ const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockJvmId2 = 'fooJvmId2';
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockJvmId3 = 'fooJvmId3';
+const mockName3 = 'someRecording3';
 
 const mockCount1 = 1;
 
 const mockRecordingSavedNotification = {
   message: {
-    target: mockConnectUrl3,
+    recording: {
+      name: mockName3,
+      metadata: {
+        labels: {
+          key: 'someLabel',
+          value: 'someValue',
+        },
+      },
+    },
   },
 } as NotificationMessage;
 
 const mockRecordingDeletedNotification = {
   message: {
-    target: mockConnectUrl1,
+    recording: {
+      name: mockName3,
+    },
   },
 } as NotificationMessage;
-
-const mockRecordingLabels = [
-  {
-    key: 'someLabel',
-    value: 'someValue',
-  },
-];
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
-  metadata: { labels: mockRecordingLabels },
+  metadata: {
+    labels: [
+      {
+        key: 'someLabel',
+        value: 'someValue',
+      },
+    ],
+  },
   size: 2048,
   archivedTime: 2048,
 };
@@ -122,39 +133,32 @@ jest
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly  // NotificationCategory.RecordingMetadataUpdated
-  .mockReturnValueOnce(of()) // NotificationCategory.ActiveRecordingSaved
   .mockReturnValueOnce(of()) // NotificationCategory.ArchivedRecordingCreated
   .mockReturnValueOnce(of()) // NotificationCategory.ArchivedRecordingDeleted
 
   .mockReturnValueOnce(of()) // shows no recordings when empty
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // has the correct table elements
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // correctly handles the search function
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // expands targets to show their <ArchivedRecordingsTable />
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // increments the count when an archived recording is saved
+  .mockReturnValueOnce(of(mockRecordingSavedNotification))
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of(mockRecordingSavedNotification)) // increments the count when an archived recording is saved
+  .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of(mockRecordingDeletedNotification)) // decrements the count when an archived recording is deleted
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of());
+  .mockReturnValueOnce(of(mockRecordingDeletedNotification));
 
 describe('<AllArchivedRecordingsTable />', () => {
   afterEach(cleanup);
@@ -249,7 +253,9 @@ describe('<AllArchivedRecordingsTable />', () => {
 
     const thirdTarget = rows[2];
     expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
-    expect(within(thirdTarget).getByText(4)).toBeTruthy();
+    await waitFor(() => {
+      expect(within(thirdTarget).getByText('4')).toBeInTheDocument();
+    });
   });
 
   it('decrements the count when an archived recording is deleted', async () => {

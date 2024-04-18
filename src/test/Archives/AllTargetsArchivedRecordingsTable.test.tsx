@@ -24,24 +24,50 @@ import { render, renderSnapshot } from '../utils';
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
 const mockTarget1: Target = {
+  jvmId: 'target1',
   connectUrl: mockConnectUrl1,
   alias: mockAlias1,
-  jvmId: 'foo',
   labels: [],
-  annotations: { cryostat: [], platform: [] },
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
 };
 const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
+const mockTarget2: Target = {
+  jvmId: 'target2',
+  connectUrl: mockConnectUrl2,
+  alias: mockAlias2,
+  labels: [],
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
+};
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockAlias3 = 'fooTarget3';
+const mockTarget3: Target = {
+  jvmId: 'target3',
+  connectUrl: mockConnectUrl3,
+  alias: mockAlias3,
+  labels: [],
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
+};
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
 const mockNewAlias = 'newTarget';
 const mockNewTarget: Target = {
+  jvmId: 'target4',
   connectUrl: mockNewConnectUrl,
   alias: mockNewAlias,
-  jvmId: 'foo',
   labels: [],
-  annotations: { cryostat: [], platform: [] },
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
 };
 const mockCount1 = 1;
 const mockCount2 = 3;
@@ -54,21 +80,31 @@ const mockTargetFoundNotification = {
   },
 } as NotificationMessage;
 
+const mockRecording = {
+  jvmId: mockTarget1.jvmId,
+  name: 'SampleRecording',
+  downloadUrl: 'http://downloadurl.com/sample',
+  reportUrl: 'http://reporturl.com/sample',
+  metadata: {
+    labels: [
+      { key: 'someLabel', value: 'someValue' },
+      { key: 'connectUrl', value: 'service:jmx:rmi://someNewUrl' },
+    ],
+  },
+  size: 1234,
+  archivedTime: 987654321,
+};
+
 const mockTargetLostNotification = {
   message: {
     event: { kind: 'LOST', serviceRef: mockTarget1 },
   },
 } as NotificationMessage;
 
-const mockRecordingSavedNotification = {
+const mockRecordingNotification = {
   message: {
-    target: mockConnectUrl3,
-  },
-} as NotificationMessage;
-
-const mockRecordingDeletedNotification = {
-  message: {
-    target: mockConnectUrl1,
+    target: mockTarget1,
+    recording: mockRecording,
   },
 } as NotificationMessage;
 
@@ -77,9 +113,16 @@ const mockTargetsAndCountsResponse = {
     targetNodes: [
       {
         target: {
-          alias: mockAlias1,
-          connectUrl: mockConnectUrl1,
+          ...mockTarget1,
           archivedRecordings: {
+            jvmId: mockTarget1.jvmId,
+            name: 'fooRecording1',
+            metadata: {
+              labels: [
+                { key: 'someLabel', value: 'someValue' },
+                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl1' },
+              ],
+            },
             aggregate: {
               count: mockCount1,
             },
@@ -88,9 +131,16 @@ const mockTargetsAndCountsResponse = {
       },
       {
         target: {
-          alias: mockAlias2,
-          connectUrl: mockConnectUrl2,
+          ...mockTarget2,
           archivedRecordings: {
+            jvmId: mockTarget2.jvmId,
+            name: 'fooRecording2',
+            metadata: {
+              labels: [
+                { key: 'someLabel', value: 'someValue' },
+                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl2' },
+              ],
+            },
             aggregate: {
               count: mockCount2,
             },
@@ -99,9 +149,16 @@ const mockTargetsAndCountsResponse = {
       },
       {
         target: {
-          alias: mockAlias3,
-          connectUrl: mockConnectUrl3,
+          ...mockTarget3,
           archivedRecordings: {
+            jvmId: mockTarget3.jvmId,
+            name: 'fooRecording3',
+            metadata: {
+              labels: [
+                { key: 'someLabel', value: 'someValue' },
+                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl3' },
+              ],
+            },
             aggregate: {
               count: mockCount3,
             },
@@ -111,13 +168,21 @@ const mockTargetsAndCountsResponse = {
     ],
   },
 };
-
 const mockNewTargetCountResponse = {
   data: {
     targetNodes: [
       {
         target: {
+          ...mockNewTarget,
           archivedRecordings: {
+            jvmId: mockNewTarget.jvmId,
+            name: 'fooRecording1',
+            metadata: {
+              labels: [
+                { key: 'someLabel', value: 'someValue' },
+                { key: 'connectUrl', value: mockNewTarget.connectUrl },
+              ],
+            },
             aggregate: {
               count: mockNewCount,
             },
@@ -147,8 +212,9 @@ jest
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // hides targets with zero recordings
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // correctly handles the search function
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // expands targets to show their <ArchivedRecordingsTable />
-  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // adds a target upon receiving a notification
-  .mockReturnValueOnce(of(mockNewTargetCountResponse))
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // adds a target upon receiving a notification (on load)
+  .mockReturnValueOnce(of(mockNewTargetCountResponse)) // adds a target upon receiving a notification (on notification)
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // removes a target upon receiving a notification)
   .mockReturnValue(of(mockTargetsAndCountsResponse)); // remaining tests
 
 jest
@@ -156,47 +222,38 @@ jest
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // has the correct table elements
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // hides targets with zero recordings
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // correctly handles the search function
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // expands targets to show their <ArchivedRecordingsTable />
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockTargetFoundNotification)) // adds a target upon receiving a notification
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockTargetLostNotification)) // removes a target upon receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // increments the count when an archived recording is saved
-  .mockReturnValueOnce(of(mockRecordingSavedNotification))
-  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockRecordingNotification))
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of(mockRecordingDeletedNotification));
+  .mockReturnValueOnce(of(mockRecordingNotification));
 
 describe('<AllTargetsArchivedRecordingsTable />', () => {
   afterEach(cleanup);
@@ -214,12 +271,12 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(screen.getByLabelText('all-targets-table')).toBeInTheDocument();
     expect(screen.getByText('Target')).toBeInTheDocument();
     expect(screen.getByText('Archives')).toBeInTheDocument();
-    expect(screen.getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockTarget1.alias} (${mockTarget1.connectUrl})`)).toBeInTheDocument();
     expect(screen.getByText(`${mockCount1}`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockAlias2} (${mockConnectUrl2})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockTarget2.alias} (${mockTarget2.connectUrl})`)).toBeInTheDocument();
     expect(screen.getByText(`${mockCount2}`)).toBeInTheDocument();
     // Default to hide target with 0 archives
-    expect(screen.queryByText(`${mockAlias3} (${mockConnectUrl3})`)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockTarget3.alias} (${mockTarget3.connectUrl})`)).not.toBeInTheDocument();
     expect(screen.queryByText(`${mockCount3}`)).not.toBeInTheDocument();
   });
 
@@ -234,10 +291,10 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     let rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(2);
     const firstTarget = rows[0];
-    expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
+    expect(within(firstTarget).getByText(`${mockTarget1.alias} (${mockTarget1.connectUrl})`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
     const secondTarget = rows[1];
-    expect(within(secondTarget).getByText(`${mockAlias2} (${mockConnectUrl2})`)).toBeTruthy();
+    expect(within(secondTarget).getByText(`${mockTarget2.alias} (${mockTarget2.connectUrl})`)).toBeTruthy();
     expect(within(secondTarget).getByText(`${mockCount2}`)).toBeTruthy();
 
     const checkbox = screen.getByLabelText('all-targets-hide-check');
@@ -247,7 +304,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(3);
     const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockAlias3} (${mockConnectUrl3})`)).toBeTruthy();
+    expect(within(thirdTarget).getByText(`${mockTarget3.alias} (${mockTarget3.connectUrl})`)).toBeTruthy();
     expect(within(thirdTarget).getByText(`${mockCount3}`)).toBeTruthy();
   });
 
@@ -266,7 +323,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(1);
     const firstTarget = rows[0];
-    expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
+    expect(within(firstTarget).getByText(`${mockTarget1.alias} (${mockTarget1.connectUrl})`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
 
     await user.type(search, 'asdasdjhj');
@@ -311,14 +368,14 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   it('adds a target upon receiving a notification', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] } });
 
-    expect(screen.getByText(`${mockNewAlias} (${mockNewConnectUrl})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockNewTarget.alias} (${mockNewTarget.connectUrl})`)).toBeInTheDocument();
     expect(screen.getByText(`${mockNewCount}`)).toBeInTheDocument();
   });
 
   it('removes a target upon receiving a notification', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] } });
 
-    expect(screen.queryByText(`${mockAlias1} (${mockConnectUrl1})`)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockTarget1.alias} (${mockTarget1.connectUrl})`)).not.toBeInTheDocument();
     expect(screen.queryByText(`${mockCount1}`)).not.toBeInTheDocument();
   });
 
@@ -327,10 +384,10 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
     const rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(3);
+    expect(rows).toHaveLength(2);
 
-    const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockCount3 + 1}`)).toBeTruthy();
+    const firstTarget = rows[0];
+    expect(within(firstTarget).getByText(`${mockCount1 + 1}`)).toBeTruthy();
   });
 
   it('decrements the count when an archived recording is deleted', async () => {
@@ -345,7 +402,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     const rows = within(tableBody).getAllByRole('row');
 
     const firstTarget = rows[0];
-    expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
+    expect(within(firstTarget).getByText(`${mockTarget1.alias} (${mockTarget1.connectUrl})`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1 - 1}`)).toBeTruthy();
   });
 });

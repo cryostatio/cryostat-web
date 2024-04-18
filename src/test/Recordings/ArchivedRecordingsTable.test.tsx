@@ -82,9 +82,15 @@ mockMetadataFile.text = jest.fn(() =>
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
+  jvmId: mockJvmId,
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
-  metadata: { labels: mockRecordingLabels },
+  metadata: {
+    labels: [
+      { key: 'someLabel', value: 'someValue' },
+      { key: 'connectUrl', value: 'service:jmx:rmi://someUrl' },
+    ],
+  },
   size: 2048,
   archivedTime: 2048,
 };
@@ -122,9 +128,11 @@ const mockCreateNotification = {
 const mockLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someRecording',
-    jvmId: mockJvmId,
-    metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
+    recording: {
+      name: 'someRecording',
+      jvmId: mockJvmId,
+      metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
+    },
   },
 } as NotificationMessage;
 const mockDeleteNotification = {
@@ -276,11 +284,17 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(size).toBeInTheDocument();
     expect(size).toBeVisible();
 
-    mockRecordingLabels.forEach((entry) => {
+    /* mockRecordingLabels.forEach((entry) => {
       const label = screen.getByText(`${entry.key}: ${entry.value}`);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
-    });
+    }); */
+
+    for (const entry of mockRecordingLabels) {
+      const label = await screen.findByText(`${entry.key}: ${entry.value}`);
+      expect(label).toBeInTheDocument();
+      expect(label).toBeVisible();
+    }
 
     const actionIcon = within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions');
     expect(actionIcon).toBeInTheDocument();

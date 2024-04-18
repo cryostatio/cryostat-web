@@ -76,13 +76,15 @@ const mockActiveRecording: ActiveRecording = {
 const mockActiveLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someActiveRecording',
-    jvmId: mockJvmId,
-    metadata: {
-      labels: [
-        { key: 'someLabel', value: 'someValue' },
-        { key: 'someNewLabel', value: 'someNewValue' },
-      ],
+    recording: {
+      name: 'someActiveRecording',
+      jvmId: mockJvmId,
+      metadata: {
+        labels: [
+          { key: 'someLabel', value: 'someValue' },
+          { key: 'someNewLabel', value: 'someNewValue' },
+        ],
+      },
     },
   },
 } as NotificationMessage;
@@ -92,13 +94,15 @@ const mockActiveRecordingResponse = [mockActiveRecording];
 const mockArchivedLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someArchivedRecording_some_random',
-    jvmId: mockJvmId,
-    metadata: {
-      labels: [
-        { key: 'someLabel', value: 'someValue' },
-        { key: 'someNewLabel', value: 'someNewValue' },
-      ],
+    recording: {
+      name: 'someArchivedRecording_some_random',
+      jvmId: mockJvmId,
+      metadata: {
+        labels: [
+          { key: 'someLabel', value: 'someValue' },
+          { key: 'someNewLabel', value: 'someNewValue' },
+        ],
+      },
     },
   },
 } as NotificationMessage;

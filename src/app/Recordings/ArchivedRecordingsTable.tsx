@@ -338,10 +338,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         const eventConnectUrlLabel = event.message.recording.metadata.labels.find(
           (label) => label.key === 'connectUrl',
         );
-
         const matchesUploadsUrlAndJvmId =
           currentTarget?.connectUrl === 'uploads' && event.message.recording.jvmId === 'uploads';
-
         if (isUploadsTable && matchesUploadsUrlAndJvmId) {
           refreshRecordingList();
         }
@@ -381,6 +379,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         ) {
           return;
         }
+
         setRecordings((oldRecordings) => {
           return oldRecordings.map((recording) => {
             if (recording.name === event.message.recording.name) {

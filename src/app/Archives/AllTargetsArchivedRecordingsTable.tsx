@@ -103,10 +103,11 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const handleNotification = React.useCallback(
     (_: string, recording: ArchivedRecording, delta: number) => {
       setArchivesForTargets((old) => {
-        const matchingTargets = old.filter(({ target }) => target.jvmId === recording.jvmId);
+        const matchingTargets = old.filter(({ target }) => {
+          return target.jvmId === recording.jvmId;
+        });
         for (const matchedTarget of matchingTargets) {
           const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
-
           const recordings = [...matchedTarget.recordings];
           if (delta === 1) {
             recordings.push(recording);
@@ -199,27 +200,10 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         .pipe(
           map((v) => {
             return v.data.targetNodes.map((node) => {
+              const target: Target = node.target;
               return {
-                target: {
-                  jvmId: node.target.jvmId,
-                  connectUrl: node.target.connectUrl,
-                  alias: node.target.alias,
-                  labels: [],
-                  annotations: {
-                    cryostat: [],
-                    platform: [],
-                  },
-                },
-                targetAsObs: of({
-                  jvmId: node.target.jvmId,
-                  connectUrl: node.target.connectUrl,
-                  alias: node.target.alias,
-                  labels: [],
-                  annotations: {
-                    cryostat: [],
-                    platform: [],
-                  },
-                }),
+                target,
+                targetAsObs: of(target),
                 archiveCount: node.target.archivedRecordings.aggregate.count,
                 recordings: node.target.archivedRecordings.data as ArchivedRecording[],
               };
@@ -244,6 +228,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 target {
                   archivedRecordings {
                     data {
+                      jvmId
                       name
                       downloadUrl
                       reportUrl
@@ -294,32 +279,26 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
 
   const handleTargetNotification = React.useCallback(
     (evt: TargetDiscoveryEvent) => {
-      const target: Target = {
-        connectUrl: evt.serviceRef.connectUrl,
-        alias: evt.serviceRef.alias,
-        labels: [],
-        annotations: {
-          cryostat: [],
-          platform: [],
-        },
-      };
       if (evt.kind === 'FOUND') {
-        getCountForNewTarget(target);
+        getCountForNewTarget(evt.serviceRef);
       } else if (evt.kind === 'MODIFIED') {
         setArchivesForTargets((old) => {
-          const idx = old.findIndex(({ target: t }) => isEqualTarget(t, target));
+          const idx = old.findIndex(({ target: t }) => isEqualTarget(t, evt.serviceRef));
           if (idx >= 0) {
             const matched = old[idx];
-            if (target.connectUrl === matched.target.connectUrl && target.alias === matched.target.alias) {
+            if (
+              evt.serviceRef.connectUrl === matched.target.connectUrl &&
+              evt.serviceRef.alias === matched.target.alias
+            ) {
               // If alias and connectUrl are not updated, ignore changes.
               return old;
             }
-            return old.splice(idx, 1, { ...matched, target: target, targetAsObs: of(target) });
+            return old.splice(idx, 1, { ...matched, target: evt.serviceRef, targetAsObs: of(evt.serviceRef) });
           }
           return old;
         });
       } else if (evt.kind === 'LOST') {
-        handleLostTarget(target);
+        handleLostTarget(evt.serviceRef);
       }
     },
     [setArchivesForTargets, getCountForNewTarget, handleLostTarget],
@@ -403,13 +382,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         handleNotification(v.message.target, v.message.recording, -1);
       }),
     );
-  }, [
-    addSubscription,
-    context.notificationChannel,
-    handleNotification,
-    refreshArchivesForTargets,
-    getCountForNewTarget,
-  ]);
+  }, [addSubscription, context.notificationChannel, handleNotification]);
 
   const toggleExpanded = React.useCallback(
     (target) => {
