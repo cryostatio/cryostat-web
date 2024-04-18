@@ -87,7 +87,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: RecordingDirectory[]) => {
-      console.log("++API Response Data:", directories);  // Log the fetched data to the console
+      //console.log("++API Response Data:", directories);  // Log the fetched data to the console
 
       setDirectories(directories.map((dir) => ({ ...dir, targetAsObs: of(getTargetFromDirectory(dir)) })));
       setIsLoading(false);
@@ -97,7 +97,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
   const handleError = React.useCallback(
     (error) => {
-      console.error("++API Error:", error);
+      //console.error("++API Error:", error);
 
       setIsLoading(false);
       setErrorMessage(error.message);

@@ -103,15 +103,25 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   const handleNotification = React.useCallback(
     (_: string, recording: ArchivedRecording, delta: number) => {
       setArchivesForTargets((old) => {
+        console.log("+++recording", recording);
+        console.log("old2: ",JSON.stringify(old, null, 2));
         const matchingTargets = old.filter(({ target }) => target.jvmId === recording.jvmId);
+        console.log("++Match2: ", matchingTargets);
+        console.log("+++target.jvmID2: ",target.jvmId);
+        console.log("+++recording.jvmID2: ",recording.jvmId);
         for (const matchedTarget of matchingTargets) {
-          const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
+          console.log("++Target: ",matchedTarget.target);
 
+          const targetIdx = old.findIndex(({ target }) => target.connectUrl === matchedTarget.target.connectUrl);
+          console.log("+++target.connectUrl2: ",matchedTarget.target.connectUrl);
+        console.log("+++recording.jvmID2: ",recording.jvmId);
           const recordings = [...matchedTarget.recordings];
           if (delta === 1) {
+            console.log("++ADDED2");
             recordings.push(recording);
           } else {
             const recordingIdx = recordings.findIndex((r) => r.name === recording.name);
+            console.log("DELETED2");
             recordings.splice(recordingIdx, 1);
           }
 

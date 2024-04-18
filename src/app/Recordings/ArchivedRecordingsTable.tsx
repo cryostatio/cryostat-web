@@ -338,11 +338,19 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         const eventConnectUrlLabel = event.message.recording.metadata.labels.find(
           (label) => label.key === 'connectUrl',
         );
-
+        console.log("++delete current Target: ", currentTarget);
+        console.log("+++ delete event: ",event);
+        console.log("++delete event connect URL:",  eventConnectUrlLabel);
         const matchesUploadsUrlAndJvmId =
           currentTarget?.connectUrl === 'uploads' && event.message.recording.jvmId === 'uploads';
+        console.log("++delete current TargetUrl: ", currentTarget?.connectUrl);
+        console.log("++ delete event Url: ", eventConnectUrlLabel?.value);
+
+        console.log("++ delete currentTarget jvmID: ", currentTarget.jvmId);
+        console.log("++ delete event jvmID: ", event.message.recording.jvmId);
 
         if (isUploadsTable && matchesUploadsUrlAndJvmId) {
+          console.log("+++ is upload");
           refreshRecordingList();
         }
         if (
@@ -371,6 +379,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
+        console.log("++current Target: ", currentTarget);
+        console.log("+++ event: ",event);
+        console.log("+++ event metadata labels: ", event.message.recording.metadata.labels);
+
         const eventConnectUrlLabel = event.message.recording.metadata.labels.find(
           (label) => label.key === 'connectUrl',
         );
@@ -381,6 +393,12 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         ) {
           return;
         }
+        console.log("++current TargetUrl: ", currentTarget?.connectUrl);
+        console.log("++ event url: ", eventConnectUrlLabel?.value);
+
+        console.log("++ event jvmID: ", event.message.recording.jvmId);
+        console.log("++ currentTarget jvmID: ", currentTarget.jvmId);
+
         setRecordings((oldRecordings) => {
           return oldRecordings.map((recording) => {
             if (recording.name === event.message.recording.name) {
