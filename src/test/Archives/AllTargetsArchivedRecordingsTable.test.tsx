@@ -84,6 +84,7 @@ const mockRecordingSavedNotification = {
 const mockRecordingDeletedNotification = {
   message: {
     target: mockConnectUrl1,
+    recording: mockRecording,
   },
 } as NotificationMessage;
 
