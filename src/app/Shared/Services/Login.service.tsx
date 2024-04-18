@@ -15,7 +15,7 @@
  */
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
+import { catchError, concatMap, debounceTime, distinctUntilChanged, finalize, map, tap } from 'rxjs/operators';
 import { SessionState } from './service.types';
 import type { SettingsService } from './Settings.service';
 
@@ -55,16 +55,14 @@ export class LoginService {
       concatMap((response) => {
         return of(response).pipe(
           map((response) => response.ok),
-          tap(() => {
-            this.resetSessionState();
-            this.navigateToLoginPage();
-          }),
+          tap(() => this.resetSessionState()),
         );
       }),
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
         return of(false);
       }),
+      finalize(() => this.navigateToLoginPage()),
     );
   }
 
@@ -78,7 +76,6 @@ export class LoginService {
   }
 
   private navigateToLoginPage(): void {
-    const url = new URL(window.location.href.split('#')[0]);
-    window.location.href = url.pathname.match(/\/settings/i) ? '/' : url.pathname;
+    window.location.href = '/';
   }
 }
