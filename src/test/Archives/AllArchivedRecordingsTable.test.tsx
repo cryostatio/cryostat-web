@@ -54,22 +54,15 @@ const mockRecordingDeletedNotification = {
   },
 } as NotificationMessage;
 
-/* const mockRecordingLabels = [
-  {
-    key: 'someLabel',
-    value: 'someValue',
-  },
-]; */
-
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: {
-    labels: {
+    labels: [ {
       key: 'someLabel',
       value: 'someValue',
-    }
+    } ]
   },
   size: 2048,
   archivedTime: 2048,
@@ -142,39 +135,32 @@ jest
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly  // NotificationCategory.RecordingMetadataUpdated
-  .mockReturnValueOnce(of()) // NotificationCategory.ActiveRecordingSaved
   .mockReturnValueOnce(of()) // NotificationCategory.ArchivedRecordingCreated
   .mockReturnValueOnce(of()) // NotificationCategory.ArchivedRecordingDeleted
 
   .mockReturnValueOnce(of()) // shows no recordings when empty
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // has the correct table elements
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // correctly handles the search function
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // expands targets to show their <ArchivedRecordingsTable />
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // increments the count when an archived recording is saved
+  .mockReturnValueOnce(of(mockRecordingSavedNotification))
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of(mockRecordingSavedNotification)) // increments the count when an archived recording is saved
+  .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of(mockRecordingDeletedNotification)) // decrements the count when an archived recording is deleted
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of());
+  .mockReturnValueOnce(of(mockRecordingDeletedNotification));
 
 describe('<AllArchivedRecordingsTable />', () => {
   afterEach(cleanup);
