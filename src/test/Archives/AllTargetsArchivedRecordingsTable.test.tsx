@@ -28,7 +28,10 @@ const mockTarget1: Target = {
   connectUrl: mockConnectUrl1,
   alias: mockAlias1,
   labels: [],
-  annotations: { cryostat: [], platform: [] },
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
 };
 const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
@@ -41,7 +44,10 @@ const mockNewTarget: Target = {
   connectUrl: mockNewConnectUrl,
   alias: mockNewAlias,
   labels: [],
-  annotations: { cryostat: [], platform: [] },
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
 };
 const mockCount1 = 1;
 const mockCount2 = 3;
@@ -53,6 +59,7 @@ const mockTargetFoundNotification = {
     event: { kind: 'FOUND', serviceRef: mockNewTarget },
   },
 } as NotificationMessage;
+console.log("++FOUND", mockTargetFoundNotification);
 
 const mockRecording = {
   jvmId: 'foo',
@@ -62,6 +69,7 @@ const mockRecording = {
   metadata: {
     labels: [
       { key: 'someLabel', value: 'someValue' },
+      { key: 'connectUrl', value: 'service:jmx:rmi://someNewUrl' }
     ]
   },
   size: 1234,
@@ -76,14 +84,15 @@ const mockTargetLostNotification = {
 
 const mockRecordingSavedNotification = {
   message: {
-    jvmId: mockConnectUrl3,
+    target: mockTarget1,
     recording: mockRecording,
+    count: mockCount1,
   },
 } as NotificationMessage;
-
+console.log("++Recording notifiation",mockRecordingSavedNotification);
 const mockRecordingDeletedNotification = {
   message: {
-    target: mockConnectUrl1,
+    target: mockTarget1,
     recording: mockRecording,
   },
 } as NotificationMessage;
