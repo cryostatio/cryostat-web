@@ -302,10 +302,13 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           const idx = old.findIndex(({ target: t }) => isEqualTarget(t, evt.serviceRef));
           if (idx >= 0) {
             const matched = old[idx];
-            console.log("+++TTmatched: ", matched);
-            console.log("+++TTTtarget: ", evt.serviceRef);
-            console.log("++matched tTTTarget: ",matched.target.connectUrl);
-            if (evt.serviceRef.connectUrl === matched.target.connectUrl && evt.serviceRef.alias === matched.target.alias) {
+            console.log('+++TTmatched: ', matched);
+            console.log('+++TTTtarget: ', evt.serviceRef);
+            console.log('++matched tTTTarget: ', matched.target.connectUrl);
+            if (
+              evt.serviceRef.connectUrl === matched.target.connectUrl &&
+              evt.serviceRef.alias === matched.target.alias
+            ) {
               // If alias and connectUrl are not updated, ignore changes.
               return old;
             }

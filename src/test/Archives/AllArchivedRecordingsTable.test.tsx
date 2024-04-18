@@ -28,7 +28,7 @@ const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockJvmId2 = 'fooJvmId2';
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockJvmId3 = 'fooJvmId3';
-const mockName3 ='someRecording3';
+const mockName3 = 'someRecording3';
 
 const mockCount1 = 1;
 
@@ -40,9 +40,9 @@ const mockRecordingSavedNotification = {
         labels: {
           key: 'someLabel',
           value: 'someValue',
-        }
-      }
-    }
+        },
+      },
+    },
   },
 } as NotificationMessage;
 
@@ -50,7 +50,7 @@ const mockRecordingDeletedNotification = {
   message: {
     recording: {
       name: mockName3,
-    }
+    },
   },
 } as NotificationMessage;
 
@@ -59,10 +59,12 @@ const mockRecording: ArchivedRecording = {
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: {
-    labels: [ {
-      key: 'someLabel',
-      value: 'someValue',
-    } ]
+    labels: [
+      {
+        key: 'someLabel',
+        value: 'someValue',
+      },
+    ],
   },
   size: 2048,
   archivedTime: 2048,
@@ -85,21 +87,20 @@ const mockRecordingDirectory3: RecordingDirectory = {
   jvmId: mockJvmId3,
   recordings: [mockRecording, mockRecording, mockRecording],
 };
-console.log("++3",mockRecordingDirectory3);
+console.log('++3', mockRecordingDirectory3);
 
 const mockRecordingDirectory3Removed: RecordingDirectory = {
   ...mockRecordingDirectory3,
   recordings: [mockRecording, mockRecording],
 };
-console.log("++3removed",mockRecordingDirectory3Removed);
+console.log('++3removed', mockRecordingDirectory3Removed);
 
 const mockRecordingDirectory3Added: RecordingDirectory = {
   connectUrl: mockConnectUrl3,
   jvmId: mockJvmId3,
   recordings: [mockRecording, mockRecording, mockRecording, mockRecording],
 };
-console.log("++3added",mockRecordingDirectory3Added);
-
+console.log('++3added', mockRecordingDirectory3Added);
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -251,12 +252,12 @@ describe('<AllArchivedRecordingsTable />', () => {
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
     const rows = within(tableBody).getAllByRole('row');
-    console.log('++Rows length before adding a recording:', rows.length);  // Log the number of rows
+    console.log('++Rows length before adding a recording:', rows.length); // Log the number of rows
 
     expect(rows).toHaveLength(3);
 
     const thirdTarget = rows[2];
-    console.log('++Details of third target:', thirdTarget);  // Detailed text content of the row
+    console.log('++Details of third target:', thirdTarget); // Detailed text content of the row
 
     expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
     await waitFor(() => {

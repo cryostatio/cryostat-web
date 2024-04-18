@@ -173,9 +173,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
   React.useEffect(() => {
     addSubscription(
-    context.notificationChannel
-      .messages(NotificationCategory.RecordingMetadataUpdated)
-      .subscribe((event) => {
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe((event) => {
         const updatedRecordingInfo = event.message;
 
         setDirectories((currentDirectories) => {
@@ -195,7 +193,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
 
           return newDirectories;
         });
-      })
+      }),
     );
   }, [addSubscription, context.notificationChannel, setDirectories]);
 

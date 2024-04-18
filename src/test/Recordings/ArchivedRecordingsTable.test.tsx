@@ -88,14 +88,14 @@ const mockRecording: ArchivedRecording = {
   metadata: {
     labels: [
       { key: 'someLabel', value: 'someValue' },
-      { key: 'connectUrl', value: 'service:jmx:rmi://someUrl' }
-    ]
+      { key: 'connectUrl', value: 'service:jmx:rmi://someUrl' },
+    ],
   },
   size: 2048,
   archivedTime: 2048,
 };
-console.log("++mockRecording", mockRecording);
-console.log("++mockRecording Stringify", JSON.stringify(mockRecording, null, 2));
+console.log('++mockRecording', mockRecording);
+console.log('++mockRecording Stringify', JSON.stringify(mockRecording, null, 2));
 
 const mockArchivedRecordingsResponse = {
   data: {
@@ -110,7 +110,7 @@ const mockArchivedRecordingsResponse = {
     ],
   },
 };
-console.log("++mockRecording Response", mockArchivedRecordingsResponse);
+console.log('++mockRecording Response', mockArchivedRecordingsResponse);
 
 const mockAllArchivedRecordingsResponse = {
   data: {
@@ -123,7 +123,7 @@ const mockAllArchivedRecordingsResponse = {
     },
   },
 };
-console.log("++mockRecording All archived", mockAllArchivedRecordingsResponse);
+console.log('++mockRecording All archived', mockAllArchivedRecordingsResponse);
 
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
 const mockCreateNotification = {
@@ -136,7 +136,7 @@ const mockLabelsNotification = {
       name: 'someRecording',
       jvmId: mockJvmId,
       metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
-    }
+    },
   },
 } as NotificationMessage;
 const mockDeleteNotification = {

@@ -83,8 +83,8 @@ const mockActiveLabelsNotification = {
         labels: [
           { key: 'someLabel', value: 'someValue' },
           { key: 'someNewLabel', value: 'someNewValue' },
-      ],
-    },
+        ],
+      },
     },
   },
 } as NotificationMessage;
@@ -101,8 +101,8 @@ const mockArchivedLabelsNotification = {
         labels: [
           { key: 'someLabel', value: 'someValue' },
           { key: 'someNewLabel', value: 'someNewValue' },
-      ],
-    }
+        ],
+      },
     },
   },
 } as NotificationMessage;

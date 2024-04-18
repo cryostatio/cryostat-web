@@ -79,7 +79,7 @@ const mockTargetFoundNotification = {
     event: { kind: 'FOUND', serviceRef: mockNewTarget },
   },
 } as NotificationMessage;
-console.log("++FOUND", mockTargetFoundNotification);
+console.log('++FOUND', mockTargetFoundNotification);
 
 const mockRecording = {
   jvmId: mockTarget1.jvmId,
@@ -89,11 +89,11 @@ const mockRecording = {
   metadata: {
     labels: [
       { key: 'someLabel', value: 'someValue' },
-      { key: 'connectUrl', value: 'service:jmx:rmi://someNewUrl' }
-    ]
+      { key: 'connectUrl', value: 'service:jmx:rmi://someNewUrl' },
+    ],
   },
   size: 1234,
-  archivedTime: 987654321
+  archivedTime: 987654321,
 };
 
 const mockTargetLostNotification = {
@@ -108,7 +108,7 @@ const mockRecordingNotification = {
     recording: mockRecording,
   },
 } as NotificationMessage;
-console.log("++Recording notifiation",mockRecordingNotification);
+console.log('++Recording notifiation', mockRecordingNotification);
 
 const mockTargetsAndCountsResponse = {
   data: {
@@ -122,8 +122,8 @@ const mockTargetsAndCountsResponse = {
             metadata: {
               labels: [
                 { key: 'someLabel', value: 'someValue' },
-                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl1' }
-              ]
+                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl1' },
+              ],
             },
             aggregate: {
               count: mockCount1,
@@ -140,8 +140,8 @@ const mockTargetsAndCountsResponse = {
             metadata: {
               labels: [
                 { key: 'someLabel', value: 'someValue' },
-                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl2' }
-              ]
+                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl2' },
+              ],
             },
             aggregate: {
               count: mockCount2,
@@ -158,8 +158,8 @@ const mockTargetsAndCountsResponse = {
             metadata: {
               labels: [
                 { key: 'someLabel', value: 'someValue' },
-                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl3' }
-              ]
+                { key: 'connectUrl', value: 'service:jmx:rmi://someUrl3' },
+              ],
             },
             aggregate: {
               count: mockCount3,
@@ -182,8 +182,8 @@ const mockNewTargetCountResponse = {
             metadata: {
               labels: [
                 { key: 'someLabel', value: 'someValue' },
-                { key: 'connectUrl', value: mockNewTarget.connectUrl}
-              ]
+                { key: 'connectUrl', value: mockNewTarget.connectUrl },
+              ],
             },
             aggregate: {
               count: mockNewCount,
@@ -194,7 +194,7 @@ const mockNewTargetCountResponse = {
     ],
   },
 };
-console.log("++mock targets and count", JSON.stringify(mockTargetsAndCountsResponse, null, 2));
+console.log('++mock targets and count', JSON.stringify(mockTargetsAndCountsResponse, null, 2));
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {

@@ -69,7 +69,7 @@ const mockLabelsNotification = {
     target: mockConnectUrl,
     recording: {
       name: 'someRecording',
-      metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] }
+      metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
     },
     jvmId: mockJvmId,
   },
