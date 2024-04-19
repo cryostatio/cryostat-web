@@ -210,7 +210,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied),
       ]).subscribe(([currentTarget, e]) => {
-        if (currentTarget?.connectUrl != e.message.targetId && currentTarget?.jvmId != e.message.jvmId) {
+        if (currentTarget?.jvmId != e.message.jvmId) {
           return;
         }
         setProbes((old) => {
@@ -227,7 +227,14 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ProbesRemoved).subscribe((_) => setProbes([])),
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ProbesRemoved),
+      ]).subscribe(([currentTarget, e]) => {
+        if (currentTarget?.jvmId == e.message.jvmId) {
+          setProbes([]);
+        }
+      }),
     );
   }, [addSubscription, context, context.notificationChannel, setProbes]);
 
