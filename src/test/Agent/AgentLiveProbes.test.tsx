@@ -68,9 +68,8 @@ const mockApplyTemplateNotification = {
     type: mockMessageType,
   } as MessageMeta,
   message: {
-    targetId: mockConnectUrl,
-    events: [mockAnotherProbe],
     jvmId: mockJvmId,
+    events: [mockAnotherProbe],
   },
 } as NotificationMessage;
 
@@ -80,7 +79,7 @@ const mockRemoveProbesNotification = {
     type: mockMessageType,
   } as MessageMeta,
   message: {
-    target: mockTarget,
+    jvmId: mockJvmId,
   },
 } as NotificationMessage;
 
