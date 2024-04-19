@@ -591,7 +591,7 @@ export class ApiService {
         recordingName,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
-    ).pipe(map((v) => v.data?.archivedRecordings?.data as ArchivedRecording[] ?? []));
+    ).pipe(map((v) => (v.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
   isProbeEnabled(): Observable<boolean> {
@@ -972,7 +972,7 @@ export class ApiService {
           },
         ),
       ),
-      map((v) => v.data?.targetNodes[0]?.target?.archivedRecordings as ArchivedRecording[] ?? []),
+      map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings as ArchivedRecording[]) ?? []),
     );
   }
 
@@ -1000,7 +1000,7 @@ export class ApiService {
         recordingName,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
-    ).pipe(map((v) => v.data?.archivedRecordings?.data as ArchivedRecording[] ?? []));
+    ).pipe(map((v) => (v.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
   postTargetRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ActiveRecording[]> {
@@ -1037,7 +1037,7 @@ export class ApiService {
           },
         ),
       ),
-      map((v) => v.data?.targetNodes[0]?.target?.activeRecordings as ActiveRecording[] ?? []),
+      map((v) => (v.data?.targetNodes[0]?.target?.activeRecordings as ActiveRecording[]) ?? []),
     );
   }
 
@@ -1329,7 +1329,7 @@ export class ApiService {
       { id: target.id! },
       true,
       true,
-    ).pipe(map((v) => v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[] ?? []));
+    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
   getTargetActiveRecordings(target: TargetStub): Observable<ActiveRecording[]> {
