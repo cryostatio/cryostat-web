@@ -199,15 +199,15 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         )
         .pipe(
           map((v) => {
-            return v.data.targetNodes.map((node) => {
-              const target: Target = node.target;
+            return v.data?.targetNodes?.map((node) => {
+              const target: Target = node?.target;
               return {
                 target,
                 targetAsObs: of(target),
-                archiveCount: node.target.archivedRecordings.aggregate.count,
-                recordings: node.target.archivedRecordings.data as ArchivedRecording[],
+                archiveCount: node?.target?.archivedRecordings?.aggregate?.count ?? 0,
+                recordings: node?.target?.archivedRecordings?.data as ArchivedRecording[] ?? [],
               };
-            });
+            }).filter(v => !!v.target);
           }),
         )
         .subscribe({
@@ -258,7 +258,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                   target: target,
                   targetAsObs: of(target),
                   archiveCount: v.data.targetNodes[0]?.target?.archivedRecordings?.aggregate?.count ?? 0,
-                  recordings: v.data.targetNodes[0]?.target?.archivedRecordings,
+                  recordings: v.data.targetNodes[0]?.target?.archivedRecordings ?? [],
                 },
               ];
             });

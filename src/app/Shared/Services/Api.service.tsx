@@ -591,7 +591,7 @@ export class ApiService {
         recordingName,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
-    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+    ).pipe(map((v) => v.data?.archivedRecordings?.data as ArchivedRecording[] ?? []));
   }
 
   isProbeEnabled(): Observable<boolean> {
@@ -972,7 +972,7 @@ export class ApiService {
           },
         ),
       ),
-      map((v) => v.data.targetNodes[0].target.archivedRecordings as ArchivedRecording[]),
+      map((v) => v.data?.targetNodes[0]?.target?.archivedRecordings as ArchivedRecording[] ?? []),
     );
   }
 
@@ -1000,7 +1000,7 @@ export class ApiService {
         recordingName,
         labels: labels.map((label) => ({ key: label.key, value: label.value })),
       },
-    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+    ).pipe(map((v) => v.data?.archivedRecordings?.data as ArchivedRecording[] ?? []));
   }
 
   postTargetRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ActiveRecording[]> {
@@ -1037,7 +1037,7 @@ export class ApiService {
           },
         ),
       ),
-      map((v) => v.data.targetNodes[0].target.activeRecordings as ActiveRecording[]),
+      map((v) => v.data?.targetNodes[0]?.target?.activeRecordings as ActiveRecording[] ?? []),
     );
   }
 
@@ -1180,7 +1180,7 @@ export class ApiService {
     ).pipe(
       first(),
       map((body) =>
-        body.data.environmentNodes[0].descendantTargets.reduce(
+        (body.data?.environmentNodes[0]?.descendantTargets ?? []).reduce(
           (acc: number, curr) => acc + curr.target.activeRecordings.aggregate.count,
           0,
         ),
@@ -1212,11 +1212,11 @@ export class ApiService {
       true,
     ).pipe(
       map((resp) => {
-        const nodes = resp.data.targetNodes;
+        const nodes = resp.data?.targetNodes ?? [];
         if (nodes.length === 0) {
           return false;
         }
-        const count = nodes[0].target.activeRecordings.aggregate.count;
+        const count = nodes[0]?.target?.activeRecordings?.aggregate?.count ?? 0;
         return count > 0;
       }),
       catchError((_) => of(false)),
@@ -1292,11 +1292,11 @@ export class ApiService {
       { id: target.id! },
     ).pipe(
       map((resp) => {
-        const nodes = resp.data.targetNodes;
+        const nodes = resp.data?.targetNodes ?? [];
         if (!nodes || nodes.length === 0) {
           return {};
         }
-        return nodes[0]?.target.mbeanMetrics;
+        return nodes[0]?.target?.mbeanMetrics ?? {};
       }),
       catchError((_) => of({})),
     );
@@ -1329,7 +1329,7 @@ export class ApiService {
       { id: target.id! },
       true,
       true,
-    ).pipe(map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]));
+    ).pipe(map((v) => v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[] ?? []));
   }
 
   getTargetActiveRecordings(target: TargetStub): Observable<ActiveRecording[]> {

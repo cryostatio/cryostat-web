@@ -182,7 +182,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
             )
             .pipe(
-              map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
+              map((v) => v.data?.archivedRecordings?.data as ArchivedRecording[] ?? []),
               first(),
             )
         : context.target.target().pipe(
@@ -213,7 +213,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 { id: target.id! },
               ),
             ),
-            map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
+            map((v) => v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[] ?? []),
             first(),
           );
     }

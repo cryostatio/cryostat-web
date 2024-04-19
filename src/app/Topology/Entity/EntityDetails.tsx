@@ -300,7 +300,7 @@ const MBeanDetails: React.FC<{
             { id: targetId },
           )
           .pipe(
-            map((resp) => resp.data.targetNodes[0].target.mbeanMetrics || {}),
+            map((resp) => resp.data?.targetNodes[0]?.target?.mbeanMetrics ?? {}),
             catchError((_) => of({})),
           )
           .subscribe(setMbeanMetrics),
