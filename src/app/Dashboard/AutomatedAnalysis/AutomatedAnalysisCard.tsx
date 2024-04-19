@@ -173,12 +173,12 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   // name: 'automated-analysis'; label: 'origin=automated-analysis'
   // Query NEEDS 'state' so that isActiveRecording(result) is valid
   const queryActiveRecordings = React.useCallback(
-    (connectUrl: string) => {
+    (targetId: number) => {
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       return context.api.graphql<any>(
         `
-      query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
-        targetNodes(filter: { name: $connectUrl }) {
+      query ActiveRecordingsForAutomatedAnalysis($id: BigInteger!) {
+        targetNodes(filter: { targetIds: [$id] }) {
           target {
             activeRecordings(filter: {
               name: "${automatedAnalysisRecordingName}",
@@ -200,18 +200,18 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           }
         }
       }`,
-        { connectUrl },
+        { id: targetId },
       );
     },
     [context.api],
   );
 
   const queryArchivedRecordings = React.useCallback(
-    (connectUrl: string) => {
+    (targetId: number) => {
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       return context.api.graphql<any>(
-        `query ArchivedRecordingsForAutomatedAnalysis($connectUrl: String) {
-          targetNodes(filter: { name: $connectUrl }) {
+        `query ArchivedRecordingsForAutomatedAnalysis($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
             target {
               archivedRecordings {
                 data {
@@ -231,7 +231,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
             }
           }
       }`,
-        { connectUrl },
+        { id: targetId },
       );
     },
     [context.api],
@@ -300,8 +300,8 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
 
   // try generating report on cached or archived recordings
   const handleEmptyRecordings = React.useCallback(
-    (connectUrl: string) => {
-      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
+    (target: Target) => {
+      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(target.connectUrl);
       if (cachedReportAnalysis.report.length > 0) {
         setReport(automatedAnalysisRecordingName);
         setUsingCachedReport(true);
@@ -310,7 +310,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         setIsLoading(false);
       } else {
         addSubscription(
-          queryArchivedRecordings(connectUrl)
+          queryArchivedRecordings(target.id!)
             .pipe(
               first(),
               map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
@@ -355,7 +355,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         )
         .subscribe((target: Target) => {
           addSubscription(
-            queryActiveRecordings(target.connectUrl)
+            queryActiveRecordings(target.id!)
               .pipe(
                 first(),
                 tap((resp) => {
@@ -395,7 +395,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                   if (isAuthFail(err.message)) {
                     handleStateErrors(authFailMessage);
                   } else {
-                    handleEmptyRecordings(target.connectUrl);
+                    handleEmptyRecordings(target);
                   }
                 },
               }),
