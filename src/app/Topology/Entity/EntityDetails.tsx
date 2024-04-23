@@ -247,7 +247,7 @@ export const TargetDetails: React.FC<{
         onToggle={onToggle}
         isExpanded={isExpanded}
       >
-        <MBeanDetails isExpanded={isExpanded} connectUrl={serviceRef.connectUrl} columnModifier={columnModifier} />
+        <MBeanDetails isExpanded={isExpanded} targetId={serviceRef.id!} columnModifier={columnModifier} />
       </ExpandableSection>
     </>
   );
@@ -255,9 +255,9 @@ export const TargetDetails: React.FC<{
 
 const MBeanDetails: React.FC<{
   isExpanded: boolean;
-  connectUrl: string;
+  targetId: number;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
-}> = ({ isExpanded, connectUrl, columnModifier }) => {
+}> = ({ isExpanded, targetId, columnModifier }) => {
   const context = React.useContext(ServiceContext);
   const [dayjs, dateTimeFormat] = useDayjs();
   const addSubscription = useSubscriptions();
@@ -269,8 +269,8 @@ const MBeanDetails: React.FC<{
         context.api
           .graphql<MBeanMetricsResponse>(
             `
-            query MBeanMXMetricsForTarget($connectUrl: String) {
-              targetNodes(filter: { name: $connectUrl }) {
+            query MBeanMXMetricsForTarget($id: BigInteger!) {
+              targetNodes(filter: { targetIds: [$id] }) {
                 target {
                   mbeanMetrics {
                     runtime {
@@ -297,7 +297,7 @@ const MBeanDetails: React.FC<{
                 }
               }
             }`,
-            { connectUrl },
+            { id: targetId },
           )
           .pipe(
             map((resp) => resp.data.targetNodes[0].target.mbeanMetrics || {}),
@@ -306,7 +306,7 @@ const MBeanDetails: React.FC<{
           .subscribe(setMbeanMetrics),
       );
     }
-  }, [isExpanded, addSubscription, connectUrl, context.api, setMbeanMetrics]);
+  }, [isExpanded, addSubscription, targetId, context.api, setMbeanMetrics]);
 
   const _collapsedData = React.useMemo((): DescriptionConfig[] => {
     return [

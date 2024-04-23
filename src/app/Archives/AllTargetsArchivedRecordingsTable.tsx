@@ -223,8 +223,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       addSubscription(
         context.api
           .graphql<any>(
-            `query ArchiveCountForTarget($connectUrl: String) {
-              targetNodes(filter: { name: $connectUrl }) {
+            `query ArchiveCountForTarget($id: BigInteger!) {
+              targetNodes(filter: { targetIds: [$id] }) {
                 target {
                   archivedRecordings {
                     data {
@@ -248,7 +248,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
                 }
               }
             }`,
-            { connectUrl: target.connectUrl },
+            { id: target.id! },
           )
           .subscribe((v) => {
             setArchivesForTargets((old) => {

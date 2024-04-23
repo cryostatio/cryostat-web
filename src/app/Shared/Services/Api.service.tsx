@@ -945,8 +945,8 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { name: $connectUrl }) {
+        query PostRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { targetIds: [$id] }) {
             target {
               archivedRecordings(filter: { name: $recordingName }) {
                 data {
@@ -966,7 +966,7 @@ export class ApiService {
           }
         }`,
           {
-            connectUrl: target.connectUrl,
+            id: target.id!,
             recordingName,
             labels: labels.map((label) => ({ key: label.key, value: label.value })),
           },
@@ -1010,8 +1010,8 @@ export class ApiService {
       concatMap((target: Target) =>
         this.graphql<any>(
           `
-        query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: [Entry_String_StringInput]) {
-          targetNodes(filter: { name: $connectUrl }) {
+        query PostActiveRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { targetIds: [$id] }) {
             target {
               activeRecordings(filter: { name: $recordingName }) {
                 data {
@@ -1031,7 +1031,7 @@ export class ApiService {
           }
         }`,
           {
-            connectUrl: target.connectUrl,
+            id: target.id!,
             recordingName,
             labels: labels.map((label) => ({ key: label.key, value: label.value })),
           },
@@ -1193,8 +1193,8 @@ export class ApiService {
   targetHasRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
-        query ActiveRecordingsForJFRMetrics($connectUrl: String, $recordingFilter: ActiveRecordingsFilterInput) {
-          targetNodes(filter: { name: $connectUrl }) {
+        query ActiveRecordingsForJFRMetrics($id: BigInteger!, $recordingFilter: ActiveRecordingsFilterInput) {
+          targetNodes(filter: { targetIds: [$id] }) {
             target {
               activeRecordings(filter: $recordingFilter) {
                 aggregate {
@@ -1205,7 +1205,7 @@ export class ApiService {
           }
         }`,
       {
-        connectUrl: target.connectUrl,
+        id: target.id!,
         recordingFilter: filter,
       },
       true,
@@ -1280,8 +1280,8 @@ export class ApiService {
   getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
     return this.graphql<MBeanMetricsResponse>(
       `
-        query MBeanMXMetricsForTarget($connectUrl: String) {
-          targetNodes(filter: { name: $connectUrl }) {
+        query MBeanMXMetricsForTarget($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
             target {
               mbeanMetrics {
                 ${queries.join('\n')}
@@ -1289,7 +1289,7 @@ export class ApiService {
             }
           }
         }`,
-      { connectUrl: target.connectUrl },
+      { id: target.id! },
     ).pipe(
       map((resp) => {
         const nodes = resp.data.targetNodes;
@@ -1305,8 +1305,8 @@ export class ApiService {
   getTargetArchivedRecordings(target: TargetStub): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-        query ArchivedRecordingsForTarget($connectUrl: String) {
-          targetNodes(filter: { name: $connectUrl }) {
+        query ArchivedRecordingsForTarget($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
             target {
               archivedRecordings {
                 data {
@@ -1326,7 +1326,7 @@ export class ApiService {
             }
           }
         }`,
-      { connectUrl: target.connectUrl },
+      { id: target.id! },
       true,
       true,
     ).pipe(map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]));
