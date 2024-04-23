@@ -269,7 +269,7 @@ const MBeanDetails: React.FC<{
         context.api
           .graphql<MBeanMetricsResponse>(
             `
-            query MBeanMXMetricsForTarget(id: BigInteger!) {
+            query MBeanMXMetricsForTarget($id: BigInteger!) {
               targetNodes(filter: { targetIds: [$id] }) {
                 target {
                   mbeanMetrics {
