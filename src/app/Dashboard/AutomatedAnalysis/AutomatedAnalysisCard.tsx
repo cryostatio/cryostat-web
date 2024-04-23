@@ -313,7 +313,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           queryArchivedRecordings(target.id!)
             .pipe(
               first(),
-              map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
+              map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
             )
             .subscribe({
               next: (recordings) => {
@@ -368,7 +368,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
                     }
                   }
                 }),
-                map((v) => v.data.targetNodes[0].target.activeRecordings.data[0] as Recording),
+                map((v) => v.data?.targetNodes[0]?.target?.activeRecordings?.data[0] as Recording),
                 tap((recording) => {
                   if (recording === null || recording === undefined) {
                     throw new Error(NO_RECORDINGS_MESSAGE);

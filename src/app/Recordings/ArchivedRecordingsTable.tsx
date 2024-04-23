@@ -247,7 +247,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     } else if (isUploadsTable) {
       addSubscription(
         queryUploadedRecordings()
-          .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]))
+          .pipe(map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []))
           .subscribe({
             next: handleRecordings,
             error: handleError,
@@ -260,7 +260,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             filter((target) => !!target),
             first(),
             concatMap((target: Target) => queryTargetRecordings(target.id!)),
-            map((v) => v.data.targetNodes[0].target.archivedRecordings.data as ArchivedRecording[]),
+            map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
           )
           .subscribe({
             next: handleRecordings,
