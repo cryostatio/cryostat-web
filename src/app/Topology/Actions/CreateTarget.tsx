@@ -16,7 +16,6 @@
 
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { Locations } from '@app/Settings/Config/CredentialsStorage';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { Target } from '@app/Shared/Services/api.types';
@@ -24,7 +23,6 @@ import { isHttpOk } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { getAnnotation, portalRoot } from '@app/utils/utils';
 import {
   Accordion,
@@ -171,7 +169,6 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   const handleSubmit = React.useCallback(() => {
     setLoading(true);
     // Get storage location
-    const locationKey = getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key);
     addSubscription(
       context.api
         .createTarget(
@@ -180,7 +177,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
             alias: alias.trim() || connectUrl,
           },
           credentials,
-          locationKey === Locations.BACKEND.key,
+          true,
         )
         .subscribe(({ status, body }) => {
           setLoading(false);

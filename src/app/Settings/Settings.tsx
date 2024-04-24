@@ -40,7 +40,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AutomatedAnalysis } from './Config/AutomatedAnalysis';
 import { AutoRefresh } from './Config/AutoRefresh';
 import { ChartCards } from './Config/ChartCards';
-import { CredentialsStorage } from './Config/CredentialsStorage';
 import { DatetimeControl } from './Config/DatetimeControl';
 import { DeletionDialogControl } from './Config/DeletionDialogControl';
 import { FeatureLevels } from './Config/FeatureLevels';
@@ -62,7 +61,6 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         NotificationControl,
         AutomatedAnalysis,
         ChartCards,
-        CredentialsStorage,
         DeletionDialogControl,
         WebSocketDebounce,
         AutoRefresh,

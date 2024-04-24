@@ -52,18 +52,6 @@ jest.mock('@app/Settings/Config/ChartCards', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/Config/CredentialsStorage', () => ({
-  CredentialsStorage: {
-    titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',
-    descConstruct: {
-      key: 'SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION',
-      parts: [], // Just raw string (avoid using React component during mock)
-    },
-    category: 'SETTINGS.CATEGORIES.ADVANCED',
-    content: () => <Text>Credentials Storage Component</Text>,
-  } as UserSetting,
-}));
-
 jest.mock('@app/Settings/Config/DeletionDialogControl', () => ({
   DeletionDialogControl: {
     titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',

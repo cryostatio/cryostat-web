@@ -43,7 +43,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
             filter((target) => !!target),
             first(),
             map((target: Target) => target.connectUrl),
-            mergeMap((connectUrl) => context.authCredentials.setCredential(connectUrl, username, password)),
+            mergeMap((connectUrl) =>
+              context.api.postCredentials(`target.connectUrl == "${connectUrl}"`, username, password),
+            ),
           )
           .subscribe((ok) => {
             setLoading(false);
@@ -53,7 +55,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
           }),
       );
     },
-    [addSubscription, context.authCredentials, targetObs, setLoading, onPropsSave],
+    [addSubscription, context.api, targetObs, setLoading, onPropsSave],
   );
 
   return (
@@ -70,12 +72,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
           <Link onClick={onDismiss} to="/security">
             Security
           </Link>{' '}
-          to add a credential matching multiple targets. Visit{' '}
-          <Link onClick={onDismiss} to="/settings">
-            Settings
-          </Link>{' '}
-          to confirm and configure whether these credentials will be held only for this browser session or stored
-          encrypted in the Cryostat backend.
+          to add a credential matching multiple targets.
         </Text>
       }
     >

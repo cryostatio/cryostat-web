@@ -15,7 +15,6 @@
  */
 import * as React from 'react';
 import { ApiService } from './Api.service';
-import { AuthCredentials } from './AuthCredentials.service';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { NotificationsInstance } from './Notifications.service';
@@ -28,7 +27,6 @@ export interface Services {
   target: TargetService;
   targets: TargetsService;
   api: ApiService;
-  authCredentials: AuthCredentials;
   notificationChannel: NotificationChannel;
   reports: ReportService;
   settings: SettingsService;
@@ -37,7 +35,6 @@ export interface Services {
 
 const target = new TargetService();
 const settings = new SettingsService();
-const authCredentials = new AuthCredentials(() => api);
 const login = new LoginService(settings);
 const api = new ApiService(target, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
@@ -48,7 +45,6 @@ const defaultServices: Services = {
   target,
   targets,
   api,
-  authCredentials,
   notificationChannel,
   reports,
   settings,
