@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { NodeType } from '@app/Shared/Services/api.types';
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
 import type { FeatureLevel } from '@app/Shared/Services/service.types';
 import { Services } from '@app/Shared/Services/Services';
@@ -73,8 +72,8 @@ export interface NodeAction {
   readonly title?: React.ReactNode;
   readonly isSeparator?: boolean;
   readonly isDisabled?: (element: GraphElement | ListElement, actionUtils: ActionUtils) => Observable<boolean>;
-  readonly includeList?: NodeType[]; // Empty means all
-  readonly blockList?: NodeType[]; // Empty means none
+  readonly allowed?: (element: GraphElement | ListElement) => boolean; // Undefined means allowing all
+  readonly blocked?: (element: GraphElement | ListElement) => boolean; // Undefined means blocking none
 }
 
 export type GroupActionResponse = {

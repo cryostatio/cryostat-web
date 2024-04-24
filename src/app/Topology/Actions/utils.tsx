@@ -111,7 +111,12 @@ export const nodeActions: NodeAction[] = [
       services.api.deleteTarget(targetNode.target).subscribe(() => undefined);
     },
     title: 'Delete Target',
-    includeList: [NodeType.CUSTOM_TARGET],
+    allowed: (element) => {
+      const targetNode: TargetNode = element.getData();
+      const realm = targetNode.target.annotations.cryostat.find((label) => label.key === 'REALM')?.value;
+
+      return targetNode.nodeType === NodeType.JVM && realm === 'Custom Targets';
+    },
   },
   {
     key: 'GROUP_START_RECORDING',
@@ -342,8 +347,8 @@ export const actionFactory = (
     return (
       actionFilter(action) &&
       (action.isGroup || false) === isGroup &&
-      (!action.includeList || action.includeList.includes(data.nodeType)) &&
-      (!action.blockList || !action.blockList.includes(data.nodeType))
+      (!action.allowed || action.allowed(element)) &&
+      (!action.blocked || !action.blocked(element))
     );
   });
 
