@@ -16,7 +16,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { StoredCredentialsCard } from './Credentials/StoreCredentials';
+import { StoredCredentialsCard } from './Credentials/StoredCredentials';
 import { ImportCertificate } from './ImportCertificate';
 
 export interface SecurityPanelProps {}
