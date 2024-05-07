@@ -133,6 +133,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       setArchivesForTargets(
         targetNodes.map((node) => {
           const target: Target = {
+            id: node.target.id,
             jvmId: node.target.jvmId,
             connectUrl: node.target.connectUrl,
             alias: node.target.alias,
@@ -171,6 +172,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           `query AllTargetsArchives {
             targetNodes {
               target {
+                id
                 connectUrl
                 alias
                 jvmId
