@@ -21,12 +21,14 @@ const TargetModel: ModelDefinition<any> = Model.extend({});
 const RecordingModel: ModelDefinition<any> = Model.extend({});
 const ArchiveModel: ModelDefinition<any> = Model.extend({});
 const RuleModel: ModelDefinition<any> = Model.extend({});
+const CredentialModel: ModelDefinition<any> = Model.extend({});
 
 export const models = {
   [Resource.TARGET]: TargetModel,
   [Resource.RECORDING]: RecordingModel,
   [Resource.ARCHIVE]: ArchiveModel,
   [Resource.RULE]: RuleModel,
+  [Resource.CREDENTIAL]: CredentialModel,
 };
 
 export default models;

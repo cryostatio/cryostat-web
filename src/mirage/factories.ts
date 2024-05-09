@@ -21,6 +21,7 @@ export const targetFactory: FactoryDefinition<any> = Factory.extend({
   alias: 'Fake Target',
   connectUrl: 'http://fake-target.local:1234',
   jvmId: '1234',
+  labels: [],
   annotations: {
     platform: [
       {
