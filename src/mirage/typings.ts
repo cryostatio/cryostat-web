@@ -18,4 +18,5 @@ export enum Resource {
   RECORDING = 'recording',
   ARCHIVE = 'archive',
   RULE = 'rule',
+  CREDENTIAL = 'credential',
 }
