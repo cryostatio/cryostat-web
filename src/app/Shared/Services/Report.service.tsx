@@ -34,7 +34,11 @@ export class ReportService {
     }
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    return fromFetch(recording.reportUrl, {
+    let url = recording.reportUrl;
+    if (!url.startsWith(this.login.authority)) {
+      url = `${this.login.authority}/${recording.reportUrl}`;
+    }
+    return fromFetch(url, {
       method: 'GET',
       mode: 'cors',
       credentials: 'include',
