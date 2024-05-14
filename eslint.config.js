@@ -1,5 +1,3 @@
-const js = require("@eslint/js");
-
 const EslintTypeScriptParser = require("@typescript-eslint/parser");
 const EslintPluginReactHooks = require("eslint-plugin-react-hooks");
 const EslintPluginReact = require("eslint-plugin-react");
@@ -8,13 +6,11 @@ const EslintPluginUnusedImports = require("eslint-plugin-unused-imports");
 const EslintTypeScriptPlugin = require("@typescript-eslint/eslint-plugin");
 const Prettier = require("prettier");
 
-module.exports [
-  js.configs.recommended,
-  EslintPluginReact.configs["jsx-runtime", "recommended"],
-  EslintPluginImport.configs.recommended,
-  EslintPluginImport.configs.typescript,
-  EslintTypeScriptPlugin.configs.recommended,
-
+module.exports = [
+  //EslintPluginReact.configs["jsx-runtime", "recommended"],
+  //EslintPluginImport.configs.recommended,
+  //EslintPluginImport.configs.typescript,
+  //EslintTypeScriptPlugin.configs.recommended,
   {
     languageOptions: {
       // tells eslint to use the TypeScript parser
@@ -53,9 +49,6 @@ module.exports [
       "import": EslintPluginImport,
       "prettier": Prettier
     },
-    ignores: [
-      "src/mirage/**"
-    ],
     rules: {
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/interface-name-prefix": "off",
