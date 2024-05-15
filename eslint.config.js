@@ -1,4 +1,5 @@
 const EslintTypeScriptParser = require("@typescript-eslint/parser");
+const ts = require("@typescript-eslint/eslint-plugin");
 const EslintPluginReactHooks = require("eslint-plugin-react-hooks");
 const EslintPluginReact = require("eslint-plugin-react");
 const EslintPluginImport = require("eslint-plugin-import");
@@ -6,12 +7,11 @@ const EslintPluginUnusedImports = require("eslint-plugin-unused-imports");
 const EslintTypeScriptPlugin = require("@typescript-eslint/eslint-plugin");
 const Prettier = require("prettier");
 
-module.exports = [
-  //EslintPluginReact.configs["jsx-runtime", "recommended"],
-  //EslintPluginImport.configs.recommended,
-  //EslintPluginImport.configs.typescript,
-  //EslintTypeScriptPlugin.configs.recommended,
+module.exports = [{
+    ignores: ['src/mirage/', '**/node_modules/'],
+  },
   {
+    files: ['**/*.{ts,tsx,js}'],
     languageOptions: {
       // tells eslint to use the TypeScript parser
       parser: EslintTypeScriptParser,
@@ -41,7 +41,7 @@ module.exports = [
     },
     // includes the typescript specific rules found here: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
     plugins: {
-      "@typescript-eslint": EslintTypeScriptPlugin,
+      "@typescript-eslint": ts,
       "react-hooks": EslintPluginReactHooks,
       "react": EslintPluginReact,
       "eslint-plugin-react-hooks": EslintPluginReactHooks,
@@ -80,6 +80,9 @@ module.exports = [
         "warn",
         { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
       ]
-    }
-  }  
-]
+   }
+  }];
+//EslintPluginReact.configs["jsx-runtime", "recommended"],
+  //EslintPluginImport.configs.recommended,
+  //EslintPluginImport.configs.typescript,
+  //ts.configs.recommended,
