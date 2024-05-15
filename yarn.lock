@@ -4159,13 +4159,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.0.0":
-  version: 9.5.0
-  resolution: "commander@npm:9.5.0"
-  checksum: c7a3e27aa59e913b54a1bafd366b88650bc41d6651f0cbe258d4ff09d43d6a7394232a4dadd0bf518b3e696fdf595db1028a0d82c785b88bd61f8a440cecfade
-  languageName: node
-  linkType: hard
-
 "commander@npm:~11.1.0":
   version: 11.1.0
   resolution: "commander@npm:11.1.0"
@@ -4410,7 +4403,6 @@ __metadata:
     rxjs: ^7.8.0
     selenium-webdriver: ^4.15.0
     semver: ^7.5.4
-    showdown: ^2.1.0
     style-loader: ^3.3.3
     svg-url-loader: ^8.0.0
     terser-webpack-plugin: ^5.3.9
@@ -12329,17 +12321,6 @@ __metadata:
   bin:
     showdown: bin/showdown.js
   checksum: f2143a3ef98cb00349cecf2cd9f26d15bbd2c75bf7c78dddf6d9f8b12929868ce33229b1daf81829bdbfeed2f92ec3d8ff9ec7b184082edc220bba9d46bbd24a
-  languageName: node
-  linkType: hard
-
-"showdown@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "showdown@npm:2.1.0"
-  dependencies:
-    commander: ^9.0.0
-  bin:
-    showdown: bin/showdown.js
-  checksum: 9e33607612c4465f9ef39de356e2cee512e248eb71d4725e1d4353cf3ab4bbe89a94601ce6bfbd8245000633693c8b90e7d85a9613dfeba7704a7422cee78282
   languageName: node
   linkType: hard
 
