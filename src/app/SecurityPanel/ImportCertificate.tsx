@@ -37,8 +37,8 @@ import {
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { SecurityCard } from './types';
 import { tap } from 'rxjs/operators';
+import { SecurityCard } from './types';
 
 export const CertificateImport: React.FC = () => {
   const context = React.useContext(ServiceContext);
