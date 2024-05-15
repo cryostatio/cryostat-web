@@ -1,11 +1,10 @@
-const EslintTypeScriptParser = require("@typescript-eslint/parser");
-const ts = require("@typescript-eslint/eslint-plugin");
-const EslintPluginReactHooks = require("eslint-plugin-react-hooks");
-const EslintPluginReact = require("eslint-plugin-react");
-const EslintPluginImport = require("eslint-plugin-import");
-const EslintPluginUnusedImports = require("eslint-plugin-unused-imports");
-const EslintTypeScriptPlugin = require("@typescript-eslint/eslint-plugin");
-const Prettier = require("prettier");
+const eslintTypeScriptParser = require("@typescript-eslint/parser");
+const eslintTypeScriptPlugin = require("@typescript-eslint/eslint-plugin");
+const eslintPluginReactHooks = require("eslint-plugin-react-hooks");
+const eslintPluginReact = require("eslint-plugin-react");
+const eslintPluginImport = require("eslint-plugin-import");
+const eslintPluginUnusedImports = require("eslint-plugin-unused-imports");
+const prettier = require("prettier");
 
 module.exports = [{
     ignores: ['src/mirage/', '**/node_modules/'],
@@ -14,7 +13,7 @@ module.exports = [{
     files: ['**/*.{ts,tsx,js}'],
     languageOptions: {
       // tells eslint to use the TypeScript parser
-      parser: EslintTypeScriptParser,
+      parser: eslintTypeScriptParser,
       // tell the TypeScript parser that we want to use JSX syntax
       parserOptions: {
         "tsx": true,
@@ -41,13 +40,13 @@ module.exports = [{
     },
     // includes the typescript specific rules found here: https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin#supported-rules
     plugins: {
-      "@typescript-eslint": ts,
-      "react-hooks": EslintPluginReactHooks,
-      "react": EslintPluginReact,
-      "eslint-plugin-react-hooks": EslintPluginReactHooks,
-      "unused-imports": EslintPluginUnusedImports,
-      "import": EslintPluginImport,
-      "prettier": Prettier
+      "@typescript-eslint": eslintTypeScriptPlugin,
+      "react-hooks": eslintPluginReactHooks,
+      "react": eslintPluginReact,
+      "eslint-plugin-react-hooks": eslintPluginReactHooks,
+      "unused-imports": eslintPluginUnusedImports,
+      "import": eslintPluginImport,
+      "prettier": prettier
     },
     rules: {
       "@typescript-eslint/explicit-function-return-type": "off",
@@ -82,7 +81,3 @@ module.exports = [{
       ]
    }
   }];
-//EslintPluginReact.configs["jsx-runtime", "recommended"],
-  //EslintPluginImport.configs.recommended,
-  //EslintPluginImport.configs.typescript,
-  //ts.configs.recommended,
