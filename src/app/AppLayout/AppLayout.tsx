@@ -336,7 +336,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <ExternalLinkAltIcon color="grey" />
         </Icon>
       </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
+      <ApplicationLauncherItem key={'Guided Tour'} onClick={handleOpenGuidedTour}>
         {t('AppLayout.APP_LAUNCHER.GUIDED_TOUR')}
       </ApplicationLauncherItem>,
       <ApplicationLauncherItem key={'Help'} onClick={handleOpenDiscussion}>
