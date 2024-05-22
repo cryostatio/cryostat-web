@@ -95,11 +95,11 @@ const LayoutRadioGroup: React.FC<LayoutRadioGroupProps> = ({ onChange, ...props 
   const configs = React.useMemo(
     () => [
       {
-        title: 'Graph View',
+        title: 'Graph view',
         isGraph: true,
       },
       {
-        title: 'List View',
+        title: 'List view',
         isGraph: false,
       },
     ],
@@ -353,7 +353,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
             <EmptyStateSecondaryActions>
               <EmptyStateBody>{`${
                 matchedExpr === '' ? 'Enter another' : 'Clear'
-              } Match Expression and try again.`}</EmptyStateBody>
+              } Match expression and try again.`}</EmptyStateBody>
             </EmptyStateSecondaryActions>
           </EmptyState>
         </Bullseye>

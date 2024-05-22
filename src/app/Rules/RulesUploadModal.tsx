@@ -138,16 +138,16 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title="Upload Automated Rules"
-      description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
+      title="Upload Automated rules"
+      description="Select an Automated rules definition file to upload. File must be in valid JSON format."
       help={
         <Popover
           appendTo={portalRoot}
           headerContent={<div>What&quot;s this?</div>}
           bodyContent={
             <div>
-              Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
-              target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
+              Automated rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
+              target JVM applications. Each Automated rule specifies parameters for which Event Template to use, how
               much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
               application recording buffer into Cryostat&quot;s own archived storage.
             </div>
@@ -160,7 +160,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       }
     >
       <Form>
-        <FormGroup label="JSON File" isRequired fieldId="file">
+        <FormGroup label="JSON file" isRequired fieldId="file">
           <MultiFileUpload
             submitRef={submitRef}
             abortRef={abortRef}

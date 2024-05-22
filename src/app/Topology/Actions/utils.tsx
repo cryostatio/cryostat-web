@@ -101,7 +101,7 @@ export const nodeActions: NodeAction[] = [
       services.target.setTarget(targetNode.target);
       navigate('/rules/create');
     },
-    title: 'Create Automated Rules',
+    title: 'Create Automated rules',
   },
   { key: '', isSeparator: true },
   {

@@ -40,7 +40,7 @@ export const AboutDescription: React.FC = () => {
     const result = cryostatVersion.match(expr);
     if (!result) {
       notificationsContext.warning(
-        'Cryostat Version Parse Failure',
+        'Cryostat version parse failure',
         `Could not parse Cryostat version string '${cryostatVersion}'.`,
       );
       return;

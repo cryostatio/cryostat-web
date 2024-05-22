@@ -254,7 +254,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     (t: EventTemplate) => {
       let actions = [
         {
-          title: 'Create Recording...',
+          title: 'Create recording...',
           onClick: () =>
             navigate('/recordings/create', {
               state: { template: { name: t.name, type: t.type } } as Partial<CustomRecordingFormData>,

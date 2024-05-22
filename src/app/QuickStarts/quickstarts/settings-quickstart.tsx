@@ -65,16 +65,16 @@ The **Connectivity** tab enables you to configure the WebSocket connection betwe
 
 1. Click [Connectivity]{{highlight settings-connectivity-tab}}.
 2. Configure the **WebSocket Connection Debounce** time.
-3. Configure the **Auto-Refresh** period for content-views.
-[To use the **Auto-Refresh** feature, make sure to enable the [Auto-Refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox.]{{admonition tip}}
+3. Configure the **Auto-refresh** period for content-views.
+[To use the **Auto-refresh** feature, make sure to enable the [Auto-refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox.]{{admonition tip}}
 `,
       },
       {
-        title: 'Go to the **Notifications & Messages** tab',
+        title: 'Go to the **Notifications & messages** tab',
         description: `
-The **Notifications & Messages** tab allows you to configure the notifications and deletion warnings.
+The **Notifications & messages** tab allows you to configure the notifications and deletion warnings.
 
-1. Click [Notifications & Messages]{{highlight settings-notifications&messages-tab}}.
+1. Click [Notifications & messages]{{highlight settings-notifications&messages-tab}}.
 2. You can enable or disable notifications from various categories. Click \`Show more\` for the full list of notifications.
   To control the maximum number of notifications, configure the input control.
 3. You are also able to enable or disable deletion dialog warnings for various destructive actions. Click \`Show more\` for the full list of deletion warnings.
@@ -88,8 +88,8 @@ The **Dashboard** tab allows you to configure settings for the various Dashboard
 The **Automated Analysis** dashboard card allows you to automatically start an analysis on the recording with a click of a button. You can configure the recording that is started by this card.
 
 1. From the list of settings tabs, click [Dashboard]{{highlight settings-dashboard-tab}}.
-2. Configure the **Automated Analysis Recording Configuration** settings.
-3. Configure the **Dashboard Metrics Configuration** settings.
+2. Configure the **Automated analysis recording configuration** settings.
+3. Configure the **Dashboard metrics configuration** settings.
 
 [When using the **Automated Analysis Card**, make sure the **Event Template** is compatible with the target JVM.]{{admonition warning}}
 [Setting both an infinite maximum size and age may result in an **Out Of Memory** error during report generation.]{{admonition caution}}
@@ -104,9 +104,9 @@ The **Automated Analysis** dashboard card allows you to automatically start an a
 2. Configure the **Credentials Storage** settings.
 
   Credentials are necessary to authenticate with the target JVMs that [APP] communicates with, if JMX auth is enabled or if a [APP] agent authenticated connection is required. If you prefer not to store these credentials in the [APP] backend, you can opt to store them in local session storage instead.
-3. Configure the **Feature Level** settings.
+3. Configure the **Feature level** settings.
 
-  The **Feature Level** setting enables you to enable or disable beta features.
+  The **Feature level** setting enables you to enable or disable beta features.
 
 `,
       },

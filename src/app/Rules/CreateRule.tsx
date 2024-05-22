@@ -343,8 +343,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   return (
     <Form>
       <Text component={TextVariants.small}>
-        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
-        applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
+        Automated rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
+        applications. Each Automated rule specifies parameters for which Event Template to use, how much data should be
         kept in the application recording buffer, and how frequently Cryostat should copy the application recording
         buffer into Cryostat&apos;s own archived storage.
       </Text>
@@ -386,11 +386,11 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         />
       </FormGroup>
       <FormGroup
-        label="Match Expression"
+        label="Match expression"
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match Expression Hint"
+            headerContent="Match expression hint"
             bodyContent={
               <>
                 Try an expression like:
@@ -473,7 +473,7 @@ enabled in the future.`}
         />
       </FormGroup>
       <FormGroup
-        label="Maximum Size"
+        label="Maximum size"
         fieldId="maxSize"
         helperText="The maximum size of recording data retained in the target application's recording buffer."
         data-quickstart-id="rule-max-size"
@@ -506,7 +506,7 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Maximum Age"
+        label="Maximum age"
         fieldId="maxAge"
         helperText="The maximum age of recording data retained in the target application's recording buffer."
         data-quickstart-id="rule-max-age"
@@ -539,7 +539,7 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Archival Period"
+        label="Archival period"
         fieldId="archivalPeriod"
         helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
         data-quickstart-id="rule-archival-period"
@@ -572,9 +572,9 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Initial Delay"
+        label="Initial delay"
         fieldId="initialDelay"
-        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later."
+        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival period later."
         data-quickstart-id="rule-initial-delay"
       >
         <Split hasGutter={true}>
@@ -605,7 +605,7 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Preserved Archives"
+        label="Preserved archives"
         fieldId="preservedArchives"
         helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
         data-quickstart-id="rule-preserved-archives"
@@ -651,7 +651,7 @@ export const CreateRule: React.FC = () => {
   const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
     () => [
       {
-        title: 'Automated Rules',
+        title: 'Automated rules',
         path: '/rules',
       },
     ],
@@ -679,7 +679,7 @@ export const CreateRule: React.FC = () => {
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
-              <CardTitle>Match Expression Visualizer</CardTitle>
+              <CardTitle>Match expression visualizer</CardTitle>
               <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
                 <MatchExpressionVisualizer />
               </CardBody>

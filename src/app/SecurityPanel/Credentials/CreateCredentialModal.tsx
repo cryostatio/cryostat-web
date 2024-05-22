@@ -219,11 +219,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       onCredentialChange={setCredential}
     >
       <FormGroup
-        label="Match Expression"
+        label="Match expression"
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match Expression Hint"
+            headerContent="Match expression hint"
             bodyContent={
               <>
                 Try an expression like:

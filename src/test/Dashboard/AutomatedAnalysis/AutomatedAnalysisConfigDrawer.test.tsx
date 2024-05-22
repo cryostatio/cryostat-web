@@ -101,7 +101,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
     expect(screen.getByText(/automatedanalysisconfigform/i)).toBeInTheDocument();
   });
 
-  it('creates a recording when Create Recording is clicked', async () => {
+  it('creates a recording when Create recording is clicked', async () => {
     const onCreateFunction = jest.fn();
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
     const { user } = render({

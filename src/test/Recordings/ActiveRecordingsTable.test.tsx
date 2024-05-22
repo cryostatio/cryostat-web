@@ -205,7 +205,7 @@ describe('<ActiveRecordingsTable />', () => {
       expect(button).toBeVisible();
     });
 
-    ['Name', 'Start Time', 'Duration', 'State', 'Labels'].map((text) => {
+    ['Name', 'Start time', 'Duration', 'State', 'Labels'].map((text) => {
       const header = screen.getByText(text);
       expect(header).toBeInTheDocument();
       expect(header).toBeVisible();

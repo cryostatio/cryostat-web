@@ -81,9 +81,9 @@ const routes: IAppRoute[] = [
   {
     component: QuickStarts,
 
-    label: 'Quick Starts',
+    label: 'Quick starts',
     path: '/quickstarts',
-    title: 'Quick Starts',
+    title: 'Quick starts',
     description: 'Get started with Cryostat.',
   },
   {
@@ -105,18 +105,18 @@ const routes: IAppRoute[] = [
   {
     component: RulesTable,
 
-    label: 'Automated Rules',
+    label: 'Automated rules',
     path: '/rules',
-    title: 'Automated Rules',
+    title: 'Automated rules',
     description:
-      'Create recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.',
+      'Create Recordings on multiple target JVMs at once using Automated rules consisting of a name, match expression, template, archival period, and more.',
     navGroup: CONSOLE,
     children: [
       {
         component: CreateRule,
 
         path: '/rules/create',
-        title: 'Create Automated Rule',
+        title: 'Create Automated rule',
       },
     ],
   },
@@ -133,7 +133,7 @@ const routes: IAppRoute[] = [
         component: CreateRecording,
 
         path: '/recordings/create',
-        title: 'Create Recording',
+        title: 'Create recording',
       },
     ],
   },

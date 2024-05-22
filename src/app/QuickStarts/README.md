@@ -27,7 +27,7 @@ TODO: Fix this section when quick starts are categorized
 [About]{{highlight nav-about-tab}}
 [Dashboard]{{highlight nav-dashboard-tab}}
 [Topology]{{highlight nav-topology-tab}}
-[Automated Rules]{{highlight nav-automatedrules-tab}}
+[Automated rules]{{highlight nav-automatedrules-tab}}
 [Recordings]{{highlight nav-recordings-tab}}
 [Archives]{{highlight nav-archives-tab}}
 [Events]{{highlight nav-events-tab}}
@@ -39,7 +39,7 @@ TODO: Fix this section when quick starts are categorized
 [Application Launcher]{{highlight application-launcher}}
 ```
 ### Some other notes:
-* When showing user-facing strings, refer to quick starts as `quick starts` and not `Quick Starts`, `QuickStarts`, or `quickstarts`.
+* When showing user-facing strings, refer to quick starts as `quick starts` and not `Quick starts`, `QuickStarts`, or `quickstarts`.
 * While rendering markdown, when mentioning the Product name itself, use `[APP]` instead of `Cryostat`.
 * The conclusion should stay largely consistent in all quick starts. Refer to the `generic-quickstart.tsx` for an example.
 

@@ -286,7 +286,7 @@ export const CustomRecordingForm: React.FC = () => {
             setAdvancedRecordingOptions(recordingOptions);
           },
           error: (error) => {
-            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create recordings' : error.message);
+            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create Recordings' : error.message);
             setTemplates([]);
             setFormData((old) => ({ ...old, template: undefined }));
             setAdvancedRecordingOptions({});

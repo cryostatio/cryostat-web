@@ -59,7 +59,7 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({
           <DropdownItem key="Remove" onClick={onRemove}>
             {t('REMOVE', { ns: 'common' })}
           </DropdownItem>,
-          <DropdownItem key="Reset Size" onClick={onResetSize}>
+          <DropdownItem key="Reset size" onClick={onResetSize}>
             {t('DashboardCardActionMenu.RESET_SIZE')}
           </DropdownItem>,
         ]}

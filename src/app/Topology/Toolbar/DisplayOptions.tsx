@@ -101,7 +101,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
       onToggle={handleToggle}
       isDisabled={isDisabled}
       isOpen={open}
-      aria-label={'Display Options'}
+      aria-label={'Display options'}
       placeholderText={'Display options'}
       customContent={menuContent}
     />

@@ -162,7 +162,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                   onSingleSuccess(
                     fileUpload.file.name,
                     <Text component="p" style={{ color: 'var(--pf-global--warning-color--200)' }}>
-                      Warning: To see this template in the template picker, make sure the Cryostat Feature Level is set
+                      Warning: To see this template in the template picker, make sure the Cryostat Feature level is set
                       to BETA.
                     </Text>,
                   );
@@ -250,7 +250,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
       }
     >
       <Form>
-        <FormGroup label="JSON File" isRequired fieldId="file">
+        <FormGroup label="JSON file" isRequired fieldId="file">
           <MultiFileUpload
             submitRef={submitRef}
             abortRef={abortRef}

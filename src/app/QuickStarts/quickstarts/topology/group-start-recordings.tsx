@@ -59,16 +59,16 @@ With **Topology** view, you can perform actions (i.e. start recording) on an ind
         description: `
 To open the action menu for a target group:
 
-- *Graph View*: Right-click a target group to display the **Action** menu.
+- *Graph view*: Right-click a target group to display the **Action** menu.
 
-- *List View*: Click the **Action** dropdown menu next to the group name.
+- *List view*: Click the **Action** dropdown menu next to the group name.
 `,
         review: {
           instructions: '#### Verify that you see action menu.',
           failedTaskHelp: `
-In *Graph View*, the line surronding the targets represents the group.
+In *Graph view*, the line surronding the targets represents the group.
 
-In *List View*, to reveal nested groups, click on list rows.`,
+In *List view*, to reveal nested groups, click on list rows.`,
         },
       },
       {

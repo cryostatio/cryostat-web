@@ -18,7 +18,7 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CryostatIcon, conclusion } from '../quickstart-utils';
 
-const displayName = 'Start a Recording';
+const displayName = 'Start a recording';
 
 const RecordingQuickStart: QuickStart = {
   metadata: {
@@ -34,7 +34,7 @@ const RecordingQuickStart: QuickStart = {
     description: `Learn how to start a recording with Java Flight Recorder (JFR) with **[APP]**.`,
     prerequisites: [''],
     introduction: `
-## Start a Recording
+## Start a recording
 **Java Flight Recorder (JFR)** is a profiling tool that is built into the JVM. It allows you to record events that happen in the JVM and then analyze the recording to find performance issues. [APP] leverages JFR to provide a simple way to start, stop, and download recordings from a containerized target JVM.
 
 ### What you'll learn
@@ -81,11 +81,11 @@ There are two tabs within the Recordings page:
 
 [Active Recordings]{{highlight active-recordings-tab}} and [Archived Recordings]{{highlight archived-recordings-tab}}.
 
-**Active recordings** are recordings that only exist only within the target JVM. **Archived recordings** are recordings that have been saved from the target JVM and copied to [APP]'s storage volume.
+**Active Recordings** are recordings that only exist only within the target JVM. **Archived recordings** are recordings that have been saved from the target JVM and copied to [APP]'s storage volume.
 
 To start an active recording:
 
-1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**.
+1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight recording Form**.
 [If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including \`Create\`."]{{admonition note}}
 2. Enter a name for the recording in the [Name]{{highlight crf-name}} field.
 3. Select the [Duration]{{highlight crf-duration}} for the recording. You can select \`CONTINUOUS\` to record until the recording is stopped.

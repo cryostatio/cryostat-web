@@ -108,10 +108,10 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           placement: 'right',
         },
         {
-          title: 'Automated Rules',
+          title: 'Automated rules',
           content: (
             <p>
-              Create, delete, enable, and view Cryostat <strong>Automated Rules</strong> in this view. Automated Rules
+              Create, delete, enable, and view Cryostat <strong>Automated rules</strong> in this view. Automated rules
               allow you start recordings on target JVMs based on a set of conditions.
             </p>
           ),

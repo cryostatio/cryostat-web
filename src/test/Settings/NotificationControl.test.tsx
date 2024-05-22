@@ -147,7 +147,7 @@ describe('<NotificationControl/>', () => {
 
     await user.click(expandButton);
 
-    const webSocketAct = screen.getByLabelText('WebSocket Client Activity');
+    const webSocketAct = screen.getByLabelText('WebSocket client activity');
     expect(webSocketAct).toBeInTheDocument();
     expect(webSocketAct).toBeVisible();
     expect(webSocketAct).toBeChecked();

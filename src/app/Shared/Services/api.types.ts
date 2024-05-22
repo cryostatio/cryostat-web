@@ -486,7 +486,7 @@ export enum NodeType {
   // A target JVM using the Cryostat Agent, *not* connectable over JMX. Agent instances
   // that do publish a JMX Service URL should publish themselves with the JVM NodeType.
   AGENT = 'CryostatAgent',
-  // Custom target defined via Custom Target Creation Form.
+  // Custom Target defined via Custom Target creation form.
   CUSTOM_TARGET = 'CustomTarget',
   // Kubernetes platform.
   NAMESPACE = 'Namespace',

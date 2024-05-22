@@ -27,7 +27,7 @@ const _CustomTargetSearchItem: QuickSearchItem = {
       color: 'green',
     },
   ],
-  descriptionShort: 'Define a custom target definition.',
+  descriptionShort: 'Define a Custom Target definition.',
   descriptionFull: 'Provide a JMX Service URL along with necessary credentials to point to a target JVM.',
   featureLevel: FeatureLevel.PRODUCTION,
   createAction: ({ navigate }) => {

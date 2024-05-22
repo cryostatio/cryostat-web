@@ -17,7 +17,7 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CryostatIcon, conclusion } from '../quickstart-utils';
 
-const displayName = 'Get started with Automated Rules';
+const displayName = 'Get started with Automated rules';
 
 const AutomatedRulesQuickStart: QuickStart = {
   metadata: {
@@ -31,10 +31,10 @@ const AutomatedRulesQuickStart: QuickStart = {
     durationMinutes: 5,
     icon: <CryostatIcon />,
     description: `Learn about automated rules in **[APP]** and how to create one.`,
-    prerequisites: ['Start a Recording'],
+    prerequisites: ['Start a recording'],
     introduction: `
-## Automated Rules
-Automated Rules are configurations that instruct [APP] to create JDK Flight Recordings on matching target JVM applications. Each rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, and how frequently [APP] should copy the application recording buffer into [APP]'s own archived storage.
+## Automated rules
+Automated rules are configurations that instruct [APP] to create JDK Flight Recordings on matching target JVM applications. Each rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, and how frequently [APP] should copy the application recording buffer into [APP]'s own archived storage.
 
 ### What you'll learn
 
@@ -49,29 +49,29 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
     `,
     tasks: [
       {
-        title: 'Create a new Automated Rule',
+        title: 'Create a new Automated rule',
         description: `
-1. In the [APP] console navigation bar, click [Automated Rules]{{highlight nav-automatedrules-tab}}.
+1. In the [APP] console navigation bar, click [Automated rules]{{highlight nav-automatedrules-tab}}.
 2. Click [Create]{{highlight create-rule-btn}}.
         `,
         review: {
-          instructions: '#### Verify that you see the Automated Rules creation form.',
+          instructions: '#### Verify that you see the Automated rules creation form.',
           failedTaskHelp:
             'If you do not see the navigation bar, click the [menu button]{{highlight nav-toggle-btn}} on the masthead.',
         },
       },
       {
-        title: 'Fill out the Automated Rule form',
+        title: 'Fill out the Automated rule form',
         description: `
-To create a new rule, use the Automated Rule creation form to fill in the required fields.
+To create a new rule, use the Automated rule creation form to fill in the required fields.
 
-The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the match expression: \`true\`{{copy}}. You can also match targets more specifically with a match expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
+The [Match expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the match expression: \`true\`{{copy}}. You can also match targets more specifically with a match expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
 
 
 To create a new rule, you must fill out the following required fields:
 1. Enter a name for the rule in the [Name]{{highlight rule-name}} field.
-2. Enter an expression in the [Match Expression]{{highlight rule-matchexpr}} field. To see an example match expression, click the [match hint]{{highlight rule-matchexpr-help}}.
-[Use the [Match Expression Visualizer]{{highlight match-expr-card}} to test your match expression against the target JVMs currently discovered by [APP]. Any matched targets will appear unfaded in the Graph view and will be listed in the List view.]{{admonition tip}}
+2. Enter an expression in the [Match expression]{{highlight rule-matchexpr}} field. To see an example match expression, click the [match hint]{{highlight rule-matchexpr-help}}.
+[Use the [Match expression visualizer]{{highlight match-expr-card}} to test your match expression against the target JVMs currently discovered by [APP]. Any matched targets will appear unfaded in the Graph view and will be listed in the List view.]{{admonition tip}}
 
 3. Select an [Event Template]{{highlight rule-evt-template}}.
 
@@ -81,7 +81,7 @@ To create a new rule, you must fill out the following required fields:
 
 `,
         review: {
-          instructions: '#### Verify that you see the new rule in the Automated Rules table.',
+          instructions: '#### Verify that you see the new rule in the Automated rules table.',
           failedTaskHelp: `If you do not see the new rule, follow the previous steps again.
                 If you cannot create the rule, check that you have entered valid values for each required field.`,
         },
@@ -101,13 +101,13 @@ The recording should be named according to the rule-name format, such as \`auto_
 `,
         review: {
           instructions:
-            '#### Verify that you see the new recording with the correct Automated Rule recording naming scheme in the list of recordings.',
+            '#### Verify that you see the new recording with the correct Automated rule recording naming scheme in the list of recordings.',
           failedTaskHelp:
             'If you do not see the new recording, go back to the Rule Creation form, and try verifying that your rule match expression correctly matches the intended target JVMs in this task.',
         },
       },
     ],
-    conclusion: conclusion(displayName, 'Automated Rules'),
+    conclusion: conclusion(displayName, 'Automated rules'),
     type: {
       text: 'Advanced',
       color: 'red',

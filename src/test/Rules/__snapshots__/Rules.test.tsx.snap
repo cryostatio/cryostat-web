@@ -23,7 +23,7 @@ exports[`<Rules /> renders correctly 1`] = `
           <h1
             className="pf-c-breadcrumb__heading"
           >
-            Automated Rules
+            Automated rules
           </h1>
         </li>
       </ol>
@@ -45,12 +45,12 @@ exports[`<Rules /> renders correctly 1`] = `
           <div
             className="pf-c-card__title"
           >
-            About Automated Rules
+            About Automated rules
           </div>
           <div
             className="pf-c-card__body"
           >
-            Automated Rules define a dynamic set of Target JVMs to connect to and start
+            Automated rules define a dynamic set of Target JVMs to connect to and start
              
             <a
               href="/recordings"
@@ -58,7 +58,7 @@ exports[`<Rules /> renders correctly 1`] = `
             >
               Active Recordings
             </a>
-             using a specific 
+             using a specific
             <a
               href="/events"
               onClick={[Function]}
@@ -66,14 +66,14 @@ exports[`<Rules /> renders correctly 1`] = `
               Event Template
             </a>
              
-            when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM connections require JMX Credentials, you can configure these in 
+            when the Automated rule is created and when any new matching Target JVMs appear. If your Target JVM connections require JMX Credentials, you can configure these in 
             <a
               href="/security"
               onClick={[Function]}
             >
               Security
             </a>
-            . Automated Rules can be configured to periodically copy the contents of the Active Recording to
+            . Automated rules can be configured to periodically copy the contents of the Active recording to
              
             <a
               href="/archives"
@@ -216,7 +216,7 @@ exports[`<Rules /> renders correctly 1`] = `
                   data-ouia-component-type="PF4/Title"
                   data-ouia-safe={true}
                 >
-                  No Automated Rules
+                  No Automated rules
                 </h4>
               </div>
             </div>

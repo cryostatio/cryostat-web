@@ -21,7 +21,7 @@ import { MatchExpressionService } from './MatchExpression.service';
 import { AutomatedAnalysisRecordingConfig, ChartControllerConfig } from './service.types';
 
 // ======================================
-// Match Expression
+// Match expression
 // ======================================
 export const SearchExprServiceContext = React.createContext(new MatchExpressionService());
 

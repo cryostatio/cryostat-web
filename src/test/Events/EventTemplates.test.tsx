@@ -212,7 +212,7 @@ describe('<EventTemplates />', () => {
 
     await user.click(screen.getByLabelText('Actions'));
 
-    expect(screen.getByText('Create Recording...'));
+    expect(screen.getByText('Create recording...'));
     expect(screen.getByText('Download'));
     expect(screen.getByText('Delete'));
 
@@ -246,7 +246,7 @@ describe('<EventTemplates />', () => {
 
     await user.click(screen.getByLabelText('Actions'));
 
-    expect(screen.getByText('Create Recording...'));
+    expect(screen.getByText('Create recording...'));
     expect(screen.getByText('Download'));
     expect(screen.getByText('Delete'));
 

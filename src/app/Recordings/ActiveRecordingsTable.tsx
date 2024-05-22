@@ -98,7 +98,7 @@ const tableColumns: TableColumn[] = [
     sortable: true,
   },
   {
-    title: 'Start Time',
+    title: 'Start time',
     keyPaths: ['startTime'],
     sortable: true,
   },
