@@ -70,7 +70,7 @@ describe('Recording workflow steps', function () {
     await recordings.archiveRecording(active[0]);
     const notif = await cryostat.getLatestNotification();
 
-    assert.equal(notif.title, 'Recording Saved');
+    assert.equal(notif.title, 'Recording saved');
     assert.ok(notif.description.includes('helloWorld'));
   });
 

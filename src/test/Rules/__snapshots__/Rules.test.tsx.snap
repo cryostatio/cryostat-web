@@ -58,7 +58,7 @@ exports[`<Rules /> renders correctly 1`] = `
             >
               Active Recordings
             </a>
-             using a specific
+             using a specific 
             <a
               href="/events"
               onClick={[Function]}

@@ -51,14 +51,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
             className="pf-c-switch__label pf-m-on"
             id="all-notifications-on"
           >
-            All Notifications
+            All notifications
           </span>
           <span
             aria-hidden="true"
             className="pf-c-switch__label pf-m-off"
             id="all-notifications-off"
           >
-            All Notifications
+            All notifications
           </span>
         </label>
         
@@ -337,14 +337,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ActiveRecordingCreated-on"
             >
-              Recording Created
+              Recording created
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ActiveRecordingCreated-off"
             >
-              Recording Created
+              Recording created
             </span>
           </label>
         </div>
@@ -571,7 +571,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ArchivedRecordingCreated-on"
             >
-              Archived Recording Uploaded
+              Archived recording uploaded
             </span>
             <span
               aria-hidden="true"
@@ -1085,7 +1085,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-off"
               id="LayoutTemplateCreated-off"
             >
-              Layout Template Created
+              Layout template created
             </span>
           </label>
         </div>

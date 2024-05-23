@@ -4,21 +4,21 @@
   },
   "AboutDescription": {
     "BUGS": "Bugs",
-    "FILE_A_REPORT": "File a Report",
+    "FILE_A_REPORT": "File a report",
     "HOMEPAGE": "Homepage",
-    "KNOWN_ISSUES": "Known Issues",
+    "KNOWN_ISSUES": "Known issues",
     "LICENSE": "License",
-    "MAILING_LIST": "Mailing List",
-    "OPEN_SOURCE_LICENSE": "Open Source License",
-    "VERSION": "version"
+    "MAILING_LIST": "Mailing list",
+    "OPEN_SOURCE_LICENSE": "Open source license",
+    "VERSION": "Version"
   },
   "AppLayout": {
     "APP_LAUNCHER": {
       "ABOUT": "About",
       "DOCUMENTATION": "Documentation",
-      "GUIDED_TOUR": "Guided Tour",
+      "GUIDED_TOUR": "Guided tour",
       "HELP": "Help",
-      "QUICKSTARTS": "Quick Starts"
+      "QUICKSTARTS": "Quick starts"
     }
   },
   "AutomatedAnalysisCard": {
@@ -37,7 +37,7 @@
     "STALE_REPORT": {
       "TEXT_one": "Most recent data from {{ count }} {{ units }} ago.",
       "TEXT_other": "Most recent data from {{ count }} {{ units }}s ago.",
-      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from."
+      "TOOLTIP": "Report data is stale. Click the Create recording button and choose an option to start an active recording to source automated reports from."
     },
     "TOOLBAR": {
       "CHECKBOX": {
@@ -64,7 +64,7 @@
   "AutomatedAnalysisConfigDrawer": {
     "INPUT_GROUP": {
       "CREATE_RECORDING": {
-        "LABEL": "Create Recording"
+        "LABEL": "Create recording"
       },
       "OPEN_SETTINGS": {
         "LABEL": "Open Settings"
@@ -72,13 +72,13 @@
     }
   },
   "AutomatedAnalysisConfigForm": {
-    "CURRENT_CONFIG": "Current Configuration",
-    "FORM_TITLE": "Profiling Recording Configuration",
+    "CURRENT_CONFIG": "Current configuration",
+    "FORM_TITLE": "Profiling recording Configuration",
     "FORMATTED_TEMPLATE": "Name: {{template.name}}, Type: {{template.type}}",
     "MAXIMUM_AGE": "Maximum age ({{unit}})",
     "MAXIMUM_SIZE": "Maximum size ({{unit}})",
     "SAVE_CHANGES": "Save changes",
-    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
+    "TEMPLATE_HELPER_TEXT": "The Event template to be applied to Automated Analysis recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
   },
   "AutomatedAnalysisScoreFilter": {
@@ -141,23 +141,23 @@
     },
     "TITLE": "{{chartKind}} (last {{duration}}s, every {{period}}s)"
   },
-  "ClickableAutomatedAnalysisLabel": {
+  "ClickableAutomatedAnalysisresult": {
     "ARIA_LABELS": {
-      "POPOVER": "automated-analysis-description-popover"
+      "POPOVER": "cryostat_tmp"
     }
   },
   "Dashboard": {
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your dashboard. Some cards require additional configuration.",
     "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
-    "CARD_CATALOG_TITLE": "Dashboard Card Catalog",
-    "INVALID_CARD_CONFIGURATIONS": "Invalid Card Configurations",
+    "CARD_CATALOG_TITLE": "Dashboard Card catalog",
+    "INVALID_CARD_CONFIGURATIONS": "Invalid Card configurations",
     "PAGE_TITLE": "Dashboard"
   },
   "DashboardCardActionMenu": {
-    "RESET_SIZE": "Reset Size"
+    "RESET_SIZE": "Reset size"
   },
   "DashboardLayoutCreateModal": {
-    "CREATE_LAYOUT": "Create Dashboard Layout",
+    "CREATE_LAYOUT": "Create Dashboard layout",
     "ERROR": {
       "NAME_INVALID": "Name must be alphanumeric and can contain underscores, dashes, and periods.",
       "NAME_REQUIRED": "Layout name is a mandatory field.",
@@ -166,10 +166,10 @@
     },
     "LABEL": "Create a new dashboard layout",
     "NAME": {
-      "HELPER_TEXT": "Enter a name for the dashboard layout.",
+      "HELPER_TEXT": "Enter a name for the Dashboard layout.",
       "LABEL": "Name"
     },
-    "RENAME_LAYOUT": "Rename Dashboard Layout"
+    "RENAME_LAYOUT": "Rename Dashboard layout"
   },
   "DashboardLayoutSetAsTemplateModal": {
     "DOWNLOAD": {
@@ -207,7 +207,7 @@
       "LABEL": "Layout menu",
       "OTHERS": "Layouts"
     },
-    "NEW_LAYOUT": "New Layout",
+    "NEW_LAYOUT": "New layout",
     "RENAME": {
       "LABEL": "Rename layout"
     },
@@ -279,7 +279,7 @@
   "QuickStarts": {
     "CATALOG_PAGE": {
       "HINT": "Quick start tutorials to get started with Cryostat.",
-      "TITLE": "Quick Starts"
+      "TITLE": "Quick starts"
     }
   },
   "RecordingLabelFields": {
@@ -290,27 +290,27 @@
     "AUTO_REFRESH": {
       "CHECKBOX_LABEL": "Enabled",
       "DESCRIPTION": "Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.",
-      "TITLE": "Auto-Refresh"
+      "TITLE": "Auto-refresh"
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
-      "DESCRIPTION": "Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
-      "TITLE": "Automated Analysis Recording Configuration"
+      "DESCRIPTION": "Set the recording configuration for Automated Analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
+      "TITLE": "Automated Analysis recording configuration"
     },
     "CATEGORIES": {
       "ADVANCED": "Advanced",
       "CONNECTIVITY": "Connectivity",
       "DASHBOARD": "Dashboard",
       "GENERAL": "General",
-      "NOTIFICATION_MESSAGE": "Notifications & Messages"
+      "NOTIFICATION_MESSAGE": "Notifications & messages"
     },
     "CHARTS_CONFIG": {
       "DESCRIPTION": "",
       "REFRESH_RATE_SETTING": "Configure the minimum time to wait between data refreshes. Individual metrics cards may still request updates on a faster cycle, but the client application instance will throttle update requests to the server according to this setting.",
-      "TITLE": "Dashboard Metrics Configuration"
+      "TITLE": "Dashboard metrics configuration"
     },
     "CREDENTIALS_STORAGE": {
       "BACKEND": {
-        "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules.",
+        "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated rules.",
         "TITLE": "Backend"
       },
       "BROWSER_SESSION": {
@@ -332,12 +332,12 @@
     "DELETION_DIALOG_CONTROL": {
       "DESCRIPTION": "",
       "SWITCH_DESCRIPTION": "Enable or disable deletion dialogs by deletion type.",
-      "SWITCH_LABEL": "All Deletion Warnings",
-      "TITLE": "Show Deletion Dialogs"
+      "SWITCH_LABEL": "All deletion warnings",
+      "TITLE": "Show deletion dialogs"
     },
     "FEATURE_LEVEL": {
       "DESCRIPTION": "Control which graphical features appear in the application.",
-      "TITLE": "Feature Level"
+      "TITLE": "Feature level"
     },
     "LANGUAGE": {
       "ARIA_LABELS": {
@@ -350,7 +350,7 @@
       "DESCRIPTION": "",
       "INPUT": "Control the maximum number of notification alerts that appear at once.",
       "INPUT_DESCRIPTION": "Enable or disable all notifications.",
-      "SWITCH_LABEL": "All Notifications",
+      "SWITCH_LABEL": "All notifications",
       "TITLE": "Notifications"
     },
     "THEME": {
@@ -365,7 +365,7 @@
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
       "DESCRIPTION": "Set the retry interval (in milliseconds) used when establishing WebSocket connections. Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages. Decrease this time if the web-interface takes a long time to populate on startup.",
-      "TITLE": "WebSocket Retry Interval"
+      "TITLE": "WebSocket retry interval"
     }
   },
   "TimePicker": {
@@ -393,7 +393,7 @@
     }
   },
   "Topology": {
-    "GRAPH_VIEW": "Graph View",
-    "LIST_VIEW": "List View"
+    "GRAPH_VIEW": "Graph view",
+    "LIST_VIEW": "List view"
   }
 }
