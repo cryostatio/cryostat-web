@@ -148,7 +148,7 @@ export class Dashboard {
     const layoutSelector = await getElementById(this.driver, 'dashboard-layout-dropdown-toggle');
     await layoutSelector.click();
 
-    const newLayoutButton = await getElementByXPath(this.driver, '//button[contains(.,"New Layout")]');
+    const newLayoutButton = await getElementByXPath(this.driver, '//button[contains(.,"New layout")]');
     await newLayoutButton.click();
   }
 
