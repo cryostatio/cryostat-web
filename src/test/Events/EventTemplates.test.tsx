@@ -212,19 +212,19 @@ describe('<EventTemplates />', () => {
 
     await user.click(screen.getByLabelText('Actions'));
 
-    expect(screen.getByText('Create recording...'));
+    expect(screen.getByText('Create Recording...'));
     expect(screen.getByText('Download'));
     expect(screen.getByText('Delete'));
 
     const deleteAction = screen.getByText('Delete');
     await user.click(deleteAction);
 
-    expect(screen.getByLabelText('Event template delete warning'));
+    expect(screen.getByLabelText('Event Template delete warning'));
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
     await user.click(screen.getByLabelText("Don't ask me again"));
-    await user.click(within(screen.getByLabelText('Event template delete warning')).getByText('Delete'));
+    await user.click(within(screen.getByLabelText('Event Template delete warning')).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');
@@ -246,7 +246,7 @@ describe('<EventTemplates />', () => {
 
     await user.click(screen.getByLabelText('Actions'));
 
-    expect(screen.getByText('Create recording...'));
+    expect(screen.getByText('Create Recording...'));
     expect(screen.getByText('Download'));
     expect(screen.getByText('Delete'));
 
@@ -255,7 +255,7 @@ describe('<EventTemplates />', () => {
     await user.click(deleteAction);
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(screen.queryByLabelText('Event template delete warning')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Event Template delete warning')).not.toBeInTheDocument();
   });
 
   it('should show error view if failing to retrieve event templates', async () => {
@@ -308,7 +308,7 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    const filterInput = screen.getByLabelText('Event template filter');
+    const filterInput = screen.getByLabelText('Event Template filter');
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 

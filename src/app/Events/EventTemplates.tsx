@@ -254,7 +254,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     (t: EventTemplate) => {
       let actions = [
         {
-          title: 'Create recording...',
+          title: 'Create Recording...',
           onClick: () =>
             navigate('/recordings/create', {
               state: { template: { name: t.name, type: t.type } } as Partial<CustomRecordingFormData>,
@@ -356,7 +356,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
                   id="templateFilter"
                   type="search"
                   placeholder="Filter..."
-                  aria-label="Event template filter"
+                  aria-label="Event Template filter"
                   onChange={setFilterText}
                   value={filterText}
                   isDisabled={errorMessage != ''}

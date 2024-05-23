@@ -369,7 +369,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
           <EmptyState>
             <EmptyStateIcon icon={SearchIcon} />
             <Title headingLevel="h4" size="lg">
-              No Automated rules
+              No Automated Rules
             </Title>
           </EmptyState>
         </>
@@ -377,7 +377,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
     } else {
       return (
         <InnerScrollContainer>
-          <TableComposable aria-label="Automated rules Table" variant={TableVariant.compact}>
+          <TableComposable aria-label="Automated Rules Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 {tableColumns.map(({ title, tooltip, sortable }, index) => (
@@ -406,15 +406,15 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
 
   return (
     <>
-      <BreadcrumbPage pageTitle="Automated rules">
+      <BreadcrumbPage pageTitle="Automated Rules">
         <Card data-quickstart-id="about-rules">
-          <CardTitle>About Automated rules</CardTitle>
+          <CardTitle>About Automated Rules</CardTitle>
           <CardBody>
-            Automated rules define a dynamic set of Target JVMs to connect to and start{' '}
+            Automated Rules define a dynamic set of Target JVMs to connect to and start{' '}
             <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
-            when the Automated rule is created and when any new matching Target JVMs appear. If your Target JVM
+            when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM
             connections require JMX Credentials, you can configure these in <Link to="/security">Security</Link>.
-            Automated rules can be configured to periodically copy the contents of the Active recording to{' '}
+            Automated Rules can be configured to periodically copy the contents of the Active Recording to{' '}
             <Link to="/archives">Archives</Link> to ensure you always have up-to-date information about your JVMs.
           </CardBody>
         </Card>

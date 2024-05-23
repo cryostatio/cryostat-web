@@ -29,14 +29,14 @@ export const CreateRecording: React.FC = () => {
   );
 
   return (
-    <TargetView pageTitle="Create recording" breadcrumbs={[{ title: 'Recordings', path: '/recordings' }]}>
+    <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: '/recordings' }]}>
       <Card>
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={onTabSelect}>
-            <Tab eventKey={0} title="Custom Flight recording">
+            <Tab eventKey={0} title="Custom Flight Recording">
               <CustomRecordingForm />
             </Tab>
-            <Tab eventKey={1} title="Snapshot recording">
+            <Tab eventKey={1} title="Snapshot Recording">
               <SnapshotRecordingForm />
             </Tab>
           </Tabs>

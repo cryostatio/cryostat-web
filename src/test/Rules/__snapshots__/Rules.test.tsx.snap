@@ -23,7 +23,7 @@ exports[`<Rules /> renders correctly 1`] = `
           <h1
             className="pf-c-breadcrumb__heading"
           >
-            Automated rules
+            Automated Rules
           </h1>
         </li>
       </ol>
@@ -45,12 +45,12 @@ exports[`<Rules /> renders correctly 1`] = `
           <div
             className="pf-c-card__title"
           >
-            About Automated rules
+            About Automated Rules
           </div>
           <div
             className="pf-c-card__body"
           >
-            Automated rules define a dynamic set of Target JVMs to connect to and start
+            Automated Rules define a dynamic set of Target JVMs to connect to and start
              
             <a
               href="/recordings"
@@ -66,14 +66,14 @@ exports[`<Rules /> renders correctly 1`] = `
               Event Template
             </a>
              
-            when the Automated rule is created and when any new matching Target JVMs appear. If your Target JVM connections require JMX Credentials, you can configure these in 
+            when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM connections require JMX Credentials, you can configure these in 
             <a
               href="/security"
               onClick={[Function]}
             >
               Security
             </a>
-            . Automated rules can be configured to periodically copy the contents of the Active recording to
+            . Automated Rules can be configured to periodically copy the contents of the Active Recording to
              
             <a
               href="/archives"
@@ -216,7 +216,7 @@ exports[`<Rules /> renders correctly 1`] = `
                   data-ouia-component-type="PF4/Title"
                   data-ouia-safe={true}
                 >
-                  No Automated rules
+                  No Automated Rules
                 </h4>
               </div>
             </div>

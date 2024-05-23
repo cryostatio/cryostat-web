@@ -571,14 +571,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ArchivedRecordingCreated-on"
             >
-              Archived recording uploaded
+              Archived Recording uploaded
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ArchivedRecordingCreated-off"
             >
-              Archived recording uploaded
+              Archived Recording uploaded
             </span>
           </label>
         </div>
@@ -610,14 +610,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ArchivedRecordingDeleted-on"
             >
-              Archived recording deleted
+              Archived Recording deleted
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ArchivedRecordingDeleted-off"
             >
-              Archived recording deleted
+              Archived Recording deleted
             </span>
           </label>
         </div>
@@ -727,14 +727,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ProbeTemplateUploaded-on"
             >
-              Probe template created
+              Probe Template created
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ProbeTemplateUploaded-off"
             >
-              Probe template created
+              Probe Template created
             </span>
           </label>
         </div>
@@ -766,14 +766,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ProbeTemplateDeleted-on"
             >
-              Probe template deleted
+              Probe Template deleted
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ProbeTemplateDeleted-off"
             >
-              Probe template deleted
+              Probe Template deleted
             </span>
           </label>
         </div>
@@ -805,14 +805,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ProbeTemplateApplied-on"
             >
-              Probe template applied
+              Probe Template applied
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ProbeTemplateApplied-off"
             >
-              Probe template applied
+              Probe Template applied
             </span>
           </label>
         </div>
@@ -844,14 +844,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ProbesRemoved-on"
             >
-              Probes removed from target
+              Probes removed from Target
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ProbesRemoved-off"
             >
-              Probes removed from target
+              Probes removed from Target
             </span>
           </label>
         </div>
@@ -883,14 +883,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="RuleCreated-on"
             >
-              Automated rule created
+              Automated Rule created
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="RuleCreated-off"
             >
-              Automated rule created
+              Automated Rule created
             </span>
           </label>
         </div>
@@ -922,14 +922,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="RuleUpdated-on"
             >
-              Automated rule updated
+              Automated Rule updated
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="RuleUpdated-off"
             >
-              Automated rule updated
+              Automated Rule updated
             </span>
           </label>
         </div>
@@ -961,14 +961,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="RuleDeleted-on"
             >
-              Automated rule deleted
+              Automated Rule deleted
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="RuleDeleted-off"
             >
-              Automated rule deleted
+              Automated Rule deleted
             </span>
           </label>
         </div>
@@ -1078,14 +1078,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="LayoutTemplateCreated-on"
             >
-              Layout template created
+              Layout Template created
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="LayoutTemplateCreated-off"
             >
-              Layout template created
+              Layout Template created
             </span>
           </label>
         </div>
@@ -1117,14 +1117,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="TargetCredentialsStored-on"
             >
-              Target credentials stored
+              Target Credentials stored
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="TargetCredentialsStored-off"
             >
-              Target credentials stored
+              Target Credentials stored
             </span>
           </label>
         </div>
@@ -1156,14 +1156,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="TargetCredentialsDeleted-on"
             >
-              Target credentials deleted
+              Target Credentials deleted
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="TargetCredentialsDeleted-off"
             >
-              Target credentials deleted
+              Target Credentials deleted
             </span>
           </label>
         </div>

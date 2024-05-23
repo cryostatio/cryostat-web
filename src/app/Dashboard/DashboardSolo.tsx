@@ -54,7 +54,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = () => {
           <EmptyState variant="large">
             <EmptyStateIcon variant="container" component={MonitoringIcon} />
             <Title headingLevel="h3" size="lg">
-              Dashboard card not found
+              Dashboard Card not found
             </Title>
             <EmptyStateBody>
               Provide valid <code>layout</code> and <code>cardId</code> query parameters and try again.

@@ -118,7 +118,7 @@ describe('<DeletionDialogControl/>', () => {
 
     await user.click(expandButton);
 
-    const activeRecordingSwitch = screen.getByLabelText('Delete Active recording');
+    const activeRecordingSwitch = screen.getByLabelText('Delete Active Recording');
     expect(activeRecordingSwitch).toBeInTheDocument();
     expect(activeRecordingSwitch).toBeVisible();
     expect(activeRecordingSwitch).toBeChecked();

@@ -12,7 +12,7 @@ exports[`<SnapshotRecordingForm /> renders correctly 1`] = `
     data-ouia-safe={true}
     data-pf-content={true}
   >
-    A Snapshot recording is one which contains all information about all events that have been captured in the current session by 
+    A Snapshot Recording is one which contains all information about all events that have been captured in the current session by 
     <i>
       other,  non-Snapshot
     </i>

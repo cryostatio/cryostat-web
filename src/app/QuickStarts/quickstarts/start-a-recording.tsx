@@ -85,7 +85,7 @@ There are two tabs within the Recordings page:
 
 To start an active recording:
 
-1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight recording Form**.
+1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**.
 [If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including \`Create\`."]{{admonition note}}
 2. Enter a name for the recording in the [Name]{{highlight crf-name}} field.
 3. Select the [Duration]{{highlight crf-duration}} for the recording. You can select \`CONTINUOUS\` to record until the recording is stopped.
@@ -128,7 +128,7 @@ Downloading a recording will save the recording to your local machine as a JFR f
       {
         title: 'View an analysis report',
         description: `
-[APP] is able to generate an **Automated Analysis Report** using a JFR recording. The **Java Mission Control** rules engine analyzes your recording, looks for common problems, and assigns a severity score from 0 (no problem) to 100 (potentially severe problem) to each problem.
+[APP] is able to generate an **Automated analysis Report** using a JFR recording. The **Java Mission Control** rules engine analyzes your recording, looks for common problems, and assigns a severity score from 0 (no problem) to 100 (potentially severe problem) to each problem.
 1. Click the [kebab menu]{{highlight recording-kebab}} next to the recording that you want to view an analysis report for.
 2. Click \`View Report ...\` to view an analysis report of the recording in a new tab.
 3. *Optional:* Right click on the page and select \`Save Page As...\` to download the report HTML file to your local machine.

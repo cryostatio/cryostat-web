@@ -24,11 +24,11 @@
   "AutomatedAnalysisCard": {
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues.",
     "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
-    "CARD_TITLE": "Automated Analysis",
+    "CARD_TITLE": "Automated analysis",
     "CRITICAL_RESULTS_one": "{{count}} Critical Result",
     "CRITICAL_RESULTS_other": "{{count}} Critical Results",
     "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report.",
-    "ERROR_TITLE": "Automated Analysis Error",
+    "ERROR_TITLE": "Automated analysis Error",
     "GOOD_RESULTS": "No problems",
     "NO_RESULTS": "No Results Found",
     "NO_RESULTS_BODY": "No results match this filter criteria. Try removing filters, showing unavailable scores, or resetting the severity score filter to 0.",
@@ -37,7 +37,7 @@
     "STALE_REPORT": {
       "TEXT_one": "Most recent data from {{ count }} {{ units }} ago.",
       "TEXT_other": "Most recent data from {{ count }} {{ units }}s ago.",
-      "TOOLTIP": "Report data is stale. Click the Create recording button and choose an option to start an active recording to source automated reports from."
+      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from."
     },
     "TOOLBAR": {
       "CHECKBOX": {
@@ -48,7 +48,7 @@
       "DELETE": {
         "LABEL": "Delete automated analysis"
       },
-      "LABEL": "Automated Analysis Toolbar",
+      "LABEL": "Automated analysis Toolbar",
       "REFRESH": {
         "LABEL": "Refresh automated analysis"
       },
@@ -64,7 +64,7 @@
   "AutomatedAnalysisConfigDrawer": {
     "INPUT_GROUP": {
       "CREATE_RECORDING": {
-        "LABEL": "Create recording"
+        "LABEL": "Create Recording"
       },
       "OPEN_SETTINGS": {
         "LABEL": "Open Settings"
@@ -78,7 +78,7 @@
     "MAXIMUM_AGE": "Maximum age ({{unit}})",
     "MAXIMUM_SIZE": "Maximum size ({{unit}})",
     "SAVE_CHANGES": "Save changes",
-    "TEMPLATE_HELPER_TEXT": "The Event template to be applied to Automated Analysis recordings.",
+    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to automated analysis recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
   },
   "AutomatedAnalysisScoreFilter": {
@@ -141,14 +141,14 @@
     },
     "TITLE": "{{chartKind}} (last {{duration}}s, every {{period}}s)"
   },
-  "ClickableAutomatedAnalysisresult": {
+  "ClickableAutomatedAnalysisLabel": {
     "ARIA_LABELS": {
-      "POPOVER": "cryostat_tmp"
+      "POPOVER": "automated-analysis-description-popover"
     }
   },
   "Dashboard": {
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your dashboard. Some cards require additional configuration.",
-    "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
+    "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
     "CARD_CATALOG_TITLE": "Dashboard Card catalog",
     "INVALID_CARD_CONFIGURATIONS": "Invalid Card configurations",
     "PAGE_TITLE": "Dashboard"
@@ -157,23 +157,23 @@
     "RESET_SIZE": "Reset size"
   },
   "DashboardLayoutCreateModal": {
-    "CREATE_LAYOUT": "Create Dashboard layout",
+    "CREATE_LAYOUT": "Create Dashboard Layout",
     "ERROR": {
       "NAME_INVALID": "Name must be alphanumeric and can contain underscores, dashes, and periods.",
       "NAME_REQUIRED": "Layout name is a mandatory field.",
       "NAME_TAKEN": "Specified layout name already exists.",
       "NAME_TOO_LONG": "Name must be 20 characters or less."
     },
-    "LABEL": "Create a new dashboard layout",
+    "LABEL": "Create a new Dashboard Layout",
     "NAME": {
-      "HELPER_TEXT": "Enter a name for the Dashboard layout.",
+      "HELPER_TEXT": "Enter a name for the Dashboard Layout.",
       "LABEL": "Name"
     },
-    "RENAME_LAYOUT": "Rename Dashboard layout"
+    "RENAME_LAYOUT": "Rename Dashboard Layout"
   },
   "DashboardLayoutSetAsTemplateModal": {
     "DOWNLOAD": {
-      "DESCRIPTION": "Download the current dashboard layout as a template.",
+      "DESCRIPTION": "Download the current Dashboard Layout as a template.",
       "TITLE": "Download Custom Layout Template"
     },
     "ERROR": {
@@ -192,7 +192,7 @@
       }
     },
     "SET_TEMPLATE": {
-      "DESCRIPTION": "Set the current dashboard layout as a template.",
+      "DESCRIPTION": "Set the current Dashboard Layout as a template.",
       "TITLE": "Set Custom Layout Template"
     }
   },
@@ -267,7 +267,7 @@
       "VERSION_INVALID": "Template version is invalid."
     },
     "HELP": {
-      "CONTENT": "Dashboard Layout Templates are pre-configured dashboard designs that can be used as a starting point for new dashboard layouts. Each template is defined in a JSON file that contains a list of dashboard cards and their configurations, as well as a unique name for the template. The name must be alphanumeric and can include underscores, dashes, and periods."
+      "CONTENT": "Dashboard Layout Templates are pre-configured dashboard designs that can be used as a starting point for new dashboard layouts. Each template is defined in a JSON file that contains a list of Dashboard Cards and their configurations, as well as a unique name for the template. The name must be alphanumeric and can include underscores, dashes, and periods."
     },
     "TITLE": "Upload Dashboard Layout Template"
   },
@@ -293,8 +293,8 @@
       "TITLE": "Auto-refresh"
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
-      "DESCRIPTION": "Set the recording configuration for Automated Analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
-      "TITLE": "Automated Analysis recording configuration"
+      "DESCRIPTION": "Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
+      "TITLE": "Automated analysis recording configuration"
     },
     "CATEGORIES": {
       "ADVANCED": "Advanced",
@@ -310,7 +310,7 @@
     },
     "CREDENTIALS_STORAGE": {
       "BACKEND": {
-        "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated rules.",
+        "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules.",
         "TITLE": "Backend"
       },
       "BROWSER_SESSION": {

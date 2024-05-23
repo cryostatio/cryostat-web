@@ -8,7 +8,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
     className="automated-analysis-datalist-innerscroll pf-c-scroll-inner-wrapper"
   >
     <table
-      aria-label="Automated Analysis Data List"
+      aria-label="Automated analysis Data List"
       className="pf-c-table pf-m-grid-md pf-m-sticky-header"
       data-ouia-component-id="OUIA-Generated-Table-1"
       data-ouia-component-type="PF4/Table"

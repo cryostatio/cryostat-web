@@ -543,11 +543,11 @@ export const CustomRecordingForm: React.FC = () => {
         >
           <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
           <FormGroup
-            fieldId="To Disk"
+            fieldId="To disk"
             helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
           >
             <Checkbox
-              label="To Disk"
+              label="To disk"
               id="toDisk-checkbox"
               isChecked={formData.toDisk}
               onChange={handleToDiskChange}

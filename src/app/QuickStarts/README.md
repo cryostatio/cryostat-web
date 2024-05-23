@@ -27,7 +27,7 @@ TODO: Fix this section when quick starts are categorized
 [About]{{highlight nav-about-tab}}
 [Dashboard]{{highlight nav-dashboard-tab}}
 [Topology]{{highlight nav-topology-tab}}
-[Automated rules]{{highlight nav-automatedrules-tab}}
+[Automated Rules]{{highlight nav-automatedrules-tab}}
 [Recordings]{{highlight nav-recordings-tab}}
 [Archives]{{highlight nav-archives-tab}}
 [Events]{{highlight nav-events-tab}}

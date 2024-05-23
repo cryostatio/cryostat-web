@@ -278,7 +278,7 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    const filterInput = screen.getByLabelText('Probe template filter');
+    const filterInput = screen.getByLabelText('Probe Template filter');
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 

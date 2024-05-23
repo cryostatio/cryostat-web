@@ -573,13 +573,13 @@ Array [
                 className="pf-c-check__label"
                 htmlFor="toDisk-checkbox"
               >
-                To Disk
+                To disk
               </label>
             </div>
             <div
               aria-live="polite"
               className="pf-c-form__helper-text"
-              id="To Disk-helper"
+              id="To disk-helper"
             >
               Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information
             </div>

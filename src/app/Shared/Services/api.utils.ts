@@ -198,7 +198,7 @@ export const messageKeys = new Map([
   [
     NotificationCategory.LayoutTemplateCreated,
     {
-      title: 'Layout template created',
+      title: 'Layout Template created',
     },
   ],
   [
@@ -287,7 +287,7 @@ export const messageKeys = new Map([
     NotificationCategory.ArchivedRecordingCreated,
     {
       variant: AlertVariant.success,
-      title: 'Archived recording uploaded',
+      title: 'Archived Recording uploaded',
       body: (evt) => `${evt.message.recording.name} was uploaded into archives`,
     } as NotificationMessageMapper,
   ],
@@ -295,7 +295,7 @@ export const messageKeys = new Map([
     NotificationCategory.ArchivedRecordingDeleted,
     {
       variant: AlertVariant.success,
-      title: 'Archived recording deleted',
+      title: 'Archived Recording deleted',
       body: (evt) => `${evt.message.recording.name} was deleted`,
     } as NotificationMessageMapper,
   ],
@@ -311,7 +311,7 @@ export const messageKeys = new Map([
     NotificationCategory.ProbeTemplateUploaded,
     {
       variant: AlertVariant.success,
-      title: 'Probe template created',
+      title: 'Probe Template created',
       body: (evt) => `${evt.message.probeTemplate} was created`,
     } as NotificationMessageMapper,
   ],
@@ -319,7 +319,7 @@ export const messageKeys = new Map([
     NotificationCategory.ProbeTemplateApplied,
     {
       variant: AlertVariant.success,
-      title: 'Probe template applied',
+      title: 'Probe Template applied',
       body: (evt) => `${evt.message.probeTemplate} was inserted`,
     } as NotificationMessageMapper,
   ],
@@ -335,7 +335,7 @@ export const messageKeys = new Map([
     NotificationCategory.ProbeTemplateDeleted,
     {
       variant: AlertVariant.success,
-      title: 'Probe template deleted',
+      title: 'Probe Template deleted',
       body: (evt) => `${evt.message.probeTemplate} was deleted`,
     } as NotificationMessageMapper,
   ],
@@ -343,7 +343,7 @@ export const messageKeys = new Map([
     NotificationCategory.ProbesRemoved,
     {
       variant: AlertVariant.success,
-      title: 'Probes removed from target',
+      title: 'Probes removed from Target',
       body: (evt) => `Probes successfully removed from ${evt.message.target}`,
     } as NotificationMessageMapper,
   ],
@@ -351,7 +351,7 @@ export const messageKeys = new Map([
     NotificationCategory.RuleCreated,
     {
       variant: AlertVariant.success,
-      title: 'Automated rule created',
+      title: 'Automated Rule created',
       body: (evt) => `${evt.message.name} was created`,
     } as NotificationMessageMapper,
   ],
@@ -359,7 +359,7 @@ export const messageKeys = new Map([
     NotificationCategory.RuleUpdated,
     {
       variant: AlertVariant.success,
-      title: 'Automated rule updated',
+      title: 'Automated Rule updated',
       body: (evt) => `${evt.message.name} was ` + (evt.message.enabled ? 'enabled' : 'disabled'),
     } as NotificationMessageMapper,
   ],
@@ -367,7 +367,7 @@ export const messageKeys = new Map([
     NotificationCategory.RuleDeleted,
     {
       variant: AlertVariant.success,
-      title: 'Automated rule deleted',
+      title: 'Automated Rule deleted',
       body: (evt) => `${evt.message.name} was deleted`,
     } as NotificationMessageMapper,
   ],
@@ -383,7 +383,7 @@ export const messageKeys = new Map([
     NotificationCategory.TargetCredentialsStored,
     {
       variant: AlertVariant.success,
-      title: 'Target credentials stored',
+      title: 'Target Credentials stored',
       body: (evt) => `Credentials stored for target: ${evt.message.target}`,
     } as NotificationMessageMapper,
   ],
@@ -391,7 +391,7 @@ export const messageKeys = new Map([
     NotificationCategory.TargetCredentialsDeleted,
     {
       variant: AlertVariant.success,
-      title: 'Target credentials deleted',
+      title: 'Target Credentials deleted',
       body: (evt) => `Credentials deleted for target: ${evt.message.target}`,
     } as NotificationMessageMapper,
   ],

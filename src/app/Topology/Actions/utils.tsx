@@ -101,7 +101,7 @@ export const nodeActions: NodeAction[] = [
       services.target.setTarget(targetNode.target);
       navigate('/rules/create');
     },
-    title: 'Create Automated rules',
+    title: 'Create Automated Rules',
   },
   { key: '', isSeparator: true },
   {
@@ -120,7 +120,7 @@ export const nodeActions: NodeAction[] = [
   },
   {
     key: 'GROUP_START_RECORDING',
-    title: 'Start recording',
+    title: 'Start Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
@@ -166,7 +166,7 @@ export const nodeActions: NodeAction[] = [
   },
   {
     key: 'GROUP_ARCHIVE_RECORDING',
-    title: 'Archive recording',
+    title: 'Archive Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
@@ -210,7 +210,7 @@ export const nodeActions: NodeAction[] = [
   },
   {
     key: 'GROUP_STOP_RECORDING',
-    title: 'Stop recording',
+    title: 'Stop Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
@@ -256,7 +256,7 @@ export const nodeActions: NodeAction[] = [
   { key: '', isSeparator: true, isGroup: true },
   {
     key: 'GROUP_DELETE_RECORDING',
-    title: 'Delete recording',
+    title: 'Delete Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();

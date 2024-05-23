@@ -38,7 +38,7 @@ jest.mock('@app/Settings/Config/AutomatedAnalysis', () => ({
     titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
     descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.DASHBOARD',
-    content: () => <Text>Automated Analysis Config Component</Text>,
+    content: () => <Text>Automated analysis Config Component</Text>,
     authenticated: true,
   } as UserSetting,
 }));
@@ -170,7 +170,7 @@ describe('<Settings/>', () => {
 
     expect(dashboardTab.getAttribute('aria-selected')).toBe('true');
 
-    const dashboardSettings = screen.queryByText('Automated Analysis Config Component');
+    const dashboardSettings = screen.queryByText('Automated analysis Config Component');
     expect(dashboardSettings).not.toBeInTheDocument();
   });
 
@@ -231,7 +231,7 @@ describe('<Settings/>', () => {
 
     expect(dashboardTab.getAttribute('aria-selected')).toBe('true');
 
-    const dashboardSettings = screen.getByText('Automated Analysis Config Component');
+    const dashboardSettings = screen.getByText('Automated analysis Config Component');
     expect(dashboardSettings).toBeInTheDocument();
     expect(dashboardSettings).toBeVisible();
   });

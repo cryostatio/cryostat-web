@@ -41,7 +41,7 @@ export const parseRule = (file: File): Observable<Rule> => {
       if (isRule(obj)) {
         return obj;
       } else {
-        throw new Error('Automated rule content is invalid.');
+        throw new Error('Automated Rule content is invalid.');
       }
     }),
   );
@@ -138,16 +138,16 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title="Upload Automated rules"
-      description="Select an Automated rules definition file to upload. File must be in valid JSON format."
+      title="Upload Automated Rules"
+      description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
       help={
         <Popover
           appendTo={portalRoot}
           headerContent={<div>What&quot;s this?</div>}
           bodyContent={
             <div>
-              Automated rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
-              target JVM applications. Each Automated rule specifies parameters for which Event Template to use, how
+              Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
+              target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
               much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
               application recording buffer into Cryostat&quot;s own archived storage.
             </div>

@@ -26,7 +26,7 @@ const GroupStartRecordingQuickStart: QuickStart = {
   },
   spec: {
     version: 2.3,
-    displayName: 'Start recording on multiple target JVMs',
+    displayName: 'Start Recording on multiple target JVMs',
     durationMinutes: 5,
     icon: <CryostatIcon />,
     description: 'Learn how to start recordings on multiple targets at once.',
@@ -72,9 +72,9 @@ In *List view*, to reveal nested groups, click on list rows.`,
         },
       },
       {
-        title: 'Start recording for a group of targets.',
+        title: 'Start Recording for a group of targets.',
         description: `
-To start a recording for targets under the selected group, select the \`Start recording\` option.
+To start a recording for targets under the selected group, select the \`Start Recording\` option.
 
 On each descendant target, **Cryostat** will create an active recording named \`cryostat_topology_action\` with the label
 \`cryostat.io.topology-group=<group_name>\` which represents the group the action is invoked on.
@@ -104,7 +104,7 @@ To check the started recordings in the previous step:
         },
       },
     ],
-    conclusion: conclusion('Start recording on multiple target JVMs', 'Topology'),
+    conclusion: conclusion('Start Recording on multiple target JVMs', 'Topology'),
     type: {
       text: 'Featured',
       color: 'blue',

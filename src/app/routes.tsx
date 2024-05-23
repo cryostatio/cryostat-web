@@ -105,18 +105,18 @@ const routes: IAppRoute[] = [
   {
     component: RulesTable,
 
-    label: 'Automated rules',
+    label: 'Automated Rules',
     path: '/rules',
-    title: 'Automated rules',
+    title: 'Automated Rules',
     description:
-      'Create Recordings on multiple target JVMs at once using Automated rules consisting of a name, match expression, template, archival period, and more.',
+      'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.',
     navGroup: CONSOLE,
     children: [
       {
         component: CreateRule,
 
         path: '/rules/create',
-        title: 'Create Automated rule',
+        title: 'Create Automated Rule',
       },
     ],
   },
@@ -133,7 +133,7 @@ const routes: IAppRoute[] = [
         component: CreateRecording,
 
         path: '/recordings/create',
-        title: 'Create recording',
+        title: 'Create Recording',
       },
     ],
   },

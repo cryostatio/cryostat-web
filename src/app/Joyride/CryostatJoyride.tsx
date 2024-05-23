@@ -88,7 +88,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
                 use of <strong>Dashboard Cards</strong>.
               </p>
               <br />
-              <p>There are various dashboard cards that can be configured to display different metrics and charts.</p>
+              <p>There are various Dashboard Cards that can be configured to display different metrics and charts.</p>
             </div>
           ),
           target: '*[data-tour-id="dashboard"]',
@@ -108,10 +108,10 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           placement: 'right',
         },
         {
-          title: 'Automated rules',
+          title: 'Automated Rules',
           content: (
             <p>
-              Create, delete, enable, and view Cryostat <strong>Automated rules</strong> in this view. Automated rules
+              Create, delete, enable, and view Cryostat <strong>Automated Rules</strong> in this view. Automated Rules
               allow you start recordings on target JVMs based on a set of conditions.
             </p>
           ),

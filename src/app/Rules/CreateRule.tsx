@@ -343,8 +343,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   return (
     <Form>
       <Text component={TextVariants.small}>
-        Automated rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
-        applications. Each Automated rule specifies parameters for which Event Template to use, how much data should be
+        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
+        applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
         kept in the application recording buffer, and how frequently Cryostat should copy the application recording
         buffer into Cryostat&apos;s own archived storage.
       </Text>
@@ -651,7 +651,7 @@ export const CreateRule: React.FC = () => {
   const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
     () => [
       {
-        title: 'Automated rules',
+        title: 'Automated Rules',
         path: '/rules',
       },
     ],

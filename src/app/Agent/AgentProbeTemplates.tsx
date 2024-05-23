@@ -301,7 +301,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                       id="templateFilter"
                       type="search"
                       placeholder="Filter..."
-                      aria-label="Probe template filter"
+                      aria-label="Probe Template filter"
                       onChange={setFilterText}
                       value={filterText}
                     />

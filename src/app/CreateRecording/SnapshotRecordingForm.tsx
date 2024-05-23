@@ -110,7 +110,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
     <>
       <Form isHorizontal>
         <Text component={TextVariants.p}>
-          A Snapshot recording is one which contains all information about all events that have been captured in the
+          A Snapshot Recording is one which contains all information about all events that have been captured in the
           current session by <i>other,&nbsp; non-Snapshot</i> recordings. Snapshots do not themselves define which
           events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from
           the moment it is created.

@@ -107,7 +107,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
-    expect(screen.getByText(/The Event Template to be applied to Automated Analysis recordings./i)).toBeInTheDocument();
+    expect(screen.getByText(/The Event Template to be applied to automated analysis recordings./i)).toBeInTheDocument();
 
     expect(screen.getByText(/the maximum size of recording data saved to disk./i)).toBeInTheDocument();
 
@@ -128,7 +128,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
-    expect(screen.getByText(/The Event Template to be applied to Automated Analysis recordings./i)).toBeInTheDocument();
+    expect(screen.getByText(/The Event Template to be applied to automated analysis recordings./i)).toBeInTheDocument();
 
     expect(screen.getByText(/the maximum size of recording data saved to disk./i)).toBeInTheDocument();
 

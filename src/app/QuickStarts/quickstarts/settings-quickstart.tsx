@@ -85,13 +85,13 @@ The **Notifications & messages** tab allows you to configure the notifications a
         description: `
 The **Dashboard** tab allows you to configure settings for the various Dashboard Cards that you can add to the Dashboard.
 
-The **Automated Analysis** dashboard card allows you to automatically start an analysis on the recording with a click of a button. You can configure the recording that is started by this card.
+The **Automated analysis** Dashboard Card allows you to automatically start an analysis on the recording with a click of a button. You can configure the recording that is started by this card.
 
 1. From the list of settings tabs, click [Dashboard]{{highlight settings-dashboard-tab}}.
 2. Configure the **Automated analysis recording configuration** settings.
 3. Configure the **Dashboard metrics configuration** settings.
 
-[When using the **Automated Analysis Card**, make sure the **Event Template** is compatible with the target JVM.]{{admonition warning}}
+[When using the **Automated analysis card**, make sure the **Event Template** is compatible with the target JVM.]{{admonition warning}}
 [Setting both an infinite maximum size and age may result in an **Out Of Memory** error during report generation.]{{admonition caution}}
 `,
       },

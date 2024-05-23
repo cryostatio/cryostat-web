@@ -138,14 +138,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteActiveRecordings-on"
             >
-              Delete Active recording
+              Delete Active Recording
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteActiveRecordings-off"
             >
-              Delete Active recording
+              Delete Active Recording
             </span>
           </label>
         </div>
@@ -177,14 +177,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteArchivedRecordings-on"
             >
-              Delete Archived recording
+              Delete Archived Recording
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteArchivedRecordings-off"
             >
-              Delete Archived recording
+              Delete Archived Recording
             </span>
           </label>
         </div>
@@ -216,14 +216,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteAutomatedRules-on"
             >
-              Delete Automated rule
+              Delete Automated Rule
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteAutomatedRules-off"
             >
-              Delete Automated rule
+              Delete Automated Rule
             </span>
           </label>
         </div>
@@ -255,14 +255,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DisableAutomatedRules-on"
             >
-              Disable Automated rule
+              Disable Automated Rule
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DisableAutomatedRules-off"
             >
-              Disable Automated rule
+              Disable Automated Rule
             </span>
           </label>
         </div>
@@ -294,14 +294,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteEventTemplates-on"
             >
-              Delete Event template
+              Delete Event Template
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteEventTemplates-off"
             >
-              Delete Event template
+              Delete Event Template
             </span>
           </label>
         </div>
@@ -333,14 +333,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteProbeTemplates-on"
             >
-              Delete Probe template
+              Delete Probe Template
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteProbeTemplates-off"
             >
-              Delete Probe template
+              Delete Probe Template
             </span>
           </label>
         </div>
@@ -372,14 +372,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteActiveProbes-on"
             >
-              Remove active Probes
+              Remove Active Probes
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteActiveProbes-off"
             >
-              Remove active Probes
+              Remove Active Probes
             </span>
           </label>
         </div>
@@ -528,14 +528,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteLayoutTemplate-on"
             >
-              Delete Layout template
+              Delete Layout Template
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteLayoutTemplate-off"
             >
-              Delete Layout template
+              Delete Layout Template
             </span>
           </label>
         </div>
@@ -567,14 +567,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ClearDashboardLayout-on"
             >
-              Clear Dashboard layout
+              Clear Dashboard Layout
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ClearDashboardLayout-off"
             >
-              Clear Dashboard layout
+              Clear Dashboard Layout
             </span>
           </label>
         </div>

@@ -1011,7 +1011,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
                 onClick={handleLoadAnalysis}
                 icon={<RedoIcon />}
               />
-              Automated Analysis
+              Automated analysis
             </Title>
             <Grid>
               {loadingAnalysis ? (
