@@ -39,7 +39,7 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
 ### What you'll learn
 
 - How to create an automated rule in [APP]
-- How to use match expressions to match one or more target JVMs
+- How to use Match Expressions to match one or more target JVMs
 
 ### What you'll need
 
@@ -65,13 +65,13 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
         description: `
 To create a new rule, use the Automated Rule creation form to fill in the required fields.
 
-The [Match expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the match expression: \`true\`{{copy}}. You can also match targets more specifically with a match expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
+The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the Match Expression: \`true\`{{copy}}. You can also match targets more specifically with a Match Expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
 
 
 To create a new rule, you must fill out the following required fields:
 1. Enter a name for the rule in the [Name]{{highlight rule-name}} field.
-2. Enter an expression in the [Match expression]{{highlight rule-matchexpr}} field. To see an example match expression, click the [match hint]{{highlight rule-matchexpr-help}}.
-[Use the [Match expression visualizer]{{highlight match-expr-card}} to test your match expression against the target JVMs currently discovered by [APP]. Any matched targets will appear unfaded in the Graph view and will be listed in the List view.]{{admonition tip}}
+2. Enter an expression in the [Match Expression]{{highlight rule-matchexpr}} field. To see an example Match Expression, click the [match hint]{{highlight rule-matchexpr-help}}.
+[Use the [Match Expression visualizer]{{highlight match-expr-card}} to test your Match Expression against the target JVMs currently discovered by [APP]. Any matched targets will appear unfaded in the Graph view and will be listed in the List view.]{{admonition tip}}
 
 3. Select an [Event Template]{{highlight rule-evt-template}}.
 
@@ -103,7 +103,7 @@ The Recording should be named according to the rule-name format, such as \`auto_
           instructions:
             '#### Verify that you see the new Recording with the correct Automated Rule Recording naming scheme in the list of Recordings.',
           failedTaskHelp:
-            'If you do not see the new Recording, go back to the Rule Creation form, and try verifying that your rule match expression correctly matches the intended target JVMs in this task.',
+            'If you do not see the new Recording, go back to the Rule Creation form, and try verifying that your rule Match Expression correctly matches the intended target JVMs in this task.',
         },
       },
     ],

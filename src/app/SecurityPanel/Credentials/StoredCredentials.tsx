@@ -165,7 +165,7 @@ const reducer = (state: State, action) => {
 
 const tableColumns: TableColumn[] = [
   {
-    title: 'Match expression',
+    title: 'Match Expression',
     keyPaths: ['matchExpression'],
     sortable: true,
   },
@@ -436,7 +436,7 @@ export const StoredCredentials = () => {
               {tableColumns.map(({ title }, index) => (
                 <Th
                   key={`table-header-${title}`}
-                  width={title === 'Match expression' ? 80 : 10}
+                  width={title === 'Match Expression' ? 80 : 10}
                   sort={getSortParams(index)}
                 >
                   {title}

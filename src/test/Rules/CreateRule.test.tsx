@@ -23,7 +23,7 @@ import { of, throwError } from 'rxjs';
 import { escapeKeyboardInput, render } from '../utils';
 
 jest.mock('@app/Shared/Components/MatchExpression/MatchExpressionVisualizer', () => ({
-  MatchExpressionVisualizer: () => <>Match expression visualizer</>,
+  MatchExpressionVisualizer: () => <>Match Expression visualizer</>,
 }));
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
@@ -112,7 +112,7 @@ describe('<CreateRule />', () => {
     expect(nameHelperText).toBeVisible();
   });
 
-  it('should show error helper text when match expression input is invalid', async () => {
+  it('should show error helper text when Match Expression input is invalid', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -127,7 +127,7 @@ describe('<CreateRule />', () => {
         ],
       },
     });
-    const matchExpressionInput = screen.getByLabelText('Match expression *');
+    const matchExpressionInput = screen.getByLabelText('Match Expression *');
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
 
@@ -138,7 +138,7 @@ describe('<CreateRule />', () => {
     expect(exphelperText).toBeVisible();
   });
 
-  it('should show warning text when match expression matches no target', async () => {
+  it('should show warning text when Match Expression matches no target', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -153,13 +153,13 @@ describe('<CreateRule />', () => {
         ],
       },
     });
-    const matchExpressionInput = screen.getByLabelText('Match expression *');
+    const matchExpressionInput = screen.getByLabelText('Match Expression *');
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
 
     await user.type(matchExpressionInput, 'false');
 
-    const exphelperText = await screen.findByText('Warning: Match expression matches no targets.');
+    const exphelperText = await screen.findByText('Warning: Match Expression matches no targets.');
     expect(exphelperText).toBeInTheDocument();
     expect(exphelperText).toBeVisible();
   });
@@ -179,7 +179,7 @@ describe('<CreateRule />', () => {
         ],
       },
     });
-    const matchExpressionInput = screen.getByLabelText('Match expression *');
+    const matchExpressionInput = screen.getByLabelText('Match Expression *');
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
 
@@ -230,7 +230,7 @@ describe('<CreateRule />', () => {
     expect(descriptionInput).toBeInTheDocument();
     expect(descriptionInput).toBeVisible();
 
-    const matchExpressionInput = screen.getByLabelText('Match expression *');
+    const matchExpressionInput = screen.getByLabelText('Match Expression *');
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
 

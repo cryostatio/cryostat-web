@@ -353,7 +353,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
             <EmptyStateSecondaryActions>
               <EmptyStateBody>{`${
                 matchedExpr === '' ? 'Enter another' : 'Clear'
-              } Match expression and try again.`}</EmptyStateBody>
+              } Match Expression and try again.`}</EmptyStateBody>
             </EmptyStateSecondaryActions>
           </EmptyState>
         </Bullseye>

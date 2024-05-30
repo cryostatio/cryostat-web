@@ -72,7 +72,7 @@ const tableColumns: TableColumn[] = [
     keyPaths: ['description'],
   },
   {
-    title: 'Match expression',
+    title: 'Match Expression',
     keyPaths: ['matchExpression'],
     sortable: true,
     tooltip:

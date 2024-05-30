@@ -219,11 +219,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       onCredentialChange={setCredential}
     >
       <FormGroup
-        label="Match expression"
+        label="Match Expression"
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match expression hint"
+            headerContent="Match Expression hint"
             bodyContent={
               <>
                 Try an expression like:
@@ -234,7 +234,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           >
             <Button
               variant="plain"
-              aria-label="More info for match expression field"
+              aria-label="More info for Match Expression field"
               onClick={(e) => e.preventDefault()}
               className="pf-c-form__group-label-help"
             >
@@ -246,11 +246,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         fieldId="match-expression"
         helperText={
           evaluating
-            ? 'Evaluating match expression...'
+            ? 'Evaluating Match Expression...'
             : matchExpressionValid === ValidatedOptions.warning
-            ? `Warning: Match expression matches no targets.`
+            ? `Warning: Match Expression matches no targets.`
             : `
-        Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+        Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
         application to determine whether the rule should be applied.`
         }
         helperTextInvalid="The expression matching failed."

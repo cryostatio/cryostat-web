@@ -74,7 +74,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     nameValid: ValidatedOptions.default,
     enabled: true,
     description: '',
-    matchExpression: '', // Use this for displaying match expression input
+    matchExpression: '', // Use this for displaying Match Expression input
     matchExpressionValid: ValidatedOptions.default,
     maxAge: 0,
     maxAgeUnit: 1,
@@ -386,11 +386,11 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         />
       </FormGroup>
       <FormGroup
-        label="Match expression"
+        label="Match Expression"
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match expression hint"
+            headerContent="Match Expression hint"
             bodyContent={
               <>
                 Try an expression like:
@@ -401,7 +401,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           >
             <Button
               variant="plain"
-              aria-label="More info for match expression field"
+              aria-label="More info for Match Expression field"
               onClick={(e) => e.preventDefault()}
               className="pf-c-form__group-label-help"
               data-quickstart-id="rule-matchexpr-help"
@@ -414,11 +414,11 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         fieldId="rule-matchexpr"
         helperText={
           evaluating
-            ? 'Evaluating match expression...'
+            ? 'Evaluating Match Expression...'
             : formData.matchExpressionValid === ValidatedOptions.warning
-            ? `Warning: Match expression matches no targets.`
+            ? `Warning: Match Expression matches no targets.`
             : `
-  Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+  Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
   application to determine whether the rule should be applied.`
         }
         helperTextInvalid="The expression matching failed."
@@ -679,7 +679,7 @@ export const CreateRule: React.FC = () => {
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
-              <CardTitle>Match expression visualizer</CardTitle>
+              <CardTitle>Match Expression visualizer</CardTitle>
               <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
                 <MatchExpressionVisualizer />
               </CardBody>

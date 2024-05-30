@@ -159,7 +159,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         </Title>
         <EmptyStateBody>{`${
           matchedExpr === '' ? 'Enter another' : 'Clear'
-        } Match expression and try again.`}</EmptyStateBody>
+        } Match Expression and try again.`}</EmptyStateBody>
       </EmptyState>
     </Bullseye>
   );

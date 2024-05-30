@@ -109,7 +109,7 @@ const routes: IAppRoute[] = [
     path: '/rules',
     title: 'Automated Rules',
     description:
-      'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.',
+      'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
     navGroup: CONSOLE,
     children: [
       {
