@@ -81,7 +81,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
       className="add-credential-modal"
       onClose={onDismiss}
       title="Store Credentials"
-      description="Create stored credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
+      description="Create Stored Credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
     >
       <SearchExprServiceContext.Provider value={matchExpreRef.current}>
         <CredentialContext.Provider value={credentialRef.current}>
