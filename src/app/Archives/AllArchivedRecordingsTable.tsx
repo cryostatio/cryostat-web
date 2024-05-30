@@ -304,7 +304,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     view = (
       <>
         <ErrorView
-          title={'Error retrieving archived recordings in All Archives View'}
+          title={'Error retrieving Archived Recordings in All Archives View'}
           message={errorMessage}
           retry={isAuthFail(errorMessage) ? authRetry : undefined}
         />

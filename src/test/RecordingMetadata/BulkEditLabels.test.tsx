@@ -161,7 +161,7 @@ describe('<BulkEditLabels />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should display read-only labels from selected recordings', async () => {
+  it('should display read-only Labels from selected Recordings', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -187,7 +187,7 @@ describe('<BulkEditLabels />', () => {
     expect(editButton).not.toBeDisabled();
   });
 
-  it('should not display labels for unchecked recordings', async () => {
+  it('should not display Labels for unchecked Recordings', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -207,7 +207,7 @@ describe('<BulkEditLabels />', () => {
     expect(placeHolder).toBeVisible();
   });
 
-  it('should display editable labels form when in edit mode', async () => {
+  it('should display editable Labels form when in edit mode', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -250,7 +250,7 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeVisible();
   });
 
-  it('should update the target recording labels after receiving a notification', async () => {
+  it('should update the target Recording labels after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -271,7 +271,7 @@ describe('<BulkEditLabels />', () => {
     expect(oldLabel).toBeVisible();
   });
 
-  it('should update the archived recording labels after receiving a notification', async () => {
+  it('should update the Archived Recording Labels after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -292,7 +292,7 @@ describe('<BulkEditLabels />', () => {
     expect(oldLabel).toBeVisible();
   });
 
-  it('should return to read-only view when edited labels are cancelled', async () => {
+  it('should return to read-only view when edited Labels are cancelled', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -342,7 +342,7 @@ describe('<BulkEditLabels />', () => {
     expect(addLabelButton).not.toBeInTheDocument();
   });
 
-  it('should save target recording labels when Save is clicked', async () => {
+  it('should save target Recording Labels when Save is clicked', async () => {
     const saveRequestSpy = jest
       .spyOn(defaultServices.api, 'postTargetRecordingMetadata')
       .mockReturnValue(of([mockActiveRecording]));
@@ -392,7 +392,7 @@ describe('<BulkEditLabels />', () => {
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should save archived recording labels when Save is clicked', async () => {
+  it('should save Archived Recording Labels when Save is clicked', async () => {
     const saveRequestSpy = jest
       .spyOn(defaultServices.api, 'postRecordingMetadata')
       .mockReturnValue(of([mockArchivedRecording]));

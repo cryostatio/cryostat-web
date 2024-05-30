@@ -345,7 +345,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
       <Text component={TextVariants.small}>
         Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
         applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
-        kept in the application recording buffer, and how frequently Cryostat should copy the application recording
+        kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording
         buffer into Cryostat&apos;s own archived storage.
       </Text>
       <FormGroup
@@ -475,7 +475,7 @@ enabled in the future.`}
       <FormGroup
         label="Maximum size"
         fieldId="maxSize"
-        helperText="The maximum size of recording data retained in the target application's recording buffer."
+        helperText="The maximum size of Recording data retained in the target application's Recording buffer."
         data-quickstart-id="rule-max-size"
       >
         <Split hasGutter={true}>
@@ -508,7 +508,7 @@ enabled in the future.`}
       <FormGroup
         label="Maximum age"
         fieldId="maxAge"
-        helperText="The maximum age of recording data retained in the target application's recording buffer."
+        helperText="The maximum age of Recording data retained in the target application's Recording buffer."
         data-quickstart-id="rule-max-age"
       >
         <Split hasGutter={true}>
@@ -541,7 +541,7 @@ enabled in the future.`}
       <FormGroup
         label="Archival period"
         fieldId="archivalPeriod"
-        helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
+        helperText="Time between copies of active Recording data being pulled into Cryostat archive storage."
         data-quickstart-id="rule-archival-period"
       >
         <Split hasGutter={true}>
@@ -574,7 +574,7 @@ enabled in the future.`}
       <FormGroup
         label="Initial delay"
         fieldId="initialDelay"
-        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival period later."
+        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later."
         data-quickstart-id="rule-initial-delay"
       >
         <Split hasGutter={true}>
@@ -607,7 +607,7 @@ enabled in the future.`}
       <FormGroup
         label="Preserved archives"
         fieldId="preservedArchives"
-        helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
+        helperText="The number of Archived Recording copies to preserve in archives for each target application affected by this rule."
         data-quickstart-id="rule-preserved-archives"
       >
         <TextInput

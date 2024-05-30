@@ -38,17 +38,17 @@ export interface DeleteOrDisableWarning {
 
 export const DeleteActiveRecordings: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteActiveRecordings,
-  title: 'Permanently delete your JFR recording?',
+  title: 'Permanently delete your JFR Recording?',
   label: 'Delete Active Recording',
-  description: `If you click Delete, recording and report data will be lost.`,
+  description: `If you click Delete, Recording and report data will be lost.`,
   ariaLabel: 'Recording delete warning',
 };
 
 export const DeleteArchivedRecordings: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteArchivedRecordings,
-  title: 'Permanently delete your Archived JFR recording?',
+  title: 'Permanently delete your Archived JFR Recording?',
   label: 'Delete Archived Recording',
-  description: `If you click Delete, recording and report data will be lost.`,
+  description: `If you click Delete, Recording and report data will be lost.`,
   ariaLabel: 'Recording delete warning',
 };
 
@@ -72,7 +72,7 @@ export const DeleteEventTemplates: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteEventTemplates,
   title: 'Permanently delete your Event Template?',
   label: 'Delete Event Template',
-  description: `If you click Delete, custom event template data will be lost.`,
+  description: `If you click Delete, custom Event Template data will be lost.`,
   ariaLabel: 'Event Template delete warning',
 };
 
@@ -86,10 +86,10 @@ export const DeleteProbeTemplates: DeleteOrDisableWarning = {
 
 export const DeleteActiveProbes: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteActiveProbes,
-  title: 'Permanently remove your active Probes from the target?',
-  label: 'Remove Active Probes',
-  description: `If you click Delete, active Probes will be removed from the target.`,
-  ariaLabel: 'Active Probes remove warning',
+  title: 'Permanently remove your active probes from the target?',
+  label: 'Remove active probes',
+  description: `If you click Delete, active probes will be removed from the target.`,
+  ariaLabel: 'Active probes remove warning',
 };
 
 export const DeleteCredentials: DeleteOrDisableWarning = {

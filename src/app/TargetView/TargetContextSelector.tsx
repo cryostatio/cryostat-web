@@ -205,7 +205,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const selectFooter = React.useMemo(
     () => (
       <Link to={'/topology/create-custom-target'}>
-        <Button variant="secondary">Create Target</Button>
+        <Button variant="secondary">Create target</Button>
       </Link>
     ),
     [],
@@ -221,7 +221,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             className={className}
             isPlain
             variant={SelectVariant.single}
-            aria-label="Select Target"
+            aria-label="Select target"
             maxHeight="30em"
             isFlipEnabled={true}
             menuAppendTo={'parent'}

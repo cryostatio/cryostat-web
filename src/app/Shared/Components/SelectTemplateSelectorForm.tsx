@@ -49,7 +49,7 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
     () =>
       [
         {
-          groupLabel: 'Target Templates',
+          groupLabel: 'Target templates',
           options: templates
             .filter((t) => t.type === 'TARGET')
             .map((t) => ({

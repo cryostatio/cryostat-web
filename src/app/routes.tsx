@@ -126,7 +126,7 @@ const routes: IAppRoute[] = [
     label: 'Recordings',
     path: '/recordings',
     title: 'Recordings',
-    description: 'Create, view and archive JFR recordings on single target JVMs.',
+    description: 'Create, view and archive JFR Recordings on single target JVMs.',
     navGroup: CONSOLE,
     children: [
       {
@@ -144,7 +144,7 @@ const routes: IAppRoute[] = [
     path: '/archives',
     title: 'Archives',
     description:
-      'View archived recordings across all target JVMs, as well as upload recordings directly to the archive.',
+      'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
     navGroup: CONSOLE,
   },
   {
@@ -153,7 +153,7 @@ const routes: IAppRoute[] = [
     label: 'Events',
     path: '/events',
     title: 'Events',
-    description: 'View available JFR event templates and types for target JVMs, as well as upload custom templates.',
+    description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
     navGroup: CONSOLE,
   },
   {

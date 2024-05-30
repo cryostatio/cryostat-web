@@ -372,14 +372,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteActiveProbes-on"
             >
-              Remove Active Probes
+              Remove active probes
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteActiveProbes-off"
             >
-              Remove Active Probes
+              Remove active probes
             </span>
           </label>
         </div>

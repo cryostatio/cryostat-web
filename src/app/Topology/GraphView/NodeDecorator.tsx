@@ -59,7 +59,7 @@ export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, qu
     if (loading) {
       return {
         icon: <InProgressIcon className={css(base, 'progress')} />,
-        tooltip: 'Retrieving active recordings.',
+        tooltip: 'Retrieving Active Recordings.',
       };
     }
     return runningRecs.length && !error

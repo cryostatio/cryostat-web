@@ -255,7 +255,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error retrieving event types'}
+        title={'Error retrieving Event Types'}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -292,7 +292,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         </Toolbar>
         {typeRowPairs.length ? (
           // TODO replace table with data list so collapsed event options can be custom formatted
-          <TableComposable aria-label="Event Types Table" variant={TableVariant.compact}>
+          <TableComposable aria-label="Event Types table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 <Th />

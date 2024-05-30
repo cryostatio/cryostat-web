@@ -65,7 +65,7 @@ describe('<SnapshotRecordingForm />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should create recording when create is clicked', async () => {
+  it('should create Recording when create is clicked', async () => {
     const onCreateSpy = jest.spyOn(defaultServices.api, 'createSnapshot').mockReturnValue(of(true));
     const { user } = render({
       routerConfigs: {
@@ -89,7 +89,7 @@ describe('<SnapshotRecordingForm />', () => {
     expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
 
-  it('should show error view if failing to retrieve templates or recording options', async () => {
+  it('should show error view if failing to retrieve templates or Recording options', async () => {
     const authSubj = new Subject<void>();
     const mockTargetSvc = {
       ...defaultServices.target,
@@ -114,7 +114,7 @@ describe('<SnapshotRecordingForm />', () => {
 
     await doAct(async () => authSubj.next());
 
-    const failTitle = screen.getByText('Error displaying recording creation form');
+    const failTitle = screen.getByText('Error displaying Recording creation form');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 

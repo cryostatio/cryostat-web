@@ -392,7 +392,7 @@ export const CustomRecordingForm: React.FC = () => {
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error displaying recording creation form'}
+        title={'Error displaying Recording creation form'}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -402,7 +402,7 @@ export const CustomRecordingForm: React.FC = () => {
   return (
     <>
       <Text component={TextVariants.small}>
-        JDK Flight Recordings are compact records of events which have occurred within the target JVM. Many event types
+        JDK Flight Recordings are compact records of events which have occurred within the target JVM. Many Event Types
         are built in to the JVM itself, while others are user defined.
       </Text>
       <Form isHorizontal>
@@ -410,8 +410,8 @@ export const CustomRecordingForm: React.FC = () => {
           label="Name"
           isRequired
           fieldId="recording-name"
-          helperText="Enter a recording name. This will be unique within the target JVM."
-          helperTextInvalid="A recording name can contain only letters, numbers, and underscores."
+          helperText="Enter a Recording name. This will be unique within the target JVM."
+          helperTextInvalid="A Recording name can contain only letters, numbers, and underscores."
           validated={formData.nameValid}
         >
           <TextInput
@@ -426,7 +426,7 @@ export const CustomRecordingForm: React.FC = () => {
             data-quickstart-id="crf-name"
           />
           <Checkbox
-            label="Restart if recording already exists"
+            label="Restart if Recording already exists"
             isChecked={formData.restart}
             isDisabled={loading}
             onChange={handleRestartExistingChange}
@@ -442,12 +442,12 @@ export const CustomRecordingForm: React.FC = () => {
           validated={formData.durationValid}
           helperText={
             formData.continuous
-              ? 'A continuous recording will never be automatically stopped.'
+              ? 'A continuous Recording will never be automatically stopped.'
               : formData.archiveOnStop
-              ? 'Time before the recording is automatically stopped and copied to archive.'
-              : 'Time before the recording is automatically stopped.'
+              ? 'Time before the Recording is automatically stopped and copied to archive.'
+              : 'Time before the Recording is automatically stopped.'
           }
-          helperTextInvalid="The recording duration must be a positive integer."
+          helperTextInvalid="The Recording duration must be a positive integer."
           data-quickstart-id="crf-duration"
         >
           <Split hasGutter>
@@ -487,7 +487,7 @@ export const CustomRecordingForm: React.FC = () => {
           isRequired
           fieldId="recording-template"
           validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
-          helperText={'The Event Template to be applied in this recording'}
+          helperText={'The Event Template to be applied in this Recording'}
           helperTextInvalid="A Template must be selected"
         >
           <SelectTemplateSelectorForm
@@ -508,7 +508,7 @@ export const CustomRecordingForm: React.FC = () => {
             fieldId="labels"
             labelIcon={
               <Tooltip
-                content={<Text>Unique key-value pairs containing information about the recording.</Text>}
+                content={<Text>Unique key-value pairs containing information about the Recording.</Text>}
                 appendTo={portalRoot}
               >
                 <HelpIcon noVerticalAlign />
@@ -544,7 +544,7 @@ export const CustomRecordingForm: React.FC = () => {
           <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
           <FormGroup
             fieldId="To disk"
-            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
+            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information"
           >
             <Checkbox
               label="To disk"
@@ -557,7 +557,7 @@ export const CustomRecordingForm: React.FC = () => {
           <FormGroup
             label="Maximum size"
             fieldId="maxSize"
-            helperText="The maximum size of recording data saved to disk"
+            helperText="The maximum size of Recording data saved to disk"
           >
             <Split hasGutter={true}>
               <SplitItem isFilled>
@@ -586,7 +586,7 @@ export const CustomRecordingForm: React.FC = () => {
               </SplitItem>
             </Split>
           </FormGroup>
-          <FormGroup label="Maximum age" fieldId="maxAge" helperText="The maximum age of recording data stored to disk">
+          <FormGroup label="Maximum age" fieldId="maxAge" helperText="The maximum age of Recording data stored to disk">
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput

@@ -190,7 +190,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
               menuAppendTo="parent"
               maxHeight="20em"
               isOpen={isDropdownOpen}
-              aria-label="Select Target"
+              aria-label="Select target"
             >
               {selectOptions}
             </Select>

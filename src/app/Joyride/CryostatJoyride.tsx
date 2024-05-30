@@ -43,13 +43,13 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <div>
               <p>
-                <strong>Cryostat</strong> is a cloud-based profiling application for managing JFR recordings in
+                <strong>Cryostat</strong> is a cloud-based profiling application for managing JFR Recordings in
                 containerized Java environments.
               </p>
               <br />
               <p>
                 There are many other features that <strong>Cryostat</strong> provides, such as the ability to download
-                recordings, generate reports, and more.
+                Recordings, generate reports, and more.
               </p>
             </div>
           ),
@@ -100,7 +100,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
             <div>
               <p>
                 The <strong>Topology</strong> view provides a visual representation of Cryostat and the deployment
-                model. Start, stop, and delete recordings on multiple targets at a time from this view.
+                model. Start, stop, and delete Recordings on multiple targets at a time from this view.
               </p>
             </div>
           ),
@@ -112,7 +112,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <p>
               Create, delete, enable, and view Cryostat <strong>Automated Rules</strong> in this view. Automated Rules
-              allow you start recordings on target JVMs based on a set of conditions.
+              allow you start Recordings on target JVMs based on a set of conditions.
             </p>
           ),
           target: '*[data-tour-id="automatedrules"]',
@@ -122,8 +122,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           title: 'JFR Recordings',
           content: (
             <p>
-              The <strong>Recordings</strong> view provides a list of all active recordings that are currently being
-              recorded on the target JVM. Start, stop, download, delete recordings from this view.
+              The <strong>Recordings</strong> view provides a list of all active Recordings that are currently being
+              recorded on the target JVM. Start, stop, download, delete Recordings from this view.
             </p>
           ),
           target: '*[data-tour-id="recordings"]',
@@ -133,7 +133,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           title: 'Archives View',
           content: (
             <p>
-              The <strong>Archives</strong> view provides a list of all saved recordings that have been saved to
+              The <strong>Archives</strong> view provides a list of all saved Recordings that have been saved to
               Cryostat. Download, delete, and generate reports from this view.
             </p>
           ),

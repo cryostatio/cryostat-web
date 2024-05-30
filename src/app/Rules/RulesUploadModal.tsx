@@ -148,8 +148,8 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
             <div>
               Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
               target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
-              much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
-              application recording buffer into Cryostat&quot;s own archived storage.
+              much data should be kept in the application Recording buffer, and how frequently Cryostat should copy the
+              application Recording buffer into Cryostat&quot;s own archived storage.
             </div>
           }
         >

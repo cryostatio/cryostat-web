@@ -41,7 +41,7 @@ export const JmxAuthDescription: React.FC<React.PropsWithChildren<DescriptionPro
       </TextList>
       <Text component={TextVariants.p}>
         These authentication credentials are stored in encrypted storage managed by the Cryostat backend and used for
-        manually managing recordings and event templates on target JVMs, as well as for Automated Rules which run in the
+        manually managing Recordings and Event Templates on target JVMs, as well as for Automated Rules which run in the
         background and open unattended target connections.
       </Text>
     </TextContent>

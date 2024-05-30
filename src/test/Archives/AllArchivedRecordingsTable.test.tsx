@@ -108,7 +108,7 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
 });
 
 jest.mock('@app/Shared/Services/Target.service', () => ({
-  ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
+  ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for target
 }));
 
 jest
@@ -170,7 +170,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('shows no recordings when empty', async () => {
+  it('shows no Recordings when empty', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] } });
 
     expect(screen.getByText('No Archived Recordings')).toBeInTheDocument();
@@ -244,7 +244,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
   });
 
-  it('increments the count when an archived recording is saved', async () => {
+  it('increments the count when an Archived Recording is saved', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] } });
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
@@ -258,7 +258,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     });
   });
 
-  it('decrements the count when an archived recording is deleted', async () => {
+  it('decrements the count when an Archived Recording is deleted', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] } });
 
     const tableBody = screen.getAllByRole('rowgroup')[1];

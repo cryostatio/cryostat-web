@@ -38,7 +38,7 @@ export const SslErrorModal: React.FC<SslErrorModalProps> = ({ visible, onDismiss
       variant={ModalVariant.medium}
       showClose={true}
       onClose={onDismiss}
-      title="SSL Error"
+      title="SSL error"
       description="The connection failed because the SSL Certificate for the target is not trusted."
     >
       <Text>

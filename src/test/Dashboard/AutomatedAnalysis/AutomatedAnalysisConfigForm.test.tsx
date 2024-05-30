@@ -96,7 +96,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
       },
     });
 
-    expect(screen.getByText(/profiling recording configuration/i)).toBeInTheDocument(); // Form title
+    expect(screen.getByText(/profiling Recording configuration/i)).toBeInTheDocument(); // Form title
 
     await user.click(
       screen.getByRole('button', {
@@ -107,11 +107,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
-    expect(screen.getByText(/The Event Template to be applied to automated analysis recordings./i)).toBeInTheDocument();
+    expect(screen.getByText(/The Event Template to be applied to automated analysis Recordings./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum size of recording data saved to disk./i)).toBeInTheDocument();
+    expect(screen.getByText(/the maximum size of Recording data saved to disk./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum age of recording data stored to disk./i)).toBeInTheDocument();
+    expect(screen.getByText(/the maximum age of Recording data stored to disk./i)).toBeInTheDocument();
   });
 
   it('renders editing settings view correctly', async () => {
@@ -121,18 +121,18 @@ describe('<AutomatedAnalysisConfigForm />', () => {
       },
     });
 
-    expect(screen.queryByText(/profiling recording configuration/i)).not.toBeInTheDocument(); // Form title
+    expect(screen.queryByText(/profiling Recording configuration/i)).not.toBeInTheDocument(); // Form title
 
     await user.click(screen.getByLabelText('Edit')); // Edit button
 
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
-    expect(screen.getByText(/The Event Template to be applied to automated analysis recordings./i)).toBeInTheDocument();
+    expect(screen.getByText(/The Event Template to be applied to automated analysis Recordings./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum size of recording data saved to disk./i)).toBeInTheDocument();
+    expect(screen.getByText(/the maximum size of Recording data saved to disk./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum age of recording data stored to disk./i)).toBeInTheDocument();
+    expect(screen.getByText(/the maximum age of Recording data stored to disk./i)).toBeInTheDocument();
   });
 
   it('saves configuration', async () => {

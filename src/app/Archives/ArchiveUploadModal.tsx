@@ -154,7 +154,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
         <Text>
           <span>
             Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming
-            convention used by Cryostat when archiving recordings
+            convention used by Cryostat when archiving Recordings
           </span>{' '}
           <Tooltip
             content={

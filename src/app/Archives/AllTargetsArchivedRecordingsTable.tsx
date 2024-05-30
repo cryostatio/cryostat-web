@@ -470,7 +470,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     view = (
       <>
         <ErrorView
-          title={'Error retrieving archived recordings in All Targets View'}
+          title={'Error retrieving Archived Recordings in All Targets View'}
           message={errorMessage}
           retry={isAuthFail(errorMessage) ? authRetry : undefined}
         />
@@ -531,7 +531,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             <ToolbarItem>
               <Checkbox
                 name={`all-targets-hide-check`}
-                label="Hide targets with zero recordings"
+                label="Hide targets with zero Recordings"
                 onChange={setHideEmptyTargets}
                 isChecked={hideEmptyTargets}
                 id={`all-targets-hide-check`}

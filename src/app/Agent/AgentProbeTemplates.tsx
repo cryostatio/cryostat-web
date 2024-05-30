@@ -323,7 +323,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
               </ToolbarContent>
             </Toolbar>
             {templateRows.length ? (
-              <TableComposable aria-label="Probe Templates Table" variant={TableVariant.compact}>
+              <TableComposable aria-label="Probe Templates table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
                     {tableColumns.map(({ title, sortable }, index) => (
@@ -449,8 +449,8 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title="Create Custom Probe Template"
-      description="Create a customized probe template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
+      title="Create custom Probe Template"
+      description="Create a customized Probe Template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
     >
       <Form>
         <FormGroup label="Template XML" isRequired fieldId="template">
@@ -502,7 +502,7 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
     return [
       {
         key: 'insert-template',
-        title: 'Insert Probes...',
+        title: 'Insert probes...',
         onClick: () => onInsert && onInsert(template),
         isDisabled: !onInsert,
       },

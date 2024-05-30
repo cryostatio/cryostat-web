@@ -844,14 +844,14 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="ProbesRemoved-on"
             >
-              Probes removed from Target
+              Probes removed from target
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="ProbesRemoved-off"
             >
-              Probes removed from Target
+              Probes removed from target
             </span>
           </label>
         </div>

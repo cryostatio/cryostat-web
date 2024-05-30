@@ -16,7 +16,7 @@ exports[`<SnapshotRecordingForm /> renders correctly 1`] = `
     <i>
       other,  non-Snapshot
     </i>
-     recordings. Snapshots do not themselves define which events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the moment it is created.
+     Recordings. Snapshots do not themselves define which events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the moment it is created.
   </p>
   <div
     className="pf-c-form__group pf-m-action"

@@ -31,10 +31,10 @@ const AutomatedRulesQuickStart: QuickStart = {
     durationMinutes: 5,
     icon: <CryostatIcon />,
     description: `Learn about automated rules in **[APP]** and how to create one.`,
-    prerequisites: ['Start a recording'],
+    prerequisites: ['Start a Recording'],
     introduction: `
 ## Automated Rules
-Automated Rules are configurations that instruct [APP] to create JDK Flight Recordings on matching target JVM applications. Each rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, and how frequently [APP] should copy the application recording buffer into [APP]'s own archived storage.
+Automated Rules are configurations that instruct [APP] to create JDK Flight Recordings on matching target JVM applications. Each rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently [APP] should copy the application Recording buffer into [APP]'s own archived storage.
 
 ### What you'll learn
 
@@ -87,23 +87,23 @@ To create a new rule, you must fill out the following required fields:
         },
       },
       {
-        title: 'View the generated recording',
+        title: 'View the generated Recording',
         description: `
-The rule that was created will have started a new recording on any matched target JVMs.
+The rule that was created will have started a new Recording on any matched target JVMs.
 1. In the [APP] console navigation bar, click [Recordings]{{highlight nav-recordings-tab}}.
 2. Click the [Target Selector]{{highlight target-select}} dropdown menu and select a target JVM that was matched from the created automated rule, if not already selected.
 
-There should now be a new recording in the list of active recordings on the selected target JVM.
+There should now be a new Recording in the list of Active Recordings on the selected target JVM.
 
-The recording should be named according to the rule-name format, such as \`auto_<rule-name>\`.
+The Recording should be named according to the rule-name format, such as \`auto_<rule-name>\`.
 
-[If you set any other attributes on the rule, you should see those attributes reflected in the recording.]{{admonition note}}
+[If you set any other attributes on the rule, you should see those attributes reflected in the Recording.]{{admonition note}}
 `,
         review: {
           instructions:
-            '#### Verify that you see the new recording with the correct Automated Rule recording naming scheme in the list of recordings.',
+            '#### Verify that you see the new Recording with the correct Automated Rule Recording naming scheme in the list of Recordings.',
           failedTaskHelp:
-            'If you do not see the new recording, go back to the Rule Creation form, and try verifying that your rule match expression correctly matches the intended target JVMs in this task.',
+            'If you do not see the new Recording, go back to the Rule Creation form, and try verifying that your rule match expression correctly matches the intended target JVMs in this task.',
         },
       },
     ],

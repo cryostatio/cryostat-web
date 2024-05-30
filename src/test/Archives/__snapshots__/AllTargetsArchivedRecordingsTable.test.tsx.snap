@@ -96,7 +96,7 @@ Array [
                 className="pf-c-check__label"
                 htmlFor="all-targets-hide-check"
               >
-                Hide targets with zero recordings
+                Hide targets with zero Recordings
               </label>
             </div>
           </div>

@@ -100,7 +100,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error displaying recording creation form'}
+        title={'Error displaying Recording creation form'}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -111,7 +111,7 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
       <Form isHorizontal>
         <Text component={TextVariants.p}>
           A Snapshot Recording is one which contains all information about all events that have been captured in the
-          current session by <i>other,&nbsp; non-Snapshot</i> recordings. Snapshots do not themselves define which
+          current session by <i>other,&nbsp; non-Snapshot</i> Recordings. Snapshots do not themselves define which
           events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from
           the moment it is created.
         </Text>

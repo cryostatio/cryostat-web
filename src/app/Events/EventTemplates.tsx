@@ -337,7 +337,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error retrieving event templates'}
+        title={'Error retrieving Event Templates'}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -509,8 +509,8 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title="Create Custom Event Template"
-      description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
+      title="Create custom Event Template"
+      description="Create a customized Event Template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
     >
       <Form>
         <FormGroup label="Template XML" isRequired fieldId="template">

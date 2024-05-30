@@ -343,7 +343,7 @@ export const messageKeys = new Map([
     NotificationCategory.ProbesRemoved,
     {
       variant: AlertVariant.success,
-      title: 'Probes removed from Target',
+      title: 'Probes removed from target',
       body: (evt) => `Probes successfully removed from ${evt.message.target}`,
     } as NotificationMessageMapper,
   ],

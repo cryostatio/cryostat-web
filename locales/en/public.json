@@ -23,21 +23,21 @@
   },
   "AutomatedAnalysisCard": {
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues.",
-    "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
+    "CARD_DESCRIPTION_FULL": "Creates a Recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
     "CARD_TITLE": "Automated analysis",
-    "CRITICAL_RESULTS_one": "{{count}} Critical Result",
-    "CRITICAL_RESULTS_other": "{{count}} Critical Results",
+    "CRITICAL_RESULTS_one": "{{count}} critical result",
+    "CRITICAL_RESULTS_other": "{{count}} critical results",
     "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report.",
-    "ERROR_TITLE": "Automated analysis Error",
+    "ERROR_TITLE": "Automated analysis error",
     "GOOD_RESULTS": "No problems",
-    "NO_RESULTS": "No Results Found",
+    "NO_RESULTS": "No results found",
     "NO_RESULTS_BODY": "No results match this filter criteria. Try removing filters, showing unavailable scores, or resetting the severity score filter to 0.",
     "RETRY_LOADING": "Retry loading report",
-    "RETRY_STARTING": "Retry starting recording",
+    "RETRY_STARTING": "Retry starting Recording",
     "STALE_REPORT": {
       "TEXT_one": "Most recent data from {{ count }} {{ units }} ago.",
       "TEXT_other": "Most recent data from {{ count }} {{ units }}s ago.",
-      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from."
+      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active Recording to source automated reports from."
     },
     "TOOLBAR": {
       "CHECKBOX": {
@@ -48,7 +48,7 @@
       "DELETE": {
         "LABEL": "Delete automated analysis"
       },
-      "LABEL": "Automated analysis Toolbar",
+      "LABEL": "Automated analysis toolbar",
       "REFRESH": {
         "LABEL": "Refresh automated analysis"
       },
@@ -67,19 +67,19 @@
         "LABEL": "Create Recording"
       },
       "OPEN_SETTINGS": {
-        "LABEL": "Open Settings"
+        "LABEL": "Open settings"
       }
     }
   },
   "AutomatedAnalysisConfigForm": {
     "CURRENT_CONFIG": "Current configuration",
-    "FORM_TITLE": "Profiling recording Configuration",
+    "FORM_TITLE": "Profiling Recording configuration",
     "FORMATTED_TEMPLATE": "Name: {{template.name}}, Type: {{template.type}}",
     "MAXIMUM_AGE": "Maximum age ({{unit}})",
     "MAXIMUM_SIZE": "Maximum size ({{unit}})",
     "SAVE_CHANGES": "Save changes",
-    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to automated analysis recordings.",
-    "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
+    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to automated analysis Recordings.",
+    "TEMPLATE_INVALID_WARNING": "WARNING: Setting a target template as a default template type configuration may not apply to all target JVMs if the JVMs do not support them."
   },
   "AutomatedAnalysisScoreFilter": {
     "CURRENT_SCORE_TEXT": "Only showing analysis results with severity scores ≥ {{ val }}:",
@@ -108,31 +108,31 @@
       }
     },
     "JFR_METRICS_CARD_DESCRIPTION": "Display common performance metrics from recent JFR data.",
-    "JFR_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported JFR event types. Data is displayed from the present moment back to a specified duration. Note: these metrics are only available for a single target at a time. Second Cryostat-Web instances, for the same user or others, will not behave as expected when using this card type.",
+    "JFR_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported JFR Event Types. Data is displayed from the present moment back to a specified duration. Note: these metrics are only available for a single target at a time. Second Cryostat-Web instances, for the same user or others, will not behave as expected when using this card type.",
     "JFR_METRICS_CARD_TITLE": "JFR Metrics Chart",
     "MBEAN_METRICS_CARD_DESCRIPTION": "Display common performance metrics from current MBean data.",
     "MBEAN_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported MBeans.",
     "MBEAN_METRICS_CARD_TITLE": "MBean Metrics Chart",
     "NO_RECORDING": {
-      "DESCRIPTION": "Metrics cards display data taken from running flight recordings with the label <label>origin={{recordingName}}</label>. No such recordings are currently available.",
-      "TITLE": "No source recording"
+      "DESCRIPTION": "Metrics cards display data taken from running flight Recordings with the label <label>origin={{recordingName}}</label>. No such Recordings are currently available.",
+      "TITLE": "No source Recording"
     },
     "PROP_CONTROLS": {
       "DATA_WINDOW": {
         "DESCRIPTION": "The data window width in seconds.",
-        "NAME": "Data Window"
+        "NAME": "Data window"
       },
       "PERFORMANCE_METRIC": {
         "DESCRIPTION": "Select the metric to display in this card.",
-        "NAME": "Performance Metric"
+        "NAME": "Performance metric"
       },
       "REFRESH_PERIOD": {
         "DESCRIPTION": "The chart refresh period in seconds.",
-        "NAME": "Refresh Period"
+        "NAME": "Refresh period"
       },
       "THEME": {
         "DESCRIPTION": "Select a color theme.",
-        "NAME": "Color Theme"
+        "NAME": "Color theme"
       },
       "THEME_COLOR": {
         "DESCRIPTION": "The color theme to apply to this chart.",
@@ -147,10 +147,10 @@
     }
   },
   "Dashboard": {
-    "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your dashboard. Some cards require additional configuration.",
+    "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your Dashboard. Some cards require additional configuration.",
     "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
     "CARD_CATALOG_TITLE": "Dashboard Card catalog",
-    "INVALID_CARD_CONFIGURATIONS": "Invalid Card configurations",
+    "INVALID_CARD_CONFIGURATIONS": "Invalid card configurations",
     "PAGE_TITLE": "Dashboard"
   },
   "DashboardCardActionMenu": {
@@ -193,7 +193,7 @@
     },
     "SET_TEMPLATE": {
       "DESCRIPTION": "Set the current Dashboard Layout as a template.",
-      "TITLE": "Set Custom Layout Template"
+      "TITLE": "Set custom Layout Template"
     }
   },
   "DashboardLayoutToolbar": {
@@ -219,7 +219,7 @@
   "DatetimeFilter": {
     "ARIA_LABELS": {
       "DATETIME_INPUT": "Input a datetime",
-      "SEARCH_BUTTON": "Search For Date",
+      "SEARCH_BUTTON": "Search for date",
       "TOGGLE_CALENDAR": "Toggle the calendar"
     },
     "INVALID_DATE_TEXT": "Invalid date time"
@@ -236,12 +236,12 @@
     "RESOLVE_MESSAGE": "Reload the page and try again. If the error still persists, see the list of <issue>{{knownIssue}}</issue> or <report>{{fileReport}}</report>."
   },
   "ErrorView": {
-    "EVENT_TEMPLATES": "Error retrieving event templates"
+    "EVENT_TEMPLATES": "Error retrieving Event Templates"
   },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected target JVM.",
-    "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
-    "CARD_TITLE": "Target JVM Details"
+    "CARD_DESCRIPTION_FULL": "View information such as the connection URL, Labels, and annotations belonging to the selected target JVM.",
+    "CARD_TITLE": "Target JVM details"
   },
   "LayoutTemplateGroup": {
     "ITEMS_one": "{{count}} item",
@@ -249,7 +249,7 @@
   },
   "LayoutTemplatePicker": {
     "SORT_BY": {
-      "CARD_COUNT": "Sort by: Card Count",
+      "CARD_COUNT": "Sort by: Card count",
       "NAME": "Sort by: Name",
       "PLACEHOLDER": "Sort by..."
     }
@@ -283,8 +283,8 @@
     }
   },
   "RecordingLabelFields": {
-    "INVALID_UPLOADS_one": "The file does not contain valid recording metadata:",
-    "INVALID_UPLOADS_other": "These files do not contain valid recording metadata:"
+    "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
+    "INVALID_UPLOADS_other": "These files do not contain valid Recording metadata:"
   },
   "SETTINGS": {
     "AUTO_REFRESH": {
@@ -293,8 +293,8 @@
       "TITLE": "Auto-refresh"
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
-      "DESCRIPTION": "Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
-      "TITLE": "Automated analysis recording configuration"
+      "DESCRIPTION": "Set the Recording configuration for automated analysis Recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
+      "TITLE": "Automated analysis Recording configuration"
     },
     "CATEGORIES": {
       "ADVANCED": "Advanced",

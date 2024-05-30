@@ -129,7 +129,7 @@ export const AgentTabs: React.FC = () => {
         isAriaDisabled={!agentDetected}
         tooltip={
           agentDetected ? undefined : (
-            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
+            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected target JVM" />
           )
         }
       >

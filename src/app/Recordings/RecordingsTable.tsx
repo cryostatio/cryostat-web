@@ -91,7 +91,7 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
     view = (
       <>
         <ErrorView
-          title={'Error retrieving recordings'}
+          title={'Error retrieving Recordings'}
           message={errorMessage}
           retry={isAuthFail(errorMessage) ? authRetry : undefined}
         />

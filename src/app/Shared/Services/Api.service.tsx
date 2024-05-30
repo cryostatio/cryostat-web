@@ -366,7 +366,7 @@ export class ApiService {
             if (resp.status == 202) {
               this.notifications.warning(
                 'Snapshot Failed to Create',
-                'The recording is not readable for reasons, such as, unavailability of active and non-snapshot source recordings from where the event data is read.',
+                'The Recording is not readable for reasons, such as, unavailability of active and non-snapshot source Recordings from where the event data is read.',
               );
             }
           }),
@@ -668,7 +668,7 @@ export class ApiService {
           tap((resp) => {
             if (resp.status == 400) {
               this.notifications.warning(
-                'Failed to insert Probes',
+                'Failed to insert probes',
                 'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent',
               );
             }

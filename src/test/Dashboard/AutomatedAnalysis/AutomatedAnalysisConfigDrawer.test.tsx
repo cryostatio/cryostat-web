@@ -64,7 +64,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
     const createRecording = screen.queryByRole('button', {
-      name: /create recording/i,
+      name: /create Recording/i,
     });
     const recordingActions = screen.queryByRole('button', {
       name: /open settings/i,
@@ -101,7 +101,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
     expect(screen.getByText(/automatedanalysisconfigform/i)).toBeInTheDocument();
   });
 
-  it('creates a recording when Create Recording is clicked', async () => {
+  it('creates a Recording when Create Recording is clicked', async () => {
     const onCreateFunction = jest.fn();
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
     const { user } = render({
@@ -123,7 +123,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
     });
 
     const createRecording = screen.getByRole('button', {
-      name: /create recording/i,
+      name: /create Recording/i,
     });
 
     expect(screen.queryByText(/automatedanalysisconfigform/i)).not.toBeInTheDocument();
