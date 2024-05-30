@@ -84,7 +84,7 @@ import {
   getCardDescriptorByName,
   hasCardDescriptorByName,
   LayoutTemplateContext,
-  recordToLayoutTemplate,S
+  recordToLayoutTemplate,
 } from './utils';
 
 export enum LayoutTemplateSort {
