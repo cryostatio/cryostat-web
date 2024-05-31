@@ -40,7 +40,7 @@ However, in some cases (e.g. for **Kubernetes API**, JMX port is not <code>9091<
 ### What you'll need
 
 - A Java application that Cryostat cannot automatically discover
-- The connection URL and JMX credentials, if required, for that application
+- The connection URL and JMX Credentials, if required, for that application
 `,
     tasks: [
       {
@@ -75,13 +75,13 @@ However, in some cases (e.g. for **Kubernetes API**, JMX port is not <code>9091<
         description: `
 1. Enter the JMX **Connection URL** for the target into the [Connection URL]{{highlight ct-connecturl-input}} field.
 2. Optionally assign an **Alias** to the target by using the [Alias]{{highlight ct-alias-input}} field.
-3. If the target has **JMX authentication** enabled, click the [JMX credential option]{{highlight ct-credential-expand}} to expand the form.
+3. If the target has **JMX authentication** enabled, click the [JMX Credential option]{{highlight ct-credential-expand}} to expand the form.
 4. Use the [Username]{{highlight ct-username-input}} and [Password]{{highlight ct-password-input}} fields to enter the username and password.
 `,
         review: {
           instructions: '#### Verify that you have filled out the form.',
           failedTaskHelp:
-            'Click the [JMX credential option]{{highlight ct-credential-expand}} to expand the form to reveal the username and password fields.',
+            'Click the [JMX Credential option]{{highlight ct-credential-expand}} to expand the form to reveal the username and password fields.',
         },
       },
       {

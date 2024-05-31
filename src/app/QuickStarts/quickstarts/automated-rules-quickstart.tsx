@@ -34,7 +34,7 @@ const AutomatedRulesQuickStart: QuickStart = {
     prerequisites: ['Start a Recording'],
     introduction: `
 ## Automated Rules
-Automated Rules are configurations that instruct [APP] to create JDK Flight Recordings on matching target JVM applications. Each rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently [APP] should copy the application Recording buffer into [APP]'s own archived storage.
+Automated Rules are configurations that instruct [APP] to create JDK Flight Recordings on matching Target JVM applications. Each rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently [APP] should copy the application Recording buffer into [APP]'s own archived storage.
 
 ### What you'll learn
 
@@ -43,8 +43,8 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
 
 ### What you'll need
 
-- A running instance of [APP] which has discovered at least one target JVM
-- JMX auth credentials for the target JVM (if required)
+- A running instance of [APP] which has discovered at least one Target JVM
+- JMX auth credentials for the Target JVM (if required)
 
     `,
     tasks: [
@@ -65,7 +65,7 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
         description: `
 To create a new rule, use the Automated Rule creation form to fill in the required fields.
 
-The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the Match Expression: \`true\`{{copy}}. You can also match targets more specifically with a Match Expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
+The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each Target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the Match Expression: \`true\`{{copy}}. You can also match targets more specifically with a Match Expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
 
 
 To create a new rule, you must fill out the following required fields:
@@ -91,9 +91,9 @@ To create a new rule, you must fill out the following required fields:
         description: `
 The rule that was created will have started a new Recording on any matched target JVMs.
 1. In the [APP] console navigation bar, click [Recordings]{{highlight nav-recordings-tab}}.
-2. Click the [Target Selector]{{highlight target-select}} dropdown menu and select a target JVM that was matched from the created automated rule, if not already selected.
+2. Click the [Target Selector]{{highlight target-select}} dropdown menu and select a Target JVM that was matched from the created automated rule, if not already selected.
 
-There should now be a new Recording in the list of Active Recordings on the selected target JVM.
+There should now be a new Recording in the list of Active Recordings on the selected Target JVM.
 
 The Recording should be named according to the rule-name format, such as \`auto_<rule-name>\`.
 

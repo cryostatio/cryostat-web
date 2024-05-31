@@ -330,14 +330,14 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               name: 'VMOperation Peak Duration',
               topic: 'vm_operations',
               description:
-                'Summary:\nNo excessively long VM operations were found in this Recording (the longest was 23.774 ms).',
+                'Summary:\nNo excessively long VM operations were found in this recording (the longest was 23.774 ms).',
             },
             PasswordsInSystemProperties: {
               score: 75.0,
               name: 'Passwords in System Properties',
               topic: 'system_properties',
               description:
-                'Summary:\nThe system properties in the Recording may contain passwords.\n\nExplanation:\nThe following suspicious system properties were found in this Recording: javax.net.ssl.keyStorePassword,javax.net.ssl.trustStorePassword,com.sun.management.jmxremote.password.file. The following regular expression was used to exclude strings from this rule: \u0027\u0027(passworld|passwise)\u0027\u0027.\n\nSolution:\nIf you wish to keep having passwords in your system properties, but want to be able to share Recordings without also sharing the passwords, please disable the \u0027\u0027Initial System Property\u0027\u0027 event.',
+                'Summary:\nThe system properties in the recording may contain passwords.\n\nExplanation:\nThe following suspicious system properties were found in this recording: javax.net.ssl.keyStorePassword,javax.net.ssl.trustStorePassword,com.sun.management.jmxremote.password.file. The following regular expression was used to exclude strings from this rule: \u0027\u0027(passworld|passwise)\u0027\u0027.\n\nSolution:\nIf you wish to keep having passwords in your system properties, but want to be able to share recordings without also sharing the passwords, please disable the \u0027\u0027Initial System Property\u0027\u0027 event.',
             },
             Options: {
               score: 0.0,
@@ -350,7 +350,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               name: 'Passwords in Environment Variables',
               topic: 'environment_variables',
               description:
-                'Summary:\nThe environment variables in the Recording may contain passwords.\n\nExplanation:\nThe following suspicious environment variables were found in this Recording: CRYOSTAT_JDBC_PASSWORD, CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD. The following regular expression was used to exclude strings from this rule: \u0027\u0027(passworld|passwise)\u0027\u0027.\n\nSolution:\nIf you wish to keep having passwords in your environment variables, but want to be able to share Recordings without also sharing the passwords, please disable the \u0027\u0027Initial Environment Variable\u0027\u0027 event.',
+                'Summary:\nThe environment variables in the recording may contain passwords.\n\nExplanation:\nThe following suspicious environment variables were found in this recording: CRYOSTAT_JDBC_PASSWORD, CRYOSTAT_JMX_CREDENTIALS_DB_PASSWORD. The following regular expression was used to exclude strings from this rule: \u0027\u0027(passworld|passwise)\u0027\u0027.\n\nSolution:\nIf you wish to keep having passwords in your environment variables, but want to be able to share recordings without also sharing the passwords, please disable the \u0027\u0027Initial Environment Variable\u0027\u0027 event.',
             },
             MethodProfiling: {
               score: 0.6705776661956153,
@@ -370,13 +370,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               name: 'Stackdepth Setting',
               topic: 'jvm_information',
               description:
-                'Summary:\nSome stack traces were truncated in this Recording.\n\nExplanation:\nThe Flight Recorder is configured with a maximum captured stack depth of 64. 3.11 % of all traces were larger than this option, and were therefore truncated. If more detailed traces are required, increase the \u0027\u0027-XX:FlightRecorderOptions\u003dstackdepth\u003d\u003cvalue\u003e\u0027\u0027 value.\nEvents of the following types have truncated stack traces: org.openjdk.jmc.flightrecorder.rules.jdk.general.StackDepthSettingRule$StackDepthTruncationData@21e159e2,org.openjdk.jmc.flightrecorder.rules.jdk.general.StackDepthSettingRule$StackDepthTruncationData@174930bc,org.openjdk.jmc.flightrecorder.rules.jdk.general.StackDepthSettingRule$StackDepthTruncationData@4f5d6223',
+                'Summary:\nSome stack traces were truncated in this recording.\n\nExplanation:\nThe Flight Recorder is configured with a maximum captured stack depth of 64. 3.11 % of all traces were larger than this option, and were therefore truncated. If more detailed traces are required, increase the \u0027\u0027-XX:FlightRecorderOptions\u003dstackdepth\u003d\u003cvalue\u003e\u0027\u0027 value.\nEvents of the following types have truncated stack traces: org.openjdk.jmc.flightrecorder.rules.jdk.general.StackDepthSettingRule$StackDepthTruncationData@21e159e2,org.openjdk.jmc.flightrecorder.rules.jdk.general.StackDepthSettingRule$StackDepthTruncationData@174930bc,org.openjdk.jmc.flightrecorder.rules.jdk.general.StackDepthSettingRule$StackDepthTruncationData@4f5d6223',
             },
             PasswordsInArguments: {
               score: 0.0,
               name: 'Passwords in Java Arguments',
               topic: 'jvm_information',
-              description: 'Summary:\nThe Recording does not seem to contain passwords in the application arguments.',
+              description: 'Summary:\nThe recording does not seem to contain passwords in the application arguments.',
             },
           },
         );
@@ -395,7 +395,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           name: 'Demo Template',
           provider: 'Demo',
           type: 'TARGET',
-          description: 'This is not a real Event Template, but it is here!',
+          description: 'This is not a real event template, but it is here!',
         },
       ]);
       this.get('api/v2/probes', () => []);

@@ -67,7 +67,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
       title="Authentication Required"
       description={
         <Text>
-          This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
+          This Target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
           target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
           <Link onClick={onDismiss} to="/security">
             Security

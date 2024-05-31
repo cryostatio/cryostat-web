@@ -75,7 +75,7 @@ export const EventTabs: React.FC = () => {
       <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
         <EventTemplates />
       </Tab>
-      <Tab eventKey={EventTab.EVENT_TYPE} title="Event Types">
+      <Tab eventKey={EventTab.EVENT_TYPE} title="Event types">
         <EventTypes />
       </Tab>
     </Tabs>
@@ -129,7 +129,7 @@ export const AgentTabs: React.FC = () => {
         isAriaDisabled={!agentDetected}
         tooltip={
           agentDetected ? undefined : (
-            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected target JVM" />
+            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
           )
         }
       >

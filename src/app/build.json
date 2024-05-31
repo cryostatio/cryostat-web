@@ -10,7 +10,7 @@
   "discussionUrl": "https://github.com/cryostatio/cryostat3/discussions",
   "knownIssuesUrl": "https://github.com/cryostatio/cryostat3/issues",
   "fileIssueUrl": "https://github.com/cryostatio/cryostat3/issues/new?labels=user+report,bug&body=Affects+__REPLACE_VERSION__",
-  "mailingListName": "Google groups",
+  "mailingListName": "Google Groups",
   "mailingListUrl": "https://groups.google.com/g/cryostat-development",
   "licenseUrl": "https://github.com/cryostatio/cryostat3/blob/main/LICENSE.txt",
   "version": "3.0.0-dev"

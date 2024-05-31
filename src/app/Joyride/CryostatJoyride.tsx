@@ -84,7 +84,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <div>
               <p>
-                The <strong>Dashboard</strong> provides a high-level overview of Cryostat and the target JVM with the
+                The <strong>Dashboard</strong> provides a high-level overview of Cryostat and the Target JVM with the
                 use of <strong>Dashboard Cards</strong>.
               </p>
               <br />
@@ -123,7 +123,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <p>
               The <strong>Recordings</strong> view provides a list of all active Recordings that are currently being
-              recorded on the target JVM. Start, stop, download, delete Recordings from this view.
+              recorded on the Target JVM. Start, stop, download, delete Recordings from this view.
             </p>
           ),
           target: '*[data-tour-id="recordings"]',
@@ -145,8 +145,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <p>
               The <strong>Events</strong> page lists the <strong>Event Templates</strong> that can be used for creating
-              Flight Recordings. It also details the JFR <strong>Event Types</strong> that can be recorded within each
-              target JVM.
+              Flight Recordings. It also details the JFR <strong>event types</strong> that can be recorded within each
+              Target JVM.
             </p>
           ),
           target: '*[data-tour-id="events"]',
@@ -157,7 +157,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <p>
               The <strong>Security</strong> tab allows you to add <strong>Credentials</strong> and{' '}
-              <strong>SSL Certificates</strong> for Cryostat to use when connecting to remote targets.
+              <strong>SSL/TLS Certificates</strong> for Cryostat to use when connecting to remote targets.
             </p>
           ),
           target: '*[data-tour-id="security"]',

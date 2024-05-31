@@ -28,7 +28,7 @@ const _CustomTargetSearchItem: QuickSearchItem = {
     },
   ],
   descriptionShort: 'Define a Custom Target definition.',
-  descriptionFull: 'Provide a JMX Service URL along with necessary credentials to point to a target JVM.',
+  descriptionFull: 'Provide a JMX Service URL along with necessary credentials to point to a Target JVM.',
   featureLevel: FeatureLevel.PRODUCTION,
   createAction: ({ navigate }) => {
     navigate('/topology/create-custom-target');

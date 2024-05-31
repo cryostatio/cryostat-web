@@ -35,18 +35,18 @@ const RecordingQuickStart: QuickStart = {
     prerequisites: [''],
     introduction: `
 ## Start a Recording
-**Java Flight Recorder (JFR)** is a profiling tool that is built into the JVM. It allows you to record events that happen in the JVM and then analyze the Recording to find performance issues. [APP] leverages JFR to provide a simple way to start, stop, and download Recordings from a containerized target JVM.
+**Java Flight Recorder (JFR)** is a profiling tool that is built into the JVM. It allows you to record events that happen in the JVM and then analyze the Recording to find performance issues. [APP] leverages JFR to provide a simple way to start, stop, and download Recordings from a containerized Target JVM.
 
 ### What you'll learn
 
-- How to start/stop a JFR Recording on a target JVM
+- How to start/stop a JFR Recording on a Target JVM
 - How to download a Recording from [APP] to your local machine
 - How to view an automated analysis report of a Recording with [APP]'s capabilities
 
 ### What you'll need
 
-- A running instance of [APP] which has discovered at least one target JVM
-- JMX auth credentials for the target JVM (if required)
+- A running instance of [APP] which has discovered at least one Target JVM
+- JMX auth credentials for the Target JVM (if required)
 
 `,
     tasks: [
@@ -60,9 +60,9 @@ const RecordingQuickStart: QuickStart = {
         },
       },
       {
-        title: 'Select a target JVM',
+        title: 'Select a Target JVM',
         description: `
-Select a target JVM from the list of available targets that [APP] has discovered.
+Select a Target JVM from the list of available targets that [APP] has discovered.
 
 1. Click the [Target Select]{{highlight target-select}} dropdown menu.
 2. Select a target from the list of available targets.
@@ -81,7 +81,7 @@ There are two tabs within the Recordings page:
 
 [Active Recordings]{{highlight active-recordings-tab}} and [Archived Recordings]{{highlight archived-recordings-tab}}.
 
-**Active Recordings** are Recordings that only exist only within the target JVM. **Archived Recordings** are Recordings that have been saved from the target JVM and copied to [APP]'s storage volume.
+**Active Recordings** are Recordings that only exist only within the Target JVM. **Archived Recordings** are Recordings that have been saved from the Target JVM and copied to [APP]'s storage volume.
 
 To start an active Recording:
 
@@ -142,7 +142,7 @@ Downloading a Recording will save the Recording to your local machine as a JFR f
       {
         title: 'Archive a Recording',
         description: `
-Archiving a Recording will save the Recording to [APP]'s archival storage, and will persist even after either the target JVM, or [APP], has stopped. These Recordings will appear in the target JVM's **Archived Recordings** tab, as well as in the [Archives]{{highlight nav-archives-tab}} view on the [APP] console navigation bar.
+Archiving a Recording will save the Recording to [APP]'s archival storage, and will persist even after either the Target JVM, or [APP], has stopped. These Recordings will appear in the Target JVM's **Archived Recordings** tab, as well as in the [Archives]{{highlight nav-archives-tab}} view on the [APP] console navigation bar.
 
 1. Click [Archive]{{highlight recordings-archive-btn}} to archive the Recording.
 2. To view the Archived Recording in [APP]'s storage, go to the [Archived Recordings]{{highlight archived-recordings-tab}} tab.

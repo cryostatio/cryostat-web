@@ -91,7 +91,7 @@ The **automated analysis** Dashboard Card allows you to automatically start an a
 2. Configure the **Automated analysis Recording configuration** settings.
 3. Configure the **Dashboard metrics configuration** settings.
 
-[When using the **Automated analysis card**, make sure the **Event Template** is compatible with the target JVM.]{{admonition warning}}
+[When using the **automated analysis card**, make sure the **Event Template** is compatible with the Target JVM.]{{admonition warning}}
 [Setting both an infinite maximum size and age may result in an **Out Of Memory** error during report generation.]{{admonition caution}}
 `,
       },
@@ -104,9 +104,9 @@ The **automated analysis** Dashboard Card allows you to automatically start an a
 2. Configure the **Credentials Storage** settings.
 
   Credentials are necessary to authenticate with the target JVMs that [APP] communicates with, if JMX auth is enabled or if a [APP] agent authenticated connection is required. If you prefer not to store these credentials in the [APP] backend, you can opt to store them in local session storage instead.
-3. Configure the **Feature level** settings.
+3. Configure the **feature level** settings.
 
-  The **Feature level** setting enables you to enable or disable beta features.
+  The **feature level** setting enables you to enable or disable beta features.
 
 `,
       },

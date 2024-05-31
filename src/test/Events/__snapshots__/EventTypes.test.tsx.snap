@@ -324,7 +324,7 @@ Array [
     </div>
   </div>,
   <table
-    aria-label="Event Types table"
+    aria-label="Event types table"
     className="pf-c-table pf-m-grid-md pf-m-compact"
     data-ouia-component-id="OUIA-Generated-Table-1"
     data-ouia-component-type="PF4/Table"

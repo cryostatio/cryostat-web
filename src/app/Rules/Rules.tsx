@@ -87,7 +87,7 @@ const tableColumns: TableColumn[] = [
     title: 'Archival period',
     keyPaths: ['archivalPeriodSeconds'],
     tooltip:
-      'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in target JVM memory.',
+      'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.',
   },
   {
     title: 'Initial delay',
@@ -99,7 +99,7 @@ const tableColumns: TableColumn[] = [
     title: 'Preserved archives',
     keyPaths: ['preservedArchives'],
     tooltip:
-      'The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in target JVM memory.',
+      'The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory.',
   },
   {
     title: 'Maximum age',
@@ -412,7 +412,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
           <CardBody>
             Automated Rules define a dynamic set of target JVMs to connect to and start{' '}
             <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
-            when the Automated Rule is created and when any new matching target JVMs appear. If your target JVM
+            when the Automated Rule is created and when any new matching target JVMs appear. If your Target JVM
             connections require JMX Credentials, you can configure these in <Link to="/security">Security</Link>.
             Automated Rules can be configured to periodically copy the contents of the Active Recording to{' '}
             <Link to="/archives">Archives</Link> to ensure you always have up-to-date information about your JVMs.

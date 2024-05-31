@@ -139,7 +139,7 @@ describe('<JFRMetricsChartCard />', () => {
     expect(screen.getByText('CPU Load (last 120s, every 10s)')).toBeInTheDocument();
     expect(screen.getByText('No source Recording')).toBeInTheDocument();
     expect(
-      screen.getByText((s) => s.includes('Metrics cards display data taken from running flight Recordings')),
+      screen.getByText((s) => s.includes('Metrics cards display data taken from running Flight Recordings')),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });

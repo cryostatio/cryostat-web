@@ -88,8 +88,8 @@ export const ListCertificates: SecurityCard = {
   key: 'ssl',
   title: (
     <Text>
-      Imported SSL Certificates
-      <Popover maxWidth="40rem" headerContent="JMX over SSL" bodyContent={<JmxSslDescription />}>
+      Imported SSL/TLS Certificates
+      <Popover maxWidth="40rem" headerContent="JMX over SSL/TLS" bodyContent={<JmxSslDescription />}>
         <Button variant="plain">
           <OutlinedQuestionCircleIcon />
         </Button>

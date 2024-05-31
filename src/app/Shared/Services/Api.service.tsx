@@ -669,7 +669,7 @@ export class ApiService {
             if (resp.status == 400) {
               this.notifications.warning(
                 'Failed to insert probes',
-                'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent',
+                'The probes failed to be injected. Check that the agent is present in the same container as the Target JVM and the target is running with -javaagent:/path/to/agent',
               );
             }
           }),

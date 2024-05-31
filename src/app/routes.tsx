@@ -162,7 +162,7 @@ const routes: IAppRoute[] = [
     label: 'Security',
     path: '/security',
     title: 'Security',
-    description: 'Upload SSL certificates for Cryostat to trust when communicating with target applications.',
+    description: 'Upload SSL/TLS certificates for Cryostat to trust when communicating with target applications.',
     navGroup: CONSOLE,
   },
   {

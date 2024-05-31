@@ -41,8 +41,8 @@ With **Topology** view, you can perform actions (i.e. start Recording) on an ind
 
 ### What you'll need
 
-- A running instance of Cryostat which has discovered at least one target JVM
-- JMX auth credentials for the target JVM (if required)
+- A running instance of Cryostat which has discovered at least one Target JVM
+- JMX auth credentials for the Target JVM (if required)
 `,
     tasks: [
       {

@@ -343,7 +343,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   return (
     <Form>
       <Text component={TextVariants.small}>
-        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
+        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM
         applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
         kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording
         buffer into Cryostat&apos;s own archived storage.

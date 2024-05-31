@@ -162,7 +162,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                   onSingleSuccess(
                     fileUpload.file.name,
                     <Text component="p" style={{ color: 'var(--pf-global--warning-color--200)' }}>
-                      Warning: To see this template in the template picker, make sure the Cryostat Feature level is set
+                      Warning: To see this template in the template picker, make sure the Cryostat feature level is set
                       to BETA.
                     </Text>,
                   );

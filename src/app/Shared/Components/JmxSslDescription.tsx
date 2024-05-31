@@ -22,7 +22,7 @@ export const JmxSslDescription: React.FC<React.PropsWithChildren<DescriptionProp
     <TextContent>
       {children}
       <Text component={TextVariants.p}>
-        JVM applications can be configured to present an SSL certificate for incoming JMX connections. Clients, such as
+        JVM applications can be configured to present an SSL/TLS certificate for incoming JMX connections. Clients, such as
         Cryostat, should be configured to trust these certificates so that the origin and authenticity of the connection
         data can be verified.
       </Text>

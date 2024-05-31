@@ -61,7 +61,7 @@ describe('<EventTypes />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should show error view if failing to retrieve Event Types', async () => {
+  it('should show error view if failing to retrieve event types', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
       target: () => of(mockTarget as Target),
@@ -86,7 +86,7 @@ describe('<EventTypes />', () => {
 
     await doAct(async () => subj.next());
 
-    const failTitle = screen.getByText('Error retrieving Event Types');
+    const failTitle = screen.getByText('Error retrieving event types');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
@@ -119,7 +119,7 @@ describe('<EventTypes />', () => {
 
     expect(screen.queryByText('Some Event')).not.toBeInTheDocument();
 
-    const hintText = screen.getByText('No Event Types');
+    const hintText = screen.getByText('No event types');
     expect(hintText).toBeInTheDocument();
     expect(hintText).toBeVisible();
   });

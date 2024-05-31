@@ -108,13 +108,13 @@
       }
     },
     "JFR_METRICS_CARD_DESCRIPTION": "Display common performance metrics from recent JFR data.",
-    "JFR_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported JFR Event Types. Data is displayed from the present moment back to a specified duration. Note: these metrics are only available for a single target at a time. Second Cryostat-Web instances, for the same user or others, will not behave as expected when using this card type.",
+    "JFR_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported JFR event types. Data is displayed from the present moment back to a specified duration. Note: these metrics are only available for a single target at a time. Second Cryostat-Web instances, for the same user or others, will not behave as expected when using this card type.",
     "JFR_METRICS_CARD_TITLE": "JFR Metrics Chart",
     "MBEAN_METRICS_CARD_DESCRIPTION": "Display common performance metrics from current MBean data.",
     "MBEAN_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported MBeans.",
     "MBEAN_METRICS_CARD_TITLE": "MBean Metrics Chart",
     "NO_RECORDING": {
-      "DESCRIPTION": "Metrics cards display data taken from running flight Recordings with the label <label>origin={{recordingName}}</label>. No such Recordings are currently available.",
+      "DESCRIPTION": "Metrics cards display data taken from running Flight Recordings with the label <label>origin={{recordingName}}</label>. No such Recordings are currently available.",
       "TITLE": "No source Recording"
     },
     "PROP_CONTROLS": {
@@ -239,8 +239,8 @@
     "EVENT_TEMPLATES": "Error retrieving Event Templates"
   },
   "JvmDetailsCard": {
-    "CARD_DESCRIPTION": "Display details about the selected target JVM.",
-    "CARD_DESCRIPTION_FULL": "View information such as the connection URL, Labels, and annotations belonging to the selected target JVM.",
+    "CARD_DESCRIPTION": "Display details about the selected Target JVM.",
+    "CARD_DESCRIPTION_FULL": "View information such as the connection URL, Labels, and Annotations belonging to the selected Target JVM.",
     "CARD_TITLE": "Target JVM details"
   },
   "LayoutTemplateGroup": {

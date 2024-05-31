@@ -53,7 +53,7 @@ Dashboard Cards are displayed in **Dashboard Layouts**, which can be customized 
         title: 'Go to the Dashboard page',
         description: `
 1. In the [APP] console navigation bar, click [Dashboard]{{highlight nav-dashboard-tab}}.
-2. From the [Target Selector]{{highlight target-select}}, select a target JVM.
+2. From the [Target Selector]{{highlight target-select}}, select a Target JVM.
 `,
         review: {
           instructions: '#### Verify that you see the Dashboard page.',
@@ -90,7 +90,7 @@ The following Dashboard Cards are available:
 - **JFR Metrics Chart (BETA)**
 - **MBean Metrics Chart**
 
-Each card displays a different set of information about the currently selected target JVM, such as the heap usage, thread statistics, JVM vendor, and more.
+Each card displays a different set of information about the currently selected Target JVM, such as the heap usage, thread statistics, JVM vendor, and more.
 
 [Learn more about each Dashboard Card in the [Cryostat documentation](${build.dashboardGuideUrl}).]{{admonition tip}}
 
