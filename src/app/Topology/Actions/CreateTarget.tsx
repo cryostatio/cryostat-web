@@ -185,9 +185,10 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           if (option === ValidatedOptions.success) {
             exitForm();
           } else {
+            let errorMessage = (body as any)?.data?.reason || 'Connection test failure';
             setValidation({
               option: option,
-              errorMessage: body['data']['reason'],
+              errorMessage,
             });
           }
         }),
@@ -408,7 +409,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
             <ActionGroup>
               <Button
                 variant="primary"
-                isDisabled={!connectUrl || validConnectUrl !== ValidatedOptions.success || loading || testing}
+                isDisabled={validation.option !== ValidatedOptions.success}
                 onClick={handleSubmit}
                 {...createButtonLoadingProps}
                 data-quickstart-id="ct-create-btn"
