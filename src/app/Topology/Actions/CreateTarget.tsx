@@ -409,7 +409,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
             <ActionGroup>
               <Button
                 variant="primary"
-                isDisabled={!connectUrl || validConnectUrl !== ValidatedOptions.success || loading || testing}
+                isDisabled={validation.option !== ValidatedOptions.success}
                 onClick={handleSubmit}
                 {...createButtonLoadingProps}
                 data-quickstart-id="ct-create-btn"
