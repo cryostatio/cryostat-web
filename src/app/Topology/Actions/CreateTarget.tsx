@@ -185,9 +185,10 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           if (option === ValidatedOptions.success) {
             exitForm();
           } else {
+            let errorMessage = (body as any)?.data?.reason || 'Connection test failure';
             setValidation({
               option: option,
-              errorMessage: body['data']['reason'],
+              errorMessage,
             });
           }
         }),
