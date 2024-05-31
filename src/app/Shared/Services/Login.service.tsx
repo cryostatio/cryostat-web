@@ -27,8 +27,27 @@ export class LoginService {
 
   constructor(private readonly settings: SettingsService) {
     this.authority = process.env.CRYOSTAT_AUTHORITY || '.';
-    this.username.next('' /*TODO get this from X-Forwarded headers: this.getCacheItem(this.USER_KEY)*/);
     this.sessionState.next(SessionState.CREATING_USER_SESSION);
+
+    fromFetch(`${this.authority}/api/v2.1/auth`, {
+      credentials: 'include',
+      mode: 'cors',
+      method: 'POST',
+      body: null,
+    })
+      .pipe(
+        concatMap((response) => {
+          let gapAuth = response?.headers?.get('Gap-Auth');
+          if (gapAuth) {
+            return new Promise<any>((r) => r({ data: { result: { username: gapAuth } } } as any));
+          }
+          return response.json();
+        }),
+        catchError(() => of({ data: { result: { username: '' } } } as any)),
+      )
+      .subscribe((v) => {
+        this.username.next(v?.data?.result?.username ?? '');
+      });
   }
 
   getUsername(): Observable<string> {
