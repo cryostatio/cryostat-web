@@ -108,8 +108,14 @@ describe('Login.service', () => {
 
       it('should make expected API calls', async () => {
         await firstValueFrom(svc.setLoggedOut());
-        expect(mockFromFetch).toHaveBeenCalledTimes(1);
-        expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v2.1/logout`, {
+        expect(mockFromFetch).toHaveBeenCalledTimes(2);
+        expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v2.1/auth`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'POST',
+          body: null,
+        });
+        expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v2.1/logout`, {
           credentials: 'include',
           mode: 'cors',
           method: 'POST',

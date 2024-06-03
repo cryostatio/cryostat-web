@@ -78,7 +78,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.post('api/v2.1/auth', () => {
         return new Response(
           200,
-          { 'X-WWW-Authenticate': 'None' },
+          {},
           {
             meta: {
               status: 'OK',
