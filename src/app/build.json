@@ -13,5 +13,5 @@
   "mailingListName": "Google Groups",
   "mailingListUrl": "https://groups.google.com/g/cryostat-development",
   "licenseUrl": "https://github.com/cryostatio/cryostat3/blob/main/LICENSE.txt",
-  "version": "3.0.0-dev"
+  "version": "3.0.0"
 }
