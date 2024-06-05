@@ -107,7 +107,7 @@ describe('<EventTemplates />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('adds a recording after receiving a notification', async () => {
+  it('adds a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -123,7 +123,7 @@ describe('<EventTemplates />', () => {
     expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
   });
 
-  it('removes a recording after receiving a notification', async () => {
+  it('removes a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -168,16 +168,16 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    expect(screen.queryByLabelText('Create Custom Event Template')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Create custom Event Template')).not.toBeInTheDocument();
 
     const buttons = screen.getAllByRole('button');
     const uploadButton = buttons[0];
     await user.click(uploadButton);
 
-    expect(screen.getByLabelText('Create Custom Event Template'));
+    expect(screen.getByLabelText('Create custom Event Template'));
   });
 
-  it('downloads an event template when Download is clicked on template action bar', async () => {
+  it('downloads an Event Template when Download is clicked on template action bar', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -219,12 +219,12 @@ describe('<EventTemplates />', () => {
     const deleteAction = screen.getByText('Delete');
     await user.click(deleteAction);
 
-    expect(screen.getByLabelText('Event template delete warning'));
+    expect(screen.getByLabelText('Event Template delete warning'));
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
     await user.click(screen.getByLabelText("Don't ask me again"));
-    await user.click(within(screen.getByLabelText('Event template delete warning')).getByText('Delete'));
+    await user.click(within(screen.getByLabelText('Event Template delete warning')).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');
@@ -255,10 +255,10 @@ describe('<EventTemplates />', () => {
     await user.click(deleteAction);
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(screen.queryByLabelText('Event template delete warning')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Event Template delete warning')).not.toBeInTheDocument();
   });
 
-  it('should show error view if failing to retrieve event templates', async () => {
+  it('should show error view if failing to retrieve Event Templates', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
       target: () => of(mockTarget as Target),
@@ -283,7 +283,7 @@ describe('<EventTemplates />', () => {
 
     await doAct(async () => subj.next());
 
-    const failTitle = screen.getByText('Error retrieving event templates');
+    const failTitle = screen.getByText('Error retrieving Event Templates');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
@@ -308,7 +308,7 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    const filterInput = screen.getByLabelText('Event template filter');
+    const filterInput = screen.getByLabelText('Event Template filter');
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 
@@ -321,7 +321,7 @@ describe('<EventTemplates />', () => {
     expect(hintText).toBeVisible();
   });
 
-  it('should upload event template when submit button is clicked', async () => {
+  it('should upload Event Template when submit button is clicked', async () => {
     const createSpy = jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValueOnce(of(true));
     const { user } = render({
       routerConfigs: {
@@ -344,7 +344,7 @@ describe('<EventTemplates />', () => {
     expect(modal).toBeInTheDocument();
     expect(modal).toBeVisible();
 
-    const modalTitle = await within(modal).findByText('Create Custom Event Template');
+    const modalTitle = await within(modal).findByText('Create custom Event Template');
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 

@@ -40,7 +40,7 @@ However, in some cases (e.g. for **Kubernetes API**, JMX port is not <code>9091<
 ### What you'll need
 
 - A Java application that Cryostat cannot automatically discover
-- The connection URL and JMX credentials, if required, for that application
+- The connection URL and JMX Credentials, if required, for that application
 `,
     tasks: [
       {
@@ -53,17 +53,17 @@ However, in some cases (e.g. for **Kubernetes API**, JMX port is not <code>9091<
         },
       },
       {
-        title: 'Open Custom Target Creation Form',
+        title: 'Open Custom Target creation form',
         description: `
 
 1. From the toolbar, click on the [catalog icon]{{highlight topology-catalog-btn}}.
 
-      This will open a modal containing the **Topology Entity Catalog**.
+      This will open a modal containing the **Topology entity catalog**.
 
 [Alternatively, press <kbd>Ctrl</kbd> + <kbd>Space</kbd> or right click the topology view. This will open a mini catalog for quick access.]{{admonition tip}}
 
 2. Find and select the **Custom Target** option. To aid your search, use the search bar.
-3. Click on the **Create** button to open the **Custom Target Creation Form**.
+3. Click on the **Create** button to open the **Custom Target creation form**.
 `,
         review: {
           instructions: '#### Verify that you can open the catalog and select Custom Target.',
@@ -75,28 +75,28 @@ However, in some cases (e.g. for **Kubernetes API**, JMX port is not <code>9091<
         description: `
 1. Enter the JMX **Connection URL** for the target into the [Connection URL]{{highlight ct-connecturl-input}} field.
 2. Optionally assign an **Alias** to the target by using the [Alias]{{highlight ct-alias-input}} field.
-3. If the target has **JMX authentication** enabled, click the [JMX Credential Option]{{highlight ct-credential-expand}} to expand the form.
+3. If the target has **JMX authentication** enabled, click the [JMX Credential option]{{highlight ct-credential-expand}} to expand the form.
 4. Use the [Username]{{highlight ct-username-input}} and [Password]{{highlight ct-password-input}} fields to enter the username and password.
 `,
         review: {
           instructions: '#### Verify that you have filled out the form.',
           failedTaskHelp:
-            'Click the [JMX Credential Option]{{highlight ct-credential-expand}} to expand the form to reveal the username and password fields.',
+            'Click the [JMX Credential option]{{highlight ct-credential-expand}} to expand the form to reveal the username and password fields.',
         },
       },
       {
-        title: 'Test the custom target definition.',
+        title: 'Test the Custom Target definition.',
         description: `
 After form is filled, the [sample node]{{highlight ct-sample-testnode}} will be populated with those information.
 
 To test the **Custom Target** definition:
 
-1. Click on the [sample node icon]{{highlight ct-sample-testnode-icon}} to test your custom target definition. **Cryostat** will attempt a connection to the target defined by the form data.
+1. Click on the [sample node icon]{{highlight ct-sample-testnode-icon}} to test your Custom Target definition. **Cryostat** will attempt a connection to the target defined by the form data.
 2. If the attempt succeeds, a **Checkmark** icon is shown. Otherwise, an **Exclaimation** icon along with an alert banner that describes the error.
 3. Re-enter the form and repeat step 1-2 until you have a valid definition.
 `,
         review: {
-          instructions: '#### Verify that you can test the custom target definition.',
+          instructions: '#### Verify that you can test the Custom Target definition.',
           failedTaskHelp: 'You must provide a valid **Connection URL** to enable testing.',
         },
       },
@@ -109,7 +109,7 @@ To create the **Custom Target** definition:
 2. If the submission is successful, the view will automatically be directed to the **Topology** page. Otherwise, revise your form inputs.
 `,
         review: {
-          instructions: '#### Verify that you can create the custom target and redirected to Topology View.',
+          instructions: '#### Verify that you can create the Custom Target and redirected to Topology View.',
           failedTaskHelp: 'Revise your **Custom Target** definition to ensure it is valid.',
         },
       },
@@ -117,7 +117,7 @@ To create the **Custom Target** definition:
         title: 'View the Custom Target.',
         description: `
 The **Custom Target** will appear under **Custom Targets Realm**.
-[In Graph View, use the toolbar to filter out the **Custom Targets Realm** and the control bar to fit graph into screen, if needed.]{{admonition tip}}
+[In Graph view, use the toolbar to filter out the **Custom Targets Realm** and the control bar to fit graph into screen, if needed.]{{admonition tip}}
 `,
         review: {
           instructions: '#### Verify that you can can see the Custom Target.',

@@ -926,7 +926,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`archived-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Title headingLevel={'h5'}>Automated Analysis</Title>
+            <Title headingLevel={'h5'}>Automated analysis</Title>
             <Grid>
               {loadingAnalysis ? (
                 <Bullseye>

@@ -186,7 +186,7 @@ describe('<ActiveRecordingsTable />', () => {
 
   afterEach(cleanup);
 
-  it('renders the recording table correctly', async () => {
+  it('renders the Recording table correctly', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -205,7 +205,7 @@ describe('<ActiveRecordingsTable />', () => {
       expect(button).toBeVisible();
     });
 
-    ['Name', 'Start Time', 'Duration', 'State', 'Labels'].map((text) => {
+    ['Name', 'Start time', 'Duration', 'State', 'Labels'].map((text) => {
       const header = screen.getByText(text);
       expect(header).toBeInTheDocument();
       expect(header).toBeVisible();
@@ -255,7 +255,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(actionIcon).toBeVisible();
   });
 
-  it('adds a recording after receiving a notification', async () => {
+  it('adds a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -272,7 +272,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
   });
 
-  it('updates the recording labels after receiving a notification', async () => {
+  it('updates the Recording labels after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -289,7 +289,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
   });
 
-  it('stops a recording after receiving a notification', async () => {
+  it('stops a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -306,7 +306,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(screen.queryByText('RUNNING')).not.toBeInTheDocument();
   });
 
-  it('removes a recording after receiving a notification', async () => {
+  it('removes a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -360,7 +360,7 @@ describe('<ActiveRecordingsTable />', () => {
     // expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/recordings', '/recordings/create']);
   });
 
-  it('archives the selected recording when Archive is clicked', async () => {
+  it('archives the selected Recording when Archive is clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -384,7 +384,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(archiveRequestSpy).toBeCalledWith('someRecording');
   });
 
-  it('stops the selected recording when Stop is clicked', async () => {
+  it('stops the selected Recording when Stop is clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -428,7 +428,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
   });
 
-  it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
+  it('shows a popup when Delete is clicked and then deletes the Recording after clicking confirmation Delete', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -462,7 +462,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteActiveRecordings, false);
   });
 
-  it('deletes the recording when Delete is clicked w/o popup warning', async () => {
+  it('deletes the Recording when Delete is clicked w/o popup warning', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -487,7 +487,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
   });
 
-  it('downloads a recording when Download Recording is clicked', async () => {
+  it('downloads a Recording when Download Recording is clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -511,7 +511,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(downloadRequestSpy).toBeCalledWith(mockRecording);
   });
 
-  it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
+  it('uploads a Recording to Grafana when View in Grafana is clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -535,7 +535,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(grafanaUploadSpy).toBeCalledWith('someRecording');
   });
 
-  it('should show error view if failing to retrieve recordings', async () => {
+  it('should show error view if failing to retrieve Recordings', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
       target: () => of(mockTarget as Target),
@@ -561,7 +561,7 @@ describe('<ActiveRecordingsTable />', () => {
 
     await act(async () => subj.next());
 
-    const failTitle = screen.getByText('Error retrieving recordings');
+    const failTitle = screen.getByText('Error retrieving Recordings');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 

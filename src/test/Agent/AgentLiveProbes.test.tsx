@@ -130,7 +130,7 @@ describe('<AgentLiveProbes />', () => {
   it('should disable remove button if there is no probe', async () => {
     render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
-    const removeButton = screen.getByText('Remove All Probes');
+    const removeButton = screen.getByText('Remove all probes');
     expect(removeButton).toBeInTheDocument();
     expect(removeButton).toBeVisible();
     expect(removeButton).toBeDisabled();
@@ -162,11 +162,11 @@ describe('<AgentLiveProbes />', () => {
     });
   });
 
-  it('should remove all probes when Remove All Probe is clicked', async () => {
+  it('should remove all probes when remove all probe is clicked', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
     const { user } = render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
-    const removeButton = screen.getByText('Remove All Probes');
+    const removeButton = screen.getByText('Remove all probes');
     expect(removeButton).toBeInTheDocument();
     expect(removeButton).toBeVisible();
 
@@ -179,7 +179,7 @@ describe('<AgentLiveProbes />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
     const { user } = render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
-    const removeButton = screen.getByText('Remove All Probes');
+    const removeButton = screen.getByText('Remove all probes');
     expect(removeButton).toBeInTheDocument();
     expect(removeButton).toBeVisible();
 
@@ -213,7 +213,7 @@ describe('<AgentLiveProbes />', () => {
 
     expect(screen.queryByText('some_name')).not.toBeInTheDocument();
 
-    const hintText = screen.getByText('No Active Probes');
+    const hintText = screen.getByText('No active probes');
     expect(hintText).toBeInTheDocument();
     expect(hintText).toBeVisible();
   });

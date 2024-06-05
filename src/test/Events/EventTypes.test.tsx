@@ -119,7 +119,7 @@ describe('<EventTypes />', () => {
 
     expect(screen.queryByText('Some Event')).not.toBeInTheDocument();
 
-    const hintText = screen.getByText('No Event Types');
+    const hintText = screen.getByText('No event types');
     expect(hintText).toBeInTheDocument();
     expect(hintText).toBeVisible();
   });

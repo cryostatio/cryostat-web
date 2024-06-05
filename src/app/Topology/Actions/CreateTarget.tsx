@@ -279,7 +279,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                   <Alert
                     variant="info"
                     title={
-                      'Note: If the target requires authentication, use JMX Credential Options to provide credentials.'
+                      'Note: If the target requires authentication, use JMX Credential options to provide credentials.'
                     }
                     aria-live="polite"
                     isInline
@@ -327,7 +327,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                   fieldId="alias"
                   helperText={
                     <FormHelperText isHidden={false}>
-                      Connection Nickname (same as Connection URL if not specified).
+                      Connection nickname (same as Connection URL if not specified).
                     </FormHelperText>
                   }
                 >
@@ -350,7 +350,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                         onClick={() => toggleCredentialForm('jmx-credential-option')}
                         type={'button'}
                       >
-                        <span className="expandable-form__title">JMX Credential Options</span>
+                        <span className="expandable-form__title">JMX Credential options</span>
                       </AccordionToggle>
                       <div className="expandable-form__help-block " id={'jmx-credential-option-description'}>
                         Creates credentials that Cryostat uses to connect to target JVMs over JMX.
@@ -455,7 +455,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
 
   const statusIcon = React.useMemo(() => {
     if (testing) {
-      return { icon: <SyncAltIcon />, message: 'Testing custom target definition.' };
+      return { icon: <SyncAltIcon />, message: 'Testing Custom Target definition.' };
     }
     return validation.option === ValidatedOptions.success
       ? {
@@ -522,7 +522,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
         </Flex>
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
           <HelperText>
-            <HelperTextItem>Click on the sample node above to test custom target definition.</HelperTextItem>
+            <HelperTextItem>Click on the sample node above to test Custom Target definition.</HelperTextItem>
           </HelperText>
         </FlexItem>
       </Flex>

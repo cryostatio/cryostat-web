@@ -144,7 +144,7 @@ describe('<RecordingFilters />', () => {
 
   afterAll(jest.useRealTimers);
 
-  it('should display currently selected category for active recordings', async () => {
+  it('should display currently selected category for Active Recordings', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -178,7 +178,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeVisible();
   });
 
-  it('should display currently selected category for archived recordings', async () => {
+  it('should display currently selected category for Archived Recordings', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -212,7 +212,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeVisible();
   });
 
-  it('should display category menu for active recordings when clicked', async () => {
+  it('should display category menu for Active Recordings when clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -259,7 +259,7 @@ describe('<RecordingFilters />', () => {
     });
   });
 
-  it('should display category menu for archived recordings when clicked', async () => {
+  it('should display category menu for Archived Recordings when clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [

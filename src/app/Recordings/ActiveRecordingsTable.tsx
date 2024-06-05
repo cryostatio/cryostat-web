@@ -98,7 +98,7 @@ const tableColumns: TableColumn[] = [
     sortable: true,
   },
   {
-    title: 'Start Time',
+    title: 'Start time',
     keyPaths: ['startTime'],
     sortable: true,
   },
@@ -1011,7 +1011,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
                 onClick={handleLoadAnalysis}
                 icon={<RedoIcon />}
               />
-              Automated Analysis
+              Automated analysis
             </Title>
             <Grid>
               {loadingAnalysis ? (

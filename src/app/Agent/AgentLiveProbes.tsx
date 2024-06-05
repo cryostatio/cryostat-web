@@ -342,7 +342,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
                       isDisabled={!filteredProbes.length || actionLoadings['REMOVE']}
                       {...actionLoadingProps['REMOVE']}
                     >
-                      {actionLoadings['REMOVE'] ? 'Removing' : 'Remove'} All Probes
+                      {actionLoadings['REMOVE'] ? 'Removing' : 'Remove'} all probes
                     </Button>
                   </ToolbarItem>
                 </ToolbarGroup>
@@ -355,7 +355,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
               />
             </Toolbar>
             {probeRows.length ? (
-              <TableComposable aria-label="Active Probe Table" variant={TableVariant.compact}>
+              <TableComposable aria-label="Active probe table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
                     {tableColumns.map(({ title, sortable }, index) => (
@@ -371,7 +371,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
               <EmptyState>
                 <EmptyStateIcon icon={SearchIcon} />
                 <Title headingLevel="h4" size="lg">
-                  No Active Probes
+                  No active probes
                 </Title>
               </EmptyState>
             )}

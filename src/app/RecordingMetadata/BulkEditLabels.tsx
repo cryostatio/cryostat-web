@@ -305,8 +305,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               <Tooltip
                 content={
                   <div>
-                    Labels present on all selected recordings will appear here. Editing the labels will affect ALL
-                    selected recordings.
+                    Labels present on all selected Recordings will appear here. Editing the Labels will affect all
+                    selected Recordings.
                   </div>
                 }
                 appendTo={portalRoot}

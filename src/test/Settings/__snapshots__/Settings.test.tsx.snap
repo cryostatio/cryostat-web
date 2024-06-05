@@ -129,7 +129,7 @@ exports[`<Settings/> renders correctly 1`] = `
                         <span
                           className="pf-c-tabs__item-text"
                         >
-                          Notifications & Messages
+                          Notifications & messages
                         </span>
                       </button>
                     </li>

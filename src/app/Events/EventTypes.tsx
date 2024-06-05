@@ -292,7 +292,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         </Toolbar>
         {typeRowPairs.length ? (
           // TODO replace table with data list so collapsed event options can be custom formatted
-          <TableComposable aria-label="Event Types Table" variant={TableVariant.compact}>
+          <TableComposable aria-label="Event types table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 <Th />
@@ -309,7 +309,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
           <EmptyState>
             <EmptyStateIcon icon={SearchIcon} />
             <Title headingLevel="h4" size="lg">
-              No Event Types
+              No event types
             </Title>
           </EmptyState>
         )}

@@ -95,11 +95,11 @@ const LayoutRadioGroup: React.FC<LayoutRadioGroupProps> = ({ onChange, ...props 
   const configs = React.useMemo(
     () => [
       {
-        title: 'Graph View',
+        title: 'Graph view',
         isGraph: true,
       },
       {
-        title: 'List View',
+        title: 'List view',
         isGraph: false,
       },
     ],

@@ -54,9 +54,9 @@ export interface RecordingFiltersCategories {
 export const categoriesToDisplayNames = {
   Name: 'Name',
   Label: 'Label',
-  State: 'Recording State',
-  StartedBeforeDate: 'Started Before Date',
-  StartedAfterDate: 'Started After Date',
+  State: 'Recording state',
+  StartedBeforeDate: 'Started before date',
+  StartedAfterDate: 'Started after date',
   DurationSeconds: 'Duration (s)',
 };
 

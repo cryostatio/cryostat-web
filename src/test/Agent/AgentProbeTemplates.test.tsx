@@ -93,7 +93,7 @@ jest
 describe('<AgentProbeTemplates />', () => {
   afterEach(cleanup);
 
-  it('should add a probe template after receiving a notification', async () => {
+  it('should add a Probe Template after receiving a notification', async () => {
     render({ routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] } });
 
     const addTemplateName = screen.getByText('anotherProbeTemplate');
@@ -101,7 +101,7 @@ describe('<AgentProbeTemplates />', () => {
     expect(addTemplateName).toBeVisible();
   });
 
-  it('should remove a probe template after receiving a notification', async () => {
+  it('should remove a Probe Template after receiving a notification', async () => {
     render({ routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] } });
 
     expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
@@ -134,12 +134,12 @@ describe('<AgentProbeTemplates />', () => {
     expect(modal).toBeInTheDocument();
     expect(modal).toBeVisible();
 
-    const modalTitle = within(modal).getByText('Create Custom Probe Template');
+    const modalTitle = within(modal).getByText('Create custom Probe Template');
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
   });
 
-  it('should upload a probe template when form is filled and Submit is clicked', async () => {
+  it('should upload a Probe Template when form is filled and Submit is clicked', async () => {
     const { user } = render({
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
@@ -154,7 +154,7 @@ describe('<AgentProbeTemplates />', () => {
     expect(modal).toBeInTheDocument();
     expect(modal).toBeVisible();
 
-    const modalTitle = within(modal).getByText('Create Custom Probe Template');
+    const modalTitle = within(modal).getByText('Create custom Probe Template');
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
@@ -191,7 +191,7 @@ describe('<AgentProbeTemplates />', () => {
     expect(closeButton).toBeVisible();
   });
 
-  it('should delete a probe template when Delete is clicked', async () => {
+  it('should delete a Probe Template when Delete is clicked', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
     const { user } = render({
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
@@ -209,7 +209,7 @@ describe('<AgentProbeTemplates />', () => {
     expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
   });
 
-  it('should show warning modal and delete a probe template when confirmed', async () => {
+  it('should show warning modal and delete a Probe Template when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
     const { user } = render({
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
@@ -249,7 +249,7 @@ describe('<AgentProbeTemplates />', () => {
 
     await user.click(screen.getByLabelText('Actions'));
 
-    const insertButton = await screen.findByText('Insert Probes...');
+    const insertButton = await screen.findByText('Insert probes...');
     expect(insertButton).toBeInTheDocument();
     expect(insertButton).toBeVisible();
     expect(insertButton.getAttribute('aria-disabled')).toBe('false');
@@ -267,7 +267,7 @@ describe('<AgentProbeTemplates />', () => {
 
     await user.click(screen.getByLabelText('Actions'));
 
-    const insertButton = await screen.findByText('Insert Probes...');
+    const insertButton = await screen.findByText('Insert probes...');
     expect(insertButton).toBeInTheDocument();
     expect(insertButton).toBeVisible();
     expect(insertButton.getAttribute('aria-disabled')).toBe('true');
@@ -278,7 +278,7 @@ describe('<AgentProbeTemplates />', () => {
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
     });
 
-    const filterInput = screen.getByLabelText('Probe template filter');
+    const filterInput = screen.getByLabelText('Probe Template filter');
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 

@@ -283,7 +283,7 @@ const MemoryMonitoringLayout: LayoutTemplate = {
 };
 
 const AutomatedAnalysisLayout: LayoutTemplate = {
-  name: 'Automated Analysis',
+  name: 'Automated analysis',
   description: 'A layout template for identifying and calculating risk scores for common performance issues in a JVM.',
   vendor: LayoutTemplateVendor.CRYOSTAT,
   cards: [
@@ -401,7 +401,7 @@ const JFRMonitoringLayout: LayoutTemplate = {
       span: 3,
       props: {
         theme: 'light',
-        chartKind: 'Recording Start Time',
+        chartKind: 'Recording start time',
         duration: 120,
         period: 10,
       },

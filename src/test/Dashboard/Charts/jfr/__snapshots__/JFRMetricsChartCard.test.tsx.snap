@@ -205,12 +205,12 @@ exports[`<JFRMetricsChartCard /> renders empty state correctly 1`] = `
                 data-ouia-component-type="PF4/Title"
                 data-ouia-safe={true}
               >
-                No source recording
+                No source Recording
               </h2>
               <div
                 className="pf-c-empty-state__body"
               >
-                Metrics cards display data taken from running flight recordings with the label 
+                Metrics cards display data taken from running Flight Recordings with the label 
                 <span
                   className="pf-c-label pf-m-blue pf-m-compact"
                 >
@@ -220,7 +220,7 @@ exports[`<JFRMetricsChartCard /> renders empty state correctly 1`] = `
                     origin=dashboard_metrics
                   </span>
                 </span>
-                . No such recordings are currently available.
+                . No such Recordings are currently available.
               </div>
               <button
                 aria-disabled={false}

@@ -30,7 +30,7 @@ export class ReportService {
 
   reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
     if (!recording.reportUrl) {
-      return throwError(() => new Error('No recording report URL'));
+      return throwError(() => new Error('No Recording report URL'));
     }
     const headers = new Headers();
     headers.append('Accept', 'application/json');

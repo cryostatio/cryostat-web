@@ -51,14 +51,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
             className="pf-c-switch__label pf-m-on"
             id="all-deletion-warnings-on"
           >
-            All Deletion Warnings
+            All deletion warnings
           </span>
           <span
             aria-hidden="true"
             className="pf-c-switch__label pf-m-off"
             id="all-deletion-warnings-off"
           >
-            All Deletion Warnings
+            All deletion warnings
           </span>
         </label>
         
@@ -372,14 +372,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteActiveProbes-on"
             >
-              Remove Active Probes
+              Remove active probes
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteActiveProbes-off"
             >
-              Remove Active Probes
+              Remove active probes
             </span>
           </label>
         </div>
@@ -489,14 +489,14 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               className="pf-c-switch__label pf-m-on"
               id="DeleteDashboardLayout-on"
             >
-              Delete Dashboard Layouts
+              Delete Dashboard layouts
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
               id="DeleteDashboardLayout-off"
             >
-              Delete Dashboard Layouts
+              Delete Dashboard layouts
             </span>
           </label>
         </div>

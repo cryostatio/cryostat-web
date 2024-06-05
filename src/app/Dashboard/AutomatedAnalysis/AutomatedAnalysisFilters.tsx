@@ -117,7 +117,7 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
         case 'Topic':
           return t('FILTER_TOPIC', { ns: 'common' });
         default:
-          throw new Error(`Unknown Automated Analysis Filter Category: ${category}`);
+          throw new Error(`Unknown automated analysis filter category: ${category}`);
       }
     },
     [t],

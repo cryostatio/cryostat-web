@@ -43,7 +43,7 @@ describe('Recording workflow steps', function () {
     assert.equal('recordings', route);
   });
 
-  it('creates a new recording', async function () {
+  it('creates a new Recording', async function () {
     assert.equal((await recordings.getRecordings()).length, 0);
     await recordings.createRecording('helloWorld');
     const active = await recordings.getRecordings();
@@ -53,7 +53,7 @@ describe('Recording workflow steps', function () {
     assert.equal(state, RecordingState.RUNNING);
   });
 
-  it('stops a recording', async function () {
+  it('stops a Recording', async function () {
     const active = await recordings.getRecordings();
     assert.equal(active.length, 1);
 
@@ -63,18 +63,18 @@ describe('Recording workflow steps', function () {
     assert.equal(state, RecordingState.STOPPED);
   });
 
-  it('archives a new recording', async function () {
+  it('archives a new Recording', async function () {
     const active = await recordings.getRecordings();
     assert.equal(active.length, 1);
 
     await recordings.archiveRecording(active[0]);
     const notif = await cryostat.getLatestNotification();
 
-    assert.equal(notif.title, 'Recording Saved');
+    assert.equal(notif.title, 'Recording saved');
     assert.ok(notif.description.includes('helloWorld'));
   });
 
-  it('deletes a recording', async function () {
+  it('deletes a Recording', async function () {
     const active = await recordings.getRecordings();
     assert.equal(active.length, 1);
 

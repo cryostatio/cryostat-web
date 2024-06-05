@@ -28,7 +28,7 @@ export const FindByMatchExpression: React.FC<FindByMatchExpressionProps> = ({ is
   return (
     <SearchInput
       {...props}
-      placeholder={'Find by match expression...'}
+      placeholder={'Find by Match Expression...'}
       value={expression}
       onChange={(input) => {
         setExpression(input);

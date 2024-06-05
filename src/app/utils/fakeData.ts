@@ -347,8 +347,8 @@ class FakeApiService extends ApiService {
     return of([]);
   }
 
-  // Automated Analysis Card
-  // This fakes the fetch for Automated Analysis recording to return available.
+  // Automated analysis card
+  // This fakes the fetch for automated analysis recording to return available.
   // Then subsequent graphql call for archived recording is ignored
   graphql<T>(
     _query: string,

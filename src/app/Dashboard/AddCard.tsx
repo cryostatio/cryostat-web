@@ -210,7 +210,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
     <>
       <div id="dashboard-catalog-btn-wrapper">{content}</div>
       <Modal
-        aria-label="Dashboard Card Catalog Modal"
+        aria-label="Dashboard Card catalog modal"
         isOpen={showWizard}
         width={'90%'}
         className="card-catalog__wizard-modal"
@@ -609,7 +609,7 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
       maxHeight={'16em'}
     >
       {errored
-        ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
+        ? [<SelectOption key={0} value={`Load error: ${options[0]}`} isPlaceholder isDisabled />]
         : options.map((choice, idx) => {
             const display =
               control.extras && control.extras.displayMapper ? control.extras.displayMapper(choice) : choice;

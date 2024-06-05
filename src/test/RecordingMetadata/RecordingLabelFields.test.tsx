@@ -82,7 +82,7 @@ describe('<RecordingLabelFields />', () => {
     expect(tree).toMatchSnapshot();
   });
 
-  it('displays all labels in form fields', async () => {
+  it('displays all Labels in form fields', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -160,7 +160,7 @@ describe('<RecordingLabelFields />', () => {
     expect(mockProps.labels[0].value).toBe('someEditedValue');
   });
 
-  it('validates labels on initial render', async () => {
+  it('validates Labels on initial render', async () => {
     render({
       routerConfigs: {
         routes: [

@@ -74,7 +74,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     nameValid: ValidatedOptions.default,
     enabled: true,
     description: '',
-    matchExpression: '', // Use this for displaying match expression input
+    matchExpression: '', // Use this for displaying Match Expression input
     matchExpressionValid: ValidatedOptions.default,
     maxAge: 0,
     maxAgeUnit: 1,
@@ -343,9 +343,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   return (
     <Form>
       <Text component={TextVariants.small}>
-        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
+        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM
         applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
-        kept in the application recording buffer, and how frequently Cryostat should copy the application recording
+        kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording
         buffer into Cryostat&apos;s own archived storage.
       </Text>
       <FormGroup
@@ -390,7 +390,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match Expression Hint"
+            headerContent="Match Expression hint"
             bodyContent={
               <>
                 Try an expression like:
@@ -401,7 +401,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           >
             <Button
               variant="plain"
-              aria-label="More info for match expression field"
+              aria-label="More info for Match Expression field"
               onClick={(e) => e.preventDefault()}
               className="pf-c-form__group-label-help"
               data-quickstart-id="rule-matchexpr-help"
@@ -414,11 +414,11 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         fieldId="rule-matchexpr"
         helperText={
           evaluating
-            ? 'Evaluating match expression...'
+            ? 'Evaluating Match Expression...'
             : formData.matchExpressionValid === ValidatedOptions.warning
-            ? `Warning: Match expression matches no targets.`
+            ? `Warning: Match Expression matches no targets.`
             : `
-  Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+  Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
   application to determine whether the rule should be applied.`
         }
         helperTextInvalid="The expression matching failed."
@@ -473,9 +473,9 @@ enabled in the future.`}
         />
       </FormGroup>
       <FormGroup
-        label="Maximum Size"
+        label="Maximum size"
         fieldId="maxSize"
-        helperText="The maximum size of recording data retained in the target application's recording buffer."
+        helperText="The maximum size of Recording data retained in the target application's Recording buffer."
         data-quickstart-id="rule-max-size"
       >
         <Split hasGutter={true}>
@@ -506,9 +506,9 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Maximum Age"
+        label="Maximum age"
         fieldId="maxAge"
-        helperText="The maximum age of recording data retained in the target application's recording buffer."
+        helperText="The maximum age of Recording data retained in the target application's Recording buffer."
         data-quickstart-id="rule-max-age"
       >
         <Split hasGutter={true}>
@@ -539,9 +539,9 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Archival Period"
+        label="Archival period"
         fieldId="archivalPeriod"
-        helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
+        helperText="Time between copies of active Recording data being pulled into Cryostat archive storage."
         data-quickstart-id="rule-archival-period"
       >
         <Split hasGutter={true}>
@@ -572,9 +572,9 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Initial Delay"
+        label="Initial delay"
         fieldId="initialDelay"
-        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later."
+        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later."
         data-quickstart-id="rule-initial-delay"
       >
         <Split hasGutter={true}>
@@ -605,9 +605,9 @@ enabled in the future.`}
         </Split>
       </FormGroup>
       <FormGroup
-        label="Preserved Archives"
+        label="Preserved archives"
         fieldId="preservedArchives"
-        helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
+        helperText="The number of Archived Recording copies to preserve in archives for each target application affected by this rule."
         data-quickstart-id="rule-preserved-archives"
       >
         <TextInput
@@ -679,7 +679,7 @@ export const CreateRule: React.FC = () => {
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
-              <CardTitle>Match Expression Visualizer</CardTitle>
+              <CardTitle>Match Expression visualizer</CardTitle>
               <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
                 <MatchExpressionVisualizer />
               </CardBody>

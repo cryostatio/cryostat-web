@@ -60,8 +60,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose 
   const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
   const [drawerCategories, setDrawerCategories] = React.useState([
-    { title: 'Completed Actions', isExpanded: true, notifications: [] as Notification[], unreadCount: 0 },
-    { title: 'Cryostat Status', isExpanded: false, notifications: [] as Notification[], unreadCount: 0 },
+    { title: 'Completed actions', isExpanded: true, notifications: [] as Notification[], unreadCount: 0 },
+    { title: 'Cryostat status', isExpanded: false, notifications: [] as Notification[], unreadCount: 0 },
     { title: 'Problems', isExpanded: true, notifications: [] as Notification[], unreadCount: 0 },
   ] as NotificationDrawerCategory[]);
 

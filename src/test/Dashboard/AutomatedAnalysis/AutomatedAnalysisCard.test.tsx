@@ -258,7 +258,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
   });
 
-  it('renders empty recordings error view and creates recording when clicked', async () => {
+  it('renders empty Recordings error view and creates Recording when clicked', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'getCachedAnalysisReport').mockReturnValueOnce(mockEmptyCachedReport);
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyArchivedRecordingsResponse));
@@ -291,7 +291,7 @@ describe('<AutomatedAnalysisCard />', () => {
     );
   });
 
-  it('renders active recording analysis', async () => {
+  it('renders Active Recording analysis', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
@@ -345,7 +345,7 @@ describe('<AutomatedAnalysisCard />', () => {
     });
   });
 
-  it('renders archived recording analysis', async () => {
+  it('renders Archived Recording analysis', async () => {
     const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
     jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyActiveRecordingsResponse));
@@ -405,7 +405,7 @@ describe('<AutomatedAnalysisCard />', () => {
     });
   });
 
-  it('renders cached recording analysis', async () => {
+  it('renders cached Recording analysis', async () => {
     const mockCurrentDate = new Date('15 Sep 2022 00:00:00 UTC'); // 2 days after the cached recording
     jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyActiveRecordingsResponse));

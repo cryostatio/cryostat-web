@@ -81,9 +81,9 @@ const routes: IAppRoute[] = [
   {
     component: QuickStarts,
 
-    label: 'Quick Starts',
+    label: 'Quick starts',
     path: '/quickstarts',
-    title: 'Quick Starts',
+    title: 'Quick starts',
     description: 'Get started with Cryostat.',
   },
   {
@@ -109,7 +109,7 @@ const routes: IAppRoute[] = [
     path: '/rules',
     title: 'Automated Rules',
     description:
-      'Create recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.',
+      'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
     navGroup: CONSOLE,
     children: [
       {
@@ -126,7 +126,7 @@ const routes: IAppRoute[] = [
     label: 'Recordings',
     path: '/recordings',
     title: 'Recordings',
-    description: 'Create, view and archive JFR recordings on single target JVMs.',
+    description: 'Create, view and archive JFR Recordings on single target JVMs.',
     navGroup: CONSOLE,
     children: [
       {
@@ -144,7 +144,7 @@ const routes: IAppRoute[] = [
     path: '/archives',
     title: 'Archives',
     description:
-      'View archived recordings across all target JVMs, as well as upload recordings directly to the archive.',
+      'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
     navGroup: CONSOLE,
   },
   {
@@ -153,7 +153,7 @@ const routes: IAppRoute[] = [
     label: 'Events',
     path: '/events',
     title: 'Events',
-    description: 'View available JFR event templates and types for target JVMs, as well as upload custom templates.',
+    description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
     navGroup: CONSOLE,
   },
   {
@@ -162,7 +162,7 @@ const routes: IAppRoute[] = [
     label: 'Security',
     path: '/security',
     title: 'Security',
-    description: 'Upload SSL certificates for Cryostat to trust when communicating with target applications.',
+    description: 'Upload SSL/TLS certificates for Cryostat to trust when communicating with target applications.',
     navGroup: CONSOLE,
   },
   {

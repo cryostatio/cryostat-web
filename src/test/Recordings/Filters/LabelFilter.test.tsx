@@ -240,7 +240,7 @@ describe('<LabelFilter />', () => {
     expect(selectMenu).not.toBeVisible();
   });
 
-  it('should not display selected labels', async () => {
+  it('should not display selected Labels', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [

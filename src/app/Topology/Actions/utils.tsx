@@ -110,7 +110,7 @@ export const nodeActions: NodeAction[] = [
       const targetNode: TargetNode = element.getData();
       services.api.deleteTarget(targetNode.target).subscribe(() => undefined);
     },
-    title: 'Delete Target',
+    title: 'Delete target',
     allowed: (element) => {
       const targetNode: TargetNode = element.getData();
       const realm = targetNode.target.annotations.cryostat.find((label) => label.key === 'REALM')?.value;
@@ -120,7 +120,7 @@ export const nodeActions: NodeAction[] = [
   },
   {
     key: 'GROUP_START_RECORDING',
-    title: 'Start recording',
+    title: 'Start Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
@@ -166,7 +166,7 @@ export const nodeActions: NodeAction[] = [
   },
   {
     key: 'GROUP_ARCHIVE_RECORDING',
-    title: 'Archive recording',
+    title: 'Archive Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
@@ -210,7 +210,7 @@ export const nodeActions: NodeAction[] = [
   },
   {
     key: 'GROUP_STOP_RECORDING',
-    title: 'Stop recording',
+    title: 'Stop Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
@@ -256,7 +256,7 @@ export const nodeActions: NodeAction[] = [
   { key: '', isSeparator: true, isGroup: true },
   {
     key: 'GROUP_DELETE_RECORDING',
-    title: 'Delete recording',
+    title: 'Delete Recording',
     isGroup: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
@@ -321,16 +321,16 @@ export const notifyGroupActionErrors = (
       // Location of failed target node
       const searchIndex = Number(err.path[err.path.indexOf('descendantTargets') + 1]);
       if (searchIndex == undefined) {
-        notifications.danger(`Could not ${actionVerb} for a Target in ${groupDisplay}`, err.message);
+        notifications.danger(`Could not ${actionVerb} for a target in ${groupDisplay}`, err.message);
       }
 
       // Get the name of failed target node
       const name: string | undefined = data.environmentNodes[0]?.descendantTargets[searchIndex]?.name;
 
       if (name) {
-        notifications.danger(`Could not ${actionVerb} for Target ${name} in ${groupDisplay}`, err.message);
+        notifications.danger(`Could not ${actionVerb} for target ${name} in ${groupDisplay}`, err.message);
       } else {
-        notifications.danger(`Could not ${actionVerb} for a Target in ${groupDisplay}`, err.message);
+        notifications.danger(`Could not ${actionVerb} for a target in ${groupDisplay}`, err.message);
       }
     });
   }

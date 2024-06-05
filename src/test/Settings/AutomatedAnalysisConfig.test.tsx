@@ -22,7 +22,7 @@ import { renderSnapshot } from '@test/utils';
 import * as React from 'react';
 
 jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm', () => ({
-  AutomatedAnalysisConfigForm: (_: any) => <>Automated Analysis Configuration Form</>,
+  AutomatedAnalysisConfigForm: (_: any) => <>Automated analysis configuration form</>,
 }));
 
 jest.mock('@app/TargetView/TargetSelect', () => ({

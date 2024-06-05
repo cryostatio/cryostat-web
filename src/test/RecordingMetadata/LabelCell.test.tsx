@@ -72,7 +72,7 @@ describe('<LabelCell />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should display read-only labels', async () => {
+  it('should display read-only Labels', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -97,7 +97,7 @@ describe('<LabelCell />', () => {
     }
   });
 
-  it('should display clickable labels', async () => {
+  it('should display clickable Labels', async () => {
     render({
       routerConfigs: {
         routes: [

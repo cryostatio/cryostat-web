@@ -43,7 +43,7 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
           });
           return labels;
         }
-        throw new Error('No labels found in file');
+        throw new Error('No Labels found in file');
       }),
   );
 };

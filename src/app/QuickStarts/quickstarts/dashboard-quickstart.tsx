@@ -53,7 +53,7 @@ Dashboard Cards are displayed in **Dashboard Layouts**, which can be customized 
         title: 'Go to the Dashboard page',
         description: `
 1. In the [APP] console navigation bar, click [Dashboard]{{highlight nav-dashboard-tab}}.
-2. From the [Target Selector]{{highlight target-select}}, select a target JVM.
+2. From the [Target Selector]{{highlight target-select}}, select a Target JVM.
 `,
         review: {
           instructions: '#### Verify that you see the Dashboard page.',
@@ -86,11 +86,11 @@ The new layout is automatically selected and should be named \`Custom1\`, assumi
 The following Dashboard Cards are available:
 
 - **Target JVM Details**
-- **Automated Analysis**
+- **Automated analysis**
 - **JFR Metrics Chart (BETA)**
 - **MBean Metrics Chart**
 
-Each card displays a different set of information about the currently selected target JVM, such as the heap usage, thread statistics, JVM vendor, and more.
+Each card displays a different set of information about the currently selected Target JVM, such as the heap usage, thread statistics, JVM vendor, and more.
 
 [Learn more about each Dashboard Card in the [Cryostat documentation](${build.dashboardGuideUrl}).]{{admonition tip}}
 
@@ -149,14 +149,14 @@ You can rename, delete and quickly switch between **Dashboard Layouts** for diff
    This will open a dropdown menu.
 2. Select **Choose Template**.
    A modal will open with a list of available templates. There will be two template categories: **Suggested** and **Cryostat**.
-3. From the **Cryostat** category, select the **Automated Analysis** template.
+3. From the **Cryostat** category, select the **Automated analysis** template.
 4. Enter a name for the new layout in the **Name** field.
 5. Click **Create** to finish.
 `,
         review: {
-          instructions: '#### Verify that you are able to create a dashboard layout from template.',
+          instructions: '#### Verify that you are able to create a Dashboard Layout from template.',
           failedTaskHelp:
-            'If you are having trouble creating a dashboard layout from a template, make sure that you have selected a template from the Template Picker and entered a name for the new layout.',
+            'If you are having trouble creating a Dashboard Layout from a template, make sure that you have selected a template from the Template Picker and entered a name for the new layout.',
         },
       },
     ],

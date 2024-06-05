@@ -454,10 +454,10 @@ export enum AutomatedAnalysisScore {
 }
 
 export const FAILED_REPORT_MESSAGE =
-  'Failed to load the report from recording because the requested entity is too large.';
-export const NO_RECORDINGS_MESSAGE = 'No active or archived recordings available. Create a new recording for analysis.';
-export const RECORDING_FAILURE_MESSAGE = 'Failed to start recording for analysis.';
-export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this recording is not supported on this JVM.';
+  'Failed to load the report from Recording because the requested entity is too large.';
+export const NO_RECORDINGS_MESSAGE = 'No Active or Archived Recordings available. Create a new Recording for analysis.';
+export const RECORDING_FAILURE_MESSAGE = 'Failed to start Recording for analysis.';
+export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this Recording is not supported on this JVM.';
 
 // ======================================
 // Discovery/Target resources
@@ -486,7 +486,7 @@ export enum NodeType {
   // A target JVM using the Cryostat Agent, *not* connectable over JMX. Agent instances
   // that do publish a JMX Service URL should publish themselves with the JVM NodeType.
   AGENT = 'CryostatAgent',
-  // Custom target defined via Custom Target Creation Form.
+  // Custom Target defined via Custom Target creation form.
   CUSTOM_TARGET = 'CustomTarget',
   // Kubernetes platform.
   NAMESPACE = 'Namespace',

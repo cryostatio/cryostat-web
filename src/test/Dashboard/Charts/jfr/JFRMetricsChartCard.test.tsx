@@ -137,14 +137,14 @@ describe('<JFRMetricsChartCard />', () => {
     });
 
     expect(screen.getByText('CPU Load (last 120s, every 10s)')).toBeInTheDocument();
-    expect(screen.getByText('No source recording')).toBeInTheDocument();
+    expect(screen.getByText('No source Recording')).toBeInTheDocument();
     expect(
-      screen.getByText((s) => s.includes('Metrics cards display data taken from running flight recordings')),
+      screen.getByText((s) => s.includes('Metrics cards display data taken from running Flight Recordings')),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });
 
-  it('navigates to recording creation with prefilled state when empty state button clicked', async () => {
+  it('navigates to Recording creation with prefilled state when empty state button clicked', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     const { user } = render({

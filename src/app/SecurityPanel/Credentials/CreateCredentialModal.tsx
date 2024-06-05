@@ -81,7 +81,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
       className="add-credential-modal"
       onClose={onDismiss}
       title="Store Credentials"
-      description="Create stored credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
+      description="Create Stored Credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
     >
       <SearchExprServiceContext.Provider value={matchExpreRef.current}>
         <CredentialContext.Provider value={credentialRef.current}>
@@ -223,7 +223,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match Expression Hint"
+            headerContent="Match Expression hint"
             bodyContent={
               <>
                 Try an expression like:
@@ -234,7 +234,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           >
             <Button
               variant="plain"
-              aria-label="More info for match expression field"
+              aria-label="More info for Match Expression field"
               onClick={(e) => e.preventDefault()}
               className="pf-c-form__group-label-help"
             >
@@ -246,11 +246,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         fieldId="match-expression"
         helperText={
           evaluating
-            ? 'Evaluating match expression...'
+            ? 'Evaluating Match Expression...'
             : matchExpressionValid === ValidatedOptions.warning
-            ? `Warning: Match expression matches no targets.`
+            ? `Warning: Match Expression matches no targets.`
             : `
-        Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+        Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
         application to determine whether the rule should be applied.`
         }
         helperTextInvalid="The expression matching failed."

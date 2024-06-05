@@ -280,7 +280,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(screen.queryByText(`${mockCount3}`)).not.toBeInTheDocument();
   });
 
-  it('hides targets with zero recordings', async () => {
+  it('hides targets with zero Recordings', async () => {
     const { user } = render({
       routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
     });
@@ -379,7 +379,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(screen.queryByText(`${mockCount1}`)).not.toBeInTheDocument();
   });
 
-  it('increments the count when an archived recording is saved', async () => {
+  it('increments the count when an Archived Recording is saved', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] } });
 
     const tableBody = screen.getAllByRole('rowgroup')[1];
@@ -390,7 +390,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(firstTarget).getByText(`${mockCount1 + 1}`)).toBeTruthy();
   });
 
-  it('decrements the count when an archived recording is deleted', async () => {
+  it('decrements the count when an Archived Recording is deleted', async () => {
     const { user } = render({
       routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
     });

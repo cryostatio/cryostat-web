@@ -47,6 +47,6 @@ export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay
       ))}
     </div>
   ) : (
-    <EmptyText text="No annotations." />
+    <EmptyText text="No Annotations." />
   );
 };

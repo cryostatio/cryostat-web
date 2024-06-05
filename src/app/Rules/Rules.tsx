@@ -84,33 +84,33 @@ const tableColumns: TableColumn[] = [
     tooltip: 'The name and location of the Event Template applied by this rule.',
   },
   {
-    title: 'Archival Period',
+    title: 'Archival period',
     keyPaths: ['archivalPeriodSeconds'],
     tooltip:
-      'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
+      'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.',
   },
   {
-    title: 'Initial Delay',
+    title: 'Initial delay',
     keyPaths: ['initialDelaySeconds'],
     tooltip:
-      'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
+      'Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.',
   },
   {
-    title: 'Preserved Archives',
+    title: 'Preserved archives',
     keyPaths: ['preservedArchives'],
     tooltip:
-      'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
+      'The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory.',
   },
   {
-    title: 'Maximum Age',
+    title: 'Maximum age',
     keyPaths: ['maxAgeSeconds'],
     tooltip:
-      'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
+      'The maximum age in seconds for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.',
   },
   {
-    title: 'Maximum Size',
+    title: 'Maximum size',
     keyPaths: ['maxSizeBytes'],
-    tooltip: 'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
+    tooltip: 'The maximum size in bytes for JFR Recordings started by this rule. Values less than 1 indicate no limit.',
   },
 ];
 
@@ -410,9 +410,9 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         <Card data-quickstart-id="about-rules">
           <CardTitle>About Automated Rules</CardTitle>
           <CardBody>
-            Automated Rules define a dynamic set of Target JVMs to connect to and start{' '}
+            Automated Rules define a dynamic set of target JVMs to connect to and start{' '}
             <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
-            when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM
+            when the Automated Rule is created and when any new matching target JVMs appear. If your Target JVM
             connections require JMX Credentials, you can configure these in <Link to="/security">Security</Link>.
             Automated Rules can be configured to periodically copy the contents of the Active Recording to{' '}
             <Link to="/archives">Archives</Link> to ensure you always have up-to-date information about your JVMs.

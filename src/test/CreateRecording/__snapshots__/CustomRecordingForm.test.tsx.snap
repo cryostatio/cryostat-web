@@ -9,7 +9,7 @@ Array [
     data-ouia-safe={true}
     data-pf-content={true}
   >
-    JDK Flight Recordings are compact records of events which have occurred within the target JVM. Many event types are built in to the JVM itself, while others are user defined.
+    JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event types are built in to the JVM itself, while others are user defined.
   </small>,
   <form
     className="pf-c-form pf-m-horizontal"
@@ -83,7 +83,7 @@ Array [
             className="pf-c-check__label"
             htmlFor="recording-restart-existing"
           >
-            Restart if recording already exists
+            Restart if Recording already exists
           </label>
         </div>
         <div
@@ -91,7 +91,7 @@ Array [
           className="pf-c-form__helper-text"
           id="recording-name-helper"
         >
-          Enter a recording name. This will be unique within the target JVM.
+          Enter a Recording name. This will be unique within the Target JVM.
         </div>
       </div>
     </div>
@@ -256,7 +256,7 @@ Array [
           className="pf-c-form__helper-text pf-m-success"
           id="recording-duration-helper"
         >
-          Time before the recording is automatically stopped and copied to archive.
+          Time before the Recording is automatically stopped and copied to archive.
         </div>
       </div>
     </div>
@@ -314,7 +314,7 @@ Array [
           <optgroup
             className=""
             disabled={false}
-            label="Target Templates"
+            label="Target templates"
           />
           <optgroup
             className=""
@@ -335,7 +335,7 @@ Array [
           className="pf-c-form__helper-text"
           id="recording-template-helper"
         >
-          The Event Template to be applied in this recording
+          The Event Template to be applied in this Recording
         </div>
       </div>
     </div>
@@ -573,15 +573,15 @@ Array [
                 className="pf-c-check__label"
                 htmlFor="toDisk-checkbox"
               >
-                To Disk
+                To disk
               </label>
             </div>
             <div
               aria-live="polite"
               className="pf-c-form__helper-text"
-              id="To Disk-helper"
+              id="To disk-helper"
             >
-              Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information
+              Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information
             </div>
           </div>
         </div>
@@ -676,7 +676,7 @@ Array [
               className="pf-c-form__helper-text"
               id="maxSize-helper"
             >
-              The maximum size of recording data saved to disk
+              The maximum size of Recording data saved to disk
             </div>
           </div>
         </div>
@@ -771,7 +771,7 @@ Array [
               className="pf-c-form__helper-text"
               id="maxAge-helper"
             >
-              The maximum age of recording data stored to disk
+              The maximum age of Recording data stored to disk
             </div>
           </div>
         </div>

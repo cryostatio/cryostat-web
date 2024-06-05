@@ -75,7 +75,7 @@ export const EventTabs: React.FC = () => {
       <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
         <EventTemplates />
       </Tab>
-      <Tab eventKey={EventTab.EVENT_TYPE} title="Event Types">
+      <Tab eventKey={EventTab.EVENT_TYPE} title="Event types">
         <EventTypes />
       </Tab>
     </Tabs>

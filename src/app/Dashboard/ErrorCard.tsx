@@ -52,7 +52,7 @@ export const ErrorCard: DashboardCardFC<ErrorCardProps> = ({
 
   const errorDescription = React.useMemo(() => {
     return (
-      <DataList isCompact aria-label={'Card Configuration Errors'} className={'configuration-error-list'}>
+      <DataList isCompact aria-label={'Card configuration errors'} className={'configuration-error-list'}>
         {errors.map((err, idx) => {
           return (
             <DataListItem key={`error-messageitem-${idx}`}>

@@ -23,7 +23,7 @@ import { of, throwError } from 'rxjs';
 import { escapeKeyboardInput, render } from '../utils';
 
 jest.mock('@app/Shared/Components/MatchExpression/MatchExpressionVisualizer', () => ({
-  MatchExpressionVisualizer: () => <>Match Expression Visualizer</>,
+  MatchExpressionVisualizer: () => <>Match Expression visualizer</>,
 }));
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
@@ -112,7 +112,7 @@ describe('<CreateRule />', () => {
     expect(nameHelperText).toBeVisible();
   });
 
-  it('should show error helper text when match expression input is invalid', async () => {
+  it('should show error helper text when Match Expression input is invalid', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -138,7 +138,7 @@ describe('<CreateRule />', () => {
     expect(exphelperText).toBeVisible();
   });
 
-  it('should show warning text when match expression matches no target', async () => {
+  it('should show warning text when Match Expression matches no target', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -159,7 +159,7 @@ describe('<CreateRule />', () => {
 
     await user.type(matchExpressionInput, 'false');
 
-    const exphelperText = await screen.findByText('Warning: Match expression matches no targets.');
+    const exphelperText = await screen.findByText('Warning: Match Expression matches no targets.');
     expect(exphelperText).toBeInTheDocument();
     expect(exphelperText).toBeVisible();
   });
@@ -238,23 +238,23 @@ describe('<CreateRule />', () => {
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
 
-    const maxSizeInput = screen.getByLabelText('Maximum Size');
+    const maxSizeInput = screen.getByLabelText('Maximum size');
     expect(maxSizeInput).toBeInTheDocument();
     expect(maxSizeInput).toBeVisible();
 
-    const maxAgeInput = screen.getByLabelText('Maximum Age');
+    const maxAgeInput = screen.getByLabelText('Maximum age');
     expect(maxAgeInput).toBeInTheDocument();
     expect(maxAgeInput).toBeVisible();
 
-    const archivalPeriodInput = screen.getByLabelText('Archival Period');
+    const archivalPeriodInput = screen.getByLabelText('Archival period');
     expect(archivalPeriodInput).toBeInTheDocument();
     expect(archivalPeriodInput).toBeVisible();
 
-    const preservedArchivesInput = screen.getByLabelText('Preserved Archives');
+    const preservedArchivesInput = screen.getByLabelText('Preserved archives');
     expect(preservedArchivesInput).toBeInTheDocument();
     expect(preservedArchivesInput).toBeVisible();
 
-    const initialDelayInput = screen.getByLabelText('Initial Delay');
+    const initialDelayInput = screen.getByLabelText('Initial delay');
     expect(initialDelayInput).toBeInTheDocument();
     expect(initialDelayInput).toBeVisible();
 

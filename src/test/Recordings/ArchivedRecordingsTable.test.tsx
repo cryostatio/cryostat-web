@@ -238,7 +238,7 @@ describe('<ArchivedRecordingsTable />', () => {
     resize(DEFAULT_DIMENSIONS[0], DEFAULT_DIMENSIONS[1]);
   });
 
-  it('renders the recording table correctly', async () => {
+  it('renders the Recording table correctly', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -305,7 +305,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(totalSize).toBeVisible();
   });
 
-  it('adds a recording after receiving a notification', async () => {
+  it('adds a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -321,7 +321,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
   });
 
-  it('updates the recording labels after receiving a notification', async () => {
+  it('updates the Recording labels after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -337,7 +337,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
   });
 
-  it('removes a recording after receiving a notification', async () => {
+  it('removes a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -403,7 +403,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
   });
 
-  it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
+  it('shows a popup when Delete is clicked and then deletes the Recording after clicking confirmation Delete', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -443,7 +443,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteArchivedRecordings, false);
   });
 
-  it('deletes the recording when Delete is clicked w/o popup warning', async () => {
+  it('deletes the Recording when Delete is clicked w/o popup warning', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -475,7 +475,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
   });
 
-  it('downloads a recording when Download Recording is clicked', async () => {
+  it('downloads a Recording when Download Recording is clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -499,7 +499,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(downloadRequestSpy).toBeCalledWith(mockRecording);
   });
 
-  it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
+  it('uploads a Recording to Grafana when View in Grafana is clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -556,7 +556,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadModal).toBeVisible();
   });
 
-  it('uploads an archived recording without labels when Submit is clicked', async () => {
+  it('uploads an Archived Recording without labels when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
     const { user } = render({
@@ -622,7 +622,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(closeButton).toBeVisible();
   });
 
-  it('uploads an archived recording with labels from editors when Submit is clicked', async () => {
+  it('uploads an Archived Recording with labels from editors when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
     const { user } = render({
@@ -716,7 +716,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(closeButton).toBeVisible();
   });
 
-  it('uploads an archived recording with labels from uploads when Submit is clicked', async () => {
+  it('uploads an Archived Recording with labels from uploads when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
     const { user } = render({
@@ -883,7 +883,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(invalidFileText).toBeVisible();
   });
 
-  it('should show error view if failing to retrieve recordings', async () => {
+  it('should show error view if failing to retrieve Recordings', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockImplementationOnce((_query) => {
       throw new Error('Something wrong');
     });
@@ -900,7 +900,7 @@ describe('<ArchivedRecordingsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    const failTitle = screen.getByText('Error retrieving recordings');
+    const failTitle = screen.getByText('Error retrieving Recordings');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 

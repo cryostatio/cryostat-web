@@ -88,7 +88,7 @@ describe('<CustomRecordingForm />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should create recording when form is filled and create is clicked', async () => {
+  it('should create Recording when form is filled and create is clicked', async () => {
     const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of(mockResponse));
     const { user } = render({
       routerConfigs: { routes: [{ path: '/recordings/create', element: <CustomRecordingForm /> }] },
@@ -153,7 +153,7 @@ describe('<CustomRecordingForm />', () => {
     expect(helperText).toBeVisible();
   });
 
-  it('should show error view if failing to retrieve templates or recording options', async () => {
+  it('should show error view if failing to retrieve templates or Recording options', async () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
       target: () => of(mockTarget as Target),
@@ -178,7 +178,7 @@ describe('<CustomRecordingForm />', () => {
 
     await doAct(async () => subj.next());
 
-    const failTitle = screen.getByText('Error displaying recording creation form');
+    const failTitle = screen.getByText('Error displaying Recording creation form');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 

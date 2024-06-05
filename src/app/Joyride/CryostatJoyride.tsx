@@ -43,13 +43,13 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <div>
               <p>
-                <strong>Cryostat</strong> is a cloud-based profiling application for managing JFR recordings in
+                <strong>Cryostat</strong> is a cloud-based profiling application for managing JFR Recordings in
                 containerized Java environments.
               </p>
               <br />
               <p>
                 There are many other features that <strong>Cryostat</strong> provides, such as the ability to download
-                recordings, generate reports, and more.
+                Recordings, generate reports, and more.
               </p>
             </div>
           ),
@@ -84,11 +84,11 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <div>
               <p>
-                The <strong>Dashboard</strong> provides a high-level overview of Cryostat and the target JVM with the
+                The <strong>Dashboard</strong> provides a high-level overview of Cryostat and the Target JVM with the
                 use of <strong>Dashboard Cards</strong>.
               </p>
               <br />
-              <p>There are various dashboard cards that can be configured to display different metrics and charts.</p>
+              <p>There are various Dashboard Cards that can be configured to display different metrics and charts.</p>
             </div>
           ),
           target: '*[data-tour-id="dashboard"]',
@@ -100,7 +100,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
             <div>
               <p>
                 The <strong>Topology</strong> view provides a visual representation of Cryostat and the deployment
-                model. Start, stop, and delete recordings on multiple targets at a time from this view.
+                model. Start, stop, and delete Recordings on multiple targets at a time from this view.
               </p>
             </div>
           ),
@@ -112,7 +112,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <p>
               Create, delete, enable, and view Cryostat <strong>Automated Rules</strong> in this view. Automated Rules
-              allow you start recordings on target JVMs based on a set of conditions.
+              allow you start Recordings on target JVMs based on a set of conditions.
             </p>
           ),
           target: '*[data-tour-id="automatedrules"]',
@@ -122,8 +122,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           title: 'JFR Recordings',
           content: (
             <p>
-              The <strong>Recordings</strong> view provides a list of all active recordings that are currently being
-              recorded on the target JVM. Start, stop, download, delete recordings from this view.
+              The <strong>Recordings</strong> view provides a list of all active Recordings that are currently being
+              recorded on the Target JVM. Start, stop, download, delete Recordings from this view.
             </p>
           ),
           target: '*[data-tour-id="recordings"]',
@@ -133,7 +133,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           title: 'Archives View',
           content: (
             <p>
-              The <strong>Archives</strong> view provides a list of all saved recordings that have been saved to
+              The <strong>Archives</strong> view provides a list of all saved Recordings that have been saved to
               Cryostat. Download, delete, and generate reports from this view.
             </p>
           ),
@@ -145,8 +145,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <p>
               The <strong>Events</strong> page lists the <strong>Event Templates</strong> that can be used for creating
-              Flight Recordings. It also details the JFR <strong>Event Types</strong> that can be recorded within each
-              target JVM.
+              Flight Recordings. It also details the JFR <strong>event types</strong> that can be recorded within each
+              Target JVM.
             </p>
           ),
           target: '*[data-tour-id="events"]',
@@ -157,7 +157,7 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = ({ children }) => {
           content: (
             <p>
               The <strong>Security</strong> tab allows you to add <strong>Credentials</strong> and{' '}
-              <strong>SSL Certificates</strong> for Cryostat to use when connecting to remote targets.
+              <strong>SSL/TLS Certificates</strong> for Cryostat to use when connecting to remote targets.
             </p>
           ),
           target: '*[data-tour-id="security"]',

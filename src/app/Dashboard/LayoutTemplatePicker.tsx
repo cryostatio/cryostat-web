@@ -89,7 +89,7 @@ import {
 
 export enum LayoutTemplateSort {
   NAME = 'Name',
-  CARD_COUNT = 'Card Count',
+  CARD_COUNT = 'Card count',
   // TODO: add 'Version' after more version are released
 }
 
@@ -461,7 +461,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
           //     return a.version.localeCompare(b.version);
           //   }
           //   return b.version.localeCompare(a.version);
-          case 'Card Count':
+          case 'Card count':
             if (sortDirection === 'asc') {
               return a.cards.length - b.cards.length;
             }
