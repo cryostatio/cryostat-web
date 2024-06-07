@@ -64,7 +64,7 @@ The **General** settings tab is where you can adjust various general settings to
 The **Connectivity** tab enables you to configure the WebSocket connection between the browser and the [APP] backend.
 
 1. Click [Connectivity]{{highlight settings-connectivity-tab}}.
-2. Configure the **WebSocket Connection Debounce** time.
+2. Configure the **WebSocket retry interval** time.
 3. Configure the **Auto-refresh** period for content-views.
 [To use the **Auto-refresh** feature, make sure to enable the [Auto-refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox.]{{admonition tip}}
 `,
