@@ -116,16 +116,6 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = fal
   );
 
   return (
-<<<<<<< HEAD
-    <Select
-      menuAppendTo={'parent'}
-      onToggle={handleToggle}
-      isDisabled={isDisabled}
-      isOpen={open}
-      aria-label={'Display options'}
-      placeholderText={'Display options'}
-      customContent={menuContent}
-=======
     <MenuContainer
       toggle={toggle}
       menu={menuContent}
@@ -134,7 +124,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = fal
       onOpenChangeKeys={['Escape']}
       menuRef={menuRef}
       toggleRef={toggleRef}
->>>>>>> c829418 (build(deps): upgrade to PF5 deps and run codemod fix)
+      aria-label={'Display options'}
     />
   );
 };
