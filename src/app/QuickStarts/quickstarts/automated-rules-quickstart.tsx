@@ -26,7 +26,6 @@ const AutomatedRulesQuickStart: QuickStart = {
     order: 3,
   },
   spec: {
-    version: 2.3,
     displayName: displayName,
     durationMinutes: 5,
     icon: <CryostatIcon />,

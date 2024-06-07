@@ -27,7 +27,6 @@ const RecordingQuickStart: QuickStart = {
     order: 1,
   },
   spec: {
-    version: 2.3,
     displayName: displayName,
     durationMinutes: 10,
     icon: <CryostatIcon />,
@@ -129,14 +128,13 @@ Downloading a Recording will save the Recording to your local machine as a JFR f
         title: 'View an analysis report',
         description: `
 [APP] is able to generate an **Automated analysis report** using a JFR Recording. The **Java Mission Control** rules engine analyzes your Recording, looks for common problems, and assigns a severity score from 0 (no problem) to 100 (potentially severe problem) to each problem.
-1. Click the [kebab menu]{{highlight recording-kebab}} next to the Recording that you want to view an analysis report for.
-2. Click \`View Report ...\` to view an analysis report of the Recording in a new tab.
-3. *Optional:* Right click on the page and select \`Save Page As...\` to download the report HTML file to your local machine.
+1. Click the [row chevron]{{highlight recording-chevron}} next to the Recording that you want to view an analysis report for.
+2. If no tile groups appear then no problems were detected in your Recording. If any tiles do appear you can click on each one to view its severity score and see any suggestions to fix the problem.
 `,
         review: {
           instructions: '#### Verify that you can see an analysis report of the Recording.',
           failedTaskHelp:
-            'The kebab `⁝` should be next to the Recording row in the Active Recordings table. Clicking the kebab icon should show a menu with the `View Report ...` option.',
+            'The chevron `>` should be at the beginning of the Recording row in the **Active Recordings** or **Archived Recordings** tables. Clicking the chevron should expand the table row and reveal the analysis report tiles',
         },
       },
       {

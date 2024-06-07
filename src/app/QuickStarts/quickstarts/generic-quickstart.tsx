@@ -32,7 +32,6 @@ const GenericQuickStart: QuickStart = {
     // you can add additional metadata here
   },
   spec: {
-    version: 2.3, // versioning for each release of the quick start
     displayName: displayName,
     durationMinutes: 10,
     type: {
