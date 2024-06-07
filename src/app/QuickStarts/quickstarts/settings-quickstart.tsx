@@ -102,7 +102,7 @@ The **automated analysis** Dashboard Card allows you to automatically start an a
 1. Click [Advanced]{{highlight settings-advanced-tab}}.
 2. Configure the **feature level** settings.
 
-  The **feature level** setting enables you to enable or disable beta features.
+  The **feature level** setting enables you to enable or disable beta features. This is a client-side switch that only applies to the particular web browser and Cryostat instance where it is set.
 
 `,
       },
