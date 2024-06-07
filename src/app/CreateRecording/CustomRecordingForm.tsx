@@ -38,10 +38,12 @@ import {
   ExpandableSection,
   Form,
   FormGroup,
+  FormHelperText,
   FormSelect,
   FormSelectOption,
   HelperText,
   HelperTextItem,
+  Icon,
   Label,
   Split,
   SplitItem,
@@ -108,12 +110,12 @@ export const CustomRecordingForm: React.FC = () => {
   );
 
   const handleRestartExistingChange = React.useCallback(
-    (checked: boolean) => setFormData((old) => ({ ...old, restart: checked })),
+    (_, checked: boolean) => setFormData((old) => ({ ...old, restart: checked })),
     [setFormData],
   );
 
   const handleContinuousChange = React.useCallback(
-    (checked: boolean) =>
+    (_, checked: boolean) =>
       setFormData((old) => ({
         ...old,
         continuous: checked,
@@ -156,7 +158,7 @@ export const CustomRecordingForm: React.FC = () => {
   }, [formData]);
 
   const handleRecordingNameChange = React.useCallback(
-    (name: string) =>
+    (_, name: string) =>
       setFormData((old) => ({
         ...old,
         name: name,
@@ -166,27 +168,27 @@ export const CustomRecordingForm: React.FC = () => {
   );
 
   const handleMaxAgeChange = React.useCallback(
-    (value: string) => setFormData((old) => ({ ...old, maxAge: Number(value) })),
+    (_, value: string) => setFormData((old) => ({ ...old, maxAge: Number(value) })),
     [setFormData],
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
-    (unit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(unit) })),
+    (_, unit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(unit) })),
     [setFormData],
   );
 
   const handleMaxSizeChange = React.useCallback(
-    (value: string) => setFormData((old) => ({ ...old, maxSize: Number(value) })),
+    (_, value: string) => setFormData((old) => ({ ...old, maxSize: Number(value) })),
     [setFormData],
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
-    (unit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(unit) })),
+    (_, unit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(unit) })),
     [setFormData],
   );
 
   const handleToDiskChange = React.useCallback(
-    (toDisk: boolean) => setFormData((old) => ({ ...old, toDisk })),
+    (_, toDisk: boolean) => setFormData((old) => ({ ...old, toDisk })),
     [setFormData],
   );
 
@@ -203,7 +205,7 @@ export const CustomRecordingForm: React.FC = () => {
   );
 
   const handleArchiveOnStopChange = React.useCallback(
-    (archiveOnStop: boolean) => setFormData((old) => ({ ...old, archiveOnStop })),
+    (_, archiveOnStop: boolean) => setFormData((old) => ({ ...old, archiveOnStop })),
     [setFormData],
   );
 
@@ -406,14 +408,7 @@ export const CustomRecordingForm: React.FC = () => {
         are built in to the JVM itself, while others are user defined.
       </Text>
       <Form isHorizontal>
-        <FormGroup
-          label="Name"
-          isRequired
-          fieldId="recording-name"
-          helperText="Enter a Recording name. This will be unique within the Target JVM."
-          helperTextInvalid="A Recording name can contain only letters, numbers, and underscores."
-          validated={formData.nameValid}
-        >
+        <FormGroup label="Name" isRequired fieldId="recording-name">
           <TextInput
             value={formData.name}
             isRequired
@@ -434,22 +429,17 @@ export const CustomRecordingForm: React.FC = () => {
             id="recording-restart-existing"
             name="recording-restart-existing"
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={formData.nameValid}>
+                {formData.nameValid === ValidatedOptions.error
+                  ? 'A Recording name can contain only letters, numbers, and underscores.'
+                  : 'Enter a Recording name. This will be unique within the target JVM.'}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
-        <FormGroup
-          label="Duration"
-          isRequired
-          fieldId="recording-duration"
-          validated={formData.durationValid}
-          helperText={
-            formData.continuous
-              ? 'A continuous Recording will never be automatically stopped.'
-              : formData.archiveOnStop
-              ? 'Time before the Recording is automatically stopped and copied to archive.'
-              : 'Time before the Recording is automatically stopped.'
-          }
-          helperTextInvalid="The Recording duration must be a positive integer."
-          data-quickstart-id="crf-duration"
-        >
+        <FormGroup label="Duration" isRequired fieldId="recording-duration" data-quickstart-id="crf-duration">
           <Split hasGutter>
             <SplitItem>
               <Checkbox
@@ -481,15 +471,21 @@ export const CustomRecordingForm: React.FC = () => {
             unitScalar={formData.durationUnit}
             onUnitScalarChange={handleDurationUnitChange}
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={formData.durationValid}>
+                {formData.durationValid === ValidatedOptions.error
+                  ? 'The Recording duration must be a positive integer.'
+                  : formData.continuous
+                  ? 'A continuous recording will never be automatically stopped.'
+                  : formData.archiveOnStop
+                  ? 'Time before the Recording is automatically stopped and copied to archive.'
+                  : 'Time before the Recording is automatically stopped.'}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
-        <FormGroup
-          label="Template"
-          isRequired
-          fieldId="recording-template"
-          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
-          helperText={'The Event Template to be applied in this Recording'}
-          helperTextInvalid="A Template must be selected"
-        >
+        <FormGroup label="Template" isRequired fieldId="recording-template">
           <SelectTemplateSelectorForm
             selected={selectedSpecifier}
             templates={templates}
@@ -497,6 +493,15 @@ export const CustomRecordingForm: React.FC = () => {
             disabled={loading}
             onSelect={handleTemplateChange}
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
+                {formData.template?.name
+                  ? 'The Event Template to be applied in this Recording'
+                  : 'A Template must be selected'}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
         <ExpandableSection
           toggleTextExpanded="Hide metadata options"
@@ -511,11 +516,13 @@ export const CustomRecordingForm: React.FC = () => {
                 content={<Text>Unique key-value pairs containing information about the Recording.</Text>}
                 appendTo={portalRoot}
               >
-                <HelpIcon noVerticalAlign />
+                <Icon>
+                  <HelpIcon />
+                </Icon>
               </Tooltip>
             }
-            isHelperTextBeforeField
-            helperText={
+          >
+            <FormHelperText>
               <HelperText>
                 <HelperTextItem
                   isDynamic
@@ -526,8 +533,7 @@ export const CustomRecordingForm: React.FC = () => {
                   set by Cryostat and will be overwritten if specifed.
                 </HelperTextItem>
               </HelperText>
-            }
-          >
+            </FormHelperText>
             <RecordingLabelFields
               labels={formData.labels}
               setLabels={handleLabelsChange}
@@ -542,10 +548,7 @@ export const CustomRecordingForm: React.FC = () => {
           data-quickstart-id="crf-advanced-opt"
         >
           <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
-          <FormGroup
-            fieldId="To disk"
-            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information"
-          >
+          <FormGroup fieldId="To Disk">
             <Checkbox
               label="To disk"
               id="toDisk-checkbox"
@@ -553,12 +556,15 @@ export const CustomRecordingForm: React.FC = () => {
               onChange={handleToDiskChange}
               isDisabled={loading}
             />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>
+                Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </FormGroup>
-          <FormGroup
-            label="Maximum size"
-            fieldId="maxSize"
-            helperText="The maximum size of Recording data saved to disk"
-          >
+          <FormGroup label="Maximum size" fieldId="maxSize">
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput
@@ -585,8 +591,13 @@ export const CustomRecordingForm: React.FC = () => {
                 </FormSelect>
               </SplitItem>
             </Split>
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>The maximum size of Recording data saved to disk</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </FormGroup>
-          <FormGroup label="Maximum age" fieldId="maxAge" helperText="The maximum age of Recording data stored to disk">
+          <FormGroup label="Maximum age" fieldId="maxAge">
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput
@@ -613,6 +624,11 @@ export const CustomRecordingForm: React.FC = () => {
                 </FormSelect>
               </SplitItem>
             </Split>
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>The maximum age of Recording data stored to disk</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </FormGroup>
         </ExpandableSection>
         <ActionGroup>

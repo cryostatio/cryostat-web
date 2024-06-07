@@ -3,34 +3,39 @@
 exports[`<About /> renders correctly 1`] = `
 <div>
   About
-  <article
-    className="pf-c-card"
+  <div
+    className="pf-v5-c-card"
     data-ouia-component-id="OUIA-Generated-Card-1"
-    data-ouia-component-type="PF4/Card"
+    data-ouia-component-type="PF5/Card"
     data-ouia-safe={true}
     id=""
   >
     <div
-      className="pf-c-card__header"
+      className="pf-v5-c-card__header"
     >
-      <img
-        alt="Cryostat"
-        className="pf-c-brand cryostat-logo"
-        src="test-file-stub"
-      />
+      <div
+        className="pf-v5-c-card__header-main"
+      >
+        <img
+          alt="Cryostat"
+          className="pf-v5-c-brand cryostat-logo"
+          src="test-file-stub"
+          style={Object {}}
+        />
+      </div>
     </div>
     <div
-      className="pf-c-card__body"
+      className="pf-v5-c-card__body"
     >
       <div>
         AboutDescription
       </div>
     </div>
     <div
-      className="pf-c-card__footer"
+      className="pf-v5-c-card__footer"
     >
       Copyright The Cryostat Authors, The Apache License, Version 2.0
     </div>
-  </article>
+  </div>
 </div>
 `;

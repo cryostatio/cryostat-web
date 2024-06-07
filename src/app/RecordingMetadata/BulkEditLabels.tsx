@@ -29,7 +29,17 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot } from '@app/utils/utils';
-import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
+import {
+  Button,
+  Icon,
+  Split,
+  SplitItem,
+  Stack,
+  StackItem,
+  Text,
+  Tooltip,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
@@ -311,7 +321,9 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 }
                 appendTo={portalRoot}
               >
-                <HelpIcon noVerticalAlign />
+                <Icon>
+                  <HelpIcon />
+                </Icon>
               </Tooltip>
             </SplitItem>
           </Split>

@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export interface LoadingProps {
-  spinnerAriaValueText?: string; // Text describing that current loading status or progress
-  spinnerAriaLabelledBy?: string; // Id of element which describes what is being loaded
-  spinnerAriaLabel?: string; // Accessible label for the spinner to describe what is loading
-  isLoading: boolean;
-}
-
-export type DescriptionProps = {
-  children?: React.ReactNode;
-};
+/**
+ * t('TimeSpinner.INPUT_HOUR12_VALUE')
+ * t('TimeSpinner.INPUT_HOUR24_VALUE')
+ * t('TimeSpinner.INPUT_MINUTE_VALUE')
+ * t('TimeSpinner.INPUT_SECOND_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.INCREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.INCREMENT_SECOND_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.DECREMENT_SECOND_VALUE')
+ */

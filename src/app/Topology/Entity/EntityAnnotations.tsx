@@ -38,7 +38,7 @@ export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay
         <div className="entity-overview__displayed-annotations" key={group.groupLabel}>
           <LabelGroup numLabels={maxDisplay} categoryName={group.groupLabel}>
             {group.annotations.map((a) => (
-              <Label color="blue" key={a} isTruncated>
+              <Label color="blue" key={a}>
                 {a}
               </Label>
             ))}

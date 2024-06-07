@@ -19,7 +19,16 @@ import { Target, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, TabTitleText, Title } from '@patternfly/react-core';
+import {
+  Card,
+  CardBody,
+  EmptyState,
+  EmptyStateIcon,
+  Tab,
+  Tabs,
+  TabTitleText,
+  EmptyStateHeader,
+} from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -90,10 +99,11 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       </Tabs>
     ) : (
       <EmptyState>
-        <EmptyStateIcon icon={SearchIcon} />
-        <Title headingLevel="h4" size="lg">
-          Archives Unavailable
-        </Title>
+        <EmptyStateHeader
+          titleText="Archives Unavailable"
+          icon={<EmptyStateIcon icon={SearchIcon} />}
+          headingLevel="h4"
+        />
       </EmptyState>
     );
   }, [archiveEnabled, activeTab, uploadTargetAsObs, onTabSelect]);

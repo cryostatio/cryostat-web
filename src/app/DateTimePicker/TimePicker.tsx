@@ -20,6 +20,7 @@ import {
   Divider,
   HelperText,
   HelperTextItem,
+  Icon,
   Level,
   LevelItem,
   Panel,
@@ -58,7 +59,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   onMeridiemSelect,
   selected,
 }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const [is24h, setIs24h] = React.useState(true);
 
   const meridiemAM = React.useMemo(() => isHourIn24hAM(selected.hour24), [selected.hour24]);
@@ -121,7 +122,12 @@ export const TimePicker: React.FC<TimePickerProps> = ({
             <HelperText>
               <HelperTextItem>{t('TimePicker.USE_24HR_TIME')}</HelperTextItem>
             </HelperText>
-            <Switch id={'24-hour-switch'} label={t('TimePicker.24HOUR')} isChecked={is24h} onChange={setIs24h} />
+            <Switch
+              id={'24-hour-switch'}
+              label={t('TimePicker.24HOUR')}
+              isChecked={is24h}
+              onChange={(_, checked: boolean) => setIs24h(checked)}
+            />
           </PanelFooter>
         </PanelMain>
       </Panel>
@@ -137,7 +143,7 @@ interface TimeSpinnerProps {
 }
 
 const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const computedMax = React.useMemo(() => {
     switch (variant) {
       case 'hour12':
@@ -166,7 +172,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
   );
 
   const handleValueChange = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       if (isNaN(Number(value))) {
         return;
       }
@@ -203,7 +209,9 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
           onClick={handleIncrement}
           aria-label={t(`TimeSpinner.INCREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
-          <AngleUpIcon size="md" />
+          <Icon size="md">
+            <AngleUpIcon />
+          </Icon>
         </Button>
       </StackItem>
       <StackItem key={`${variant}-input`}>
@@ -224,24 +232,11 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
           onClick={handleDecrement}
           aria-label={t(`TimeSpinner.DECREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
-          <AngleDownIcon size="md" />
+          <Icon size="md">
+            <AngleDownIcon />
+          </Icon>
         </Button>
       </StackItem>
     </Stack>
   );
 };
-
-/**
- * t('TimeSpinner.INPUT_HOUR12_VALUE')
- * t('TimeSpinner.INPUT_HOUR24_VALUE')
- * t('TimeSpinner.INPUT_MINUTE_VALUE')
- * t('TimeSpinner.INPUT_SECOND_VALUE')
- * t('TimeSpinner.INCREMENT_HOUR12_VALUE')
- * t('TimeSpinner.INCREMENT_HOUR24_VALUE')
- * t('TimeSpinner.INCREMENT_MINUTE_VALUE')
- * t('TimeSpinner.INCREMENT_SECOND_VALUE')
- * t('TimeSpinner.DECREMENT_HOUR12_VALUE')
- * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
- * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
- * t('TimeSpinner.DECREMENT_SECOND_VALUE')
- */

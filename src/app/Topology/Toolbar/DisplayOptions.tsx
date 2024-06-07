@@ -15,7 +15,16 @@
  */
 import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState, topologyDisplayOptionsSetIntent } from '@app/Shared/Redux/ReduxStore';
-import { Checkbox, Divider, Select, Stack, StackItem, Switch } from '@patternfly/react-core';
+import {
+  Checkbox,
+  Divider,
+  MenuContainer,
+  MenuToggle,
+  MenuToggleElement,
+  Stack,
+  StackItem,
+  Switch,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,19 +33,17 @@ export interface DisplayOptionsProps {
   isGraph?: boolean;
 }
 
-export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
-  isDisabled = false,
-  isGraph: isGraphView = true,
-  ..._props
-}) => {
-  const [open, setOpen] = React.useState(false);
+export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = false, isGraph: isGraphView = true }) => {
+  const toggleRef = React.useRef<HTMLButtonElement>(null);
+  const menuRef = React.useRef<HTMLDivElement>();
+  const [isExpanded, setIsExpanded] = React.useState(false);
   const { show, groupings } = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
   const dispatch = useDispatch();
-  const handleToggle = React.useCallback(() => setOpen((old) => !old), [setOpen]);
+  const handleToggle = React.useCallback(() => setIsExpanded((old) => !old), [setIsExpanded]);
 
   const getChangeHandler = React.useCallback(
     (group: OptionCategory, key: string) => {
-      return (checked: boolean, _) => {
+      return (_: React.FormEvent<HTMLInputElement>, checked: boolean) => {
         dispatch(topologyDisplayOptionsSetIntent(group, key, checked));
       };
     },
@@ -95,15 +102,29 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
     );
   }, [checkBoxContents, switchContents]);
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={handleToggle}
+        isExpanded={isExpanded}
+        isDisabled={isDisabled}
+        placeholder={'Display options'}
+      />
+    ),
+    [handleToggle, isExpanded, isDisabled],
+  );
+
   return (
-    <Select
-      menuAppendTo={'parent'}
-      onToggle={handleToggle}
-      isDisabled={isDisabled}
-      isOpen={open}
+    <MenuContainer
+      toggle={toggle}
+      menu={menuContent}
+      isOpen={isExpanded}
+      onOpenChange={setIsExpanded}
+      onOpenChangeKeys={['Escape']}
+      menuRef={menuRef}
+      toggleRef={toggleRef}
       aria-label={'Display options'}
-      placeholderText={'Display options'}
-      customContent={menuContent}
     />
   );
 };

@@ -79,9 +79,14 @@ export const RuleDeleteWarningModal = ({
           label="Clean"
           description={`Clean will stop any Active Recordings that ${ruleName} created.`}
           isChecked={clean}
-          onChange={setClean}
+          onChange={(_, checked) => setClean(checked)}
         />
-        <Checkbox id="do-not-ask-enabled" label="Don't ask me again" isChecked={doNotAsk} onChange={setDoNotAsk} />
+        <Checkbox
+          id="do-not-ask-enabled"
+          label="Don't ask me again"
+          isChecked={doNotAsk}
+          onChange={(_event, checked) => setDoNotAsk(checked)}
+        />
       </Stack>
     </Modal>
   );

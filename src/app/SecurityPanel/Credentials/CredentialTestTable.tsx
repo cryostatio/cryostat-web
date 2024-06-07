@@ -32,23 +32,23 @@ import {
   LabelProps,
   Popover,
   SearchInput,
-  Select,
-  SelectOption,
-  SelectVariant,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   Tooltip,
   ValidatedOptions,
+  EmptyStateHeader,
+  DropdownList,
+  Select,
+  SelectOption,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import {
   InnerScrollContainer,
   OuterScrollContainer,
   SortByDirection,
-  TableComposable,
+  Table,
   Tbody,
   Td,
   Th,
@@ -137,7 +137,7 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
     <OuterScrollContainer>
       {toolbar}
       <InnerScrollContainer>
-        <TableComposable {...props}>
+        <Table {...props}>
           <Thead>
             <Tr>
               <Th sort={getSortParams(0)}>Target</Th>
@@ -147,16 +147,17 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
             </Tr>
           </Thead>
           <Tbody>{rows}</Tbody>
-        </TableComposable>
+        </Table>
       </InnerScrollContainer>
     </OuterScrollContainer>
   ) : (
     <Bullseye>
       <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateIcon variant="container" component={SearchIcon} />
-        <Title headingLevel="h3" size="lg">
-          No Targets Matched
-        </Title>
+        <EmptyStateHeader
+          titleText="No Targets Matched"
+          icon={<EmptyStateIcon icon={SearchIcon} />}
+          headingLevel="h3"
+        />
         <EmptyStateBody>{`${
           matchedExpr === '' ? 'Enter another' : 'Clear'
         } Match Expression and try again.`}</EmptyStateBody>
@@ -300,7 +301,7 @@ interface CredentialToolbarProps {
 
 const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
   onFilter,
-  onSearch,
+  onSearch = () => undefined,
   matchedTargets,
   filters,
   searchText,
@@ -331,7 +332,11 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
     <Toolbar {...props} isSticky id="credential-test-table-toolbar" aria-label="credential-test-table-toolbar">
       <ToolbarContent>
         <ToolbarItem variant="search-filter">
-          <SearchInput aria-label="Items example search input" onChange={onSearch} value={searchText} />
+          <SearchInput
+            aria-label="Items example search input"
+            onChange={(_, value: string) => onSearch(value)}
+            value={searchText}
+          />
         </ToolbarItem>
         <ToolbarGroup variant="filter-group">
           <StatusFilter onChange={onFilter} filters={filters} />
@@ -368,19 +373,20 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
   return (
     <Select
       {...props}
-      variant={SelectVariant.checkbox}
+      role="menu"
       aria-label="Status"
-      onToggle={handleToggle}
+      toggle={handleToggle}
       onSelect={handleSelect}
-      selections={filters}
+      selected={filters}
       isOpen={isOpen}
-      placeholderText="Status"
     >
-      {Object.values(CredentialTestState).map((state) => (
-        <SelectOption key={state} value={state}>
-          <Label color={getColor(state)}>{state}</Label>
-        </SelectOption>
-      ))}
+      <DropdownList>
+        {Object.values(CredentialTestState).map((state) => (
+          <SelectOption key={state} value={state}>
+            <Label color={getColor(state)}>{state}</Label>
+          </SelectOption>
+        ))}
+      </DropdownList>
     </Select>
   );
 };
