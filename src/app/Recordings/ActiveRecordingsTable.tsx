@@ -931,6 +931,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             isExpanded: isExpanded,
             onToggle: handleToggle,
           }}
+          data-quickstart-id="recording-chevron"
         />
         <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
           {recording.name}

@@ -874,6 +874,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             isExpanded: isExpanded,
             onToggle: handleToggle,
           }}
+          data-quickstart-id="recording-chevron"
         />
         <Td key={`archived-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
           {recording.name}

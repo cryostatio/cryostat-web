@@ -27,7 +27,6 @@ const SettingsQuickStart: QuickStart = {
     order: 100,
   },
   spec: {
-    version: 2.3,
     displayName: displayName,
     durationMinutes: 5,
     icon: <CogIcon />,
@@ -64,7 +63,7 @@ The **General** settings tab is where you can adjust various general settings to
 The **Connectivity** tab enables you to configure the WebSocket connection between the browser and the [APP] backend.
 
 1. Click [Connectivity]{{highlight settings-connectivity-tab}}.
-2. Configure the **WebSocket Connection Debounce** time.
+2. Configure the **WebSocket retry interval** time.
 3. Configure the **Auto-refresh** period for content-views.
 [To use the **Auto-refresh** feature, make sure to enable the [Auto-refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox.]{{admonition tip}}
 `,
@@ -101,12 +100,9 @@ The **automated analysis** Dashboard Card allows you to automatically start an a
 [APP] has a few advanced settings that can be configured.
 
 1. Click [Advanced]{{highlight settings-advanced-tab}}.
-2. Configure the **Credentials Storage** settings.
+2. Configure the **feature level** settings.
 
-  Credentials are necessary to authenticate with the target JVMs that [APP] communicates with, if JMX auth is enabled or if a [APP] agent authenticated connection is required. If you prefer not to store these credentials in the [APP] backend, you can opt to store them in local session storage instead.
-3. Configure the **feature level** settings.
-
-  The **feature level** setting enables you to enable or disable beta features.
+  The **feature level** setting enables you to enable or disable beta features. This is a client-side switch that only applies to the particular web browser and Cryostat instance where it is set.
 
 `,
       },
