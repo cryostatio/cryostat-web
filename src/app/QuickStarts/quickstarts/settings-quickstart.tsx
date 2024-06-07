@@ -100,10 +100,7 @@ The **automated analysis** Dashboard Card allows you to automatically start an a
 [APP] has a few advanced settings that can be configured.
 
 1. Click [Advanced]{{highlight settings-advanced-tab}}.
-2. Configure the **Credentials Storage** settings.
-
-  Credentials are necessary to authenticate with the target JVMs that [APP] communicates with, if JMX auth is enabled or if a [APP] agent authenticated connection is required. If you prefer not to store these credentials in the [APP] backend, you can opt to store them in local session storage instead.
-3. Configure the **feature level** settings.
+2. Configure the **feature level** settings.
 
   The **feature level** setting enables you to enable or disable beta features.
 
