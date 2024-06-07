@@ -27,7 +27,6 @@ const SettingsQuickStart: QuickStart = {
     order: 100,
   },
   spec: {
-    version: 2.3,
     displayName: displayName,
     durationMinutes: 5,
     icon: <CogIcon />,

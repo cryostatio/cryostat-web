@@ -24,7 +24,6 @@ const CustomTargetQuickstart: QuickStart = {
     featureLevel: FeatureLevel.PRODUCTION,
   },
   spec: {
-    version: 2.3,
     displayName: 'Create a Custom Target',
     durationMinutes: 10,
     icon: <CryostatIcon />,

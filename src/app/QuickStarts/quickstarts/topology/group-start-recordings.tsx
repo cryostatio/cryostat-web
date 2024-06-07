@@ -19,13 +19,11 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 
 const GroupStartRecordingQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
   metadata: {
     name: 'topology/start-group-recording',
     featureLevel: FeatureLevel.PRODUCTION,
   },
   spec: {
-    version: 2.3,
     displayName: 'Start Recording on multiple target JVMs',
     durationMinutes: 5,
     icon: <CryostatIcon />,

@@ -27,7 +27,6 @@ const RecordingQuickStart: QuickStart = {
     order: 1,
   },
   spec: {
-    version: 2.3,
     displayName: displayName,
     durationMinutes: 10,
     icon: <CryostatIcon />,
