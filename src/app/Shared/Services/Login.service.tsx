@@ -22,7 +22,7 @@ import type { SettingsService } from './Settings.service';
 export class LoginService {
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
-  private readonly sessionState = new ReplaySubject<SessionState>(1);
+  private readonly sessionState = new ReplaySubject<SessionState>(SessionState.CREATING_USER_SESSION);
   readonly authority: string;
 
   constructor(private readonly settings: SettingsService) {
