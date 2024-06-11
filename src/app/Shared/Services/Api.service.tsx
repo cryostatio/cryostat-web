@@ -17,7 +17,18 @@
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
-import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  EMPTY,
+  forkJoin,
+  from,
+  Observable,
+  ObservableInput,
+  of,
+  ReplaySubject,
+  shareReplay,
+  throwError,
+} from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import {
@@ -66,11 +77,10 @@ import {
 import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
-import { SessionState } from './service.types';
 import { TargetService } from './Target.service';
 
 export class ApiService {
-  private readonly archiveEnabled = new ReplaySubject<boolean>(1);
+  private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
@@ -80,20 +90,14 @@ export class ApiService {
     private readonly notifications: NotificationService,
     private readonly login: LoginService,
   ) {
-    // show recording archives when recordings available
-    this.login
-      .getSessionState()
+    this.doGet('recordings')
       .pipe(
-        concatMap((sessionState) => (sessionState === SessionState.USER_SESSION ? this.doGet('recordings') : EMPTY)),
-      )
-      .subscribe({
-        next: () => {
-          this.archiveEnabled.next(true);
-        },
-        error: () => {
+        catchError(() => {
           this.archiveEnabled.next(false);
-        },
-      });
+          return EMPTY;
+        }),
+      )
+      .subscribe();
 
     const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
       `${this.login.authority}/api/v1/grafana_datasource_url`,
