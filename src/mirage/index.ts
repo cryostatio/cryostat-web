@@ -20,7 +20,6 @@ import { Server as WSServer, Client } from 'mock-socket';
 import factories from './factories';
 import models from './models';
 import { Resource } from './typings';
-import { sizeUnits } from 'src/app/utils/utils';
 
 export const startMirage = ({ environment = 'development' } = {}) => {
   const wsUrl = `ws://localhost:9091/api/notifications`;
