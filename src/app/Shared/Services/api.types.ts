@@ -500,6 +500,7 @@ export enum NodeType {
   ENDPOINT = 'Endpoint',
   // Standalone targets
   TARGET = 'Target',
+  NODE = 'Node', // Default/fallback for unknown
 }
 
 interface _AbstractNode {
