@@ -66,11 +66,10 @@ import {
 import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
-import { SessionState } from './service.types';
 import { TargetService } from './Target.service';
 
 export class ApiService {
-  private readonly archiveEnabled = new ReplaySubject<boolean>(1);
+  private readonly archiveEnabled = new ReplaySubject<boolean>(true);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
@@ -80,10 +79,8 @@ export class ApiService {
     private readonly notifications: NotificationService,
     private readonly login: LoginService,
   ) {
-    // show recording archives when recordings available
     this.doGet('recordings')
       .pipe(
-        tap(() => this.archiveEnabled.next(true)),
         catchError(() => {
           this.archiveEnabled.next(false);
           return EMPTY;
