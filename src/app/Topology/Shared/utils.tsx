@@ -38,7 +38,7 @@ export const DiscoveryTreeContext = React.createContext(DEFAULT_EMPTY_UNIVERSE);
 
 export const COLLAPSE_EXEMPTS = [NodeType.NAMESPACE, NodeType.REALM, NodeType.UNIVERSE];
 
-export const nodeTypeToAbbr = (type: NodeType): string => {
+export const nodeTypeToAbbr = (type: NodeType = NodeType.NODE): string => {
   // Keep uppercases (or uppercase whole word if none) and retain first 4 charaters.
   return (type.replace(/[^A-Z]/g, '') || type.toUpperCase()).slice(0, 4);
 };

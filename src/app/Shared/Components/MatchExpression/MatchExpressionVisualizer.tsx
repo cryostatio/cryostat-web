@@ -388,7 +388,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
               isHidden={!expanded.includes(connectUrl)}
             >
               <EntityDetails
-                entity={{ getData: () => target }}
+                entity={{ getData: () => ({ target }) }}
                 columnModifier={{ default: '3Col' }}
                 alertOptions={alertOptions}
                 className="topology__list-view__entity-details"
