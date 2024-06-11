@@ -22,11 +22,12 @@ import type { SettingsService } from './Settings.service';
 export class LoginService {
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
-  private readonly sessionState = new ReplaySubject<SessionState>(SessionState.CREATING_USER_SESSION);
+  private readonly sessionState = new ReplaySubject<SessionState>(1);
   readonly authority: string;
 
   constructor(private readonly settings: SettingsService) {
     this.authority = process.env.CRYOSTAT_AUTHORITY || '.';
+    this.sessionState.next(SessionState.CREATING_USER_SESSION);
 
     fromFetch(`${this.authority}/api/v2.1/auth`, {
       credentials: 'include',
@@ -46,7 +47,6 @@ export class LoginService {
       )
       .subscribe((v) => {
         this.username.next(v?.data?.result?.username ?? '');
-        this.sessionState.next(SessionState.USER_SESSION);
       });
   }
 
