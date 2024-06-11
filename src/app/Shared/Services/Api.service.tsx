@@ -17,7 +17,18 @@
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
-import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  EMPTY,
+  forkJoin,
+  from,
+  Observable,
+  ObservableInput,
+  of,
+  ReplaySubject,
+  shareReplay,
+  throwError,
+} from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import {
@@ -69,7 +80,7 @@ import { NotificationService } from './Notifications.service';
 import { TargetService } from './Target.service';
 
 export class ApiService {
-  private readonly archiveEnabled = new ReplaySubject<boolean>(true);
+  private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
