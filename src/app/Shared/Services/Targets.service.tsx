@@ -33,9 +33,9 @@ export class TargetsService {
     login: LoginService,
     notificationChannel: NotificationChannel,
   ) {
-      // just trigger a startup query
+    // just trigger a startup query
     this.queryForTargets().subscribe();
-  
+
     notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
       const evt: TargetDiscoveryEvent = v.message.event;
       switch (evt.kind) {

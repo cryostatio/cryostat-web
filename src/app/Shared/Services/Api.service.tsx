@@ -81,13 +81,15 @@ export class ApiService {
     private readonly login: LoginService,
   ) {
     // show recording archives when recordings available
-    this.doGet('recordings').pipe(
-      tap(() => this.archiveEnabled.next(true)),
-      catchError(() => {
-        this.archiveEnabled.next(false);
-        return EMPTY;
-      })
-    ).subscribe();
+    this.doGet('recordings')
+      .pipe(
+        tap(() => this.archiveEnabled.next(true)),
+        catchError(() => {
+          this.archiveEnabled.next(false);
+          return EMPTY;
+        }),
+      )
+      .subscribe();
 
     const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
       `${this.login.authority}/api/v1/grafana_datasource_url`,
