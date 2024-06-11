@@ -65,13 +65,11 @@ export class NotificationChannel {
         });
       });
 
-    combineLatest([this.login.getSessionState(), timer(0, 5000)])
+    combineLatest([this.login.getSessionState(), this._ready, timer(0, 5000)])
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
-        next: (parts: string[]) => {
-          const sessionState = parseInt(parts[0]);
-
-          if (sessionState !== SessionState.CREATING_USER_SESSION) {
+        next: ([sessionState, readyState]) => {
+          if (sessionState === SessionState.NO_USER_SESSION || readyState.ready) {
             return;
           }
 
@@ -86,10 +84,7 @@ export class NotificationChannel {
             url: url.toString(),
             protocol: '',
             openObserver: {
-              next: () => {
-                this._ready.next({ ready: true });
-                this.login.setSessionState(SessionState.USER_SESSION);
-              },
+              next: () => this._ready.next({ ready: true }),
             },
             closeObserver: {
               next: (evt) => {

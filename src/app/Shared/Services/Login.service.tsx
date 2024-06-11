@@ -27,7 +27,6 @@ export class LoginService {
 
   constructor(private readonly settings: SettingsService) {
     this.authority = process.env.CRYOSTAT_AUTHORITY || '.';
-    this.sessionState.next(SessionState.CREATING_USER_SESSION);
 
     fromFetch(`${this.authority}/api/v2.1/auth`, {
       credentials: 'include',
@@ -47,6 +46,7 @@ export class LoginService {
       )
       .subscribe((v) => {
         this.username.next(v?.data?.result?.username ?? '');
+        this.sessionState.next(SessionState.USER_SESSION);
       });
   }
 
