@@ -31,10 +31,10 @@ export const MatchExpressionHint: React.FC<MatchExpressionHintProps> = ({ target
     if (!target || !target.alias || !target.connectUrl) {
       body = 'true';
     } else {
-      body = `target.alias == '${target.alias}' || target.annotations.cryostat['PORT'] == ${getAnnotation(
+      body = `target.alias == '${target.alias}' || ('PORT' in target.annotations.cryostat && target.annotations.cryostat.PORT == ${getAnnotation(
         target.annotations.cryostat,
         'PORT',
-      )}`;
+      )})`;
     }
     body = JSON.stringify(body, null, 2);
     body = body.substring(1, body.length - 1);
