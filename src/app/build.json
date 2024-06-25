@@ -1,17 +1,22 @@
 {
   "productName": "Cryostat",
-  "developmentUrl": "https://github.com/cryostatio/cryostat3",
-  "releaseTagUrl": "https://github.com/cryostatio/cryostat3/releases/tag/__REPLACE_HASH__",
+  "developmentUrl": "https://github.com/cryostatio/cryostat",
+  "releaseTagUrl": "https://github.com/cryostatio/cryostat/releases/tag/__REPLACE_HASH__",
   "homePageUrl": "https://cryostat.io",
   "blogPageUrl": "https://cryostat.io/blog",
   "documentationUrl": "https://cryostat.io/guides",
   "automatedRulesGuideUrl": "https://cryostat.io/guides/#create-an-automated-rule",
   "dashboardGuideUrl": "https://cryostat.io/guides/#dashboard",
-  "discussionUrl": "https://github.com/cryostatio/cryostat3/discussions",
-  "knownIssuesUrl": "https://github.com/cryostatio/cryostat3/issues",
-  "fileIssueUrl": "https://github.com/cryostatio/cryostat3/issues/new?labels=user+report,bug&body=Affects+__REPLACE_VERSION__",
+  "discussionUrl": "https://github.com/cryostatio/cryostat/discussions",
+  "knownIssuesUrl": "https://github.com/cryostatio/cryostat/issues",
+  "fileIssueUrl": "https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+__REPLACE_VERSION__",
   "mailingListName": "Google Groups",
   "mailingListUrl": "https://groups.google.com/g/cryostat-development",
+<<<<<<< HEAD
   "licenseUrl": "https://github.com/cryostatio/cryostat3/blob/main/LICENSE.txt",
   "version": "3.0.0-dev"
+=======
+  "licenseUrl": "https://github.com/cryostatio/cryostat/blob/main/LICENSE.txt",
+  "version": "4.0.0-dev"
+>>>>>>> ddaac50 (chore(links): update build.json for repo rename (#1292))
 }
