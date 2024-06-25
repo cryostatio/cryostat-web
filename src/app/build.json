@@ -12,11 +12,6 @@
   "fileIssueUrl": "https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+__REPLACE_VERSION__",
   "mailingListName": "Google Groups",
   "mailingListUrl": "https://groups.google.com/g/cryostat-development",
-<<<<<<< HEAD
-  "licenseUrl": "https://github.com/cryostatio/cryostat3/blob/main/LICENSE.txt",
-  "version": "3.0.0-dev"
-=======
   "licenseUrl": "https://github.com/cryostatio/cryostat/blob/main/LICENSE.txt",
-  "version": "4.0.0-dev"
->>>>>>> ddaac50 (chore(links): update build.json for repo rename (#1292))
+  "version": "3.0.0-dev"
 }
