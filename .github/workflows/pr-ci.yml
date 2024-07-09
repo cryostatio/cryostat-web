@@ -79,9 +79,9 @@ jobs:
       PR_num: ${{ needs.checkout-branch.outputs.PR_num }}
       head_sha: ${{ needs.checkout-branch.outputs.PR_head_sha }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
-        repository: cryostatio/cryostat3
+        repository: cryostatio/cryostat
         submodules: true
         fetch-depth: 0
     - uses: actions/setup-java@v3
