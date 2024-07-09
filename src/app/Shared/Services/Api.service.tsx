@@ -63,11 +63,12 @@ import {
   TargetMetadata,
   isTargetMetadata,
 } from './api.types';
-import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
+import { isHttpError, includesTarget, isHttpOk, isXMLHttpError, isGraphQLAuthError, isGraphQLSSLError } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { SessionState } from './service.types';
 import { TargetService } from './Target.service';
+import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 
 export class ApiService {
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
@@ -1278,7 +1279,7 @@ export class ApiService {
   }
 
   getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
-    return this.graphql<MBeanMetricsResponse>(
+    return this.graphql<any>(
       `
         query MBeanMXMetricsForTarget($id: BigInteger!) {
           targetNodes(filter: { targetIds: [$id] }) {
@@ -1291,6 +1292,19 @@ export class ApiService {
         }`,
       { id: target.id! },
     ).pipe(
+      tap((resp) => {
+        if (resp.data == undefined) {
+          if (isGraphQLAuthError(resp)) {
+            this.target.setAuthFailure();
+            throw new Error(authFailMessage);
+          } else if (isGraphQLSSLError(resp)) {
+            this.target.setSslFailure();
+            throw new Error(missingSSLMessage);
+          } else {
+            throw new Error(resp.errors[0].message);
+          }
+        }
+      }),
       map((resp) => {
         const nodes = resp.data?.targetNodes ?? [];
         if (!nodes || nodes.length === 0) {

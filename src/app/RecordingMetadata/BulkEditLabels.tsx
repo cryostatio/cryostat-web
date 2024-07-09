@@ -32,9 +32,11 @@ import { hashCode, portalRoot } from '@app/utils/utils';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of, tap } from 'rxjs';
 import { RecordingLabelFields } from './RecordingLabelFields';
 import { includesLabel } from './utils';
+import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
+import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -213,6 +215,19 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 { id: target.id! },
               ),
             ),
+            tap((resp) => {
+              if (resp.data == undefined) {
+                if (isGraphQLAuthError(resp)) {
+                  context.target.setAuthFailure();
+                  throw new Error(authFailMessage);
+                } else if (isGraphQLSSLError(resp)) {
+                  context.target.setSslFailure();
+                  throw new Error(missingSSLMessage);
+                } else {
+                  throw new Error(resp.errors[0].message);
+                }
+              }
+            }),
             map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
             first(),
           );

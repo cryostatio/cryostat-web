@@ -59,10 +59,24 @@ export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecordin
   return (toCheck as ActiveRecording).state !== undefined;
 };
 
+// ======================================
+// GraphQL Error Handling utils
+// ======================================
+
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 export const isGraphQLAuthError = (resp: any): boolean => {
   if (resp.errors !== undefined) {
     if (resp.errors[0].message.includes('Authentication failed!')) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/* eslint @typescript-eslint/no-explicit-any: 0 */
+export const isGraphQLSSLError = (resp: any): boolean => {
+  if (resp.errors !== undefined) {
+    if (resp.errors[0].message.includes('Bad Gateway')) {
       return true;
     }
   }

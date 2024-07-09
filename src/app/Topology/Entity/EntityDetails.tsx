@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+
+import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { EnvironmentNode, MBeanMetrics, MBeanMetricsResponse, TargetNode } from '@app/Shared/Services/api.types';
-import { isTargetNode } from '@app/Shared/Services/api.utils';
+import { isGraphQLAuthError, isGraphQLSSLError, isTargetNode } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown } from '@app/Topology/Actions/NodeActions';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -49,7 +51,7 @@ import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from 
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { catchError, concatMap, map, of } from 'rxjs';
+import { catchError, concatMap, map, of, tap } from 'rxjs';
 import { EmptyText } from '../../Shared/Components/EmptyText';
 import { NodeAction } from '../Actions/types';
 import { actionFactory } from '../Actions/utils';
@@ -75,6 +77,8 @@ import {
   mapSection,
   useResources,
 } from './utils';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+
 
 export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
@@ -105,6 +109,58 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       const titleContent = isTarget ? data.target.alias : data.name;
 
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
+
+      const [errorMessage, setErrorMessage] = React.useState('');
+      const addSubscription = useSubscriptions();
+      const services = React.useContext(ServiceContext);
+    
+      React.useEffect(() => {
+        addSubscription(
+          services.target.sslFailure().subscribe(() => {
+            // also triggered if api calls in Custom Recording form fail
+            setErrorMessage(missingSSLMessage);
+          }),
+        );
+      }, [services.target, setErrorMessage, addSubscription]);
+    
+      React.useEffect(() => {
+        addSubscription(
+          services.target.authRetry().subscribe(() => {
+            setErrorMessage(''); // Reset on retry
+          }),
+        );
+      }, [services.target, setErrorMessage, addSubscription]);
+    
+      React.useEffect(() => {
+        addSubscription(
+          services.target.authFailure().subscribe(() => {
+            // also triggered if api calls in Custom Recording form fail
+            setErrorMessage(authFailMessage);
+          }),
+        );
+      }, [services.target, setErrorMessage, addSubscription]);
+    
+      React.useEffect(() => {
+        addSubscription(
+          services.target.target().subscribe(() => {
+            setErrorMessage(''); // Reset on change
+          }),
+        );
+      }, [services.target, setErrorMessage, addSubscription]);
+    
+      const authRetry = React.useCallback(() => {
+        services.target.setAuthRetry();
+      }, [services.target]);
+    
+      if (errorMessage != '') {
+        return (
+          <ErrorView
+            title={'Error displaying Mbean Metrics'}
+            message={errorMessage}
+            retry={isAuthFail(errorMessage) ? authRetry : undefined}
+          />
+        );
+      }
 
       return (
         <>
@@ -267,7 +323,7 @@ const MBeanDetails: React.FC<{
     if (isExpanded) {
       addSubscription(
         context.api
-          .graphql<MBeanMetricsResponse>(
+          .graphql<any>(
             `
             query MBeanMXMetricsForTarget($id: BigInteger!) {
               targetNodes(filter: { targetIds: [$id] }) {
@@ -306,7 +362,7 @@ const MBeanDetails: React.FC<{
           .subscribe(setMbeanMetrics),
       );
     }
-  }, [isExpanded, addSubscription, targetId, context.api, setMbeanMetrics]);
+  }, [isExpanded, addSubscription, targetId, context.api, setMbeanMetrics, context.target]);
 
   const _collapsedData = React.useMemo((): DescriptionConfig[] => {
     return [

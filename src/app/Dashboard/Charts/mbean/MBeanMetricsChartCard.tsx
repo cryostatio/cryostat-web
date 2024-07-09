@@ -47,6 +47,8 @@ import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from '../context';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { missingSSLMessage, authFailMessage, isAuthFail } from '@app/ErrorView/types';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardTypeProps {
   themeColor: string;
@@ -101,6 +103,58 @@ const SimpleChart: React.FC<{
       ),
     [units, interpolation],
   );
+
+  const serviceContext = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [errorMessage, setErrorMessage] = React.useState('');
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.sslFailure().subscribe(() => {
+        setErrorMessage(missingSSLMessage);
+      }),
+    );
+  }, [serviceContext.target, serviceContext.target.sslFailure, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.authRetry().subscribe(() => {
+        setErrorMessage(''); // Reset on retry
+      }),
+    );
+  }, [serviceContext.target, serviceContext.target.authRetry, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      }),
+    );
+  }, [serviceContext.target, serviceContext.target.authFailure, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.target().subscribe(() => {
+        setErrorMessage(''); // Reset on change
+      }),
+    );
+  }, [serviceContext.target, serviceContext.target.target, setErrorMessage, addSubscription]);
+
+  const authRetry = React.useCallback(() => {
+    serviceContext.target.setAuthRetry();
+  }, [serviceContext.target]);
+
+  const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
+
+  if (isError) {
+    return (
+      <ErrorView
+        title={'Error displaying Mbean Metrics'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
+  }
 
   return (
     <Chart

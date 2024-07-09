@@ -77,12 +77,14 @@ import { Tbody, Tr, Td, ExpandableRowContent, TableComposable, SortByDirection }
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, filter, first, map, tap } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
+import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
+import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 
 const tableColumns: TableColumn[] = [
   {
@@ -247,7 +249,21 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     } else if (isUploadsTable) {
       addSubscription(
         queryUploadedRecordings()
-          .pipe(map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []))
+          .pipe(
+            tap((resp) => {
+              if (resp.data == undefined) {
+                if (isGraphQLAuthError(resp)) {
+                  context.target.setAuthFailure();
+                  throw new Error(authFailMessage);
+                } else if (isGraphQLSSLError(resp)) {
+                  context.target.setSslFailure();
+                  throw new Error(missingSSLMessage);
+                } else {
+                  throw new Error(resp.errors[0].message);
+                }
+              }
+            }),
+            map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []))
           .subscribe({
             next: handleRecordings,
             error: handleError,
@@ -259,7 +275,20 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           .pipe(
             filter((target) => !!target),
             first(),
-            concatMap((target: Target) => queryTargetRecordings(target.id!)),
+            concatMap((target: Target) => queryTargetRecordings(target.id!).pipe(
+              tap((resp) => {
+                if (resp.data == undefined) {
+                  if (isGraphQLAuthError(resp)) {
+                    context.target.setAuthFailure();
+                    throw new Error(authFailMessage);
+                  } else if (isGraphQLSSLError(resp)) {
+                    throw new Error(missingSSLMessage);
+                  } else {
+                    throw new Error(resp.errors[0].message);
+                  }
+                }
+              }),
+            )),
             map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
           )
           .subscribe({
