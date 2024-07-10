@@ -21,10 +21,11 @@ module.exports = merge(common('development'), {
     proxy: process.env.PREVIEW? undefined: [
       {
         context: ['/api', '/health', '/grafana'],
-        target: process.env.CRYOSTAT_AUTHORITY ?? 'http://localhost:8080',
+        target: process.env.CRYOSTAT_PROXY_URL ?? 'http://localhost:8080',
         secure: false, // ignore insecure tls
         auth: 'user:pass',
         ws: true,
+        followRedirects: true,
       }
     ]
   },
