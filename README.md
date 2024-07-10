@@ -55,7 +55,8 @@ $ bash smoketest.bash
 Then, run:
 
 ```bash
-$ yarn start:dev
+# By default, CRYOSTAT_URL is set to http://localhost:8080
+$ CRYOSTAT_URL=https://localhost:8443 yarn start:dev 
 ```
 
 The dev server will proxy API requests to Cryostat and Grafana.
