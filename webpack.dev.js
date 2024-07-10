@@ -17,19 +17,22 @@ module.exports = merge(common('development'), {
     hot: true,
     open: true,
     port: PORT,
+    // In preview mode, requests are intercepted with miragejs
     proxy: process.env.PREVIEW? undefined: [
       {
-        context: ["/api", "/health", "/grafana"],
-        target: process.env.CRYOSTAT_AUTHORITY ?? "http://localhost:8080",
+        context: ['/api', '/health', '/grafana'],
+        target: process.env.CRYOSTAT_AUTHORITY ?? 'http://localhost:8080',
         secure: false, // ignore insecure tls
-        auth: "user:pass",
+        auth: 'user:pass',
         ws: true,
       }
     ]
   },
   plugins: [
     new EnvironmentPlugin({
-      CRYOSTAT_AUTHORITY: '', // requests are proxied by dev-server
+      // Requests are proxied by dev-server
+      // In preview mode, a base url is required.
+      CRYOSTAT_AUTHORITY: process.env.PREVIEW? 'http://localhost:8181': '', 
       PREVIEW: process.env.PREVIEW || 'false'
     })
   ],
