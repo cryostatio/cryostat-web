@@ -17,7 +17,7 @@ module.exports = merge(common('development'), {
     hot: true,
     open: true,
     port: PORT,
-    proxy: [
+    proxy: process.env.PREVIEW? undefined: [
       {
         context: ["/api", "/health", "/grafana"],
         target: process.env.CRYOSTAT_AUTHORITY ?? "http://localhost:8080",
