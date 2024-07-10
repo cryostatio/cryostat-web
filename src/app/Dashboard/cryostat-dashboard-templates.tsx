@@ -401,7 +401,7 @@ const JFRMonitoringLayout: LayoutTemplate = {
       span: 3,
       props: {
         theme: 'light',
-        chartKind: 'Recording start time',
+        chartKind: 'Recording Start Time',
         duration: 120,
         period: 10,
       },

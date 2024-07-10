@@ -116,7 +116,7 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
     if (!dashboardUrl) {
       return;
     }
-    const u = new URL('/d-solo/main', dashboardUrl);
+    const u = new URL('d-solo/main', new URL(dashboardUrl, window.location.href));
     u.searchParams.append('theme', theme);
     u.searchParams.append('panelId', String(kindToId(props.chartKind)));
     u.searchParams.append('to', 'now');
