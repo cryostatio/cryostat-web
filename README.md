@@ -46,11 +46,10 @@ Development environment supports hot reload with Webpack's [Hot Module Replaceme
 
 ### With Cryostat
 
-First, launch a [`Cryostat`](https://github.com/cryostatio/cryostat) instance with CORS enabled by setting `CRYOSTAT_CORS_ORIGIN` to `http://localhost:9000`. For example:
-
+First, launch a [`Cryostat`](https://github.com/cryostatio/cryostat) instance:
 ```bash
 $ cd /path/to/cryostat
-$ CRYOSTAT_DISABLE_SSL=true CRYOSTAT_CORS_ORIGIN=http://localhost:9000 sh run.sh
+$ bash smoketest.bash
 ```
 
 Then, run:
@@ -58,6 +57,8 @@ Then, run:
 ```bash
 $ yarn start:dev
 ```
+
+The dev server will proxy API requests to Cryostat and Grafana.
 
 ### Without Cryostat
 

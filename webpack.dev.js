@@ -17,10 +17,19 @@ module.exports = merge(common('development'), {
     hot: true,
     open: true,
     port: PORT,
+    proxy: [
+      {
+        context: ["/api", "/health", "/grafana"],
+        target: process.env.CRYOSTAT_AUTHORITY ?? "http://localhost:8080",
+        secure: false, // ignore insecure tls
+        auth: "user:pass",
+        ws: true,
+      }
+    ]
   },
   plugins: [
     new EnvironmentPlugin({
-      CRYOSTAT_AUTHORITY: 'http://localhost:8181',
+      CRYOSTAT_AUTHORITY: '', // requests are proxied by dev-server
       PREVIEW: process.env.PREVIEW || 'false'
     })
   ],
