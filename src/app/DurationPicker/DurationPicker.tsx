@@ -41,7 +41,7 @@ export const DurationPicker: React.FC<DurationPickerProps> = ({
             type="number"
             id="duration-picker-period"
             aria-label="Duration Picker Period Input"
-            onChange={(v) => onPeriodChange(Number(v))}
+            onChange={(_event, v) => onPeriodChange(Number(v))}
             isDisabled={!enabled}
             min="0"
           />
@@ -49,7 +49,7 @@ export const DurationPicker: React.FC<DurationPickerProps> = ({
         <SplitItem>
           <FormSelect
             value={unitScalar}
-            onChange={(v) => onUnitScalarChange(Number(v))}
+            onChange={(_event, v) => onUnitScalarChange(Number(v))}
             aria-label="Duration Picker Units Input"
             isDisabled={!enabled}
           >

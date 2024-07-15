@@ -16,7 +16,19 @@
 
 import { CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import {
+  Button,
+  MenuToggle,
+  MenuToggleElement,
+  Select,
+  SelectList,
+  SelectOption,
+  SelectOptionProps,
+  TextInputGroup,
+  TextInputGroupMain,
+  TextInputGroupUtilities,
+} from '@patternfly/react-core';
+import { TimesIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
 export interface AutomatedAnalysisNameFilterProps {
@@ -25,12 +37,17 @@ export interface AutomatedAnalysisNameFilterProps {
   onSubmit: (inputName: string) => void;
 }
 
-export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterProps> = ({ onSubmit, ...props }) => {
+export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterProps> = ({
+  onSubmit,
+  filteredNames,
+  evaluations,
+}) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [filterValue, setFilterValue] = React.useState('');
 
   const onSelect = React.useCallback(
-    (_, selection, isPlaceholder) => {
-      if (!isPlaceholder) {
+    (_, selection) => {
+      if (selection) {
         setIsExpanded(false);
         onSubmit(selection);
       }
@@ -38,32 +55,83 @@ export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterPr
     [onSubmit, setIsExpanded],
   );
 
+  const onToggle = React.useCallback(() => setIsExpanded((isExpanded) => !isExpanded), [setIsExpanded]);
+
+  const onInputChange = React.useCallback((_, inputVal: string) => setFilterValue(inputVal), [setFilterValue]);
+
   const nameOptions = React.useMemo(() => {
     const flatEvalMap: string[] = [] as string[];
-    for (const topic of props.evaluations.map((r) => r[1])) {
+    for (const topic of evaluations.map((r) => r[1])) {
       for (const rule of topic) {
         flatEvalMap.push(rule.name);
       }
     }
-    return flatEvalMap
-      .filter((n) => !props.filteredNames.includes(n))
-      .sort()
-      .map((option, index) => <SelectOption key={index} value={option} />);
-  }, [props.evaluations, props.filteredNames]);
+    return flatEvalMap.filter((n) => !filteredNames.includes(n)).sort();
+  }, [evaluations, filteredNames]);
+
+  const filteredNameOptions = React.useMemo(() => {
+    return !filterValue ? nameOptions : nameOptions.filter((n) => n.includes(filterValue.toLowerCase()));
+  }, [filterValue, nameOptions]);
+
+  const selectOptionProps: SelectOptionProps[] = React.useMemo(() => {
+    if (!filteredNameOptions.length) {
+      return [{ isDisabled: true, children: `No results found for "${filterValue}"`, value: undefined }];
+    }
+    return filteredNameOptions.map((n) => ({ children: n, value: n }));
+  }, [filteredNameOptions, filterValue]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} variant="typeahead" onClick={onToggle} isExpanded={isExpanded} isFullWidth>
+        <TextInputGroup isPlain>
+          <TextInputGroupMain
+            value={filterValue}
+            onClick={onToggle}
+            onChange={onInputChange}
+            autoComplete="off"
+            placeholder="Filter by name..."
+            isExpanded={isExpanded}
+            role="combobox"
+            id="typeahead-name-filter"
+            aria-controls="typeahead-filter-select"
+          />
+          <TextInputGroupUtilities>
+            {filterValue ? (
+              <Button
+                variant="plain"
+                onClick={() => {
+                  setFilterValue('');
+                }}
+                aria-label="Clear input value"
+              >
+                <TimesIcon aria-hidden />
+              </Button>
+            ) : null}
+          </TextInputGroupUtilities>
+        </TextInputGroup>
+      </MenuToggle>
+    ),
+    [onToggle, isExpanded, filterValue, onInputChange, setFilterValue],
+  );
 
   return (
     <Select
-      variant={SelectVariant.typeahead}
-      onToggle={setIsExpanded}
+      toggle={toggle}
       onSelect={onSelect}
       isOpen={isExpanded}
-      typeAheadAriaLabel="Filter by name..."
-      placeholderText="Filter by name..."
       aria-label="Filter by name"
-      maxHeight="16em"
-      menuAppendTo={() => document.getElementById('dashboard-grid') || portalRoot}
+      popperProps={{
+        enableFlip: true,
+        appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
+      }}
     >
-      {nameOptions}
+      <SelectList id="typeahead-filter-select">
+        {selectOptionProps.map(({ value, children }, index) => (
+          <SelectOption key={index} value={value}>
+            {children}
+          </SelectOption>
+        ))}
+      </SelectList>
     </Select>
   );
 };

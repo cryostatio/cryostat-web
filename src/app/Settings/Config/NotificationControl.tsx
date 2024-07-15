@@ -36,7 +36,7 @@ const min = 0;
 const max = 10;
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
@@ -143,8 +143,8 @@ const Component = () => {
         </StackItem>
         <StackItem key={'expandable-noti-switch-list'}>
           <ExpandableSection
-            toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
-            onToggle={setExpanded}
+            toggleText={expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })}
+            onToggle={(_, expanded: boolean) => setExpanded(expanded)}
             isExpanded={expanded}
           >
             {switches}

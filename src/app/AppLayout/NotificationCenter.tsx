@@ -20,8 +20,9 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   Dropdown,
   DropdownItem,
-  DropdownPosition,
-  KebabToggle,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
   NotificationDrawer,
   NotificationDrawerBody,
   NotificationDrawerGroup,
@@ -34,6 +35,7 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
 
@@ -129,14 +131,17 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose 
     return dayjs(timestamp).tz(datetimeContext.timeZone.full).format('L LTS z');
   };
 
-  const drawerDropdownItems = [
-    <DropdownItem key="markAllRead" onClick={handleMarkAllRead} component="button">
-      Mark all read
-    </DropdownItem>,
-    <DropdownItem key="clearAll" onClick={handleClearAll} component="button">
-      Clear all
-    </DropdownItem>,
-  ];
+  const drawerDropdownItems = React.useMemo(
+    () => [
+      <DropdownItem key="markAllRead" onClick={handleMarkAllRead} component="button">
+        Mark all read
+      </DropdownItem>,
+      <DropdownItem key="clearAll" onClick={handleClearAll} component="button">
+        Clear all
+      </DropdownItem>,
+    ],
+    [handleMarkAllRead, handleClearAll],
+  );
 
   return (
     <>
@@ -145,11 +150,23 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose 
           <Dropdown
             isPlain
             onSelect={handleToggleDropdown}
-            toggle={<KebabToggle onToggle={handleToggleDropdown} />}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
+                variant="plain"
+                onClick={() => setHeaderDropdownOpen((open) => !open)}
+                isExpanded={isHeaderDropdownOpen}
+              >
+                <EllipsisVIcon />
+              </MenuToggle>
+            )}
             isOpen={isHeaderDropdownOpen}
-            position={DropdownPosition.right}
-            dropdownItems={drawerDropdownItems}
-          />
+            popperProps={{
+              position: 'right',
+            }}
+          >
+            <DropdownList>{drawerDropdownItems}</DropdownList>
+          </Dropdown>
         </NotificationDrawerHeader>
         <NotificationDrawerBody>
           <NotificationDrawerGroupList>

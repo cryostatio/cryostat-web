@@ -17,7 +17,8 @@ import { Recording, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable } from 'rxjs';
@@ -101,22 +102,41 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
     [setIsOpen],
   );
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={() => setIsOpen((isOpen) => !isOpen)}
+        isExpanded={isOpen}
+        data-quickstart-id="recording-kebab"
+      >
+        <EllipsisVIcon />
+      </MenuToggle>
+    ),
+    [setIsOpen, isOpen],
+  );
+
   return (
     <Td isActionCell>
       <Dropdown
+        toggle={toggle}
+        popperProps={{
+          appendTo: document.body,
+          position: 'right',
+          direction: 'down',
+        }}
         aria-label={`${props.recording.name}-actions`}
-        menuAppendTo={document.body}
-        position="right"
-        direction="down"
-        toggle={<KebabToggle id="toggle-kebab" onToggle={setIsOpen} data-quickstart-id="recording-kebab" />}
         isPlain
         isOpen={isOpen}
-        dropdownItems={actionItems.map((action) => (
-          <DropdownItem key={action.key} onClick={() => onSelect(action)} data-quickstart-id={action.key}>
-            {action.title}
-          </DropdownItem>
-        ))}
-      />
+      >
+        <DropdownList>
+          {actionItems.map((action) => (
+            <DropdownItem key={action.key} onClick={() => onSelect(action)} data-quickstart-id={action.key}>
+              {action.title}
+            </DropdownItem>
+          ))}
+        </DropdownList>
+      </Dropdown>
     </Td>
   );
 };

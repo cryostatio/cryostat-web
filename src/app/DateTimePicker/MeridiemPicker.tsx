@@ -23,7 +23,7 @@ export interface MeridiemPickerProps {
 }
 
 export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () => undefined, isAM = true }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const handleSelectAM = React.useCallback(() => {
     onSelect(true);
   }, [onSelect]);

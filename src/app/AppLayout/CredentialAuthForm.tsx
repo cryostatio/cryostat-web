@@ -83,7 +83,7 @@ export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({
           isRequired
           type="text"
           id="username"
-          onChange={(v) => {
+          onChange={(_event, v) => {
             setUsername(v);
             onCredentialChange &&
               onCredentialChange({
@@ -102,7 +102,7 @@ export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({
           isRequired
           type="password"
           id="password"
-          onChange={(v) => {
+          onChange={(_event, v) => {
             setPassword(v);
             onCredentialChange &&
               onCredentialChange({

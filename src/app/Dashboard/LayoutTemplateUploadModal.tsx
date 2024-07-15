@@ -129,7 +129,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
   }, [setNumOfFiles, setUploading]);
 
   const handleClose = React.useCallback(
-    (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    (ev?: KeyboardEvent | React.MouseEvent<Element, MouseEvent>) => {
       ev && ev.stopPropagation();
       if (uploading) {
         abortRef.current && abortRef.current.click();
@@ -255,7 +255,9 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
-            dropZoneAccepts={['application/json']}
+            dropZoneAccepts={{
+              'application/json': ['.json'],
+            }}
             displayAccepts={['JSON']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}

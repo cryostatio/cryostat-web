@@ -2,42 +2,47 @@
 
 exports[`<LoadingView /> renders correctly 1`] = `
 <div
-  className="pf-l-bullseye"
+  className="pf-v5-l-bullseye"
 >
   <div
-    className="pf-c-empty-state"
+    className="pf-v5-c-empty-state"
   >
     <div
-      className="pf-c-empty-state__content"
+      className="pf-v5-c-empty-state__content"
     >
       <div
-        className="pf-c-empty-state__icon"
+        className="pf-v5-c-empty-state__header"
       >
-        <span
-          aria-label="Contents"
-          aria-valuetext="Loading..."
-          className="pf-c-spinner pf-m-xl"
-          role="progressbar"
+        <div
+          className="pf-v5-c-empty-state__icon"
         >
-          <span
-            className="pf-c-spinner__clipper"
-          />
-          <span
-            className="pf-c-spinner__lead-ball"
-          />
-          <span
-            className="pf-c-spinner__tail-ball"
-          />
-        </span>
+          <svg
+            aria-hidden={false}
+            aria-label="Contents"
+            aria-valuetext="Loading..."
+            className="pf-v5-c-spinner pf-m-xl"
+            role="progressbar"
+            viewBox="0 0 100 100"
+          >
+            <circle
+              className="pf-v5-c-spinner__path"
+              cx="50"
+              cy="50"
+              fill="none"
+              r="45"
+            />
+          </svg>
+        </div>
+        <div
+          className="pf-v5-c-empty-state__title"
+        >
+          <h2
+            className="pf-v5-c-empty-state__title-text"
+          >
+            Loading
+          </h2>
+        </div>
       </div>
-      <h2
-        className="pf-c-title pf-m-lg"
-        data-ouia-component-id="OUIA-Generated-Title-1"
-        data-ouia-component-type="PF4/Title"
-        data-ouia-safe={true}
-      >
-        Loading
-      </h2>
     </div>
   </div>
 </div>

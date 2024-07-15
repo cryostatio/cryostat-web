@@ -21,19 +21,24 @@ import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { SerializedTarget } from '@app/TargetView/SerializedTarget';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { getAnnotation } from '@app/utils/utils';
+import { getAnnotation, portalRoot } from '@app/utils/utils';
 import {
   Card,
   CardBody,
   CardExpandableContent,
   CardHeader,
   CardTitle,
-  Select,
+  Dropdown,
   SelectGroup,
   SelectOption,
-  SelectVariant,
+  SelectList,
+  MenuToggle,
+  SearchInput,
+  MenuSearch,
+  MenuSearchInput,
+  DropdownGroup,
 } from '@patternfly/react-core';
-import { ContainerNodeIcon } from '@patternfly/react-icons';
+import { ContainerNodeIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
 export interface TargetSelectProps {
@@ -115,13 +120,15 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
       Array.from(groupNames)
         .map((name) => (
           <SelectGroup key={name} label={name}>
-            {targets
-              .filter((t) => (getAnnotation(t.annotations.cryostat, 'REALM') || 'Others') === name)
-              .map((t: Target) => (
-                <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>
-                  {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
-                </SelectOption>
-              ))}
+            <SelectList>
+              {targets
+                .filter((t) => (getAnnotation(t.annotations.cryostat, 'REALM') || 'Others') === name)
+                .map((t: Target) => (
+                  <SelectOption key={t.connectUrl} value={t}>
+                    {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
+                  </SelectOption>
+                ))}
+            </SelectList>
           </SelectGroup>
         ))
         .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`)),
@@ -175,25 +182,35 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
       ) : (
         <>
           <CardBody>
-            <Select
-              placeholderText="Select a target"
-              toggleIcon={<ContainerNodeIcon />}
-              variant={SelectVariant.single}
-              hasInlineFilter
-              inlineFilterPlaceholderText="Filter by target"
-              isGrouped
-              onFilter={handleTargetFilter}
-              onSelect={handleSelect}
-              onToggle={setDropdownOpen}
-              selections={selected?.alias || selected?.connectUrl}
-              isFlipEnabled={true}
-              menuAppendTo="parent"
-              maxHeight="20em"
+            <Dropdown
               isOpen={isDropdownOpen}
-              aria-label="Select target"
+              placeholder="Select Target"
+              toggle={(toggleRef) => (
+                <MenuToggle
+                  aria-label="Select Target"
+                  ref={toggleRef}
+                  onClick={() => handleSelect(undefined, undefined, true)}
+                  isExpanded={isExpanded}
+                  icon={<ContainerNodeIcon />}
+                  variant="plain"
+                >
+                  {selected?.alias || selected?.connectUrl}
+                </MenuToggle>
+              )}
+              popperProps={{
+                appendTo: portalRoot,
+                enableFlip: true,
+                //maxHeight="20em"
+              }}
             >
-              {selectOptions}
-            </Select>
+              <MenuSearch>
+                <MenuSearchInput>
+                  <SearchIcon />
+                  <SearchInput placeholder="Filter by target" onSearch={handleTargetFilter} />
+                </MenuSearchInput>
+              </MenuSearch>
+              <DropdownGroup label="Targets">{selectOptions}</DropdownGroup>
+            </Dropdown>
           </CardBody>
           <CardExpandableContent>
             <CardBody>{!selected ? <NoTargetSelected /> : <SerializedTarget target={selected} />}</CardBody>

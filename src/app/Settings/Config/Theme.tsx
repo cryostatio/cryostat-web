@@ -15,7 +15,8 @@
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useTheme } from '@app/utils/hooks/useTheme';
-import { Select, SelectOption } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, ThemeSetting, UserSetting } from '../types';
@@ -24,37 +25,50 @@ const Component = () => {
   const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [open, setOpen] = React.useState(false);
-  const [_theme, setting] = useTheme();
+  const [_theme, themeSetting] = useTheme();
 
   const handleThemeToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
 
   const handleThemeSelect = React.useCallback(
-    (_, v) => {
-      context.settings.setThemeSetting(v as ThemeSetting);
+    (_, setting: ThemeSetting) => {
+      context.settings.setThemeSetting(setting);
       setOpen(false);
     },
     [context.settings, setOpen],
+  );
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={handleThemeToggle} isExpanded={open}>
+        {themeSetting}
+      </MenuToggle>
+    ),
+    [handleThemeToggle, open, themeSetting],
   );
 
   return (
     <Select
       isOpen={open}
       aria-label={t('SETTINGS.THEME.SELECT.LABEL')}
-      onToggle={handleThemeToggle}
       onSelect={handleThemeSelect}
-      selections={setting}
-      isFlipEnabled
-      menuAppendTo="parent"
+      selected={themeSetting}
+      popperProps={{
+        enableFlip: true,
+        appendTo: portalRoot,
+      }}
+      toggle={toggle}
     >
-      <SelectOption key="auto" value="auto">
-        {t('SETTINGS.THEME.AUTO')}
-      </SelectOption>
-      <SelectOption key="light" value="light">
-        {t('SETTINGS.THEME.LIGHT')}
-      </SelectOption>
-      <SelectOption key="dark" value="dark">
-        {t('SETTINGS.THEME.DARK')}
-      </SelectOption>
+      <SelectList>
+        <SelectOption key="auto" value={ThemeSetting.AUTO}>
+          {t('SETTINGS.THEME.AUTO')}
+        </SelectOption>
+        <SelectOption key="light" value={ThemeSetting.LIGHT}>
+          {t('SETTINGS.THEME.LIGHT')}
+        </SelectOption>
+        <SelectOption key="dark" value={ThemeSetting.DARK}>
+          {t('SETTINGS.THEME.DARK')}
+        </SelectOption>
+      </SelectList>
     </Select>
   );
 };
