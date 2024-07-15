@@ -52,7 +52,7 @@ module.exports = merge(common('development'), {
           path.resolve(__dirname, 'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/quickstarts/dist/quickstarts.css'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-topology/node_modules/@patternfly/react-styles/css')
+          path.resolve(__dirname, 'node_modules/@patternfly/react-topology/dist/esm/css'),
         ],
         use: ['style-loader', 'css-loader']
       }

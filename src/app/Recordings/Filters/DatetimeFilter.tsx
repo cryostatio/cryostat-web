@@ -31,6 +31,7 @@ import {
   StackItem,
   TextInput,
   ValidatedOptions,
+  InputGroupItem,
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
 import { t } from 'i18next';
@@ -81,7 +82,7 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
   );
 
   const handleTextInput = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       setDatetimeInput((_) => {
         if (value === '') {
           return _emptyDatetimeInput;
@@ -127,22 +128,26 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
             <Stack>
               <StackItem>
                 <InputGroup>
-                  <TextInput
-                    type="text"
-                    id="date-time"
-                    placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).toISOString()}
-                    aria-label={t('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT') || ''}
-                    value={datetimeInput.text}
-                    validated={datetimeInput.validation}
-                    onChange={handleTextInput}
-                  />
-                  <Button
-                    variant="control"
-                    aria-label={t('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR') || ''}
-                    onClick={onToggleCalendar}
-                  >
-                    <OutlinedCalendarAltIcon />
-                  </Button>
+                  <InputGroupItem isFill>
+                    <TextInput
+                      type="text"
+                      id="date-time"
+                      placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).toISOString()}
+                      aria-label={t('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT') || ''}
+                      value={datetimeInput.text}
+                      validated={datetimeInput.validation}
+                      onChange={handleTextInput}
+                    />
+                  </InputGroupItem>
+                  <InputGroupItem>
+                    <Button
+                      variant="control"
+                      aria-label={t('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR') || ''}
+                      onClick={onToggleCalendar}
+                    >
+                      <OutlinedCalendarAltIcon />
+                    </Button>
+                  </InputGroupItem>
                 </InputGroup>
               </StackItem>
               {datetimeInput.validation === ValidatedOptions.error ? (

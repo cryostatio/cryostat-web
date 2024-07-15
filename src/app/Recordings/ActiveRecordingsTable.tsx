@@ -52,12 +52,14 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Dropdown,
   Grid,
   GridItem,
-  KebabToggle,
   Label,
   LabelGroup,
+  Dropdown,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
   OverflowMenu,
   OverflowMenuContent,
   OverflowMenuControl,
@@ -73,7 +75,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { RedoIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon, RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -806,15 +808,21 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  aria-label={'active-recording-actions'}
                   isPlain
-                  isFlipEnabled
                   onSelect={() => setActionToggleOpen(false)}
-                  menuAppendTo={document.body}
+                  toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                    <MenuToggle ref={toggleRef} onClick={() => handleActionToggle()}>
+                      <EllipsisVIcon />
+                    </MenuToggle>
+                  )}
                   isOpen={actionToggleOpen}
-                  toggle={<KebabToggle id="active-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
-                  dropdownItems={buttons.map((b) => b.collapsed)}
-                />
+                  popperProps={{
+                    appendTo: document.body,
+                    enableFlip: true,
+                  }}
+                >
+                  <DropdownList>={buttons.map((b) => b.collapsed)}</DropdownList>
+                </Dropdown>
               </OverflowMenuControl>
             </OverflowMenu>
           </ToolbarItem>
@@ -867,7 +875,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
 
   const handleCheck = React.useCallback(
-    (checked: boolean) => {
+    (_, checked: boolean) => {
       handleRowCheck(checked, index);
     },
     [index, handleRowCheck],
@@ -1007,7 +1015,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             <Title headingLevel={'h5'}>
               <Button
                 variant="plain"
-                isSmall
+                size="sm"
                 isDisabled={loadingAnalysis}
                 onClick={handleLoadAnalysis}
                 icon={<RedoIcon />}

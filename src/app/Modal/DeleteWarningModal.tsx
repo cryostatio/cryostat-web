@@ -54,7 +54,7 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
   );
 
   const onInnerClose = React.useCallback(
-    (ev?: React.MouseEvent) => {
+    (ev?: KeyboardEvent | React.MouseEvent<Element, MouseEvent>) => {
       ev && ev.stopPropagation();
       onClose();
     },
@@ -85,7 +85,12 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
         </Stack>,
       ]}
     >
-      <Checkbox id="do-not-ask-enabled" label="Don't ask me again" isChecked={doNotAsk} onChange={setDoNotAsk} />
+      <Checkbox
+        id="do-not-ask-enabled"
+        label="Don't ask me again"
+        isChecked={doNotAsk}
+        onChange={(_event, val) => setDoNotAsk(val)}
+      />
     </Modal>
   );
 };

@@ -23,8 +23,9 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateSecondaryActions,
-  Title,
+  EmptyStateActions,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -59,15 +60,18 @@ export const NotFound: React.FC<NotFoundProps> = (_) => {
   return (
     <>
       <EmptyState className="pf-c-empty-state-not-found">
-        <EmptyStateIcon icon={MapMarkedAltIcon} />
-        <Title headingLevel="h4" size="lg">
-          404: We couldn&apos;t find that page
-        </Title>
+        <EmptyStateHeader
+          titleText="404: We couldn't find that page"
+          icon={<EmptyStateIcon icon={MapMarkedAltIcon} />}
+          headingLevel="h4"
+        />
         <EmptyStateBody>One of the following pages might have what you&apos;re looking for.</EmptyStateBody>
-        <EmptyStateSecondaryActions>{cards}</EmptyStateSecondaryActions>
-        <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
-          Take me home
-        </Button>
+        <EmptyStateFooter>
+          <EmptyStateActions>{cards}</EmptyStateActions>
+          <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
+            Take me home
+          </Button>
+        </EmptyStateFooter>
       </EmptyState>
     </>
   );

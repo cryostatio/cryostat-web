@@ -4,33 +4,43 @@ exports[`<LabelCell /> renders correctly 1`] = `
 Array [
   <span
     aria-label="someLabel: someValue"
-    className="pf-c-label"
-    onClick={[Function]}
+    className="pf-v5-c-label"
     onFocus={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
     style={Object {}}
   >
-    <span
-      className="pf-c-label__content"
+    <button
+      className="pf-v5-c-label__content"
+      onClick={[Function]}
+      type="button"
     >
-      someLabel: someValue
-    </span>
+      <span
+        className="pf-v5-c-label__text"
+      >
+        someLabel: someValue
+      </span>
+    </button>
   </span>,
   <span
     aria-label="anotherLabel: anotherValue"
-    className="pf-c-label"
-    onClick={[Function]}
+    className="pf-v5-c-label"
     onFocus={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
     style={Object {}}
   >
-    <span
-      className="pf-c-label__content"
+    <button
+      className="pf-v5-c-label__content"
+      onClick={[Function]}
+      type="button"
     >
-      anotherLabel: anotherValue
-    </span>
+      <span
+        className="pf-v5-c-label__text"
+      >
+        anotherLabel: anotherValue
+      </span>
+    </button>
   </span>,
 ]
 `;

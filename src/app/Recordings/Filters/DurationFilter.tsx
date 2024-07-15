@@ -32,7 +32,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
   const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
 
   const handleContinuousCheckBoxChange = React.useCallback(
-    (checked) => {
+    (_, checked: boolean) => {
       onContinuousDurationSelect(checked);
     },
     [onContinuousDurationSelect],
@@ -56,7 +56,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
           value={duration}
           id="duration-input"
           aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
+          onChange={(e, value) => setDuration(Number(value))}
           min="0"
           onKeyDown={handleEnterKey}
         />

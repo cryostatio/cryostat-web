@@ -52,9 +52,6 @@ import {
   LevelItem,
   Modal,
   NumberInput,
-  Select,
-  SelectOption,
-  SelectOptionObject,
   Stack,
   StackItem,
   Switch,
@@ -63,16 +60,24 @@ import {
   TextInput,
   Title,
   Tooltip,
-} from '@patternfly/react-core';
-import {
-  CustomWizardNavFunction,
   Wizard,
-  WizardControlStep,
   WizardHeader,
   WizardNav,
-  WizardNavItem,
   WizardStep,
-} from '@patternfly/react-core/dist/js/next';
+  WizardNavItem,
+  EmptyStateHeader,
+  EmptyStateFooter,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  WizardStepType,
+  CustomWizardNavFunction,
+  Select,
+  SelectOption,
+  SelectList,
+  MenuToggle,
+  MenuToggleElement,
+} from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import { nanoid } from 'nanoid';
@@ -84,7 +89,7 @@ import { ChartContext } from './Charts/context';
 import { CardConfig, DashboardCardDescriptor, PropControl } from './types';
 import { getCardDescriptorByTitle, getDashboardCards } from './utils';
 
-interface AddCardProps {
+export interface AddCardProps {
   variant: 'card' | 'icon-button';
 }
 
@@ -137,23 +142,23 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
   const customNav: CustomWizardNavFunction = React.useCallback(
     (
       isExpanded: boolean,
-      steps: WizardControlStep[],
-      activeStep: WizardControlStep,
+      steps: WizardStepType[],
+      activeStep: WizardStepType,
       goToStepByIndex: (index: number) => void,
     ) => {
       return (
         <WizardNav isExpanded={isExpanded}>
           {steps
             .filter((step) => !step.isHidden)
-            .map((step, idx) => (
+            .map((step) => (
               <WizardNavItem
                 key={step.id}
                 id={step.id}
                 content={step.name}
                 isCurrent={activeStep.id === step.id}
-                isDisabled={step.isDisabled || (idx > 0 && !selection)}
+                isDisabled={step.isDisabled || (step.index > 0 && !selection)}
                 stepIndex={step.index}
-                onNavItemClick={goToStepByIndex}
+                onClick={() => goToStepByIndex(step.index)}
               />
             ))}
         </WizardNav>
@@ -169,15 +174,18 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
           <Card isRounded isCompact isFullHeight>
             <CardBody>
               <Bullseye>
-                <EmptyState variant={EmptyStateVariant.large}>
-                  <EmptyStateIcon icon={PlusCircleIcon} />
-                  <Title headingLevel="h2" size="md">
-                    Add a new card
-                  </Title>
+                <EmptyState variant={EmptyStateVariant.lg}>
+                  <EmptyStateHeader
+                    titleText="Add a new card"
+                    icon={<EmptyStateIcon icon={PlusCircleIcon} />}
+                    headingLevel="h2"
+                  />
                   <EmptyStateBody>{t('Dashboard.CARD_CATALOG_DESCRIPTION')}</EmptyStateBody>
-                  <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
-                    Add
-                  </Button>
+                  <EmptyStateFooter>
+                    <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
+                      Add
+                    </Button>
+                  </EmptyStateFooter>
                 </EmptyState>
               </Bullseye>
             </CardBody>
@@ -297,7 +305,10 @@ const getFullDescription = (selection: string, t: TFunction) => {
 
 export interface CardGalleryProps {
   selection: string; // Translated card title
-  onSelect: (event: React.MouseEvent, selection: string) => void;
+  onSelect: (
+    event: React.MouseEvent<Element, MouseEvent> | React.FormEvent<HTMLInputElement>,
+    selection: string,
+  ) => void;
 }
 
 export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect }) => {
@@ -314,20 +325,25 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
         <Card
           id={title}
           key={title}
-          hasSelectableInput
-          isSelectableRaised
-          onClick={(event) => {
-            if (selection === t(title)) {
-              setToViewCard(availableCards.find((card) => t(card.title) === selection));
-            } else {
-              onSelect(event, t(title));
-            }
-          }}
+          isClickable
+          isSelectable
           isFullHeight
           isFlat
           isSelected={selection === t(title)}
+          tabIndex={0}
         >
-          <CardHeader>
+          <CardHeader
+            selectableActions={{
+              onClickAction: (event) => {
+                if (selection === t(title)) {
+                  setToViewCard(availableCards.find((card) => t(card.title) === selection));
+                } else {
+                  onSelect(event, t(title));
+                }
+              },
+              selectableActionId: title,
+            }}
+          >
             <Level hasGutter>
               {icon ? <LevelItem>{icon}</LevelItem> : null}
               <LevelItem>
@@ -527,7 +543,12 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
           break;
       }
       return (
-        <FormGroup key={`${ctrl.key}`} label={t(ctrl.name)} helperText={t(ctrl.description)} isInline isStack>
+        <FormGroup key={`${ctrl.key}`} label={t(ctrl.name)} isInline isStack>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{t(ctrl.description)}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
           {input}
         </FormGroup>
       );
@@ -552,10 +573,11 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
 interface SelectControlProps {
   handleChange: (selection: string) => void;
   control: PropControl;
-  selectedConfig: string | SelectOptionObject;
+  selectedConfig: string;
+  isDisabled?: boolean;
 }
 
-const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, selectedConfig }) => {
+const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, selectedConfig, isDisabled }) => {
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
@@ -563,14 +585,14 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
   const [errored, setErrored] = React.useState(false);
 
   const handleSelect = React.useCallback(
-    (_, selection, isPlaceholder) => {
-      if (!isPlaceholder) {
-        handleChange(selection);
-      }
+    (_, selection) => {
+      handleChange(selection);
       setSelectOpen(false);
     },
     [handleChange, setSelectOpen],
   );
+
+  const handleToggle = React.useCallback((_) => setSelectOpen((isOpen) => !isOpen), [setSelectOpen]);
 
   React.useEffect(() => {
     let obs;
@@ -598,27 +620,40 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
     );
   }, [addSubscription, setOptions, setErrored, control, control.values]);
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={selectOpen} isDisabled={isDisabled}>
+        {selectedConfig}
+      </MenuToggle>
+    ),
+    [handleToggle, isDisabled, selectOpen, selectedConfig],
+  );
+
   return (
     <Select
-      onToggle={setSelectOpen}
+      toggle={toggle}
       isOpen={selectOpen}
       onSelect={handleSelect}
-      selections={selectedConfig}
-      menuAppendTo={portalRoot}
-      isFlipEnabled
-      maxHeight={'16em'}
+      selected={selectedConfig}
+      popperProps={{
+        enableFlip: true,
+        appendTo: portalRoot,
+      }}
+      shouldFocusToggleOnSelect
     >
-      {errored
-        ? [<SelectOption key={0} value={`Load error: ${options[0]}`} isPlaceholder isDisabled />]
-        : options.map((choice, idx) => {
-            const display =
-              control.extras && control.extras.displayMapper ? control.extras.displayMapper(choice) : choice;
-            return (
-              <SelectOption key={idx + 1} value={choice}>
-                {display}
-              </SelectOption>
-            );
-          })}
+      <SelectList>
+        {errored
+          ? [<SelectOption key={0} value={`Load error: ${options[0]}`} isDisabled isDanger />]
+          : options.map((choice, idx) => {
+              const display =
+                control.extras && control.extras.displayMapper ? control.extras.displayMapper(choice) : choice;
+              return (
+                <SelectOption key={idx + 1} value={choice}>
+                  {display}
+                </SelectOption>
+              );
+            })}
+      </SelectList>
     </Select>
   );
 };
