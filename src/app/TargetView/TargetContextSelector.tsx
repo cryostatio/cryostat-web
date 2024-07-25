@@ -66,7 +66,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         context.target.setTarget(target);
       }
     },
-    [targets, setSelectedTarget, setIsTargetOpen, context.target],
+    [selectedTarget, setSelectedTarget, setIsTargetOpen, context.target],
   );
 
   React.useEffect(() => {
@@ -188,7 +188,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         return toUpdate;
       });
     },
-    [favorites, setFavorites],
+    [setFavorites],
   );
 
   const onClearSelection = React.useCallback(() => {
@@ -218,7 +218,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         </SplitItem>
       </Split>
     ),
-    [],
+    [onClearSelection],
   );
 
   return (
