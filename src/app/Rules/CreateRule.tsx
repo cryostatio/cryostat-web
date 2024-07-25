@@ -595,8 +595,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-            Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started.
-            The second archived copy will occur one Archival period later.
+              Initial delay before archiving starts. The first archived copy will be made this long after the Recording
+              is started. The second archived copy will occur one Archival period later.
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
@@ -631,7 +631,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-            The number of Archived Recording copies to preserve in archives for each target application affected by this rule.
+              The number of Archived Recording copies to preserve in archives for each target application affected by
+              this rule.
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
