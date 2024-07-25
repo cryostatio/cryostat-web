@@ -127,8 +127,6 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
       ];
     }
 
-    const favSet = new Set(favorites);
-
     const groupNames = new Set<string>();
     targets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
 
@@ -139,7 +137,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             .filter((t) => getAnnotation(t.annotations.cryostat, 'REALM') === name)
             .map((t: Target) => (
               <DropdownItem
-                isSelected={favSet.has(t.connectUrl)}
+                isFavorited={favorites.includes(t.connectUrl)}
                 itemId={t}
                 key={t.connectUrl}
                 description={t.connectUrl}
@@ -158,11 +156,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
               .map((f) => targets.find((t) => t.connectUrl === f))
               .filter((t) => t !== undefined)
               .map((t: Target) => (
-                <DropdownItem
-                  //isFavorite
-                  itemId={t}
-                  key={`favorited-${t.connectUrl}`}
-                >
+                <DropdownItem isFavorited itemId={t} key={`favorited-${t.connectUrl}`}>
                   {getTargetRepresentation(t)}
                 </DropdownItem>
               ))}
@@ -197,15 +191,19 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     [selectOptions, noOptions],
   );
 
-  const handleFavorite = React.useCallback(
-    (itemId: string, isFavorite: boolean) => {
+  const onFavoriteClick = React.useCallback(
+    (_, item: Target, actionId: string) => {
+      if (!actionId) {
+        return;
+      }
       setFavorites((old) => {
-        const toUpdate = !isFavorite ? [...old, itemId] : old.filter((f) => f !== itemId);
+        const prevFav = old.includes(item.connectUrl);
+        const toUpdate = prevFav ? old.filter((f) => f !== item.connectUrl) : [...old, item.connectUrl];
         saveToLocalStorage('TARGET_FAVORITES', toUpdate);
         return toUpdate;
       });
     },
-    [setFavorites],
+    [favorites, setFavorites],
   );
 
   const selectionPrefix = React.useMemo(
@@ -237,6 +235,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             onOpenChange={(isOpen) => setIsTargetOpen(isOpen)}
             onOpenChangeKeys={['Escape']}
             onSelect={onSelect}
+            onActionClick={onFavoriteClick}
             toggle={(toggleRef) => (
               <MenuToggle
                 aria-label="Select Target"
@@ -260,8 +259,6 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
                 <SearchIcon />
                 <SearchInput placeholder="Filter by target..." onSearch={handleTargetFilter} />
               </MenuSearchInput>
-              {favorites}
-              {handleFavorite}
             </MenuSearch>
             <DropdownList>{selectOptions}</DropdownList>
             <MenuFooter>{selectFooter}</MenuFooter>
