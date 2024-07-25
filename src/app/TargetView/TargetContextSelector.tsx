@@ -138,8 +138,13 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
           {targets
             .filter((t) => getAnnotation(t.annotations.cryostat, 'REALM') === name)
             .map((t: Target) => (
-              <DropdownItem isSelected={favSet.has(t.connectUrl)} itemId={t} key={t.connectUrl}>
-                {getTargetRepresentation(t)}
+              <DropdownItem
+                isSelected={favSet.has(t.connectUrl)}
+                itemId={t}
+                key={t.connectUrl}
+                description={t.connectUrl}
+              >
+                {t.alias}
               </DropdownItem>
             ))}
         </DropdownGroup>
