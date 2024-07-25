@@ -33,6 +33,8 @@ import {
   MenuToggle,
   MenuSearch,
   MenuSearchInput,
+  Split,
+  SplitItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -206,14 +208,18 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
 
   const selectFooter = React.useMemo(
     () => (
-      <>
-        <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
-          Create target
-        </Button>
-        <Button variant="tertiary" onClick={onClearSelection}>
-          Clear selection
-        </Button>
-      </>
+      <Split hasGutter>
+        <SplitItem>
+          <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
+            Create target
+          </Button>
+        </SplitItem>
+        <SplitItem>
+          <Button variant="tertiary" onClick={onClearSelection}>
+            Clear selection
+          </Button>
+        </SplitItem>
+      </Split>
     ),
     [],
   );
