@@ -140,7 +140,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     const options = Array.from(groupNames)
       .map((name) => (
         <DropdownGroup key={name} label={name}>
-          {targets
+          {filteredTargets
             .filter((t) => getAnnotation(t.annotations.cryostat, 'REALM') === name)
             .map((t: Target) => (
               <DropdownItem
