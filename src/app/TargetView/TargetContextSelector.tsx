@@ -27,13 +27,13 @@ import {
   MenuFooter,
   SearchInput,
   Dropdown,
+  DropdownItem,
+  DropdownList,
   MenuToggle,
   MenuSearch,
   MenuSearchInput,
   SelectOption,
   SelectGroup,
-  DropdownList,
-  DropdownItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
