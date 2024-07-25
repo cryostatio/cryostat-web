@@ -134,7 +134,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
       (t) =>
         matchExp.test(t.alias) ||
         matchExp.test(t.connectUrl) ||
-        matchExp.test(t.annotations.cryostat.find((kv) => kv.key === 'REALM')?.value || ''),
+        matchExp.test(getAnnotation(t.annotations.cryostat, 'REALM') ?? ''),
     );
 
     const groupNames = new Set<string>();
