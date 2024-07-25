@@ -167,8 +167,8 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
                 .map((f) => targets.find((t) => t.connectUrl === f))
                 .filter((t) => t !== undefined)
                 .map((t: Target) => (
-                  <DropdownItem isFavorited itemId={t} key={`favorited-${t.connectUrl}`}>
-                    {getTargetRepresentation(t)}
+                  <DropdownItem isFavorited itemId={t} key={`favorited-${t.connectUrl}`} description={t.connectUrl}>
+                    {t.alias}
                   </DropdownItem>
                 ))}
             </DropdownGroup>,
