@@ -1398,9 +1398,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-topology@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@patternfly/react-topology@npm:5.1.0"
+"@patternfly/react-topology@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "@patternfly/react-topology@npm:5.3.0"
   dependencies:
     "@patternfly/react-core": ^5.1.1
     "@patternfly/react-icons": ^5.1.1
@@ -1411,7 +1411,6 @@ __metadata:
     "@types/react-measure": ^2.0.6
     d3: ^7.8.0
     dagre: 0.8.2
-    lodash: ^4.17.19
     mobx: ^6.9.0
     mobx-react: ^7.6.0
     point-in-svg-path: ^1.0.1
@@ -1422,7 +1421,7 @@ __metadata:
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: e83627f62f0f77bd6e0b83f40909a1d35d782efe9df0a2f2f65caa5728aef53dcca512b94434d5070f14d5f98322fc98d9f092323d4db4588da7c95b7a107339
+  checksum: f0d4f0a3bcb371a94e7ca20e996119cfd448791baa974e8d3c246f0484be062ccaec215ce71ef3a7917faf1b30cffda7785ebb81d97ca8ea7ee9b12d79bf0b73
   languageName: node
   linkType: hard
 
@@ -4260,7 +4259,7 @@ __metadata:
     "@patternfly/react-icons": ^5.1.1
     "@patternfly/react-styles": ^5.1.1
     "@patternfly/react-table": ^5.1.1
-    "@patternfly/react-topology": ^5.1.0
+    "@patternfly/react-topology": ^5.3.0
     "@reduxjs/toolkit": ^1.9.3
     "@testing-library/dom": ^9.3.1
     "@testing-library/jest-dom": ^5.16.5

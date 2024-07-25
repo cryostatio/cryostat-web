@@ -18,10 +18,6 @@ limitations under the License.
 Below CSS rules only apply to Topology components
 */
 
-.topology__view-switcher {
-  font-size: 1.8em !important;
-}
-
 .sample-node-donut__node-wrapper {
   position: relative;
   width: 12em;
@@ -201,7 +197,7 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__help-icon {
-  color: var(--pf-global--palette--blue-400);
+  color: var(--pf-v5-global--palette--blue-400);
 }
 
 .topology__help-icon-button {
@@ -224,7 +220,7 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__node-badge text {
-  fill: var(--pf-v5-global--palette--white);
+  fill: var(--pf-v5-global--palette--white) !important;
   font-weight: 700;
 }
 
@@ -261,7 +257,7 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__toolbar-container {
-  padding: 0.4em 0 0.2em 0 !important;
+  padding: 0.8em 0 0.4em 0 !important;
 }
 
 .topology__toolbar-chip-content {
