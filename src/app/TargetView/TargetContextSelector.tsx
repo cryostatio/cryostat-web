@@ -192,6 +192,13 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     [favorites, setFavorites],
   );
 
+  const onClearSelection = React.useCallback(() => {
+    setIsTargetOpen(false);
+    removeFromLocalStorage('TARGET');
+    setSelectedTarget(undefined);
+    context.target.setTarget(undefined);
+  }, [setSelectedTarget, setIsTargetOpen, context.target]);
+
   const selectionPrefix = React.useMemo(
     () => (!selectedTarget ? undefined : <span style={{ fontWeight: 700 }}>Target:</span>),
     [selectedTarget],
@@ -199,11 +206,17 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
 
   const selectFooter = React.useMemo(
     () => (
-      <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
-        Create target
-      </Button>
+      <>
+        <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
+          Create target
+        </Button>
+        <Button variant="tertiary" onClick={onClearSelection}>
+          Clear selection
+        </Button>
+      </>
     ),
-    []);
+    [],
+  );
 
   return (
     <>
