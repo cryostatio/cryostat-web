@@ -227,7 +227,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
           <Dropdown
             className={className}
             isScrollable
-            placeholder="Select Target"
+            placeholder="Select a Target"
             isOpen={isTargetOpen}
             onOpenChange={(isOpen) => setIsTargetOpen(isOpen)}
             onOpenChangeKeys={['Escape']}
@@ -242,7 +242,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
                 variant="plainText"
                 icon={selectionPrefix}
               >
-                {!selectedTarget ? undefined : getTargetRepresentation(selectedTarget)}
+                {!selectedTarget ? 'Select a Target' : getTargetRepresentation(selectedTarget)}
               </MenuToggle>
             )}
             popperProps={{
