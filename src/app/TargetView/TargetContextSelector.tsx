@@ -58,14 +58,11 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   };
 
   const onSelect = React.useCallback(
-    (_, id) => {
+    (_, target) => {
       setIsTargetOpen(false);
-      if (typeof id === 'number' && id >= 0) {
-        const toSelect = targets[id];
-        if (!isEqualTarget(toSelect, selectedTarget)) {
-          setSelectedTarget(toSelect);
-          context.target.setTarget(toSelect);
-        }
+      if (!isEqualTarget(target, selectedTarget)) {
+        setSelectedTarget(target);
+        context.target.setTarget(target);
       }
     },
     [targets, setSelectedTarget, setIsTargetOpen, context.target],
@@ -274,7 +271,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             </MenuSearch>
             <DropdownList>
               {targets.map((v, i) => (
-                <DropdownItem itemId={i} key={i}>
+                <DropdownItem itemId={v} key={i}>
                   {getTargetRepresentation(v)}
                 </DropdownItem>
               ))}
