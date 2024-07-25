@@ -27,13 +27,12 @@ import {
   MenuFooter,
   SearchInput,
   Dropdown,
+  DropdownGroup,
   DropdownItem,
   DropdownList,
   MenuToggle,
   MenuSearch,
   MenuSearchInput,
-  SelectOption,
-  SelectGroup,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -122,9 +121,9 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const selectOptions = React.useMemo(() => {
     if (noOptions) {
       return [
-        <SelectOption key={'no-target-found'} isDisabled>
+        <DropdownItem itemId={undefined} key={'no-target-found'} isDisabled>
           No target found
-        </SelectOption>,
+        </DropdownItem>,
       ];
     }
 
@@ -135,44 +134,34 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
 
     const options = Array.from(groupNames)
       .map((name) => (
-        <SelectGroup key={name} label={name}>
+        <DropdownGroup key={name} label={name}>
           {targets
             .filter((t) => getAnnotation(t.annotations.cryostat, 'REALM') === name)
             .map((t: Target) => (
-              <SelectOption
-                isSelected={favSet.has(t.connectUrl)}
-                id={t.connectUrl}
-                key={t.connectUrl}
-                value={{
-                  toString: () => getTargetRepresentation(t),
-                  compareTo: (other) => other.target.connectUrl === t.connectUrl,
-                  ...{ target: t }, // Bypassing type checks
-                }}
-              />
+              <DropdownItem isSelected={favSet.has(t.connectUrl)} itemId={t} key={t.connectUrl}>
+                {getTargetRepresentation(t)}
+              </DropdownItem>
             ))}
-        </SelectGroup>
+        </DropdownGroup>
       ))
       .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`));
 
     const favGroup = favorites.length
       ? [
-          <SelectGroup key={'Favorites'} label={'Favorites'}>
+          <DropdownGroup key={'Favorites'} label={'Favorites'}>
             {favorites
               .map((f) => targets.find((t) => t.connectUrl === f))
               .filter((t) => t !== undefined)
               .map((t: Target) => (
-                <SelectOption
+                <DropdownItem
                   //isFavorite
-                  id={t.connectUrl}
+                  itemId={t}
                   key={`favorited-${t.connectUrl}`}
-                  value={{
-                    toString: () => getTargetRepresentation(t),
-                    compareTo: (other) => other.target.connectUrl === t.connectUrl,
-                    ...{ target: t },
-                  }}
-                />
+                >
+                  {getTargetRepresentation(t)}
+                </DropdownItem>
               ))}
-          </SelectGroup>,
+          </DropdownGroup>,
           <Divider key={'favorite-divider'} />,
         ]
       : [];
@@ -269,13 +258,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
               {favorites}
               {handleFavorite}
             </MenuSearch>
-            <DropdownList>
-              {targets.map((v, i) => (
-                <DropdownItem itemId={v} key={i}>
-                  {getTargetRepresentation(v)}
-                </DropdownItem>
-              ))}
-            </DropdownList>
+            <DropdownList>{selectOptions}</DropdownList>
             <MenuFooter>{selectFooter}</MenuFooter>
           </Dropdown>
         )}
