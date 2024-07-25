@@ -224,7 +224,7 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__node-badge text {
-  fill: var(--pf-global--palette--white);
+  fill: var(--pf-v5-global--palette--white);
   font-weight: 700;
 }
 
