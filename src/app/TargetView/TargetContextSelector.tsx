@@ -199,12 +199,11 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
 
   const selectFooter = React.useMemo(
     () => (
-      <Link to={'/topology/create-custom-target'}>
-        <Button variant="secondary">Create target</Button>
-      </Link>
+      <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
+        Create target
+      </Button>
     ),
-    [],
-  );
+    []);
 
   return (
     <>
