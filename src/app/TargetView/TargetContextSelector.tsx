@@ -259,7 +259,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             <MenuSearch>
               <MenuSearchInput>
                 <SearchInput
-                  placeholder="Filter by target..."
+                  placeholder="Filter by URL, alias, or discovery group..."
                   value={searchTerm}
                   onChange={(_, v) => setSearchTerm(v)}
                 />
