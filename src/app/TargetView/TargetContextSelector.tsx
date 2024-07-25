@@ -130,11 +130,8 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     }
 
     const matchExp = new RegExp(searchTerm, 'i');
-    const filteredTargets = targets.filter(
-      (t) =>
-        matchExp.test(t.alias) ||
-        matchExp.test(t.connectUrl) ||
-        matchExp.test(getAnnotation(t.annotations.cryostat, 'REALM') ?? ''),
+    const filteredTargets = targets.filter((t) =>
+      [t.alias, t.connectUrl, getAnnotation(t.annotations.cryostat, 'REALM') ?? ''].some((v) => matchExp.test(v)),
     );
 
     const groupNames = new Set<string>();
