@@ -48,6 +48,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const [targets, setTargets] = React.useState<Target[]>([]);
   const [selectedTarget, setSelectedTarget] = React.useState<Target>();
   const [favorites, setFavorites] = React.useState<string[]>(getFromLocalStorage('TARGET_FAVORITES', []));
+  const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [isTargetOpen, setIsTargetOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
 
@@ -126,8 +127,16 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
       ];
     }
 
+    const matchExp = new RegExp(searchTerm, 'i');
+    const filteredTargets = targets.filter(
+      (t) =>
+        matchExp.test(t.alias) ||
+        matchExp.test(t.connectUrl) ||
+        matchExp.test(t.annotations.cryostat.find((kv) => kv.key === 'REALM')?.value || ''),
+    );
+
     const groupNames = new Set<string>();
-    targets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
+    filteredTargets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
 
     const options = Array.from(groupNames)
       .map((name) => (
@@ -148,47 +157,25 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
       ))
       .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`));
 
-    const favGroup = favorites.length
-      ? [
-          <DropdownGroup key={'Favorites'} label={'Favorites'}>
-            {favorites
-              .map((f) => targets.find((t) => t.connectUrl === f))
-              .filter((t) => t !== undefined)
-              .map((t: Target) => (
-                <DropdownItem isFavorited itemId={t} key={`favorited-${t.connectUrl}`}>
-                  {getTargetRepresentation(t)}
-                </DropdownItem>
-              ))}
-          </DropdownGroup>,
-          <Divider key={'favorite-divider'} />,
-        ]
-      : [];
+    const favGroup =
+      !searchTerm && favorites.length
+        ? [
+            <DropdownGroup key={'Favorites'} label={'Favorites'}>
+              {favorites
+                .map((f) => targets.find((t) => t.connectUrl === f))
+                .filter((t) => t !== undefined)
+                .map((t: Target) => (
+                  <DropdownItem isFavorited itemId={t} key={`favorited-${t.connectUrl}`}>
+                    {getTargetRepresentation(t)}
+                  </DropdownItem>
+                ))}
+            </DropdownGroup>,
+            <Divider key={'favorite-divider'} />,
+          ]
+        : [];
 
     return favGroup.concat(options);
-  }, [targets, noOptions, favorites]);
-
-  const handleTargetFilter = React.useCallback(
-    (_, value: string) => {
-      if (!value || noOptions) {
-        // In case of empty options, placeholder is returned.
-        return selectOptions;
-      }
-
-      const matchExp = new RegExp(value, 'i');
-      return selectOptions
-        .filter((grp) => grp.props.children)
-        .map((grp) =>
-          React.cloneElement(grp, {
-            children: grp.props.children.filter((option) => {
-              const { target } = option.props.value;
-              return matchExp.test(target.connectUrl) || matchExp.test(target.alias);
-            }),
-          }),
-        )
-        .filter((grp) => grp.props.children.length > 0);
-    },
-    [selectOptions, noOptions],
-  );
+  }, [targets, noOptions, favorites, searchTerm]);
 
   const onFavoriteClick = React.useCallback(
     (_, item: Target, actionId: string) => {
@@ -255,7 +242,11 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
           >
             <MenuSearch>
               <MenuSearchInput>
-                <SearchInput placeholder="Filter by target..." onSearch={handleTargetFilter} />
+                <SearchInput
+                  placeholder="Filter by target..."
+                  value={searchTerm}
+                  onChange={(_, v) => setSearchTerm(v)}
+                />
               </MenuSearchInput>
             </MenuSearch>
             <Divider />
