@@ -34,7 +34,6 @@ import {
   MenuSearch,
   MenuSearchInput,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -256,10 +255,10 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
           >
             <MenuSearch>
               <MenuSearchInput>
-                <SearchIcon />
                 <SearchInput placeholder="Filter by target..." onSearch={handleTargetFilter} />
               </MenuSearchInput>
             </MenuSearch>
+            <Divider />
             <DropdownList>{selectOptions}</DropdownList>
             <MenuFooter>{selectFooter}</MenuFooter>
           </Dropdown>
