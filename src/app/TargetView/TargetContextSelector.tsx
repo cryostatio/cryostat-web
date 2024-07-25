@@ -54,9 +54,9 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const [isTargetOpen, setIsTargetOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
 
-  const onToggleClick = () => {
-    setIsTargetOpen(!isTargetOpen);
-  };
+  const onToggleClick = React.useCallback(() => {
+    setIsTargetOpen((v) => !v);
+  }, [setIsTargetOpen]);
 
   const onSelect = React.useCallback(
     (_, target) => {
