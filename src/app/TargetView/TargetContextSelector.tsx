@@ -238,7 +238,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
                 ref={toggleRef}
                 onClick={onToggleClick}
                 isExpanded={isTargetOpen}
-                variant="plain"
+                variant="plainText"
                 icon={selectionPrefix}
               >
                 {!selectedTarget ? undefined : getTargetRepresentation(selectedTarget)}
