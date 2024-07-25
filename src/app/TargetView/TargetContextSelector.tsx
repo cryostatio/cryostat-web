@@ -28,13 +28,14 @@ import {
   SearchInput,
   Dropdown,
   DropdownGroup,
+  DropdownItem,
+  DropdownList,
   MenuToggle,
   MenuSearch,
   MenuSearchInput,
-  SelectOption,
-  SelectGroup,
+  Split,
+  SplitItem,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -49,20 +50,23 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const [targets, setTargets] = React.useState<Target[]>([]);
   const [selectedTarget, setSelectedTarget] = React.useState<Target>();
   const [favorites, setFavorites] = React.useState<string[]>(getFromLocalStorage('TARGET_FAVORITES', []));
+  const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [isTargetOpen, setIsTargetOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
 
-  const handleSelectToggle = React.useCallback(() => setIsTargetOpen((old) => !old), [setIsTargetOpen]);
+  const onToggleClick = React.useCallback(() => {
+    setIsTargetOpen((v) => !v);
+  }, [setIsTargetOpen]);
 
-  const handleTargetSelect = React.useCallback(
-    (_, { target }, isPlaceholder) => {
+  const onSelect = React.useCallback(
+    (_, target) => {
       setIsTargetOpen(false);
-      const toSelect: Target = isPlaceholder ? undefined : target;
-      if (!isEqualTarget(toSelect, selectedTarget)) {
-        context.target.setTarget(toSelect);
+      if (!isEqualTarget(target, selectedTarget)) {
+        setSelectedTarget(target);
+        context.target.setTarget(target);
       }
     },
-    [setIsTargetOpen, selectedTarget, context.target],
+    [selectedTarget, setSelectedTarget, setIsTargetOpen, context.target],
   );
 
   React.useEffect(() => {
@@ -119,97 +123,80 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const selectOptions = React.useMemo(() => {
     if (noOptions) {
       return [
-        <SelectOption key={'no-target-found'} isDisabled>
+        <DropdownItem itemId={undefined} key={'no-target-found'} isDisabled>
           No target found
-        </SelectOption>,
+        </DropdownItem>,
       ];
     }
 
-    const favSet = new Set(favorites);
+    const matchExp = new RegExp(searchTerm, 'i');
+    const filteredTargets = targets.filter((t) =>
+      [t.alias, t.connectUrl, getAnnotation(t.annotations.cryostat, 'REALM') ?? ''].some((v) => matchExp.test(v)),
+    );
 
     const groupNames = new Set<string>();
-    targets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
+    filteredTargets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
 
     const options = Array.from(groupNames)
       .map((name) => (
-        <SelectGroup key={name} label={name}>
-          {targets
+        <DropdownGroup key={name} label={name}>
+          {filteredTargets
             .filter((t) => getAnnotation(t.annotations.cryostat, 'REALM') === name)
             .map((t: Target) => (
-              <SelectOption
-                isSelected={favSet.has(t.connectUrl)}
-                id={t.connectUrl}
+              <DropdownItem
+                isFavorited={favorites.includes(t.connectUrl)}
+                itemId={t}
                 key={t.connectUrl}
-                value={{
-                  toString: () => getTargetRepresentation(t),
-                  compareTo: (other) => other.target.connectUrl === t.connectUrl,
-                  ...{ target: t }, // Bypassing type checks
-                }}
-              />
+                description={t.connectUrl}
+              >
+                {t.alias}
+              </DropdownItem>
             ))}
-        </SelectGroup>
+        </DropdownGroup>
       ))
       .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`));
 
-    const favGroup = favorites.length
-      ? [
-          <SelectGroup key={'Favorites'} label={'Favorites'}>
-            {favorites
-              .map((f) => targets.find((t) => t.connectUrl === f))
-              .filter((t) => t !== undefined)
-              .map((t: Target) => (
-                <SelectOption
-                  //isFavorite
-                  id={t.connectUrl}
-                  key={`favorited-${t.connectUrl}`}
-                  value={{
-                    toString: () => getTargetRepresentation(t),
-                    compareTo: (other) => other.target.connectUrl === t.connectUrl,
-                    ...{ target: t },
-                  }}
-                />
-              ))}
-          </SelectGroup>,
-          <Divider key={'favorite-divider'} />,
-        ]
-      : [];
+    const favGroup =
+      !searchTerm && favorites.length
+        ? [
+            <DropdownGroup key={'Favorites'} label={'Favorites'}>
+              {favorites
+                .map((f) => targets.find((t) => t.connectUrl === f))
+                .filter((t) => t !== undefined)
+                .map((t: Target) => (
+                  <DropdownItem isFavorited itemId={t} key={`favorited-${t.connectUrl}`} description={t.connectUrl}>
+                    {t.alias}
+                  </DropdownItem>
+                ))}
+            </DropdownGroup>,
+            <Divider key={'favorite-divider'} />,
+          ]
+        : [];
 
     return favGroup.concat(options);
-  }, [targets, noOptions, favorites]);
+  }, [targets, noOptions, favorites, searchTerm]);
 
-  const handleTargetFilter = React.useCallback(
-    (_, value: string) => {
-      if (!value || noOptions) {
-        // In case of empty options, placeholder is returned.
-        return selectOptions;
+  const onFavoriteClick = React.useCallback(
+    (_, item: Target, actionId: string) => {
+      if (!actionId) {
+        return;
       }
-
-      const matchExp = new RegExp(value, 'i');
-      return selectOptions
-        .filter((grp) => grp.props.children)
-        .map((grp) =>
-          React.cloneElement(grp, {
-            children: grp.props.children.filter((option) => {
-              const { target } = option.props.value;
-              return matchExp.test(target.connectUrl) || matchExp.test(target.alias);
-            }),
-          }),
-        )
-        .filter((grp) => grp.props.children.length > 0);
-    },
-    [selectOptions, noOptions],
-  );
-
-  const handleFavorite = React.useCallback(
-    (itemId: string, isFavorite: boolean) => {
       setFavorites((old) => {
-        const toUpdate = !isFavorite ? [...old, itemId] : old.filter((f) => f !== itemId);
+        const prevFav = old.includes(item.connectUrl);
+        const toUpdate = prevFav ? old.filter((f) => f !== item.connectUrl) : [...old, item.connectUrl];
         saveToLocalStorage('TARGET_FAVORITES', toUpdate);
         return toUpdate;
       });
     },
     [setFavorites],
   );
+
+  const onClearSelection = React.useCallback(() => {
+    setIsTargetOpen(false);
+    removeFromLocalStorage('TARGET');
+    setSelectedTarget(undefined);
+    context.target.setTarget(undefined);
+  }, [setSelectedTarget, setIsTargetOpen, context.target]);
 
   const selectionPrefix = React.useMemo(
     () => (!selectedTarget ? undefined : <span style={{ fontWeight: 700 }}>Target:</span>),
@@ -218,11 +205,20 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
 
   const selectFooter = React.useMemo(
     () => (
-      <Link to={'/topology/create-custom-target'}>
-        <Button variant="secondary">Create target</Button>
-      </Link>
+      <Split hasGutter>
+        <SplitItem>
+          <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
+            Create target
+          </Button>
+        </SplitItem>
+        <SplitItem>
+          <Button variant="tertiary" onClick={onClearSelection}>
+            Clear selection
+          </Button>
+        </SplitItem>
+      </Split>
     ),
-    [],
+    [onClearSelection],
   );
 
   return (
@@ -233,44 +229,41 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         ) : (
           <Dropdown
             className={className}
-            //onToggle={handleSelectToggle}
-            //onSelect={handleTargetSelect}
-            isPlain
-            placeholder="Select Target"
+            isScrollable
+            placeholder="Select a Target"
             isOpen={isTargetOpen}
-            onSelect={handleSelectToggle}
+            onOpenChange={(isOpen) => setIsTargetOpen(isOpen)}
+            onOpenChangeKeys={['Escape']}
+            onSelect={onSelect}
+            onActionClick={onFavoriteClick}
             toggle={(toggleRef) => (
               <MenuToggle
                 aria-label="Select Target"
                 ref={toggleRef}
-                onClick={() => handleTargetSelect(undefined, { target: selectedTarget }, undefined)}
-                variant="plain"
+                onClick={onToggleClick}
+                isExpanded={isTargetOpen}
+                variant="plainText"
                 icon={selectionPrefix}
               >
-                {!selectedTarget
-                  ? undefined
-                  : {
-                      toString: () => getTargetRepresentation(selectedTarget),
-                      compareTo: (other) => other.target.connectUrl === selectedTarget.connectUrl,
-                      ...{ target: selectedTarget },
-                    }}
+                {!selectedTarget ? 'Select a Target' : getTargetRepresentation(selectedTarget)}
               </MenuToggle>
             )}
             popperProps={{
               enableFlip: true,
               appendTo: portalRoot,
-              //maxHeight: '30em',
             }}
           >
             <MenuSearch>
               <MenuSearchInput>
-                <SearchIcon />
-                <SearchInput placeholder="Filter by target..." onSearch={handleTargetFilter} />
+                <SearchInput
+                  placeholder="Filter by URL, alias, or discovery group..."
+                  value={searchTerm}
+                  onChange={(_, v) => setSearchTerm(v)}
+                />
               </MenuSearchInput>
-              {favorites}
-              {handleFavorite}
             </MenuSearch>
-            <DropdownGroup label="Target Groups">{selectOptions}</DropdownGroup>
+            <Divider />
+            <DropdownList>{selectOptions}</DropdownList>
             <MenuFooter>{selectFooter}</MenuFooter>
           </Dropdown>
         )}

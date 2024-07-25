@@ -559,7 +559,8 @@ export const CustomRecordingForm: React.FC = () => {
             <FormHelperText>
               <HelperText>
                 <HelperTextItem>
-                Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information
+                  Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the
+                  most recent Recording information
                 </HelperTextItem>
               </HelperText>
             </FormHelperText>
