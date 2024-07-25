@@ -27,12 +27,13 @@ import {
   MenuFooter,
   SearchInput,
   Dropdown,
-  DropdownGroup,
   MenuToggle,
   MenuSearch,
   MenuSearchInput,
   SelectOption,
   SelectGroup,
+  DropdownList,
+  DropdownItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -52,17 +53,22 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const [isTargetOpen, setIsTargetOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
 
-  const handleSelectToggle = React.useCallback(() => setIsTargetOpen((old) => !old), [setIsTargetOpen]);
+  const onToggleClick = () => {
+    setIsTargetOpen(!isTargetOpen);
+  };
 
-  const handleTargetSelect = React.useCallback(
-    (_, { target }, isPlaceholder) => {
+  const onSelect = React.useCallback(
+    (_, id) => {
       setIsTargetOpen(false);
-      const toSelect: Target = isPlaceholder ? undefined : target;
-      if (!isEqualTarget(toSelect, selectedTarget)) {
-        context.target.setTarget(toSelect);
+      if (typeof id === 'number' && id >= 0) {
+        const toSelect = targets[id];
+        if (!isEqualTarget(toSelect, selectedTarget)) {
+          setSelectedTarget(toSelect);
+          context.target.setTarget(toSelect);
+        }
       }
     },
-    [setIsTargetOpen, selectedTarget, context.target],
+    [targets, setSelectedTarget, setIsTargetOpen, context.target],
   );
 
   React.useEffect(() => {
@@ -233,27 +239,23 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         ) : (
           <Dropdown
             className={className}
-            //onToggle={handleSelectToggle}
-            //onSelect={handleTargetSelect}
             isPlain
+            isScrollable
             placeholder="Select Target"
             isOpen={isTargetOpen}
-            onSelect={handleSelectToggle}
+            onOpenChange={(isOpen) => setIsTargetOpen(isOpen)}
+            onOpenChangeKeys={['Escape']}
+            onSelect={onSelect}
             toggle={(toggleRef) => (
               <MenuToggle
                 aria-label="Select Target"
                 ref={toggleRef}
-                onClick={() => handleTargetSelect(undefined, { target: selectedTarget }, undefined)}
+                onClick={onToggleClick}
+                isExpanded={isTargetOpen}
                 variant="plain"
                 icon={selectionPrefix}
               >
-                {!selectedTarget
-                  ? undefined
-                  : {
-                      toString: () => getTargetRepresentation(selectedTarget),
-                      compareTo: (other) => other.target.connectUrl === selectedTarget.connectUrl,
-                      ...{ target: selectedTarget },
-                    }}
+                {!selectedTarget ? undefined : getTargetRepresentation(selectedTarget)}
               </MenuToggle>
             )}
             popperProps={{
@@ -270,7 +272,13 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
               {favorites}
               {handleFavorite}
             </MenuSearch>
-            <DropdownGroup label="Target Groups">{selectOptions}</DropdownGroup>
+            <DropdownList>
+              {targets.map((v, i) => (
+                <DropdownItem itemId={i} key={i}>
+                  {getTargetRepresentation(v)}
+                </DropdownItem>
+              ))}
+            </DropdownList>
             <MenuFooter>{selectFooter}</MenuFooter>
           </Dropdown>
         )}
