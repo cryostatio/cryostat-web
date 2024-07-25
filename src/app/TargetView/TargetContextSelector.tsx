@@ -214,7 +214,6 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         ) : (
           <Dropdown
             className={className}
-            isPlain
             isScrollable
             placeholder="Select Target"
             isOpen={isTargetOpen}
@@ -237,7 +236,6 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             popperProps={{
               enableFlip: true,
               appendTo: portalRoot,
-              //maxHeight: '30em',
             }}
           >
             <MenuSearch>
