@@ -434,7 +434,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               </ToolbarGroup>
               <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
-                  isPlain
                   onSelect={() => setShowUserInfoDropdown(false)}
                   toggle={UserInfoToggle}
                   isOpen={showUserInfoDropdown}
