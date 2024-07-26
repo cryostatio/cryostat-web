@@ -73,7 +73,6 @@ import {
   BellIcon,
   CaretDownIcon,
   CogIcon,
-  EllipsisVIcon,
   ExternalLinkAltIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
@@ -297,13 +296,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const UserInfoToggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
+      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
         {username || (
           <Icon size="sm">
             <UserIcon color="white" />
           </Icon>
         )}
-        <EllipsisVIcon />
       </MenuToggle>
     ),
     [username, handleUserInfoToggle],
@@ -333,8 +331,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const helpItems = React.useMemo(() => {
     return [
-      <DropdownItem key={'Quickstarts'}>
-        <NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>
+      <DropdownItem key={'Quickstarts'} component={(props) => <Link {...props} to="/quickstarts" />}>
+        {t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}
       </DropdownItem>,
       <DropdownItem key={'Documentation'} onClick={handleOpenDocumentation}>
         <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
@@ -409,9 +407,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
                   >
-                    <Icon size="sm">
-                      <CogIcon />
-                    </Icon>
+                    <CogIcon />
                   </Button>
                 </ToolbarItem>
                 <ToolbarItem>
@@ -421,12 +417,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                       <MenuToggle
                         ref={toggleRef}
+                        variant="plainText"
                         icon={<QuestionCircleIcon />}
                         className="application-launcher"
                         onClick={() => handleHelpToggle()}
-                      >
-                        <EllipsisVIcon />
-                      </MenuToggle>
+                      ></MenuToggle>
                     )}
                     isOpen={showHelpDropdown}
                     popperProps={{
