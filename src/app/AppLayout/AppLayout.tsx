@@ -424,6 +424,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                       ></MenuToggle>
                     )}
                     isOpen={showHelpDropdown}
+                    onOpenChange={(v) => setShowHelpDropdown(v)}
+                    onOpenChangeKeys={['Escape']}
                     popperProps={{
                       position: 'right',
                     }}
@@ -437,6 +439,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   onSelect={() => setShowUserInfoDropdown(false)}
                   toggle={UserInfoToggle}
                   isOpen={showUserInfoDropdown}
+                  onOpenChange={(v) => setShowUserInfoDropdown(v)}
+                  onOpenChangeKeys={['Escape']}
                   popperProps={{
                     position: 'right',
                   }}
