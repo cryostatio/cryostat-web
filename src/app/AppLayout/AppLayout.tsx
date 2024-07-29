@@ -73,7 +73,6 @@ import {
   BellIcon,
   CaretDownIcon,
   CogIcon,
-  EllipsisVIcon,
   ExternalLinkAltIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
@@ -297,13 +296,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const UserInfoToggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
+      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
         {username || (
           <Icon size="sm">
             <UserIcon color="white" />
           </Icon>
         )}
-        <EllipsisVIcon />
       </MenuToggle>
     ),
     [username, handleUserInfoToggle],
@@ -333,8 +331,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const helpItems = React.useMemo(() => {
     return [
-      <DropdownItem key={'Quickstarts'}>
-        <NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>
+      <DropdownItem key={'Quickstarts'} component={(props) => <Link {...props} to="/quickstarts" />}>
+        {t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}
       </DropdownItem>,
       <DropdownItem key={'Documentation'} onClick={handleOpenDocumentation}>
         <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
@@ -398,7 +396,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     onClick={handleNotificationCenterToggle}
                     aria-label="Notifications"
                   >
-                    <BellIcon />
+                    <Icon>
+                      <BellIcon />
+                    </Icon>
                   </NotificationBadge>
                 </ToolbarItem>
                 <ToolbarItem>
@@ -409,7 +409,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
                   >
-                    <Icon size="sm">
+                    <Icon>
                       <CogIcon />
                     </Icon>
                   </Button>
@@ -421,14 +421,18 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                       <MenuToggle
                         ref={toggleRef}
-                        icon={<QuestionCircleIcon />}
+                        variant="plain"
                         className="application-launcher"
                         onClick={() => handleHelpToggle()}
                       >
-                        <EllipsisVIcon />
+                        <Icon>
+                          <QuestionCircleIcon />
+                        </Icon>
                       </MenuToggle>
                     )}
                     isOpen={showHelpDropdown}
+                    onOpenChange={(v) => setShowHelpDropdown(v)}
+                    onOpenChangeKeys={['Escape']}
                     popperProps={{
                       position: 'right',
                     }}
@@ -439,10 +443,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               </ToolbarGroup>
               <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
-                  isPlain
                   onSelect={() => setShowUserInfoDropdown(false)}
                   toggle={UserInfoToggle}
                   isOpen={showUserInfoDropdown}
+                  onOpenChange={(v) => setShowUserInfoDropdown(v)}
+                  onOpenChangeKeys={['Escape']}
                   popperProps={{
                     position: 'right',
                   }}
@@ -483,7 +488,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               data-quickstart-id="nav-toggle-btn"
               data-tour-id="nav-toggle-btn"
             >
-              <BarsIcon />
+              <Icon>
+                <BarsIcon />
+              </Icon>
             </PageToggleButton>
           </MastheadToggle>
           <MastheadMain>

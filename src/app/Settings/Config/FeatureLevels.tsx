@@ -71,10 +71,10 @@ const Component = () => {
             .filter((v) => typeof v === 'string')
             .map((v): { key: string; value: number } => ({ key: String(v), value: FeatureLevel[v] }))
             .filter((v) => {
-              if (!process.env.CRYOSTAT_AUTHORITY) {
-                return v.value !== FeatureLevel.DEVELOPMENT;
+              if ((process.env.NODE_ENV ?? '').toLowerCase() === 'development') {
+                return true;
               }
-              return true;
+              return v.value !== FeatureLevel.DEVELOPMENT;
             })
             .map((level) => (
               <SelectOption key={level.key} value={level.value}>
