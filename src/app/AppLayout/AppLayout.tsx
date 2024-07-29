@@ -421,11 +421,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                       <MenuToggle
                         ref={toggleRef}
-                        variant="plainText"
-                        icon={<QuestionCircleIcon />}
+                        variant="plain"
                         className="application-launcher"
                         onClick={() => handleHelpToggle()}
-                      ></MenuToggle>
+                      >
+                        <Icon>
+                          <QuestionCircleIcon />
+                        </Icon>
+                      </MenuToggle>
                     )}
                     isOpen={showHelpDropdown}
                     onOpenChange={(v) => setShowHelpDropdown(v)}
