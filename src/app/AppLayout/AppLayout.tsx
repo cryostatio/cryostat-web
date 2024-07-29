@@ -396,7 +396,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     onClick={handleNotificationCenterToggle}
                     aria-label="Notifications"
                   >
-                    <BellIcon />
+                    <Icon>
+                      <BellIcon />
+                    </Icon>
                   </NotificationBadge>
                 </ToolbarItem>
                 <ToolbarItem>
@@ -407,7 +409,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
                   >
-                    <CogIcon />
+                    <Icon>
+                      <CogIcon />
+                    </Icon>
                   </Button>
                 </ToolbarItem>
                 <ToolbarItem>
@@ -481,7 +485,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               data-quickstart-id="nav-toggle-btn"
               data-tour-id="nav-toggle-btn"
             >
-              <BarsIcon />
+              <Icon>
+                <BarsIcon />
+              </Icon>
             </PageToggleButton>
           </MastheadToggle>
           <MastheadMain>
