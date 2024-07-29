@@ -18,7 +18,7 @@
 import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { EnvironmentNode, MBeanMetrics, MBeanMetricsResponse, TargetNode } from '@app/Shared/Services/api.types';
-import { isGraphQLAuthError, isGraphQLSSLError, isTargetNode } from '@app/Shared/Services/api.utils';
+import { isTargetNode } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown } from '@app/Topology/Actions/NodeActions';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -101,6 +101,45 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   alertOptions,
   ...props
 }) => {
+  
+  const services = React.useContext(ServiceContext);
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const addSubscription = useSubscriptions();
+
+  React.useEffect(() => {
+    addSubscription(
+      services.target.sslFailure().subscribe(() => {
+        // also triggered if api calls in Custom Recording form fail
+        setErrorMessage(missingSSLMessage);
+      }),
+    );
+  }, [services.target, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      services.target.authRetry().subscribe(() => {
+        setErrorMessage(''); // Reset on retry
+      }),
+    );
+  }, [services.target, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      services.target.authFailure().subscribe(() => {
+        // also triggered if api calls in Custom Recording form fail
+        setErrorMessage(authFailMessage);
+      }),
+    );
+  }, [services.target, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      services.target.target().subscribe(() => {
+        setErrorMessage(''); // Reset on change
+      }),
+    );
+  }, [services.target, setErrorMessage, addSubscription]);
+
   const [activeTab, setActiveTab] = React.useState(EntityTab.DETAIL);
   const viewContent = React.useMemo(() => {
     if (entity && isRenderable(entity)) {
@@ -110,44 +149,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
 
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
 
-      const [errorMessage, setErrorMessage] = React.useState('');
-      const addSubscription = useSubscriptions();
       const services = React.useContext(ServiceContext);
-    
-      React.useEffect(() => {
-        addSubscription(
-          services.target.sslFailure().subscribe(() => {
-            // also triggered if api calls in Custom Recording form fail
-            setErrorMessage(missingSSLMessage);
-          }),
-        );
-      }, [services.target, setErrorMessage, addSubscription]);
-    
-      React.useEffect(() => {
-        addSubscription(
-          services.target.authRetry().subscribe(() => {
-            setErrorMessage(''); // Reset on retry
-          }),
-        );
-      }, [services.target, setErrorMessage, addSubscription]);
-    
-      React.useEffect(() => {
-        addSubscription(
-          services.target.authFailure().subscribe(() => {
-            // also triggered if api calls in Custom Recording form fail
-            setErrorMessage(authFailMessage);
-          }),
-        );
-      }, [services.target, setErrorMessage, addSubscription]);
-    
-      React.useEffect(() => {
-        addSubscription(
-          services.target.target().subscribe(() => {
-            setErrorMessage(''); // Reset on change
-          }),
-        );
-      }, [services.target, setErrorMessage, addSubscription]);
-    
       const authRetry = React.useCallback(() => {
         services.target.setAuthRetry();
       }, [services.target]);

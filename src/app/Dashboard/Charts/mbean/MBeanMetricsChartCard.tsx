@@ -20,6 +20,7 @@ import {
   DashboardCardSizes,
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 import { ThemeType, ThemeSetting } from '@app/Settings/types';
 import { MBeanMetrics } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
@@ -47,7 +48,6 @@ import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from '../context';
-import { ErrorView } from '@app/ErrorView/ErrorView';
 import { missingSSLMessage, authFailMessage, isAuthFail } from '@app/ErrorView/types';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardTypeProps {

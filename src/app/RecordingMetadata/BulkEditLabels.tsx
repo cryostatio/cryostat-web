@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { uploadAsTarget } from '@app/Archives/Archives';
+import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { LoadingProps } from '@app/Shared/Components/types';
 import {
@@ -26,6 +27,7 @@ import {
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
+import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot } from '@app/utils/utils';
@@ -35,8 +37,6 @@ import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of, tap } from 'rxjs';
 import { RecordingLabelFields } from './RecordingLabelFields';
 import { includesLabel } from './utils';
-import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
-import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;

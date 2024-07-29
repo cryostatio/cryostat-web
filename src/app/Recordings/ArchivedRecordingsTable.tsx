@@ -19,6 +19,7 @@ import {
   ClickableAutomatedAnalysisLabel,
   clickableAutomatedAnalysisKey,
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
+import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingProps } from '@app/Shared/Components/types';
@@ -43,6 +44,7 @@ import {
   CategorizedRuleEvaluations,
   AnalysisResult,
 } from '@app/Shared/Services/api.types';
+import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -83,8 +85,6 @@ import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
-import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
-import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 
 const tableColumns: TableColumn[] = [
   {
@@ -304,6 +304,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     handleError,
     queryTargetRecordings,
     queryUploadedRecordings,
+    context.target,
     isUploadsTable,
     propsDirectory,
     propsTarget,
