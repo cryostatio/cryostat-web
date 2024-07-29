@@ -18,13 +18,16 @@ import { RootState, topologyDisplayOptionsSetIntent } from '@app/Shared/Redux/Re
 import {
   Checkbox,
   Divider,
+  Menu,
   MenuContainer,
+  MenuContent,
+  MenuGroup,
+  MenuItem,
+  MenuList,
   MenuToggle,
-  MenuToggleElement,
-  Stack,
-  StackItem,
   Switch,
 } from '@patternfly/react-core';
+import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -35,89 +38,77 @@ export interface DisplayOptionsProps {
 
 export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = false, isGraph: isGraphView = true }) => {
   const toggleRef = React.useRef<HTMLButtonElement>(null);
-  const menuRef = React.useRef<HTMLDivElement>();
+  const menuRef = React.useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = React.useState(false);
   const { show, groupings } = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
   const dispatch = useDispatch();
   const handleToggle = React.useCallback(() => setIsExpanded((old) => !old), [setIsExpanded]);
 
-  const getChangeHandler = React.useCallback(
-    (group: OptionCategory, key: string) => {
-      return (_: React.FormEvent<HTMLInputElement>, checked: boolean) => {
-        dispatch(topologyDisplayOptionsSetIntent(group, key, checked));
+  const getToggleHandler = React.useCallback(
+    (group: OptionCategory, key: string, source: object) => {
+      return (_: React.FormEvent<HTMLInputElement>) => {
+        dispatch(topologyDisplayOptionsSetIntent(group, key, !source[key]));
       };
     },
     [dispatch],
   );
 
-  const checkBoxContents = React.useMemo((): [string, JSX.Element][] => {
-    return showOptions.map(([option, key]) => [
-      key,
-      <Checkbox
+  const checkBoxContents = React.useMemo(() => {
+    return showOptions.map(([option, key]) => (
+      <MenuItem
         key={key}
         id={`show-${option.toLowerCase()}-checkbox`}
-        className={'topology__display-option-menu-item'}
-        label={option}
-        isChecked={show[key]}
-        onChange={getChangeHandler('show', key)}
+        hasCheckbox
         isDisabled={!isGraphView} // Allow only graph view
-      />,
-    ]);
-  }, [show, isGraphView, getChangeHandler]);
+        isSelected={show[key]}
+        onClick={getToggleHandler('show', key, show)}
+      >
+        {option}
+      </MenuItem>
+    ));
+  }, [show, isGraphView, getToggleHandler]);
 
-  const switchContents = React.useMemo((): [string, JSX.Element][] => {
-    return groupingOptions.map(([option, key]) => [
-      key,
-      <Switch
-        key={key}
-        id={`${option.toLowerCase()}-mode`}
-        className={'topology__display-option-menu-item'}
-        label={option}
-        isDisabled={key === 'collapseSingles' && groupings.realmOnly}
-        isChecked={groupings[key]}
-        onChange={getChangeHandler('groupings', key)}
-      />,
-    ]);
-  }, [groupings, getChangeHandler]);
+  const switchContents = React.useMemo(() => {
+    return groupingOptions.map(([option, key]) => (
+      <div key={key} className={css('pf-v5-c-menu__item')}>
+        <Switch
+          id={`${option.toLowerCase()}-mode`}
+          label={option}
+          isDisabled={key === 'collapseSingles' && groupings.realmOnly}
+          isChecked={groupings[key]}
+          onChange={getToggleHandler('groupings', key, groupings)}
+        />
+      </div>
+    ));
+  }, [groupings, getToggleHandler]);
 
   const menuContent = React.useMemo(() => {
     return (
-      <Stack className="topology__display-option-menu">
-        <StackItem key={'mode-group-title'}>
-          <span className="pf-c-select__menu-group-title">Groupings</span>
-        </StackItem>
-        {switchContents.map(([key, children]) => (
-          <StackItem key={key}>{children}</StackItem>
-        ))}
-        <StackItem key={'divider0'}>
+      <Menu ref={menuRef}>
+        <MenuContent>
+          <MenuGroup label="Groupings" key={'groupings'}>
+            <MenuList>{switchContents}</MenuList>
+          </MenuGroup>
           <Divider />
-        </StackItem>
-        <StackItem key={'show-group-title'}>
-          <span className="pf-c-select__menu-group-title">Show</span>
-        </StackItem>
-        {checkBoxContents.map(([key, children]) => (
-          <StackItem key={key}>{children}</StackItem>
-        ))}
-      </Stack>
+          <MenuGroup label="Show" key={'show'}>
+            <MenuList>{checkBoxContents}</MenuList>
+          </MenuGroup>
+        </MenuContent>
+      </Menu>
     );
   }, [checkBoxContents, switchContents]);
 
-  const toggle = React.useCallback(
-    (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle
-        ref={toggleRef}
-        onClick={handleToggle}
-        isExpanded={isExpanded}
-        isDisabled={isDisabled}
-        placeholder={'Display options'}
-      />
+  const toggle = React.useMemo(
+    () => (
+      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={isExpanded} isDisabled={isDisabled}>
+        Display options
+      </MenuToggle>
     ),
     [handleToggle, isExpanded, isDisabled],
   );
 
   return (
     <MenuContainer
-      toggle={toggle}
       menu={menuContent}
       isOpen={isExpanded}
       onOpenChange={setIsExpanded}
@@ -125,6 +116,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = fal
       menuRef={menuRef}
       toggleRef={toggleRef}
       aria-label={'Display options'}
+      toggle={toggle}
     />
   );
 };

@@ -245,17 +245,6 @@ Below CSS rules only apply to Topology components
   fill-opacity: 0.5;
 }
 
-.topology__display-option-menu {
-  width: max-content;
-}
-
-.topology__display-option-menu-item {
-  margin-top: var(--pf-c-select__menu-group-title--PaddingTop);
-  margin-right: var(--pf-c-select__menu-group-title--PaddingRight);
-  margin-bottom: var(--pf-c-select__menu-group-title--PaddingBottom);
-  margin-left: var(--pf-c-select__menu-group-title--PaddingLeft);
-}
-
 .topology__toolbar-container {
   padding: 0.8em 0 0.4em 0 !important;
 }

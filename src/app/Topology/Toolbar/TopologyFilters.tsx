@@ -155,6 +155,7 @@ export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelect
       isOpen={isOpen}
       selected={selected}
       aria-label={'Filter Categories'}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>{options}</SelectList>
     </Select>
