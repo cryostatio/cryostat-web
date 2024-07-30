@@ -111,7 +111,7 @@ export const isGroupNodeFiltered = (
   }
   if (filter.Label && filter.Label.length) {
     matched =
-      matched && Object.entries(groupNode.labels).filter(([k, v]) => filter.Label.includes(`${k}=${v}`)).length > 0;
+      matched && groupNode.labels.map((kv) => `${kv.key}=${kv.value}`).filter((v) => filter.Label.includes(v)).length > 0;
   }
   return matched;
 };
@@ -132,14 +132,14 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
   }
   if (filters.Label && filters.Label.length) {
     matched =
-      matched && Object.entries(target.labels || {}).filter(([k, v]) => filters.Label.includes(`${k}=${v}`)).length > 0;
+      matched && target.labels.map((kv) => `${kv.key}=${kv.value}`).some((v) => filters.Label.includes(v));
   }
   if (filters.Annotation && filters.Annotation.length) {
     const annotations = target.annotations;
     matched =
       matched &&
-      [...Object.entries(annotations?.cryostat || {}), ...Object.entries(annotations?.platform || {})].filter(
-        ([k, v]) => filters.Annotation.includes(`${k}=${v}`),
+      [...annotations?.cryostat, ...annotations?.platform].filter(
+        (kv) => filters.Annotation.includes(`${kv.key}=${kv.value}`),
       ).length > 0;
   }
   return matched;
