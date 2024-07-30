@@ -3,8 +3,9 @@
 exports[`<LabelCell /> renders correctly 1`] = `
 Array [
   <span
-    aria-label="someLabel: someValue"
+    aria-label="someLabel=someValue"
     className="pf-v5-c-label"
+    isTruncated={true}
     onFocus={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
@@ -18,13 +19,14 @@ Array [
       <span
         className="pf-v5-c-label__text"
       >
-        someLabel: someValue
+        someLabel=someValue
       </span>
     </button>
   </span>,
   <span
-    aria-label="anotherLabel: anotherValue"
+    aria-label="anotherLabel=anotherValue"
     className="pf-v5-c-label"
+    isTruncated={true}
     onFocus={[Function]}
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}
@@ -38,7 +40,7 @@ Array [
       <span
         className="pf-v5-c-label__text"
       >
-        anotherLabel: anotherValue
+        anotherLabel=anotherValue
       </span>
     </button>
   </span>,

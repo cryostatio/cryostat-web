@@ -2,8 +2,9 @@
 
 exports[`<ClickableLabel /> renders correctly 1`] = `
 <span
-  aria-label="someLabel: someValue"
+  aria-label="someLabel=someValue"
   className="pf-v5-c-label pf-m-blue"
+  isTruncated={true}
   onFocus={[Function]}
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}
@@ -17,7 +18,7 @@ exports[`<ClickableLabel /> renders correctly 1`] = `
     <span
       className="pf-v5-c-label__text"
     >
-      someLabel: someValue
+      someLabel=someValue
     </span>
   </button>
 </span>

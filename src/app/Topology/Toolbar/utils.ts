@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NodeType } from '@app/Shared/Services/api.types';
+import { NodeType, isKeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 
 export const isLabelOrAnnotation = (category: string) => /(label|annotation)/i.test(category);
 
@@ -25,6 +25,19 @@ export const fieldValueToStrings = (value: unknown): string[] => {
   }
   if (typeof value === 'object') {
     if (Array.isArray(value)) {
+      if (value.length > 0 && typeof value[0] === 'object') {
+        if (isKeyValue(value[0])) {
+          return value.map(keyValueToString);
+        } else {
+          return value.map((o) => {
+            let str = '';
+            for (const p in Object.getOwnPropertyNames(o)) {
+              str += `${p}=${o[p]}`;
+            }
+            return str;
+          });
+        }
+      }
       return value.map((v) => `${v}`);
     } else {
       return Object.entries(value as object).map(([k, v]) => `${k}=${v}`);

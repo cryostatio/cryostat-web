@@ -173,7 +173,7 @@ describe('<BulkEditLabels />', () => {
       },
     });
 
-    const label = screen.getByLabelText('someLabel: someValue');
+    const label = screen.getByLabelText('someLabel=someValue');
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
     expect(label.onclick).toBeNull();
@@ -262,11 +262,11 @@ describe('<BulkEditLabels />', () => {
       },
     });
 
-    const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
+    const newLabel = screen.getByLabelText('someNewLabel=someNewValue');
     expect(newLabel).toBeInTheDocument();
     expect(newLabel).toBeVisible();
 
-    const oldLabel = screen.getByLabelText('someLabel: someValue');
+    const oldLabel = screen.getByLabelText('someLabel=someValue');
     expect(oldLabel).toBeInTheDocument();
     expect(oldLabel).toBeVisible();
   });
@@ -283,11 +283,11 @@ describe('<BulkEditLabels />', () => {
       },
     });
 
-    const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
+    const newLabel = screen.getByLabelText('someNewLabel=someNewValue');
     expect(newLabel).toBeInTheDocument();
     expect(newLabel).toBeVisible();
 
-    const oldLabel = screen.getByLabelText('someLabel: someValue');
+    const oldLabel = screen.getByLabelText('someLabel=someValue');
     expect(oldLabel).toBeInTheDocument();
     expect(oldLabel).toBeVisible();
   });

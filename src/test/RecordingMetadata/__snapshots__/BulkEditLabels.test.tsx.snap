@@ -32,7 +32,7 @@ exports[`<BulkEditLabels /> renders correctly 1`] = `
     className="pf-v5-l-stack__item"
   >
     <span
-      aria-label="someLabel: someValue"
+      aria-label="someLabel=someValue"
       className="pf-v5-c-label"
     >
       <span
@@ -41,7 +41,7 @@ exports[`<BulkEditLabels /> renders correctly 1`] = `
         <span
           className="pf-v5-c-label__text"
         >
-          someLabel: someValue
+          someLabel=someValue
         </span>
       </span>
     </span>

@@ -31,7 +31,7 @@ const mockAnotherRecordingLabels = [
     value: 'anotherValue',
   },
 ];
-const mockRecordingLabelList = ['someLabel:someValue', 'anotherLabel:anotherValue'];
+const mockRecordingLabelList = ['someLabel=someValue', 'anotherLabel=anotherValue'];
 
 const mockRecording: ActiveRecording = {
   name: 'someRecording',
@@ -302,12 +302,12 @@ describe('<LabelFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    await user.click(screen.getByText('someLabel:someValue'));
+    await user.click(screen.getByText('someLabel=someValue'));
 
     // NameFilter's parent rebuilds to close menu by default.
 
     expect(submitLabelInput).toBeCalledTimes(1);
-    expect(submitLabelInput).toBeCalledWith('someLabel:someValue');
-    expect(emptyFilteredLabels).toStrictEqual(['someLabel:someValue']);
+    expect(submitLabelInput).toBeCalledWith('someLabel=someValue');
+    expect(emptyFilteredLabels).toStrictEqual(['someLabel=someValue']);
   });
 });

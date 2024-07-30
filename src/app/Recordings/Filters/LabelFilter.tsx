@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { getLabelDisplay } from '@app/RecordingMetadata/utils';
-import { Recording } from '@app/Shared/Services/api.types';
+import { Recording, keyValueToString } from '@app/Shared/Services/api.types';
 import {
   Button,
   Label,
@@ -60,7 +58,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
     const labels = new Set<string>();
     recordings.forEach((r) => {
       if (!r || !r.metadata || !r.metadata.labels) return;
-      r.metadata.labels.map((label) => labels.add(getLabelDisplay(label)));
+      r.metadata.labels.map((label) => labels.add(keyValueToString(label)));
     });
     return Array.from(labels)
       .filter((l) => !filteredLabels.includes(l))

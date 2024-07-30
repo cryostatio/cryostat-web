@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { keyValueToString } from '@app/Shared/Services/api.types';
 import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../../Shared/Components/EmptyText';
@@ -27,7 +28,7 @@ export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay
     return annotations
       ? Object.keys(annotations).map((groupK) => ({
           groupLabel: groupK,
-          annotations: annotations[groupK].map((kv) => `${kv.key}=${kv.value}`),
+          annotations: annotations[groupK].map((kv) => keyValueToString(kv)),
         }))
       : [];
   }, [annotations]);

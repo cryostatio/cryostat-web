@@ -48,8 +48,6 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
   );
 };
 
-export const getLabelDisplay = (label: KeyValue) => `${label.key}:${label.value}`;
-
 export const LabelPattern = /^\S+$/;
 
 export const getValidatedOption = (isValid: boolean) => {

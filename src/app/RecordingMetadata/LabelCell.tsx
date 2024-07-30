@@ -15,11 +15,10 @@
  */
 
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import { KeyValue } from '@app/Shared/Services/api.types';
+import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { Label, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { ClickableLabel } from './ClickableLabel';
-import { getLabelDisplay } from './utils';
 
 export interface LabelCellProps {
   target: string;
@@ -36,7 +35,7 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
     (label: KeyValue) => {
       if (clickableOptions) {
         const labelFilterSet = new Set(clickableOptions.labelFilters);
-        return labelFilterSet.has(getLabelDisplay(label));
+        return labelFilterSet.has(keyValueToString(label));
       }
       return false;
     },
@@ -52,7 +51,7 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
       if (clickableOptions) {
         clickableOptions.updateFilters(target, {
           filterKey: 'Label',
-          filterValue: getLabelDisplay(clickedLabel),
+          filterValue: keyValueToString(clickedLabel),
           deleted: isLabelSelected(clickedLabel),
         });
       }
@@ -72,8 +71,8 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
               onLabelClick={onLabelSelectToggle}
             />
           ) : (
-            <Label aria-label={`${label.key}: ${label.value}`} key={label.key} color={getLabelColor(label)}>
-              {`${label.key}: ${label.value}`}
+            <Label aria-label={keyValueToString(label)} key={label.key} color={getLabelColor(label)}>
+              {keyValueToString(label)}
             </Label>
           ),
         )
