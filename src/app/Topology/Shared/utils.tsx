@@ -17,7 +17,7 @@
 import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
-import { NodeType, EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
+import { NodeType, EnvironmentNode, TargetNode, keyValueToString } from '@app/Shared/Services/api.types';
 import { DEFAULT_EMPTY_UNIVERSE, isTargetNode } from '@app/Shared/Services/api.utils';
 import {
   Button,
@@ -110,8 +110,7 @@ export const isGroupNodeFiltered = (
     matched = matched && filter.Name.includes(groupNode.name);
   }
   if (filter.Label && filter.Label.length) {
-    matched =
-      matched && groupNode.labels.map((kv) => `${kv.key}=${kv.value}`).filter((v) => filter.Label.includes(v)).length > 0;
+    matched = matched && groupNode.labels.map(keyValueToString).some((v) => filter.Label.includes(v));
   }
   return matched;
 };
@@ -131,16 +130,15 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
     matched = matched && target.jvmId !== undefined && filters.JvmId.includes(target.jvmId);
   }
   if (filters.Label && filters.Label.length) {
-    matched =
-      matched && target.labels.map((kv) => `${kv.key}=${kv.value}`).some((v) => filters.Label.includes(v));
+    matched = matched && target.labels.map(keyValueToString).some((v) => filters.Label.includes(v));
   }
   if (filters.Annotation && filters.Annotation.length) {
     const annotations = target.annotations;
     matched =
       matched &&
-      [...annotations?.cryostat, ...annotations?.platform].filter(
-        (kv) => filters.Annotation.includes(`${kv.key}=${kv.value}`),
-      ).length > 0;
+      [...annotations?.cryostat, ...annotations?.platform].some((kv) =>
+        filters.Annotation.includes(keyValueToString(kv)),
+      );
   }
   return matched;
 };

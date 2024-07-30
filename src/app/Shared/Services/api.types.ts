@@ -32,6 +32,10 @@ export const isKeyValue = (o: any): o is KeyValue => {
   return typeof o === 'object' && _.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(o)));
 };
 
+export const keyValueToString = (kv: KeyValue): string => {
+  return `${kv.key}=${kv.value}`;
+};
+
 export interface Metadata {
   labels: KeyValue[];
 }
