@@ -273,7 +273,10 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
             value={{
               toString: () => opt,
               compareTo: (other) => {
-                const regex = new RegExp(typeof other === 'string' ? other : other.value, 'i');
+                const regex = new RegExp(
+                  typeof other === 'string' ? other : isKeyValue(other) ? other.value : `${other}`,
+                  'i',
+                );
                 return regex.test(opt);
               },
               ...{
