@@ -25,7 +25,7 @@ import {
   topologyUpdateCategoryIntent,
   topologyUpdateCategoryTypeIntent,
 } from '@app/Shared/Redux/ReduxStore';
-import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
+import { EnvironmentNode, TargetNode, isKeyValue } from '@app/Shared/Services/api.types';
 import { flattenTree, getUniqueNodeTypes, isTargetNode } from '@app/Shared/Services/api.utils';
 import { getDisplayFieldName } from '@app/utils/utils';
 import {
@@ -351,7 +351,7 @@ export const fieldValueToStrings = (value: unknown): string[] => {
   if (typeof value === 'object') {
     if (Array.isArray(value)) {
       if (value.length > 0 && typeof value[0] === 'object') {
-        if (_.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(value[0])))) {
+        if (isKeyValue(value[0])) {
           return value.map((o) => `${o.key}: ${o.value}`);
         } else {
           return value.map((o) => {

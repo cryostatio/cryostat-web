@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import _ from 'lodash';
 import { RecordingReplace } from '@app/CreateRecording/types';
 import { AlertVariant } from '@patternfly/react-core';
 import { Observable } from 'rxjs';
@@ -27,6 +27,10 @@ export interface KeyValue {
   key: string;
   value: string;
 }
+
+export const isKeyValue = (o: any): o is KeyValue => {
+  return typeof o === 'object' && _.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(o)));
+};
 
 export interface Metadata {
   labels: KeyValue[];
