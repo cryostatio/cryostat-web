@@ -212,7 +212,13 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
                   },
                 }}
               >
-                {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
+                {isLabelOrAnnotation(cat) ? (
+                  <Label color="grey" isTruncated>
+                    {opt}
+                  </Label>
+                ) : (
+                  opt
+                )}
               </SelectOption>
             ))}
           </SelectGroup>
@@ -285,7 +291,13 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
               },
             }}
           >
-            {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
+            {isLabelOrAnnotation(cat) ? (
+              <Label color="grey" isTruncated>
+                {opt}
+              </Label>
+            ) : (
+              opt
+            )}
           </SelectOption>
         );
       });
