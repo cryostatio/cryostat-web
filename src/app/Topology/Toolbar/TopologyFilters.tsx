@@ -25,7 +25,11 @@ import {
   topologyUpdateCategoryIntent,
   topologyUpdateCategoryTypeIntent,
 } from '@app/Shared/Redux/ReduxStore';
+<<<<<<< HEAD
 import { EnvironmentNode, TargetNode, isKeyValue, keyValueToString } from '@app/Shared/Services/api.types';
+=======
+import { EnvironmentNode, TargetNode, isKeyValue } from '@app/Shared/Services/api.types';
+>>>>>>> b769f43a (refactor)
 import { flattenTree, getUniqueNodeTypes, isTargetNode } from '@app/Shared/Services/api.utils';
 import { getDisplayFieldName } from '@app/utils/utils';
 import {
