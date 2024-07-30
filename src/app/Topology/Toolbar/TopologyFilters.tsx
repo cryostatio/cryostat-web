@@ -156,6 +156,7 @@ export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelect
       selected={selected}
       aria-label={'Filter Categories'}
       onOpenChangeKeys={['Escape']}
+      onOpenChange={setIsOpen}
     >
       <SelectList>{options}</SelectList>
     </Select>
@@ -337,13 +338,7 @@ export const TopologyFilterSelect: React.FC<TopologyFilterSelectProps> = ({
           />
           <TextInputGroupUtilities>
             {filterValue ? (
-              <Button
-                variant="plain"
-                onClick={() => {
-                  setFilterValue('');
-                }}
-                aria-label="Clear input value"
-              >
+              <Button variant="plain" onClick={() => setFilterValue('')} aria-label="Clear input value">
                 <TimesIcon aria-hidden />
               </Button>
             ) : null}
@@ -387,6 +382,8 @@ export const TopologyFilterSelect: React.FC<TopologyFilterSelectProps> = ({
       onSelect={() => {
         setIsExpanded(false);
       }}
+      onOpenChange={setIsExpanded}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>{selectOptions}</SelectList>
     </Select>
