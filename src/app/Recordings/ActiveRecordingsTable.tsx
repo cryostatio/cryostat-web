@@ -36,9 +36,11 @@ import {
   ActiveRecording,
   AnalysisResult,
   CategorizedRuleEvaluations,
+  KeyValue,
   NotificationCategory,
   RecordingState,
   Target,
+  keyValueToString,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
@@ -902,6 +904,18 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     handleLoadAnalysis();
   }, [isExpanded, handleLoadAnalysis]);
 
+  const recordingOptions = (recording: ActiveRecording): KeyValue[] => {
+    const options: KeyValue[] = [];
+    options.push({ key: 'toDisk', value: String(recording.toDisk) });
+    if (recording.maxAge) {
+      options.push({ key: 'maxAge', value: `${recording.maxAge / 1000}s` });
+    }
+    if (recording.maxSize) {
+      options.push({ key: 'maxSize', value: formatBytes(recording.maxAge) });
+    }
+    return options;
+  };
+
   const parentRow = React.useMemo(() => {
     const RecordingDuration = (props: { duration: number }) => {
       const str = React.useMemo(
@@ -952,19 +966,11 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         </Td>
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
           <LabelGroup isVertical style={{ padding: '0.2em' }}>
-            <Label color="blue" key="toDisk">
-              toDisk: {String(recording.toDisk)}
-            </Label>
-            {recording.maxAge ? (
-              <Label color="blue" key="maxAge">
-                maxAge: {recording.maxAge / 1000}s
+            {recordingOptions(recording).map((options) => (
+              <Label color="blue" key={options.key}>
+                {keyValueToString(options)}
               </Label>
-            ) : undefined}
-            {recording.maxSize ? (
-              <Label color="blue" key="maxSize">
-                maxSize: {formatBytes(recording.maxSize)}
-              </Label>
-            ) : undefined}
+            ))}
           </LabelGroup>
         </Td>
         <Td key={`active-table-row-${index}_7`} dataLabel={tableColumns[5].title}>

@@ -367,7 +367,7 @@ export const fieldValueToStrings = (value: unknown): string[] => {
       }
       return value.map((v) => `${v}`);
     } else {
-      return Object.entries(value as object).map(([k, v]) => `${k}: ${v}`);
+      return Object.entries(value as object).map(([k, v]) => `${k}=${v}`);
     }
   } else {
     return [`${value}`];
