@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import _ from 'lodash';
 import {
   allowedGroupFilters,
   allowedTargetFilters,
@@ -349,6 +350,19 @@ export const fieldValueToStrings = (value: unknown): string[] => {
   }
   if (typeof value === 'object') {
     if (Array.isArray(value)) {
+      if (value.length > 0 && typeof value[0] === 'object') {
+        if (_.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(value[0])))) {
+          return value.map((o) => `${o.key}=${o.value}`);
+        } else {
+          return value.map((o) => {
+            let str = '';
+            for (const p in Object.getOwnPropertyNames(o)) {
+              str += `${p}=${o[p]}`;
+            }
+            return str;
+          });
+        }
+      }
       return value.map((v) => `${v}`);
     } else {
       return Object.entries(value as object).map(([k, v]) => `${k}=${v}`);
