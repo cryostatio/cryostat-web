@@ -213,8 +213,10 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
 
       const contextMenu = document.getElementById('topology-context-menu');
       if (contextMenu) {
-        contextMenu.style.top = `${e.clientY}px`;
-        contextMenu.style.left = `${e.clientX}px`;
+        // FIXME: This is a magic workaround.
+        // Position of context menu should be absolute to the document. Currently, it is relative to the container.
+        contextMenu.style.top = `${e.offsetY + 80}px`;
+        contextMenu.style.left = `${e.offsetX + 15}px`;
         contextMenu.style.display = 'block';
       }
     };
