@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import _ from 'lodash';
 import { RecordingReplace } from '@app/CreateRecording/types';
 import { AlertVariant } from '@patternfly/react-core';
+import _ from 'lodash';
 import { Observable } from 'rxjs';
 
 export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' | 'beta';
