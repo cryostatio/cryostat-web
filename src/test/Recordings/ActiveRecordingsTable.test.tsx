@@ -245,7 +245,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(state).toBeVisible();
 
     mockRecordingLabels.forEach((entry) => {
-      const label = screen.getByText(`${entry.key}: ${entry.value}`);
+      const label = screen.getByText(`${entry.key}=${entry.value}`);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     });
@@ -285,8 +285,8 @@ describe('<ActiveRecordingsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
-    expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
+    expect(screen.getByText('someLabel=someUpdatedValue')).toBeInTheDocument();
+    expect(screen.queryByText('someLabel=someValue')).not.toBeInTheDocument();
   });
 
   it('stops a Recording after receiving a notification', async () => {

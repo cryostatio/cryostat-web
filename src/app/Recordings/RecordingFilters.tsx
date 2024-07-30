@@ -20,7 +20,7 @@ import {
   allowedArchivedRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { Recording, RecordingState } from '@app/Shared/Services/api.types';
+import { KeyValue, Recording, RecordingState, keyValueToString } from '@app/Shared/Services/api.types';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import dayjs from '@i18n/datetime';
 import {
@@ -294,7 +294,7 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
   }
   if (filters.Label.length) {
     filtered = filtered.filter((recording) => {
-      const recordingLabels = recording.metadata.labels.map((label) => `${label.key}:${label.value}`);
+      const recordingLabels = recording.metadata.labels.map((label: KeyValue) => keyValueToString(label));
       return filters.Label.some((filterLabel) => recordingLabels.includes(filterLabel));
     });
   }
