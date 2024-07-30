@@ -33,7 +33,7 @@ export const isKeyValue = (o: any): o is KeyValue => {
 };
 
 export const keyValueToString = (kv: KeyValue): string => {
-  return `${kv.key}=${kv.value}`;
+  return `${kv.key}: ${kv.value}`;
 };
 
 export interface Metadata {
