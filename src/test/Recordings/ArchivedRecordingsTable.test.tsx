@@ -291,7 +291,7 @@ describe('<ArchivedRecordingsTable />', () => {
     }); */
 
     for (const entry of mockRecordingLabels) {
-      const label = await screen.findByText(`${entry.key}: ${entry.value}`);
+      const label = await screen.findByText(`${entry.key}=${entry.value}`);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     }
@@ -333,8 +333,8 @@ describe('<ArchivedRecordingsTable />', () => {
       },
       preloadedState: preloadedState,
     });
-    expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
-    expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
+    expect(screen.getByText('someLabel=someUpdatedValue')).toBeInTheDocument();
+    expect(screen.queryByText('someLabel=someValue')).not.toBeInTheDocument();
   });
 
   it('removes a Recording after receiving a notification', async () => {

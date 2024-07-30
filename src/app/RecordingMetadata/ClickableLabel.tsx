@@ -47,7 +47,7 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
   return (
     <>
       <Label
-        aria-label={`${label.key}: ${label.value}`}
+        aria-label={keyValueToString(label)}
         style={style}
         isTruncated
         onMouseEnter={handleHoveredOrFocused}

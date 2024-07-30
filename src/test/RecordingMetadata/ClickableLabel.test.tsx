@@ -23,7 +23,7 @@ const mockLabel = {
   key: 'someLabel',
   value: 'someValue',
 } as KeyValue;
-const mockLabelAsString = 'someLabel: someValue';
+const mockLabelAsString = 'someLabel=someValue';
 
 const onLabelClick = jest.fn((_label: KeyValue) => {
   /**Do nothing. Used for checking renders */
