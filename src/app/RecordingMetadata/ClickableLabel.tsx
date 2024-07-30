@@ -55,6 +55,7 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
         onClick={handleLabelClicked}
         key={label.key}
         color={labelColor}
+        isTruncated
       >
         {`${label.key}: ${label.value}`}
       </Label>
