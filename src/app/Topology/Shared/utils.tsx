@@ -110,7 +110,7 @@ export const isGroupNodeFiltered = (
     matched = matched && filter.Name.includes(groupNode.name);
   }
   if (filter.Label && filter.Label.length) {
-    matched = matched && groupNode.labels.map(keyValueToString).some((v) => filter.Label.includes(v));
+    matched = matched && groupNode.labels.some((kv) => filter.Label.includes(keyValueToString(kv)));
   }
   return matched;
 };
@@ -130,7 +130,7 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
     matched = matched && target.jvmId !== undefined && filters.JvmId.includes(target.jvmId);
   }
   if (filters.Label && filters.Label.length) {
-    matched = matched && target.labels.map(keyValueToString).some((v) => filters.Label.includes(v));
+    matched = matched && target.labels.some((kv) => filters.Label.includes(keyValueToString(kv)));
   }
   if (filters.Annotation && filters.Annotation.length) {
     const annotations = target.annotations;
