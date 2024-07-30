@@ -158,8 +158,8 @@ Below CSS rules only apply to Topology components
 }
 
 .entity-overview__entity-title-badge {
-  background-color: var(--pf-global--palette--blue-500);
-  color: var(--pf-global--palette--white);
+  background-color: var(--pf-v5-global--palette--blue-500);
+  color: var(--pf-v5-global--palette--white);
   padding: 2px 12px 2px 12px;
   margin-right: 8px;
   text-align: center;
