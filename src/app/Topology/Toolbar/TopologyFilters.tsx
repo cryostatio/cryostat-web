@@ -352,7 +352,7 @@ export const fieldValueToStrings = (value: unknown): string[] => {
     if (Array.isArray(value)) {
       if (value.length > 0 && typeof value[0] === 'object') {
         if (_.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(value[0])))) {
-          return value.map((o) => `${o.key}=${o.value}`);
+          return value.map((o) => `${o.key}: ${o.value}`);
         } else {
           return value.map((o) => {
             let str = '';
@@ -365,7 +365,7 @@ export const fieldValueToStrings = (value: unknown): string[] => {
       }
       return value.map((v) => `${v}`);
     } else {
-      return Object.entries(value as object).map(([k, v]) => `${k}=${v}`);
+      return Object.entries(value as object).map(([k, v]) => `${k}: ${v}`);
     }
   } else {
     return [`${value}`];

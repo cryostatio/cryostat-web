@@ -27,7 +27,7 @@ export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay
     return annotations
       ? Object.keys(annotations).map((groupK) => ({
           groupLabel: groupK,
-          annotations: annotations[groupK].map((kv) => `${kv.key}=${kv.value}`),
+          annotations: annotations[groupK].map((kv) => `${kv.key}: ${kv.value}`),
         }))
       : [];
   }, [annotations]);
