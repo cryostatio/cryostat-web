@@ -26,7 +26,7 @@ import {
 } from '@app/Shared/Redux/ReduxStore';
 import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { flattenTree, getUniqueNodeTypes, isTargetNode } from '@app/Shared/Services/api.utils';
-import { getDisplayFieldName } from '@app/utils/utils';
+import { getDisplayFieldName, LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
 import {
   Button,
   Divider,
@@ -213,7 +213,7 @@ export const TopologyFilter: React.FC<TopologyFilterProps> = ({ isDisabled }) =>
                   value: val,
                   render: () =>
                     isLabelOrAnnotation(cat) ? (
-                      <Label color="grey" textMaxWidth={'20ch'}>
+                      <Label color="grey" textMaxWidth={LABEL_TEXT_MAXWIDTH}>
                         {val}
                       </Label>
                     ) : (
@@ -271,7 +271,7 @@ export const TopologyFilter: React.FC<TopologyFilterProps> = ({ isDisabled }) =>
                   value: val,
                   render: () =>
                     isLabelOrAnnotation(cat) ? (
-                      <Label color="grey" textMaxWidth={'20ch'}>
+                      <Label color="grey" textMaxWidth={LABEL_TEXT_MAXWIDTH}>
                         {val}
                       </Label>
                     ) : (
