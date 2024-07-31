@@ -975,7 +975,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
           <LabelGroup isVertical style={{ padding: '0.2em' }}>
             {recordingOptions(recording).map((options) => (
-              <Label color="blue" key={options.key} isTruncated>
+              <Label color="blue" key={options.key} textMaxWidth="20ch">
                 {keyValueToString(options)}
               </Label>
             ))}

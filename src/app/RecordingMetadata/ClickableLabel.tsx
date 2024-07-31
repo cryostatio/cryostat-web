@@ -49,7 +49,7 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
       <Label
         aria-label={keyValueToString(label)}
         style={style}
-        isTruncated
+        textMaxWidth="20ch"
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
