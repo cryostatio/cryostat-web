@@ -49,7 +49,6 @@ import {
   ActiveRecordingsFilterInput,
   RecordingCountResponse,
   MBeanMetrics,
-  MBeanMetricsResponse,
   EventType,
   NotificationCategory,
   HttpError,

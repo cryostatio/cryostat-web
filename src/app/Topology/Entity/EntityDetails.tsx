@@ -15,9 +15,11 @@
  */
 
 
+
+import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
-import { EnvironmentNode, MBeanMetrics, MBeanMetricsResponse, TargetNode } from '@app/Shared/Services/api.types';
+import { EnvironmentNode, MBeanMetrics, TargetNode } from '@app/Shared/Services/api.types';
 import { isTargetNode } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown } from '@app/Topology/Actions/NodeActions';
@@ -51,7 +53,7 @@ import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from 
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { catchError, concatMap, map, of, tap } from 'rxjs';
+import { catchError, concatMap, map, of} from 'rxjs';
 import { EmptyText } from '../../Shared/Components/EmptyText';
 import { NodeAction } from '../Actions/types';
 import { actionFactory } from '../Actions/utils';
@@ -77,7 +79,6 @@ import {
   mapSection,
   useResources,
 } from './utils';
-import { ErrorView } from '@app/ErrorView/ErrorView';
 
 
 export interface EntityDetailsProps {
@@ -101,10 +102,13 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   alertOptions,
   ...props
 }) => {
-  
+
   const services = React.useContext(ServiceContext);
   const [errorMessage, setErrorMessage] = React.useState('');
   const addSubscription = useSubscriptions();
+  const authRetry = React.useCallback(() => {
+    services.target.setAuthRetry();
+  }, [services.target]);
 
   React.useEffect(() => {
     addSubscription(
@@ -148,11 +152,6 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       const titleContent = isTarget ? data.target.alias : data.name;
 
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
-
-      const services = React.useContext(ServiceContext);
-      const authRetry = React.useCallback(() => {
-        services.target.setAuthRetry();
-      }, [services.target]);
     
       if (errorMessage != '') {
         return (
@@ -197,7 +196,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions]);
+  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions, errorMessage, authRetry]);
   return (
     <div {...props} className={css('entity-overview', className)}>
       {viewContent}
