@@ -19,7 +19,7 @@ import { BuildInfo } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Stack, StackItem, Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
+import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -86,7 +86,7 @@ export const AboutDescription: React.FC = () => {
     } else {
       return <Text component={TextVariants.p}>{t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}</Text>;
     }
-  }, [buildInfo]);
+  }, [t, buildInfo]);
 
   return (
     <>
