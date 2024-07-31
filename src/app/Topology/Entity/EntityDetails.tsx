@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
@@ -53,7 +51,7 @@ import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from 
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { catchError, concatMap, map, of} from 'rxjs';
+import { catchError, concatMap, map, of } from 'rxjs';
 import { EmptyText } from '../../Shared/Components/EmptyText';
 import { NodeAction } from '../Actions/types';
 import { actionFactory } from '../Actions/utils';
@@ -80,7 +78,6 @@ import {
   useResources,
 } from './utils';
 
-
 export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
@@ -102,7 +99,6 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   alertOptions,
   ...props
 }) => {
-
   const services = React.useContext(ServiceContext);
   const [errorMessage, setErrorMessage] = React.useState('');
   const addSubscription = useSubscriptions();
@@ -152,7 +148,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       const titleContent = isTarget ? data.target.alias : data.name;
 
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
-    
+
       if (errorMessage != '') {
         return (
           <ErrorView

@@ -263,7 +263,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
                 }
               }
             }),
-            map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []))
+            map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
+          )
           .subscribe({
             next: handleRecordings,
             error: handleError,
@@ -275,20 +276,22 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           .pipe(
             filter((target) => !!target),
             first(),
-            concatMap((target: Target) => queryTargetRecordings(target.id!).pipe(
-              tap((resp) => {
-                if (resp.data == undefined) {
-                  if (isGraphQLAuthError(resp)) {
-                    context.target.setAuthFailure();
-                    throw new Error(authFailMessage);
-                  } else if (isGraphQLSSLError(resp)) {
-                    throw new Error(missingSSLMessage);
-                  } else {
-                    throw new Error(resp.errors[0].message);
+            concatMap((target: Target) =>
+              queryTargetRecordings(target.id!).pipe(
+                tap((resp) => {
+                  if (resp.data == undefined) {
+                    if (isGraphQLAuthError(resp)) {
+                      context.target.setAuthFailure();
+                      throw new Error(authFailMessage);
+                    } else if (isGraphQLSSLError(resp)) {
+                      throw new Error(missingSSLMessage);
+                    } else {
+                      throw new Error(resp.errors[0].message);
+                    }
                   }
-                }
-              }),
-            )),
+                }),
+              ),
+            ),
             map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
           )
           .subscribe({

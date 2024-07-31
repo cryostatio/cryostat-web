@@ -63,7 +63,14 @@ import {
   TargetMetadata,
   isTargetMetadata,
 } from './api.types';
-import { isHttpError, includesTarget, isHttpOk, isXMLHttpError, isGraphQLAuthError, isGraphQLSSLError } from './api.utils';
+import {
+  isHttpError,
+  includesTarget,
+  isHttpOk,
+  isXMLHttpError,
+  isGraphQLAuthError,
+  isGraphQLSSLError,
+} from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { SessionState } from './service.types';
