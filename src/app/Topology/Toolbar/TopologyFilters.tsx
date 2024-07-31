@@ -155,6 +155,8 @@ export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelect
       isOpen={isOpen}
       selected={selected}
       aria-label={'Filter Categories'}
+      onOpenChangeKeys={['Escape']}
+      onOpenChange={setIsOpen}
     >
       <SelectList>{options}</SelectList>
     </Select>
@@ -209,7 +211,14 @@ export const TopologyFilter: React.FC<TopologyFilterProps> = ({ isDisabled }) =>
                 })
                 .map<TopologyFilterSelectOption>((val) => ({
                   value: val,
-                  render: () => (isLabelOrAnnotation(cat) ? <Label color="grey">{val}</Label> : val),
+                  render: () =>
+                    isLabelOrAnnotation(cat) ? (
+                      <Label color="grey" textMaxWidth={'20ch'}>
+                        {val}
+                      </Label>
+                    ) : (
+                      val
+                    ),
                 })),
             ),
           ),
@@ -260,7 +269,14 @@ export const TopologyFilter: React.FC<TopologyFilterProps> = ({ isDisabled }) =>
                 })
                 .map<TopologyFilterSelectOption>((val) => ({
                   value: val,
-                  render: () => (isLabelOrAnnotation(cat) ? <Label color="grey">{val}</Label> : val),
+                  render: () =>
+                    isLabelOrAnnotation(cat) ? (
+                      <Label color="grey" textMaxWidth={'20ch'}>
+                        {val}
+                      </Label>
+                    ) : (
+                      val
+                    ),
                 })),
             ),
           ),
@@ -336,13 +352,7 @@ export const TopologyFilterSelect: React.FC<TopologyFilterSelectProps> = ({
           />
           <TextInputGroupUtilities>
             {filterValue ? (
-              <Button
-                variant="plain"
-                onClick={() => {
-                  setFilterValue('');
-                }}
-                aria-label="Clear input value"
-              >
+              <Button variant="plain" onClick={() => setFilterValue('')} aria-label="Clear input value">
                 <TimesIcon aria-hidden />
               </Button>
             ) : null}
@@ -386,8 +396,12 @@ export const TopologyFilterSelect: React.FC<TopologyFilterSelectProps> = ({
       onSelect={() => {
         setIsExpanded(false);
       }}
+      onOpenChange={setIsExpanded}
+      onOpenChangeKeys={['Escape']}
     >
-      <SelectList>{selectOptions}</SelectList>
+      <SelectList>
+        {selectOptions.length > 0 ? selectOptions : <SelectOption isDisabled>No results found</SelectOption>}
+      </SelectList>
     </Select>
   );
 };

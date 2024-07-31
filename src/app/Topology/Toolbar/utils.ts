@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NodeType, isKeyValue, keyValueToString } from '@app/Shared/Services/api.types';
+import { isKeyValue, keyValueToString, NodeType } from '@app/Shared/Services/api.types';
 
 export const isLabelOrAnnotation = (category: string) => /(label|annotation)/i.test(category);
 

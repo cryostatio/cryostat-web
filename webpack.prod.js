@@ -59,9 +59,10 @@ module.exports = merge(common('production'), {
           path.resolve(__dirname, 'node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, 'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/quickstarts/dist/quickstarts.css'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-topology/dist/esm/css'),
+          path.resolve(__dirname, "node_modules/@patternfly/react-topology/node_modules/@patternfly/react-styles/css"),
+          path.resolve(__dirname, "node_modules/@patternfly/react-catalog-view-extension/node_modules/@patternfly/react-styles/css")
         ],
         use: [MiniCssExtractPlugin.loader, 'css-loader']
       }

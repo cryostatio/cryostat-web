@@ -218,7 +218,6 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onCl
     return (
       <span>
         For quickstarts on how to create these entities, visit <Link to={'/quickstarts'}>Quick Starts</Link>.
-        <Link to={'/quickstarts'}>Quick Starts</Link>.
       </span>
     );
   }, []);
@@ -233,7 +232,7 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onCl
       title={'Topology entity catalog'}
       className={'topology__quick-search-modal'}
       id={'topology-quick-search-modal'}
-      description={{ description }}
+      description={description}
     >
       <QuickSearchPanel />
     </Modal>

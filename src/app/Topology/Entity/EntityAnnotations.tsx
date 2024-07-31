@@ -28,7 +28,7 @@ export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay
     return annotations
       ? Object.keys(annotations).map((groupK) => ({
           groupLabel: groupK,
-          annotations: annotations[groupK].map((kv) => keyValueToString(kv)),
+          annotations: annotations[groupK].map(keyValueToString),
         }))
       : [];
   }, [annotations]);
@@ -39,7 +39,7 @@ export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay
         <div className="entity-overview__displayed-annotations" key={group.groupLabel}>
           <LabelGroup numLabels={maxDisplay} categoryName={group.groupLabel}>
             {group.annotations.map((a) => (
-              <Label color="blue" key={a}>
+              <Label color="blue" key={a} textMaxWidth={'20ch'}>
                 {a}
               </Label>
             ))}

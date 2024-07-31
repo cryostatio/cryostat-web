@@ -35,7 +35,7 @@ export const EntityKeyValues: React.FC<EntityKeyValuesProps> = ({
     <div className="entity-overview__displayed-keyvalues-wrapper" {...props}>
       <LabelGroup numLabels={maxDisplay}>
         {_transformedKv.map((l) => (
-          <Label color="blue" key={l}>
+          <Label color="blue" key={l} textMaxWidth={'20ch'}>
             {l}
           </Label>
         ))}
