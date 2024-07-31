@@ -16,7 +16,6 @@
 import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState, topologyDisplayOptionsSetIntent } from '@app/Shared/Redux/ReduxStore';
 import {
-  Checkbox,
   Divider,
   Menu,
   MenuContainer,
