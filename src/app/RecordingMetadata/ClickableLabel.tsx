@@ -15,6 +15,7 @@
  */
 
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
+import { LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
 import { Label } from '@patternfly/react-core';
 import * as React from 'react';
 
@@ -49,7 +50,7 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
       <Label
         aria-label={keyValueToString(label)}
         style={style}
-        textMaxWidth="20ch"
+        textMaxWidth={LABEL_TEXT_MAXWIDTH}
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}

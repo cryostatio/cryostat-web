@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { keyValueToString } from '@app/Shared/Services/api.types';
+import { LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
 import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../../Shared/Components/EmptyText';
@@ -39,7 +40,7 @@ export const EntityAnnotations: React.FC<{ annotations?: Annotations; maxDisplay
         <div className="entity-overview__displayed-annotations" key={group.groupLabel}>
           <LabelGroup numLabels={maxDisplay} categoryName={group.groupLabel}>
             {group.annotations.map((a) => (
-              <Label color="blue" key={a} textMaxWidth={'20ch'}>
+              <Label color="blue" key={a} textMaxWidth={LABEL_TEXT_MAXWIDTH}>
                 {a}
               </Label>
             ))}

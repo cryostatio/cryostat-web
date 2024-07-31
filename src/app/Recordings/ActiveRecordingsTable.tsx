@@ -46,7 +46,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -975,7 +975,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
           <LabelGroup isVertical style={{ padding: '0.2em' }}>
             {recordingOptions(recording).map((options) => (
-              <Label color="blue" key={options.key} textMaxWidth="20ch">
+              <Label color="blue" key={options.key} textMaxWidth={LABEL_TEXT_MAXWIDTH}>
                 {keyValueToString(options)}
               </Label>
             ))}
