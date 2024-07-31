@@ -15,9 +15,11 @@
  */
 
 import build from '@app/build.json';
+import { BuildInfo } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { Stack, StackItem, Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,14 +27,16 @@ export const AboutDescription: React.FC = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
+  const [buildInfo, setBuildInfo] = React.useState<BuildInfo>({ git: { hash: '' } });
   const { t } = useTranslation();
+  const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
-    return () => sub.unsubscribe();
-  }, [serviceContext]);
+    addSubscription(serviceContext.api.cryostatVersion().subscribe(setCryostatVersion));
+    addSubscription(serviceContext.api.buildInfo().subscribe(setBuildInfo));
+  }, [addSubscription, serviceContext]);
 
-  const cryostatCommitHash = React.useMemo(() => {
+  const cryostatReleaseTag = React.useMemo(() => {
     if (!cryostatVersion) {
       return;
     }
@@ -55,8 +59,8 @@ export const AboutDescription: React.FC = () => {
           component={TextVariants.a}
           target="_blank"
           href={
-            cryostatCommitHash
-              ? build.releaseTagUrl.replace('__REPLACE_HASH__', cryostatCommitHash)
+            cryostatReleaseTag
+              ? build.releaseTagUrl.replace('__REPLACE_HASH__', cryostatReleaseTag)
               : build.developmentUrl
           }
         >
@@ -66,7 +70,23 @@ export const AboutDescription: React.FC = () => {
     } else {
       return <Text component={TextVariants.p}>{cryostatVersion}</Text>;
     }
-  }, [cryostatVersion, cryostatCommitHash]);
+  }, [cryostatVersion, cryostatReleaseTag]);
+
+  const buildInfoComponent = React.useMemo(() => {
+    if (build.commitUrl) {
+      return (
+        <Text
+          component={TextVariants.a}
+          target="_blank"
+          href={build.commitUrl.replace('__REPLACE_HASH__', buildInfo.git.hash)}
+        >
+          {t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}
+        </Text>
+      );
+    } else {
+      return <Text component={TextVariants.p}>{t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}</Text>;
+    }
+  }, [buildInfo]);
 
   return (
     <>
@@ -74,6 +94,8 @@ export const AboutDescription: React.FC = () => {
         <TextList component="dl">
           <TextListItem component="dt">{t('AboutDescription.VERSION')}</TextListItem>
           <TextListItem component="dd">{versionComponent}</TextListItem>
+          <TextListItem component="dt">{t('AboutDescription.BUILD_INFO')}</TextListItem>
+          <TextListItem component="dd">{buildInfoComponent}</TextListItem>
           <TextListItem component="dt">{t('AboutDescription.HOMEPAGE')}</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>

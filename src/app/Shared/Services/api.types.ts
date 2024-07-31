@@ -23,6 +23,13 @@ export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' 
 // ======================================
 // Common Resources
 // ======================================
+
+export interface BuildInfo {
+  git: {
+    hash: string;
+  };
+}
+
 export interface KeyValue {
   key: string;
   value: string;
@@ -127,6 +134,7 @@ export interface GrafanaDatasourceUrlGetResponse {
 
 export interface HealthGetResponse {
   cryostatVersion: string;
+  build: BuildInfo;
   datasourceConfigured: boolean;
   datasourceAvailable: boolean;
   dashboardConfigured: boolean;
