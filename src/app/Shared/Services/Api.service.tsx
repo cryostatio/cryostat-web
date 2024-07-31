@@ -73,6 +73,7 @@ import {
   TargetMetadata,
   isTargetMetadata,
   MBeanMetricsResponse,
+  BuildInfo,
 } from './api.types';
 import {
   isHttpError,
@@ -91,6 +92,7 @@ import { TargetService } from './Target.service';
 export class ApiService {
   private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
+  private readonly buildInfoSubject = new ReplaySubject<BuildInfo>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
 
@@ -128,6 +130,7 @@ export class ApiService {
       .pipe(
         concatMap((jsonResp) => {
           this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
+          this.buildInfoSubject.next(jsonResp.build);
           const toFetch: unknown[] = [];
           const unconfigured: string[] = [];
           const unavailable: string[] = [];
@@ -735,6 +738,10 @@ export class ApiService {
 
   cryostatVersion(): Observable<string> {
     return this.cryostatVersionSubject.asObservable();
+  }
+
+  buildInfo(): Observable<BuildInfo> {
+    return this.buildInfoSubject.asObservable();
   }
 
   grafanaDatasourceUrl(): Observable<string> {

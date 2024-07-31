@@ -4,6 +4,8 @@
   },
   "AboutDescription": {
     "BUGS": "Bugs",
+    "BUILD_INFO": "Build Information",
+    "COMMIT": "commit {{ hash }}",
     "FILE_A_REPORT": "File a report",
     "HOMEPAGE": "Homepage",
     "KNOWN_ISSUES": "Known issues",
