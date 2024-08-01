@@ -146,6 +146,26 @@
       "POPOVER": "automated-analysis-description-popover"
     }
   },
+  "CreateRule": {
+    "ABOUT": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording buffer into Cryostat's own archived storage.",
+    "ARCHIVAL_PERIOD_HELPER_TEXT": "Time between copies of active Recording data being pulled into Cryostat archive storage.",
+    "DESCRIPTION_HELPER_TEXT": "Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions.",
+    "ENABLE_SWITCH_HELPER_TEXT": "Rules take effect when created if enabled and will be matched against all discovered target applications immediately. When new target applications appear they are checked against all enabled rules. Disabled rules have no effect but are available to be enabled in the future.",
+    "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
+    "FAILING_EVALUATION": "The expression matching failed.",
+    "INITIAL_DELAY_HELPER_TEXT": "Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later.",
+    "MATCH_EXPRESSION_HELPER_TEXT": "Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.",
+    "MATCH_EXPRESSION_HINT_BODY": "Try an expression like:",
+    "MATCH_EXPRESSION_HINT_MODAL_HEADER": "Match Expression hint",
+    "MAXAGE_HELPER_TEXT": "The maximum age of Recording data retained in the target application's Recording buffer.",
+    "MAXSIZE_HELPER_TEXT": "The maximum size of Recording data retained in the target application's Recording buffer.",
+    "NAME_HELPER_TEXT": "Enter a rule name.",
+    "NAME_HINT": "A rule name can contain only letters, numbers, and underscores.",
+    "PRESERVED_ARCHIVES_HELPER_TEXT": "The number of Archived Recording copies to preserve in archives for each target application affected by this rule.",
+    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied by this Rule against matching target applications.",
+    "TEMPLATE_HINT": "A Template must be selected.",
+    "WARNING_NO_MATCH": "Warning: Match Expression matches no targets."
+  },
   "Dashboard": {
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your Dashboard. Some cards require additional configuration.",
     "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
@@ -271,6 +291,10 @@
     },
     "TITLE": "Upload Dashboard Layout Template"
   },
+  "MATCH_EXPRESSION_VISUALIZER": {
+    "TITLE": "Match Expression visualizer"
+  },
+  "MATCH_EXPRESSION_VISUALIZER_TITLE": "cryostat_tmp",
   "MeridiemPicker": {
     "ARIA_LABELS": {
       "LISTBOX": "Select AM or PM"

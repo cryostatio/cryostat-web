@@ -56,6 +56,7 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
@@ -68,6 +69,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
@@ -346,13 +348,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
 
   return (
     <Form>
-      <Text component={TextVariants.small}>
-        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM
-        applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
-        kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording
-        buffer into Cryostat&apos;s own archived storage.
-      </Text>
-      <FormGroup label="Name" isRequired fieldId="rule-name" data-quickstart-id="rule-name">
+      <Text component={TextVariants.small}>{t('CreateRule.ABOUT')}</Text>
+      <FormGroup label={t('NAME', { ns: 'common' })} isRequired fieldId="rule-name" data-quickstart-id="rule-name">
         <TextInput
           value={formData.name}
           isDisabled={loading}
@@ -367,13 +364,17 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           <HelperText>
             <HelperTextItem variant={formData.nameValid}>
               {formData.nameValid === ValidatedOptions.error
-                ? 'A rule name can contain only letters, numbers, and underscores.'
-                : 'Enter a rule name.'}
+                ? t('CreateRule.NAME_HINT')
+                : t('CreateRule.NAME_HELPER_TEXT')}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Description" fieldId="rule-description" data-quickstart-id="rule-description">
+      <FormGroup
+        label={t('DESCRIPTION', { ns: 'common' })}
+        fieldId="rule-description"
+        data-quickstart-id="rule-description"
+      >
         <TextArea
           value={formData.description}
           isDisabled={loading}
@@ -386,22 +387,19 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         />
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              Enter a rule description. This is only used for display purposes to aid in identifying rules and their
-              intentions.
-            </HelperTextItem>
+            <HelperTextItem>{t('CreateRule.DESCRIPTION_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
       <FormGroup
-        label="Match Expression"
+        label={t('MATCH_EXPRESSION', { ns: 'common' })}
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match Expression hint"
+            headerContent={t('CreateRule.MATCH_EXPRESSION_HINT_MODAL_HEADER')}
             bodyContent={
               <>
-                Try an expression like:
+                {t('CreateRule.MATCH_EXPRESSION_HINT_BODY')}
                 <MatchExpressionHint target={sampleTarget} />
               </>
             }
@@ -438,19 +436,17 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           <HelperText>
             <HelperTextItem variant={formData.matchExpressionValid}>
               {evaluating
-                ? 'Evaluating Match Expression...'
+                ? t('CreateRule.EVALUATING_EXPRESSION')
                 : formData.matchExpressionValid === ValidatedOptions.warning
-                ? `Warning: Match Expression matches no targets.`
+                ? t('CreateRule.WARNING_NO_MATCH')
                 : formData.matchExpressionValid === ValidatedOptions.error
-                ? 'The expression matching failed.'
-                : `
-      Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
-      application to determine whether the rule should be applied.`}
+                ? t('CreateRule.FAILING_EVALUATION')
+                : t('CreateRule.MATCH_EXPRESSION_HELPER_TEXT')}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Enabled" isRequired fieldId="rule-enabled">
+      <FormGroup label={t('ENABLED', { ns: 'common' })} isRequired fieldId="rule-enabled">
         <Switch
           id="rule-enabled"
           isDisabled={loading}
@@ -460,15 +456,16 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         />
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              Rules take effect when created if enabled and will be matched against all discovered target applications
-              immediately. When new target applications appear they are checked against all enabled rules. Disabled
-              rules have no effect but are available to be enabled in the future.
-            </HelperTextItem>
+            <HelperTextItem>{t('CreateRule.ENABLE_SWITCH_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Template" isRequired fieldId="recording-template" data-quickstart-id="rule-evt-template">
+      <FormGroup
+        label={t('TEMPLATE', { ns: 'common' })}
+        isRequired
+        fieldId="recording-template"
+        data-quickstart-id="rule-evt-template"
+      >
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           disabled={loading}
@@ -479,14 +476,12 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
-              {!formData.template?.name
-                ? 'A Template must be selected'
-                : 'The Event Template to be applied by this Rule against matching target applications.'}
+              {!formData.template?.name ? t('CreateRule.TEMPLATE_HINT') : t('CreateRule.TEMPLATE_HELPER_TEXT')}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Maximum Size" fieldId="maxSize" data-quickstart-id="rule-max-size">
+      <FormGroup label={t('MAXIMUM_SIZE', { ns: 'common' })} fieldId="maxSize" data-quickstart-id="rule-max-size">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -516,13 +511,11 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         </Split>
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              {"The maximum size of Recording data retained in the target application's Recording buffer."}
-            </HelperTextItem>
+            <HelperTextItem>{t('CreateRule.MAXSIZE_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Maximum Age" fieldId="maxAge" data-quickstart-id="rule-max-age">
+      <FormGroup label={t('MAXIMUM_AGE', { ns: 'common' })} fieldId="maxAge" data-quickstart-id="rule-max-age">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -544,21 +537,23 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               onChange={handleMaxAgeUnitChange}
               aria-label="Max Age units Input"
             >
-              <FormSelectOption key="1" value="1" label="Seconds" />
-              <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
             </FormSelect>
           </SplitItem>
         </Split>
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              {"The maximum age of Recording data retained in the target application's Recording buffer."}
-            </HelperTextItem>
+            <HelperTextItem>{t('CreateRule.MAXAGE_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Archival Period" fieldId="archivalPeriod" data-quickstart-id="rule-archival-period">
+      <FormGroup
+        label={t('ARCHIVAL_PERIOD', { ns: 'common' })}
+        fieldId="archivalPeriod"
+        data-quickstart-id="rule-archival-period"
+      >
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -580,21 +575,23 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               onChange={handleArchivalPeriodUnitsChange}
               aria-label="archival period units input"
             >
-              <FormSelectOption key="1" value="1" label="Seconds" />
-              <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
             </FormSelect>
           </SplitItem>
         </Split>
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              Time between copies of active Recording data being pulled into Cryostat archive storage.
-            </HelperTextItem>
+            <HelperTextItem>{t('CreateRule.ARCHIVAL_PERIOD_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Initial Delay" fieldId="initialDelay" data-quickstart-id="rule-initial-delay">
+      <FormGroup
+        label={t('INITIAL_DELAY', { ns: 'common' })}
+        fieldId="initialDelay"
+        data-quickstart-id="rule-initial-delay"
+      >
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -616,22 +613,23 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               onChange={handleInitialDelayUnitsChanged}
               aria-label="initial delay units input"
             >
-              <FormSelectOption key="1" value="1" label="Seconds" />
-              <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
             </FormSelect>
           </SplitItem>
         </Split>
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              Initial delay before archiving starts. The first archived copy will be made this long after the Recording
-              is started. The second archived copy will occur one Archival period later.
-            </HelperTextItem>
+            <HelperTextItem>{t('CreateRule.INITIAL_DELAY_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label="Preserved Archives" fieldId="preservedArchives" data-quickstart-id="rule-preserved-archives">
+      <FormGroup
+        label={t('PRESERVED_ARCHIVES', { ns: 'common' })}
+        fieldId="preservedArchives"
+        data-quickstart-id="rule-preserved-archives"
+      >
         <TextInput
           value={formData.preservedArchives}
           isDisabled={loading}
@@ -644,10 +642,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         />
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              The number of Archived Recording copies to preserve in archives for each target application affected by
-              this rule.
-            </HelperTextItem>
+            <HelperTextItem>{t('CreateRule.PRESERVED_ARCHIVES_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
@@ -665,10 +660,10 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}
         >
-          {loading ? 'Creating' : 'Create'}
+          {t(loading ? 'CREATING' : 'CREATE', { ns: 'common' })}
         </Button>
         <Button variant="secondary" onClick={exitForm} isAriaDisabled={loading}>
-          Cancel
+          {t('CANCEL', { ns: 'common' })}
         </Button>
       </ActionGroup>
     </Form>
@@ -677,15 +672,16 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
 
 export const CreateRule: React.FC = () => {
   const matchExpreRef = React.useRef(new MatchExpressionService());
+  const { t } = useTranslation();
 
   const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
     () => [
       {
-        title: 'Automated Rules',
+        title: t('AUTOMATED_RULES', { ns: 'common' }),
         path: '/rules',
       },
     ],
-    [],
+    [t],
   );
 
   const gridStyles: React.CSSProperties = React.useMemo(
@@ -697,7 +693,7 @@ export const CreateRule: React.FC = () => {
   );
 
   return (
-    <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
+    <BreadcrumbPage pageTitle={t('CREATE', { ns: 'common' })} breadcrumbs={breadcrumbs}>
       <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
         <Grid hasGutter style={gridStyles}>
           <GridItem xl={5} order={{ xl: '0', default: '1' }}>
@@ -709,7 +705,7 @@ export const CreateRule: React.FC = () => {
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
-              <CardTitle>Match Expression visualizer</CardTitle>
+              <CardTitle>{t('MATCH_EXPRESSION_VISUALIZER.TITLE')}</CardTitle>
               <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
                 <MatchExpressionVisualizer />
               </CardBody>

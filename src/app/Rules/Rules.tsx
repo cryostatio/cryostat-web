@@ -51,6 +51,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
@@ -120,6 +121,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
@@ -327,7 +329,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
           {r.name}
         </Td>
         <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
-          {r.description || <EmptyText text={'No description'} />}
+          {r.description || <EmptyText text={t('NO_DESCRIPTION', { ns: 'common' })} />}
         </Td>
         <Td key={`automatic-rule-matchExpression-${index}`} dataLabel={tableColumns[3].title}>
           {r.matchExpression}
@@ -361,7 +363,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         </Td>
       </Tr>
     ));
-  }, [rules, sortBy, handleToggle, actionResolver]);
+  }, [rules, sortBy, handleToggle, actionResolver, t]);
 
   const viewContent = React.useMemo(() => {
     if (isLoading) {
@@ -428,7 +430,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
               <ToolbarContent>
                 <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
                   <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
-                    Create
+                    {t('CREATE', { ns: 'common' })}
                   </Button>
                 </ToolbarItem>
                 <ToolbarItem key="upload">
