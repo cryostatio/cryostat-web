@@ -358,6 +358,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
             items={actionResolver(r)}
             popperProps={{
               appendTo: () => document.getElementById('automated-rule-toolbar') || document.body,
+              position: 'right',
             }}
           />
         </Td>
