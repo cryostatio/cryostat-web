@@ -353,15 +353,6 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         buffer into Cryostat&apos;s own archived storage.
       </Text>
       <FormGroup label="Name" isRequired fieldId="rule-name" data-quickstart-id="rule-name">
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem variant={formData.nameValid}>
-              {formData.nameValid === ValidatedOptions.error
-                ? 'A rule name can contain only letters, numbers, and underscores.'
-                : 'Enter a rule name.'}
-            </HelperTextItem>
-          </HelperText>
-        </FormHelperText>
         <TextInput
           value={formData.name}
           isDisabled={loading}
@@ -372,16 +363,17 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           onChange={handleNameChange}
           validated={formData.nameValid}
         />
-      </FormGroup>
-      <FormGroup label="Description" fieldId="rule-description" data-quickstart-id="rule-description">
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>
-              Enter a rule description. This is only used for display purposes to aid in identifying rules and their
-              intentions.
+            <HelperTextItem variant={formData.nameValid}>
+              {formData.nameValid === ValidatedOptions.error
+                ? 'A rule name can contain only letters, numbers, and underscores.'
+                : 'Enter a rule name.'}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
+      </FormGroup>
+      <FormGroup label="Description" fieldId="rule-description" data-quickstart-id="rule-description">
         <TextArea
           value={formData.description}
           isDisabled={loading}
@@ -392,6 +384,14 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           autoResize
           onChange={handleDescriptionChange}
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              Enter a rule description. This is only used for display purposes to aid in identifying rules and their
+              intentions.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <FormGroup
         label="Match Expression"
@@ -422,6 +422,18 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         fieldId="rule-matchexpr"
         data-quickstart-id="rule-matchexpr"
       >
+        <TextArea
+          value={formData.matchExpression}
+          isDisabled={loading}
+          isRequired
+          type="text"
+          id="rule-matchexpr"
+          aria-describedby="rule-matchexpr-helper"
+          resizeOrientation="vertical"
+          autoResize
+          onChange={handleMatchExpressionChange}
+          validated={formData.matchExpressionValid}
+        />
         <FormHelperText>
           <HelperText>
             <HelperTextItem variant={formData.matchExpressionValid}>
@@ -437,20 +449,15 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
-        <TextArea
-          value={formData.matchExpression}
-          isDisabled={loading}
-          isRequired
-          type="text"
-          id="rule-matchexpr"
-          aria-describedby="rule-matchexpr-helper"
-          resizeOrientation="vertical"
-          autoResize
-          onChange={handleMatchExpressionChange}
-          validated={formData.matchExpressionValid}
-        />
       </FormGroup>
       <FormGroup label="Enabled" isRequired fieldId="rule-enabled">
+        <Switch
+          id="rule-enabled"
+          isDisabled={loading}
+          aria-label="Apply this rule to matching targets"
+          isChecked={formData.enabled}
+          onChange={handleEnabledChange}
+        />
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
@@ -460,15 +467,15 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
-        <Switch
-          id="rule-enabled"
-          isDisabled={loading}
-          aria-label="Apply this rule to matching targets"
-          isChecked={formData.enabled}
-          onChange={handleEnabledChange}
-        />
       </FormGroup>
       <FormGroup label="Template" isRequired fieldId="recording-template" data-quickstart-id="rule-evt-template">
+        <SelectTemplateSelectorForm
+          selected={selectedSpecifier}
+          disabled={loading}
+          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
+          templates={templates}
+          onSelect={handleTemplateChange}
+        />
         <FormHelperText>
           <HelperText>
             <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
@@ -478,22 +485,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
-        <SelectTemplateSelectorForm
-          selected={selectedSpecifier}
-          disabled={loading}
-          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
-          templates={templates}
-          onSelect={handleTemplateChange}
-        />
       </FormGroup>
       <FormGroup label="Maximum Size" fieldId="maxSize" data-quickstart-id="rule-max-size">
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem>
-              {"The maximum size of Recording data retained in the target application's Recording buffer."}
-            </HelperTextItem>
-          </HelperText>
-        </FormHelperText>
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -509,6 +502,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.maxSizeUnit}
               isDisabled={loading}
               onChange={handleMaxSizeUnitChange}
@@ -520,15 +514,15 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             </FormSelect>
           </SplitItem>
         </Split>
-      </FormGroup>
-      <FormGroup label="Maximum Age" fieldId="maxAge" data-quickstart-id="rule-max-age">
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-              {"The maximum age of Recording data retained in the target application's Recording buffer."}
+              {"The maximum size of Recording data retained in the target application's Recording buffer."}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
+      </FormGroup>
+      <FormGroup label="Maximum Age" fieldId="maxAge" data-quickstart-id="rule-max-age">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -544,6 +538,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.maxAgeUnit}
               isDisabled={loading}
               onChange={handleMaxAgeUnitChange}
@@ -555,15 +550,15 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             </FormSelect>
           </SplitItem>
         </Split>
-      </FormGroup>
-      <FormGroup label="Archival Period" fieldId="archivalPeriod" data-quickstart-id="rule-archival-period">
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-              Time between copies of active Recording data being pulled into Cryostat archive storage.
+              {"The maximum age of Recording data retained in the target application's Recording buffer."}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
+      </FormGroup>
+      <FormGroup label="Archival Period" fieldId="archivalPeriod" data-quickstart-id="rule-archival-period">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -579,6 +574,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.archivalPeriodUnit}
               isDisabled={loading}
               onChange={handleArchivalPeriodUnitsChange}
@@ -590,16 +586,15 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             </FormSelect>
           </SplitItem>
         </Split>
-      </FormGroup>
-      <FormGroup label="Initial Delay" fieldId="initialDelay" data-quickstart-id="rule-initial-delay">
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-              Initial delay before archiving starts. The first archived copy will be made this long after the Recording
-              is started. The second archived copy will occur one Archival period later.
+              Time between copies of active Recording data being pulled into Cryostat archive storage.
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
+      </FormGroup>
+      <FormGroup label="Initial Delay" fieldId="initialDelay" data-quickstart-id="rule-initial-delay">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -615,6 +610,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.initialDelayUnit}
               isDisabled={loading}
               onChange={handleInitialDelayUnitsChanged}
@@ -626,16 +622,16 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             </FormSelect>
           </SplitItem>
         </Split>
-      </FormGroup>
-      <FormGroup label="Preserved Archives" fieldId="preservedArchives" data-quickstart-id="rule-preserved-archives">
         <FormHelperText>
           <HelperText>
             <HelperTextItem>
-              The number of Archived Recording copies to preserve in archives for each target application affected by
-              this rule.
+              Initial delay before archiving starts. The first archived copy will be made this long after the Recording
+              is started. The second archived copy will occur one Archival period later.
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
+      </FormGroup>
+      <FormGroup label="Preserved Archives" fieldId="preservedArchives" data-quickstart-id="rule-preserved-archives">
         <TextInput
           value={formData.preservedArchives}
           isDisabled={loading}
@@ -646,6 +642,14 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           onChange={handlePreservedArchivesChange}
           min="0"
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              The number of Archived Recording copies to preserve in archives for each target application affected by
+              this rule.
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <ActionGroup>
         <Button
