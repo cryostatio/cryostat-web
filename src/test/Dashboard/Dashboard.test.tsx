@@ -56,6 +56,9 @@ jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSet
 jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of());
 jest.spyOn(defaultServices.settings, 'chartControllerConfig').mockReturnValue(defaultChartControllerConfig);
 jest.spyOn(defaultServices.api, 'getTargetMBeanMetrics').mockReturnValue(of({}));
+jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
+jest.spyOn(defaultServices.target, 'sslFailure').mockReturnValue(of());
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {
