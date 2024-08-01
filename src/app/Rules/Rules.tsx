@@ -424,7 +424,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         </Card>
         <Card>
           <CardBody>
-            <Toolbar>
+            <Toolbar id="automated-rule-toolbar">
               <ToolbarContent>
                 <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
                   <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
