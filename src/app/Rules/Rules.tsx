@@ -15,6 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -327,7 +328,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
           {r.name}
         </Td>
         <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
-          {r.description}
+          {r.description || <EmptyText text={'No description'} />}
         </Td>
         <Td key={`automatic-rule-matchExpression-${index}`} dataLabel={tableColumns[3].title}>
           {r.matchExpression}
