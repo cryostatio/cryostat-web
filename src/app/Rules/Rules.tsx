@@ -34,6 +34,8 @@ import {
   ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
+  ActionList,
+  ActionListItem,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -424,23 +426,18 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         </Card>
         <Card>
           <CardBody>
-            <Toolbar id="automated-rule-toolbar">
+            <Toolbar>
               <ToolbarContent>
-                <ToolbarGroup variant="icon-button-group">
-                  <ToolbarItem>
-                    <Button
-                      key="create"
-                      variant="primary"
-                      onClick={handleCreateRule}
-                      data-quickstart-id="create-rule-btn"
-                    >
-                      Create
-                    </Button>{' '}
-                    <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
-                      <UploadIcon />
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarGroup>
+                <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
+                  <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
+                    Create
+                  </Button>
+                </ToolbarItem>
+                <ToolbarItem key="upload">
+                  <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
+                    <UploadIcon />
+                  </Button>
+                </ToolbarItem>
                 {ruleToWarn ? (
                   <RuleDeleteWarningModal
                     warningType={
