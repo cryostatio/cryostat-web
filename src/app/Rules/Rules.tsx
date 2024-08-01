@@ -31,11 +31,8 @@ import {
   Switch,
   Toolbar,
   ToolbarContent,
-  ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
-  ActionList,
-  ActionListItem,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
