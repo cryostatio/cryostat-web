@@ -312,6 +312,17 @@
   "RuleDeleteWarningModal": {
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
+  "Rules": {
+    "ABOUT_BODY": "Automated Rules define a dynamic set of target JVMs to connect to and start <0>Active Recordings</0> using a specific <1>Event Template</1> when the Automated Rule is created and when any new matching target JVMs appear. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
+    "ABOUT_TITLE": "About Automated Rules",
+    "ARCHIVAL_PERIOD_TOOLTIP": "Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.",
+    "EVENT_SPECIFIER_TOOLTIP": "The name and location of the Event Template applied by this rule.",
+    "INITIAL_DELAY_TOOLTIP": "Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.",
+    "MATCH_EXPRESSION_TOOLTIP": "A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.",
+    "MAX_AGE_TOOLTIP": "The maximum age in seconds for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.",
+    "MAX_SIZE_TOOLTIP": "The maximum size in bytes for JFR Recordings started by this rule. Values less than 1 indicate no limit.",
+    "PRESERVED_ARCHIVES_TOOLTIP": "The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory."
+  },
   "RulesUploadModal": {
     "DESCRIPTION": "Select an Automated Rules definition file to upload. File must be in valid JSON format.",
     "HEADER_CONTENT": "Whats this?",
