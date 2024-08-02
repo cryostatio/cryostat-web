@@ -37,12 +37,10 @@ const mockAnotherLabel = { key: 'anotherLabel', value: 'anotherValue' } as KeyVa
 const mockLabelList = [mockLabel, mockAnotherLabel];
 
 // For display
-const mockLabelStringDisplayList = [
-  `${mockLabel.key}: ${mockLabel.value}`,
-  `${mockAnotherLabel.key}: ${mockAnotherLabel.value}`,
+const mockLabelStringList = [
+  `${mockLabel.key}=${mockLabel.value}`,
+  `${mockAnotherLabel.key}=${mockAnotherLabel.value}`,
 ];
-// For filters and labeling elements
-const mockLabelStringList = mockLabelStringDisplayList.map((s: string) => s.replace(' ', ''));
 
 describe('<LabelCell />', () => {
   let onUpdateLabels: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
@@ -84,7 +82,7 @@ describe('<LabelCell />', () => {
       },
     });
 
-    for (const labelAsString of mockLabelStringDisplayList) {
+    for (const labelAsString of mockLabelStringList) {
       const displayedLabel = screen.getByLabelText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();
@@ -117,7 +115,7 @@ describe('<LabelCell />', () => {
 
     let count = 0;
     let index = 0;
-    for (const labelAsString of mockLabelStringDisplayList) {
+    for (const labelAsString of mockLabelStringList) {
       const displayedLabel = screen.getByLabelText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();

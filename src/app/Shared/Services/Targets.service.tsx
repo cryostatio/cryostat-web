@@ -15,14 +15,13 @@
  */
 
 import _ from 'lodash';
-import { Observable, BehaviorSubject, of, EMPTY } from 'rxjs';
-import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { catchError, first, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { Target, NotificationCategory, TargetDiscoveryEvent } from './api.types';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { NotificationService } from './Notifications.service';
-import { SessionState } from './service.types';
 
 export class TargetsService {
   private readonly _targets$: BehaviorSubject<Target[]> = new BehaviorSubject<Target[]>([]);
@@ -33,12 +32,9 @@ export class TargetsService {
     login: LoginService,
     notificationChannel: NotificationChannel,
   ) {
-    login
-      .getSessionState()
-      .pipe(concatMap((sessionState) => (sessionState === SessionState.USER_SESSION ? this.queryForTargets() : EMPTY)))
-      .subscribe(() => {
-        // just trigger a startup query
-      });
+    // just trigger a startup query
+    this.queryForTargets().subscribe();
+
     notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
       const evt: TargetDiscoveryEvent = v.message.event;
       switch (evt.kind) {

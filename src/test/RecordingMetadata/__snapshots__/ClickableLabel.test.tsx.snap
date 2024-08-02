@@ -2,7 +2,7 @@
 
 exports[`<ClickableLabel /> renders correctly 1`] = `
 <span
-  aria-label="someLabel: someValue"
+  aria-label="someLabel=someValue"
   className="pf-c-label pf-m-blue"
   onClick={[Function]}
   onFocus={[Function]}
@@ -13,7 +13,11 @@ exports[`<ClickableLabel /> renders correctly 1`] = `
   <span
     className="pf-c-label__content"
   >
-    someLabel: someValue
+    <span
+      className="pf-c-label__text"
+    >
+      someLabel=someValue
+    </span>
   </span>
 </span>
 `;

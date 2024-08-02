@@ -20,11 +20,12 @@ import { Server as WSServer, Client } from 'mock-socket';
 import factories from './factories';
 import models from './models';
 import { Resource } from './typings';
-import { sizeUnits } from 'src/app/utils/utils';
 
 export const startMirage = ({ environment = 'development' } = {}) => {
-  const wsUrl = `ws://localhost:9091/api/notifications`;
-  const wsServer = new WSServer(wsUrl);
+  const wsUrl = new URL(window.location.href);
+  wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
+  wsUrl.pathname = '/api/notifications';
+  const wsServer = new WSServer(wsUrl.toString());
 
   // Create a mock server socket to send notifications
   let websocket: Client;

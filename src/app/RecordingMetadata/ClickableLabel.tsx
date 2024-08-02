@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { KeyValue } from '@app/Shared/Services/api.types';
+import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { Label } from '@patternfly/react-core';
 import * as React from 'react';
 
@@ -47,8 +47,9 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
   return (
     <>
       <Label
-        aria-label={`${label.key}: ${label.value}`}
+        aria-label={keyValueToString(label)}
         style={style}
+        isTruncated
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
@@ -56,7 +57,7 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
         key={label.key}
         color={labelColor}
       >
-        {`${label.key}: ${label.value}`}
+        {keyValueToString(label)}
       </Label>
     </>
   );

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { RecordingReplace } from '@app/CreateRecording/types';
 import { AlertVariant } from '@patternfly/react-core';
+import _ from 'lodash';
 import { Observable } from 'rxjs';
 
 export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' | 'beta';
@@ -27,6 +27,14 @@ export interface KeyValue {
   key: string;
   value: string;
 }
+
+export const isKeyValue = (o: any): o is KeyValue => {
+  return typeof o === 'object' && _.isEqual(new Set(['key', 'value']), new Set(Object.getOwnPropertyNames(o)));
+};
+
+export const keyValueToString = (kv: KeyValue): string => {
+  return `${kv.key}=${kv.value}`;
+};
 
 export interface Metadata {
   labels: KeyValue[];
@@ -500,6 +508,7 @@ export enum NodeType {
   ENDPOINT = 'Endpoint',
   // Standalone targets
   TARGET = 'Target',
+  NODE = 'Node', // Default/fallback for unknown
 }
 
 interface _AbstractNode {

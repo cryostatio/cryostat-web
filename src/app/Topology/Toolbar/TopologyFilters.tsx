@@ -24,7 +24,7 @@ import {
   topologyUpdateCategoryIntent,
   topologyUpdateCategoryTypeIntent,
 } from '@app/Shared/Redux/ReduxStore';
-import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
+import { EnvironmentNode, TargetNode, isKeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { flattenTree, getUniqueNodeTypes, isTargetNode } from '@app/Shared/Services/api.utils';
 import { getDisplayFieldName } from '@app/utils/utils';
 import {
@@ -212,7 +212,13 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
                   },
                 }}
               >
-                {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
+                {isLabelOrAnnotation(cat) ? (
+                  <Label color="grey" isTruncated>
+                    {opt}
+                  </Label>
+                ) : (
+                  opt
+                )}
               </SelectOption>
             ))}
           </SelectGroup>
@@ -272,7 +278,10 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
             value={{
               toString: () => opt,
               compareTo: (other) => {
-                const regex = new RegExp(typeof other === 'string' ? other : other.value, 'i');
+                const regex = new RegExp(
+                  typeof other === 'string' ? other : isKeyValue(other) ? keyValueToString(other) : `${other}`,
+                  'i',
+                );
                 return regex.test(opt);
               },
               ...{
@@ -282,7 +291,13 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
               },
             }}
           >
-            {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
+            {isLabelOrAnnotation(cat) ? (
+              <Label color="grey" isTruncated>
+                {opt}
+              </Label>
+            ) : (
+              opt
+            )}
           </SelectOption>
         );
       });
@@ -349,6 +364,19 @@ export const fieldValueToStrings = (value: unknown): string[] => {
   }
   if (typeof value === 'object') {
     if (Array.isArray(value)) {
+      if (value.length > 0 && typeof value[0] === 'object') {
+        if (isKeyValue(value[0])) {
+          return value.map(keyValueToString);
+        } else {
+          return value.map((o) => {
+            let str = '';
+            for (const p in Object.getOwnPropertyNames(o)) {
+              str += `${p}=${o[p]}`;
+            }
+            return str;
+          });
+        }
+      }
       return value.map((v) => `${v}`);
     } else {
       return Object.entries(value as object).map(([k, v]) => `${k}=${v}`);

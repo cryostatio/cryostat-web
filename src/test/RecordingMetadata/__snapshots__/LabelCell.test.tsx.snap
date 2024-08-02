@@ -3,7 +3,7 @@
 exports[`<LabelCell /> renders correctly 1`] = `
 Array [
   <span
-    aria-label="someLabel: someValue"
+    aria-label="someLabel=someValue"
     className="pf-c-label"
     onClick={[Function]}
     onFocus={[Function]}
@@ -14,11 +14,15 @@ Array [
     <span
       className="pf-c-label__content"
     >
-      someLabel: someValue
+      <span
+        className="pf-c-label__text"
+      >
+        someLabel=someValue
+      </span>
     </span>
   </span>,
   <span
-    aria-label="anotherLabel: anotherValue"
+    aria-label="anotherLabel=anotherValue"
     className="pf-c-label"
     onClick={[Function]}
     onFocus={[Function]}
@@ -29,7 +33,11 @@ Array [
     <span
       className="pf-c-label__content"
     >
-      anotherLabel: anotherValue
+      <span
+        className="pf-c-label__text"
+      >
+        anotherLabel=anotherValue
+      </span>
     </span>
   </span>,
 ]
