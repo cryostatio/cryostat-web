@@ -15,7 +15,6 @@
  */
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
-import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import {
@@ -73,6 +72,7 @@ import {
   Metadata,
   TargetMetadata,
   isTargetMetadata,
+  MBeanMetricsResponse,
 } from './api.types';
 import {
   isHttpError,
@@ -1289,7 +1289,7 @@ export class ApiService {
   }
 
   getTargetMBeanMetrics(target: TargetStub, queries: string[]): Observable<MBeanMetrics> {
-    return this.graphql<any>(
+    return this.graphql<MBeanMetricsResponse>(
       `
         query MBeanMXMetricsForTarget($id: BigInteger!) {
           targetNodes(filter: { targetIds: [$id] }) {
@@ -1306,12 +1306,8 @@ export class ApiService {
         if (resp.data == undefined) {
           if (isGraphQLAuthError(resp)) {
             this.target.setAuthFailure();
-            throw new Error(authFailMessage);
           } else if (isGraphQLSSLError(resp)) {
             this.target.setSslFailure();
-            throw new Error(missingSSLMessage);
-          } else {
-            throw new Error(resp.errors[0].message);
           }
         }
       }),
