@@ -294,7 +294,6 @@
   "MATCH_EXPRESSION_VISUALIZER": {
     "TITLE": "Match Expression visualizer"
   },
-  "MATCH_EXPRESSION_VISUALIZER_TITLE": "cryostat_tmp",
   "MeridiemPicker": {
     "ARIA_LABELS": {
       "LISTBOX": "Select AM or PM"
@@ -309,6 +308,13 @@
   "RecordingLabelFields": {
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
     "INVALID_UPLOADS_other": "These files do not contain valid Recording metadata:"
+  },
+  "RulesUploadModal": {
+    "DESCRIPTION": "Select an Automated Rules definition file to upload. File must be in valid JSON format.",
+    "HEADER_CONTENT": "Whats this?",
+    "INVALID_RULE_CONTENT": "Automated Rule content is invalid.",
+    "JSON_FILE": "JSON File",
+    "TITLE": "Upload Automated Rules"
   },
   "SETTINGS": {
     "AUTO_REFRESH": {
