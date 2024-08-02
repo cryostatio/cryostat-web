@@ -21,7 +21,9 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
+import { TFunction } from 'i18next';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
 import { isRule } from './utils';
@@ -31,7 +33,7 @@ export interface RuleUploadModalProps {
   onClose: () => void;
 }
 
-export const parseRule = (file: File): Observable<Rule> => {
+export const parseRule = (file: File, t: TFunction): Observable<Rule> => {
   return from(
     file.text().then((content) => {
       const obj = JSON.parse(content);
@@ -41,7 +43,7 @@ export const parseRule = (file: File): Observable<Rule> => {
       if (isRule(obj)) {
         return obj;
       } else {
-        throw new Error('Automated Rule content is invalid.');
+        throw new Error(t('RulesUploadModal.INVALID_RULE_CONTENT'));
       }
     }),
   );
@@ -49,6 +51,7 @@ export const parseRule = (file: File): Observable<Rule> => {
 
 export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
@@ -79,7 +82,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
 
       fileUploads.forEach((fileUpload) => {
         tasks.push(
-          parseRule(fileUpload.file).pipe(
+          parseRule(fileUpload.file, t).pipe(
             first(),
             concatMap((rule) =>
               context.api.uploadRule(rule, getProgressUpdateCallback(fileUpload.file.name), fileUpload.abortSignal),
@@ -106,7 +109,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
           }),
       );
     },
-    [setUploading, context.api, addSubscription, setAllOks],
+    [setUploading, context.api, addSubscription, setAllOks, t],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -138,20 +141,13 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title="Upload Automated Rules"
-      description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
+      title={t('RulesUploadModal.TITLE')}
+      description={t('RulesUploadModal.DESCRIPTION')}
       help={
         <Popover
           appendTo={portalRoot}
-          headerContent={<div>What&quot;s this?</div>}
-          bodyContent={
-            <div>
-              Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
-              Target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
-              much data should be kept in the application Recording buffer, and how frequently Cryostat should copy the
-              application Recording buffer into Cryostat&quot;s own archived storage.
-            </div>
-          }
+          headerContent={<div>{t('RulesUploadModal.HEADER_CONTENT')}</div>}
+          bodyContent={<div>{t('CreateRule.ABOUT')}</div>}
         >
           <Button variant="plain" aria-label="Help">
             <HelpIcon />
@@ -160,7 +156,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       }
     >
       <Form>
-        <FormGroup label="JSON file" isRequired fieldId="file">
+        <FormGroup label={t('RulesUploadModal.JSON_FILE')} isRequired fieldId="file">
           <MultiFileUpload
             submitRef={submitRef}
             abortRef={abortRef}
@@ -176,7 +172,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
         <ActionGroup>
           {allOks && numOfFiles ? (
             <Button variant="primary" onClick={handleClose}>
-              Close
+              {t('CLOSE', { ns: 'common' })}
             </Button>
           ) : (
             <>
@@ -186,10 +182,10 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
                 isDisabled={!numOfFiles || uploading}
                 {...submitButtonLoadingProps}
               >
-                Submit
+                {t('SUBMIT', { ns: 'common' })}
               </Button>
               <Button variant="link" onClick={handleClose}>
-                Cancel
+                {t('CANCEL', { ns: 'common' })}
               </Button>
             </>
           )}

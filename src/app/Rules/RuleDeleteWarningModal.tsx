@@ -18,6 +18,7 @@ import { portalRoot } from '@app/utils/utils';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
 import { getFromWarningMap } from '../Modal/utils';
 
@@ -36,6 +37,7 @@ export const RuleDeleteWarningModal = ({
   clean,
   setClean,
 }: RuleDeleteWarningProps): JSX.Element => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
@@ -64,10 +66,10 @@ export const RuleDeleteWarningModal = ({
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
-              {warningType.match(/disable/i) ? 'Disable' : 'Delete'}
+              {t(warningType.match(/disable/i) ? 'DISABLE' : 'DELETE', { ns: 'common' })}
             </Button>
             <Button variant="link" onClick={onClose}>
-              Cancel
+              {t('CANCEL', { ns: 'common' })}
             </Button>
           </Split>
         </Stack>,
@@ -76,14 +78,14 @@ export const RuleDeleteWarningModal = ({
       <Stack hasGutter key="modal-checkboxes-stack">
         <Checkbox
           id="clean-rule-enabled"
-          label="Clean"
-          description={`Clean will stop any Active Recordings that ${ruleName} created.`}
+          label={t('CLEAN', { ns: 'common' })}
+          description={t('RuleDeleteWarningModal.CLEAN_DESCRIPTION', { ruleName: ruleName })}
           isChecked={clean}
           onChange={(_, checked) => setClean(checked)}
         />
         <Checkbox
           id="do-not-ask-enabled"
-          label="Don't ask me again"
+          label={t('DONOT_ASK_AGAIN', { ns: 'common' })}
           isChecked={doNotAsk}
           onChange={(_event, checked) => setDoNotAsk(checked)}
         />

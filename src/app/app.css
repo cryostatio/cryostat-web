@@ -699,3 +699,7 @@ svg.topology__node-decorator-icon.progress {
 :is(.pf-v5-theme-dark) .configuration-error-list code {
   background-color: var(--pf-v5-global--palette--black-600);
 }
+
+.rules_form_select {
+  min-width: 10ch;
+}

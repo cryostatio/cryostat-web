@@ -15,6 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -30,7 +31,6 @@ import {
   Switch,
   Toolbar,
   ToolbarContent,
-  ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
 } from '@patternfly/react-core';
@@ -51,68 +51,12 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
-
-const tableColumns: TableColumn[] = [
-  {
-    title: 'Enabled',
-    keyPaths: ['enabled'],
-  },
-  {
-    title: 'Name',
-    keyPaths: ['name'],
-    sortable: true,
-  },
-  {
-    title: 'Description',
-    keyPaths: ['description'],
-  },
-  {
-    title: 'Match Expression',
-    keyPaths: ['matchExpression'],
-    sortable: true,
-    tooltip:
-      'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
-  },
-  {
-    title: 'Event Specifier',
-    keyPaths: ['eventSpecifier'],
-    tooltip: 'The name and location of the Event Template applied by this rule.',
-  },
-  {
-    title: 'Archival period',
-    keyPaths: ['archivalPeriodSeconds'],
-    tooltip:
-      'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.',
-  },
-  {
-    title: 'Initial delay',
-    keyPaths: ['initialDelaySeconds'],
-    tooltip:
-      'Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.',
-  },
-  {
-    title: 'Preserved archives',
-    keyPaths: ['preservedArchives'],
-    tooltip:
-      'The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory.',
-  },
-  {
-    title: 'Maximum age',
-    keyPaths: ['maxAgeSeconds'],
-    tooltip:
-      'The maximum age in seconds for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.',
-  },
-  {
-    title: 'Maximum size',
-    keyPaths: ['maxSizeBytes'],
-    tooltip: 'The maximum size in bytes for JFR Recordings started by this rule. Values less than 1 indicate no limit.',
-  },
-];
 
 export interface RulesTableProps {}
 
@@ -120,6 +64,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
@@ -128,6 +73,61 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
+
+  const tableColumns: TableColumn[] = React.useMemo(
+    () => [
+      {
+        title: t('ENABLED', { ns: 'common' }),
+        keyPaths: ['enabled'],
+      },
+      {
+        title: t('NAME', { ns: 'common' }),
+        keyPaths: ['name'],
+        sortable: true,
+      },
+      {
+        title: t('DESCRIPTION', { ns: 'common' }),
+        keyPaths: ['description'],
+      },
+      {
+        title: t('MATCH_EXPRESSION', { ns: 'common' }),
+        keyPaths: ['matchExpression'],
+        sortable: true,
+        tooltip: t('Rules.MATCH_EXPRESSION_TOOLTIP'),
+      },
+      {
+        title: t('EVENT_SPECIFIER', { ns: 'common' }),
+        keyPaths: ['eventSpecifier'],
+        tooltip: t('Rules.EVENT_SPECIFIER_TOOLTIP'),
+      },
+      {
+        title: t('ARCHIVAL_PERIOD', { ns: 'common' }),
+        keyPaths: ['archivalPeriodSeconds'],
+        tooltip: t('Rules.ARCHIVAL_PERIOD_TOOLTIP'),
+      },
+      {
+        title: t('INITIAL_DELAY', { ns: 'common' }),
+        keyPaths: ['initialDelaySeconds'],
+        tooltip: t('Rules.INITIAL_DELAY_TOOLTIP'),
+      },
+      {
+        title: t('PRESERVED_ARCHIVES', { ns: 'common' }),
+        keyPaths: ['preservedArchives'],
+        tooltip: t('Rules.PRESERVED_ARCHIVES_TOOLTIP'),
+      },
+      {
+        title: t('MAXIMUM_AGE', { ns: 'common' }),
+        keyPaths: ['maxAgeSeconds'],
+        tooltip: t('Rules.MAX_AGE_TOOLTIP'),
+      },
+      {
+        title: t('MAXIMUM_SIZE', { ns: 'common' }),
+        keyPaths: ['maxSizeBytes'],
+        tooltip: t('Rules.MAX_SIZE_TOOLTIP'),
+      },
+    ],
+    [t],
+  );
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -284,19 +284,19 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
     (rule: Rule): IAction[] => {
       return [
         {
-          title: 'Download',
+          title: t('DOWNLOAD', { ns: 'common' }),
           onClick: () => context.api.downloadRule(rule.name),
         },
         {
           isSeparator: true,
         },
         {
-          title: 'Delete',
+          title: t('DELETE', { ns: 'common' }),
           onClick: () => handleDeleteButton(rule),
         },
       ];
     },
-    [context.api, handleDeleteButton],
+    [context.api, handleDeleteButton, t],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
@@ -327,7 +327,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
           {r.name}
         </Td>
         <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
-          {r.description}
+          {r.description || <EmptyText text={t('NO_DESCRIPTION', { ns: 'common' })} />}
         </Td>
         <Td key={`automatic-rule-matchExpression-${index}`} dataLabel={tableColumns[3].title}>
           {r.matchExpression}
@@ -355,12 +355,13 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
             items={actionResolver(r)}
             popperProps={{
               appendTo: () => document.getElementById('automated-rule-toolbar') || document.body,
+              position: 'right',
             }}
           />
         </Td>
       </Tr>
     ));
-  }, [rules, sortBy, handleToggle, actionResolver]);
+  }, [rules, sortBy, handleToggle, actionResolver, t, tableColumns]);
 
   const viewContent = React.useMemo(() => {
     if (isLoading) {
@@ -405,41 +406,41 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         </InnerScrollContainer>
       );
     }
-  }, [getSortParams, isLoading, rules, ruleRows]);
+  }, [getSortParams, isLoading, rules, ruleRows, tableColumns]);
 
   return (
     <>
       <BreadcrumbPage pageTitle="Automated Rules">
         <Card data-quickstart-id="about-rules">
-          <CardTitle>About Automated Rules</CardTitle>
+          <CardTitle>{t('Rules.ABOUT_TITLE')}</CardTitle>
           <CardBody>
-            Automated Rules define a dynamic set of target JVMs to connect to and start{' '}
-            <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
-            when the Automated Rule is created and when any new matching target JVMs appear. If your Target JVM
-            connections require JMX Credentials, you can configure these in <Link to="/security">Security</Link>.
-            Automated Rules can be configured to periodically copy the contents of the Active Recording to{' '}
-            <Link to="/archives">Archives</Link> to ensure you always have up-to-date information about your JVMs.
+            <Trans
+              t={t}
+              components={[
+                <Link to={'/recordings'} />,
+                <Link to={'/events'} />,
+                <Link to={'/security'} />,
+                <Link to={'/archives'} />,
+              ]}
+            >
+              Rules.ABOUT_BODY
+            </Trans>
           </CardBody>
         </Card>
         <Card>
           <CardBody>
             <Toolbar id="automated-rule-toolbar">
               <ToolbarContent>
-                <ToolbarGroup variant="icon-button-group">
-                  <ToolbarItem>
-                    <Button
-                      key="create"
-                      variant="primary"
-                      onClick={handleCreateRule}
-                      data-quickstart-id="create-rule-btn"
-                    >
-                      Create
-                    </Button>{' '}
-                    <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
-                      <UploadIcon />
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarGroup>
+                <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
+                  <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
+                    {t('CREATE', { ns: 'common' })}
+                  </Button>
+                </ToolbarItem>
+                <ToolbarItem key="upload">
+                  <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
+                    <UploadIcon />
+                  </Button>
+                </ToolbarItem>
                 {ruleToWarn ? (
                   <RuleDeleteWarningModal
                     warningType={
@@ -454,9 +455,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
                     clean={cleanRuleEnabled}
                     setClean={setCleanRuleEnabled}
                   />
-                ) : (
-                  <></>
-                )}
+                ) : null}
               </ToolbarContent>
             </Toolbar>
             {viewContent}
