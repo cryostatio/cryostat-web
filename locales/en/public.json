@@ -309,6 +309,9 @@
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
     "INVALID_UPLOADS_other": "These files do not contain valid Recording metadata:"
   },
+  "RuleDeleteWarningModal": {
+    "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
+  },
   "RulesUploadModal": {
     "DESCRIPTION": "Select an Automated Rules definition file to upload. File must be in valid JSON format.",
     "HEADER_CONTENT": "Whats this?",
