@@ -97,11 +97,6 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   alertOptions,
   ...props
 }) => {
-  const services = React.useContext(ServiceContext);
-  const authRetry = React.useCallback(() => {
-    services.target.setAuthRetry();
-  }, [services.target]);
-
   const [activeTab, setActiveTab] = React.useState(EntityTab.DETAIL);
   const viewContent = React.useMemo(() => {
     if (entity && isRenderable(entity)) {
@@ -144,7 +139,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions, authRetry]);
+  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions]);
   return (
     <div {...props} className={css('entity-overview', className)}>
       {viewContent}
