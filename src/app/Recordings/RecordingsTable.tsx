@@ -97,7 +97,7 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
       <Bullseye>
         <EmptyState>
           <EmptyStateHeader
-            titleText={<>No{tableTitle}</>}
+            titleText={<>No {tableTitle}</>}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
@@ -109,7 +109,7 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
       <Bullseye>
         <EmptyState>
           <EmptyStateHeader
-            titleText={<>No{tableTitle}found</>}
+            titleText={<>No {tableTitle}found</>}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
