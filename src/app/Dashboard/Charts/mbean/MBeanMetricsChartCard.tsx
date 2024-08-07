@@ -39,9 +39,8 @@ import {
   ChartLegend,
   ChartLine,
   ChartVoronoiContainer,
-  getResizeObserver,
 } from '@patternfly/react-charts';
-import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
+import { getResizeObserver, Button, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
@@ -404,6 +403,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
 
   React.useEffect(() => {
     resizeObserver.current = getResizeObserver(containerRef.current, handleResize);
+    handleResize();
     return resizeObserver.current;
   }, [resizeObserver, containerRef, handleResize]);
 
@@ -478,11 +478,10 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
 
   const header = React.useMemo(
     () => (
-      <CardHeader>
+      <CardHeader actions={{ actions: <>{actions}</>, hasNoOffset: false, className: undefined }}>
         <CardTitle>
           {t('CHART_CARD.TITLE', { chartKind: props.chartKind, duration: props.duration, period: props.period })}
         </CardTitle>
-        <CardActions>{actions}</CardActions>
       </CardHeader>
     ),
     [t, props.chartKind, props.duration, props.period, actions],

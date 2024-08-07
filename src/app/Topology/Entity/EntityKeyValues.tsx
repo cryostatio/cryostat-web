@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
 import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EmptyText } from '../../Shared/Components/EmptyText';
@@ -35,7 +36,7 @@ export const EntityKeyValues: React.FC<EntityKeyValuesProps> = ({
     <div className="entity-overview__displayed-keyvalues-wrapper" {...props}>
       <LabelGroup numLabels={maxDisplay}>
         {_transformedKv.map((l) => (
-          <Label color="blue" key={l} isTruncated>
+          <Label color="blue" key={l} textMaxWidth={LABEL_TEXT_MAXWIDTH}>
             {l}
           </Label>
         ))}

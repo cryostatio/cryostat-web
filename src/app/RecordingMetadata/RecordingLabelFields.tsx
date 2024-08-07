@@ -22,6 +22,7 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  Icon,
   List,
   ListItem,
   Popover,
@@ -227,15 +228,12 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
               aria-describedby="label-key-input-helper"
               aria-label="Label Key"
               value={label.key ?? ''}
-              onChange={(key) => handleKeyChange(idx, key)}
+              onChange={(_event, key) => handleKeyChange(idx, key)}
               validated={validKeys[idx]}
               isDisabled={isDisabled}
             />
             <Text>Key</Text>
-            <FormHelperText
-              isHidden={validKeys[idx] !== ValidatedOptions.error && validValues[idx] !== ValidatedOptions.error}
-              component="div"
-            >
+            <FormHelperText>
               <HelperText id="label-error-text">
                 <HelperTextItem variant="error">
                   Keys must be unique. Labels should not contain empty spaces.
@@ -252,7 +250,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
               aria-describedby="label-value-input-helper"
               aria-label="Label Value"
               value={label.value ?? ''}
-              onChange={(value) => handleValueChange(idx, value)}
+              onChange={(_event, value) => handleValueChange(idx, value)}
               validated={validValues[idx]}
               isDisabled={isDisabled}
             />
@@ -264,7 +262,11 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
               variant="link"
               aria-label="Remove Label"
               isDisabled={isDisabled}
-              icon={<CloseIcon color="gray" size="sm" />}
+              icon={
+                <Icon size="sm">
+                  <CloseIcon color="gray" />{' '}
+                </Icon>
+              }
             />
           </SplitItem>
         </Split>

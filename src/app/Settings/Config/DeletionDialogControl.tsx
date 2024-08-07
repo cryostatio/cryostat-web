@@ -31,7 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(context.settings.deletionDialogsEnabled());
   const [expanded, setExpanded] = React.useState(false);
@@ -93,7 +93,7 @@ const Component = () => {
         <StackItem key={'expandable-delete-warning-switch-list'}>
           <ExpandableSection
             toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
-            onToggle={setExpanded}
+            onToggle={(_, expanded: boolean) => setExpanded(expanded)}
             isExpanded={expanded}
           >
             {switches}

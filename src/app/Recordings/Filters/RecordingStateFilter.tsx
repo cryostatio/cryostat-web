@@ -15,7 +15,7 @@
  */
 
 import { RecordingState } from '@app/Shared/Services/api.types';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Badge, MenuToggle, MenuToggleElement, Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface RecordingStateFilterProps {
@@ -27,25 +27,29 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
   const [isOpen, setIsOpen] = React.useState(false);
 
   const onSelect = React.useCallback(
-    (_, selection) => {
+    (_, selection: RecordingState) => {
       setIsOpen(false);
       onSelectToggle(selection);
     },
     [setIsOpen, onSelectToggle],
   );
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={() => setIsOpen((isOpen) => !isOpen)} isExpanded={isOpen}>
+        Filter by state
+        {filteredStates?.length ? <Badge isRead>{filteredStates.length}</Badge> : null}
+      </MenuToggle>
+    ),
+    [filteredStates, setIsOpen, isOpen],
+  );
+
   return (
-    <Select
-      variant={SelectVariant.checkbox}
-      onToggle={setIsOpen}
-      onSelect={onSelect}
-      selections={filteredStates}
-      isOpen={isOpen}
-      aria-label="Filter by state"
-      placeholderText="Filter by state"
-    >
+    <Select toggle={toggle} onSelect={onSelect} selected={filteredStates} isOpen={isOpen} aria-label="Filter by state">
       {Object.values(RecordingState).map((rs) => (
-        <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
+        <SelectOption aria-label={`${rs} State`} key={rs} value={rs}>
+          {rs}
+        </SelectOption>
       ))}
     </Select>
   );

@@ -66,7 +66,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                 </DescriptionListTermHelpText>{' '}
                 is enabled,{' '}
                 <WarningResolverAsCredModal key={`${node.target.alias}-resolver-as-credential-modal`}>
-                  <Button variant="link" isSmall style={{ padding: 0 }}>
+                  <Button variant="link" size="sm" style={{ padding: 0 }}>
                     add credentials
                   </Button>
                   .

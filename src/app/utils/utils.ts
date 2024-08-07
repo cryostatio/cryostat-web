@@ -28,6 +28,8 @@ const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
 const DAY_MILLIS = 24 * HOUR_MILLIS;
 
+export const LABEL_TEXT_MAXWIDTH = '20ch';
+
 /**
  *
  * [     0,    1,    2,    3     ] array

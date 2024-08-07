@@ -46,6 +46,7 @@ interface DecoratorProps {
 
 export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, quadrant, ...props }) => {
   const data: TargetNode = element.getData();
+  const decoratorRef = React.useRef<SVGGElement>(null);
   const { x, y } = getDefaultShapeDecoratorCenter(quadrant, element);
   const { resources: recordings, error, loading } = useResources<ActiveRecording>(data, 'activeRecordings');
 
@@ -71,19 +72,30 @@ export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, qu
   }, [error, loading, runningRecs]);
 
   return iconConfig ? (
-    <Tooltip {...props} content={iconConfig.tooltip} appendTo={portalRoot}>
-      <Decorator x={x} y={y} radius={DEFAULT_DECORATOR_RADIUS} showBackground icon={iconConfig.icon} />
+    <Tooltip content={iconConfig.tooltip} triggerRef={decoratorRef} appendTo={portalRoot}>
+      <Decorator
+        innerRef={decoratorRef}
+        {...props}
+        x={x}
+        y={y}
+        radius={DEFAULT_DECORATOR_RADIUS}
+        showBackground
+        icon={iconConfig.icon}
+      />
     </Tooltip>
   ) : null;
 };
 
 export const StatusDecorator: React.FC<DecoratorProps> = ({ element, quadrant, ...props }) => {
+  const decoratorRef = React.useRef<SVGGElement>(null);
   const data: TargetNode = element.getData();
   const [nodeStatus, extra] = getStatusTargetNode(data);
   const { x, y } = getDefaultShapeDecoratorCenter(quadrant, element);
   return nodeStatus ? (
-    <Tooltip {...props} content={extra?.title} appendTo={portalRoot}>
+    <Tooltip content={extra?.title} triggerRef={decoratorRef} appendTo={portalRoot}>
       <Decorator
+        {...props}
+        innerRef={decoratorRef}
         x={x}
         y={y}
         radius={DEFAULT_DECORATOR_RADIUS}

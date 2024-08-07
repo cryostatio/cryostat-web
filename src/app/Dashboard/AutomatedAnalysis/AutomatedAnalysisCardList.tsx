@@ -27,7 +27,7 @@ import {
   InnerScrollContainer,
   ISortBy,
   OuterScrollContainer,
-  TableComposable,
+  Table,
   Tbody,
   Td,
   Th,
@@ -113,7 +113,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
   return (
     <OuterScrollContainer className="automated-analysis-datalist-outerscroll">
       <InnerScrollContainer className="automated-analysis-datalist-innerscroll">
-        <TableComposable aria-label={'Automated analysis data list'} gridBreakPoint={'grid-md'} isStickyHeader>
+        <Table aria-label={'Automated analysis data list'} gridBreakPoint={'grid-md'} isStickyHeader>
           <Thead>
             <Tr>
               <Th sort={getSortParams(0)}>{t('NAME', { ns: 'common' })}</Th>
@@ -147,7 +147,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
               );
             })}
           </Tbody>
-        </TableComposable>
+        </Table>
       </InnerScrollContainer>
     </OuterScrollContainer>
   );

@@ -13,3 +13,7 @@ coverage
 storybook-static
 .build_cache
 .eslintcache
+.cache*
+
+# Old locale files
+locales/**/*_old.json

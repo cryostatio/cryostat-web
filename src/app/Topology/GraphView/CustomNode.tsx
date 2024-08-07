@@ -55,7 +55,7 @@ export const renderNodeIcon = (graphic: string, _data: TargetNode, element: Node
 
   return (
     <>
-      <circle cx={cx} cy={cy} r={contentSize / 2} fill="var(--pf-global--palette--white)" />
+      <circle cx={cx} cy={cy} r={contentSize / 2} fill="var(--pf-v5-global--palette--white)" />
       {useAlt ? (
         <g transform={`translate(${trueCx}, ${trueCy})`}>
           <ContainerNodeIcon width={mainContentSize} height={mainContentSize} />
@@ -127,7 +127,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({
           scaleNode={(hover || contextMenuOpen) && detailsLevel !== ScaleDetailsLevel.high}
           badge={showBadge ? nodeTypeToAbbr(data.nodeType) : undefined}
           badgeColor={NODE_BADGE_COLOR}
-          badgeClassName={'topology__node-badge'}
+          badgeClassName={css('topology__node-badge')}
           nodeStatus={showStatus ? nodeStatus : undefined}
           showStatusBackground={!hover && detailsLevel === ScaleDetailsLevel.low}
           truncateLength={RESOURCE_NAME_TRUNCATE_LENGTH}

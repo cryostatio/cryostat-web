@@ -28,7 +28,6 @@ import { useTheme } from '@app/utils/hooks/useTheme';
 import {
   Bullseye,
   Button,
-  CardActions,
   CardBody,
   CardHeader,
   CardTitle,
@@ -37,7 +36,8 @@ import {
   EmptyStateIcon,
   EmptyStateVariant,
   Label,
-  Title,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -87,7 +87,7 @@ export function kindToId(kind: string): number {
 }
 
 export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (props) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
   const navigate = useNavigate();
@@ -193,11 +193,16 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
 
   const header = React.useMemo(() => {
     return (
-      <CardHeader>
+      <CardHeader
+        actions={{
+          actions: <>{controllerState === ControllerState.READY ? actions : props.actions}</>,
+          hasNoOffset: false,
+          className: undefined,
+        }}
+      >
         <CardTitle>
           {t('CHART_CARD.TITLE', { chartKind: props.chartKind, duration: props.duration, period: props.period })}
         </CardTitle>
-        <CardActions>{controllerState === ControllerState.READY ? actions : props.actions}</CardActions>
       </CardHeader>
     );
   }, [props.actions, props.chartKind, props.duration, props.period, t, controllerState, actions]);
@@ -246,11 +251,12 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
           </div>
         ) : (
           <Bullseye>
-            <EmptyState variant={EmptyStateVariant.large}>
-              <EmptyStateIcon icon={DataSourceIcon} />
-              <Title headingLevel="h2" size="md">
-                {t('CHART_CARD.NO_RECORDING.TITLE')}
-              </Title>
+            <EmptyState variant={EmptyStateVariant.lg}>
+              <EmptyStateHeader
+                titleText={<>{t('CHART_CARD.NO_RECORDING.TITLE')}</>}
+                icon={<EmptyStateIcon icon={DataSourceIcon} />}
+                headingLevel="h2"
+              />
               <EmptyStateBody>
                 <Trans
                   t={t}
@@ -260,9 +266,11 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
                   CHART_CARD.NO_RECORDING.DESCRIPTION
                 </Trans>
               </EmptyStateBody>
-              <Button variant="primary" onClick={handleCreateRecording}>
-                {t('CHART_CARD.BUTTONS.CREATE.LABEL')}
-              </Button>
+              <EmptyStateFooter>
+                <Button variant="primary" onClick={handleCreateRecording}>
+                  {t('CHART_CARD.BUTTONS.CREATE.LABEL')}
+                </Button>
+              </EmptyStateFooter>
             </EmptyState>
           </Bullseye>
         )}

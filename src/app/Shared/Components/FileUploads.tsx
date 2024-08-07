@@ -25,6 +25,7 @@ import {
 import { InProgressIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Subject } from 'rxjs';
+import { DropzoneAccept, FileRejection } from './types';
 
 export type ProgressVariant = 'success' | 'danger' | 'warning';
 
@@ -50,7 +51,7 @@ export interface MultiFileUploadProps {
   abortRef?: React.RefObject<HTMLDivElement>;
   uploading: boolean;
   displayAccepts: string[];
-  dropZoneAccepts?: string[]; // Infer from displayAccepts, if not specified
+  dropZoneAccepts: DropzoneAccept;
   onFilesChange?: (files: FUpload[]) => void;
   onFileSubmit: (fileUploads: FUpload[], uploadCallbacks: UploadCallbacks) => void;
   titleIcon?: React.ReactNode;
@@ -76,15 +77,8 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
   const [fileUploads, setFileUploads] = React.useState<FUpload[]>([]);
   const [showCancelPrompt, setShowCancelPrompt] = React.useState(false);
 
-  const dzAccept = React.useMemo(() => {
-    if (dropZoneAccepts && dropZoneAccepts.length) {
-      return dropZoneAccepts.join(',');
-    }
-    return displayAccepts.map((t) => `.${t.toLocaleLowerCase()}`).join(',');
-  }, [dropZoneAccepts, displayAccepts]);
-
   const handleFileDrop = React.useCallback(
-    (droppedFiles: File[]) => {
+    (_, droppedFiles: File[]) => {
       setFileUploads((old) => {
         // Check for re-uploads
         const currentFilenames = old.map((fileUpload) => fileUpload.file.name);
@@ -108,19 +102,14 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
   );
 
   const handleFileReject = React.useCallback(
-    (rejectedFiles: File[]) => {
-      rejectedFiles.forEach((f) => {
-        if (!dzAccept.includes(f.type) || f.type === '') {
-          const message = `Expected file format: ${dzAccept}, but received ${
-            f.type === '' ? 'unknown type' : f.type
-          } for ${f.name}`;
-          notifications.warning(`Incompatible file format`, message);
-        } else {
-          notifications.warning(`Failed to load file`, f.name);
-        }
+    (fileRejections: FileRejection[]) => {
+      fileRejections.forEach(({ file, errors }) => {
+        errors.forEach(({ message }) => {
+          notifications.warning(`Rejected file: ${file.name}`, message);
+        });
       });
     },
-    [notifications, dzAccept],
+    [notifications],
   );
 
   const handleFileRemove = React.useCallback(
@@ -272,7 +261,7 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
       <MultipleFileUpload
         onFileDrop={handleFileDrop}
         dropzoneProps={{
-          accept: dzAccept,
+          accept: dropZoneAccepts,
           onDropRejected: handleFileReject,
         }}
         disabled={uploading}

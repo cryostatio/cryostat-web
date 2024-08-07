@@ -73,7 +73,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
-  const [t] = useTranslation();
+  const { t } = useTranslation();
 
   const [example, setExample] = React.useState('');
   const [{ connectUrl, alias, validConnectUrl, username, password }, setFormData] = React.useState({
@@ -124,7 +124,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   );
 
   const handleConnectUrlChange = React.useCallback(
-    (connectUrl: string) => {
+    (_, connectUrl: string) => {
       setFormData((old) => ({
         ...old,
         connectUrl,
@@ -141,7 +141,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   );
 
   const handleAliasChange = React.useCallback(
-    (alias: string) => {
+    (_, alias: string) => {
       setFormData((old) => ({ ...old, alias }));
       resetTestState();
     },
@@ -149,7 +149,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   );
 
   const handleUsernameChange = React.useCallback(
-    (username: string) => {
+    (_, username: string) => {
       setFormData((old) => ({ ...old, username }));
       resetTestState();
     },
@@ -157,7 +157,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   );
 
   const handlePasswordChange = React.useCallback(
-    (password: string) => {
+    (_, password: string) => {
       setFormData((old) => ({ ...old, password }));
       resetTestState();
     },
@@ -267,6 +267,25 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
     [],
   );
 
+  const connectUrlHelperText = React.useMemo(() => {
+    if (validConnectUrl === ValidatedOptions.error) {
+      return 'JMX Service URL must not contain empty spaces.';
+    }
+    return (
+      <>
+        JMX Service URL.{' '}
+        {example && (
+          <>
+            For example,
+            <ClipboardCopy hoverTip="Click to copy to clipboard" clickTip="Copied!" variant="inline-compact">
+              {example}
+            </ClipboardCopy>
+          </>
+        )}
+      </>
+    );
+  }, [validConnectUrl, example]);
+
   return (
     <BreadcrumbPage pageTitle={'Create Custom Target'} breadcrumbs={[{ title: 'Topology', path: '/topology' }]}>
       <Card isFullHeight>
@@ -285,30 +304,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                     isInline
                   />
                 </FormAlert>
-                <FormGroup
-                  label="Connection URL"
-                  isRequired
-                  fieldId="connect-url"
-                  helperText={
-                    <FormHelperText isHidden={false} component="div">
-                      JMX Service URL.{' '}
-                      {example && (
-                        <>
-                          For example,
-                          <ClipboardCopy
-                            hoverTip="Click to copy to clipboard"
-                            clickTip="Copied!"
-                            variant="inline-compact"
-                          >
-                            {example}
-                          </ClipboardCopy>
-                        </>
-                      )}
-                    </FormHelperText>
-                  }
-                  helperTextInvalid={'JMX Service URL must not contain empty spaces.'}
-                  validated={validConnectUrl}
-                >
+                <FormGroup label="Connection URL" isRequired fieldId="connect-url">
                   <TextInput
                     aria-label={'Connection URL'}
                     value={connectUrl}
@@ -321,16 +317,13 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                     validated={validConnectUrl}
                     data-quickstart-id="ct-connecturl-input"
                   />
+                  <FormHelperText>
+                    <HelperText>
+                      <HelperTextItem variant={validConnectUrl}>{connectUrlHelperText}</HelperTextItem>
+                    </HelperText>
+                  </FormHelperText>
                 </FormGroup>
-                <FormGroup
-                  label="Alias"
-                  fieldId="alias"
-                  helperText={
-                    <FormHelperText isHidden={false}>
-                      Connection nickname (same as Connection URL if not specified).
-                    </FormHelperText>
-                  }
-                >
+                <FormGroup label="Alias" fieldId="alias">
                   <TextInput
                     value={alias}
                     type="text"
@@ -339,6 +332,11 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                     isDisabled={loading || testing}
                     data-quickstart-id="ct-alias-input"
                   />
+                  <FormHelperText>
+                    <HelperText>
+                      <HelperTextItem>Connection nickname (same as Connection URL if not specified).</HelperTextItem>
+                    </HelperText>
+                  </FormHelperText>
                 </FormGroup>
                 <FormGroup>
                   <Accordion asDefinitionList={false} data-quickstart-id="ct-credential-expand">
@@ -359,12 +357,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                         isHidden={!expandedSections.includes('jmx-credential-option')}
                         id={'expanded-jmx-credential-option'}
                       >
-                        <FormGroup
-                          label={'Username'}
-                          fieldId="username"
-                          className="expandable-form__form-group"
-                          helperText={<FormHelperText isHidden={false}>Username for JMX connection.</FormHelperText>}
-                        >
+                        <FormGroup label={'Username'} fieldId="username" className="expandable-form__form-group">
                           <TextInput
                             aria-label={'Username'}
                             value={username}
@@ -375,13 +368,13 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                             isDisabled={loading || testing}
                             data-quickstart-id="ct-username-input"
                           />
+                          <FormHelperText>
+                            <HelperText>
+                              <HelperTextItem>Username for JMX connection.</HelperTextItem>
+                            </HelperText>
+                          </FormHelperText>
                         </FormGroup>
-                        <FormGroup
-                          label={'Password'}
-                          fieldId="password"
-                          className="expandable-form__form-group"
-                          helperText={<FormHelperText isHidden={false}>Password for JMX connection.</FormHelperText>}
-                        >
+                        <FormGroup label={'Password'} fieldId="password" className="expandable-form__form-group">
                           <TextInput
                             value={password}
                             isDisabled={loading || testing}
@@ -391,6 +384,11 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                             onChange={handlePasswordChange}
                             data-quickstart-id="ct-password-input"
                           />
+                          <FormHelperText>
+                            <HelperText>
+                              <HelperTextItem>Password for JMX connection.</HelperTextItem>
+                            </HelperText>
+                          </FormHelperText>
                         </FormGroup>
                       </AccordionContent>
                     </AccordionItem>

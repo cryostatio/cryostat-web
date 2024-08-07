@@ -36,7 +36,7 @@ export const renderGroupIcon = (width: number, height: number): React.ReactNode 
 
   return (
     <>
-      <circle cx={cx} cy={cy} r={contentSize / 2} fill="var(--pf-global--palette--white)" />
+      <circle cx={cx} cy={cy} r={contentSize / 2} fill="var(--pf-v5-global--palette--white)" />
       <image
         x={cx - mainContentSize / 2}
         y={cy - mainContentSize / 2}

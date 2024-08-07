@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export interface FormProps {
-  onSubmit: (evt: Event, token: string, authMethod: string, rememberMe: boolean) => void;
-}
+// t('DISABLE', { ns: "common"})

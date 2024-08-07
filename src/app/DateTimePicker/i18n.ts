@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
-import * as React from 'react';
-
-export const ConnectionError: React.FC = () => (
-  <EmptyState>
-    <EmptyStateIcon variant="container" component={ExclamationCircleIcon} />
-    <Title size="lg" headingLevel="h4">
-      Unable to connect to the server
-    </Title>
-    <EmptyStateBody>Check your connection and reload the page.</EmptyStateBody>
-  </EmptyState>
-);
+/**
+ * t('TimeSpinner.INPUT_HOUR12_VALUE')
+ * t('TimeSpinner.INPUT_HOUR24_VALUE')
+ * t('TimeSpinner.INPUT_MINUTE_VALUE')
+ * t('TimeSpinner.INPUT_SECOND_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.INCREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.INCREMENT_SECOND_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.DECREMENT_SECOND_VALUE')
+ */

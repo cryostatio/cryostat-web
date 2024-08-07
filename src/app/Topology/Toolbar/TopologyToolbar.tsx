@@ -15,7 +15,7 @@
  */
 import { topologyConfigSetViewModeIntent, topologyDeleteAllFiltersIntent } from '@app/Shared/Redux/ReduxStore';
 import { portalRoot } from '@app/utils/utils';
-import { Button, Popover, Toolbar, ToolbarContent, ToolbarItem, Tooltip } from '@patternfly/react-core';
+import { Button, Icon, Popover, Toolbar, ToolbarContent, ToolbarItem, Tooltip } from '@patternfly/react-core';
 import { TopologyIcon, ListIcon, MouseIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import { Visualization } from '@patternfly/react-topology';
 import * as React from 'react';
@@ -74,8 +74,8 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
         aria-live="polite"
         appendTo={portalRoot}
       >
-        <Button className="topology__view-switcher" aria-label="Clipboard" variant="plain" onClick={toggleView}>
-          {isGraphView ? <ListIcon /> : <TopologyIcon />}
+        <Button aria-label="Clipboard" variant="plain" onClick={toggleView}>
+          <Icon size="lg">{isGraphView ? <ListIcon /> : <TopologyIcon />}</Icon>
         </Button>
       </Tooltip>
     ),
@@ -171,8 +171,8 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
               <HelpButton visualization={visualization} />
             </ToolbarItem>
           ) : null}
-          {!isDisabled ? <ToolbarItem alignment={{ default: 'alignRight' }}>{shortcuts}</ToolbarItem> : null}
-          <ToolbarItem alignment={isDisabled ? { default: 'alignRight' } : undefined}>{modeIcon}</ToolbarItem>
+          {!isDisabled ? <ToolbarItem align={{ default: 'alignRight' }}>{shortcuts}</ToolbarItem> : null}
+          <ToolbarItem align={isDisabled ? { default: 'alignRight' } : undefined}>{modeIcon}</ToolbarItem>
         </ToolbarContent>
       </Toolbar>
       <TopologyFilterChips className="topology__toolbar-chip-content" />

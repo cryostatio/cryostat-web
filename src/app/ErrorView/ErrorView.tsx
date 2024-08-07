@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title, StackItem, Stack } from '@patternfly/react-core';
+import {
+  Button,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  StackItem,
+  Stack,
+  EmptyStateHeader,
+} from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
@@ -28,10 +36,11 @@ export const ErrorView: React.FC<ErrorViewProps> = ({ title, message, retryButto
   return (
     <>
       <EmptyState>
-        <EmptyStateIcon icon={ExclamationCircleIcon} color={'#a30000'} />
-        <Title headingLevel="h4" size="lg">
-          {title}
-        </Title>
+        <EmptyStateHeader
+          titleText={<>{title}</>}
+          icon={<EmptyStateIcon icon={ExclamationCircleIcon} color={'#a30000'} />}
+          headingLevel="h4"
+        />
         <EmptyStateBody>
           <>
             <Stack>
