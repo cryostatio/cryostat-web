@@ -995,6 +995,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           index={index}
           recording={recording}
           uploadFn={() => context.api.uploadActiveRecordingToGrafana(recording.name)}
+          deleteFn={() => context.api.deleteRecording(recording.name)}
         />
       </Tr>
     );
