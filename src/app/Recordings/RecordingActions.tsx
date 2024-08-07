@@ -108,6 +108,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
         ref={toggleRef}
         onClick={() => setIsOpen((isOpen) => !isOpen)}
         isExpanded={isOpen}
+        variant="plain"
         data-quickstart-id="recording-kebab"
       >
         <EllipsisVIcon />
@@ -126,7 +127,6 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
           direction: 'down',
         }}
         aria-label={`${props.recording.name}-actions`}
-        isPlain
         isOpen={isOpen}
       >
         <DropdownList>
