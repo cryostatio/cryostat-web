@@ -44,7 +44,7 @@ import {
   CategorizedRuleEvaluations,
   AnalysisResult,
 } from '@app/Shared/Services/api.types';
-import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
+import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -251,7 +251,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         queryUploadedRecordings()
           .pipe(
             tap((resp) => {
-              if (resp.data == undefined) {
+              if (isGraphQLError(resp)) {
                 if (isGraphQLAuthError(resp)) {
                   context.target.setAuthFailure();
                   throw new Error(authFailMessage);
@@ -279,7 +279,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             concatMap((target: Target) =>
               queryTargetRecordings(target.id!).pipe(
                 tap((resp) => {
-                  if (resp.data == undefined) {
+                  if (isGraphQLError(resp)) {
                     if (isGraphQLAuthError(resp)) {
                       context.target.setAuthFailure();
                       throw new Error(authFailMessage);

@@ -27,7 +27,7 @@ import {
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
-import { isGraphQLAuthError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
+import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot } from '@app/utils/utils';
@@ -216,7 +216,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               ),
             ),
             tap((resp) => {
-              if (resp.data == undefined) {
+              if (isGraphQLError(resp)) {
                 if (isGraphQLAuthError(resp)) {
                   context.target.setAuthFailure();
                   throw new Error(authFailMessage);
