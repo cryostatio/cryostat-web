@@ -111,7 +111,14 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
   );
 
   return (
-    <Select toggle={toggle} onSelect={onSelect} isOpen={isExpanded} aria-label="Filter by label">
+    <Select
+      toggle={toggle}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      aria-label="Filter by label"
+      onOpenChange={(isOpen) => setIsExpanded(isOpen)}
+      onOpenChangeKeys={['Escape']}
+    >
       <SelectList id="typeahead-label-select">
         {selectOptionProps.map(({ value, children }, index) => (
           <SelectOption key={index} value={value}>
