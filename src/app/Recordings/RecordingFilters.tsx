@@ -161,11 +161,17 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
     return (
       <Dropdown
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle ref={toggleRef} icon={<FilterIcon />} aria-label={currentCategory} onClick={() => onCategoryToggle()}>
-            
+          <MenuToggle
+            ref={toggleRef}
+            icon={<FilterIcon />}
+            aria-label={currentCategory}
+            onClick={() => onCategoryToggle()}
+          >
             {categoriesToDisplayNames[currentCategory]}
           </MenuToggle>
         )}
+        onOpenChange={(isOpen) => setIsCategoryDropdownOpen(isOpen)}
+        onOpenChangeKeys={['Escape']}
         isOpen={isCategoryDropdownOpen}
         popperProps={{
           position: 'left',

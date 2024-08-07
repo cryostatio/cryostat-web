@@ -104,7 +104,14 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
   );
 
   return (
-    <Select toggle={toggle} onSelect={onSelect} isOpen={isExpanded} aria-label="Filter by name">
+    <Select
+      toggle={toggle}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      aria-label="Filter by name"
+      onOpenChange={(isOpen) => setIsExpanded(isOpen)}
+      onOpenChangeKeys={['Escape']}
+    >
       <SelectList>
         {selectOptionProps.map(({ value, children }, index) => (
           <SelectOption key={index} value={value}>

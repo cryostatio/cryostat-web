@@ -45,7 +45,15 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
   );
 
   return (
-    <Select toggle={toggle} onSelect={onSelect} selected={filteredStates} isOpen={isOpen} aria-label="Filter by state">
+    <Select
+      toggle={toggle}
+      onSelect={onSelect}
+      selected={filteredStates}
+      isOpen={isOpen}
+      aria-label="Filter by state"
+      onOpenChange={(isOpen) => setIsOpen(isOpen)}
+      onOpenChangeKeys={['Escape']}
+    >
       {Object.values(RecordingState).map((rs) => (
         <SelectOption aria-label={`${rs} State`} key={rs} value={rs}>
           {rs}
