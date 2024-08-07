@@ -59,7 +59,6 @@ import {
   ActiveRecordingsFilterInput,
   RecordingCountResponse,
   MBeanMetrics,
-  MBeanMetricsResponse,
   EventType,
   NotificationCategory,
   HttpError,
@@ -73,8 +72,18 @@ import {
   Metadata,
   TargetMetadata,
   isTargetMetadata,
+  MBeanMetricsResponse,
 } from './api.types';
-import { isHttpError, includesTarget, isHttpOk, isXMLHttpError } from './api.utils';
+import {
+  isHttpError,
+  includesTarget,
+  isHttpOk,
+  isXMLHttpError,
+  isGraphQLAuthError,
+  isGraphQLSSLError,
+  isGraphQLError,
+  GraphQLError,
+} from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { TargetService } from './Target.service';
@@ -807,33 +816,32 @@ export class ApiService {
   ): Observable<T> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    return this.sendRequest(
-      'v2.2',
-      'graphql',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          query: query.replace(/[\s]+/g, ' '),
-          variables,
+    const req = () =>
+      this.sendRequest(
+        'v2.2',
+        'graphql',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            query: query.replace(/[\s]+/g, ' '),
+            variables,
+          }),
+          headers,
+        },
+        undefined,
+        suppressNotifications,
+        skipStatusCheck,
+      ).pipe(
+        map((resp) => resp.json()),
+        concatMap(from),
+        tap((resp) => {
+          if (isGraphQLError(resp)) {
+            this.handleError(new GraphQLError(resp.errors), req);
+          }
         }),
-        headers,
-      },
-      undefined,
-      suppressNotifications,
-      skipStatusCheck,
-    ).pipe(
-      map((resp) => resp.json()),
-      concatMap(from),
-      tap((resp) => {
-        if (suppressNotifications || !resp?.errors?.length) {
-          return;
-        }
-        resp.errors.forEach((err) =>
-          this.notifications.danger(`Request failed (${err.extensions.classification})`, err.message),
-        );
-      }),
-      first(),
-    );
+        first(),
+      );
+    return req();
   }
 
   downloadRecording(recording: Recording): void {
@@ -1450,6 +1458,20 @@ export class ApiService {
             this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
           }
         });
+      }
+      throw error;
+    } else if (isGraphQLError(error)) {
+      if (isGraphQLAuthError(error)) {
+        this.target.setAuthFailure();
+        return this.target.authRetry().pipe(mergeMap(() => retry()));
+      } else if (isGraphQLSSLError(error)) {
+        this.target.setSslFailure();
+      } else {
+        if (!suppressNotifications) {
+          error.errors.forEach((err) =>
+            this.notifications.danger(`Request failed (${err.extensions.classification})`, err.message),
+          );
+        }
       }
       throw error;
     }

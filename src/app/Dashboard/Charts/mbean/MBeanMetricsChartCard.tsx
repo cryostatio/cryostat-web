@@ -20,6 +20,8 @@ import {
   DashboardCardSizes,
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import { missingSSLMessage, authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ThemeType, ThemeSetting } from '@app/Settings/types';
 import { MBeanMetrics } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
@@ -370,6 +372,8 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   const addSubscription = useSubscriptions();
   const [samples, setSamples] = React.useState([] as Sample[]);
   const [isLoading, setLoading] = React.useState(true);
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   const resizeObserver = React.useRef((): void => undefined);
   const [cardWidth, setCardWidth] = React.useState(0);
@@ -411,9 +415,34 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
     addSubscription(
       serviceContext.target.target().subscribe((_) => {
         setSamples([]);
+        setErrorMessage(''); // Reset on change
       }),
     );
-  }, [addSubscription, serviceContext, setSamples, refresh]);
+  }, [addSubscription, serviceContext, setSamples, setErrorMessage, refresh]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.authRetry().subscribe(() => {
+        setErrorMessage(''); // Reset on retry
+      }),
+    );
+  }, [addSubscription, serviceContext.target, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.sslFailure().subscribe(() => {
+        setErrorMessage(missingSSLMessage);
+      }),
+    );
+  }, [addSubscription, serviceContext.target, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      }),
+    );
+  }, [addSubscription, serviceContext.target, setErrorMessage]);
 
   React.useEffect(() => {
     refresh();
@@ -423,6 +452,10 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   React.useEffect(() => {
     addSubscription(controllerContext.mbeanController.loading().subscribe(setLoading));
   }, [addSubscription, controllerContext, setLoading]);
+
+  const authRetry = React.useCallback(() => {
+    serviceContext.target.setAuthRetry();
+  }, [serviceContext.target]);
 
   const refreshButton = React.useMemo(
     () => (
@@ -466,7 +499,13 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
     [theme, containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples],
   );
 
-  return (
+  return isError ? (
+    <ErrorView
+      title={'Error retrieving metrics'}
+      message={errorMessage}
+      retry={isAuthFail(errorMessage) ? authRetry : undefined}
+    />
+  ) : (
     <DashboardCard
       id={props.chartKind + '-chart-card'}
       dashboardId={props.dashboardId}
