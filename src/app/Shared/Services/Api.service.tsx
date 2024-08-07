@@ -835,6 +835,9 @@ export class ApiService {
         if (suppressNotifications || !resp?.errors?.length) {
           return;
         }
+        if (resp.errors && Array.isArray(resp.errors) && resp.errors.length > 0) {
+          throw new HttpError(resp);
+        }
         resp.errors.forEach((err) =>
           this.notifications.danger(`Request failed (${err.extensions.classification})`, err.message),
         );
@@ -1302,15 +1305,6 @@ export class ApiService {
         }`,
       { id: target.id! },
     ).pipe(
-      tap((resp) => {
-        if (resp.data == undefined) {
-          if (isGraphQLAuthError(resp)) {
-            this.target.setAuthFailure();
-          } else if (isGraphQLSSLError(resp)) {
-            this.target.setSslFailure();
-          }
-        }
-      }),
       map((resp) => {
         const nodes = resp.data?.targetNodes ?? [];
         if (!nodes || nodes.length === 0) {
@@ -1459,6 +1453,10 @@ export class ApiService {
         this.target.setAuthFailure();
         return this.target.authRetry().pipe(mergeMap(() => retry()));
       } else if (error.httpResponse.status === 502) {
+        this.target.setSslFailure();
+      } else if (isGraphQLAuthError(error.httpResponse)) {
+        this.target.setAuthFailure();
+      } else if (isGraphQLSSLError(error.httpResponse)) {
         this.target.setSslFailure();
       } else {
         error.httpResponse.text().then((detail) => {
