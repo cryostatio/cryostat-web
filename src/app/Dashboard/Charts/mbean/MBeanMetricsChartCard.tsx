@@ -499,29 +499,26 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
     [theme, containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples],
   );
 
-  if (isError) {
-    return (
-      <ErrorView
-        title={'Error retrieving metrics'}
-        message={errorMessage}
-        retry={isAuthFail(errorMessage) ? authRetry : undefined}
-      />
-    );
-  } else
-    return (
-      <DashboardCard
-        id={props.chartKind + '-chart-card'}
-        dashboardId={props.dashboardId}
-        cardSizes={MBeanMetricsChartCardSizes}
-        isCompact
-        isDraggable={props.isDraggable}
-        isResizable={props.isResizable}
-        isFullHeight={props.isFullHeight}
-        cardHeader={header}
-      >
-        <CardBody>{visual}</CardBody>
-      </DashboardCard>
-    );
+  return isError ? (
+    <ErrorView
+      title={'Error retrieving metrics'}
+      message={errorMessage}
+      retry={isAuthFail(errorMessage) ? authRetry : undefined}
+    />
+  ) : (
+    <DashboardCard
+      id={props.chartKind + '-chart-card'}
+      dashboardId={props.dashboardId}
+      cardSizes={MBeanMetricsChartCardSizes}
+      isCompact
+      isDraggable={props.isDraggable}
+      isResizable={props.isResizable}
+      isFullHeight={props.isFullHeight}
+      cardHeader={header}
+    >
+      <CardBody>{visual}</CardBody>
+    </DashboardCard>
+  );
 };
 
 MBeanMetricsChartCard.cardComponentName = 'MBeanMetricsChartCard';
