@@ -63,24 +63,25 @@ export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecordin
 // GraphQL Error Handling utils
 // ======================================
 
-/* eslint @typescript-eslint/no-explicit-any: 0 */
-export const isGraphQLAuthError = (resp: any): boolean => {
-  if (resp.errors !== undefined) {
-    if (resp.errors[0].message.includes('Authentication failed!')) {
-      return true;
-    }
+export class GraphQLError extends Error {
+  constructor(readonly errors: any[]) {
+    super();
   }
-  return false;
+}
+
+/* eslint @typescript-eslint/no-explicit-any: 0 */
+export const isGraphQLError = (resp: any): resp is GraphQLError => {
+  return Array.isArray(resp?.errors) && resp.errors.length > 0;
 };
 
 /* eslint @typescript-eslint/no-explicit-any: 0 */
-export const isGraphQLSSLError = (resp: any): boolean => {
-  if (resp.errors !== undefined) {
-    if (resp.errors[0].message.includes('Bad Gateway')) {
-      return true;
-    }
-  }
-  return false;
+export const isGraphQLAuthError = (resp: GraphQLError): boolean => {
+  return isGraphQLError(resp) && resp.errors.some((v) => v.message.includes('Client Error (427)'));
+};
+
+/* eslint @typescript-eslint/no-explicit-any: 0 */
+export const isGraphQLSSLError = (resp: GraphQLError): boolean => {
+  return isGraphQLError(resp) && resp.errors.some((v) => v.message.includes('Bad Gateway'));
 };
 
 // ======================================
