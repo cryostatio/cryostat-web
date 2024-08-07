@@ -502,7 +502,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   if (isError) {
     return (
       <ErrorView
-        title={'Error displaying Mbean Metrics'}
+        title={'Error retrieving metrics'}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
