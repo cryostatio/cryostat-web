@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { ErrorView } from '@app/ErrorView/ErrorView';
-import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
-import { EnvironmentNode, MBeanMetrics, TargetNode } from '@app/Shared/Services/api.types';
+import { EnvironmentNode, MBeanMetrics, MBeanMetricsResponse, TargetNode } from '@app/Shared/Services/api.types';
 import { isTargetNode } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown } from '@app/Topology/Actions/NodeActions';
@@ -100,45 +98,9 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   ...props
 }) => {
   const services = React.useContext(ServiceContext);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const addSubscription = useSubscriptions();
   const authRetry = React.useCallback(() => {
     services.target.setAuthRetry();
   }, [services.target]);
-
-  React.useEffect(() => {
-    addSubscription(
-      services.target.sslFailure().subscribe(() => {
-        // also triggered if api calls in Custom Recording form fail
-        setErrorMessage(missingSSLMessage);
-      }),
-    );
-  }, [services.target, setErrorMessage, addSubscription]);
-
-  React.useEffect(() => {
-    addSubscription(
-      services.target.authRetry().subscribe(() => {
-        setErrorMessage(''); // Reset on retry
-      }),
-    );
-  }, [services.target, setErrorMessage, addSubscription]);
-
-  React.useEffect(() => {
-    addSubscription(
-      services.target.authFailure().subscribe(() => {
-        // also triggered if api calls in Custom Recording form fail
-        setErrorMessage(authFailMessage);
-      }),
-    );
-  }, [services.target, setErrorMessage, addSubscription]);
-
-  React.useEffect(() => {
-    addSubscription(
-      services.target.target().subscribe(() => {
-        setErrorMessage(''); // Reset on change
-      }),
-    );
-  }, [services.target, setErrorMessage, addSubscription]);
 
   const [activeTab, setActiveTab] = React.useState(EntityTab.DETAIL);
   const viewContent = React.useMemo(() => {
@@ -148,16 +110,6 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       const titleContent = isTarget ? data.target.alias : data.name;
 
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
-
-      if (errorMessage != '') {
-        return (
-          <ErrorView
-            title={'Error displaying Mbean Metrics'}
-            message={errorMessage}
-            retry={isAuthFail(errorMessage) ? authRetry : undefined}
-          />
-        );
-      }
 
       return (
         <>
@@ -192,7 +144,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions, errorMessage, authRetry]);
+  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions, authRetry]);
   return (
     <div {...props} className={css('entity-overview', className)}>
       {viewContent}
@@ -320,7 +272,7 @@ const MBeanDetails: React.FC<{
     if (isExpanded) {
       addSubscription(
         context.api
-          .graphql<any>(
+          .graphql<MBeanMetricsResponse>(
             `
             query MBeanMXMetricsForTarget($id: BigInteger!) {
               targetNodes(filter: { targetIds: [$id] }) {
@@ -359,7 +311,7 @@ const MBeanDetails: React.FC<{
           .subscribe(setMbeanMetrics),
       );
     }
-  }, [isExpanded, addSubscription, targetId, context.api, setMbeanMetrics, context.target]);
+  }, [isExpanded, addSubscription, targetId, context.api, setMbeanMetrics]);
 
   const _collapsedData = React.useMemo((): DescriptionConfig[] => {
     return [
