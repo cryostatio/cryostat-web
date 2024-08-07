@@ -275,7 +275,6 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     handleError,
     queryTargetRecordings,
     queryUploadedRecordings,
-    context.target,
     isUploadsTable,
     propsDirectory,
     propsTarget,
