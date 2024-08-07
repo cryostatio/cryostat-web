@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { uploadAsTarget } from '@app/Archives/Archives';
-import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { LoadingProps } from '@app/Shared/Components/types';
 import {
@@ -27,14 +26,13 @@ import {
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
-import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot } from '@app/utils/utils';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of, tap } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
 import { RecordingLabelFields } from './RecordingLabelFields';
 import { includesLabel } from './utils';
 
@@ -215,19 +213,6 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
                 { id: target.id! },
               ),
             ),
-            tap((resp) => {
-              if (isGraphQLError(resp)) {
-                if (isGraphQLAuthError(resp)) {
-                  context.target.setAuthFailure();
-                  throw new Error(authFailMessage);
-                } else if (isGraphQLSSLError(resp)) {
-                  context.target.setSslFailure();
-                  throw new Error(missingSSLMessage);
-                } else {
-                  throw new Error(resp.errors[0].message);
-                }
-              }
-            }),
             map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
             first(),
           );

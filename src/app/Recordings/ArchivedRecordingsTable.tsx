@@ -19,7 +19,6 @@ import {
   ClickableAutomatedAnalysisLabel,
   clickableAutomatedAnalysisKey,
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
-import { authFailMessage, missingSSLMessage } from '@app/ErrorView/types';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingProps } from '@app/Shared/Components/types';
@@ -44,7 +43,6 @@ import {
   CategorizedRuleEvaluations,
   AnalysisResult,
 } from '@app/Shared/Services/api.types';
-import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -79,7 +77,7 @@ import { Tbody, Tr, Td, ExpandableRowContent, TableComposable, SortByDirection }
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
-import { concatMap, filter, first, map, tap } from 'rxjs/operators';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
@@ -249,22 +247,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     } else if (isUploadsTable) {
       addSubscription(
         queryUploadedRecordings()
-          .pipe(
-            tap((resp) => {
-              if (isGraphQLError(resp)) {
-                if (isGraphQLAuthError(resp)) {
-                  context.target.setAuthFailure();
-                  throw new Error(authFailMessage);
-                } else if (isGraphQLSSLError(resp)) {
-                  context.target.setSslFailure();
-                  throw new Error(missingSSLMessage);
-                } else {
-                  throw new Error(resp.errors[0].message);
-                }
-              }
-            }),
-            map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
-          )
+          .pipe(map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []))
           .subscribe({
             next: handleRecordings,
             error: handleError,
@@ -276,22 +259,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           .pipe(
             filter((target) => !!target),
             first(),
-            concatMap((target: Target) =>
-              queryTargetRecordings(target.id!).pipe(
-                tap((resp) => {
-                  if (isGraphQLError(resp)) {
-                    if (isGraphQLAuthError(resp)) {
-                      context.target.setAuthFailure();
-                      throw new Error(authFailMessage);
-                    } else if (isGraphQLSSLError(resp)) {
-                      throw new Error(missingSSLMessage);
-                    } else {
-                      throw new Error(resp.errors[0].message);
-                    }
-                  }
-                }),
-              ),
-            ),
+            concatMap((target: Target) => queryTargetRecordings(target.id!)),
             map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
           )
           .subscribe({
