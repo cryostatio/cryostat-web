@@ -62,11 +62,15 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
     return !filterValue ? nameOptions : nameOptions.filter((n) => n.includes(filterValue.toLowerCase()));
   }, [filterValue, nameOptions]);
 
-  const selectOptionProps: SelectOptionProps[] = React.useMemo(() => {
+  const selectOptions = React.useMemo(() => {
     if (!filteredNameOptions.length) {
-      return [{ isDisabled: true, children: `No results found for "${filterValue}"`, value: undefined }];
+      return <SelectOption isDisabled>No results found</SelectOption>;
     }
-    return filteredNameOptions.map((n) => ({ children: n, value: n }));
+    return filteredNameOptions.map((n, index) => (
+      <SelectOption key={index} value={n}>
+        {n}
+      </SelectOption>
+    ));
   }, [filterValue, filteredNameOptions]);
 
   const toggle = React.useCallback(
@@ -112,13 +116,7 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
       onOpenChange={(isOpen) => setIsExpanded(isOpen)}
       onOpenChangeKeys={['Escape']}
     >
-      <SelectList>
-        {selectOptionProps.map(({ value, children }, index) => (
-          <SelectOption key={index} value={value}>
-            {children}
-          </SelectOption>
-        ))}
-      </SelectList>
+      <SelectList>{selectOptions}</SelectList>
     </Select>
   );
 };

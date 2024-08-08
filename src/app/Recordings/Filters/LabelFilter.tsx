@@ -69,11 +69,17 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
     return !filterValue ? labelOptions : labelOptions.filter((l) => l.includes(filterValue.toLowerCase()));
   }, [filterValue, labelOptions]);
 
-  const selectOptionProps: SelectOptionProps[] = React.useMemo(() => {
+  const selectOptions = React.useMemo(() => {
     if (!filteredLabelOptions.length) {
-      return [{ isDisabled: true, children: `No results found for "${filterValue}"`, value: undefined }];
+      return <SelectOption isDisabled>No results found</SelectOption>;
     }
-    return filteredLabelOptions.map((l) => ({ children: l, value: l }));
+    return filteredLabelOptions.map((l, index) => (
+      <SelectOption key={index} value={l}>
+        <Label key={l} color="grey">
+          {l}
+        </Label>
+      </SelectOption>
+    ));
   }, [filteredLabelOptions, filterValue]);
 
   const toggle = React.useCallback(
@@ -119,15 +125,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
       onOpenChange={(isOpen) => setIsExpanded(isOpen)}
       onOpenChangeKeys={['Escape']}
     >
-      <SelectList id="typeahead-label-select">
-        {selectOptionProps.map(({ value, children }, index) => (
-          <SelectOption key={index} value={value}>
-            <Label key={value} color="grey">
-              {children}
-            </Label>
-          </SelectOption>
-        ))}
-      </SelectList>
+      <SelectList id="typeahead-label-select">{selectOptions}</SelectList>
     </Select>
   );
 };
