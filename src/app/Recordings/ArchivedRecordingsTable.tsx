@@ -761,13 +761,14 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  isPlain
                   onSelect={() => setActionToggleOpen(false)}
                   toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                    <MenuToggle ref={toggleRef} onClick={() => handleActionToggle()}>
+                    <MenuToggle variant="plain" ref={toggleRef} onClick={() => handleActionToggle()}>
                       <EllipsisVIcon />
                     </MenuToggle>
                   )}
+                  onOpenChange={setActionToggleOpen}
+                  onOpenChangeKeys={['Escape']}
                   isOpen={actionToggleOpen}
                   popperProps={{
                     appendTo: portalRoot,

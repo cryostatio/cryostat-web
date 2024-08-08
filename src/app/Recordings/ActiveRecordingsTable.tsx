@@ -818,20 +818,21 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  isPlain
                   onSelect={() => setActionToggleOpen(false)}
                   toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                    <MenuToggle ref={toggleRef} onClick={() => handleActionToggle()}>
+                    <MenuToggle variant="plain" ref={toggleRef} onClick={() => handleActionToggle()}>
                       <EllipsisVIcon />
                     </MenuToggle>
                   )}
+                  onOpenChange={setActionToggleOpen}
+                  onOpenChangeKeys={['Escape']}
                   isOpen={actionToggleOpen}
                   popperProps={{
                     appendTo: document.body,
                     enableFlip: true,
                   }}
                 >
-                  <DropdownList>={buttons.map((b) => b.collapsed)}</DropdownList>
+                  <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
                 </Dropdown>
               </OverflowMenuControl>
             </OverflowMenu>
