@@ -17,7 +17,7 @@
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
-import { Label, Text } from '@patternfly/react-core';
+import { Label } from '@patternfly/react-core';
 import * as React from 'react';
 import { ClickableLabel } from './ClickableLabel';
 

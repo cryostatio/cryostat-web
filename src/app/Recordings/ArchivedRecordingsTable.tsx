@@ -937,6 +937,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     propsDirectory,
     recording,
     context.api,
+    context.reports,
     updateFilters,
     handleCheck,
     handleToggle,

@@ -18,7 +18,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
-import { DivideIcon, EllipsisVIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable } from 'rxjs';
@@ -39,14 +39,7 @@ export interface RecordingActionsProps {
   deleteFn: () => Observable<boolean>;
 }
 
-export const RecordingActions: React.FC<RecordingActionsProps> = ({
-  index,
-  recording,
-  sourceTarget,
-  uploadFn,
-  deleteFn,
-  ...props
-}) => {
+export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, deleteFn, ...props }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
@@ -78,7 +71,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({
           }
         }),
     );
-  }, [addSubscription, notifications, props, context.api]);
+  }, [addSubscription, notifications, context.api, recording, uploadFn]);
 
   const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(recording);
@@ -86,7 +79,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({
 
   const handleDeleteRecording = React.useCallback(
     () => addSubscription(deleteFn().subscribe()),
-    [addSubscription, context.api, recording],
+    [addSubscription, deleteFn],
   );
 
   const actionItems = React.useMemo(() => {
@@ -117,7 +110,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({
     );
 
     return actionItems;
-  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload]);
+  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload, handleDeleteRecording]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {
