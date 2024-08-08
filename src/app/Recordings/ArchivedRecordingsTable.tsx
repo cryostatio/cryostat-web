@@ -73,6 +73,11 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
+  PanelHeader,
+  Divider,
+  Panel,
+  PanelMain,
+  PanelMainBody,
 } from '@patternfly/react-core';
 import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
@@ -942,35 +947,47 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`archived-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Title headingLevel={'h5'}>Automated analysis</Title>
-            <Grid>
-              {loadingAnalysis ? (
-                <Bullseye>
-                  <Spinner />
-                </Bullseye>
-              ) : (
-                analyses.map(([topic, evaluations]) => {
-                  return (
-                    <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                      <LabelGroup
-                        className="automated-analysis-topic-label-groups"
-                        categoryName={topic}
-                        isVertical
-                        numLabels={2}
-                        isCompact
-                        key={topic}
-                      >
-                        {evaluations.map((evaluation) => {
-                          return (
-                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                          );
-                        })}
-                      </LabelGroup>
-                    </GridItem>
-                  );
-                })
-              )}
-            </Grid>
+            <Panel>
+              <PanelHeader>
+                <Title headingLevel={'h5'}>Automated analysis</Title>
+              </PanelHeader>
+              <Divider />
+              <PanelMain>
+                <PanelMainBody>
+                  <Grid>
+                    {loadingAnalysis ? (
+                      <Bullseye>
+                        <Spinner />
+                      </Bullseye>
+                    ) : (
+                      analyses.map(([topic, evaluations]) => {
+                        return (
+                          <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+                            <LabelGroup
+                              className="automated-analysis-topic-label-groups"
+                              categoryName={topic}
+                              isVertical
+                              numLabels={2}
+                              isCompact
+                              key={topic}
+                            >
+                              {evaluations.map((evaluation) => {
+                                return (
+                                  <ClickableAutomatedAnalysisLabel
+                                    result={evaluation}
+                                    key={clickableAutomatedAnalysisKey}
+                                  />
+                                );
+                              })}
+                            </LabelGroup>
+                          </GridItem>
+                        );
+                      })
+                    )}
+                  </Grid>
+                </PanelMainBody>
+              </PanelMain>
+            </Panel>
           </ExpandableRowContent>
         </Td>
       </Tr>
