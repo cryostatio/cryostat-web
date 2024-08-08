@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { Label, Text } from '@patternfly/react-core';
@@ -77,7 +78,7 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
           ),
         )
       ) : (
-        <Text>-</Text>
+        <EmptyText text="No labels" />
       )}
     </>
   );
