@@ -76,6 +76,11 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Divider,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
@@ -1019,44 +1024,56 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Title headingLevel={'h5'}>
-              <Button
-                variant="plain"
-                size="sm"
-                isDisabled={loadingAnalysis}
-                onClick={handleLoadAnalysis}
-                icon={<RedoIcon />}
-              />
-              Automated analysis
-            </Title>
-            <Grid>
-              {loadingAnalysis ? (
-                <Bullseye>
-                  <Spinner />
-                </Bullseye>
-              ) : (
-                analyses.map(([topic, evaluations]) => {
-                  return (
-                    <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                      <LabelGroup
-                        className="automated-analysis-topic-label-groups"
-                        categoryName={topic}
-                        isVertical
-                        numLabels={2}
-                        isCompact
-                        key={topic}
-                      >
-                        {evaluations.map((evaluation) => {
-                          return (
-                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                          );
-                        })}
-                      </LabelGroup>
-                    </GridItem>
-                  );
-                })
-              )}
-            </Grid>
+            <Panel>
+              <PanelHeader>
+                <Title headingLevel={'h5'}>
+                  Automated analysis
+                  <Button
+                    variant="plain"
+                    size="sm"
+                    isDisabled={loadingAnalysis}
+                    onClick={handleLoadAnalysis}
+                    icon={<RedoIcon />}
+                  />
+                </Title>
+              </PanelHeader>
+              <Divider />
+              <PanelMain>
+                <PanelMainBody>
+                  <Grid>
+                    {loadingAnalysis ? (
+                      <Bullseye>
+                        <Spinner />
+                      </Bullseye>
+                    ) : (
+                      analyses.map(([topic, evaluations]) => {
+                        return (
+                          <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+                            <LabelGroup
+                              className="automated-analysis-topic-label-groups"
+                              categoryName={topic}
+                              isVertical
+                              numLabels={2}
+                              isCompact
+                              key={topic}
+                            >
+                              {evaluations.map((evaluation) => {
+                                return (
+                                  <ClickableAutomatedAnalysisLabel
+                                    result={evaluation}
+                                    key={clickableAutomatedAnalysisKey}
+                                  />
+                                );
+                              })}
+                            </LabelGroup>
+                          </GridItem>
+                        );
+                      })
+                    )}
+                  </Grid>
+                </PanelMainBody>
+              </PanelMain>
+            </Panel>
           </ExpandableRowContent>
         </Td>
       </Tr>

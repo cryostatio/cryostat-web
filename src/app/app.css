@@ -280,24 +280,18 @@ html, body, #root {
   color: var(--pf-v5-global--danger-color--100);
 }
 
+.automated-analysis-grid-item .pf-v5-c-label-group {
+  width: 100%;
+  height: 100%;
+  background-color: var(--pf-v5-global--BackgroundColor--light-300) !important;
+}
+
+:is(.pf-v5-theme-dark) .automated-analysis-grid-item .pf-v5-c-label-group {
+  background-color: var(--pf-v5-global--BackgroundColor--light-300) !important;
+}
+
 .automated-analysis-grid-item .pf-v5-c-label-group__main {
   width: 100%;
-}
-
-.automated-analysis-grid-item .pf-v5-c-label-group__list {
-  width: 100%;
-}
-
-.automated-analysis-grid-item .pf-v5-c-label-group__list-item {
-  width: 100%;
-}
-
-.automated-analysis-grid-item .pf-v5-c-label.pf-v5-m-compact {
-  max-width: 100%;
-}
-
-:is(.pf-v5-theme-dark) .automated-analysis-grid-item .pf-v5-c-label {
-  --pf-v5-c-label--BackgroundColor: var(--pf-v5-global--BackgroundColor--dark-100);
 }
 
 .automated-analysis-grid-item .pf-v5-c-label-group__label {
