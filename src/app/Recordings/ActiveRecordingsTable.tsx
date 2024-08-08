@@ -732,7 +732,12 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           </Button>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Stop'} isShared onClick={props.handleStopRecordings}>
+          <OverflowMenuDropdownItem
+            key={'Stop'}
+            isShared
+            onClick={props.handleStopRecordings}
+            isDisabled={isStopDisabled}
+          >
             {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
           </OverflowMenuDropdownItem>
         ),
