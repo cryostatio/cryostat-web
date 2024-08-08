@@ -22,7 +22,6 @@ import {
   Select,
   SelectList,
   SelectOption,
-  SelectOptionProps,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -71,7 +70,7 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
         {n}
       </SelectOption>
     ));
-  }, [filterValue, filteredNameOptions]);
+  }, [filteredNameOptions]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (

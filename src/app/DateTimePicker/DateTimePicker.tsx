@@ -22,8 +22,6 @@ import {
   Bullseye,
   Button,
   CalendarMonth,
-  Flex,
-  FlexItem,
   Form,
   FormGroup,
   Tab,
@@ -158,20 +156,16 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
         </Tab>
       </Tabs>
       <FormGroup label={t('DateTimePicker.SELECTED_DATETIME')}>
-        <Flex>
-          <FlexItem>
-            <TextInput
-              id="selected-datetime"
-              aria-label={t('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME') || ''}
-              className="datetime-picker__datetime-selected-display"
-              readOnly
-              value={selectedDatetimeDisplay}
-            />
-          </FlexItem>
-          <FlexItem>
-            <TimezonePicker menuAppendTo={document.body} onTimezoneChange={setTimezone} selected={timezone} isCompact />
-          </FlexItem>
-        </Flex>
+        <TextInput
+          id="selected-datetime"
+          aria-label={t('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME') || ''}
+          className="datetime-picker__datetime-selected-display"
+          readOnlyVariant="default"
+          value={selectedDatetimeDisplay}
+        />
+      </FormGroup>
+      <FormGroup label={t('DateTimePicker.SELECTED_TIMEZONE')}>
+        <TimezonePicker onTimezoneChange={setTimezone} selected={timezone} />
       </FormGroup>
       <ActionGroup style={{ marginTop: 0 }}>
         <Button variant="primary" onClick={handleSubmit}>

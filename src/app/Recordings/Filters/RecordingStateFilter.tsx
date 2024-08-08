@@ -48,7 +48,7 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
     ),
     [filteredStates, setIsOpen, isOpen],
   );
-  console.log(filteredStates);
+
   return (
     <Select
       toggle={toggle}

@@ -438,13 +438,13 @@ html, body, #root {
 }
 
 /* Chrome, Safari, Edge, Opera */
-input.datetime-picker__number-input::-webkit-outer-spin-button,
-input.datetime-picker__number-input::-webkit-inner-spin-button {
+.datetime-picker__number-input input::-webkit-outer-spin-button,
+.datetime-picker__number-input input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type=number].datetime-picker__number-input {
+.datetime-picker__number-input input[type=number] {
   -moz-appearance: textfield; /* Firefox */
   width: 3.6rem;
   height: 3.6em;
@@ -453,7 +453,7 @@ input[type=number].datetime-picker__number-input {
   font-weight: 600;
 }
 
-:where(.pf-v5-theme-dark) input[type=number].datetime-picker__number-input {
+:where(.pf-v5-theme-dark) .datetime-picker__number-input input[type=number] {
   background-color: var(--pf-v5-global--palette--black-500);
 }
 
@@ -462,7 +462,7 @@ input[type=number].datetime-picker__number-input {
 }
 
 .datetime-picker__time-spin-box {
-  width: 3.6rem;
+  width: 100%;
   height: 2.2rem;
 }
 
@@ -471,7 +471,7 @@ input[type=number].datetime-picker__number-input {
 }
 
 .datetime-picker__time-spin-box.down {
-  border-radius: 0 0 0.5rem 0.5rem ;
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .datetime-picker__colon-divider {
@@ -482,7 +482,7 @@ input[type=number].datetime-picker__number-input {
 .datetime-picker__time-text-top-label {
   text-align: center;
   color: var(--pf-v5-global--palette--black-600);
-  margin: 0 0 0.5em 0 !important;
+  margin: 0 0 0.5em 0;
 }
 
 :where(.pf-v5-theme-dark) .datetime-picker__time-text-top-label {
