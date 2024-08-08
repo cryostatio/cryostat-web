@@ -34,7 +34,7 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
-import { FilterIcon, EllipsisVIcon } from '@patternfly/react-icons';
+import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimeFilter } from './Filters/DatetimeFilter';
