@@ -81,10 +81,12 @@ import {
   PanelHeader,
   PanelMain,
   PanelMainBody,
+  Tooltip,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
@@ -865,6 +867,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
+  const { t } = useTranslation();
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
@@ -1033,7 +1036,11 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
                     size="sm"
                     isDisabled={loadingAnalysis}
                     onClick={handleLoadAnalysis}
-                    icon={<RedoIcon />}
+                    icon={
+                      <Tooltip content={t('REFRESH', { ns: 'common' })}>
+                        <RedoIcon />
+                      </Tooltip>
+                    }
                   />
                 </Title>
               </PanelHeader>
