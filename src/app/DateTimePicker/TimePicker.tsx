@@ -108,9 +108,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
                   onChange={onSecondSelect}
                 />
               </LevelItem>
-              {is24h ? (
-                <></>
-              ) : (
+              {is24h ? null : (
                 <LevelItem key={'meridiem'}>
                   <MeridiemPicker isAM={meridiemAM} onSelect={onMeridiemSelect} />
                 </LevelItem>
@@ -200,16 +198,14 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
             {label}
           </Title>
         </StackItem>
-      ) : (
-        <></>
-      )}
+      ) : null}
       <StackItem key={`${variant}-increment`}>
         <Button
           className={css('datetime-picker__time-spin-box', 'up')}
           onClick={handleIncrement}
           aria-label={t(`TimeSpinner.INCREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
-          <Icon size="md">
+          <Icon size="lg">
             <AngleUpIcon />
           </Icon>
         </Button>
@@ -232,7 +228,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
           onClick={handleDecrement}
           aria-label={t(`TimeSpinner.DECREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
-          <Icon size="md">
+          <Icon size="lg">
             <AngleDownIcon />
           </Icon>
         </Button>

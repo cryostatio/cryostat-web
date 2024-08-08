@@ -249,7 +249,8 @@
       "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime",
       "TABS": "Select a date or time tab"
     },
-    "SELECTED_DATETIME": "Selected DateTime"
+    "SELECTED_DATETIME": "Selected Date and Time",
+    "SELECTED_TIMEZONE": "Selected Timezone"
   },
   "ERROR_BOUNDARY": {
     "ERROR_MESSAGE": "Reason: {{message}}",

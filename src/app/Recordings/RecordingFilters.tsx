@@ -33,6 +33,7 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
+  Icon,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -163,7 +164,11 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
-            icon={<FilterIcon />}
+            icon={
+              <Icon>
+                <FilterIcon />
+              </Icon>
+            }
             aria-label={currentCategory}
             onClick={() => onCategoryToggle()}
           >
@@ -228,7 +233,14 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 
   return (
-    <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={breakpoint}>
+    <ToolbarToggleGroup
+      toggleIcon={
+        <Icon>
+          <FilterIcon />
+        </Icon>
+      }
+      breakpoint={breakpoint}
+    >
       <ToolbarGroup variant="filter-group">
         <ToolbarItem style={{ alignSelf: 'start' }} key={'category-select'}>
           {categoryDropdown}

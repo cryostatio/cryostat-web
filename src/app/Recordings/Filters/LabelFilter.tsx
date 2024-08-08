@@ -22,7 +22,6 @@ import {
   Select,
   SelectList,
   SelectOption,
-  SelectOptionProps,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -80,7 +79,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
         </Label>
       </SelectOption>
     ));
-  }, [filteredLabelOptions, filterValue]);
+  }, [filteredLabelOptions]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
