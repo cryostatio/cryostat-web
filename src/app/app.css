@@ -118,10 +118,6 @@ html, body, #root {
   padding-left: 0.65em;
 }
 
-.automated-analysis-grid-item {
-  padding: 0.25em;
-}
-
 #automated-analysis-card {
   height: 100%;
 }
@@ -280,14 +276,18 @@ html, body, #root {
   color: var(--pf-v5-global--danger-color--100);
 }
 
-.automated-analysis-grid-item .pf-v5-c-label-group {
-  width: 100%;
-  height: 100%;
-  background-color: var(--pf-v5-global--BackgroundColor--light-300) !important;
+.automated-analysis-grid-item {
+  padding: 0.25em;
 }
 
-:is(.pf-v5-theme-dark) .automated-analysis-grid-item .pf-v5-c-label-group {
-  background-color: var(--pf-v5-global--BackgroundColor--light-300) !important;
+.automated-analysis-grid-item .automated-analysis-topic-label-groups.pf-v5-c-label-group {
+  width: 100%;
+  height: 100%;
+  background-color: var(--pf-v5-global--BackgroundColor--light-300);
+}
+
+:is(.pf-v5-theme-dark) .automated-analysis-grid-item .automated-analysis-topic-label-groups.pf-v5-c-label-group {
+  background-color: var(--pf-v5-global--BackgroundColor--light-300);
 }
 
 .automated-analysis-grid-item .pf-v5-c-label-group__main {
@@ -300,6 +300,14 @@ html, body, #root {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.automated-analysis-grid-item .pf-v5-c-label-group__list {
+  width: 100%;
+}
+
+.automated-analysis-grid-item .pf-v5-c-label-group__list-item {
+  width: 100%;
 }
 
 .stale-report-text {
