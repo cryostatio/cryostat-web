@@ -76,6 +76,10 @@ html, body, #root {
   --pf-v5-c-chip__text--MaxWidth: 100ch;
 }
 
+.duration-filter__continuous-checkbox .pf-v5-c-check__label {
+  align-self: center;
+}
+
 .recording-table-outer-container {
   height: 67.3vh;
 }

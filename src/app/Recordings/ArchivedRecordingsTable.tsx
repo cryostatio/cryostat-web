@@ -742,6 +742,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           updateFilters={props.updateFilters}
           breakpoint={'xl'}
         />
+        <ToolbarItem variant="separator" />
         <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
           <ToolbarItem variant="overflow-menu">
             <OverflowMenu
