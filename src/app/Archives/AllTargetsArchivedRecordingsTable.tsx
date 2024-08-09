@@ -133,6 +133,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       setArchivesForTargets(
         targetNodes.map((node) => {
           const target: Target = {
+            agent: node.target.agent,
             id: node.target.id,
             jvmId: node.target.jvmId,
             connectUrl: node.target.connectUrl,

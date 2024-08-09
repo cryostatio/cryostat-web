@@ -28,6 +28,7 @@ jest.mock('@app/Shared/Components/MatchExpression/MatchExpressionVisualizer', ()
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget: Target = {
+  agent: false,
   connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
   labels: [],

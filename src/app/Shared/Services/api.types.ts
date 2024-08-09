@@ -107,7 +107,7 @@ export class XMLHttpError extends Error {
   }
 }
 
-export type TargetStub = Omit<Target, 'jvmId' | 'labels' | 'annotations'>;
+export type TargetStub = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annotations'>;
 
 export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
   labels: object;

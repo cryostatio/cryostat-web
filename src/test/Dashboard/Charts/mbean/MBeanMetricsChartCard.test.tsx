@@ -38,6 +38,7 @@ jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'sslFailure').mockReturnValue(of());
 
 const mockTarget = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someUrl',
   alias: 'fooTarget',
   jvmId: 'foo',

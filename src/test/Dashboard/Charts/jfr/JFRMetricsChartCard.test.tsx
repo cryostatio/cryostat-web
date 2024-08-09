@@ -30,6 +30,7 @@ const mockDashboardUrl = 'http://localhost:3000';
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDashboardUrl));
 
 const mockTarget = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someUrl',
   alias: 'fooTarget',
   jvmId: 'foo',
