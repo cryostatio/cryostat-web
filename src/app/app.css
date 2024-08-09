@@ -76,10 +76,6 @@ html, body, #root {
   --pf-v5-c-chip__text--MaxWidth: 100ch;
 }
 
-.duration-filter__continuous-checkbox .pf-v5-c-check__label {
-  align-self: center;
-}
-
 .recording-table-outer-container {
   height: 67.3vh;
 }
@@ -230,16 +226,6 @@ html, body, #root {
   --pf-v5-c-label--BackgroundColor: var(--pf-v5-global--BackgroundColor--400);
 }
 
-.pf-v5-c-label-group.pf-v5-m-vertical.pf-v5-c-label-group {
-  height: 100%;
-  width: 100%;
-  background-color: var(--pf-v5-global--BackgroundColor--light-300);
-  border-color: var(--pf-v5-global--BorderColor--light-100);
-  border-style: solid;
-  border-width: 0.1em;
-  border-radius: 0.5em;
-}
-
 .automated-analysis-score-filter-slider .pf-v5-c-slider__step-label {
   font-size: 0.85em;
 }
@@ -282,6 +268,16 @@ html, body, #root {
 
 .automated-analysis-grid-item {
   padding: 0.25em;
+}
+
+.automated-analysis-grid-item .pf-v5-c-label-group.pf-m-vertical.pf-v5-c-label-group {
+  height: 100%;
+  width: 100%;
+  background-color: var(--pf-v5-global--BackgroundColor--light-300);
+  border-color: var(--pf-v5-global--BorderColor--light-100);
+  border-style: solid;
+  border-width: 0.1em;
+  border-radius: 0.5em;
 }
 
 .automated-analysis-grid-item .automated-analysis-topic-label-groups.pf-v5-c-label-group {
@@ -513,8 +509,8 @@ html, body, #root {
   padding-left: 0 !important;
 }
 
-.expandable-form__accordion-toggle-block.pf-v5-c-accordion__toggle.pf-v5-m-expanded {
-  --pf-v5-c-accordion__toggle--before--BackgroundColor: transparent;
+.expandable-form__accordion-toggle-block.pf-v5-c-accordion__toggle.pf-m-expanded {
+  --pf-v5-c-accordion__toggle--after--BackgroundColor: transparent;
 }
 
 .expandable-form__title {
