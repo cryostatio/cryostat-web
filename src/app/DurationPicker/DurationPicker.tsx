@@ -48,6 +48,7 @@ export const DurationPicker: React.FC<DurationPickerProps> = ({
         </SplitItem>
         <SplitItem>
           <FormSelect
+            className="duration-picker__form_select"
             value={unitScalar}
             onChange={(_event, v) => onUnitScalarChange(Number(v))}
             aria-label="Duration Picker Units Input"
