@@ -48,6 +48,7 @@ import {
   Split,
   SplitItem,
   Text,
+  TextContent,
   TextInput,
   TextVariants,
   Tooltip,
@@ -403,11 +404,13 @@ export const CustomRecordingForm: React.FC = () => {
 
   return (
     <>
-      <Text component={TextVariants.small}>
-        JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event types
-        are built in to the JVM itself, while others are user defined.
-      </Text>
       <Form isHorizontal>
+        <TextContent>
+          <Text component={TextVariants.p}>
+            JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event
+            types are built in to the JVM itself, while others are user defined.
+          </Text>
+        </TextContent>
         <FormGroup label="Name" isRequired fieldId="recording-name">
           <TextInput
             value={formData.name}
