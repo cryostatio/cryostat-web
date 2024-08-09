@@ -501,7 +501,7 @@ export const CustomRecordingForm: React.FC = () => {
               <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
                 {formData.template?.name
                   ? 'The Event Template to be applied in this Recording'
-                  : 'A Template must be selected'}
+                  : 'A Template must be selected.'}
               </HelperTextItem>
             </HelperText>
           </FormHelperText>
@@ -525,6 +525,12 @@ export const CustomRecordingForm: React.FC = () => {
               </Tooltip>
             }
           >
+            <RecordingLabelFields
+              labels={formData.labels}
+              setLabels={handleLabelsChange}
+              setValid={handleLabelValidationChange}
+              isDisabled={loading}
+            />
             <FormHelperText>
               <HelperText>
                 <HelperTextItem
@@ -537,12 +543,6 @@ export const CustomRecordingForm: React.FC = () => {
                 </HelperTextItem>
               </HelperText>
             </FormHelperText>
-            <RecordingLabelFields
-              labels={formData.labels}
-              setLabels={handleLabelsChange}
-              setValid={handleLabelValidationChange}
-              isDisabled={loading}
-            />
           </FormGroup>
         </ExpandableSection>
         <ExpandableSection

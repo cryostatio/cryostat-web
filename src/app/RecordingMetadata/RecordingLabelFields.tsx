@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { KeyValue } from '@app/Shared/Services/api.types';
+import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import {
-  Button,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
-  Icon,
-  List,
-  ListItem,
-  Popover,
-  Split,
-  SplitItem,
-  Text,
-  TextInput,
-  ValidatedOptions,
-} from '@patternfly/react-core';
-import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
+import { Button, Label, LabelGroup, List, ListItem, Popover, Text, ValidatedOptions } from '@patternfly/react-core';
+import { ExclamationCircleIcon, FileIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
@@ -162,15 +148,6 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
     <LoadingView />
   ) : (
     <>
-      <Button
-        aria-label="Add Label"
-        onClick={handleAddLabelButtonClick}
-        variant="link"
-        icon={<PlusCircleIcon />}
-        isDisabled={isDisabled}
-      >
-        Add Label
-      </Button>
       {isUploadable && (
         <>
           <Popover
@@ -217,7 +194,23 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
           />
         </>
       )}
-      {labels.map((label, idx) => (
+      <LabelGroup
+        categoryName="Recording Labels"
+        numLabels={5}
+        isEditable
+        addLabelControl={
+          <Label color="blue" variant="outline" isOverflowLabel onClick={() => {}}>
+            Add label
+          </Label>
+        }
+      >
+        {labels.map((label, idx) => (
+          <Label key={label.key} id={label.key} color="blue" onClose={() => handleDeleteLabelButtonClick(idx)}>
+            {keyValueToString(label)}
+          </Label>
+        ))}
+      </LabelGroup>
+      {/* {labels.map((label, idx) => (
         <Split hasGutter key={idx}>
           <SplitItem isFilled>
             <TextInput
@@ -270,7 +263,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
             />
           </SplitItem>
         </Split>
-      ))}
+      ))} */}
     </>
   );
 };
