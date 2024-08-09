@@ -161,6 +161,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
+        selected={currentCategory}
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
@@ -184,7 +185,12 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       >
         <DropdownList>
           {(!isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map((cat) => (
-            <DropdownItem aria-label={categoriesToDisplayNames[cat]} key={cat} onClick={() => onCategorySelect(cat)}>
+            <DropdownItem
+              aria-label={categoriesToDisplayNames[cat]}
+              key={cat}
+              onClick={() => onCategorySelect(cat)}
+              value={cat}
+            >
               {categoriesToDisplayNames[cat]}
             </DropdownItem>
           ))}
