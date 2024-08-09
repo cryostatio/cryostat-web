@@ -501,6 +501,11 @@ html, body, #root {
   z-index: 199;  /* Fix input border overlap */
 }
 
+.pf-v5-c-check__input {
+  --pf-v5-c-check__input--TranslateY--moz: 0;
+  --pf-v5-c-check__input--TranslateY: 0;
+}
+
 .settings__content {
   padding: 2ch;
 }
