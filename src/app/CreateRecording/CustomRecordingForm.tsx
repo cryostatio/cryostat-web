@@ -614,6 +614,7 @@ export const CustomRecordingForm: React.FC = () => {
               </SplitItem>
               <SplitItem>
                 <FormSelect
+                  className="recording-create__form_select"
                   value={formData.maxAgeUnit}
                   onChange={handleMaxAgeUnitChange}
                   aria-label="Max Age units Input"

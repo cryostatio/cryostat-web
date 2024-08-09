@@ -710,3 +710,11 @@ svg.topology__node-decorator-icon.progress {
 .rules_form_select {
   min-width: 10ch;
 }
+
+.recording-create__form_select {
+  min-width: 10ch;
+}
+
+.duration-picker__form_select {
+  min-width: 10ch;
+}
