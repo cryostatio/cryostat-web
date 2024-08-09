@@ -73,12 +73,17 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
+  PanelHeader,
+  Divider,
+  Panel,
+  PanelMain,
+  PanelMainBody,
 } from '@patternfly/react-core';
 import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
+import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
@@ -737,6 +742,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           updateFilters={props.updateFilters}
           breakpoint={'xl'}
         />
+        <ToolbarItem variant="separator" />
         <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
           <ToolbarItem variant="overflow-menu">
             <OverflowMenu
@@ -755,13 +761,14 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  isPlain
                   onSelect={() => setActionToggleOpen(false)}
                   toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                    <MenuToggle ref={toggleRef} onClick={() => handleActionToggle()}>
+                    <MenuToggle variant="plain" ref={toggleRef} onClick={() => handleActionToggle()}>
                       <EllipsisVIcon />
                     </MenuToggle>
                   )}
+                  onOpenChange={setActionToggleOpen}
+                  onOpenChangeKeys={['Escape']}
                   isOpen={actionToggleOpen}
                   popperProps={{
                     appendTo: portalRoot,
@@ -905,12 +912,19 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             recording={recording}
             index={index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafanaFromPath(propsDirectory.jvmId, recording.name)}
+            deleteFn={() => context.api.deleteArchivedRecordingFromPath(propsDirectory.jvmId, recording.name)}
           />
         ) : (
           <RecordingActions
             recording={recording}
             index={index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafana(sourceTarget, recording.name)}
+            deleteFn={() => {
+              context.reports.delete(recording);
+              return sourceTarget.pipe(
+                concatMap((t) => (t ? context.api.deleteArchivedRecording(t.connectUrl, recording.name) : of(false))),
+              );
+            }}
           />
         )}
       </Tr>
@@ -925,6 +939,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     propsDirectory,
     recording,
     context.api,
+    context.reports,
     updateFilters,
     handleCheck,
     handleToggle,
@@ -935,35 +950,47 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`archived-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Title headingLevel={'h5'}>Automated analysis</Title>
-            <Grid>
-              {loadingAnalysis ? (
-                <Bullseye>
-                  <Spinner />
-                </Bullseye>
-              ) : (
-                analyses.map(([topic, evaluations]) => {
-                  return (
-                    <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                      <LabelGroup
-                        className="automated-analysis-topic-label-groups"
-                        categoryName={topic}
-                        isVertical
-                        numLabels={2}
-                        isCompact
-                        key={topic}
-                      >
-                        {evaluations.map((evaluation) => {
-                          return (
-                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                          );
-                        })}
-                      </LabelGroup>
-                    </GridItem>
-                  );
-                })
-              )}
-            </Grid>
+            <Panel>
+              <PanelHeader>
+                <Title headingLevel={'h5'}>Automated analysis</Title>
+              </PanelHeader>
+              <Divider />
+              <PanelMain>
+                <PanelMainBody>
+                  <Grid>
+                    {loadingAnalysis ? (
+                      <Bullseye>
+                        <Spinner />
+                      </Bullseye>
+                    ) : (
+                      analyses.map(([topic, evaluations]) => {
+                        return (
+                          <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+                            <LabelGroup
+                              className="automated-analysis-topic-label-groups"
+                              categoryName={topic}
+                              isVertical
+                              numLabels={2}
+                              isCompact
+                              key={topic}
+                            >
+                              {evaluations.map((evaluation) => {
+                                return (
+                                  <ClickableAutomatedAnalysisLabel
+                                    result={evaluation}
+                                    key={clickableAutomatedAnalysisKey}
+                                  />
+                                );
+                              })}
+                            </LabelGroup>
+                          </GridItem>
+                        );
+                      })
+                    )}
+                  </Grid>
+                </PanelMainBody>
+              </PanelMain>
+            </Panel>
           </ExpandableRowContent>
         </Td>
       </Tr>

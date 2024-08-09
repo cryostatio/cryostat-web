@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { uploadAsTarget } from '@app/Archives/Archives';
-import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { LoadingProps } from '@app/Shared/Components/types';
 import {
   RecordingDirectory,
@@ -28,19 +27,18 @@ import {
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { hashCode, portalRoot } from '@app/utils/utils';
+import { hashCode } from '@app/utils/utils';
 import {
+  ActionList,
+  ActionListItem,
   Button,
-  Icon,
-  Split,
-  SplitItem,
+  HelperText,
+  HelperTextItem,
   Stack,
   StackItem,
-  Text,
-  Tooltip,
+  Title,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
 import { RecordingLabelFields } from './RecordingLabelFields';
@@ -62,10 +60,9 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   directoryRecordings,
 }) => {
   const context = React.useContext(ServiceContext);
-  const [recordings, setRecordings] = React.useState([] as Recording[]);
-  const [editing, setEditing] = React.useState(false);
-  const [commonLabels, setCommonLabels] = React.useState([] as KeyValue[]);
-  const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as KeyValue[]);
+  const [recordings, setRecordings] = React.useState<Recording[]>([]);
+  const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
+  const [savedCommonLabels, setSavedCommonLabels] = React.useState<KeyValue[]>([]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -76,9 +73,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   );
 
   const handlePostUpdate = React.useCallback(() => {
-    setEditing(false);
     setLoading(false);
-  }, [setLoading, setEditing]);
+  }, [setLoading]);
 
   const handleUpdateLabels = React.useCallback(() => {
     setLoading(true);
@@ -124,14 +120,9 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     directory,
   ]);
 
-  const handleEditLabels = React.useCallback(() => {
-    setEditing(true);
-  }, [setEditing]);
-
   const handleCancel = React.useCallback(() => {
-    setEditing(false);
     setCommonLabels(savedCommonLabels);
-  }, [setEditing, setCommonLabels, savedCommonLabels]);
+  }, [setCommonLabels, savedCommonLabels]);
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: KeyValue[]) => void) => {
@@ -291,84 +282,48 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
     updateCommonLabels(setSavedCommonLabels);
-
-    if (!recordings.length && editing) {
-      setEditing(false);
-    }
-  }, [editing, recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels, setEditing]);
-
-  React.useEffect(() => {
-    if (!checkedIndices.length) {
-      setEditing(false);
-    }
-  }, [checkedIndices, setEditing]);
+  }, [recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels]);
 
   return (
     <>
       <Stack hasGutter>
         <StackItem>
-          <Split hasGutter>
-            <SplitItem>
-              <Text>Edit Recording Labels</Text>
-            </SplitItem>
-            <SplitItem>
-              <Tooltip
-                content={
-                  <div>
-                    Labels present on all selected Recordings will appear here. Editing the Labels will affect all
-                    selected Recordings.
-                  </div>
-                }
-                appendTo={portalRoot}
+          <Title headingLevel="h2">Edit labels</Title>
+        </StackItem>
+        <StackItem>
+          <HelperText>
+            <HelperTextItem>
+              Labels present on all selected Recordings will appear here. Editing the Labels will affect all selected
+              Recordings.
+            </HelperTextItem>
+          </HelperText>
+        </StackItem>
+        <StackItem>
+          <RecordingLabelFields
+            labels={commonLabels}
+            setLabels={setCommonLabels}
+            setValid={setValid}
+            isDisabled={loading}
+          />
+        </StackItem>
+        <StackItem>
+          <ActionList>
+            <ActionListItem>
+              <Button
+                variant="primary"
+                onClick={handleUpdateLabels}
+                isDisabled={valid != ValidatedOptions.success || loading}
+                {...saveButtonLoadingProps}
               >
-                <Icon>
-                  <HelpIcon />
-                </Icon>
-              </Tooltip>
-            </SplitItem>
-          </Split>
-        </StackItem>
-        <StackItem>
-          <LabelCell target="" labels={savedCommonLabels} />
-        </StackItem>
-        <StackItem>
-          {editing ? (
-            <>
-              <RecordingLabelFields
-                labels={commonLabels}
-                setLabels={setCommonLabels}
-                setValid={setValid}
-                isDisabled={loading}
-              />
-              <Split hasGutter>
-                <SplitItem>
-                  <Button
-                    variant="primary"
-                    onClick={handleUpdateLabels}
-                    isDisabled={valid != ValidatedOptions.success || loading}
-                    {...saveButtonLoadingProps}
-                  >
-                    {loading ? 'Saving' : 'Save'}
-                  </Button>
-                </SplitItem>
-                <SplitItem>
-                  <Button variant="secondary" onClick={handleCancel} isDisabled={loading}>
-                    Cancel
-                  </Button>
-                </SplitItem>
-              </Split>
-            </>
-          ) : (
-            <Button
-              key="edit labels"
-              aria-label="Edit Labels"
-              variant="secondary"
-              onClick={handleEditLabels}
-              isDisabled={!checkedIndices.length}
-            >
-              Edit
-            </Button>
-          )}
+                {loading ? 'Saving' : 'Save'}
+              </Button>
+            </ActionListItem>
+            <ActionListItem>
+              <Button variant="secondary" onClick={handleCancel} isDisabled={loading}>
+                Cancel
+              </Button>
+            </ActionListItem>
+          </ActionList>
         </StackItem>
       </Stack>
     </>

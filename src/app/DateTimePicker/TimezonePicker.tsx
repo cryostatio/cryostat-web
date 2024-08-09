@@ -15,20 +15,21 @@
  */
 
 import { useDayjs } from '@app/utils/hooks/useDayjs';
+import { portalRoot } from '@app/utils/utils';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
 import {
-  Button,
   Icon,
+  MenuSearch,
+  MenuSearchInput,
   MenuToggle,
   MenuToggleElement,
+  SearchInput,
   Select,
   SelectList,
   SelectOption,
-  TextInputGroup,
-  TextInputGroupMain,
-  TextInputGroupUtilities,
 } from '@patternfly/react-core';
-import { GlobeIcon, TimesIcon } from '@patternfly/react-icons';
+import { GlobeIcon } from '@patternfly/react-icons';
+import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -38,16 +39,12 @@ const OPTION_INCREMENT = 15;
 
 export interface TimezonePickerProps {
   isFlipEnabled?: boolean;
-  isCompact?: boolean;
-  menuAppendTo?: HTMLElement | (() => HTMLElement) | 'inline' | undefined;
   onTimezoneChange?: (timezone: Timezone) => void;
   selected: Timezone;
 }
 
 export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   isFlipEnabled = true,
-  isCompact,
-  menuAppendTo = 'inline',
   selected,
   onTimezoneChange = (_) => undefined,
 }) => {
@@ -55,7 +52,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   const [dayjs, _] = useDayjs();
   const [numOfOptions, setNumOfOptions] = React.useState(DEFAULT_NUM_OPTIONS);
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
-  const [filterValue, setFilterValue] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const onSelect = React.useCallback(
     (_, timezone) => {
@@ -72,7 +69,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
 
   const onToggle = React.useCallback(() => setIsTimezoneOpen((isOpen) => !isOpen), [setIsTimezoneOpen]);
 
-  const onInputChange = React.useCallback((_, inputVal: string) => setFilterValue(inputVal), [setFilterValue]);
+  const onInputChange = React.useCallback((_, inputVal: string) => setSearchTerm(inputVal), [setSearchTerm]);
 
   const timezones = React.useMemo(() => supportedTimezones(), []);
 
@@ -84,15 +81,15 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   );
 
   const mapToSelection = React.useCallback(
-    (timezone: Timezone, isCompact?: boolean) => {
+    (timezone: Timezone) => {
       return (
         <SelectOption
           key={timezone.full}
           value={timezone}
-          description={isCompact ? timezone.full : timezone.short}
+          description={timezone.short}
           isSelected={selected.full === timezone.full}
         >
-          {isCompact ? timezone.short : `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
+          {`(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
         </SelectOption>
       );
     },
@@ -100,19 +97,18 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   );
 
   const filteredTimezones = React.useMemo(() => {
-    let _opts = timezones.slice(0, numOfOptions);
-    if (filterValue) {
-      const matchExp = new RegExp(filterValue.replace(/([+])/gi, `\\$1`), 'i');
+    let _opts = timezones;
+    if (searchTerm) {
+      const matchExp = new RegExp(searchTerm.replace(/([+])/gi, `\\$1`), 'i');
       _opts = _opts.filter((tz) => matchExp.test(tz.full) || matchExp.test(tz.short));
     }
-    return _opts;
-  }, [timezones, numOfOptions, filterValue]);
+    return _opts.slice(0, numOfOptions);
+  }, [timezones, numOfOptions, searchTerm]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
         ref={toggleRef}
-        variant="typeahead"
         onClick={onToggle}
         isExpanded={isTimezoneOpen}
         isFullWidth
@@ -122,36 +118,10 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
           </Icon>
         }
       >
-        <TextInputGroup isPlain>
-          <TextInputGroupMain
-            value={filterValue}
-            onClick={onToggle}
-            onChange={onInputChange}
-            autoComplete="off"
-            placeholder="Filter by name..."
-            isExpanded={isTimezoneOpen}
-            role="combobox"
-            id="typeahead-name-filter"
-            aria-controls="typeahead-filter-select"
-            aria-label={t('TimezonePicker.ARIA_LABELS.TYPE_AHEAD')}
-          />
-          <TextInputGroupUtilities>
-            {filterValue ? (
-              <Button
-                variant="plain"
-                onClick={() => {
-                  setFilterValue('');
-                }}
-                aria-label="Clear input value"
-              >
-                <TimesIcon aria-hidden />
-              </Button>
-            ) : null}
-          </TextInputGroupUtilities>
-        </TextInputGroup>
+        {selected.full}
       </MenuToggle>
     ),
-    [onToggle, isTimezoneOpen, filterValue, onInputChange, setFilterValue, t],
+    [onToggle, isTimezoneOpen, selected.full],
   );
 
   return (
@@ -159,18 +129,38 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
       toggle={toggle}
       popperProps={{
         enableFlip: isFlipEnabled,
-        width: isCompact ? '8.5em' : undefined,
-        appendTo: menuAppendTo,
+        preventOverflow: true,
+        appendTo: portalRoot,
       }}
       onSelect={onSelect}
       aria-label={t('TimezonePicker.ARIA_LABELS.SELECT')}
       isOpen={isTimezoneOpen}
+      onOpenChange={(isOpen) => setIsTimezoneOpen(isOpen)}
+      onOpenChangeKeys={['Escape']}
+      isScrollable
+      menuHeight="20vh"
     >
+      <MenuSearch>
+        <MenuSearchInput>
+          <SearchInput
+            placeholder="Filter by timezone..."
+            value={searchTerm}
+            onChange={onInputChange}
+            aria-label={t('TimezonePicker.ARIA_LABELS.TYPE_AHEAD')}
+          />
+        </MenuSearchInput>
+      </MenuSearch>
       <SelectList>
-        {filteredTimezones.map((tz) => mapToSelection(tz, isCompact))}
-        {numOfOptions < timezones.length ? (
+        {filteredTimezones.length > 0 ? (
+          filteredTimezones.map(mapToSelection)
+        ) : (
+          <SelectOption isDisabled>No results found</SelectOption>
+        )}
+        {numOfOptions < timezones.length && filteredTimezones.length > 0 ? (
           <SelectOption key="view-more" onClick={handleViewMore} value={undefined}>
-            {t('VIEW_MORE', { ns: 'common' })}
+            <span className={css('pf-v5-c-button', 'pf-m-link', 'pf-m-inline')}>
+              {t('VIEW_MORE', { ns: 'common' })}
+            </span>
           </SelectOption>
         ) : null}
       </SelectList>

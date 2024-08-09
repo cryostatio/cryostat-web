@@ -18,7 +18,7 @@ import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/t
 import { LoadingProps } from '@app/Shared/Components/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { first } from 'rxjs';
@@ -109,12 +109,14 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
   return (
     <>
       <Form isHorizontal>
-        <Text component={TextVariants.p}>
-          A Snapshot Recording is one which contains all information about all events that have been captured in the
-          current session by <i>other,&nbsp; non-Snapshot</i> Recordings. Snapshots do not themselves define which
-          events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from
-          the moment it is created.
-        </Text>
+        <TextContent>
+          <Text component={TextVariants.p}>
+            A Snapshot Recording is one which contains all information about all events that have been captured in the
+            current session by <i>other, non-Snapshot</i> Recordings. Snapshots do not themselves define which events
+            are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the
+            moment it is created.
+          </Text>
+        </TextContent>
         <ActionGroup>
           <Button variant="primary" onClick={handleCreateSnapshot} isDisabled={loading} {...createButtonLoadingProps}>
             {loading ? 'Creating' : 'Create'}
