@@ -133,7 +133,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
       } // Ignore initial empty key inputs
     });
     return arr;
-  }, [labels, isDuplicateKey]);
+  }, [labels]);
 
   return loading ? (
     <LoadingView />
