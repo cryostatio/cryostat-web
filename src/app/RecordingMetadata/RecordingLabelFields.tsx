@@ -16,13 +16,20 @@
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { portalRoot } from '@app/utils/utils';
+import { LABEL_TEXT_MAXWIDTH, portalRoot } from '@app/utils/utils';
 import { Button, Label, LabelGroup, List, ListItem, Popover, Text, ValidatedOptions } from '@patternfly/react-core';
 import { ExclamationCircleIcon, FileIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
-import { matchesLabelSyntax, getValidatedOption, LabelPattern, parseLabelsFromFile } from './utils';
+import {
+  isValidLabel,
+  getValidatedOption,
+  isDuplicateKey,
+  parseLabelsFromFile,
+  isValidLabelInput,
+  getLabelFromInput,
+} from './utils';
 
 export interface RecordingLabelFieldsProps {
   labels: KeyValue[];
@@ -46,27 +53,21 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
   const [loading, setLoading] = React.useState(false);
   const [invalidUploads, setInvalidUploads] = React.useState<string[]>([]);
 
-  const handleKeyChange = React.useCallback(
-    (idx: number, key: string) => {
-      const updatedLabels = [...labels];
-      updatedLabels[idx].key = key;
-      setLabels(updatedLabels);
-    },
-    [labels, setLabels],
-  );
-
-  const handleValueChange = React.useCallback(
-    (idx: number, value: string) => {
-      const updatedLabels = [...labels];
-      updatedLabels[idx].value = value;
-      setLabels(updatedLabels);
-    },
-    [labels, setLabels],
-  );
-
   const handleAddLabelButtonClick = React.useCallback(() => {
-    setLabels([...labels, { key: '', value: '' } as KeyValue]);
+    setLabels([...labels, { key: 'key', value: 'value' }]);
   }, [labels, setLabels]);
+
+  const handleLabelEdit = React.useCallback(
+    (idx: number, keyValue: string) => {
+      const label = getLabelFromInput(keyValue);
+      if (label) {
+        const updatedLabels = [...labels];
+        updatedLabels[idx] = label;
+        setLabels(updatedLabels);
+      }
+    },
+    [labels, setLabels],
+  );
 
   const handleDeleteLabelButtonClick = React.useCallback(
     (idx: number) => {
@@ -77,38 +78,10 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
     [labels, setLabels],
   );
 
-  const isDuplicateKey = React.useCallback(
-    (key: string, labels: KeyValue[]) => labels.filter((label) => label.key === key).length > 1,
-    [],
-  );
-
-  const validKeys = React.useMemo(() => {
-    const arr = Array(labels.length).fill(ValidatedOptions.default);
-    labels.forEach((label, index) => {
-      if (label.key.length > 0) {
-        arr[index] = getValidatedOption(LabelPattern.test(label.key) && !isDuplicateKey(label.key, labels));
-      } // Ignore initial empty key inputs
-    });
-    return arr;
-  }, [labels, isDuplicateKey]);
-
-  const validValues = React.useMemo(() => {
-    const arr = Array(labels.length).fill(ValidatedOptions.default);
-    labels.forEach((label, index) => {
-      if (label.value.length > 0) {
-        arr[index] = getValidatedOption(LabelPattern.test(label.value));
-      } // Ignore initial empty value inputs
-    });
-    return arr;
-  }, [labels]);
-
   React.useEffect(() => {
-    const valid = labels.reduce(
-      (prev, curr) => matchesLabelSyntax(curr) && !isDuplicateKey(curr.key, labels) && prev,
-      true,
-    );
+    const valid = labels.reduce((prev, curr) => isValidLabel(curr) && !isDuplicateKey(curr.key, labels) && prev, true);
     setValid(getValidatedOption(valid));
-  }, [setValid, labels, isDuplicateKey]);
+  }, [setValid, labels]);
 
   const handleUploadLabel = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,71 +172,26 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
         numLabels={5}
         isEditable
         addLabelControl={
-          <Label color="blue" variant="outline" isOverflowLabel onClick={() => {}}>
+          <Label color="blue" variant="outline" isDisabled={isDisabled} onClick={handleAddLabelButtonClick}>
             Add label
           </Label>
         }
       >
         {labels.map((label, idx) => (
-          <Label key={label.key} id={label.key} color="blue" onClose={() => handleDeleteLabelButtonClick(idx)}>
+          <Label
+            key={label.key}
+            id={label.key}
+            color="grey"
+            isEditable
+            onClose={() => handleDeleteLabelButtonClick(idx)}
+            isDisabled={isDisabled}
+            onEditCancel={(_, prevText) => handleLabelEdit(idx, prevText)}
+            onEditComplete={(_, newText) => handleLabelEdit(idx, newText)}
+          >
             {keyValueToString(label)}
           </Label>
         ))}
       </LabelGroup>
-      {/* {labels.map((label, idx) => (
-        <Split hasGutter key={idx}>
-          <SplitItem isFilled>
-            <TextInput
-              isRequired
-              type="text"
-              id="label-key-input"
-              name="label-key-input"
-              aria-describedby="label-key-input-helper"
-              aria-label="Label Key"
-              value={label.key ?? ''}
-              onChange={(_event, key) => handleKeyChange(idx, key)}
-              validated={validKeys[idx]}
-              isDisabled={isDisabled}
-            />
-            <Text>Key</Text>
-            <FormHelperText>
-              <HelperText id="label-error-text">
-                <HelperTextItem variant="error">
-                  Keys must be unique. Labels should not contain empty spaces.
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          </SplitItem>
-          <SplitItem isFilled>
-            <TextInput
-              isRequired
-              type="text"
-              id="label-value-input"
-              name="label-value-input"
-              aria-describedby="label-value-input-helper"
-              aria-label="Label Value"
-              value={label.value ?? ''}
-              onChange={(_event, value) => handleValueChange(idx, value)}
-              validated={validValues[idx]}
-              isDisabled={isDisabled}
-            />
-            <Text>Value</Text>
-          </SplitItem>
-          <SplitItem>
-            <Button
-              onClick={() => handleDeleteLabelButtonClick(idx)}
-              variant="link"
-              aria-label="Remove Label"
-              isDisabled={isDisabled}
-              icon={
-                <Icon size="sm">
-                  <CloseIcon color="gray" />{' '}
-                </Icon>
-              }
-            />
-          </SplitItem>
-        </Split>
-      ))} */}
     </>
   );
 };

@@ -34,6 +34,7 @@ import {
   Button,
   HelperText,
   HelperTextItem,
+  Label,
   Stack,
   StackItem,
   Title,
@@ -50,6 +51,7 @@ export interface BulkEditLabelsProps {
   checkedIndices: number[];
   directory?: RecordingDirectory;
   directoryRecordings?: ArchivedRecording[];
+  closePanelFn: () => void;
 }
 
 export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
@@ -58,6 +60,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   checkedIndices,
   directory,
   directoryRecordings,
+  closePanelFn,
 }) => {
   const context = React.useContext(ServiceContext);
   const [recordings, setRecordings] = React.useState<Recording[]>([]);
@@ -84,10 +87,10 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     recordings.forEach((r: Recording) => {
       const idx = getIdxFromRecording(r);
       if (checkedIndices.includes(idx)) {
-        let updatedLabels = [...r.metadata.labels, ...commonLabels];
-        updatedLabels = updatedLabels.filter((label) => {
-          return !includesLabel(toDelete, label);
-        });
+        const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
+          (label) => !includesLabel(toDelete, label),
+        );
+
         if (directory) {
           tasks.push(context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()));
         }
@@ -122,11 +125,12 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
 
   const handleCancel = React.useCallback(() => {
     setCommonLabels(savedCommonLabels);
-  }, [setCommonLabels, savedCommonLabels]);
+    closePanelFn();
+  }, [setCommonLabels, savedCommonLabels, closePanelFn]);
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: KeyValue[]) => void) => {
-      const allRecordingLabels = [] as KeyValue[][];
+      const allRecordingLabels: KeyValue[][] = [];
 
       recordings.forEach((r: Recording) => {
         const idx = getIdxFromRecording(r);
@@ -293,8 +297,8 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         <StackItem>
           <HelperText>
             <HelperTextItem>
-              Labels present on all selected Recordings will appear here. Editing the Labels will affect all selected
-              Recordings.
+              Labels present on all selected Recordings will appear here. Editing the labels will affect all selected
+              Recordings. Specify labels with format <Label isCompact>key=value</Label>.
             </HelperTextItem>
           </HelperText>
         </StackItem>
