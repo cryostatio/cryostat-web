@@ -33,12 +33,12 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
       .then(JSON.parse)
       .then((obj) => {
         const labels: KeyValue[] = [];
-        const labelObj = obj['labels'];
+        const labelObj: KeyValue[] = obj['labels'];
         if (labelObj) {
-          Object.keys(labelObj).forEach((key) => {
+          Object.values(labelObj).forEach((keyValue) => {
             labels.push({
-              key: key,
-              value: labelObj[key],
+              key: keyValue.key,
+              value: keyValue.value,
             });
           });
           return labels;
@@ -47,7 +47,6 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
       }),
   );
 };
-
 export const LabelPattern = /^\S+$/;
 
 export const getValidatedOption = (isValid: boolean) => {
