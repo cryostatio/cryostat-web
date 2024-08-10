@@ -21,17 +21,18 @@ import * as tlr from '@testing-library/react';
 import { cleanup, screen } from '@testing-library/react';
 import { render, renderSnapshot } from '../utils';
 
-const mockUploadedRecordingLabels = {
-  someUploaded: 'someUploadedValue',
+const mockUploadedRecordingLabels: KeyValue = {
+  key: 'someUploaded',
+  value: 'someUploadedValue',
 };
 const mockMetadataFileName = 'mock.metadata.json';
 const mockMetadataFile = new File(
-  [JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })],
+  [JSON.stringify({ labels: [{ ...mockUploadedRecordingLabels }] })],
   mockMetadataFileName,
   { type: 'json' },
 );
 mockMetadataFile.text = jest.fn(
-  () => new Promise((resolve, _) => resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } }))),
+  () => new Promise((resolve, _) => resolve(JSON.stringify({ labels: [{ ...mockUploadedRecordingLabels }] }))),
 );
 
 describe('<RecordingLabelFields />', () => {
@@ -387,10 +388,6 @@ describe('<RecordingLabelFields />', () => {
     expect(labelUploadInput.files?.item(0)).toStrictEqual(mockMetadataFile);
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
-    expect(mockProps.setLabels).toHaveBeenCalledWith([
-      mockLabel1,
-      mockLabel2,
-      { key: 'someUploaded', value: 'someUploadedValue' },
-    ]);
+    expect(mockProps.setLabels).toHaveBeenCalledWith([mockLabel1, mockLabel2, mockUploadedRecordingLabels]);
   });
 });
