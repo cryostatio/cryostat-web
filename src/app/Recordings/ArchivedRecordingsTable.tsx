@@ -83,7 +83,7 @@ import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
+import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
@@ -912,19 +912,12 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             recording={recording}
             index={index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafanaFromPath(propsDirectory.jvmId, recording.name)}
-            deleteFn={() => context.api.deleteArchivedRecordingFromPath(propsDirectory.jvmId, recording.name)}
           />
         ) : (
           <RecordingActions
             recording={recording}
             index={index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafana(sourceTarget, recording.name)}
-            deleteFn={() => {
-              context.reports.delete(recording);
-              return sourceTarget.pipe(
-                concatMap((t) => (t ? context.api.deleteArchivedRecording(t.connectUrl, recording.name) : of(false))),
-              );
-            }}
           />
         )}
       </Tr>
@@ -939,7 +932,6 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
     propsDirectory,
     recording,
     context.api,
-    context.reports,
     updateFilters,
     handleCheck,
     handleToggle,

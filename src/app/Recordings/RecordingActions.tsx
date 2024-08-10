@@ -36,10 +36,9 @@ export interface RecordingActionsProps {
   recording: Recording;
   sourceTarget?: Observable<Target>;
   uploadFn: () => Observable<boolean>;
-  deleteFn: () => Observable<boolean>;
 }
 
-export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, deleteFn, ...props }) => {
+export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
@@ -77,11 +76,6 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     context.api.downloadRecording(recording);
   }, [context.api, recording]);
 
-  const handleDeleteRecording = React.useCallback(
-    () => addSubscription(deleteFn().subscribe()),
-    [addSubscription, deleteFn],
-  );
-
   const actionItems = React.useMemo(() => {
     const actionItems = [
       {
@@ -98,19 +92,8 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
       });
     }
 
-    actionItems.push(
-      {
-        isSeparator: true,
-      },
-      {
-        title: 'Delete',
-        key: 'delete',
-        onClick: handleDeleteRecording,
-      },
-    );
-
     return actionItems;
-  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload, handleDeleteRecording]);
+  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {
