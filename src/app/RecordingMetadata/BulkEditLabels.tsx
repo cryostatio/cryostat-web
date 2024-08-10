@@ -51,7 +51,7 @@ export interface BulkEditLabelsProps {
   checkedIndices: number[];
   directory?: RecordingDirectory;
   directoryRecordings?: ArchivedRecording[];
-  closePanelFn: () => void;
+  closePanelFn?: () => void;
 }
 
 export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
@@ -125,7 +125,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
 
   const handleCancel = React.useCallback(() => {
     setCommonLabels(savedCommonLabels);
-    closePanelFn();
+    closePanelFn && closePanelFn();
   }, [setCommonLabels, savedCommonLabels, closePanelFn]);
 
   const updateCommonLabels = React.useCallback(

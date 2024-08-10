@@ -16,20 +16,13 @@
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { LABEL_TEXT_MAXWIDTH, portalRoot } from '@app/utils/utils';
+import { portalRoot } from '@app/utils/utils';
 import { Button, Label, LabelGroup, List, ListItem, Popover, Text, ValidatedOptions } from '@patternfly/react-core';
 import { ExclamationCircleIcon, FileIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
-import {
-  isValidLabel,
-  getValidatedOption,
-  isDuplicateKey,
-  parseLabelsFromFile,
-  isValidLabelInput,
-  getLabelFromInput,
-} from './utils';
+import { isValidLabel, getValidatedOption, isDuplicateKey, parseLabelsFromFile, getLabelFromInput } from './utils';
 
 export interface RecordingLabelFieldsProps {
   labels: KeyValue[];
