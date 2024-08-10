@@ -17,7 +17,18 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import { Button, Label, LabelGroup, List, ListItem, Popover, Text, ValidatedOptions } from '@patternfly/react-core';
+import {
+  ActionList,
+  ActionListItem,
+  Button,
+  Label,
+  LabelGroup,
+  List,
+  ListItem,
+  Popover,
+  Text,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { ExclamationCircleIcon, FileIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -116,48 +127,51 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
     <>
       {isUploadable && (
         <>
-          <Popover
-            appendTo={portalRoot}
-            isVisible={!!invalidUploads.length}
-            aria-label="uploading warning"
-            alertSeverityVariant="danger"
-            headerContent="Invalid Selection"
-            headerComponent="h1"
-            shouldClose={closeWarningPopover}
-            headerIcon={<ExclamationCircleIcon />}
-            bodyContent={
-              <>
-                <Text component="h4">
-                  {t('RecordingLabelFields.INVALID_UPLOADS', { count: invalidUploads.length })}
-                </Text>
-                <List>
-                  {invalidUploads.map((uploadName) => (
-                    <ListItem key={uploadName} icon={<FileIcon />}>
-                      {uploadName}
-                    </ListItem>
-                  ))}
-                </List>
-              </>
-            }
-          >
-            <Button
-              aria-label="Upload Labels"
-              onClick={openLabelFileBrowse}
-              variant="link"
-              icon={<UploadIcon />}
-              isDisabled={isDisabled}
-            >
-              Upload Labels
-            </Button>
-          </Popover>
-          <input
-            ref={inputRef}
-            accept={'.json'}
-            type="file"
-            style={{ display: 'none' }}
-            onChange={handleUploadLabel}
-            multiple
-          />
+          <ActionList style={{ marginBottom: '1em' }}>
+            <ActionListItem>
+              <Popover
+                appendTo={portalRoot}
+                isVisible={!!invalidUploads.length}
+                aria-label="uploading warning"
+                alertSeverityVariant="danger"
+                headerContent="Invalid Selection"
+                headerComponent="h1"
+                shouldClose={closeWarningPopover}
+                headerIcon={<ExclamationCircleIcon />}
+                bodyContent={
+                  <>
+                    <Text component="h4">
+                      {t('RecordingLabelFields.INVALID_UPLOADS', { count: invalidUploads.length })}
+                    </Text>
+                    <List>
+                      {invalidUploads.map((uploadName) => (
+                        <ListItem key={uploadName} icon={<FileIcon />}>
+                          {uploadName}
+                        </ListItem>
+                      ))}
+                    </List>
+                  </>
+                }
+              >
+                <Button
+                  aria-label="Upload Labels"
+                  onClick={openLabelFileBrowse}
+                  variant="secondary"
+                  isDisabled={isDisabled}
+                >
+                  <UploadIcon />
+                </Button>
+              </Popover>
+              <input
+                ref={inputRef}
+                accept={'.json'}
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleUploadLabel}
+                multiple
+              />
+            </ActionListItem>
+          </ActionList>
         </>
       )}
       <LabelGroup
