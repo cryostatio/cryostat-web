@@ -66,11 +66,13 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
   const handleLabelEdit = React.useCallback(
     (idx: number, keyValue: string) => {
       const label = getLabelFromInput(keyValue);
+      const updatedLabels = [...labels];
       if (label) {
-        const updatedLabels = [...labels];
         updatedLabels[idx] = label;
-        setLabels(updatedLabels);
+      } else {
+        updatedLabels.splice(idx);
       }
+      setLabels(updatedLabels);
     },
     [labels, setLabels],
   );
@@ -188,7 +190,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
       )}
       <LabelGroup
         categoryName="Recording Labels"
-        numLabels={5}
+        numLabels={10}
         isEditable
         addLabelControl={
           <Label color="blue" variant="outline" isDisabled={isDisabled} onClick={handleAddLabelButtonClick}>
