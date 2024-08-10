@@ -21,6 +21,8 @@ import {
   ActionList,
   ActionListItem,
   Button,
+  HelperText,
+  HelperTextItem,
   Label,
   LabelGroup,
   List,
@@ -121,6 +123,16 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
     inputRef.current && inputRef.current.click();
   }, [inputRef]);
 
+  const validLabels: boolean[] = React.useMemo(() => {
+    const arr = Array(labels.length).fill(false);
+    labels.forEach((label, index) => {
+      if (label.key.length > 0) {
+        arr[index] = isValidLabel(label) && !isDuplicateKey(label.key, labels);
+      } // Ignore initial empty key inputs
+    });
+    return arr;
+  }, [labels, isDuplicateKey]);
+
   return loading ? (
     <LoadingView />
   ) : (
@@ -188,7 +200,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
           <Label
             key={label.key}
             id={label.key}
-            color="grey"
+            color={validLabels[idx] ? 'grey' : 'red'}
             isEditable
             onClose={() => handleDeleteLabelButtonClick(idx)}
             isDisabled={isDisabled}
@@ -199,6 +211,11 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
           </Label>
         ))}
       </LabelGroup>
+      {validLabels.some((v) => !v) ? (
+        <HelperText>
+          <HelperTextItem variant="error">Keys must be unique. Labels should not contain empty spaces.</HelperTextItem>
+        </HelperText>
+      ) : null}
     </>
   );
 };
