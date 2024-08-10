@@ -489,10 +489,6 @@ html, body, #root {
   color: var(--pf-v5-global--palette--black-300);
 }
 
-.datetime-picker__datetime-selected-display {
-  max-width: 14em !important;
-}
-
 .datetime-picker__calendar .pf-v5-c-calendar-month__header-year{
   min-width: 6em !important;
 }
