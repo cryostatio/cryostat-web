@@ -33,8 +33,8 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
       .then(JSON.parse)
       .then((obj) => {
         const labels: KeyValue[] = [];
-        const labelObj: KeyValue[] = obj['labels'];
-        if (labelObj) {
+        const labelObj = obj['labels'];
+        if (labelObj && Array.isArray(labelObj)) {
           Object.values(labelObj).forEach((keyValue) => {
             labels.push({
               key: keyValue.key,
