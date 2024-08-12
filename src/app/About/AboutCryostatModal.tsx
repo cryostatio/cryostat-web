@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import bkgImg from '@app/assets/about_background.png';
+import bkgImg from '@app/assets/cryostat_icon_bg.svg';
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { portalRoot } from '@app/utils/utils';
