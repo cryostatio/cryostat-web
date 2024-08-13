@@ -34,11 +34,11 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
       .then((obj) => {
         const labels: KeyValue[] = [];
         const labelObj = obj['labels'];
-        if (labelObj) {
-          Object.keys(labelObj).forEach((key) => {
+        if (labelObj && Array.isArray(labelObj)) {
+          Object.values(labelObj).forEach((keyValue) => {
             labels.push({
-              key: key,
-              value: labelObj[key],
+              key: keyValue.key,
+              value: keyValue.value,
             });
           });
           return labels;
@@ -47,9 +47,12 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
       }),
   );
 };
+<<<<<<< HEAD
 
 export const getLabelDisplay = (label: KeyValue) => `${label.key}:${label.value}`;
 
+=======
+>>>>>>> 73a7e9e (fix(labels): fix broken label file parsing in archive upload modal (#1323))
 export const LabelPattern = /^\S+$/;
 
 export const getValidatedOption = (isValid: boolean) => {
