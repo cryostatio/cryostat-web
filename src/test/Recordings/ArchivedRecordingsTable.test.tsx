@@ -51,13 +51,13 @@ const mockUploadsTarget = {
   labels: [],
   annotations: { cryostat: [], platform: [] },
 };
-const mockRecordingLabels = [
+const mockRecordingLabels: KeyValue[] = [
   {
     key: 'someLabel',
     value: 'someValue',
   },
 ];
-const mockUploadedRecordingLabels = [
+const mockUploadedRecordingLabels: KeyValue[] = [
   {
     key: 'someUploaded',
     value: 'someUpdatedValue',
@@ -71,14 +71,10 @@ export const convertLabels = (kv: KeyValue[]): object => {
   return out;
 };
 const mockMetadataFileName = 'mock.metadata.json';
-const mockMetadataFile = new File(
-  [JSON.stringify({ labels: convertLabels(mockUploadedRecordingLabels) })],
-  mockMetadataFileName,
-  { type: 'json' },
-);
-mockMetadataFile.text = jest.fn(() =>
-  Promise.resolve(JSON.stringify({ labels: convertLabels(mockUploadedRecordingLabels) })),
-);
+const mockMetadataFile = new File([JSON.stringify({ labels: mockUploadedRecordingLabels })], mockMetadataFileName, {
+  type: 'json',
+});
+mockMetadataFile.text = jest.fn(() => Promise.resolve(JSON.stringify({ labels: mockUploadedRecordingLabels })));
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
