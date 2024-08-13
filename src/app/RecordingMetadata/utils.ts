@@ -47,12 +47,9 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
       }),
   );
 };
-<<<<<<< HEAD
 
 export const getLabelDisplay = (label: KeyValue) => `${label.key}:${label.value}`;
 
-=======
->>>>>>> 73a7e9e (fix(labels): fix broken label file parsing in archive upload modal (#1323))
 export const LabelPattern = /^\S+$/;
 
 export const getValidatedOption = (isValid: boolean) => {
