@@ -15,7 +15,7 @@
  */
 
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
+import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import {
   emptyAutomatedAnalysisFilters,
@@ -45,7 +45,7 @@ import {
   AutomatedAnalysisScore,
   AnalysisResult,
 } from '@app/Shared/Services/api.types';
-import { isGraphQLAuthError } from '@app/Shared/Services/api.utils';
+import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -359,10 +359,13 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
               .pipe(
                 first(),
                 tap((resp) => {
-                  if (resp.data == undefined) {
+                  if (isGraphQLError(resp)) {
                     if (isGraphQLAuthError(resp)) {
                       context.target.setAuthFailure();
                       throw new Error(authFailMessage);
+                    } else if (isGraphQLSSLError(resp)) {
+                      context.target.setSslFailure();
+                      throw new Error(missingSSLMessage);
                     } else {
                       throw new Error(resp.errors[0].message);
                     }

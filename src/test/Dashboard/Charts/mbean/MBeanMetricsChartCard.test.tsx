@@ -33,6 +33,9 @@ import { from, of } from 'rxjs';
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.DARK));
 jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
+jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
+jest.spyOn(defaultServices.target, 'sslFailure').mockReturnValue(of());
 
 const mockTarget = {
   connectUrl: 'service:jmx:rmi://someUrl',
