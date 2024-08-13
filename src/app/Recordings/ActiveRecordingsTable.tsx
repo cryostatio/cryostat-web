@@ -911,7 +911,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
       options.push({ key: 'maxAge', value: `${recording.maxAge / 1000}s` });
     }
     if (recording.maxSize) {
-      options.push({ key: 'maxSize', value: formatBytes(recording.maxAge) });
+      options.push({ key: 'maxSize', value: formatBytes(recording.maxSize) });
     }
     return options;
   };
