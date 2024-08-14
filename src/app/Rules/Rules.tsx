@@ -342,7 +342,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
           {formatBytes(r.maxSizeBytes)}
         </Td>
         <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[7].title}>
-          {formatDuration( r.archivalPeriodSeconds )}
+          {formatDuration(r.archivalPeriodSeconds)}
         </Td>
         <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[8].title}>
           {formatDuration(r.initialDelaySeconds)}
