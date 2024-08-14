@@ -157,12 +157,7 @@ const Component = () => {
           <HelperText>
             <HelperTextItem>{t('SETTINGS.DATETIME_CONTROL.TIMEZONE_SELECT_DESCRIPTION')}</HelperTextItem>
           </HelperText>
-          <TimezonePicker
-            selected={datetimeFormat.timeZone}
-            menuAppendTo={portalRoot}
-            isFlipEnabled
-            onTimezoneChange={handleTimezoneSelect}
-          />
+          <TimezonePicker selected={datetimeFormat.timeZone} isFlipEnabled onTimezoneChange={handleTimezoneSelect} />
         </FormGroup>
       </StackItem>
     </Stack>

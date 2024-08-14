@@ -76,10 +76,17 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Divider,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
+  Tooltip,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
@@ -725,7 +732,12 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           </Button>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Stop'} isShared onClick={props.handleStopRecordings}>
+          <OverflowMenuDropdownItem
+            key={'Stop'}
+            isShared
+            onClick={props.handleStopRecordings}
+            isDisabled={isStopDisabled}
+          >
             {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
           </OverflowMenuDropdownItem>
         ),
@@ -792,6 +804,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           updateFilters={props.updateFilters}
           breakpoint={'xl'}
         />
+        <ToolbarItem variant="separator" />
         <ToolbarGroup style={{ alignSelf: 'start' }} variant="button-group">
           <ToolbarItem variant="overflow-menu">
             <OverflowMenu
@@ -810,20 +823,21 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  isPlain
                   onSelect={() => setActionToggleOpen(false)}
                   toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                    <MenuToggle ref={toggleRef} onClick={() => handleActionToggle()}>
+                    <MenuToggle variant="plain" ref={toggleRef} onClick={() => handleActionToggle()}>
                       <EllipsisVIcon />
                     </MenuToggle>
                   )}
+                  onOpenChange={setActionToggleOpen}
+                  onOpenChangeKeys={['Escape']}
                   isOpen={actionToggleOpen}
                   popperProps={{
                     appendTo: document.body,
                     enableFlip: true,
                   }}
                 >
-                  <DropdownList>={buttons.map((b) => b.collapsed)}</DropdownList>
+                  <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
                 </Dropdown>
               </OverflowMenuControl>
             </OverflowMenu>
@@ -860,6 +874,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
+  const { t } = useTranslation();
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
@@ -975,7 +990,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
           <LabelGroup isVertical style={{ padding: '0.2em' }}>
             {recordingOptions(recording).map((options) => (
-              <Label color="blue" key={options.key} textMaxWidth={LABEL_TEXT_MAXWIDTH}>
+              <Label color="purple" key={options.key} textMaxWidth={LABEL_TEXT_MAXWIDTH}>
                 {keyValueToString(options)}
               </Label>
             ))}
@@ -1018,49 +1033,65 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Title headingLevel={'h5'}>
-              <Button
-                variant="plain"
-                size="sm"
-                isDisabled={loadingAnalysis}
-                onClick={handleLoadAnalysis}
-                icon={<RedoIcon />}
-              />
-              Automated analysis
-            </Title>
-            <Grid>
-              {loadingAnalysis ? (
-                <Bullseye>
-                  <Spinner />
-                </Bullseye>
-              ) : (
-                analyses.map(([topic, evaluations]) => {
-                  return (
-                    <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                      <LabelGroup
-                        className="automated-analysis-topic-label-groups"
-                        categoryName={topic}
-                        isVertical
-                        numLabels={2}
-                        isCompact
-                        key={topic}
-                      >
-                        {evaluations.map((evaluation) => {
-                          return (
-                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                          );
-                        })}
-                      </LabelGroup>
-                    </GridItem>
-                  );
-                })
-              )}
-            </Grid>
+            <Panel>
+              <PanelHeader>
+                <Title headingLevel={'h5'}>
+                  Automated analysis
+                  <Button
+                    variant="plain"
+                    size="sm"
+                    isDisabled={loadingAnalysis}
+                    onClick={handleLoadAnalysis}
+                    icon={
+                      <Tooltip content={t('REFRESH', { ns: 'common' })}>
+                        <RedoIcon />
+                      </Tooltip>
+                    }
+                  />
+                </Title>
+              </PanelHeader>
+              <Divider />
+              <PanelMain>
+                <PanelMainBody>
+                  <Grid>
+                    {loadingAnalysis ? (
+                      <Bullseye>
+                        <Spinner />
+                      </Bullseye>
+                    ) : (
+                      analyses.map(([topic, evaluations]) => {
+                        return (
+                          <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+                            <LabelGroup
+                              className="automated-analysis-topic-label-groups"
+                              categoryName={topic}
+                              isVertical
+                              numLabels={2}
+                              isCompact
+                              key={topic}
+                            >
+                              {evaluations.map((evaluation) => {
+                                return (
+                                  <ClickableAutomatedAnalysisLabel
+                                    result={evaluation}
+                                    key={clickableAutomatedAnalysisKey}
+                                  />
+                                );
+                              })}
+                            </LabelGroup>
+                          </GridItem>
+                        );
+                      })
+                    )}
+                  </Grid>
+                </PanelMainBody>
+              </PanelMain>
+            </Panel>
           </ExpandableRowContent>
         </Td>
       </Tr>
     );
-  }, [index, isExpanded, handleLoadAnalysis, loadingAnalysis, analyses]);
+  }, [index, isExpanded, handleLoadAnalysis, loadingAnalysis, analyses, t]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>

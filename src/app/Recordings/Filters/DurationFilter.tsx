@@ -61,8 +61,9 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
           onKeyDown={handleEnterKey}
         />
       </FlexItem>
-      <FlexItem>
+      <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
         <Checkbox
+          className="duration-filter__continuous-checkbox"
           label="Continuous"
           id="continuous-checkbox"
           isChecked={isContinuous}

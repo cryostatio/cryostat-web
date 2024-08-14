@@ -48,6 +48,7 @@ import {
   Split,
   SplitItem,
   Text,
+  TextContent,
   TextInput,
   TextVariants,
   Tooltip,
@@ -403,11 +404,13 @@ export const CustomRecordingForm: React.FC = () => {
 
   return (
     <>
-      <Text component={TextVariants.small}>
-        JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event types
-        are built in to the JVM itself, while others are user defined.
-      </Text>
       <Form isHorizontal>
+        <TextContent>
+          <Text component={TextVariants.p}>
+            JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event
+            types are built in to the JVM itself, while others are user defined.
+          </Text>
+        </TextContent>
         <FormGroup label="Name" isRequired fieldId="recording-name">
           <TextInput
             value={formData.name}
@@ -498,7 +501,7 @@ export const CustomRecordingForm: React.FC = () => {
               <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
                 {formData.template?.name
                   ? 'The Event Template to be applied in this Recording'
-                  : 'A Template must be selected'}
+                  : 'A Template must be selected.'}
               </HelperTextItem>
             </HelperText>
           </FormHelperText>
@@ -522,6 +525,12 @@ export const CustomRecordingForm: React.FC = () => {
               </Tooltip>
             }
           >
+            <RecordingLabelFields
+              labels={formData.labels}
+              setLabels={handleLabelsChange}
+              setValid={handleLabelValidationChange}
+              isDisabled={loading}
+            />
             <FormHelperText>
               <HelperText>
                 <HelperTextItem
@@ -534,12 +543,6 @@ export const CustomRecordingForm: React.FC = () => {
                 </HelperTextItem>
               </HelperText>
             </FormHelperText>
-            <RecordingLabelFields
-              labels={formData.labels}
-              setLabels={handleLabelsChange}
-              setValid={handleLabelValidationChange}
-              isDisabled={loading}
-            />
           </FormGroup>
         </ExpandableSection>
         <ExpandableSection
@@ -614,6 +617,7 @@ export const CustomRecordingForm: React.FC = () => {
               </SplitItem>
               <SplitItem>
                 <FormSelect
+                  className="recording-create__form_select"
                   value={formData.maxAgeUnit}
                   onChange={handleMaxAgeUnitChange}
                   aria-label="Max Age units Input"

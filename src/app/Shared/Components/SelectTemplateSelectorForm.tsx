@@ -96,12 +96,22 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
         id="recording-template"
         data-quickstart-id="template-selector"
       >
-        <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder />
+        <FormSelectOption key="placeholder" label="Select a Template" isPlaceholder isDisabled />
+
         {groups.map((group, index) => (
           <FormSelectOptionGroup isDisabled={group.disabled} key={index} label={group.groupLabel}>
-            {group.options.map((option, idx) => (
-              <FormSelectOption key={idx} label={option.label} value={option.value} isDisabled={option.disabled} />
-            ))}
+            {group.options.length > 0 ? (
+              group.options.map((option) => (
+                <FormSelectOption
+                  key={option.label}
+                  label={option.label}
+                  value={option.value}
+                  isDisabled={option.disabled}
+                />
+              ))
+            ) : (
+              <FormSelectOption key="no-template" label="No templates" isDisabled />
+            )}
           </FormSelectOptionGroup>
         ))}
       </FormSelect>

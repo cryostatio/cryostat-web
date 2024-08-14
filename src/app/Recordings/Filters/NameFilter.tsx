@@ -22,7 +22,6 @@ import {
   Select,
   SelectList,
   SelectOption,
-  SelectOptionProps,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -62,12 +61,16 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
     return !filterValue ? nameOptions : nameOptions.filter((n) => n.includes(filterValue.toLowerCase()));
   }, [filterValue, nameOptions]);
 
-  const selectOptionProps: SelectOptionProps[] = React.useMemo(() => {
+  const selectOptions = React.useMemo(() => {
     if (!filteredNameOptions.length) {
-      return [{ isDisabled: true, children: `No results found for "${filterValue}"`, value: undefined }];
+      return <SelectOption isDisabled>No results found</SelectOption>;
     }
-    return filteredNameOptions.map((n) => ({ children: n, value: n }));
-  }, [filterValue, filteredNameOptions]);
+    return filteredNameOptions.map((n, index) => (
+      <SelectOption key={index} value={n}>
+        {n}
+      </SelectOption>
+    ));
+  }, [filteredNameOptions]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -104,14 +107,15 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
   );
 
   return (
-    <Select toggle={toggle} onSelect={onSelect} isOpen={isExpanded} aria-label="Filter by name">
-      <SelectList>
-        {selectOptionProps.map(({ value, children }, index) => (
-          <SelectOption key={index} value={value}>
-            {children}
-          </SelectOption>
-        ))}
-      </SelectList>
+    <Select
+      toggle={toggle}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      aria-label="Filter by name"
+      onOpenChange={(isOpen) => setIsExpanded(isOpen)}
+      onOpenChangeKeys={['Escape']}
+    >
+      <SelectList>{selectOptions}</SelectList>
     </Select>
   );
 };

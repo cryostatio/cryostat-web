@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
-import { Label, Text } from '@patternfly/react-core';
+import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { ClickableLabel } from './ClickableLabel';
 
@@ -46,6 +47,7 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
     (label: KeyValue) => (isLabelSelected(label) ? 'blue' : 'grey'),
     [isLabelSelected],
   );
+
   const onLabelSelectToggle = React.useCallback(
     (clickedLabel: KeyValue) => {
       if (clickableOptions) {
@@ -61,23 +63,25 @@ export const LabelCell: React.FC<LabelCellProps> = ({ target, labels, clickableO
 
   return (
     <>
-      {!!labels && labels.length ? (
-        labels.map((label) =>
-          clickableOptions ? (
-            <ClickableLabel
-              key={label.key}
-              label={label}
-              isSelected={isLabelSelected(label)}
-              onLabelClick={onLabelSelectToggle}
-            />
-          ) : (
-            <Label aria-label={keyValueToString(label)} key={label.key} color={getLabelColor(label)}>
-              {keyValueToString(label)}
-            </Label>
-          ),
-        )
+      {labels.length ? (
+        <LabelGroup>
+          {labels.map((label) =>
+            clickableOptions ? (
+              <ClickableLabel
+                key={label.key}
+                label={label}
+                isSelected={isLabelSelected(label)}
+                onLabelClick={onLabelSelectToggle}
+              />
+            ) : (
+              <Label aria-label={keyValueToString(label)} key={label.key} color={getLabelColor(label)}>
+                {keyValueToString(label)}
+              </Label>
+            ),
+          )}
+        </LabelGroup>
       ) : (
-        <Text>-</Text>
+        <EmptyText text="No labels" />
       )}
     </>
   );

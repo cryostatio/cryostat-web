@@ -33,8 +33,9 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
+  Icon,
 } from '@patternfly/react-core';
-import { FilterIcon, EllipsisVIcon } from '@patternfly/react-icons';
+import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimeFilter } from './Filters/DatetimeFilter';
@@ -56,9 +57,9 @@ export const categoriesToDisplayNames = {
   Name: 'Name',
   Label: 'Label',
   State: 'Recording state',
-  StartedBeforeDate: 'Started before date',
-  StartedAfterDate: 'Started after date',
-  DurationSeconds: 'Duration (s)',
+  StartedBeforeDate: 'Start time before',
+  StartedAfterDate: 'Start time after',
+  DurationSeconds: 'Duration (seconds)',
 };
 
 export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);
@@ -160,13 +161,23 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
+        selected={currentCategory}
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle ref={toggleRef} aria-label={currentCategory} onClick={() => onCategoryToggle()}>
-            <FilterIcon />
+          <MenuToggle
+            ref={toggleRef}
+            icon={
+              <Icon>
+                <FilterIcon />
+              </Icon>
+            }
+            aria-label={currentCategory}
+            onClick={() => onCategoryToggle()}
+          >
             {categoriesToDisplayNames[currentCategory]}
-            <EllipsisVIcon />
           </MenuToggle>
         )}
+        onOpenChange={(isOpen) => setIsCategoryDropdownOpen(isOpen)}
+        onOpenChangeKeys={['Escape']}
         isOpen={isCategoryDropdownOpen}
         popperProps={{
           position: 'left',
@@ -174,7 +185,12 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       >
         <DropdownList>
           {(!isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map((cat) => (
-            <DropdownItem aria-label={categoriesToDisplayNames[cat]} key={cat} onClick={() => onCategorySelect(cat)}>
+            <DropdownItem
+              aria-label={categoriesToDisplayNames[cat]}
+              key={cat}
+              onClick={() => onCategorySelect(cat)}
+              value={cat}
+            >
               {categoriesToDisplayNames[cat]}
             </DropdownItem>
           ))}
@@ -223,7 +239,14 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 
   return (
-    <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={breakpoint}>
+    <ToolbarToggleGroup
+      toggleIcon={
+        <Icon>
+          <FilterIcon />
+        </Icon>
+      }
+      breakpoint={breakpoint}
+    >
       <ToolbarGroup variant="filter-group">
         <ToolbarItem style={{ alignSelf: 'start' }} key={'category-select'}>
           {categoryDropdown}

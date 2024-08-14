@@ -36,18 +36,36 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={() => setIsOpen((isOpen) => !isOpen)} isExpanded={isOpen}>
+      <MenuToggle
+        ref={toggleRef}
+        badge={filteredStates?.length ? <Badge>{filteredStates.length}</Badge> : null}
+        onClick={() => setIsOpen((isOpen) => !isOpen)}
+        isExpanded={isOpen}
+      >
         Filter by state
-        {filteredStates?.length ? <Badge isRead>{filteredStates.length}</Badge> : null}
       </MenuToggle>
     ),
     [filteredStates, setIsOpen, isOpen],
   );
 
   return (
-    <Select toggle={toggle} onSelect={onSelect} selected={filteredStates} isOpen={isOpen} aria-label="Filter by state">
+    <Select
+      toggle={toggle}
+      onSelect={onSelect}
+      selected={filteredStates}
+      isOpen={isOpen}
+      aria-label="Filter by state"
+      onOpenChange={(isOpen) => setIsOpen(isOpen)}
+      onOpenChangeKeys={['Escape']}
+    >
       {Object.values(RecordingState).map((rs) => (
-        <SelectOption aria-label={`${rs} State`} key={rs} value={rs}>
+        <SelectOption
+          aria-label={`${rs} State`}
+          key={rs}
+          value={rs}
+          hasCheckbox
+          isSelected={filteredStates?.some((s) => s === rs)}
+        >
           {rs}
         </SelectOption>
       ))}
