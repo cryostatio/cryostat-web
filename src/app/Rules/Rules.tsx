@@ -19,7 +19,7 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, formatDuration, sortResources } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -84,33 +84,33 @@ const tableColumns: TableColumn[] = [
     tooltip: 'The name and location of the Event Template applied by this rule.',
   },
   {
+    title: 'Maximum age',
+    keyPaths: ['maxAgeSeconds'],
+    tooltip:
+      'The maximum age for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.',
+  },
+  {
+    title: 'Maximum size',
+    keyPaths: ['maxSizeBytes'],
+    tooltip: 'The maximum size for JFR Recordings started by this rule. Values less than 1 indicate no limit.',
+  },
+  {
     title: 'Archival period',
     keyPaths: ['archivalPeriodSeconds'],
     tooltip:
-      'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.',
+      'Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.',
   },
   {
     title: 'Initial delay',
     keyPaths: ['initialDelaySeconds'],
     tooltip:
-      'Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.',
+      'Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.',
   },
   {
     title: 'Preserved archives',
     keyPaths: ['preservedArchives'],
     tooltip:
       'The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory.',
-  },
-  {
-    title: 'Maximum age',
-    keyPaths: ['maxAgeSeconds'],
-    tooltip:
-      'The maximum age in seconds for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.',
-  },
-  {
-    title: 'Maximum size',
-    keyPaths: ['maxSizeBytes'],
-    tooltip: 'The maximum size in bytes for JFR Recordings started by this rule. Values less than 1 indicate no limit.',
   },
 ];
 
@@ -335,20 +335,20 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
           {r.eventSpecifier}
         </Td>
-        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[5].title}>
-          {r.archivalPeriodSeconds}
+        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[5].title}>
+          {formatDuration(r.maxAgeSeconds)}
         </Td>
-        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[6].title}>
-          {r.initialDelaySeconds}
+        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[6].title}>
+          {formatBytes(r.maxSizeBytes)}
         </Td>
-        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[7].title}>
+        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[7].title}>
+          {formatDuration( r.archivalPeriodSeconds )}
+        </Td>
+        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[8].title}>
+          {formatDuration(r.initialDelaySeconds)}
+        </Td>
+        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[9].title}>
           {r.preservedArchives}
-        </Td>
-        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[8].title}>
-          {r.maxAgeSeconds}
-        </Td>
-        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[9].title}>
-          {r.maxSizeBytes}
         </Td>
         <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
           <ActionsColumn

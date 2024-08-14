@@ -17,6 +17,7 @@
 import { KeyValue } from '@app/Shared/Services/api.types';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
+import humanizeDuration from 'humanize-duration';
 import { NavigateFunction } from 'react-router-dom';
 import { BehaviorSubject, Observable } from 'rxjs';
 import semverGt from 'semver/functions/gt';
@@ -93,6 +94,11 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizeUnits[i]}`;
+};
+
+/* scalar is the time unit. Default milliseconds. */
+export const formatDuration = (quantity: number, scalar = 1000): string => {
+  return humanizeDuration(quantity * scalar);
 };
 
 export interface AutomatedAnalysisTimerObject {
