@@ -40,6 +40,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^14.4.3",
+    "@types/humanize-duration": "^3.27.4",
     "@types/jest": "^27.0.2",
     "@types/js-base64": "3.3.1",
     "@types/react-test-renderer": "^17.0.7",
