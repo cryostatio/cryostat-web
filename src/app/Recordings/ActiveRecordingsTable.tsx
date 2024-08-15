@@ -46,7 +46,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -931,7 +931,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     const options: KeyValue[] = [];
     options.push({ key: 'toDisk', value: String(recording.toDisk) });
     if (recording.maxAge) {
-      options.push({ key: 'maxAge', value: `${recording.maxAge / 1000}s` });
+      options.push({ key: 'maxAge', value: formatDuration(recording.maxAge, 1) });
     }
     if (recording.maxSize) {
       options.push({ key: 'maxSize', value: formatBytes(recording.maxSize) });
@@ -942,7 +942,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const parentRow = React.useMemo(() => {
     const RecordingDuration = (props: { duration: number }) => {
       const str = React.useMemo(
-        () => (props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`),
+        () => (props.duration === 0 ? 'Continuous' : formatDuration(recording.duration, 1)),
         [props.duration],
       );
       return <span>{str}</span>;

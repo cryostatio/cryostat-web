@@ -2193,6 +2193,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/humanize-duration@npm:^3.27.4":
+  version: 3.27.4
+  resolution: "@types/humanize-duration@npm:3.27.4"
+  checksum: aa7fa41af839021c846a1728d2f097b7885f80acbc5050623a9804d23fd8fee19d2654eaae331f000a4e551b88d99cd0b5f6cc97aa99f869b9205f6248066827
+  languageName: node
+  linkType: hard
+
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0, @types/istanbul-lib-coverage@npm:^2.0.1":
   version: 2.0.4
   resolution: "@types/istanbul-lib-coverage@npm:2.0.4"
@@ -4255,6 +4262,7 @@ __metadata:
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^12.1.5
     "@testing-library/user-event": ^14.4.3
+    "@types/humanize-duration": ^3.27.4
     "@types/jest": ^27.0.2
     "@types/js-base64": 3.3.1
     "@types/lodash": ^4.14.202
@@ -4276,6 +4284,7 @@ __metadata:
     file-loader: ^6.2.0
     fork-ts-checker-webpack-plugin: ^7.3.0
     html-webpack-plugin: ^5.5.4
+    humanize-duration: ^3.32.1
     i18next: ^22.4.10
     i18next-browser-languagedetector: ^7.0.1
     i18next-parser: ^8.12.0
@@ -7282,6 +7291,13 @@ __metadata:
   version: 2.1.0
   resolution: "human-signals@npm:2.1.0"
   checksum: b87fd89fce72391625271454e70f67fe405277415b48bcc0117ca73d31fa23a4241787afdc8d67f5a116cf37258c052f59ea82daffa72364d61351423848e3b8
+  languageName: node
+  linkType: hard
+
+"humanize-duration@npm:^3.32.1":
+  version: 3.32.1
+  resolution: "humanize-duration@npm:3.32.1"
+  checksum: 17f6f2ec09a931eb0bf7de1fc8ac01f90174f366f60390289bd0797c6e4545255bd5d770dd18909c9b21685d76cc190b3a8ec880d2ecc088a1ad032e0d2f57cb
   languageName: node
   linkType: hard
 

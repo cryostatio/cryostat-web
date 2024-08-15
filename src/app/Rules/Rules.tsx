@@ -20,7 +20,7 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, formatDuration, sortResources } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -101,6 +101,16 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         tooltip: t('Rules.EVENT_SPECIFIER_TOOLTIP'),
       },
       {
+        title: t('MAXIMUM_AGE', { ns: 'common' }),
+        keyPaths: ['maxAgeSeconds'],
+        tooltip: t('Rules.MAX_AGE_TOOLTIP'),
+      },
+      {
+        title: t('MAXIMUM_SIZE', { ns: 'common' }),
+        keyPaths: ['maxSizeBytes'],
+        tooltip: t('Rules.MAX_SIZE_TOOLTIP'),
+      },
+      {
         title: t('ARCHIVAL_PERIOD', { ns: 'common' }),
         keyPaths: ['archivalPeriodSeconds'],
         tooltip: t('Rules.ARCHIVAL_PERIOD_TOOLTIP'),
@@ -114,16 +124,6 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         title: t('PRESERVED_ARCHIVES', { ns: 'common' }),
         keyPaths: ['preservedArchives'],
         tooltip: t('Rules.PRESERVED_ARCHIVES_TOOLTIP'),
-      },
-      {
-        title: t('MAXIMUM_AGE', { ns: 'common' }),
-        keyPaths: ['maxAgeSeconds'],
-        tooltip: t('Rules.MAX_AGE_TOOLTIP'),
-      },
-      {
-        title: t('MAXIMUM_SIZE', { ns: 'common' }),
-        keyPaths: ['maxSizeBytes'],
-        tooltip: t('Rules.MAX_SIZE_TOOLTIP'),
       },
     ],
     [t],
@@ -335,20 +335,20 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
         <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
           {r.eventSpecifier}
         </Td>
-        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[5].title}>
-          {r.archivalPeriodSeconds}
+        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[5].title}>
+          {formatDuration(r.maxAgeSeconds)}
         </Td>
-        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[6].title}>
-          {r.initialDelaySeconds}
+        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[6].title}>
+          {formatBytes(r.maxSizeBytes)}
         </Td>
-        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[7].title}>
+        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[7].title}>
+          {formatDuration(r.archivalPeriodSeconds)}
+        </Td>
+        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[8].title}>
+          {formatDuration(r.initialDelaySeconds)}
+        </Td>
+        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[9].title}>
           {r.preservedArchives}
-        </Td>
-        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[8].title}>
-          {r.maxAgeSeconds}
-        </Td>
-        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[9].title}>
-          {r.maxSizeBytes}
         </Td>
         <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
           <ActionsColumn
