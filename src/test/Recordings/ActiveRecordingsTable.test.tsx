@@ -235,7 +235,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(toolTip).toBeVisible();
 
     const duration = screen.getByText(
-      mockRecording.continuous || mockRecording.duration === 0 ? 'Continuous' : `${mockRecording.duration / 1000}s`,
+      mockRecording.continuous || mockRecording.duration === 0 ? 'Continuous' : '1 second',
     );
     expect(duration).toBeInTheDocument();
     expect(duration).toBeVisible();
