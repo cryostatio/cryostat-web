@@ -281,9 +281,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const userInfoItems = React.useMemo(
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownItem key={'language-preferences'} onClick={handleLanguagePref}>Language preference</DropdownItem>
+        <DropdownItem key={'language-preferences'} onClick={handleLanguagePref}>
+          Language preference
+        </DropdownItem>
       </FeatureFlag>,
-      <DropdownItem key={'log-out'} onClick={handleLogout}>Log out</DropdownItem>,
+      <DropdownItem key={'log-out'} onClick={handleLogout}>
+        Log out
+      </DropdownItem>,
     ],
     [handleLogout, handleLanguagePref],
   );
@@ -354,7 +358,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <Label
         isCompact
         style={{ marginLeft: '2ch', textTransform: 'capitalize', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
-        color={level === FeatureLevel.BETA ? 'green' : 'red'}
+        color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
       >
         {FeatureLevel[level].toLowerCase()}
       </Label>
