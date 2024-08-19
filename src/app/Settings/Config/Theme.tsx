@@ -73,6 +73,8 @@ const Component = () => {
         appendTo: portalRoot,
       }}
       toggle={toggle}
+      onOpenChange={setOpen}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>
         {Object.values(ThemeSetting).map((theme) => (

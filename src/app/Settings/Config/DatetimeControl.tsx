@@ -149,6 +149,8 @@ const Component = () => {
             onSelect={handleDateLocaleSelect}
             menuHeight="20vh"
             isScrollable
+            onOpenChange={setDateLocaleOpen}
+            onOpenChangeKeys={['Escape']}
           >
             <SelectList>{dateLocaleOptions}</SelectList>
           </Select>

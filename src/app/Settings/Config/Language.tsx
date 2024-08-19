@@ -62,6 +62,8 @@ const Component = () => {
         enableFlip: true,
         appendTo: portalRoot,
       }}
+      onOpenChange={setOpen}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>
         {Object.keys(i18nResources).map((l) => (
