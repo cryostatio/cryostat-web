@@ -147,6 +147,8 @@ const Component = () => {
             }}
             selected={datetimeFormat.dateLocale}
             onSelect={handleDateLocaleSelect}
+            menuHeight="20vh"
+            isScrollable
           >
             <SelectList>{dateLocaleOptions}</SelectList>
           </Select>
