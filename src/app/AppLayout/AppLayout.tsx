@@ -353,17 +353,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
-  const levelBadge = React.useCallback((level: FeatureLevel) => {
-    return (
-      <Label
-        isCompact
-        style={{ marginLeft: '2ch', textTransform: 'capitalize', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
-        color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
-      >
-        {FeatureLevel[level].toLowerCase()}
-      </Label>
-    );
-  }, []);
+  const levelBadge = React.useCallback(
+    (level: FeatureLevel) => {
+      return (
+        <Label
+          isCompact
+          style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
+          color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
+        >
+          {t(FeatureLevel[level])}
+        </Label>
+      );
+    },
+    [t],
+  );
 
   const headerToolbar = React.useMemo(
     () => (
