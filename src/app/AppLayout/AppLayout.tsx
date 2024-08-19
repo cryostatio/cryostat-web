@@ -283,13 +283,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const userInfoItems = React.useMemo(
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownGroup key={'language-preferences'}>
-          <DropdownItem onClick={handleLanguagePref}>Language preference</DropdownItem>
-        </DropdownGroup>
+        <DropdownItem onClick={handleLanguagePref}>Language preference</DropdownItem>
       </FeatureFlag>,
-      <DropdownGroup key={'log-out'}>
-        <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
-      </DropdownGroup>,
+      <DropdownItem onClick={handleLogout}>Log out</DropdownItem>,
     ],
     [handleLogout, handleLanguagePref],
   );
