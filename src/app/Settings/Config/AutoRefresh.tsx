@@ -41,7 +41,7 @@ const Component = () => {
   }, [setState, context.settings]);
 
   const handleAutoRefreshEnabledChange = React.useCallback(
-    (autoRefreshEnabled) => {
+    (_, autoRefreshEnabled) => {
       setState((state) => ({ ...state, autoRefreshEnabled }));
       context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
     },
