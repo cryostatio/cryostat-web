@@ -64,14 +64,12 @@ import {
   MenuToggleElement,
   MenuToggle,
   DropdownList,
-  DropdownGroup,
   DropdownItem,
   Dropdown,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
   BellIcon,
-  CaretDownIcon,
   CogIcon,
   ExternalLinkAltIcon,
   PlusCircleIcon,
@@ -283,16 +281,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const userInfoItems = React.useMemo(
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownItem onClick={handleLanguagePref}>Language preference</DropdownItem>
+        <DropdownItem key={'language-preferences'} onClick={handleLanguagePref}>Language preference</DropdownItem>
       </FeatureFlag>,
-      <DropdownItem onClick={handleLogout}>Log out</DropdownItem>,
+      <DropdownItem key={'log-out'} onClick={handleLogout}>Log out</DropdownItem>,
     ],
     [handleLogout, handleLanguagePref],
   );
 
-  const UserInfoToggle = React.useCallback(
+  const userInfoToggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
+      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle}>
         {username || (
           <Icon size="sm">
             <UserIcon color="white" />
@@ -427,7 +425,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                       </MenuToggle>
                     )}
                     isOpen={showHelpDropdown}
-                    onOpenChange={(v) => setShowHelpDropdown(v)}
+                    onOpenChange={setShowHelpDropdown}
                     onOpenChangeKeys={['Escape']}
                     popperProps={{
                       position: 'right',
@@ -440,9 +438,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
                   onSelect={() => setShowUserInfoDropdown(false)}
-                  toggle={UserInfoToggle}
+                  toggle={userInfoToggle}
                   isOpen={showUserInfoDropdown}
-                  onOpenChange={(v) => setShowUserInfoDropdown(v)}
+                  onOpenChange={setShowUserInfoDropdown}
                   onOpenChangeKeys={['Escape']}
                   popperProps={{
                     position: 'right',
@@ -465,7 +463,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       setShowUserInfoDropdown,
       showUserInfoDropdown,
       showHelpDropdown,
-      UserInfoToggle,
+      userInfoToggle,
       userInfoItems,
       helpItems,
     ],
