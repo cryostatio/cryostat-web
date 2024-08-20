@@ -381,7 +381,10 @@
       "TITLE": "Show deletion dialogs"
     },
     "FEATURE_LEVEL": {
+      "BETA_DESCRIPTION": "Experimental features",
       "DESCRIPTION": "Control which graphical features appear in the application.",
+      "DEVELOPMENT_DESCRIPTION": "Under development features",
+      "PRODUCTION_DESCRIPTION": "Stable production-ready features",
       "TITLE": "Feature level"
     },
     "LANGUAGE": {

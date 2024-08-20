@@ -75,7 +75,12 @@ const Component = () => {
             .map((v): { key: string; value: number } => ({ key: v.toString(), value: FeatureLevel[v] }))
             .filter((v) => isDevNodeEnv() || v.value !== FeatureLevel.DEVELOPMENT)
             .map((level) => (
-              <SelectOption key={level.key} value={level} isSelected={featureLevel == level.value}>
+              <SelectOption
+                key={level.key}
+                value={level}
+                isSelected={featureLevel == level.value}
+                description={t(`SETTINGS.FEATURE_LEVEL.${level.key}_DESCRIPTION`)}
+              >
                 {t(level.key)}
               </SelectOption>
             ))}
