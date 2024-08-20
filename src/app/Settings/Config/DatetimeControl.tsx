@@ -19,22 +19,20 @@ import useDayjs from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { locales, Timezone } from '@i18n/datetime';
 import {
-  Button,
   FormGroup,
   HelperText,
   HelperTextItem,
+  MenuSearch,
+  MenuSearchInput,
   MenuToggle,
   MenuToggleElement,
+  SearchInput,
   Select,
   SelectList,
   SelectOption,
   Stack,
   StackItem,
-  TextInputGroup,
-  TextInputGroupMain,
-  TextInputGroupUtilities,
 } from '@patternfly/react-core';
-import { TimesIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
@@ -44,7 +42,7 @@ const Component = () => {
   const context = React.useContext(ServiceContext);
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
   const [_, datetimeFormat] = useDayjs();
-  const [filterValue, setFilterValue] = React.useState('');
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleDateLocaleSelect = React.useCallback(
     (_, locale) => {
@@ -77,57 +75,36 @@ const Component = () => {
     () =>
       locales
         .filter((locale) => {
-          if (!filterValue) {
+          if (!searchTerm) {
             return true;
           }
-          const matchExp = new RegExp(filterValue, 'i');
+          const matchExp = new RegExp(searchTerm, 'i');
           return matchExp.test(locale.name) || matchExp.test(locale.key);
         })
         .map((locale) => (
-          <SelectOption key={locale.key} description={locale.key} value={locale}>
+          <SelectOption
+            key={locale.key}
+            description={locale.key}
+            value={locale}
+            isSelected={locale.key === datetimeFormat.dateLocale.key}
+          >
             {locale.name}
           </SelectOption>
         )),
-    [filterValue],
+    [searchTerm, datetimeFormat.dateLocale],
   );
 
   const onToggle = React.useCallback(() => setDateLocaleOpen((open) => !open), [setDateLocaleOpen]);
 
-  const onInputChange = React.useCallback((_, value: string) => setFilterValue(value), [setFilterValue]);
+  const onInputChange = React.useCallback((_, value: string) => setSearchTerm(value), [setSearchTerm]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} variant="typeahead" onClick={onToggle} isExpanded={dateLocaleOpen} isFullWidth>
-        <TextInputGroup isPlain>
-          <TextInputGroupMain
-            value={filterValue}
-            onClick={onToggle}
-            onChange={onInputChange}
-            autoComplete="off"
-            placeholder={t('SETTINGS.DATETIME_CONTROL.LOCALE_SELECT_DESCRIPTION')}
-            isExpanded={dateLocaleOpen}
-            role="combobox"
-            id="typeahead-datetime-filter"
-            aria-controls="typeahead-datetime-select"
-            aria-label={t('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT')}
-          />
-          <TextInputGroupUtilities>
-            {filterValue ? (
-              <Button
-                variant="plain"
-                onClick={() => {
-                  setFilterValue('');
-                }}
-                aria-label="Clear input value"
-              >
-                <TimesIcon aria-hidden />
-              </Button>
-            ) : null}
-          </TextInputGroupUtilities>
-        </TextInputGroup>
+      <MenuToggle ref={toggleRef} onClick={onToggle} isExpanded={dateLocaleOpen} isFullWidth>
+        {datetimeFormat.dateLocale.name}
       </MenuToggle>
     ),
-    [onToggle, dateLocaleOpen, filterValue, onInputChange, setFilterValue, t],
+    [onToggle, dateLocaleOpen, datetimeFormat.dateLocale],
   );
 
   return (
@@ -152,7 +129,14 @@ const Component = () => {
             onOpenChange={setDateLocaleOpen}
             onOpenChangeKeys={['Escape']}
           >
-            <SelectList>{dateLocaleOptions}</SelectList>
+            <SelectList>
+              <MenuSearch>
+                <MenuSearchInput>
+                  <SearchInput placeholder="Filter by locale..." value={searchTerm} onChange={onInputChange} />
+                </MenuSearchInput>
+              </MenuSearch>
+              {dateLocaleOptions}
+            </SelectList>
           </Select>
         </FormGroup>
       </StackItem>
