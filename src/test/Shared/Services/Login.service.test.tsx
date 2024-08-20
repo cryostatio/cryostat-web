@@ -109,13 +109,13 @@ describe('Login.service', () => {
       it('should make expected API calls', async () => {
         await firstValueFrom(svc.setLoggedOut());
         expect(mockFromFetch).toHaveBeenCalledTimes(2);
-        expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v2.1/auth`, {
+        expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v4/auth`, {
           credentials: 'include',
           mode: 'cors',
           method: 'POST',
           body: null,
         });
-        expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v2.1/logout`, {
+        expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v4/logout`, {
           credentials: 'include',
           mode: 'cors',
           method: 'POST',
@@ -210,7 +210,7 @@ describe('Login.service', () => {
         it('should make expected API calls', async () => {
           await firstValueFrom(svc.setLoggedOut());
           expect(mockFromFetch).toHaveBeenCalledTimes(3);
-          expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v2.1/auth`, {
+          expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v4/auth`, {
             credentials: 'include',
             mode: 'cors',
             method: 'POST',
@@ -219,7 +219,7 @@ describe('Login.service', () => {
               Authorization: `Bearer c2hhMjU2fmhlbGxvd29ybGQ`,
             }),
           });
-          expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v2.1/logout`, {
+          expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v4/logout`, {
             credentials: 'include',
             mode: 'cors',
             method: 'POST',
@@ -228,7 +228,7 @@ describe('Login.service', () => {
               Authorization: `Bearer c2hhMjU2fmhlbGxvd29ybGQ`,
             }),
           });
-          expect(mockFromFetch).toHaveBeenNthCalledWith(3, `./api/v2.1/auth`, {
+          expect(mockFromFetch).toHaveBeenNthCalledWith(3, `./api/v4/auth`, {
             credentials: 'include',
             mode: 'cors',
             method: 'POST',

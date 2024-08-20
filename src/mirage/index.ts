@@ -79,9 +79,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         reportsAvailable: true,
         reportsConfigured: false,
       }));
-      this.get('api/v1/grafana_datasource_url', () => new Response(500));
-      this.get('api/v1/grafana_dashboard_url', () => new Response(500));
-      this.post('api/v2.1/auth', () => {
+      this.get('api/v4/grafana_datasource_url', () => new Response(500));
+      this.get('api/v4/grafana_dashboard_url', () => new Response(500));
+      this.post('api/v4/auth', () => {
         return new Response(
           200,
           {},
@@ -98,15 +98,14 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
       });
       this.post(
-        'api/v2.1/auth/token',
+        'api/v4/auth/token',
         () => new Response(400, {}, 'Resource downloads are not supported in this demo'),
       );
-      this.post('api/v2/targets', (schema, request) => {
+      this.post('api/v4/targets', (schema, request) => {
         const params = request.queryParams;
         if (params['dryrun']) {
           return new Response(200);
         }
-
         const attrs = request.requestBody as any;
         const target = schema.create(Resource.TARGET, {
           jvmId: `${Date.now().toString(16)}`,
@@ -138,8 +137,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
         };
       });
-      this.get('api/v1/targets', (schema) => schema.all(Resource.TARGET).models);
-      this.get('api/v3/discovery', (schema) => {
+      this.get('api/v4/targets', (schema) => schema.all(Resource.TARGET).models);
+      this.get('api/v4/discovery', (schema) => {
         const models = schema.all(Resource.TARGET).models;
         const realmTypes = models.map((t) => t.annotations.cryostat['REALM']);
         return {
@@ -162,7 +161,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           })),
         };
       });
-      this.get('api/v1/recordings', (schema) => schema.all(Resource.ARCHIVE).models);
+      this.get('api/v4/recordings', (schema) => schema.all(Resource.ARCHIVE).models);
       this.get('api/beta/fs/recordings', (schema) => {
         const target = schema.first(Resource.TARGET);
         const archives = schema.all(Resource.ARCHIVE).models;
@@ -200,7 +199,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(200);
       });
-      this.post('api/v1/targets/:targetId/recordings', (schema, request) => {
+      this.post('api/v4/targets/:targetId/recordings', (schema, request) => {
         // Note: MirageJS will fake serialize FormData (i.e. FormData object is returned when accessing request.requestBody)
         const attrs = request.requestBody as any;
 
@@ -246,8 +245,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return recording;
       });
-      this.get('api/v1/targets/:targetId/recordings', (schema) => schema.all(Resource.RECORDING).models);
-      this.delete('api/v1/targets/:targetId/recordings/:recordingName', (schema, request) => {
+      this.get('api/v4/targets/:targetId/recordings', (schema) => schema.all(Resource.RECORDING).models);
+      this.delete('api/v4/targets/:targetId/recordings/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
         const recording = schema.findBy(Resource.RECORDING, { name: recordingName });
 
@@ -271,7 +270,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(200);
       });
-      this.patch('api/v1/targets/:targetId/recordings/:recordingName', (schema, request) => {
+      this.patch('api/v4/targets/:targetId/recordings/:recordingName', (schema, request) => {
         const body = request.requestBody;
         const recordingName = request.params.recordingName;
         const target = schema.findBy(Resource.TARGET, { connectUrl: request.params.targetId });
@@ -392,8 +391,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
         );
       });
-      this.get('api/v1/targets/:targetId/recordingOptions', () => []);
-      this.get('api/v1/targets/:targetId/events', () => [
+      this.get('api/v4/targets/:targetId/recordingOptions', () => []);
+      this.get('api/v4/targets/:targetId/events', () => [
         {
           category: ['GC', 'Java Virtual Machine'],
           name: 'GC Heap Configuration',
@@ -401,7 +400,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'The configuration of the garbage collected heap',
         },
       ]);
-      this.get('api/v1/targets/:targetId/templates', () => [
+      this.get('api/v4/targets/:targetId/templates', () => [
         {
           name: 'Demo Template',
           provider: 'Demo',
@@ -409,7 +408,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'This is not a real event template, but it is here!',
         },
       ]);
-      this.get('api/v2/probes', () => []);
+      this.get('api/v4/probes', () => []);
       this.post('api/beta/matchExpressions', (_, request) => {
         const attr = JSON.parse(request.requestBody);
         if (!attr.matchExpression || !attr.targets) {
@@ -423,7 +422,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
         };
       });
-      this.post('api/v2/rules', (schema, request) => {
+      this.post('api/v4/rules', (schema, request) => {
         const attrs = JSON.parse(request.requestBody);
         const rule = schema.create(Resource.RULE, attrs);
         const msg = {
@@ -440,10 +439,10 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
         };
       });
-      this.get('api/v2/rules', (schema) => ({
+      this.get('api/v4/rules', (schema) => ({
         data: { result: schema.all(Resource.RULE).models },
       }));
-      this.patch('api/v2/rules/:ruleName', (schema, request) => {
+      this.patch('api/v4/rules/:ruleName', (schema, request) => {
         const ruleName = request.params.ruleName;
         const patch = JSON.parse(request.requestBody);
         const rule = schema.findBy(Resource.RULE, { name: ruleName });
@@ -462,7 +461,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(200);
       });
-      this.delete('api/v2/rules/:ruleName', (schema, request) => {
+      this.delete('api/v4/rules/:ruleName', (schema, request) => {
         const ruleName = request.params.ruleName;
         const rule = schema.findBy(Resource.RULE, { name: ruleName });
 
@@ -481,7 +480,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         websocket.send(JSON.stringify(msg));
         return new Response(200);
       });
-      this.post('api/v2.2/credentials', (schema, request) => {
+      this.post('api/v4/credentials', (schema, request) => {
         const credential = schema.create(Resource.CREDENTIAL, {
           matchExpression: (request.requestBody as any).get('matchExpression'),
           numMatchingTargets: 0,
@@ -501,9 +500,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return new Response(201);
       });
-      this.get('api/v2.2/credentials', (schema) => ({ data: { result: schema.all(Resource.CREDENTIAL).models } }));
-      this.get('api/v2.2/credentials/:id', () => ({ data: { result: { matchExpression: '', targets: [] } } }));
-      this.post('api/v2.2/graphql', (schema, request) => {
+      this.get('api/v4/credentials', (schema) => ({ data: { result: schema.all(Resource.CREDENTIAL).models } }));
+      this.get('api/v4/credentials/:id', () => ({ data: { result: { matchExpression: '', targets: [] } } }));
+      this.post('api/v4/graphql', (schema, request) => {
         const body = JSON.parse(request.requestBody);
         const query = body.query.trim();
         const variables = body.variables;
@@ -732,7 +731,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         }
         return { data };
       });
-      this.get('api/v3/tls/certs', () => {
+      this.get('api/v4/tls/certs', () => {
         return new Response(200, {}, ['/truststore/additional-app.crt']);
       });
     },

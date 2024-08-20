@@ -111,10 +111,10 @@ export class ApiService {
       .subscribe();
 
     const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v1/grafana_datasource_url`,
+      `${this.login.authority}/api/v4/grafana_datasource_url`,
     ).pipe(concatMap((resp) => from(resp.json())));
     const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v1/grafana_dashboard_url`,
+      `${this.login.authority}/api/v4/grafana_dashboard_url`,
     ).pipe(concatMap((resp) => from(resp.json())));
     const health: Observable<HealthGetResponse> = fromFetch(`${this.login.authority}/health`).pipe(
       tap((resp: Response) => {
@@ -866,7 +866,7 @@ export class ApiService {
         first(),
         map(
           (target) =>
-            `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
+            `${this.login.authority}/api/v4/targets/${encodeURIComponent(
               target!.connectUrl,
             )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`,
         ),
