@@ -97,10 +97,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           },
         );
       });
-      this.post(
-        'api/v4/auth/token',
-        () => new Response(400, {}, 'Resource downloads are not supported in this demo'),
-      );
+      this.post('api/v4/auth/token', () => new Response(400, {}, 'Resource downloads are not supported in this demo'));
       this.post('api/v4/targets', (schema, request) => {
         const params = request.queryParams;
         if (params['dryrun']) {
