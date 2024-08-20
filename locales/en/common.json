@@ -43,6 +43,7 @@
   "MAXIMUM_SIZE_HELPER_TEXT": "The maximum size of Recording data saved to disk.",
   "MERIDIEM_AM": "AM",
   "MERIDIEM_PM": "PM",
+  "MILLISECOND": "Millisecond",
   "MINUTE": "Minute",
   "MINUTE_one": "Minute",
   "MINUTE_other": "Minutes",
