@@ -75,9 +75,8 @@
     "CURRENT_CONFIG": "Current configuration",
     "FORM_TITLE": "Profiling Recording configuration",
     "FORMATTED_TEMPLATE": "Name: {{template.name}}, Type: {{template.type}}",
-    "MAXIMUM_AGE": "Maximum age ({{unit}})",
-    "MAXIMUM_SIZE": "Maximum size ({{unit}})",
-    "SAVE_CHANGES": "Save changes",
+    "MAXIMUM_AGE": "Maximum age",
+    "MAXIMUM_SIZE": "Maximum size",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to automated analysis Recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a target template as a default template type configuration may not apply to all target JVMs if the JVMs do not support them."
   },
@@ -339,7 +338,7 @@
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
       "DESCRIPTION": "Set the Recording configuration for automated analysis Recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
-      "TITLE": "Automated analysis Recording configuration"
+      "TITLE": "Recording configuration for Automated analysis"
     },
     "CATEGORIES": {
       "ADVANCED": "Advanced",

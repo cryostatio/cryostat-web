@@ -319,6 +319,10 @@ html, body, #root {
   margin-top: 0.5em;
 }
 
+.automated-analysis__form_select {
+  min-width: 10ch;
+}
+
 :where(.pf-v5-theme-dark) #automated-analysis-config-drawer-create-recording-button {
   --pf-v5-c-button--after--BorderColor: var(--pf-v5-c-button--m-control--after--BorderTopColor) var(--pf-v5-c-button--m-control--after--BorderRightColor) var(--pf-v5-c-button--m-control--after--BorderBottomColor) var(--pf-v5-global--BorderColor--300);
 }
