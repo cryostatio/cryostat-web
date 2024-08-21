@@ -82,6 +82,11 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
     [setNumOfOptions, timezones],
   );
 
+  const getTimezoneDisplay = React.useCallback(
+    (timezone: Timezone) => `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`,
+    [dayjs],
+  );
+
   const mapToSelection = React.useCallback(
     (timezone: Timezone) => {
       return (
@@ -91,21 +96,21 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
           description={timezone.short}
           isSelected={selected.full === timezone.full}
         >
-          {`(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
+          {getTimezoneDisplay(timezone)}
         </SelectOption>
       );
     },
-    [dayjs, selected],
+    [selected, getTimezoneDisplay],
   );
 
   const filteredTimezones = React.useMemo(() => {
     let _opts = timezones;
     if (searchTerm) {
       const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
-      _opts = _opts.filter((tz) => matchExp.test(tz.full) || matchExp.test(tz.short));
+      _opts = _opts.filter((tz) => matchExp.test(getTimezoneDisplay(tz)));
     }
     return _opts.slice(0, numOfOptions);
-  }, [timezones, numOfOptions, searchTerm]);
+  }, [timezones, numOfOptions, searchTerm, getTimezoneDisplay]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
