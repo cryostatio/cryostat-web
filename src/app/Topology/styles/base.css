@@ -232,6 +232,14 @@ Below CSS rules only apply to Topology components
   font-weight: 700;
 }
 
+.topology__group-node-badge {
+  fill: var(--pf-v5-global--palette--white);
+}
+
+:where(.pf-v5-theme-dark) .topology__group-node-badge {
+  fill: var(--pf-v5-global--palette--black-300);
+}
+
 #topology__visualization-container.topology__main-container {
   padding: 1em;
 }
