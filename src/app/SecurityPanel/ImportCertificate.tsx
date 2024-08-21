@@ -52,7 +52,7 @@ export const CertificateImport: React.FC = () => {
     setLoading(true);
     addSubscription(
       context.api
-        .doGet('tls/certs', 'v3')
+        .doGet('tls/certs', 'v4')
         .pipe(tap((_) => setLoading(false)))
         .subscribe(setCerts),
     );

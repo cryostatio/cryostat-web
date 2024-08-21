@@ -1130,7 +1130,7 @@ export class ApiService {
   }
 
   getDiscoveryTree(): Observable<EnvironmentNode> {
-    return this.sendRequest('v3', 'discovery', {
+    return this.sendRequest('v4', 'discovery', {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
