@@ -28,7 +28,7 @@ Below CSS rules only apply to Topology components
   margin: 1em;
 }
 
-:where(.pf-theme-dark) .sample-node-donut__node-wrapper {
+:where(.pf-v5-theme-dark) .sample-node-donut__node-wrapper {
   background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
@@ -38,7 +38,8 @@ Below CSS rules only apply to Topology components
   aspect-ratio: 1;
   top: 50%;
   left: 50%;
-  margin: -45% 0 0 -45%; /* Ensure true center */
+  margin: -45% 0 0 -45%;
+  /* Ensure true center */
   border-radius: 50%;
   padding: 1em;
   border: 0.8em solid var(--pf-v5-global--palette--blue-400);
@@ -69,7 +70,7 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-v5-global--palette--white);
 }
 
-:where(.pf-theme-dark) .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
+:where(.pf-v5-theme-dark) .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
   background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
@@ -90,7 +91,7 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-v5-global--palette--white);
 }
 
-:where(.pf-theme-dark) .sample-node-donut__node-label {
+:where(.pf-v5-theme-dark) .sample-node-donut__node-label {
   background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
@@ -149,10 +150,10 @@ Below CSS rules only apply to Topology components
 .entity-overview__entity-title-wrapper {
   font-weight: 700;
   font-size: 1.2em;
-  color:  var(--pf-v5-global--palette--blue-500);
+  color: var(--pf-v5-global--palette--blue-500);
 }
 
-:where(.pf-theme-dark) .entity-overview__entity-title-wrapper {
+:where(.pf-v5-theme-dark) .entity-overview__entity-title-wrapper {
   color: var(--pf-v5-global--palette--blue-300);
 }
 
@@ -187,11 +188,11 @@ Below CSS rules only apply to Topology components
 
 .topology-listview__realm-title {
   font-size: 1.2em;
-  color:  var(--pf-v5-global--palette--blue-500);
+  color: var(--pf-v5-global--palette--blue-500);
   margin-right: 0.5em;
 }
 
-:where(.pf-theme-dark) .topology-listview__realm-title {
+:where(.pf-v5-theme-dark) .topology-listview__realm-title {
   color: var(--pf-v5-global--palette--blue-300);
 }
 
@@ -223,7 +224,7 @@ Below CSS rules only apply to Topology components
   font-weight: 700;
 }
 
-#topology__visualization-container.topology__main-container  {
+#topology__visualization-container.topology__main-container {
   padding: 1em;
 }
 
@@ -249,7 +250,8 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__toolbar-chip-content {
-  padding: 0 0.5em 0.4em 1em; /* Subtract 0.5em chip group right margin */
+  padding: 0 0.5em 0.4em 1em;
+  /* Subtract 0.5em chip group right margin */
 }
 
 .topology__filter-chip-group {
@@ -265,7 +267,7 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-v5-global--palette--white);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tab-icon {
+:where(.pf-v5-theme-dark) .topology__quicksearch__tab-icon {
   background-color: var(--pf-v5-global--BackgroundColor--dark-400);
 }
 
@@ -277,11 +279,11 @@ Below CSS rules only apply to Topology components
   margin: 0 !important;
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tabs {
-    background-color: var(--pf-v5-global--BackgroundColor--dark-300);
+:where(.pf-v5-theme-dark) .topology__quicksearch__tabs {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tabs .pf-v5-c-label {
+:where(.pf-v5-theme-dark) .topology__quicksearch__tabs .pf-v5-c-label {
   background-color: var(--pf-v5-global--BackgroundColor--dark-200);
 }
 
@@ -289,11 +291,11 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-v5-global--BackgroundColor--200);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tab.pf-m-current {
+:where(.pf-v5-theme-dark) .topology__quicksearch__tab.pf-m-current {
   background-color: var(--pf-v5-global--BackgroundColor--100);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tab-content {
+:where(.pf-v5-theme-dark) .topology__quicksearch__tab-content {
   background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
@@ -328,7 +330,7 @@ Below CSS rules only apply to Topology components
   height: 25em !important;
 }
 
-:where(.pf-theme-dark) .topology__list-view__entity-details {
+:where(.pf-v5-theme-dark) .topology__list-view__entity-details {
   background-color: var(--pf-v5-global--BackgroundColor--dark-100);
 }
 
