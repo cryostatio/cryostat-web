@@ -21,7 +21,7 @@ import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { SerializedTarget } from '@app/TargetView/SerializedTarget';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { getAnnotation, portalRoot } from '@app/utils/utils';
+import { getAnnotation } from '@app/utils/utils';
 import {
   Card,
   CardBody,
