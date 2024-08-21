@@ -382,7 +382,6 @@ body,
   position: relative;
   border-right: 4px solid var(--pf-v5-global--palette--black-500);
   border-top-right-radius: var(--pf-v5-global--BorderRadius--sm);
-  /* 3px */
   border-bottom-right-radius: var(--pf-v5-global--BorderRadius--sm);
 }
 

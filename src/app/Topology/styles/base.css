@@ -38,8 +38,8 @@ Below CSS rules only apply to Topology components
   aspect-ratio: 1;
   top: 50%;
   left: 50%;
-  margin: -45% 0 0 -45%;
   /* Ensure true center */
+  margin: -45% 0 0 -45%;
   border-radius: 50%;
   padding: 1em;
   border: 0.8em solid var(--pf-v5-global--palette--blue-400);
@@ -211,12 +211,20 @@ Below CSS rules only apply to Topology components
   color: var(--pf-v5-global--palette--black-600);
 }
 
+:where(.pf-v5-theme-dark) .topology__shortcut-command  {
+  color: var(--pf-v5-global--palette--white);
+}
+
 .topology__shortcut-command-icon {
   margin-right: 0.5em;
 }
 
 .topology__shortcut-command-plus {
   margin: 0 0.5em
+}
+
+:where(.pf-v5-theme-dark) .topology__short-cuts.pf-v5-c-table {
+  --pf-v5-c-table--BackgroundColor: var(--pf-v5-global--BackgroundColor--300);
 }
 
 .topology__node-badge text {

@@ -29,7 +29,13 @@ export interface ShortcutsProps {
 
 export const Shortcuts: React.FC<ShortcutsProps> = ({ shortcuts, ...props }) => {
   return (
-    <Table borders={false} aria-label={'Shortcuts table'} variant={'compact'} {...props}>
+    <Table
+      className="topology__short-cuts"
+      borders={false}
+      aria-label={'Shortcuts table'}
+      variant={'compact'}
+      {...props}
+    >
       <Tbody>
         {shortcuts.map((sc) => (
           <Tr key={sc.id}>
