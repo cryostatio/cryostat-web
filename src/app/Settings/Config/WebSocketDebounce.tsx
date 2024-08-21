@@ -89,7 +89,7 @@ const Component = () => {
         onChange={handleWebSocketDebounceChange}
         onMinus={handleWebSocketDebounceMinus}
         onPlus={handleWebSocketDebouncePlus}
-        unit={t('MILLISECOND', { ns: 'common' })}
+        unit={t('MILLISECOND_other', { ns: 'common' })}
       />
     </>
   );
