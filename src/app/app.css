@@ -13,7 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -26,8 +28,8 @@ html, body, #root {
 
 .cryostat-text {
   margin-top: -0.5em !important;
-  font-family: "Montserrat", sans-serif; 
-  font-weight: 900; 
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
   text-align: center;
   font-size: 4.5em;
   color: var(--cryostat-indigo);
@@ -68,7 +70,7 @@ html, body, #root {
   width: 10rem;
 }
 
-.pf-v5-c-chip-group	{
+.pf-v5-c-chip-group {
   max-width: 100ch;
 }
 
@@ -187,7 +189,7 @@ html, body, #root {
 
 .clickable-automated-analysis-label-popover-body-score {
   font-weight: bold;
-  margin-bottom: 0.5rem; 
+  margin-bottom: 0.5rem;
 }
 
 .clickable-automated-analysis-label-popover-body-score.pf-v5-m-danger {
@@ -360,7 +362,7 @@ html, body, #root {
   box-shadow: 0 0.5rem 1rem 0 rgba(3, 3, 3, 0.25);
 }
 
-.dashboard-card-resizable-wrapper { 
+.dashboard-card-resizable-wrapper {
   display: flex;
 }
 
@@ -379,7 +381,8 @@ html, body, #root {
   cursor: col-resize;
   position: relative;
   border-right: 4px solid var(--pf-v5-global--palette--black-500);
-  border-top-right-radius: var(--pf-v5-global--BorderRadius--sm); /* 3px */
+  border-top-right-radius: var(--pf-v5-global--BorderRadius--sm);
+  /* 3px */
   border-bottom-right-radius: var(--pf-v5-global--BorderRadius--sm);
 }
 
@@ -416,7 +419,7 @@ html, body, #root {
 }
 
 .datetime-picker__meridiem-tile:last-child {
-  border-radius: 0 0 0.5rem 0.5rem ;
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .datetime-picker__meridiem-tile.selected {
@@ -449,7 +452,8 @@ html, body, #root {
 }
 
 .datetime-picker__number-input input[type=number] {
-  -moz-appearance: textfield; /* Firefox */
+  -moz-appearance: textfield;
+  /* Firefox */
   width: 3.6rem;
   height: 3.6em;
   background-color: var(--pf-v5-global--palette--black-100);
@@ -493,12 +497,13 @@ html, body, #root {
   color: var(--pf-v5-global--palette--black-300);
 }
 
-.datetime-picker__calendar .pf-v5-c-calendar-month__header-year{
+.datetime-picker__calendar .pf-v5-c-calendar-month__header-year {
   min-width: 6em !important;
 }
 
 .recording-filter__toolbar-filter {
-  z-index: 199;  /* Fix input border overlap */
+  z-index: 199;
+  /* Fix input border overlap */
 }
 
 .pf-v5-c-check__input {
@@ -525,7 +530,7 @@ html, body, #root {
 .expandable-form__help-block {
   font-size: var(--pf-v5-global--FontSize--sm);
   white-space: pre-line;
-  color: var(--pf-v5-global--palette--black-700); 
+  color: var(--pf-v5-global--palette--black-700);
   margin-bottom: 8px;
   margin-top: 0;
 }
@@ -563,15 +568,19 @@ html, body, #root {
   padding: 0.3em 1em 0.3em 1em;
 }
 
-.linear-dot-spinner{
+.linear-dot-spinner {
   width: 2em;
   aspect-ratio: 4;
-  background: radial-gradient(circle closest-side, var(--pf-v5-global--palette--blue-200) 90%,#0000) 0/calc(100%/3) 100% space;
+  background: radial-gradient(circle closest-side, var(--pf-v5-global--palette--blue-200) 90%, #0000) 0/calc(100%/3) 100% space;
   clip-path: inset(0 100% 0 0);
   animation: linear-dot-spinner-animate 1s steps(4) infinite;
 }
 
-@keyframes linear-dot-spinner-animate {to {clip-path: inset(0 -34% 0 0)}}
+@keyframes linear-dot-spinner-animate {
+  to {
+    clip-path: inset(0 -34% 0 0)
+  }
+}
 
 .target-context-selector__linear-dot-spinner {
   width: 2em;
@@ -717,4 +726,13 @@ svg.topology__node-decorator-icon.progress {
 
 .duration-picker__form_select {
   min-width: 10ch;
+}
+
+.theme__toggle-group .pf-v5-c-toggle-group__button {
+  --pf-v5-c-toggle-group__button--hover--BackgroundColor: var(--pf-v5-global--palette--black-700);
+  --pf-v5-c-toggle-group__button--focus--BackgroundColor: var(--pf-v5-global--palette--black-700);
+}
+
+.theme__toggle-group .pf-v5-c-toggle-group__button.pf-m-selected {
+  --pf-v5-c-toggle-group__button--m-selected--BackgroundColor: var(--pf-v5-global--palette--blue-500);
 }

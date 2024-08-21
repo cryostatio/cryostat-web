@@ -81,6 +81,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
+import { ThemeToggle } from './ThemeToggle';
 
 export interface AppLayoutProps {
   children?: React.ReactNode;
@@ -387,6 +388,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   />
                 </ToolbarItem>
               </FeatureFlag>
+              <ToolbarGroup variant="icon-button-group" spacer={{ default: 'spacerSm' }}>
+                <ToolbarItem>
+                  <ThemeToggle />
+                </ToolbarItem>
+              </ToolbarGroup>
               <ToolbarGroup variant="icon-button-group">
                 <ToolbarItem>
                   <NotificationBadge
