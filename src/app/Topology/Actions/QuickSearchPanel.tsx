@@ -46,6 +46,7 @@ import {
 import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
+import _ from 'lodash';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
@@ -135,7 +136,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
   const filteredQuicksearches = React.useMemo(() => {
     let items = quickSearches.filter((qs) => activeLevel <= qs.featureLevel);
     if (searchText && searchText !== '') {
-      const regex = new RegExp(searchText, 'i');
+      const regex = new RegExp(_.escapeRegExp(searchText), 'i');
       items = items.filter(({ name, descriptionFull = '', descriptionShort = '', labels = [] }) => {
         let matchResult = regex.test(name) || regex.test(descriptionFull) || regex.test(descriptionShort);
 

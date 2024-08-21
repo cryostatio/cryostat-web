@@ -36,6 +36,7 @@ import {
   Split,
   SplitItem,
 } from '@patternfly/react-core';
+import _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -129,7 +130,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
       ];
     }
 
-    const matchExp = new RegExp(searchTerm, 'i');
+    const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
     const filteredTargets = targets.filter((t) =>
       [t.alias, t.connectUrl, getAnnotation(t.annotations.cryostat, 'REALM') ?? ''].some((v) => matchExp.test(v)),
     );

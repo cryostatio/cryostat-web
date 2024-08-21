@@ -34,6 +34,7 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
@@ -42,7 +43,7 @@ const Component = () => {
   const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
-  const [_, datetimeFormat] = useDayjs();
+  const [_dayjs, datetimeFormat] = useDayjs();
   const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleDateLocaleSelect = React.useCallback(
@@ -79,7 +80,7 @@ const Component = () => {
           if (!searchTerm) {
             return true;
           }
-          const matchExp = new RegExp(searchTerm, 'i');
+          const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
           return matchExp.test(locale.name) || matchExp.test(locale.key);
         })
         .map((locale) => (

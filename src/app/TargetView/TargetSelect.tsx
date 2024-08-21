@@ -40,6 +40,7 @@ import {
   DropdownItem,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface TargetSelectProps {
@@ -114,7 +115,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
   }, [handleSelect, targets, selected, firstLoadRef]);
 
   const selectOptions = React.useMemo(() => {
-    const matchExp = new RegExp(searchTerm, 'i');
+    const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
     const filteredTargets = targets.filter((t) =>
       [t.alias, t.connectUrl, getAnnotation(t.annotations.cryostat, 'REALM') ?? ''].some((v) => matchExp.test(v)),
     );

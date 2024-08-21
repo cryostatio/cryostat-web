@@ -31,6 +31,7 @@ import {
 } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -50,7 +51,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   onTimezoneChange = (_) => undefined,
 }) => {
   const { t } = useTranslation();
-  const [dayjs, _] = useDayjs();
+  const [dayjs, _dateFormat] = useDayjs();
   const [numOfOptions, setNumOfOptions] = React.useState(DEFAULT_NUM_OPTIONS);
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -100,7 +101,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   const filteredTimezones = React.useMemo(() => {
     let _opts = timezones;
     if (searchTerm) {
-      const matchExp = new RegExp(searchTerm.replace(/([+])/gi, `\\$1`), 'i');
+      const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
       _opts = _opts.filter((tz) => matchExp.test(tz.full) || matchExp.test(tz.short));
     }
     return _opts.slice(0, numOfOptions);
