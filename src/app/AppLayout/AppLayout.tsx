@@ -24,7 +24,7 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { GlobalQuickStartDrawer } from '@app/QuickStarts/QuickStartDrawer';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { ThemeSetting, SettingTab } from '@app/Settings/types';
-import { selectTab, tabAsParam } from '@app/Settings/utils';
+import { DARK_THEME_CLASS, selectTab, tabAsParam } from '@app/Settings/utils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
@@ -118,9 +118,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   React.useEffect(() => {
     if (theme === ThemeSetting.DARK) {
-      document.documentElement.classList.add('pf-theme-dark');
+      document.documentElement.classList.add(DARK_THEME_CLASS);
     } else {
-      document.documentElement.classList.remove('pf-theme-dark');
+      document.documentElement.classList.remove(DARK_THEME_CLASS);
     }
   }, [theme]);
 
