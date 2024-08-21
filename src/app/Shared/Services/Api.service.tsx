@@ -202,7 +202,7 @@ export class ApiService {
     credentials?.username && form.append('username', credentials.username);
     credentials?.password && form.append('password', credentials.password);
     return this.sendRequest(
-      'v2',
+      'v4',
       `targets`,
       {
         method: 'POST',
@@ -226,7 +226,7 @@ export class ApiService {
   }
 
   deleteTarget(target: TargetStub): Observable<boolean> {
-    return this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}`, {
+    return this.sendRequest('v4', `targets/${encodeURIComponent(target.connectUrl)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -244,7 +244,7 @@ export class ApiService {
 
     const headers = {};
     headers['Content-Type'] = 'application/json';
-    return this.sendLegacyRequest('v2', 'rules', 'Rule Upload Failed', {
+    return this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
       method: 'POST',
       body: JSON.stringify(rule),
       headers: headers,
@@ -267,7 +267,7 @@ export class ApiService {
   createRule(rule: Rule): Observable<boolean> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    return this.sendRequest('v2', 'rules', {
+    return this.sendRequest('v4', 'rules', {
       method: 'POST',
       body: JSON.stringify(rule),
       headers,
@@ -282,7 +282,7 @@ export class ApiService {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
     return this.sendRequest(
-      'v2',
+      'v4',
       `rules/${rule.name}`,
       {
         method: 'PATCH',
@@ -298,7 +298,7 @@ export class ApiService {
 
   deleteRule(name: string, clean = true): Observable<boolean> {
     return this.sendRequest(
-      'v2',
+      'v4',
       `rules/${name}`,
       {
         method: 'DELETE',
@@ -348,7 +348,7 @@ export class ApiService {
 
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v1', `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings`, {
+        this.sendRequest('v4', `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings`, {
           method: 'POST',
           body: form,
         }).pipe(
@@ -375,7 +375,7 @@ export class ApiService {
   createSnapshot(): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v1', `targets/${encodeURIComponent(target?.connectUrl || '')}/snapshot`, {
+        this.sendRequest('v4', `targets/${encodeURIComponent(target?.connectUrl || '')}/snapshot`, {
           method: 'POST',
         }).pipe(
           tap((resp) => {
@@ -394,10 +394,10 @@ export class ApiService {
     );
   }
 
-  createSnapshotV2(): Observable<ActiveRecording | undefined> {
+  createSnapshotv4(): Observable<ActiveRecording | undefined> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v2', `targets/${encodeURIComponent(target?.connectUrl || '')}/snapshot`, {
+        this.sendRequest('v4', `targets/${encodeURIComponent(target?.connectUrl || '')}/snapshot`, {
           method: 'POST',
         }).pipe(
           concatMap((resp) => resp.json() as Promise<RecordingResponse>),
@@ -417,7 +417,7 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'v1',
+          'v4',
           `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'PATCH',
@@ -435,7 +435,7 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'v1',
+          'v4',
           `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'PATCH',
@@ -453,7 +453,7 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'v1',
+          'v4',
           `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'DELETE',
@@ -483,7 +483,7 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'v1',
+          'v4',
           `targets/${encodeURIComponent(target?.connectUrl || '')}/recordings/${encodeURIComponent(
             recordingName,
           )}/upload`,
@@ -619,7 +619,7 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v1', `templates/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v4', `templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -637,7 +637,7 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('template', file);
-    return this.sendLegacyRequest('v1', 'templates', 'Template Upload Failed', {
+    return this.sendLegacyRequest('v4', 'templates', 'Template Upload Failed', {
       body: body,
       method: 'POST',
       headers: {},
@@ -660,7 +660,7 @@ export class ApiService {
   removeProbes(): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v2', `targets/${encodeURIComponent(target?.connectUrl || '')}/probes`, {
+        this.sendRequest('v4', `targets/${encodeURIComponent(target?.connectUrl || '')}/probes`, {
           method: 'DELETE',
         }).pipe(
           map((resp) => resp.ok),
@@ -675,7 +675,7 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'v2',
+          'v4',
           `targets/${encodeURIComponent(target?.connectUrl || '')}/probes/${encodeURIComponent(templateName)}`,
           {
             method: 'POST',
@@ -706,7 +706,7 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('probeTemplate', file);
-    return this.sendLegacyRequest('v2', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
+    return this.sendLegacyRequest('v4', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
       method: 'POST',
       body: body,
       headers: {},
@@ -727,7 +727,7 @@ export class ApiService {
   }
 
   deleteCustomProbeTemplate(templateName: string): Observable<boolean> {
-    return this.sendRequest('v2', `probes/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest('v4', `probes/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -754,7 +754,7 @@ export class ApiService {
 
   doGet<T>(
     path: string,
-    apiVersion: ApiVersion = 'v1',
+    apiVersion: ApiVersion = 'v4',
     params?: URLSearchParams,
     suppressNotifications?: boolean,
     skipStatusCheck?: boolean,
@@ -767,7 +767,7 @@ export class ApiService {
   }
 
   getProbeTemplates(): Observable<ProbeTemplate[]> {
-    return this.sendRequest('v2', 'probes', { method: 'GET' }).pipe(
+    return this.sendRequest('v4', 'probes', { method: 'GET' }).pipe(
       concatMap((resp) => resp.json()),
       map((response: ProbeTemplateResponse) => response.data.result),
       first(),
@@ -778,7 +778,7 @@ export class ApiService {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
-          'v2',
+          'v4',
           `targets/${encodeURIComponent(target?.connectUrl || '')}/probes`,
           {
             method: 'GET',
@@ -800,7 +800,7 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<EventProbe[]> {
     return this.sendRequest(
-      'v2',
+      'v4',
       `targets/${encodeURIComponent(target.connectUrl)}/probes`,
       {
         method: 'GET',
@@ -825,7 +825,7 @@ export class ApiService {
     headers.set('Content-Type', 'application/json');
     const req = () =>
       this.sendRequest(
-        'v2.2',
+        'v4',
         'graphql',
         {
           method: 'POST',
@@ -877,7 +877,7 @@ export class ApiService {
   }
 
   downloadRule(name: string): void {
-    this.doGet<RuleResponse>('rules/' + name, 'v2')
+    this.doGet<RuleResponse>('rules/' + name, 'v4')
       .pipe(
         first(),
         map((resp) => resp.data.result),
@@ -903,7 +903,7 @@ export class ApiService {
     body.append('recording', file);
     body.append('labels', JSON.stringify(labels));
 
-    return this.sendLegacyRequest('v1', 'recordings', 'Recording Upload Failed', {
+    return this.sendLegacyRequest('v4', 'recordings', 'Recording Upload Failed', {
       method: 'POST',
       body: body,
       headers: {},
@@ -937,7 +937,7 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('cert', file);
-    return this.sendLegacyRequest('v2', 'certificates', 'Certificate Upload Failed', {
+    return this.sendLegacyRequest('v4', 'certificates', 'Certificate Upload Failed', {
       method: 'POST',
       body,
       headers: {},
@@ -1066,7 +1066,7 @@ export class ApiService {
     body.append('username', username);
     body.append('password', password);
 
-    return this.sendRequest('v2.2', 'credentials', {
+    return this.sendRequest('v4', 'credentials', {
       method: 'POST',
       body,
     }).pipe(
@@ -1077,7 +1077,7 @@ export class ApiService {
   }
 
   getCredential(id: number): Observable<MatchedCredential> {
-    return this.sendRequest('v2.2', `credentials/${id}`, {
+    return this.sendRequest('v4', `credentials/${id}`, {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
@@ -1088,7 +1088,7 @@ export class ApiService {
 
   getCredentials(suppressNotifications = false, skipStatusCheck = false): Observable<StoredCredential[]> {
     return this.sendRequest(
-      'v2.2',
+      'v4',
       `credentials`,
       {
         method: 'GET',
@@ -1104,7 +1104,7 @@ export class ApiService {
   }
 
   deleteCredentials(id: number): Observable<boolean> {
-    return this.sendRequest('v2.2', `credentials/${id}`, {
+    return this.sendRequest('v4', `credentials/${id}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
@@ -1114,7 +1114,7 @@ export class ApiService {
 
   getRules(suppressNotifications = false, skipStatusCheck = false): Observable<Rule[]> {
     return this.sendRequest(
-      'v2',
+      'v4',
       'rules',
       {
         method: 'GET',
@@ -1354,7 +1354,7 @@ export class ApiService {
   getTargetActiveRecordings(target: TargetStub): Observable<ActiveRecording[]> {
     return this.doGet<ActiveRecording[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/recordings`,
-      'v1',
+      'v4',
       undefined,
       true,
       true,
@@ -1364,7 +1364,7 @@ export class ApiService {
   getTargetEventTemplates(target: TargetStub): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/templates`,
-      'v1',
+      'v4',
       undefined,
       true,
       true,
@@ -1374,7 +1374,7 @@ export class ApiService {
   getTargetEventTypes(target: TargetStub): Observable<EventType[]> {
     return this.doGet<EventType[]>(
       `targets/${encodeURIComponent(target.connectUrl)}/events`,
-      'v1',
+      'v4',
       undefined,
       true,
       true,

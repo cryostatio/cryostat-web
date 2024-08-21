@@ -276,7 +276,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
                   context.api
                     .doGet<EventTemplate[]>(
                       `targets/${encodeURIComponent(t.connectUrl)}/templates`,
-                      'v1',
+                      'v4',
                       undefined,
                       true,
                       true,

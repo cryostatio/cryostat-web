@@ -105,7 +105,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           context.api
             .doGet<EventTemplate[]>(
               `targets/${encodeURIComponent(target?.connectUrl || '')}/templates`,
-              'v1',
+              'v4',
               undefined,
               undefined,
               true,
