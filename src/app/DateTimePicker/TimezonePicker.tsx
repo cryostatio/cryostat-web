@@ -18,6 +18,7 @@ import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
 import {
+  Divider,
   Icon,
   MenuSearch,
   MenuSearchInput,
@@ -150,6 +151,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
           />
         </MenuSearchInput>
       </MenuSearch>
+      <Divider />
       <SelectList>
         {filteredTimezones.length > 0 ? (
           filteredTimezones.map(mapToSelection)

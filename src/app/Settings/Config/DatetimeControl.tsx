@@ -19,6 +19,7 @@ import useDayjs from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { locales, Timezone } from '@i18n/datetime';
 import {
+  Divider,
   FormGroup,
   HelperText,
   HelperTextItem,
@@ -135,6 +136,7 @@ const Component = () => {
                   <SearchInput placeholder="Filter by locale..." value={searchTerm} onChange={onInputChange} />
                 </MenuSearchInput>
               </MenuSearch>
+              <Divider />
               {dateLocaleOptions}
             </SelectList>
           </Select>
