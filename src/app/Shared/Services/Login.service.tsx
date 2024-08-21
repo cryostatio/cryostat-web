@@ -65,7 +65,7 @@ export class LoginService {
   }
 
   setLoggedOut(): Observable<boolean> {
-    return fromFetch(`${this.authority}/api/v4logout`, {
+    return fromFetch(`${this.authority}/api/v4/logout`, {
       credentials: 'include',
       mode: 'cors',
       method: 'POST',
