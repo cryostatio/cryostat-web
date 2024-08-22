@@ -107,7 +107,7 @@ export class XMLHttpError extends Error {
   }
 }
 
-export type TargetStub = Omit<Target, 'jvmId' | 'labels' | 'annotations'>;
+export type TargetStub = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annotations'>;
 
 export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
   labels: object;
@@ -473,6 +473,7 @@ export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this Reco
 export interface Target {
   id?: number; // present in responses but we must not include it in requests to create targets
   jvmId?: string; // present in responses, but we do not need to provide it in requests
+  agent: boolean;
   connectUrl: string;
   alias: string;
   labels: KeyValue[];

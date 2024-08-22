@@ -26,7 +26,6 @@ import {
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
-import { isTargetAgentHttp } from '@app/Shared/Services/api.utils';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -286,7 +285,7 @@ export const CustomRecordingForm: React.FC = () => {
             setAdvancedRecordingOptions(recordingOptions);
           },
           error: (error) => {
-            setErrorMessage(isTargetAgentHttp(target) ? 'Unsupported operation: Create Recordings' : error.message);
+            setErrorMessage(error.message);
             setTemplates([]);
             setFormData((old) => ({ ...old, template: undefined }));
             setAdvancedRecordingOptions({});

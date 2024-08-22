@@ -39,6 +39,7 @@ import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
 const mockTarget: Target = {
+  agent: false,
   connectUrl: mockConnectUrl,
   alias: 'fooTarget',
   jvmId: mockJvmId,
@@ -46,6 +47,7 @@ const mockTarget: Target = {
   annotations: { cryostat: [], platform: [] },
 };
 const mockUploadsTarget = {
+  agent: false,
   connectUrl: UPLOADS_SUBDIRECTORY,
   alias: '',
   labels: [],

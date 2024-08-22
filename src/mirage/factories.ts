@@ -18,6 +18,7 @@ import { FactoryDefinition } from 'miragejs/-types';
 import { Resource } from './typings';
 
 export const targetFactory: FactoryDefinition<any> = Factory.extend({
+  agent: true,
   alias: 'Fake Target',
   connectUrl: 'http://fake-target.local:1234',
   jvmId: '1234',

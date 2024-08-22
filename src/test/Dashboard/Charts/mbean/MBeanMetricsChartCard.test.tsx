@@ -35,6 +35,7 @@ jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSet
 jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
 
 const mockTarget = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someUrl',
   alias: 'fooTarget',
   jvmId: 'foo',
