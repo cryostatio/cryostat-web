@@ -21,7 +21,8 @@
       "QUICKSTARTS": "Quick starts"
     },
     "NOTIFICATIONS": {
-      "OVERFLOW_MESSAGE": "View {{count}} more"
+      "OVERFLOW_MESSAGE_one": "View one more",
+      "OVERFLOW_MESSAGE_other": "View {{count}} more"
     },
     "TOOLBAR": {
       "ARIA_LABELS": {
