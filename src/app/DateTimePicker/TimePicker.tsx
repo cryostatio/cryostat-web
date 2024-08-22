@@ -74,7 +74,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
   return (
     <>
-      <Panel>
+      <Panel className="datetime-picker">
         <PanelMain>
           <PanelMainBody>
             <Level hasGutter>

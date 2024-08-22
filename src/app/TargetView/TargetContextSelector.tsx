@@ -119,21 +119,19 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     return () => window.clearInterval(id);
   }, [context.settings, refreshTargetList]);
 
-  const noOptions = React.useMemo(() => targets.length === 0, [targets]);
-
   const selectOptions = React.useMemo(() => {
-    if (noOptions) {
+    const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
+    const filteredTargets = targets.filter((t) =>
+      [t.alias, t.connectUrl, getAnnotation(t.annotations.cryostat, 'REALM') ?? ''].some((v) => matchExp.test(v)),
+    );
+
+    if (filteredTargets.length === 0) {
       return [
         <DropdownItem itemId={undefined} key={'no-target-found'} isDisabled>
           No target found
         </DropdownItem>,
       ];
     }
-
-    const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
-    const filteredTargets = targets.filter((t) =>
-      [t.alias, t.connectUrl, getAnnotation(t.annotations.cryostat, 'REALM') ?? ''].some((v) => matchExp.test(v)),
-    );
 
     const groupNames = new Set<string>();
     filteredTargets.forEach((t) => groupNames.add(getAnnotation(t.annotations.cryostat, 'REALM') || 'Others'));
@@ -175,7 +173,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         : [];
 
     return favGroup.concat(options);
-  }, [targets, noOptions, favorites, searchTerm]);
+  }, [targets, favorites, searchTerm]);
 
   const onFavoriteClick = React.useCallback(
     (_, item: Target, actionId: string) => {

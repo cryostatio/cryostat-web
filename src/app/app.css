@@ -39,7 +39,7 @@ body,
   color: var(--cryostat-white);
 }
 
-.pf-v5-c-page__sidebar.pf-v5-m-collapsed {
+.pf-v5-c-page__sidebar.pf-m-collapsed {
   overflow: hidden !important;
 }
 
@@ -132,19 +132,19 @@ body,
   max-height: 26.75rem;
 }
 
-.automated-analysis-datalist-innerscroll .pf-v5-m-grey {
+.automated-analysis-datalist-innerscroll .pf-m-grey {
   color: var(--pf-v5-global--Color--100);
 }
 
-.automated-analysis-datalist-innerscroll .pf-v5-m-green {
+.automated-analysis-datalist-innerscroll .pf-m-green {
   color: var(--pf-v5-global--success-color--100);
 }
 
-.automated-analysis-datalist-innerscroll .pf-v5-m-orange {
+.automated-analysis-datalist-innerscroll .pf-m-orange {
   color: var(--pf-v5-global--warning-color--100);
 }
 
-.automated-analysis-datalist-innerscroll .pf-v5-m-red {
+.automated-analysis-datalist-innerscroll .pf-m-red {
   color: var(--pf-v5-global--danger-color--100);
 }
 
@@ -178,9 +178,16 @@ body,
   width: 4.5em;
 }
 
+.clickable-automated-analysis-label-popover .pf-v5-c-popover__title {
+  justify-content: center;
+}
+
+.clickable-automated-analysis-label-popover .pf-v5-c-popover__title-text {
+  margin-left: 48px; /* Close button size */
+}
+
 .clickable-automated-analysis-label-popover-header {
   text-align: center;
-  margin-left: 16.6%;
 }
 
 .clickable-automated-analysis-label-popover-body {
@@ -192,23 +199,23 @@ body,
   margin-bottom: 0.5rem;
 }
 
-.clickable-automated-analysis-label-popover-body-score.pf-v5-m-danger {
+.clickable-automated-analysis-label-popover-body-score.pf-m-danger {
   color: var(--pf-v5-c-popover--m-danger__title-text--Color);
 }
 
-.clickable-automated-analysis-label-popover-body-score.pf-v5-m-warning {
+.clickable-automated-analysis-label-popover-body-score.pf-m-warning {
   color: var(--pf-v5-c-popover--m-warning__title-text--Color);
 }
 
-.clickable-automated-analysis-label-popover-body-score.pf-v5-m-success {
+.clickable-automated-analysis-label-popover-body-score.pf-m-success {
   color: var(--pf-v5-c-popover--m-success__title-text--Color);
 }
 
-.clickable-automated-analysis-label-popover-body-score.pf-v5-m-default {
+.clickable-automated-analysis-label-popover-body-score.pf-m-default {
   color: var(--pf-v5-global--Color--100);
 }
 
-.clickable-automated-analysis-label-popover-body-score.pf-v5-m-info {
+.clickable-automated-analysis-label-popover-body-score.pf-m-info {
   color: var(--pf-v5-c-popover--m-info__title-text--Color);
 }
 
@@ -222,10 +229,6 @@ body,
 .pf-v5-c-label.clickable-label-hovered {
   cursor: pointer;
   --pf-v5-c-label__content--before--BorderWidth: 2.5px;
-}
-
-:where(.pf-v5-theme-dark) .recording-filter__toolbar-filter .pf-v5-c-label {
-  --pf-v5-c-label--BackgroundColor: var(--pf-v5-global--BackgroundColor--400);
 }
 
 .automated-analysis-score-filter-slider .pf-v5-c-slider__step-label {
@@ -282,14 +285,8 @@ body,
   border-radius: 0.5em;
 }
 
-.automated-analysis-grid-item .automated-analysis-topic-label-groups.pf-v5-c-label-group {
-  width: 100%;
-  height: 100%;
-  background-color: var(--pf-v5-global--BackgroundColor--light-300);
-}
-
-:is(.pf-v5-theme-dark) .automated-analysis-grid-item .automated-analysis-topic-label-groups.pf-v5-c-label-group {
-  background-color: var(--pf-v5-global--BackgroundColor--light-300);
+:where(.pf-v5-theme-dark) .automated-analysis-grid-item .pf-v5-c-label-group.pf-m-vertical.pf-v5-c-label-group {
+  background-color: var(--pf-v5-global--palette--black-600);
 }
 
 .automated-analysis-grid-item .pf-v5-c-label-group__main {
@@ -372,7 +369,7 @@ body,
   overflow: auto;
 }
 
-.pf-v5-c-card.pf-v5-m-rounded.dashboard-card {
+.pf-v5-c-card.pf-m-rounded.dashboard-card {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -401,6 +398,10 @@ body,
 .xsm-icon {
   height: 0.8em;
   width: 0.8em;
+}
+
+:where(.pf-v5-theme-dark) .datetime-picker .pf-v5-c-panel__main {
+  background-color: var(--pf-v5-global--palette--black-700);
 }
 
 .datetime-picker__meridiem-tile {
@@ -614,7 +615,7 @@ svg.topology__node-decorator-icon.progress {
   height: 100%
 }
 
-.pf-v5-c-drawer__panel.pf-v5-m-resizable.layout-template-picker-drawer__panel {
+.pf-v5-c-drawer__panel.pf-m-resizable.layout-template-picker-drawer__panel {
   transition-duration: 0s;
   transition-property: none;
 }
