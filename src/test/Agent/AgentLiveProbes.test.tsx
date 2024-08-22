@@ -31,6 +31,7 @@ import { render, renderSnapshot } from '../utils';
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
 const mockTarget = {
+  agent: false,
   connectUrl: mockConnectUrl,
   alias: 'fooTarget',
   jvmId: mockJvmId,

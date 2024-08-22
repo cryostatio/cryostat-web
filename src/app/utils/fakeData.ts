@@ -46,6 +46,7 @@ import { TargetService } from '@app/Shared/Services/Target.service';
 import { Observable, of } from 'rxjs';
 
 export const fakeTarget: Target = {
+  agent: false,
   jvmId: 'rpZeYNB9wM_TEnXoJvAFuR0jdcUBXZgvkXiKhjQGFvY=',
   connectUrl: 'service:jmx:rmi:///jndi/rmi://10-128-2-25.my-namespace.pod:9097/jmxrmi',
   alias: 'quarkus-test-77f556586c-25bkv',

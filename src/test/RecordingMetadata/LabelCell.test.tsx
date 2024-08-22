@@ -23,6 +23,7 @@ import userEvent from '@testing-library/user-event';
 import { render, renderSnapshot } from '../utils';
 
 const mockFooTarget: Target = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
   labels: [],

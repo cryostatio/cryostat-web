@@ -24,6 +24,7 @@ import { render, renderSnapshot } from '../utils';
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
 const mockTarget1: Target = {
+  agent: false,
   jvmId: 'target1',
   connectUrl: mockConnectUrl1,
   alias: mockAlias1,
@@ -36,6 +37,7 @@ const mockTarget1: Target = {
 const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
 const mockTarget2: Target = {
+  agent: false,
   jvmId: 'target2',
   connectUrl: mockConnectUrl2,
   alias: mockAlias2,
@@ -48,6 +50,7 @@ const mockTarget2: Target = {
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockAlias3 = 'fooTarget3';
 const mockTarget3: Target = {
+  agent: false,
   jvmId: 'target3',
   connectUrl: mockConnectUrl3,
   alias: mockAlias3,
@@ -60,6 +63,7 @@ const mockTarget3: Target = {
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
 const mockNewAlias = 'newTarget';
 const mockNewTarget: Target = {
+  agent: false,
   jvmId: 'target4',
   connectUrl: mockNewConnectUrl,
   alias: mockNewAlias,
