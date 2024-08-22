@@ -42,6 +42,7 @@ import {
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface TargetSelectProps {
   simple?: boolean; // Display a simple, non-expandable component
@@ -53,6 +54,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
   const addSubscription = useSubscriptions();
   const firstLoadRef = React.useRef(false);
 
+  const { t } = useTranslation();
   const [isExpanded, setExpanded] = React.useState(false);
   const [selected, setSelected] = React.useState<Target>();
   const [targets, setTargets] = React.useState<Target[]>([]);
@@ -126,7 +128,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
     if (filteredTargets.length === 0) {
       return [
         <DropdownItem itemId={undefined} key={'no-target-found'} isDisabled>
-          No target found
+          {t('TargetContextSelector.NO_SEARCH_MATCHES')}
         </DropdownItem>,
       ];
     }
@@ -144,7 +146,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
         </DropdownGroup>
       ))
       .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`));
-  }, [targets, searchTerm]);
+  }, [targets, searchTerm, t]);
 
   const cardHeaderProps = React.useMemo(
     () =>
@@ -154,18 +156,18 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
             onExpand: handleExpand,
             toggleButtonProps: {
               id: 'target-select-expand-button',
-              'aria-label': 'Details',
+              'aria-label': t('TargetSelect.ARIA_LABELS.CARD_DETAILS'),
               'aria-labelledby': 'expandable-card-title target-select-expand-button',
               'aria-expanded': isExpanded,
             },
           },
-    [simple, handleExpand, isExpanded],
+    [simple, handleExpand, isExpanded, t],
   );
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
-        aria-label="Select Target"
+        aria-label={t('TargetContextSelector.TOGGLE_LABEL')}
         ref={toggleRef}
         onClick={handleToggle}
         isExpanded={isDropdownOpen}
@@ -175,13 +177,13 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
         {selected?.alias || selected?.connectUrl}
       </MenuToggle>
     ),
-    [isDropdownOpen, selected, handleToggle],
+    [isDropdownOpen, selected, handleToggle, t],
   );
 
   return (
     <Card {...props} isRounded isCompact isFlat isExpanded={isExpanded}>
       <CardHeader {...cardHeaderProps}>
-        <CardTitle>Target JVM</CardTitle>
+        <CardTitle>{t('TargetSelect.CARD.TITLE')}</CardTitle>
       </CardHeader>
       {isLoading ? (
         <LoadingView />
@@ -190,7 +192,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
           <CardBody>
             <Dropdown
               isScrollable
-              placeholder="Select a Target"
+              placeholder={t('TargetContextSelector.TOGGLE_PLACEHOLDER')}
               isOpen={isDropdownOpen}
               onOpenChange={setIsDropdownOpen}
               onOpenChangeKeys={['Escape']}
@@ -203,7 +205,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
               <MenuSearch>
                 <MenuSearchInput>
                   <SearchInput
-                    placeholder="Filter by URL, alias, or discovery group..."
+                    placeholder={t('TargetContextSelector.SEARCH_PLACEHOLDER')}
                     value={searchTerm}
                     onChange={(_, v) => setSearchTerm(v)}
                   />

@@ -440,6 +440,14 @@
     "TOGGLE_LABEL": "Select Target",
     "TOGGLE_PLACEHOLDER": "Select a Target"
   },
+  "TargetSelect": {
+    "ARIA_LABELS": {
+      "CARD_DETAILS": "Details"
+    },
+    "CARD": {
+      "TITLE": "Target JVM"
+    }
+  },
   "TimePicker": {
     "24HOUR": "24-hour",
     "USE_24HR_TIME": "Use 24-hour time"
