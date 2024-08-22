@@ -55,6 +55,7 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { TestPoolContext, useAuthCredential } from './utils';
@@ -217,7 +218,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
   const isEmptyCredential = React.useMemo(() => credential.password === '' || credential.username === '', [credential]);
 
   const isShowed = React.useMemo(() => {
-    const regex = new RegExp(searchText, 'i');
+    const regex = new RegExp(_.escapeRegExp(searchText), 'i');
     if (searchText !== '' && !(regex.test(target.alias) || regex.test(target.connectUrl))) {
       return false;
     }

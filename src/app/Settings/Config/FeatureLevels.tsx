@@ -22,6 +22,7 @@ import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from 
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
+import { isDevNodeEnv } from '../utils';
 
 const Component = () => {
   const { t } = useTranslation();
@@ -47,7 +48,7 @@ const Component = () => {
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={open}>
+      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={open} isFullWidth>
         {t(FeatureLevel[featureLevel])}
       </MenuToggle>
     ),
@@ -65,19 +66,21 @@ const Component = () => {
           appendTo: portalRoot,
         }}
         toggle={toggle}
+        onOpenChange={setOpen}
+        onOpenChangeKeys={['Escape']}
       >
         <SelectList>
           {Object.values(FeatureLevel)
             .filter((v) => typeof v === 'string')
-            .map((v): { key: string; value: number } => ({ key: String(v), value: FeatureLevel[v] }))
-            .filter((v) => {
-              if ((process.env.NODE_ENV ?? '').toLowerCase() === 'development') {
-                return true;
-              }
-              return v.value !== FeatureLevel.DEVELOPMENT;
-            })
+            .map((v): { key: string; value: number } => ({ key: v.toString(), value: FeatureLevel[v] }))
+            .filter((v) => isDevNodeEnv() || v.value !== FeatureLevel.DEVELOPMENT)
             .map((level) => (
-              <SelectOption key={level.key} value={level.value}>
+              <SelectOption
+                key={level.key}
+                value={level}
+                isSelected={featureLevel == level.value}
+                description={t(`SETTINGS.FEATURE_LEVEL.${level.key}_DESCRIPTION`)}
+              >
                 {t(level.key)}
               </SelectOption>
             ))}

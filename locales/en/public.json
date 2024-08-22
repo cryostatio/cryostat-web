@@ -19,6 +19,22 @@
       "GUIDED_TOUR": "Guided tour",
       "HELP": "Help",
       "QUICKSTARTS": "Quick starts"
+    },
+    "NOTIFICATIONS": {
+      "OVERFLOW_MESSAGE_one": "View one more",
+      "OVERFLOW_MESSAGE_other": "View {{count}} more"
+    },
+    "TOOLBAR": {
+      "ARIA_LABELS": {
+        "GLOBAL_NAVIGATION": "Global navigation",
+        "NAVIGATION": "Navigation",
+        "NOTIFICATIONS": "Notifications",
+        "SETTINGS": "Settings"
+      }
+    },
+    "USER_MENU": {
+      "LANGUAGE_PREFERENCE": "<Icon/> Language preference",
+      "LOGOUT": "Log out"
     }
   },
   "AutomatedAnalysisCard": {
@@ -75,9 +91,8 @@
     "CURRENT_CONFIG": "Current configuration",
     "FORM_TITLE": "Profiling Recording configuration",
     "FORMATTED_TEMPLATE": "Name: {{template.name}}, Type: {{template.type}}",
-    "MAXIMUM_AGE": "Maximum age ({{unit}})",
-    "MAXIMUM_SIZE": "Maximum size ({{unit}})",
-    "SAVE_CHANGES": "Save changes",
+    "MAXIMUM_AGE": "Maximum age",
+    "MAXIMUM_SIZE": "Maximum size",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to automated analysis Recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a target template as a default template type configuration may not apply to all target JVMs if the JVMs do not support them."
   },
@@ -339,7 +354,7 @@
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
       "DESCRIPTION": "Set the Recording configuration for automated analysis Recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
-      "TITLE": "Automated analysis Recording configuration"
+      "TITLE": "Recording configuration for Automated analysis"
     },
     "CATEGORIES": {
       "ADVANCED": "Advanced",
@@ -371,6 +386,7 @@
       },
       "DESCRIPTION": "",
       "LOCALE_SELECT_DESCRIPTION": "Select current date locale.",
+      "SEARCH_PLACEHOLDER": "Filter by locale...",
       "TIMEZONE_SELECT_DESCRIPTION": "Select current timezone.",
       "TITLE": "Date & Time"
     },
@@ -381,7 +397,10 @@
       "TITLE": "Show deletion dialogs"
     },
     "FEATURE_LEVEL": {
+      "BETA_DESCRIPTION": "Experimental features",
       "DESCRIPTION": "Control which graphical features appear in the application.",
+      "DEVELOPMENT_DESCRIPTION": "Under development features",
+      "PRODUCTION_DESCRIPTION": "Stable production-ready features",
       "TITLE": "Feature level"
     },
     "LANGUAGE": {
@@ -413,6 +432,27 @@
       "TITLE": "WebSocket retry interval"
     }
   },
+  "ShortCuts": {
+    "ARIA_LABELS": {
+      "TABLE": "Shortcuts table"
+    }
+  },
+  "TargetContextSelector": {
+    "CLEAR_SELECTION": "Clear selection",
+    "CREATE_TARGET": "Create Target",
+    "NO_SEARCH_MATCHES": "No Target found",
+    "SEARCH_PLACEHOLDER": "Filter by URL, alias, or discovery group...",
+    "TOGGLE_LABEL": "Select Target",
+    "TOGGLE_PLACEHOLDER": "Select a Target"
+  },
+  "TargetSelect": {
+    "ARIA_LABELS": {
+      "CARD_DETAILS": "Details"
+    },
+    "CARD": {
+      "TITLE": "Target JVM"
+    }
+  },
   "TimePicker": {
     "24HOUR": "24-hour",
     "USE_24HR_TIME": "Use 24-hour time"
@@ -435,7 +475,8 @@
     "ARIA_LABELS": {
       "SELECT": "Select a timezone",
       "TYPE_AHEAD": "Search a timezone"
-    }
+    },
+    "SEARCH_PLACEHOLDER": "Filter by timezone..."
   },
   "Topology": {
     "GRAPH_VIEW": "Graph view",

@@ -23,7 +23,10 @@ import type { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/serv
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetView/TargetSelect';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { formatBytes, formatDuration } from '@app/utils/utils';
 import {
+  ActionList,
+  ActionListItem,
   Button,
   Card,
   CardBody,
@@ -72,13 +75,13 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const addSubscription = useSubscriptions();
   const { t } = useTranslation();
 
-  const targetSubjectRef = React.useRef(new ReplaySubject<NullableTarget>(1));
-  const targetSubject = targetSubjectRef.current;
+  const _targetSubjectRef = React.useRef(new ReplaySubject<NullableTarget>(1));
+  const _targetSubject = _targetSubjectRef.current;
 
   const [recordingConfig, setRecordingConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
     context.settings.automatedAnalysisRecordingConfig(),
   );
-  const [formData, setFormConfig] = React.useState<AutomatedAnalysisConfigFormData>({
+  const [formData, setFormData] = React.useState<AutomatedAnalysisConfigFormData>({
     maxAge: context.settings.automatedAnalysisRecordingConfig().maxAge,
     maxAgeUnit: 1,
     maxSize: context.settings.automatedAnalysisRecordingConfig().maxSize,
@@ -112,7 +115,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           next: (templates: EventTemplate[]) => {
             setErrorMessage('');
             setTemplates(templates);
-            setFormConfig((old) => {
+            setFormData((old) => {
               const oldTemplate = old.template;
               const matched = templates.find((t) => t.name === oldTemplate?.name && t.type === oldTemplate?.type);
               return {
@@ -135,16 +138,12 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         }),
       );
     },
-    [addSubscription, context.api, setErrorMessage, setTemplates, setFormConfig, setIsLoading, setIsAuthModalOpen],
+    [addSubscription, context.api, setErrorMessage, setTemplates, setFormData, setIsLoading, setIsAuthModalOpen],
   );
 
   React.useEffect(() => {
-    addSubscription(
-      targetSubject.subscribe((target) => {
-        refreshTemplates(target);
-      }),
-    );
-  }, [targetSubject, addSubscription, refreshTemplates, setIsLoading, editing]);
+    addSubscription(_targetSubject.subscribe(refreshTemplates));
+  }, [_targetSubject, addSubscription, refreshTemplates, setIsLoading, editing]);
 
   const setAAConfig = React.useCallback(
     (config: AutomatedAnalysisRecordingConfig) => {
@@ -158,63 +157,53 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   );
 
   const handleMaxAgeChange = React.useCallback(
-    (evt) => {
-      setFormConfig((old) => {
-        return {
-          ...old,
-          maxAge: Number(evt),
-        };
-      });
+    (_, value: string) => {
+      setFormData((old) => ({
+        ...old,
+        maxAge: Number(value),
+      }));
     },
-    [setFormConfig],
+    [setFormData],
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
-    (evt) => {
-      setFormConfig((old) => {
-        return {
-          ...old,
-          maxAgeUnits: Number(evt),
-        };
-      });
+    (_, unit: string) => {
+      setFormData((old) => ({
+        ...old,
+        maxAgeUnit: Number(unit),
+      }));
     },
-    [setFormConfig],
+    [setFormData],
   );
 
   const handleMaxSizeChange = React.useCallback(
-    (evt) => {
-      setFormConfig((old) => {
-        return {
-          ...old,
-          maxSize: Number(evt),
-        };
-      });
+    (_, value: string) => {
+      setFormData((old) => ({
+        ...old,
+        maxSize: Number(value),
+      }));
     },
-    [setFormConfig],
+    [setFormData],
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
-    (evt) => {
-      setFormConfig((old) => {
-        return {
-          ...old,
-          maxSizeUnits: Number(evt),
-        };
-      });
+    (_, unit: string) => {
+      setFormData((old) => ({
+        ...old,
+        maxSizeUnit: Number(unit),
+      }));
     },
-    [setFormConfig],
+    [setFormData],
   );
 
   const handleTemplateChange = React.useCallback(
     (template) => {
-      setFormConfig((old) => {
-        return {
-          ...old,
-          template,
-        };
-      });
+      setFormData((old) => ({
+        ...old,
+        template,
+      }));
     },
-    [setFormConfig],
+    [setFormData],
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -240,8 +229,8 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   }, [formData]);
 
   const targetSelect = React.useMemo(() => {
-    return editing && <TargetSelect simple onSelect={(target) => targetSubject.next(target)} />;
-  }, [editing, targetSubject]);
+    return editing && <TargetSelect simple onSelect={(target) => _targetSubject.next(target)} />;
+  }, [editing, _targetSubject]);
 
   const configData = React.useMemo(() => {
     if (editing) {
@@ -327,6 +316,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 </SplitItem>
                 <SplitItem>
                   <FormSelect
+                    className={`${automatedAnalysisRecordingName}__form_select`}
                     value={formData.maxAgeUnit}
                     onChange={handleMaxAgeUnitChange}
                     aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT', { ns: 'common' })}
@@ -357,12 +347,12 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           </DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>{t('AutomatedAnalysisConfigForm.MAXIMUM_SIZE', { unit: 'B' })}</DescriptionListTerm>
-          <DescriptionListDescription>{recordingConfig.maxSize}</DescriptionListDescription>
+          <DescriptionListTerm>{t('AutomatedAnalysisConfigForm.MAXIMUM_SIZE')}</DescriptionListTerm>
+          <DescriptionListDescription>{formatBytes(recordingConfig.maxSize)}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>{t('AutomatedAnalysisConfigForm.MAXIMUM_AGE', { unit: 's' })}</DescriptionListTerm>
-          <DescriptionListDescription>{recordingConfig.maxAge}</DescriptionListDescription>
+          <DescriptionListTerm>{t('AutomatedAnalysisConfigForm.MAXIMUM_AGE')}</DescriptionListTerm>
+          <DescriptionListDescription>{formatDuration(recordingConfig.maxAge)}</DescriptionListDescription>
         </DescriptionListGroup>
       </DescriptionList>
     );
@@ -385,14 +375,14 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
   const toggleEdit = React.useCallback(() => {
     setEditing((edit) => !edit);
-    setFormConfig({
+    setFormData({
       template: recordingConfig.template,
       maxSize: recordingConfig.maxSize,
       maxAge: recordingConfig.maxAge,
       maxSizeUnit: 1,
       maxAgeUnit: 1,
     });
-  }, [setEditing, setFormConfig, recordingConfig]);
+  }, [setEditing, setFormData, recordingConfig]);
 
   const authModal = React.useMemo(() => {
     return (
@@ -402,15 +392,15 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         onSave={() => {
           setIsAuthModalOpen(false);
           addSubscription(
-            targetSubject.pipe(take(1)).subscribe((target) => {
+            _targetSubject.pipe(take(1)).subscribe((target) => {
               refreshTemplates(target);
             }),
           );
         }}
-        targetObs={targetSubject}
+        targetObs={_targetSubject}
       />
     );
-  }, [addSubscription, isAuthModalOpen, setIsAuthModalOpen, refreshTemplates, targetSubject]);
+  }, [addSubscription, isAuthModalOpen, setIsAuthModalOpen, refreshTemplates, _targetSubject]);
 
   const formContent = React.useMemo(
     () => (
@@ -419,39 +409,46 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           <CardHeader
             actions={{
               actions: (
-                <>
-                  {editing && (
-                    <Button
-                      onClick={handleSubmit}
-                      variant={'primary'}
-                      isDisabled={!formData.template?.name || !formData.template?.type}
-                    >
-                      {t('AutomatedAnalysisConfigForm.SAVE_CHANGES')}
-                    </Button>
-                  )}
-                  <Button
-                    variant="plain"
-                    onClick={toggleEdit}
-                    aria-label={editing ? t('CANCEL', { ns: 'common' }) : t('EDIT', { ns: 'common' })}
-                  >
-                    {editing ? <CloseIcon /> : <PencilAltIcon />}
-                  </Button>
-                </>
+                <Button
+                  variant="plain"
+                  onClick={toggleEdit}
+                  aria-label={editing ? t('CANCEL', { ns: 'common' }) : t('EDIT', { ns: 'common' })}
+                >
+                  {editing ? <CloseIcon /> : <PencilAltIcon />}
+                </Button>
               ),
-              hasNoOffset: false,
-              className: undefined,
             }}
           >
-            <CardTitle>
-              <Title headingLevel="h3" size="md">
-                {t('AutomatedAnalysisConfigForm.CURRENT_CONFIG')}
-              </Title>
-            </CardTitle>
+            {!editing && (
+              <CardTitle>
+                <Title headingLevel="h3" size="md">
+                  {t('AutomatedAnalysisConfigForm.CURRENT_CONFIG')}
+                </Title>
+              </CardTitle>
+            )}
           </CardHeader>
           <CardBody>
             <Stack hasGutter>
               <StackItem>{targetSelect}</StackItem>
               <StackItem>{configData}</StackItem>
+              {editing && (
+                <ActionList>
+                  <ActionListItem>
+                    <Button
+                      onClick={handleSubmit}
+                      variant={'primary'}
+                      isDisabled={!formData.template?.name || !formData.template?.type}
+                    >
+                      {t('SAVE', { ns: 'common' })}
+                    </Button>
+                  </ActionListItem>
+                  <ActionListItem>
+                    <Button variant="secondary" onClick={toggleEdit}>
+                      {t('CANCEL', { ns: 'common' })}
+                    </Button>
+                  </ActionListItem>
+                </ActionList>
+              )}
             </Stack>
           </CardBody>
         </Card>

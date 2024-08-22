@@ -16,6 +16,7 @@
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface IShortcut {
   id: string;
@@ -28,8 +29,15 @@ export interface ShortcutsProps {
 }
 
 export const Shortcuts: React.FC<ShortcutsProps> = ({ shortcuts, ...props }) => {
+  const { t } = useTranslation();
   return (
-    <Table borders={false} aria-label={'Shortcuts table'} variant={'compact'} {...props}>
+    <Table
+      className="topology__short-cuts"
+      borders={false}
+      aria-label={t('ShortCuts.ARIA_LABELS.TABLE')}
+      variant={'compact'}
+      {...props}
+    >
       <Tbody>
         {shortcuts.map((sc) => (
           <Tr key={sc.id}>

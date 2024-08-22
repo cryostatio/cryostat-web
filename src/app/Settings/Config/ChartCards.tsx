@@ -75,7 +75,7 @@ const Component = () => {
             onChange={handleChange}
             onMinus={handleVisibleStep(-1)}
             onPlus={handleVisibleStep(1)}
-            unit={t('SECOND', { ns: 'common' })}
+            unit={t('SECOND_other', { ns: 'common' })}
           />
         </FormGroup>
       </StackItem>

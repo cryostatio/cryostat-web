@@ -148,7 +148,6 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose 
       <NotificationDrawer>
         <NotificationDrawerHeader count={totalUnreadNotificationsCount} onClose={onClose}>
           <Dropdown
-            isPlain
             onSelect={handleToggleDropdown}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
               <MenuToggle
@@ -164,6 +163,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose 
             popperProps={{
               position: 'right',
             }}
+            onOpenChange={setHeaderDropdownOpen}
+            onOpenChangeKeys={['Escape']}
           >
             <DropdownList>{drawerDropdownItems}</DropdownList>
           </Dropdown>

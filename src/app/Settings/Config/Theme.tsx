@@ -37,13 +37,29 @@ const Component = () => {
     [context.settings, setOpen],
   );
 
+  const getThemeDisplay = React.useCallback(
+    (theme: ThemeSetting) => {
+      switch (theme) {
+        case ThemeSetting.AUTO:
+          return t('SETTINGS.THEME.AUTO');
+        case ThemeSetting.DARK:
+          return t('SETTINGS.THEME.DARK');
+        case ThemeSetting.LIGHT:
+          return t('SETTINGS.THEME.LIGHT');
+        default:
+          return `${theme}`;
+      }
+    },
+    [t],
+  );
+
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleThemeToggle} isExpanded={open}>
-        {themeSetting}
+      <MenuToggle ref={toggleRef} onClick={handleThemeToggle} isExpanded={open} isFullWidth>
+        {getThemeDisplay(themeSetting)}
       </MenuToggle>
     ),
-    [handleThemeToggle, open, themeSetting],
+    [handleThemeToggle, open, getThemeDisplay, themeSetting],
   );
 
   return (
@@ -57,17 +73,15 @@ const Component = () => {
         appendTo: portalRoot,
       }}
       toggle={toggle}
+      onOpenChange={setOpen}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>
-        <SelectOption key="auto" value={ThemeSetting.AUTO}>
-          {t('SETTINGS.THEME.AUTO')}
-        </SelectOption>
-        <SelectOption key="light" value={ThemeSetting.LIGHT}>
-          {t('SETTINGS.THEME.LIGHT')}
-        </SelectOption>
-        <SelectOption key="dark" value={ThemeSetting.DARK}>
-          {t('SETTINGS.THEME.DARK')}
-        </SelectOption>
+        {Object.values(ThemeSetting).map((theme) => (
+          <SelectOption key={theme} value={theme}>
+            {getThemeDisplay(theme)}
+          </SelectOption>
+        ))}
       </SelectList>
     </Select>
   );

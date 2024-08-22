@@ -18,6 +18,7 @@ import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
 import {
+  Divider,
   Icon,
   MenuSearch,
   MenuSearchInput,
@@ -30,6 +31,7 @@ import {
 } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -49,7 +51,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   onTimezoneChange = (_) => undefined,
 }) => {
   const { t } = useTranslation();
-  const [dayjs, _] = useDayjs();
+  const [dayjs, _dateFormat] = useDayjs();
   const [numOfOptions, setNumOfOptions] = React.useState(DEFAULT_NUM_OPTIONS);
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -80,6 +82,11 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
     [setNumOfOptions, timezones],
   );
 
+  const getTimezoneDisplay = React.useCallback(
+    (timezone: Timezone) => `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`,
+    [dayjs],
+  );
+
   const mapToSelection = React.useCallback(
     (timezone: Timezone) => {
       return (
@@ -89,21 +96,21 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
           description={timezone.short}
           isSelected={selected.full === timezone.full}
         >
-          {`(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
+          {getTimezoneDisplay(timezone)}
         </SelectOption>
       );
     },
-    [dayjs, selected],
+    [selected, getTimezoneDisplay],
   );
 
   const filteredTimezones = React.useMemo(() => {
     let _opts = timezones;
     if (searchTerm) {
-      const matchExp = new RegExp(searchTerm.replace(/([+])/gi, `\\$1`), 'i');
-      _opts = _opts.filter((tz) => matchExp.test(tz.full) || matchExp.test(tz.short));
+      const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
+      _opts = _opts.filter((tz) => matchExp.test(getTimezoneDisplay(tz)));
     }
     return _opts.slice(0, numOfOptions);
-  }, [timezones, numOfOptions, searchTerm]);
+  }, [timezones, numOfOptions, searchTerm, getTimezoneDisplay]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -143,13 +150,14 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
       <MenuSearch>
         <MenuSearchInput>
           <SearchInput
-            placeholder="Filter by timezone..."
+            placeholder={t('TimezonePicker.SEARCH_PLACEHOLDER')}
             value={searchTerm}
             onChange={onInputChange}
             aria-label={t('TimezonePicker.ARIA_LABELS.TYPE_AHEAD')}
           />
         </MenuSearchInput>
       </MenuSearch>
+      <Divider />
       <SelectList>
         {filteredTimezones.length > 0 ? (
           filteredTimezones.map(mapToSelection)

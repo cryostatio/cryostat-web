@@ -102,6 +102,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
         </div>
       }
       appendTo={portalRoot}
+      className={`${clickableAutomatedAnalysisKey}-popover`}
     >
       <Label
         aria-label={result.name}

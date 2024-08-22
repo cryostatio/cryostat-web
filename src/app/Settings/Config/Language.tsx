@@ -44,8 +44,8 @@ const Component = () => {
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleLanguageToggle} isExpanded={open}>
-        {i18n.language}
+      <MenuToggle ref={toggleRef} onClick={handleLanguageToggle} isExpanded={open} isFullWidth>
+        {localeReadable(i18n.language)}
       </MenuToggle>
     ),
     [handleLanguageToggle, open, i18n.language],
@@ -62,6 +62,8 @@ const Component = () => {
         enableFlip: true,
         appendTo: portalRoot,
       }}
+      onOpenChange={setOpen}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>
         {Object.keys(i18nResources).map((l) => (

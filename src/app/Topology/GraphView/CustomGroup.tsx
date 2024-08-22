@@ -17,6 +17,7 @@
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { EnvironmentNode, NodeType } from '@app/Shared/Services/api.types';
+import { css } from '@patternfly/react-styles';
 import {
   DefaultGroup,
   Node,
@@ -99,6 +100,7 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
           collapsedHeight: collapsedHeight,
           collapsedWidth: collapsedWidth,
           badge: showBadge ? data.nodeType : undefined,
+          badgeClassName: css('topology__group-node-badge'),
           showLabel: true,
           contextMenuOpen: contextMenuOpen,
           onContextMenu: onContextMenu,

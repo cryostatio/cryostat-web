@@ -45,3 +45,7 @@ export const getGroupFeatureLevel = (settings: _TransformedUserSetting[]): Featu
   }
   return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
 };
+
+export const isDevNodeEnv = () => (process.env.NODE_ENV ?? '').toLowerCase() === 'development';
+
+export const DARK_THEME_CLASS = 'pf-v5-theme-dark';

@@ -24,7 +24,7 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { GlobalQuickStartDrawer } from '@app/QuickStarts/QuickStartDrawer';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { ThemeSetting, SettingTab } from '@app/Settings/types';
-import { selectTab, tabAsParam } from '@app/Settings/utils';
+import { DARK_THEME_CLASS, selectTab, tabAsParam } from '@app/Settings/utils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
@@ -64,25 +64,25 @@ import {
   MenuToggleElement,
   MenuToggle,
   DropdownList,
-  DropdownGroup,
   DropdownItem,
   Dropdown,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
   BellIcon,
-  CaretDownIcon,
   CogIcon,
   ExternalLinkAltIcon,
+  LanguageIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
   UserIcon,
 } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
+import { ThemeToggle } from './ThemeToggle';
 
 export interface AppLayoutProps {
   children?: React.ReactNode;
@@ -120,9 +120,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   React.useEffect(() => {
     if (theme === ThemeSetting.DARK) {
-      document.documentElement.classList.add('pf-theme-dark');
+      document.documentElement.classList.add(DARK_THEME_CLASS);
     } else {
-      document.documentElement.classList.remove('pf-theme-dark');
+      document.documentElement.classList.remove(DARK_THEME_CLASS);
     }
   }, [theme]);
 
@@ -167,10 +167,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     }
     const overflow = notificationsToDisplay.length - visibleNotificationsCount;
     if (overflow > 0) {
-      return `View ${overflow} more`;
+      return t('AppLayout.NOTIFICATIONS.OVERFLOW_MESSAGE', { count: overflow });
     }
     return '';
-  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount]);
+  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount, t]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -283,20 +283,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const userInfoItems = React.useMemo(
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownGroup key={'language-preferences'}>
-          <DropdownItem onClick={handleLanguagePref}>Language preference</DropdownItem>
-        </DropdownGroup>
+        <DropdownItem key={'language-preferences'} onClick={handleLanguagePref}>
+          <Trans t={t} components={{ Icon: <LanguageIcon /> }} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
+        </DropdownItem>
       </FeatureFlag>,
-      <DropdownGroup key={'log-out'}>
-        <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
-      </DropdownGroup>,
+      <DropdownItem key={'log-out'} onClick={handleLogout}>
+        {t('AppLayout.USER_MENU.LOGOUT')}
+      </DropdownItem>,
     ],
-    [handleLogout, handleLanguagePref],
+    [t, handleLogout, handleLanguagePref],
   );
 
-  const UserInfoToggle = React.useCallback(
+  const userInfoToggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle} icon={CaretDownIcon}>
+      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle}>
         {username || (
           <Icon size="sm">
             <UserIcon color="white" />
@@ -355,17 +355,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
-  const levelBadge = React.useCallback((level: FeatureLevel) => {
-    return (
-      <Label
-        isCompact
-        style={{ marginLeft: '2ch', textTransform: 'capitalize', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
-        color={level === FeatureLevel.BETA ? 'green' : 'red'}
-      >
-        {FeatureLevel[level].toLowerCase()}
-      </Label>
-    );
-  }, []);
+  const levelBadge = React.useCallback(
+    (level: FeatureLevel) => {
+      return (
+        <Label
+          isCompact
+          style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
+          color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
+        >
+          {t(FeatureLevel[level])}
+        </Label>
+      );
+    },
+    [t],
+  );
 
   const headerToolbar = React.useMemo(
     () => (
@@ -386,6 +389,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   />
                 </ToolbarItem>
               </FeatureFlag>
+              <ToolbarGroup variant="icon-button-group" spacer={{ default: 'spacerSm' }}>
+                <ToolbarItem>
+                  <ThemeToggle />
+                </ToolbarItem>
+              </ToolbarGroup>
               <ToolbarGroup variant="icon-button-group">
                 <ToolbarItem>
                   <NotificationBadge
@@ -394,7 +402,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                       errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'
                     }
                     onClick={handleNotificationCenterToggle}
-                    aria-label="Notifications"
+                    aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NOTIFICATIONS')}
                   >
                     <Icon>
                       <BellIcon />
@@ -404,7 +412,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <ToolbarItem>
                   <Button
                     variant="plain"
-                    aria-label="Settings"
+                    aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.SETTINGS')}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
@@ -431,7 +439,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                       </MenuToggle>
                     )}
                     isOpen={showHelpDropdown}
-                    onOpenChange={(v) => setShowHelpDropdown(v)}
+                    onOpenChange={setShowHelpDropdown}
                     onOpenChangeKeys={['Escape']}
                     popperProps={{
                       position: 'right',
@@ -444,9 +452,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
                   onSelect={() => setShowUserInfoDropdown(false)}
-                  toggle={UserInfoToggle}
+                  toggle={userInfoToggle}
                   isOpen={showUserInfoDropdown}
-                  onOpenChange={(v) => setShowUserInfoDropdown(v)}
+                  onOpenChange={setShowUserInfoDropdown}
                   onOpenChangeKeys={['Escape']}
                   popperProps={{
                     position: 'right',
@@ -469,9 +477,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       setShowUserInfoDropdown,
       showUserInfoDropdown,
       showHelpDropdown,
-      UserInfoToggle,
+      userInfoToggle,
       userInfoItems,
       helpItems,
+      t,
     ],
   );
 
@@ -482,7 +491,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <MastheadToggle>
             <PageToggleButton
               variant="plain"
-              aria-label="Navigation"
+              aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NAVIGATION')}
               isSidebarOpen={isNavOpen}
               onSidebarToggle={onNavToggle}
               data-quickstart-id="nav-toggle-btn"
@@ -506,7 +515,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge],
+    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge, t],
   );
 
   const isActiveRoute = React.useCallback(
@@ -528,7 +537,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const Navigation = React.useMemo(
     () => (
-      <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect} aria-label="Global nav">
+      <Nav
+        id="nav-primary-simple"
+        theme="dark"
+        variant="default"
+        onSelect={mobileOnSelect}
+        aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.GLOBAL_NAVIGATION')}
+      >
         {navGroups.map((title) => {
           return (
             <NavGroup title={title} key={title}>
@@ -562,7 +577,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         })}
       </Nav>
     ),
-    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel],
+    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel, t],
   );
 
   const Sidebar = React.useMemo(
