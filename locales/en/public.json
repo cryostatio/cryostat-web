@@ -432,6 +432,11 @@
       "TITLE": "WebSocket retry interval"
     }
   },
+  "ShortCuts": {
+    "ARIA_LABELS": {
+      "TABLE": "Shortcuts table"
+    }
+  },
   "TargetContextSelector": {
     "CLEAR_SELECTION": "Clear selection",
     "CREATE_TARGET": "Create Target",

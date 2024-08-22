@@ -444,7 +444,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                   </ActionListItem>
                   <ActionListItem>
                     <Button variant="secondary" onClick={toggleEdit}>
-                      Cancel
+                      {t('CANCEL', { ns: 'common' })}
                     </Button>
                   </ActionListItem>
                 </ActionList>
