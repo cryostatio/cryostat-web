@@ -415,6 +415,14 @@
       "TITLE": "WebSocket retry interval"
     }
   },
+  "TargetContextSelector": {
+    "CLEAR_SELECTION": "Clear selection",
+    "CREATE_TARGET": "Create Target",
+    "NO_SEARCH_MATCHES": "No Target found",
+    "SEARCH_PLACEHOLDER": "Filter by URL, alias, or discovery group...",
+    "TOGGLE_LABEL": "Select Target",
+    "TOGGLE_PLACEHOLDER": "Select a Target"
+  },
   "TimePicker": {
     "24HOUR": "24-hour",
     "USE_24HR_TIME": "Use 24-hour time"

@@ -38,6 +38,7 @@ import {
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 export interface TargetContextSelectorProps {
@@ -48,6 +49,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
+  const { t } = useTranslation();
   const [targets, setTargets] = React.useState<Target[]>([]);
   const [selectedTarget, setSelectedTarget] = React.useState<Target>();
   const [favorites, setFavorites] = React.useState<string[]>(getFromLocalStorage('TARGET_FAVORITES', []));
@@ -128,7 +130,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     if (filteredTargets.length === 0) {
       return [
         <DropdownItem itemId={undefined} key={'no-target-found'} isDisabled>
-          No target found
+          {t('TargetContextSelector.NO_SEARCH_MATCHES')}
         </DropdownItem>,
       ];
     }
@@ -207,17 +209,17 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
       <Split hasGutter>
         <SplitItem>
           <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
-            Create target
+            {t('TargetContextSelector.CREATE_TARGET')}
           </Button>
         </SplitItem>
         <SplitItem>
           <Button variant="tertiary" onClick={onClearSelection}>
-            Clear selection
+            {t('TargetContextSelector.CLEAR_SELECTION')}
           </Button>
         </SplitItem>
       </Split>
     ),
-    [onClearSelection],
+    [t, onClearSelection],
   );
 
   return (
@@ -229,7 +231,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
           <Dropdown
             className={className}
             isScrollable
-            placeholder="Select a Target"
+            placeholder={t('TargetContextSelector.TOGGLE_PLACEHOLDER')}
             isOpen={isTargetOpen}
             onOpenChange={(isOpen) => setIsTargetOpen(isOpen)}
             onOpenChangeKeys={['Escape']}
@@ -237,14 +239,16 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             onActionClick={onFavoriteClick}
             toggle={(toggleRef) => (
               <MenuToggle
-                aria-label="Select Target"
+                aria-label={t('TargetContextSelector.TOGGLE_LABEL')}
                 ref={toggleRef}
                 onClick={onToggleClick}
                 isExpanded={isTargetOpen}
                 variant="plainText"
                 icon={selectionPrefix}
               >
-                {!selectedTarget ? 'Select a Target' : getTargetRepresentation(selectedTarget)}
+                {!selectedTarget
+                  ? t('TargetContextSelector.TOGGLE_PLACEHOLDER')
+                  : getTargetRepresentation(selectedTarget)}
               </MenuToggle>
             )}
             popperProps={{
@@ -255,7 +259,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
             <MenuSearch>
               <MenuSearchInput>
                 <SearchInput
-                  placeholder="Filter by URL, alias, or discovery group..."
+                  placeholder={t('TargetContextSelector.SEARCH_PLACEHOLDER')}
                   value={searchTerm}
                   onChange={(_, v) => setSearchTerm(v)}
                 />
