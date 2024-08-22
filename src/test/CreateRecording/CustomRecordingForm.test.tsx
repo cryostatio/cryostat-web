@@ -37,6 +37,7 @@ jest.mock('react-router-dom', () => ({
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = {
+  agent: false,
   connectUrl: mockConnectUrl,
   alias: 'fooTarget',
   jvmId: 'foo',

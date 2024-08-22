@@ -35,6 +35,7 @@ import { of } from 'rxjs';
 import { basePreloadedState, render } from '../utils';
 
 const mockFooTarget: Target = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
   labels: [],

@@ -152,8 +152,6 @@ export const indexOfTarget = (arr: Target[], target: Target): number => {
 export const getTargetRepresentation = (t: Target) =>
   !t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`;
 
-export const isTargetAgentHttp = (t: Target) => t.connectUrl.startsWith('http');
-
 export const isTargetNode = (node: EnvironmentNode | TargetNode): node is TargetNode => {
   return node['target'] !== undefined;
 };

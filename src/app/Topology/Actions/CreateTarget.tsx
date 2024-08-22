@@ -429,7 +429,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
 };
 
 export interface SampleNodeDonutProps {
-  target: Target;
+  target: Omit<Target, 'agent'>;
   testing?: boolean;
   validation: {
     option: ValidatedOptions;
