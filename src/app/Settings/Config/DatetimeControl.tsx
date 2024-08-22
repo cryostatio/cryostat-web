@@ -134,7 +134,11 @@ const Component = () => {
             <SelectList>
               <MenuSearch>
                 <MenuSearchInput>
-                  <SearchInput placeholder="Filter by locale..." value={searchTerm} onChange={onInputChange} />
+                  <SearchInput
+                    placeholder={t('SETTINGS.DATETIME_CONTROL.SEARCH_PLACEHOLDER')}
+                    value={searchTerm}
+                    onChange={onInputChange}
+                  />
                 </MenuSearchInput>
               </MenuSearch>
               <Divider />

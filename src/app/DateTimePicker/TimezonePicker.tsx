@@ -150,7 +150,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
       <MenuSearch>
         <MenuSearchInput>
           <SearchInput
-            placeholder="Filter by timezone..."
+            placeholder={t('TimezonePicker.SEARCH_PLACEHOLDER')}
             value={searchTerm}
             onChange={onInputChange}
             aria-label={t('TimezonePicker.ARIA_LABELS.TYPE_AHEAD')}

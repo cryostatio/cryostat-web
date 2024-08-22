@@ -382,6 +382,7 @@
       },
       "DESCRIPTION": "",
       "LOCALE_SELECT_DESCRIPTION": "Select current date locale.",
+      "SEARCH_PLACEHOLDER": "Filter by locale...",
       "TIMEZONE_SELECT_DESCRIPTION": "Select current timezone.",
       "TITLE": "Date & Time"
     },
@@ -457,7 +458,8 @@
     "ARIA_LABELS": {
       "SELECT": "Select a timezone",
       "TYPE_AHEAD": "Search a timezone"
-    }
+    },
+    "SEARCH_PLACEHOLDER": "Filter by timezone..."
   },
   "Topology": {
     "GRAPH_VIEW": "Graph view",
