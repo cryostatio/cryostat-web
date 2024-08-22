@@ -402,7 +402,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                       errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'
                     }
                     onClick={handleNotificationCenterToggle}
-                    aria-label={t('AppLayout.TOOLBAR.NOTIFICATIONS_LABEL')}
+                    aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NOTIFICATIONS')}
                   >
                     <Icon>
                       <BellIcon />
@@ -412,7 +412,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <ToolbarItem>
                   <Button
                     variant="plain"
-                    aria-label={t('AppLayout.TOOLBAR.SETTINGS_LABEL')}
+                    aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.SETTINGS')}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
@@ -491,7 +491,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <MastheadToggle>
             <PageToggleButton
               variant="plain"
-              aria-label={t('AppLayout.TOOLBAR.NAVIGATION_LABEL')}
+              aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NAVIGATION')}
               isSidebarOpen={isNavOpen}
               onSidebarToggle={onNavToggle}
               data-quickstart-id="nav-toggle-btn"
@@ -537,7 +537,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const Navigation = React.useMemo(
     () => (
-      <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect} aria-label="Global nav">
+      <Nav
+        id="nav-primary-simple"
+        theme="dark"
+        variant="default"
+        onSelect={mobileOnSelect}
+        aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.GLOBAL_NAVIGATION')}
+      >
         {navGroups.map((title) => {
           return (
             <NavGroup title={title} key={title}>
@@ -571,7 +577,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         })}
       </Nav>
     ),
-    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel],
+    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel, t],
   );
 
   const Sidebar = React.useMemo(

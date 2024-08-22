@@ -24,9 +24,12 @@
       "OVERFLOW_MESSAGE": "View {{count}} more"
     },
     "TOOLBAR": {
-      "NAVIGATION_LABEL": "Navigation",
-      "NOTIFICATIONS_LABEL": "Notifications",
-      "SETTINGS_LABEL": "Settings"
+      "ARIA_LABELS": {
+        "GLOBAL_NAVIGATION": "Global navigation",
+        "NAVIGATION": "Navigation",
+        "NOTIFICATIONS": "Notifications",
+        "SETTINGS": "Settings"
+      }
     },
     "USER_MENU": {
       "LANGUAGE_PREFERENCE": "<Icon/> Language preference",
