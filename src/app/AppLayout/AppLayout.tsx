@@ -72,13 +72,14 @@ import {
   BellIcon,
   CogIcon,
   ExternalLinkAltIcon,
+  LanguageIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
   UserIcon,
 } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { ThemeToggle } from './ThemeToggle';
@@ -166,10 +167,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     }
     const overflow = notificationsToDisplay.length - visibleNotificationsCount;
     if (overflow > 0) {
-      return `View ${overflow} more`;
+      return t('AppLayout.NOTIFICATIONS.OVERFLOW_MESSAGE', { count: overflow });
     }
     return '';
-  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount]);
+  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount, t]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -283,14 +284,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
         <DropdownItem key={'language-preferences'} onClick={handleLanguagePref}>
-          Language preference
+          <Trans t={t} components={{ Icon: <LanguageIcon /> }} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
         </DropdownItem>
       </FeatureFlag>,
       <DropdownItem key={'log-out'} onClick={handleLogout}>
-        Log out
+        {t('AppLayout.USER_MENU.LOGOUT')}
       </DropdownItem>,
     ],
-    [handleLogout, handleLanguagePref],
+    [t, handleLogout, handleLanguagePref],
   );
 
   const userInfoToggle = React.useCallback(
@@ -401,7 +402,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                       errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'
                     }
                     onClick={handleNotificationCenterToggle}
-                    aria-label="Notifications"
+                    aria-label={t('AppLayout.TOOLBAR.NOTIFICATIONS_LABEL')}
                   >
                     <Icon>
                       <BellIcon />
@@ -411,7 +412,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <ToolbarItem>
                   <Button
                     variant="plain"
-                    aria-label="Settings"
+                    aria-label={t('AppLayout.TOOLBAR.SETTINGS_LABEL')}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
@@ -479,6 +480,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       userInfoToggle,
       userInfoItems,
       helpItems,
+      t,
     ],
   );
 
@@ -489,7 +491,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <MastheadToggle>
             <PageToggleButton
               variant="plain"
-              aria-label="Navigation"
+              aria-label={t('AppLayout.TOOLBAR.NAVIGATION_LABEL')}
               isSidebarOpen={isNavOpen}
               onSidebarToggle={onNavToggle}
               data-quickstart-id="nav-toggle-btn"
@@ -513,7 +515,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge],
+    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge, t],
   );
 
   const isActiveRoute = React.useCallback(

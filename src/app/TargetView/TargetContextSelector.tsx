@@ -175,7 +175,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         : [];
 
     return favGroup.concat(options);
-  }, [targets, favorites, searchTerm]);
+  }, [targets, favorites, searchTerm, t]);
 
   const onFavoriteClick = React.useCallback(
     (_, item: Target, actionId: string) => {

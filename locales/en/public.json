@@ -19,6 +19,18 @@
       "GUIDED_TOUR": "Guided tour",
       "HELP": "Help",
       "QUICKSTARTS": "Quick starts"
+    },
+    "NOTIFICATIONS": {
+      "OVERFLOW_MESSAGE": "View {{count}} more"
+    },
+    "TOOLBAR": {
+      "NAVIGATION_LABEL": "Navigation",
+      "NOTIFICATIONS_LABEL": "Notifications",
+      "SETTINGS_LABEL": "Settings"
+    },
+    "USER_MENU": {
+      "LANGUAGE_PREFERENCE": "<Icon/> Language preference",
+      "LOGOUT": "Log out"
     }
   },
   "AutomatedAnalysisCard": {
