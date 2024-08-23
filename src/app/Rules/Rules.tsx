@@ -431,10 +431,11 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   );
 
   const viewContent = React.useMemo(() => {
+    let view: JSX.Element;
     if (isLoading) {
-      return <LoadingView />;
+      view = <LoadingView />;
     } else if (!rules.length) {
-      return (
+      view = (
         <>
           <Bullseye>
             <EmptyState>
@@ -448,37 +449,38 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         </>
       );
     } else {
-      return (
-        <OuterScrollContainer className="rules-table-outer-container">
-          {toolbar}
-          <InnerScrollContainer className="rules-table-inner-container">
-            <Table aria-label="Automated Rules Table" isStickyHeader variant="compact">
-              <Thead>
-                <Tr>
-                  {tableColumns.map(({ title, tooltip, sortable }, index) => (
-                    <Th
-                      key={`automatic-rule-header-${title}`}
-                      sort={sortable ? getSortParams(index) : undefined}
-                      info={
-                        tooltip
-                          ? {
-                              tooltip: tooltip,
-                            }
-                          : undefined
-                      }
-                    >
-                      {title}
-                    </Th>
-                  ))}
-                  <Th key="table-header-actions" />
-                </Tr>
-              </Thead>
-              <Tbody>{ruleRows}</Tbody>
-            </Table>
-          </InnerScrollContainer>
-        </OuterScrollContainer>
+      view = (
+        <Table aria-label="Automated Rules Table" isStickyHeader variant="compact">
+          <Thead>
+            <Tr>
+              {tableColumns.map(({ title, tooltip, sortable }, index) => (
+                <Th
+                  key={`automatic-rule-header-${title}`}
+                  sort={sortable ? getSortParams(index) : undefined}
+                  info={
+                    tooltip
+                      ? {
+                          tooltip: tooltip,
+                        }
+                      : undefined
+                  }
+                >
+                  {title}
+                </Th>
+              ))}
+              <Th key="table-header-actions" />
+            </Tr>
+          </Thead>
+          <Tbody>{ruleRows}</Tbody>
+        </Table>
       );
     }
+    return (
+      <OuterScrollContainer className="rules-table-outer-container">
+        {toolbar}
+        <InnerScrollContainer className="rules-table-inner-container">{view}</InnerScrollContainer>
+      </OuterScrollContainer>
+    );
   }, [getSortParams, isLoading, rules, ruleRows, tableColumns, toolbar]);
 
   return (
