@@ -59,7 +59,9 @@ import {
   ThProps,
   Tr,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, defaultIfEmpty, first, tap } from 'rxjs/operators';
 import { AboutAgentCard } from './AboutAgentCard';
@@ -83,6 +85,7 @@ export interface AgentProbeTemplatesProps {
 
 export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentDetected }) => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
   const addSubscription = useSubscriptions();
 
   const [templates, setTemplates] = React.useState<ProbeTemplate[]>([]);
@@ -212,10 +215,8 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
     if (!filterText) {
       filtered = templates;
     } else {
-      const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter(
-        (t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft),
-      );
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
+      filtered = templates.filter((t: ProbeTemplate) => reg.test(t.name) || reg.test(t.xml));
     }
 
     setFilteredTemplates(
@@ -300,16 +301,18 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
                     <TextInput
+                      style={{ minWidth: '30ch' }}
                       name="templateFilter"
                       id="templateFilter"
                       type="search"
-                      placeholder="Filter..."
+                      placeholder={t('AgentProbeTemplates.SEARCH_PLACEHOLDER')}
                       aria-label="Probe Template filter"
                       onChange={handleFilterTextChange}
                       value={filterText}
                     />
                   </ToolbarItem>
                 </ToolbarGroup>
+                <ToolbarItem variant="separator" />
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
                     <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleTemplateUpload}>

@@ -12,6 +12,12 @@
     "OPEN_SOURCE_LICENSE": "Open source license",
     "VERSION": "Version"
   },
+  "AgentLiveProbes": {
+    "SEARCH_PLACEHOLDER": "Find by name, description, clazz, or method..."
+  },
+  "AgentProbeTemplates": {
+    "SEARCH_PLACEHOLDER": "Find by name, or XML content..."
+  },
   "AllArchivedRecordingsTable": {
     "SEARCH_PLACEHOLDER": "Find by directory, or JVM Hash ID..."
   },

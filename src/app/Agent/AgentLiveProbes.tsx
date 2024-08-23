@@ -49,7 +49,9 @@ import {
   Tr,
   Td,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { combineLatest } from 'rxjs';
 import { AboutAgentCard } from './AboutAgentCard';
 
@@ -85,8 +87,9 @@ const tableColumns: TableColumn[] = [
 
 export interface AgentLiveProbesProps {}
 
-export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
+export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
   const addSubscription = useSubscriptions();
 
   const [probes, setProbes] = React.useState<EventProbe[]>([]);
@@ -245,14 +248,14 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
     if (!filterText) {
       filtered = probes;
     } else {
-      const ft = filterText.trim().toLowerCase();
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
       filtered = probes.filter(
         (t: EventProbe) =>
-          t.name.toLowerCase().includes(ft) ||
-          t.description.toLowerCase().includes(ft) ||
-          t.clazz.toLowerCase().includes(ft) ||
-          t.methodDescriptor.toLowerCase().includes(ft) ||
-          t.methodName.toLowerCase().includes(ft),
+          reg.test(t.name) ||
+          reg.test(t.description) ||
+          reg.test(t.clazz) ||
+          reg.test(t.methodDescriptor) ||
+          reg.test(t.methodName),
       );
     }
 
@@ -326,15 +329,17 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
                     <TextInput
+                      style={{ minWidth: '40ch' }}
                       name="activeProbeFilter"
                       id="activeProbeFilter"
                       type="search"
-                      placeholder="Filter..."
+                      placeholder={t('AgentLiveProbes.SEARCH_PLACEHOLDER')}
                       aria-label="Active probe filter"
                       onChange={handleFilterTextChange}
                     />
                   </ToolbarItem>
                 </ToolbarGroup>
+                <ToolbarItem variant="separator" />
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
                     <Button
