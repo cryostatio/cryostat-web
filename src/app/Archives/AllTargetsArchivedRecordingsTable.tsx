@@ -345,10 +345,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   }, [refreshArchivesForTargets]);
 
   const searchedArchivesForTargets = React.useMemo(() => {
-    let updated: ArchivesForTarget[];
-    if (!searchText) {
-      updated = archivesForTargets;
-    } else {
+    let updated: ArchivesForTarget[] =  archivesForTargets;
+    if (searchText) {
       const reg = new RegExp(_.escapeRegExp(searchText), 'i');
       updated = archivesForTargets.filter(({ target }) => reg.test(targetDisplay(target)));
     }
@@ -475,30 +473,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       rowPairs.push(targetRows[i]);
       rowPairs.push(recordingRows[i]);
     }
-    return [
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-      ...rowPairs,
-    ];
+    return rowPairs;
   }, [targetRows, recordingRows]);
 
   let view: JSX.Element;
