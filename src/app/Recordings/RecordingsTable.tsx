@@ -129,13 +129,7 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
   } else {
     view = (
       <>
-        <Table
-          {...props}
-          isStickyHeader
-          aria-label={tableTitle}
-          variant={isNestedTable ? 'compact' : undefined}
-          style={{ zIndex: 99 }} // z-index of filters Select dropdown is 100
-        >
+        <Table {...props} isStickyHeader aria-label={tableTitle} variant={isNestedTable ? 'compact' : undefined}>
           <Thead>
             <Tr>
               <Th

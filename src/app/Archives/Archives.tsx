@@ -110,9 +110,10 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
 
   return (
     <BreadcrumbPage {...props} pageTitle="Archives">
-      <Card>
-        <CardBody>{cardBody}</CardBody>
+      <Card isFullHeight>
+        <CardBody isFilled>{cardBody}</CardBody>
       </Card>
+      <></>
     </BreadcrumbPage>
   );
 };

@@ -29,15 +29,18 @@ import {
   ToolbarGroup,
   ToolbarItem,
   SearchInput,
-  Badge,
   Checkbox,
   EmptyState,
   EmptyStateIcon,
   EmptyStateHeader,
+  Button,
+  Icon,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { FileIcon, SearchIcon } from '@patternfly/react-icons';
 import { Table, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, SortByDirection } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -82,6 +85,8 @@ export interface AllTargetsArchivedRecordingsTableProps {}
 
 export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
+
   const [searchText, setSearchText] = React.useState('');
   const [archivesForTargets, setArchivesForTargets] = React.useState<ArchivesForTarget[]>([]);
   const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
@@ -315,6 +320,14 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     setSearchText('');
   }, [setSearchText]);
 
+  const targetDisplay = React.useCallback(
+    (target: Target) =>
+      target.alias == target.connectUrl || !target.alias
+        ? `${target.connectUrl}`
+        : `${target.alias} (${target.connectUrl})`,
+    [],
+  );
+
   React.useEffect(() => {
     refreshArchivesForTargets();
   }, [refreshArchivesForTargets]);
@@ -324,12 +337,8 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     if (!searchText) {
       updated = archivesForTargets;
     } else {
-      const formattedSearchText = searchText.trim().toLowerCase();
-      updated = archivesForTargets.filter(
-        ({ target: t }) =>
-          t.alias.toLowerCase().includes(formattedSearchText) ||
-          t.connectUrl.toLowerCase().includes(formattedSearchText),
-      );
+      const reg = new RegExp(_.escapeRegExp(searchText), 'i');
+      updated = archivesForTargets.filter(({ target }) => reg.test(targetDisplay(target)));
     }
     return sortResources(
       {
@@ -339,7 +348,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
       tableColumns,
     );
-  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets]);
+  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets, targetDisplay]);
 
   React.useEffect(() => {
     addSubscription(
@@ -415,17 +424,20 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             }}
           />
           <Td key={`target-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
-            {target.alias == target.connectUrl || !target.alias
-              ? `${target.connectUrl}`
-              : `${target.alias} (${target.connectUrl})`}
+            {targetDisplay(target)}
           </Td>
           <Td key={`target-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Badge key={`${idx}_count`}>{archiveCount}</Badge>
+            <Button variant="plain" onClick={() => toggleExpanded(target)}>
+              <Icon iconSize="md">
+                <FileIcon />
+              </Icon>
+              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{archiveCount}</span>
+            </Button>
           </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, searchedArchivesForTargets, expandedTargets]);
+  }, [toggleExpanded, searchedArchivesForTargets, expandedTargets, targetDisplay]);
 
   const recordingRows = React.useMemo(() => {
     return searchedArchivesForTargets.map(({ target, targetAsObs }) => {
@@ -517,25 +529,24 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           <ToolbarGroup variant="filter-group">
             <ToolbarItem>
               <SearchInput
-                placeholder="Search"
+                style={{ minWidth: '30ch' }}
+                placeholder={t('AllTargetsArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
                 value={searchText}
                 onChange={handleSearchInput}
                 onClear={handleSearchInputClear}
               />
             </ToolbarItem>
           </ToolbarGroup>
-          <ToolbarGroup>
-            <ToolbarItem>
-              <Checkbox
-                name={`all-targets-hide-check`}
-                label="Hide targets with zero Recordings"
-                onChange={handleHideEmptyTarget}
-                isChecked={hideEmptyTargets}
-                id={`all-targets-hide-check`}
-                aria-label={`all-targets-hide-check`}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
+          <ToolbarItem alignSelf="center">
+            <Checkbox
+              name={`all-targets-hide-check`}
+              label="Hide targets with zero Recordings"
+              onChange={handleHideEmptyTarget}
+              isChecked={hideEmptyTargets}
+              id={`all-targets-hide-check`}
+              aria-label={`all-targets-hide-check`}
+            />
+          </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
       {view}

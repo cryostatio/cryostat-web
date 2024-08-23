@@ -731,7 +731,6 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
       id="archived-recordings-toolbar"
       aria-label="archived-recording-toolbar"
       clearAllFilters={props.handleClearFilters}
-      isSticky
     >
       <ToolbarContent>
         <RecordingFilters

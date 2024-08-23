@@ -78,8 +78,16 @@ body,
   --pf-v5-c-chip__text--MaxWidth: 100ch;
 }
 
+.rules-table-outer-container {
+  height: 67.5vh;
+}
+
+.rules-table-inner-container {
+  height: 100%;
+}
+
 .recording-table-outer-container {
-  height: 67.3vh;
+  height: 64.5vh;
 }
 
 .recording-table--inner-container {
