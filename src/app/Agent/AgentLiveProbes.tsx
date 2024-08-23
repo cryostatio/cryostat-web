@@ -29,12 +29,12 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  TextInput,
   Stack,
   StackItem,
   EmptyState,
   EmptyStateIcon,
   EmptyStateHeader,
+  SearchInput,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
@@ -328,8 +328,8 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
               <ToolbarContent>
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
-                    <TextInput
-                      style={{ minWidth: '40ch' }}
+                    <SearchInput
+                      style={{ minWidth: '36ch' }}
                       name="activeProbeFilter"
                       id="activeProbeFilter"
                       type="search"
