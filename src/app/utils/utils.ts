@@ -267,6 +267,3 @@ export const isAssetNew = (currVer: string) => {
   const oldVer: string = getFromLocalStorage('ASSET_VERSION', '0.0.0');
   return !semverValid(oldVer) || semverGt(currVer, oldVer);
 };
-
-export const includesSubstr = (a: string, b: string): boolean =>
-  !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());

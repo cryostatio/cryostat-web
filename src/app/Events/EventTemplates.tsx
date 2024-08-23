@@ -35,12 +35,12 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
-  TextInput,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
+  SearchInput,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -57,7 +57,9 @@ import {
   ThProps,
   Tr,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
@@ -87,9 +89,10 @@ const tableColumns: TableColumn[] = [
 
 export interface EventTemplatesProps {}
 
-export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
+export const EventTemplates: React.FC<EventTemplatesProps> = () => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [filteredTemplates, setFilteredTemplates] = React.useState<EventTemplate[]>([]);
@@ -121,12 +124,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     if (!filterText) {
       filtered = templates;
     } else {
-      const ft = filterText.trim().toLowerCase();
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
       filtered = templates.filter(
-        (t: EventTemplate) =>
-          t.name.toLowerCase().includes(ft) ||
-          t.description.toLowerCase().includes(ft) ||
-          t.provider.toLowerCase().includes(ft),
+        (t: EventTemplate) => reg.test(t.name) || reg.test(t.description) || reg.test(t.provider),
       );
     }
 
@@ -351,11 +351,12 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           <ToolbarContent>
             <ToolbarGroup variant="filter-group">
               <ToolbarItem>
-                <TextInput
+                <SearchInput
+                  style={{ minWidth: '30ch' }}
                   name="templateFilter"
                   id="templateFilter"
                   type="search"
-                  placeholder="Filter..."
+                  placeholder={t('EventTemplates.SEARCH_PLACEHOLDER')}
                   aria-label="Event Template filter"
                   onChange={(_, value: string) => setFilterText(value)}
                   value={filterText}
@@ -363,6 +364,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
                 />
               </ToolbarItem>
             </ToolbarGroup>
+            <ToolbarItem variant="separator" />
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
                 <Button

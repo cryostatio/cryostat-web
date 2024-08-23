@@ -280,6 +280,12 @@
   "ErrorView": {
     "EVENT_TEMPLATES": "Error retrieving Event Templates"
   },
+  "EventTemplates": {
+    "SEARCH_PLACEHOLDER": "Find by name, description or provider..."
+  },
+  "EventTypes": {
+    "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
+  },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected Target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, Labels, and Annotations belonging to the selected Target JVM.",
