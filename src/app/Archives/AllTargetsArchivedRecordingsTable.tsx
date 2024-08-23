@@ -35,9 +35,21 @@ import {
   EmptyStateHeader,
   Button,
   Icon,
+  Bullseye,
 } from '@patternfly/react-core';
 import { FileIcon, SearchIcon } from '@patternfly/react-icons';
-import { Table, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, SortByDirection } from '@patternfly/react-table';
+import {
+  Table,
+  Th,
+  Thead,
+  Tbody,
+  Tr,
+  Td,
+  ExpandableRowContent,
+  SortByDirection,
+  OuterScrollContainer,
+  InnerScrollContainer,
+} from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -463,7 +475,30 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       rowPairs.push(targetRows[i]);
       rowPairs.push(recordingRows[i]);
     }
-    return rowPairs;
+    return [
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+      ...rowPairs,
+    ];
   }, [targetRows, recordingRows]);
 
   let view: JSX.Element;
@@ -489,41 +524,41 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   } else if (!searchedArchivesForTargets.length) {
     view = (
       <>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText="No Archived Recordings"
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
-        </EmptyState>
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateHeader
+              titleText="No Archived Recordings"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
+          </EmptyState>
+        </Bullseye>
       </>
     );
   } else {
     view = (
-      <>
-        <Table aria-label="all-targets-table">
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {tableColumns.map(({ title, width }, idx) => (
-                <Th
-                  key={`table-header-${title}`}
-                  width={width as React.ComponentProps<typeof Th>['width']}
-                  sort={getSortParams(idx)}
-                >
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>{rowPairs}</Tbody>
-        </Table>
-      </>
+      <Table aria-label="all-targets-table" isStickyHeader>
+        <Thead>
+          <Tr>
+            <Th key="table-header-expand" />
+            {tableColumns.map(({ title, width }, idx) => (
+              <Th
+                key={`table-header-${title}`}
+                width={width as React.ComponentProps<typeof Th>['width']}
+                sort={getSortParams(idx)}
+              >
+                {title}
+              </Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>{rowPairs}</Tbody>
+      </Table>
     );
   }
 
   return (
-    <>
+    <OuterScrollContainer className="archive-table-outer-container">
       <Toolbar id="all-targets-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="filter-group">
@@ -549,7 +584,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
-      {view}
-    </>
+      <InnerScrollContainer className="archive-table-inner-container">{view}</InnerScrollContainer>
+    </OuterScrollContainer>
   );
 };

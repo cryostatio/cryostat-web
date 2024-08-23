@@ -94,6 +94,16 @@ body,
   height: 100%;
 }
 
+.archive-table-outer-container {
+  height: 75vh;
+}
+
+.archive-table-inner-container {
+  height: 100%;
+}
+
+
+
 #dashboard-layout-dropdown-toggle {
   width: 20em;
 }

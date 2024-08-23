@@ -37,9 +37,21 @@ import {
   EmptyStateHeader,
   Button,
   Icon,
+  Bullseye,
 } from '@patternfly/react-core';
 import { FileIcon, HelpIcon, SearchIcon } from '@patternfly/react-icons';
-import { Table, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, SortByDirection } from '@patternfly/react-table';
+import {
+  Table,
+  Th,
+  Thead,
+  Tbody,
+  Tr,
+  Td,
+  ExpandableRowContent,
+  SortByDirection,
+  OuterScrollContainer,
+  InnerScrollContainer,
+} from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -313,41 +325,41 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   } else if (!searchedDirectories.length) {
     view = (
       <>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText="No Archived Recordings"
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
-        </EmptyState>
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateHeader
+              titleText="No Archived Recordings"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
+          </EmptyState>
+        </Bullseye>
       </>
     );
   } else {
     view = (
-      <>
-        <Table aria-label="all-archives-table">
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {tableColumns.map(({ title, width }, index) => (
-                <Th
-                  key={`table-header-${title}`}
-                  sort={getSortParams(index)}
-                  width={width as React.ComponentProps<typeof Th>['width']}
-                >
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>{rowPairs}</Tbody>
-        </Table>
-      </>
+      <Table aria-label="all-archives-table" isStickyHeader>
+        <Thead>
+          <Tr>
+            <Th key="table-header-expand" />
+            {tableColumns.map(({ title, width }, index) => (
+              <Th
+                key={`table-header-${title}`}
+                sort={getSortParams(index)}
+                width={width as React.ComponentProps<typeof Th>['width']}
+              >
+                {title}
+              </Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>{rowPairs}</Tbody>
+      </Table>
     );
   }
 
   return (
-    <>
+    <OuterScrollContainer className="archive-table-outer-container">
       <Toolbar id="all-archives-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="filter-group">
@@ -363,7 +375,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           </ToolbarGroup>
         </ToolbarContent>
       </Toolbar>
-      {view}
-    </>
+      <InnerScrollContainer className="archive-table-inner-container">{view}</InnerScrollContainer>
+    </OuterScrollContainer>
   );
 };
