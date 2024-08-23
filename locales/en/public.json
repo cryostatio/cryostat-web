@@ -469,6 +469,14 @@
       "TABLE": "Shortcuts table"
     }
   },
+  "StoredCredentials": {
+    "ARIA_LABELS": {
+      "Add": "add-credential",
+      "Delete": "delete-selected-credential"
+    },
+    "AT_LEAST_ONE_MATCH": ">= 1 Match Only",
+    "NO_MATCH": "No Match Only"
+  },
   "TargetContextSelector": {
     "CLEAR_SELECTION": "Clear selection",
     "CREATE_TARGET": "Create Target",

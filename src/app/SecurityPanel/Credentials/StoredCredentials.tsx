@@ -32,9 +32,6 @@ import {
   Text,
   TextContent,
   TextVariants,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
   EmptyStateHeader,
   Dropdown,
   DropdownList,
@@ -42,10 +39,13 @@ import {
   MenuToggleElement,
   MenuToggle,
   MenuToggleCheckbox,
+  ActionList,
+  ActionListItem,
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { forkJoin } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
@@ -181,6 +181,7 @@ const tableColumns: TableColumn[] = [
 const tableTitle = 'Stored Credentials';
 
 export const StoredCredentials = () => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, dispatch] = React.useReducer(reducer, {
     credentials: [] as StoredCredential[],
@@ -278,49 +279,51 @@ export const StoredCredentials = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const TargetCredentialsToolbar = () => {
-    const buttons = React.useMemo(() => {
-      const arr = [
-        <Button key="add" variant="primary" aria-label="add-credential" onClick={handleAuthModalOpen}>
-          Add
-        </Button>,
-        <Button
-          key="delete"
-          variant="danger"
-          aria-label="delete-selected-credential"
-          onClick={handleDeleteButton}
-          isDisabled={!state.checkedCredentials.length}
-        >
-          Delete
-        </Button>,
-      ];
-      return (
-        <>
-          {arr.map((btn, idx) => (
-            <ToolbarItem key={idx}>{btn}</ToolbarItem>
-          ))}
-        </>
-      );
-    }, []);
+  const targetCredentialsToolbar = React.useMemo(() => {
+    const buttons = [
+      <Button
+        key="add"
+        variant="primary"
+        aria-label={t('StoredCredentials.ARIA_LABELS.Add')}
+        onClick={handleAuthModalOpen}
+      >
+        {t('ADD', { ns: 'common' })}
+      </Button>,
+      <Button
+        key="delete"
+        variant="danger"
+        aria-label={t('StoredCredentials.ARIA_LABELS.Delete')}
+        onClick={handleDeleteButton}
+        isDisabled={!state.checkedCredentials.length}
+      >
+        {t('DELETE', { ns: 'common' })}
+      </Button>,
+    ];
 
-    const deleteCredentialModal = React.useMemo(() => {
-      return (
+    return (
+      <>
+        <ActionList>
+          {buttons.map((btn, idx) => (
+            <ActionListItem key={idx}>{btn}</ActionListItem>
+          ))}
+        </ActionList>
         <DeleteWarningModal
           warningType={DeleteOrDisableWarningType.DeleteCredentials}
           visible={warningModalOpen}
           onAccept={handleDeleteCredentials}
           onClose={handleWarningModalClose}
         />
-      );
-    }, []);
-
-    return (
-      <Toolbar id="target-credentials-toolbar">
-        <ToolbarContent>{buttons}</ToolbarContent>
-        {deleteCredentialModal}
-      </Toolbar>
+      </>
     );
-  };
+  }, [
+    t,
+    handleAuthModalOpen,
+    handleDeleteButton,
+    warningModalOpen,
+    handleDeleteCredentials,
+    handleWarningModalClose,
+    state.checkedCredentials.length,
+  ]);
 
   const matchExpressionRows = React.useMemo(() => {
     return sortResources(sortBy, state.credentials, tableColumns).map((credential, idx) => {
@@ -414,7 +417,7 @@ export const StoredCredentials = () => {
       <>
         <EmptyState>
           <EmptyStateHeader
-            titleText={<>No{tableTitle}</>}
+            titleText={<>No {tableTitle}</>}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
@@ -455,7 +458,7 @@ export const StoredCredentials = () => {
 
   return (
     <>
-      <TargetCredentialsToolbar />
+      {targetCredentialsToolbar}
       {content}
       <CreateCredentialModal
         visible={showAuthModal}
@@ -479,6 +482,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   onSelectAll,
   isSelectAll,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleToggle = React.useCallback(() => setIsOpen((isOpen) => !isOpen), [setIsOpen]);
@@ -486,11 +490,13 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   const dropdownItems = React.useMemo(() => {
     return [
       <DropdownItem key="action" onClick={onNoMatchSelect}>
-        No Match Only
+        {t('StoredCredentials.NO_MATCH')}
       </DropdownItem>,
-      <DropdownItem key="action" onClick={onAtLeastOneMatchSelect}>{`>= 1 Match Only`}</DropdownItem>,
+      <DropdownItem key="action" onClick={onAtLeastOneMatchSelect}>
+        {t('StoredCredentials.AT_LEAST_ONE_MATCH')}
+      </DropdownItem>,
     ];
-  }, [onNoMatchSelect, onAtLeastOneMatchSelect]);
+  }, [onNoMatchSelect, onAtLeastOneMatchSelect, t]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -520,6 +526,8 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
       }}
       toggle={toggle}
       isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
       popperProps={{
         appendTo: portalRoot,
       }}
