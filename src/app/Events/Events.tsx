@@ -31,22 +31,17 @@ export interface EventsProps {}
 export const Events: React.FC<EventsProps> = ({ ...props }) => {
   return (
     <TargetView {...props} pageTitle="Events">
-      <Stack hasGutter>
-        <StackItem>
-          <Card>
-            <CardBody>
-              <EventTabs />
-            </CardBody>
-          </Card>
-        </StackItem>
-        <StackItem>
-          <Card>
-            <CardBody>
-              <AgentTabs />
-            </CardBody>
-          </Card>
-        </StackItem>
-      </Stack>
+      <Card isFullHeight>
+        <CardBody isFilled>
+          <EventTabs />
+        </CardBody>
+      </Card>
+      <Card isFullHeight>
+        <CardBody isFilled>
+          <AgentTabs />
+        </CardBody>
+      </Card>
+      <></>
     </TargetView>
   );
 };

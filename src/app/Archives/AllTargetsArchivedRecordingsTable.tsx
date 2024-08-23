@@ -345,7 +345,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   }, [refreshArchivesForTargets]);
 
   const searchedArchivesForTargets = React.useMemo(() => {
-    let updated: ArchivesForTarget[] =  archivesForTargets;
+    let updated: ArchivesForTarget[] = archivesForTargets;
     if (searchText) {
       const reg = new RegExp(_.escapeRegExp(searchText), 'i');
       updated = archivesForTargets.filter(({ target }) => reg.test(targetDisplay(target)));
