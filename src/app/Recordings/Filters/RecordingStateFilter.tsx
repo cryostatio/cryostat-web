@@ -38,7 +38,7 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
         ref={toggleRef}
-        badge={filteredStates?.length ? <Badge>{filteredStates.length}</Badge> : null}
+        badge={filteredStates?.length ? <Badge isRead>{filteredStates.length}</Badge> : null}
         onClick={() => setIsOpen((isOpen) => !isOpen)}
         isExpanded={isOpen}
       >
