@@ -19,4 +19,5 @@ export interface SecurityCard {
   title: JSX.Element;
   description: JSX.Element;
   content: React.FC;
+  isFilled?: boolean;
 }

@@ -558,4 +558,5 @@ export const StoredCredentialsCard: SecurityCard = {
     </TextContent>
   ),
   content: StoredCredentials,
+  isFilled: true
 };
