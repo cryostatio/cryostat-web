@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ClipboardCopy } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface MatchExpressionDisplayProps {
@@ -20,5 +21,16 @@ export interface MatchExpressionDisplayProps {
 }
 
 export const MatchExpressionDisplay: React.FC<MatchExpressionDisplayProps> = ({ matchExpression }) => {
-  return <div className="match-expression-display">{matchExpression}</div>;
+  return (
+    <ClipboardCopy
+      className="match-expression-display"
+      hoverTip="Copy"
+      clickTip="Copied"
+      variant="inline-compact"
+      isBlock
+      isCode
+    >
+      {matchExpression}
+    </ClipboardCopy>
+  );
 };
