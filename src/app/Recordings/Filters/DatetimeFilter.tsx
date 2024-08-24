@@ -124,6 +124,7 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
             minWidth={'28em'}
             position={PopoverPosition.bottom}
             flipBehavior={['bottom']}
+            shouldClose={() => setIsCalendarOpen(false)}
           >
             <Stack>
               <StackItem>
