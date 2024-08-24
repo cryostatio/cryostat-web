@@ -323,6 +323,11 @@
     "SELECTED_DATETIME": "Selected Date and Time",
     "SELECTED_TIMEZONE": "Selected Timezone"
   },
+  "DurationFilter": {
+    "ARIA_LABELS": {
+      "SEARCH_BUTTON": "Search for duration"
+    }
+  },
   "ERROR_BOUNDARY": {
     "ERROR_MESSAGE": "Reason: {{message}}",
     "RESOLVE_MESSAGE": "Reload the page and try again. If the error still persists, see the list of <issue>{{knownIssue}}</issue> or <report>{{fileReport}}</report>."

@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
+import { Button, ButtonVariant, Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+
+export const CONTINUOUS_INDICATOR = 'continuous';
 
 export interface DurationFilterProps {
   durations: string[] | undefined;
@@ -28,8 +32,9 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
   onDurationInput,
   onContinuousDurationSelect,
 }) => {
+  const { t } = useTranslation();
   const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
+  const isContinuous = React.useMemo(() => durations && durations.includes(CONTINUOUS_INDICATOR), [durations]);
 
   const handleContinuousCheckBoxChange = React.useCallback(
     (_, checked: boolean) => {
@@ -38,37 +43,50 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
     [onContinuousDurationSelect],
   );
 
+  const handleSubmit = React.useCallback(() => onDurationInput(duration), [onDurationInput, duration]);
+
   const handleEnterKey = React.useCallback(
     (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
+      if (e.key && e.key === 'Enter') {
+        handleSubmit();
       }
-      onDurationInput(duration);
     },
-    [onDurationInput, duration],
+    [handleSubmit],
   );
 
   return (
     <Flex>
-      <FlexItem flex={{ default: 'flex_1' }}>
-        <TextInput
-          type="number"
-          value={duration}
-          id="duration-input"
-          aria-label="duration filter"
-          onChange={(e, value) => setDuration(Number(value))}
-          min="0"
-          onKeyDown={handleEnterKey}
-        />
-      </FlexItem>
-      <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-        <Checkbox
-          className="duration-filter__continuous-checkbox"
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={isContinuous}
-          onChange={handleContinuousCheckBoxChange}
-        />
+      <Flex direction={{ default: 'column' }}>
+        <FlexItem>
+          <TextInput
+            type="number"
+            value={duration}
+            id="duration-input"
+            aria-label="duration filter"
+            onChange={(_, value) => setDuration(Number(value))}
+            min="0"
+            onKeyDown={handleEnterKey}
+            style={{ maxWidth: '16ch' }}
+          />
+        </FlexItem>
+        <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
+          <Checkbox
+            className="duration-filter__continuous-checkbox"
+            label="Continuous"
+            id="continuous-checkbox"
+            isChecked={isContinuous}
+            onChange={handleContinuousCheckBoxChange}
+          />
+        </FlexItem>
+      </Flex>
+      <FlexItem>
+        <Button
+          variant={ButtonVariant.control}
+          aria-label={t('DurationFilter.ARIA_LABELS.SEARCH_BUTTON') || ''}
+          onClick={handleSubmit}
+        >
+          <SearchIcon />
+        </Button>
       </FlexItem>
     </Flex>
   );
