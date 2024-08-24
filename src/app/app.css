@@ -546,6 +546,10 @@ body,
   /* Fix input border overlap */
 }
 
+.recording-toolbar-separator {
+  max-height: 2.25em;
+}
+
 .pf-v5-c-check__input {
   --pf-v5-c-check__input--TranslateY--moz: 0;
   --pf-v5-c-check__input--TranslateY: 0;

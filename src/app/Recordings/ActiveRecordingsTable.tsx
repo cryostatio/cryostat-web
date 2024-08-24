@@ -803,7 +803,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           updateFilters={props.updateFilters}
           breakpoint={'xl'}
         />
-        <ToolbarItem variant="separator" />
+        <ToolbarItem variant="separator" className="recording-toolbar-separator" />
         <ToolbarGroup style={{ alignSelf: 'start' }} variant="button-group">
           <ToolbarItem variant="overflow-menu">
             <OverflowMenu
