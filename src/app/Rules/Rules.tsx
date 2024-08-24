@@ -17,6 +17,7 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -341,7 +342,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
             {r.description || <EmptyText text={t('NO_DESCRIPTION', { ns: 'common' })} />}
           </Td>
           <Td key={`automatic-rule-matchExpression-${index}`} width={25} dataLabel={tableColumns[3].title}>
-            {r.matchExpression}
+            <MatchExpressionDisplay matchExpression={r.matchExpression} />
           </Td>
           <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
             {r.eventSpecifier}

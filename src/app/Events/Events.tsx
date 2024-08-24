@@ -19,7 +19,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
-import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
+import { Card, CardBody, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { concatMap, filter } from 'rxjs';

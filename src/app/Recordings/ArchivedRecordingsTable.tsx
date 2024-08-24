@@ -556,7 +556,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     [checkedIndices, setShowDetailsPanel, isUploadsTable, propsDirectory, directoryRecordings],
   );
 
-  const totalArchiveSize = React.useMemo(() =>  filteredRecordings.reduce((total, r) => total + r.size, 0), [filteredRecordings]);
+  const totalArchiveSize = React.useMemo(
+    () => filteredRecordings.reduce((total, r) => total + r.size, 0),
+    [filteredRecordings],
+  );
 
   const columnConfig: ColumnConfig = React.useMemo(
     () => ({
