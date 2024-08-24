@@ -474,8 +474,8 @@
       "Add": "add-credential",
       "Delete": "delete-selected-credential"
     },
-    "AT_LEAST_ONE_MATCH": ">= 1 Match Only",
-    "NO_MATCH": "No Match Only"
+    "AT_LEAST_ONE_MATCH": "At least 1 match",
+    "NO_MATCH": "No Match"
   },
   "TargetContextSelector": {
     "CLEAR_SELECTION": "Clear selection",

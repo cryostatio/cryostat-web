@@ -41,8 +41,9 @@ import {
   MenuToggleCheckbox,
   ActionList,
   ActionListItem,
+  Icon,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
+import { ContainerNodeIcon, FileIcon, OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -363,7 +364,12 @@ export const StoredCredentials = () => {
             {credential.matchExpression}
           </Td>
           <Td key={`credentials-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Badge key={`${idx}_count`}>{credential.numMatchingTargets}</Badge>
+            <Button variant="plain" onClick={() => handleToggleExpanded()}>
+              <Icon iconSize="md">
+                <ContainerNodeIcon />
+              </Icon>
+              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential.numMatchingTargets}</span>
+            </Button>
           </Td>
         </Tr>
       );
@@ -558,5 +564,5 @@ export const StoredCredentialsCard: SecurityCard = {
     </TextContent>
   ),
   content: StoredCredentials,
-  isFilled: true
+  isFilled: true,
 };

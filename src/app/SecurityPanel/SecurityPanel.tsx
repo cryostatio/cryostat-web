@@ -27,7 +27,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
     title: c.title,
     description: c.description,
     element: React.createElement(c.content, null),
-    isFullHeight: c.isFilled
+    isFullHeight: c.isFilled,
   }));
 
   return (
