@@ -23,7 +23,6 @@ import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources, portalRoot } from '@app/utils/utils';
 import {
-  Badge,
   Button,
   Checkbox,
   EmptyState,
@@ -39,12 +38,17 @@ import {
   MenuToggleElement,
   MenuToggle,
   MenuToggleCheckbox,
-  ActionList,
-  ActionListItem,
   Icon,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  ToolbarGroup,
+  SearchInput,
+  Bullseye,
 } from '@patternfly/react-core';
-import { ContainerNodeIcon, FileIcon, OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
+import { ContainerNodeIcon, OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { forkJoin } from 'rxjs';
@@ -184,6 +188,7 @@ const tableTitle = 'Stored Credentials';
 export const StoredCredentials = () => {
   const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [state, dispatch] = React.useReducer(reducer, {
     credentials: [] as StoredCredential[],
     expandedCredentials: [] as StoredCredential[],
@@ -194,7 +199,7 @@ export const StoredCredentials = () => {
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
-  const addSubscription = useSubscriptions();
+  const [searchText, setSearchText] = React.useState('');
 
   const refreshStoredCredentialsAndCounts = React.useCallback(() => {
     setIsLoading(true);
@@ -303,11 +308,26 @@ export const StoredCredentials = () => {
 
     return (
       <>
-        <ActionList>
-          {buttons.map((btn, idx) => (
-            <ActionListItem key={idx}>{btn}</ActionListItem>
-          ))}
-        </ActionList>
+        <Toolbar id="all-targets-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  placeholder={t('StoredCredentials.SEARCH_PLACEHOLDER')}
+                  value={searchText}
+                  onChange={(_, val) => setSearchText(val)}
+                  onClear={() => setSearchText('')}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarItem variant="separator" />
+            <ToolbarGroup variant="button-group">
+              {buttons.map((btn, idx) => (
+                <ToolbarItem key={idx}>{btn}</ToolbarItem>
+              ))}
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
         <DeleteWarningModal
           warningType={DeleteOrDisableWarningType.DeleteCredentials}
           visible={warningModalOpen}
@@ -324,10 +344,16 @@ export const StoredCredentials = () => {
     handleDeleteCredentials,
     handleWarningModalClose,
     state.checkedCredentials.length,
+    searchText,
   ]);
 
+  const filteredCredentials = React.useMemo(() => {
+    const reg = new RegExp(_.escapeRegExp(searchText), 'i');
+    return state.credentials.filter((c) => reg.test(c.matchExpression));
+  }, [searchText, state.credentials]);
+
   const matchExpressionRows = React.useMemo(() => {
-    return sortResources(sortBy, state.credentials, tableColumns).map((credential, idx) => {
+    return sortResources(sortBy, filteredCredentials, tableColumns).map((credential, idx) => {
       const isExpanded = includesCredential(state.expandedCredentials, credential);
       const isChecked = includesCredential(state.checkedCredentials, credential);
 
@@ -374,10 +400,10 @@ export const StoredCredentials = () => {
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials, state.checkedCredentials, sortBy]);
+  }, [filteredCredentials, state.expandedCredentials, state.checkedCredentials, sortBy]);
 
   const targetRows = React.useMemo(() => {
-    return state.credentials.map((credential, idx) => {
+    return filteredCredentials.map((credential, idx) => {
       const isExpanded: boolean = includesCredential(state.expandedCredentials, credential);
 
       return (
@@ -392,7 +418,7 @@ export const StoredCredentials = () => {
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials]);
+  }, [filteredCredentials, state.expandedCredentials]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -418,16 +444,22 @@ export const StoredCredentials = () => {
         <LoadingView />
       </>
     );
-  } else if (state.credentials.length === 0) {
+  } else if (matchExpressionRows.length === 0) {
     content = (
       <>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={<>No {tableTitle}</>}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
-        </EmptyState>
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateHeader
+              titleText={
+                <>
+                  No {tableTitle} {searchText !== '' ? 'Found' : ''}
+                </>
+              }
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
+          </EmptyState>
+        </Bullseye>
       </>
     );
   } else {
@@ -439,7 +471,7 @@ export const StoredCredentials = () => {
               <Th key="table-header-expand" />
               <Th key="table-header-check-all">
                 <CheckBoxActions
-                  isSelectAll={state.isHeaderChecked}
+                  isSelectAll={matchExpressionRows.length > 0 && state.isHeaderChecked}
                   onSelectAll={handleHeaderCheck}
                   onAtLeastOneMatchSelect={handleAtLeatOneSelect}
                   onNoMatchSelect={handleNoMatchSelect}

@@ -475,7 +475,8 @@
       "Delete": "delete-selected-credential"
     },
     "AT_LEAST_ONE_MATCH": "At least 1 match",
-    "NO_MATCH": "No Match"
+    "NO_MATCH": "No Match",
+    "SEARCH_PLACEHOLDER": "Find by Match Expression..."
   },
   "TargetContextSelector": {
     "CLEAR_SELECTION": "Clear selection",
