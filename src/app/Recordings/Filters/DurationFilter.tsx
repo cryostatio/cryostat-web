@@ -55,7 +55,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
   );
 
   return (
-    <Flex>
+    <Flex spaceItems={{ default: 'spaceItemsSm' }}>
       <Flex direction={{ default: 'column' }}>
         <FlexItem>
           <TextInput
