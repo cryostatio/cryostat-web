@@ -15,20 +15,23 @@
  */
 import { ClipboardCopy } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface MatchExpressionDisplayProps {
   matchExpression: string;
 }
 
 export const MatchExpressionDisplay: React.FC<MatchExpressionDisplayProps> = ({ matchExpression }) => {
+  const { t } = useTranslation();
   return (
     <ClipboardCopy
       className="match-expression-display"
-      hoverTip="Copy"
-      clickTip="Copied"
+      hoverTip={t('COPY', { ns: 'common' })}
+      clickTip={t('COPIED', { ns: 'common' })}
       variant="inline-compact"
       isBlock
       isCode
+      isReadOnly
     >
       {matchExpression}
     </ClipboardCopy>
