@@ -453,6 +453,12 @@
       "TITLE": "Target JVM"
     }
   },
+  "ThemeToggle": {
+    "ARIA_LABELS": {
+      "DARK_THEME": "dark-theme",
+      "LIGHT_THEME": "light-theme"
+    }
+  },
   "TimePicker": {
     "24HOUR": "24-hour",
     "USE_24HR_TIME": "Use 24-hour time"
