@@ -681,7 +681,7 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
               <>
                 <StackItem key={'alert-description'}>{extra?.description}</StackItem>
                 <StackItem key={'alert-call-for-action'}>
-                  <Flex>
+                  <Flex direction={{ default: 'column' }}>
                     {extra.callForAction.map((action, index) => (
                       <FlexItem key={index}>{action}</FlexItem>
                     ))}
