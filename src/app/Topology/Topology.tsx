@@ -26,9 +26,9 @@ import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Bullseye, Card, CardBody } from '@patternfly/react-core';
-import _ from 'lodash';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
+import { debounceTime } from 'rxjs';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
 import { DiscoveryTreeContext } from './Shared/utils';
@@ -81,7 +81,8 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
       // Credentials will trigger modifed target event if any
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
-        .subscribe(() => _.debounce(_refreshDiscoveryTree, 100)),
+        .pipe(debounceTime(100))
+        .subscribe(() => _refreshDiscoveryTree()),
     );
   }, [addSubscription, context.notificationChannel, _refreshDiscoveryTree]);
 
