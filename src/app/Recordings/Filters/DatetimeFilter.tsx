@@ -26,7 +26,6 @@ import {
   HelperTextItem,
   InputGroup,
   Popover,
-  PopoverPosition,
   Stack,
   StackItem,
   TextInput,
@@ -121,10 +120,7 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
             }
             isVisible={isCalendarOpen}
             showClose={false}
-            minWidth={'28em'}
-            position={PopoverPosition.bottom}
-            flipBehavior={['bottom']}
-            shouldClose={() => setIsCalendarOpen(false)}
+            hasAutoWidth
           >
             <Stack>
               <StackItem>

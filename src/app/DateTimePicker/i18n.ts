@@ -26,4 +26,6 @@
  * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
  * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
  * t('TimeSpinner.DECREMENT_SECOND_VALUE')
+ * t('DATE', { ns: 'common' })
+ * t('TIME', { ns: 'common' })
  */

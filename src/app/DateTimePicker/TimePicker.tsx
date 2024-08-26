@@ -18,20 +18,19 @@ import { format2Digit, hourIn12HrFormat, hourIn24HrFormat, isHourIn24hAM } from 
 import {
   Button,
   Divider,
-  HelperText,
-  HelperTextItem,
   Icon,
   Level,
   LevelItem,
   Panel,
-  PanelFooter,
+  PanelHeader,
   PanelMain,
   PanelMainBody,
   Stack,
   StackItem,
-  Switch,
   TextInput,
   Title,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@patternfly/react-core';
 import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -75,6 +74,18 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   return (
     <>
       <Panel className="datetime-picker">
+        <PanelHeader>
+          <ToggleGroup>
+            <ToggleGroupItem text="24-Hour" buttonId="24-hour-btn" isSelected={is24h} onChange={() => setIs24h(true)} />
+            <ToggleGroupItem
+              text="12-Hour"
+              buttonId="12-hour-btn"
+              isSelected={!is24h}
+              onChange={() => setIs24h(false)}
+            />
+          </ToggleGroup>
+        </PanelHeader>
+        <Divider />
         <PanelMain>
           <PanelMainBody>
             <Level hasGutter>
@@ -115,18 +126,6 @@ export const TimePicker: React.FC<TimePickerProps> = ({
               )}
             </Level>
           </PanelMainBody>
-          <Divider />
-          <PanelFooter>
-            <HelperText>
-              <HelperTextItem>{t('TimePicker.USE_24HR_TIME')}</HelperTextItem>
-            </HelperText>
-            <Switch
-              id={'24-hour-switch'}
-              label={t('TimePicker.24HOUR')}
-              isChecked={is24h}
-              onChange={(_, checked: boolean) => setIs24h(checked)}
-            />
-          </PanelFooter>
         </PanelMain>
       </Panel>
     </>

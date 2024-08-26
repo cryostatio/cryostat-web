@@ -79,6 +79,7 @@
   "TEMPLATE": "Template",
   "TEST": "Test",
   "TIME": "Time",
+  "TIMEZONE": "Timezone",
   "UNKNOWN_ERROR": "Unknown error",
   "USER_SUBMITTED": "User-submitted",
   "VIEW": "View",

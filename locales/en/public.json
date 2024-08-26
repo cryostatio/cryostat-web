@@ -317,11 +317,9 @@
   },
   "DateTimePicker": {
     "ARIA_LABELS": {
-      "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime",
-      "TABS": "Select a date or time tab"
+      "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime"
     },
-    "SELECTED_DATETIME": "Selected Date and Time",
-    "SELECTED_TIMEZONE": "Selected Timezone"
+    "DATETIME": "Date and Time"
   },
   "DurationFilter": {
     "ARIA_LABELS": {
@@ -564,10 +562,6 @@
       "DARK_THEME": "dark-theme",
       "LIGHT_THEME": "light-theme"
     }
-  },
-  "TimePicker": {
-    "24HOUR": "24-hour",
-    "USE_24HR_TIME": "Use 24-hour time"
   },
   "TimeSpinner": {
     "DECREMENT_HOUR12_VALUE": "Decrement hour12 value",

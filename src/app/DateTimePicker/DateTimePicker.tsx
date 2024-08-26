@@ -19,14 +19,13 @@ import { Timezone, defaultDatetimeFormat } from '@i18n/datetime';
 import { isHourIn24hAM } from '@i18n/datetimeUtils';
 import {
   ActionGroup,
-  Bullseye,
   Button,
   CalendarMonth,
+  Divider,
   Form,
   FormGroup,
-  Tab,
-  Tabs,
-  TabTitleText,
+  Level,
+  LevelItem,
   TextInput,
 } from '@patternfly/react-core';
 import * as React from 'react';
@@ -39,19 +38,11 @@ export interface DateTimePickerProps {
   onDismiss: () => void;
 }
 
-type _TabKey = 'date' | 'time';
-
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
   const { t } = useTranslation();
   const [dayjs, _] = useDayjs();
-  const [activeTab, setActiveTab] = React.useState<_TabKey>('date');
   const [datetime, setDatetime] = React.useState<Date>(new Date());
   const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone); // Not affected by user preferences
-
-  const handleTabSelect = React.useCallback(
-    (_: MouseEvent | React.MouseEvent, key: string | number) => setActiveTab(`${key}` as _TabKey),
-    [setActiveTab],
-  );
 
   const handleSubmit = React.useCallback(() => {
     onSelect && onSelect(datetime, timezone);
@@ -63,9 +54,8 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
         const wrappedOld = dayjs(old);
         return dayjs(date).hour(wrappedOld.hour()).minute(wrappedOld.minute()).second(wrappedOld.second()).toDate();
       });
-      setActiveTab('time'); // Switch to time
     },
-    [setDatetime, setActiveTab, dayjs],
+    [setDatetime, dayjs],
   );
 
   const handleHourChange = React.useCallback(
@@ -112,50 +102,38 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
 
   return (
     <Form>
-      <Tabs
-        aria-label={t('DateTimePicker.ARIA_LABELS.TABS') || ''}
-        onSelect={handleTabSelect}
-        activeKey={activeTab}
-        isFilled
-        role="region"
-      >
-        <Tab key={'date'} eventKey={'date'} title={<TabTitleText>{t('DATE', { ns: 'common' })}</TabTitleText>}>
-          <FormGroup>
-            <Bullseye>
-              <CalendarMonth
-                className="datetime-picker__calendar"
-                isDateFocused
-                locale={dayjs.locale()}
-                inlineProps={{
-                  component: 'article',
-                  ariaLabelledby: 'start-date',
-                }}
-                style={{ padding: 0 }}
-                date={datetime}
-                onChange={handleCalendarSelect}
-              />
-            </Bullseye>
-          </FormGroup>
-        </Tab>
-        <Tab key={'time'} eventKey={'time'} title={<TabTitleText>{t('TIME', { ns: 'common' })}</TabTitleText>}>
-          <FormGroup>
-            <Bullseye>
-              <TimePicker
-                selected={{
-                  hour24: dayjs(datetime).hour(), // 24hr format
-                  minute: dayjs(datetime).minute(),
-                  second: dayjs(datetime).second(),
-                }}
-                onHourSelect={handleHourChange}
-                onMinuteSelect={handleMinuteChange}
-                onSecondSelect={handleSecondChange}
-                onMeridiemSelect={handleMeridiemChange}
-              />
-            </Bullseye>
-          </FormGroup>
-        </Tab>
-      </Tabs>
-      <FormGroup label={t('DateTimePicker.SELECTED_DATETIME')}>
+      <FormGroup label={t('DateTimePicker.DATETIME')}>
+        <Level hasGutter>
+          <LevelItem>
+            <CalendarMonth
+              className="datetime-picker__calendar"
+              isDateFocused
+              locale={dayjs.locale()}
+              inlineProps={{
+                component: 'article',
+              }}
+              style={{ padding: 0 }}
+              date={datetime}
+              onChange={handleCalendarSelect}
+            />
+          </LevelItem>
+          <Divider orientation={{ default: 'vertical' }}></Divider>
+          <LevelItem>
+            <TimePicker
+              selected={{
+                hour24: dayjs(datetime).hour(), // 24hr format
+                minute: dayjs(datetime).minute(),
+                second: dayjs(datetime).second(),
+              }}
+              onHourSelect={handleHourChange}
+              onMinuteSelect={handleMinuteChange}
+              onSecondSelect={handleSecondChange}
+              onMeridiemSelect={handleMeridiemChange}
+            />
+          </LevelItem>
+        </Level>
+      </FormGroup>
+      <FormGroup>
         <TextInput
           id="selected-datetime"
           aria-label={t('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME') || ''}
@@ -164,7 +142,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
           value={selectedDatetimeDisplay}
         />
       </FormGroup>
-      <FormGroup label={t('DateTimePicker.SELECTED_TIMEZONE')}>
+      <FormGroup label={t('TIMEZONE', { ns: 'common' })}>
         <TimezonePicker onTimezoneChange={setTimezone} selected={timezone} />
       </FormGroup>
       <ActionGroup style={{ marginTop: 0 }}>

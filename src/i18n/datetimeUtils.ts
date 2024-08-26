@@ -24,13 +24,15 @@ export const hourIn12HrFormat = (hourIn24h: number): [number, boolean] => {
     return [hourIn24h - 12, false];
   } else if (hourIn24h === 0) {
     return [12, true]; // 12AM
+  } else if (hourIn24h === 12) {
+    return [12, false]; // 12PM
   } else {
     return [hourIn24h, true];
   }
 };
 
 export const hourIn24HrFormat = (hourIn12h: number, isAM: boolean): number => {
-  hourIn12h = clamp(hourIn12h, 0, 12);
+  hourIn12h = clamp(hourIn12h, 1, 12);
   return dayjs(`2023-01-01 ${hourIn12h}:00:00 ${isAM ? 'AM' : 'PM'}`, 'YY-MM-DD H:mm:ss A').hour();
 };
 

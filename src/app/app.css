@@ -444,6 +444,10 @@ body,
   background-color: var(--pf-v5-global--palette--black-700);
 }
 
+:where(.pf-v5-theme-dark) .datetime-picker .pf-v5-c-panel__header {
+  background-color: var(--pf-v5-global--palette--black-700);
+}
+
 .datetime-picker__meridiem-tile {
   font-size: 1.5em;
   font-weight: 600;
@@ -494,11 +498,11 @@ body,
 .datetime-picker__number-input input[type=number] {
   -moz-appearance: textfield;
   /* Firefox */
-  width: 3.6rem;
-  height: 3.6em;
-  background-color: var(--pf-v5-global--palette--black-100);
+  width: 100%;
+  height: 2.8em;
   text-align: center;
   font-weight: 600;
+  margin-bottom: 3px;
 }
 
 :where(.pf-v5-theme-dark) .datetime-picker__number-input input[type=number] {
