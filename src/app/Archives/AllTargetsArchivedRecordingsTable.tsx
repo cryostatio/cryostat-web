@@ -50,6 +50,7 @@ import {
   OuterScrollContainer,
   InnerScrollContainer,
 } from '@patternfly/react-table';
+import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,9 +61,11 @@ const tableColumns: TableColumn[] = [
   {
     title: 'Target',
     keyPaths: ['target'],
-    transform: (target: Target, _obj: ArchivesForTarget) => {
+    transform: (target: Target, _obj: ArchivesForTarget, t?: TFunction) => {
       return target.alias === target.connectUrl || !target.alias
         ? `${target.connectUrl}`
+        : t
+        ? t('AllTargetsArchivedRecordingsTable.TARGET_DISPLAY', { alias: target.alias, connectUrl: target.connectUrl })
         : `${target.alias} (${target.connectUrl})`;
     },
     sortable: true,
@@ -333,11 +336,15 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   }, [setSearchText]);
 
   const targetDisplay = React.useCallback(
-    (target: Target) =>
-      target.alias == target.connectUrl || !target.alias
-        ? `${target.connectUrl}`
-        : `${target.alias} (${target.connectUrl})`,
-    [],
+    (target: Target): string => {
+      const _transform = tableColumns[0].transform;
+      if (_transform) {
+        return `${_transform(target, undefined, t)}`;
+      }
+      // should not occur
+      return `${target.connectUrl}`;
+    },
+    [t],
   );
 
   React.useEffect(() => {
@@ -502,7 +509,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
         <Bullseye>
           <EmptyState>
             <EmptyStateHeader
-              titleText="No Archived Recordings"
+              titleText={t('RecordingsTable.NO_ARCHIVES')}
               icon={<EmptyStateIcon icon={SearchIcon} />}
               headingLevel="h4"
             />
@@ -550,7 +557,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           <ToolbarItem alignSelf="center">
             <Checkbox
               name={`all-targets-hide-check`}
-              label="Hide targets with zero Recordings"
+              label={t('AllTargetsArchivedRecordingsTable.HIDE_TARGET_WITH_ZERO_RECORDING')}
               onChange={handleHideEmptyTarget}
               isChecked={hideEmptyTargets}
               id={`all-targets-hide-check`}

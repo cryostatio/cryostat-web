@@ -13,16 +13,23 @@
     "VERSION": "Version"
   },
   "AgentLiveProbes": {
-    "SEARCH_PLACEHOLDER": "Find by name, description, clazz, or method..."
+    "SEARCH_PLACEHOLDER": "Find by name, description, class, or method..."
+  },
+  "AgentLiveProves": {
+    "ARIA_LABELS": {
+      "SEARCH_PLACEHOLDER": "Active probe filter"
+    }
   },
   "AgentProbeTemplates": {
-    "SEARCH_PLACEHOLDER": "Find by name, or XML content..."
+    "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
   "AllArchivedRecordingsTable": {
-    "SEARCH_PLACEHOLDER": "Find by directory, or JVM Hash ID..."
+    "SEARCH_PLACEHOLDER": "Find by JVM ID..."
   },
   "AllTargetsArchivedRecordingsTable": {
-    "SEARCH_PLACEHOLDER": "Find by URL, or alias..."
+    "HIDE_TARGET_WITH_ZERO_RECORDING": "Hide targets with zero Recordings",
+    "SEARCH_PLACEHOLDER": "Find by connection URL or alias...",
+    "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
   },
   "AppLayout": {
     "APP_LAUNCHER": {
@@ -287,7 +294,7 @@
     "EVENT_TEMPLATES": "Error retrieving Event Templates"
   },
   "EventTemplates": {
-    "SEARCH_PLACEHOLDER": "Find by name, description or provider..."
+    "SEARCH_PLACEHOLDER": "Find by name, description, or provider..."
   },
   "EventTypes": {
     "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
@@ -343,6 +350,9 @@
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
     "INVALID_UPLOADS_other": "These files do not contain valid Recording metadata:"
   },
+  "RecordingsTable": {
+    "NO_ARCHIVES": "No Archived Recordings"
+  },
   "RuleDeleteWarningModal": {
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
@@ -354,6 +364,7 @@
     "MATCH_EXPRESSION_TOOLTIP": "A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.",
     "MAX_AGE_TOOLTIP": "The maximum age in seconds for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.",
     "MAX_SIZE_TOOLTIP": "The maximum size in bytes for JFR Recordings started by this rule. Values less than 1 indicate no limit.",
+    "NO_RULES": "No Automated Rules",
     "PRESERVED_ARCHIVES_TOOLTIP": "The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory.",
     "SEARCH_PLACEHOLDER": "Find by name, or description..."
   },

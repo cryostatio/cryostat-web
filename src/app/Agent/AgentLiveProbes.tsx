@@ -334,7 +334,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
                       id="activeProbeFilter"
                       type="search"
                       placeholder={t('AgentLiveProbes.SEARCH_PLACEHOLDER')}
-                      aria-label="Active probe filter"
+                      aria-label={t('AgentLiveProves.ARIA_LABELS.SEARCH_PLACEHOLDER')}
                       onChange={handleFilterTextChange}
                     />
                   </ToolbarItem>

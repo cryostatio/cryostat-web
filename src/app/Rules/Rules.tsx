@@ -441,7 +441,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           <Bullseye>
             <EmptyState>
               <EmptyStateHeader
-                titleText="No Automated Rules"
+                titleText={t('Rules.NO_RULES')}
                 icon={<EmptyStateIcon icon={SearchIcon} />}
                 headingLevel="h4"
               />
@@ -482,7 +482,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         <InnerScrollContainer className="rules-table-inner-container">{view}</InnerScrollContainer>
       </OuterScrollContainer>
     );
-  }, [getSortParams, isLoading, rules, ruleRows, tableColumns, toolbar]);
+  }, [getSortParams, isLoading, rules, ruleRows, tableColumns, toolbar, t]);
 
   return (
     <>

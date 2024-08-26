@@ -328,7 +328,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         <Bullseye>
           <EmptyState>
             <EmptyStateHeader
-              titleText="No Archived Recordings"
+              titleText={t('RecordingsTable.NO_ARCHIVES')}
               icon={<EmptyStateIcon icon={SearchIcon} />}
               headingLevel="h4"
             />
