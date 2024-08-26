@@ -102,6 +102,10 @@ body,
   height: 100%;
 }
 
+.archive-table-outer-container .pf-v5-c-table__expandable-row {
+  z-index: 0;
+}
+
 #dashboard-layout-dropdown-toggle {
   width: 20em;
 }
