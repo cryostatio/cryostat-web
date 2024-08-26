@@ -76,9 +76,14 @@ export const TimePicker: React.FC<TimePickerProps> = ({
       <Panel className="datetime-picker">
         <PanelHeader>
           <ToggleGroup>
-            <ToggleGroupItem text="24-Hour" buttonId="24-hour-btn" isSelected={is24h} onChange={() => setIs24h(true)} />
             <ToggleGroupItem
-              text="12-Hour"
+              text={t('TimePicker.24_H')}
+              buttonId="24-hour-btn"
+              isSelected={is24h}
+              onChange={() => setIs24h(true)}
+            />
+            <ToggleGroupItem
+              text={t('TimePicker.12_H')}
               buttonId="12-hour-btn"
               isSelected={!is24h}
               onChange={() => setIs24h(false)}

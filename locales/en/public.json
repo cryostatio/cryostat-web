@@ -561,7 +561,10 @@
     "ARIA_LABELS": {
       "DARK_THEME": "dark-theme",
       "LIGHT_THEME": "light-theme"
-    }
+    },
+  "TimePicker": {
+    "12_H": "12-Hour",
+    "24_H": "24-Hour"
   },
   "TimeSpinner": {
     "DECREMENT_HOUR12_VALUE": "Decrement hour12 value",
