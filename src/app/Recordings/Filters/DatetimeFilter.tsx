@@ -106,7 +106,7 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
   );
 
   return (
-    <Flex>
+    <Flex spaceItems={{ default: 'spaceItemsSm' }}>
       <Flex alignSelf={{ default: 'alignSelfFlexStart' }}>
         <FlexItem spacer={{ default: 'spacerNone' }}>
           <Popover
