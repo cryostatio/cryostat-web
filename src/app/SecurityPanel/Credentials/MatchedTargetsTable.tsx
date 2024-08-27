@@ -110,7 +110,11 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
     view = (
       <>
         <EmptyState>
-          <EmptyStateHeader titleText="No Targets" icon={<EmptyStateIcon icon={SearchIcon} />} headingLevel="h4" />
+          <EmptyStateHeader
+            titleText="No Targets Matched"
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
         </EmptyState>
       </>
     );
@@ -118,7 +122,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
     view = (
       <>
         <InnerScrollContainer style={{ maxHeight: '24em' }}>
-          <Table aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
+          <Table aria-label="matched-targets-table" isStickyHeader variant={'compact'} borders={false}>
             <Thead>
               <Tr>
                 {tableColumns.map(({ title }, index) => (
