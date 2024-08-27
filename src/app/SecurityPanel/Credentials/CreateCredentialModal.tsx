@@ -133,7 +133,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   const [isDisabled, setIsDisabled] = React.useState(false);
   const [evaluating, setEvaluating] = React.useState(false);
 
-  const [sampleTarget, setSampleTarget] = React.useState<Target>();
+  const [sampleTarget, setSampleTarget] = React.useState<Target | undefined>();
 
   const onSave = React.useCallback(
     (username: string, password: string) => {
@@ -159,7 +159,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             setMatchExpressionValid(ValidatedOptions.default);
           },
         }),
-        context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
+        context.targets.targets().pipe(tap((ts) => (ts && ts.length > 0 ? setSampleTarget(ts[0]) : undefined))),
       ])
         .pipe(
           switchMap(([input, targets]) =>
