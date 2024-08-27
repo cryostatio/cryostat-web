@@ -15,7 +15,7 @@
  */
 
 import { KeyValue } from '@app/Shared/Services/api.types';
-import { ISortBy, SortByDirection } from '@patternfly/react-table';
+import { ISortBy, SortByDirection, ThProps } from '@patternfly/react-table';
 import humanizeDuration from 'humanize-duration';
 import { TFunction } from 'i18next';
 import _ from 'lodash';
@@ -188,7 +188,7 @@ export interface TableColumn {
   keyPaths?: string[];
   transform?: (value: unknown, _rec: unknown, t?: TFunction) => unknown;
   sortable?: boolean;
-  width?: number;
+  width?: ThProps['width'];
 }
 
 export const getAnnotation = (kv: KeyValue[], key: string, def?: string): string | undefined => {

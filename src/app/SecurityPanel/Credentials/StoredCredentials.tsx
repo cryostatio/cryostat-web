@@ -47,7 +47,17 @@ import {
   Bullseye,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
-import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  ExpandableRowContent,
+  InnerScrollContainer,
+  OuterScrollContainer,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -175,11 +185,13 @@ const tableColumns: TableColumn[] = [
     title: 'Match Expression',
     keyPaths: ['matchExpression'],
     sortable: true,
+    width: 80,
   },
   {
     title: 'Matches',
     keyPaths: ['numMatchingTargets'],
     sortable: true,
+    width: 10,
   },
 ];
 
@@ -465,11 +477,11 @@ export const StoredCredentials = () => {
   } else {
     content = (
       <>
-        <Table aria-label={tableTitle}>
+        <Table aria-label={tableTitle} isStickyHeader>
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              <Th key="table-header-check-all">
+              <Th key="table-header-check-all" width={10}>
                 <CheckBoxActions
                   isSelectAll={matchExpressionRows.length > 0 && state.isHeaderChecked}
                   onSelectAll={handleHeaderCheck}
@@ -477,12 +489,8 @@ export const StoredCredentials = () => {
                   onNoMatchSelect={handleNoMatchSelect}
                 />
               </Th>
-              {tableColumns.map(({ title }, index) => (
-                <Th
-                  key={`table-header-${title}`}
-                  width={title === 'Match Expression' ? 80 : 10}
-                  sort={getSortParams(index)}
-                >
+              {tableColumns.map(({ title, width }, index) => (
+                <Th key={`table-header-${title}`} width={width} sort={getSortParams(index)}>
                   {title}
                 </Th>
               ))}
@@ -497,7 +505,9 @@ export const StoredCredentials = () => {
   return (
     <>
       {targetCredentialsToolbar}
-      {content}
+      <OuterScrollContainer className="credentials-table-outer-container">
+        <InnerScrollContainer className="credentials-table-inner-container">{content}</InnerScrollContainer>
+      </OuterScrollContainer>
       <CreateCredentialModal
         visible={showAuthModal}
         onDismiss={handleAuthModalClose}
@@ -559,14 +569,13 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
 
   return (
     <Dropdown
-      onSelect={() => {
-        setIsOpen(false);
-      }}
+      onSelect={() => setIsOpen(false)}
       toggle={toggle}
       isOpen={isOpen}
       onOpenChange={setIsOpen}
       onOpenChangeKeys={['Escape']}
       popperProps={{
+        enableFlip: true,
         appendTo: portalRoot,
       }}
     >
