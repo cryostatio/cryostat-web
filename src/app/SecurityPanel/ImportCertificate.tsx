@@ -35,7 +35,7 @@ import {
   TextVariants,
   Title,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { tap } from 'rxjs/operators';
 import { SecurityCard } from './types';
@@ -66,7 +66,7 @@ export const CertificateImport: React.FC = () => {
             <List isPlain isBordered>
               {certs.map((cert) => (
                 <ListItem key={cert}>
-                  <Label>{cert}</Label>
+                  <Label icon={<FileIcon />}>{cert}</Label>
                 </ListItem>
               ))}
             </List>
