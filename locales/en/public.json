@@ -563,8 +563,8 @@
       "LIGHT_THEME": "light-theme"
     },
   "TimePicker": {
-    "12_H": "12-Hour",
-    "24_H": "24-Hour"
+    "12_H": "12Hr View",
+    "24_H": "24Hr View"
   },
   "TimeSpinner": {
     "DECREMENT_HOUR12_VALUE": "Decrement hour12 value",
