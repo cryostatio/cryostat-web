@@ -278,10 +278,18 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
             value={{
               toString: () => opt,
               compareTo: (other) => {
-                const regex = new RegExp(
-                  typeof other === 'string' ? other : isKeyValue(other) ? keyValueToString(other) : `${other}`,
-                  'i',
-                );
+                let otherString;
+                if (typeof other === 'string') {
+                  otherString = other;
+                } else if (typeof other === 'boolean') {
+                  otherString ? 'true' : 'false';
+                } else if (isKeyValue(other)) {
+                  otherString = keyValueToString(other);
+                } else {
+                  otherString = `${other}`;
+                }
+
+                const regex = new RegExp(otherString, 'i');
                 return regex.test(opt);
               },
               ...{
@@ -362,7 +370,9 @@ export const fieldValueToStrings = (value: unknown): string[] => {
   if (value === undefined || value === null) {
     return [];
   }
-  if (typeof value === 'object') {
+  if (typeof value === 'boolean') {
+    return [value ? 'true' : 'false'];
+  } else if (typeof value === 'object') {
     if (Array.isArray(value)) {
       if (value.length > 0 && typeof value[0] === 'object') {
         if (isKeyValue(value[0])) {
