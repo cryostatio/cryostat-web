@@ -16,6 +16,7 @@
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSort } from '@app/utils/hooks/useSort';
@@ -42,6 +43,9 @@ import {
   DropdownList,
   Select,
   SelectOption,
+  SelectList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import {
@@ -55,6 +59,7 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
+import { t } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
@@ -371,23 +376,32 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
     [onChange, filters],
   );
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={isOpen}>
+        Status
+      </MenuToggle>
+    ),
+    [handleToggle, open, isOpen, t],
+  );
+
   return (
     <Select
       {...props}
-      role="menu"
-      aria-label="Status"
-      toggle={handleToggle}
+      aria-label="Test Status"
+      toggle={toggle}
       onSelect={handleSelect}
-      selected={filters}
       isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
     >
-      <DropdownList>
+      <SelectList>
         {Object.values(CredentialTestState).map((state) => (
-          <SelectOption key={state} value={state}>
+          <SelectOption key={state} value={state} hasCheckbox isSelected={filters.includes(state)}>
             <Label color={getColor(state)}>{state}</Label>
           </SelectOption>
         ))}
-      </DropdownList>
+      </SelectList>
     </Select>
   );
 };
