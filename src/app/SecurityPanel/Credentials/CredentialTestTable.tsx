@@ -16,7 +16,6 @@
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target } from '@app/Shared/Services/api.types';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSort } from '@app/utils/hooks/useSort';
@@ -40,7 +39,6 @@ import {
   Tooltip,
   ValidatedOptions,
   EmptyStateHeader,
-  DropdownList,
   Select,
   SelectOption,
   SelectList,
@@ -59,7 +57,6 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
-import { t } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
@@ -347,6 +344,7 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
         <ToolbarGroup variant="filter-group">
           <StatusFilter onChange={onFilter} filters={filters} />
         </ToolbarGroup>
+        <ToolbarItem variant="separator" />
         <ToolbarItem>
           <Tooltip content={'Test credentials against all matching targets.'} appendTo={portalRoot}>
             <Button variant="primary" onClick={handleTestAll} isAriaDisabled={disableTest}>
@@ -382,7 +380,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
         Status
       </MenuToggle>
     ),
-    [handleToggle, open, isOpen, t],
+    [handleToggle, isOpen],
   );
 
   return (
