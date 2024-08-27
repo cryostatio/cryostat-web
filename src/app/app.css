@@ -459,11 +459,11 @@ body,
 
 .datetime-picker__meridiem-tile:first-child {
   border-top-width: 0.10rem;
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: 0.25rem 0.25rem 0 0;
 }
 
 .datetime-picker__meridiem-tile:last-child {
-  border-radius: 0 0 0.5rem 0.5rem;
+  border-radius: 0 0 0.25rem 0.25rem;
 }
 
 .datetime-picker__meridiem-tile.selected {
@@ -519,11 +519,11 @@ body,
 }
 
 .datetime-picker__time-spin-box.up {
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: 0.25rem 0.25rem 0 0;
 }
 
 .datetime-picker__time-spin-box.down {
-  border-radius: 0 0 0.5rem 0.5rem;
+  border-radius: 0 0 0.25rem 0.25rem;
 }
 
 .datetime-picker__colon-divider {
