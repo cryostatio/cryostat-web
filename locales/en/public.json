@@ -302,6 +302,13 @@
   "EventTypes": {
     "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
   },
+  "ImportCertificate": {
+    "CARD_DESCRIPTION": "The following certificates are present in Cryostat&apos's additional trust store. Contact your Cryostat administrator if your application requires a new trusted certificate. You must restart the Cryostat server to reload the certificate store after adding new certificates.",
+    "CARD_TITLE": "Imported SSL/TLS Certificates",
+    "CARD_TITLE_POPOVER_HEADER": "JMX over SSL/TLS",
+    "NO_CERTIFICATE_BODY": "No additional certificates are loaded.",
+    "NO_CERTIFICATE_TITLE": "No certificates"
+  },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected Target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, Labels, and Annotations belonging to the selected Target JVM.",
@@ -475,6 +482,9 @@
       "Delete": "delete-selected-credential"
     },
     "AT_LEAST_ONE_MATCH": "At least 1 match",
+    "CARD_DESCRIPTION": "Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored in encrypted storage managed by the Cryostat server.",
+    "CARD_TITLE": "Stored Credentials",
+    "CARD_TITLE_POPOVER_HEADER": "JMX Authentication",
     "NO_MATCH": "No Match",
     "SEARCH_PLACEHOLDER": "Find by Match Expression..."
   },

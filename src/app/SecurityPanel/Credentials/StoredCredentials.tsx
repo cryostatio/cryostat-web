@@ -58,6 +58,7 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
+import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -586,22 +587,23 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
 
 export const StoredCredentialsCard: SecurityCard = {
   key: 'credentials',
-  title: (
+  title: (t: TFunction) => (
     <Text>
-      Store Credentials
-      <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
+      {t('StoredCredentials.CARD_TITLE')}
+      <Popover
+        maxWidth="40rem"
+        headerContent={t('StoredCredentials.CARD_TITLE_POPOVER_HEADER')}
+        bodyContent={<JmxAuthDescription />}
+      >
         <Button variant="plain">
           <OutlinedQuestionCircleIcon />
         </Button>
       </Popover>
     </Text>
   ),
-  description: (
+  description: (t: TFunction) => (
     <TextContent>
-      <Text component={TextVariants.small}>
-        Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored in encrypted
-        storage managed by the Cryostat server.
-      </Text>
+      <Text component={TextVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Text>
     </TextContent>
   ),
   content: StoredCredentials,
