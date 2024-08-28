@@ -22,7 +22,6 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateVariant,
-  Label,
   List,
   ListItem,
   Panel,
@@ -40,7 +39,7 @@ import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { tap } from 'rxjs/operators';
-import { SecurityCard } from '../types';
+import { SecurityCard } from './types';
 
 export const CertificateImport: React.FC = () => {
   const { t } = useTranslation();
