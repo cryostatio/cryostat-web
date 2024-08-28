@@ -18,7 +18,7 @@ import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StoredCredentialsCard } from './Credentials/StoredCredentials';
-import { ListCertificates } from './ImportCertificate';
+import { ListCertificates } from './Certificates/ImportCertificate';
 
 export interface SecurityPanelProps {}
 
