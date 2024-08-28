@@ -47,7 +47,7 @@ export const CertificateImport: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(true);
-  const [certs, setCerts] = React.useState([] as string[]);
+  const [certs, setCerts] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -66,10 +66,10 @@ export const CertificateImport: React.FC = () => {
           {loading ? (
             <Spinner />
           ) : certs.length ? (
-            <List isPlain isBordered>
+            <List isPlain>
               {certs.map((cert) => (
-                <ListItem key={cert}>
-                  <Label icon={<FileIcon />}>{cert}</Label>
+                <ListItem key={cert} icon={<FileIcon />}>
+                  {cert}
                 </ListItem>
               ))}
             </List>
