@@ -91,9 +91,10 @@ export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelect
     (_, category: string) => {
       if (category) {
         dispatch(topologyUpdateCategoryIntent(isGroup, category));
+        setIsOpen(false);
       }
     },
-    [dispatch, isGroup],
+    [dispatch, isGroup, setIsOpen],
   );
 
   const handleCategoryTypeChange = React.useCallback(
