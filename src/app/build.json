@@ -2,6 +2,7 @@
   "productName": "Cryostat",
   "developmentUrl": "https://github.com/cryostatio/cryostat",
   "releaseTagUrl": "https://github.com/cryostatio/cryostat/releases/tag/__REPLACE_HASH__",
+  "commitUrl": "https://github.com/cryostatio/cryostat/commit/__REPLACE_HASH__",
   "homePageUrl": "https://cryostat.io",
   "blogPageUrl": "https://cryostat.io/blog",
   "documentationUrl": "https://cryostat.io/guides",
