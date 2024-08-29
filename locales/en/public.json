@@ -203,6 +203,20 @@
     "TEMPLATE_HINT": "A Template must be selected.",
     "WARNING_NO_MATCH": "Warning: Match Expression matches no targets."
   },
+  "CredentialTestTable": {
+    "ARIA_LABELS": {
+      "STATUS_POPOVER": "Test Result Details ({{connectUrl}})",
+      "STATUS_SELECT": "test-status-select",
+      "TOOLBAR": "credential-test-table-toolbar"
+    },
+    "CLEAR_AND_TRY_AGAIN": "Clear Match Expression and try again.",
+    "ENTER_ANOTHER": "Enter another Match Expression.",
+    "NO_TARGET_MATCHED": "No Targets Matched",
+    "SEARCH_PLACEHOLDER": "Find by connection URL or alias...",
+    "TEST_ALL": "Test All",
+    "TEST_ALL_TOOLTIP": "Test credentials against all matching targets.",
+    "TEST_FAILED": "Test failed"
+  },
   "Dashboard": {
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your Dashboard. Some cards require additional configuration.",
     "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
@@ -345,6 +359,12 @@
   "MATCH_EXPRESSION_VISUALIZER": {
     "TITLE": "Match Expression visualizer"
   },
+  "MatchedTargetsTable": {
+    "ARIA_LABELS": {
+      "TABLE": "matched-targets-table"
+    },
+    "NO_TARGET_MATCHED": "No Targets Matched"
+  },
   "MeridiemPicker": {
     "ARIA_LABELS": {
       "LISTBOX": "Select AM or PM"
@@ -479,12 +499,16 @@
   "StoredCredentials": {
     "ARIA_LABELS": {
       "Add": "add-credential",
-      "Delete": "delete-selected-credential"
+      "Delete": "delete-selected-credential",
+      "FILTER_CHECKBOX": "select-all",
+      "ROW_CHECKBOX": "credentials-table-row-{{index}}",
+      "TABLE": "stored-credentials"
     },
     "AT_LEAST_ONE_MATCH": "At least 1 match",
     "CARD_DESCRIPTION": "Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored in encrypted storage managed by the Cryostat server.",
     "CARD_TITLE": "Stored Credentials",
     "CARD_TITLE_POPOVER_HEADER": "JMX Authentication",
+    "NO_CREDENTIAL_TITLE": "No Stored Credentials",
     "NO_MATCH": "No Match",
     "SEARCH_PLACEHOLDER": "Find by Match Expression..."
   },

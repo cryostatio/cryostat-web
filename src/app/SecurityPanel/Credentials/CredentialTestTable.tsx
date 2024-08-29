@@ -59,6 +59,7 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { TestPoolContext, useAuthCredential } from './utils';
 
@@ -81,6 +82,7 @@ const tableColumns: TableColumn[] = [
 export interface CredentialTestTableProps {}
 
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
+  const { t } = useTranslation();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const matchExprService = useMatchExpressionSvc();
@@ -143,9 +145,9 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         <Table {...props}>
           <Thead>
             <Tr>
-              <Th sort={getSortParams(0)}>Target</Th>
+              <Th sort={getSortParams(0)}>{t('TARGET', { ns: 'common' })}</Th>
               <Th textCenter width={20}>
-                Status
+                {t('STATUS', { ns: 'common' })}
               </Th>
             </Tr>
           </Thead>
@@ -157,13 +159,13 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
     <Bullseye>
       <EmptyState variant={EmptyStateVariant.full}>
         <EmptyStateHeader
-          titleText="No Targets Matched"
+          titleText={t('CredentialTestTable.NO_TARGET_MATCHED')}
           icon={<EmptyStateIcon icon={SearchIcon} />}
-          headingLevel="h3"
+          headingLevel="h4"
         />
         <EmptyStateBody>{`${
-          matchedExpr === '' ? 'Enter another' : 'Clear'
-        } Match Expression and try again.`}</EmptyStateBody>
+          matchedExpr === '' ? t('CredentialTestTable.ENTER_ANOTHER') : t('CredentialTestTable.CLEAR_AND_TRY_AGAIN')
+        }`}</EmptyStateBody>
       </EmptyState>
     </Bullseye>
   );
@@ -207,6 +209,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
   searchText = '',
   ...props
 }) => {
+  const { t } = useTranslation();
   const [status, setStatus] = React.useState<TestStatus>({
     state: CredentialTestState.NO_STATUS,
     error: undefined,
@@ -255,21 +258,31 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
 
   return isShowed ? (
     <Tr {...props} id={`${target.connectUrl}-test-row`}>
-      <Td dataLabel="Target">{!target.alias ? target.connectUrl : `${target.alias} (${target.connectUrl})`}</Td>
-      <Td dataLabel="Status" textCenter>
+      <Td dataLabel={t('TARGET', { ns: 'common' })}>
+        {!target.alias || target.alias === target.connectUrl
+          ? target.connectUrl
+          : `${target.alias} (${target.connectUrl})`}
+      </Td>
+      <Td dataLabel={t('STATUS', { ns: 'common' })} textCenter>
         {loading ? (
           <Bullseye>
             <LinearDotSpinner />
           </Bullseye>
         ) : status.state === CredentialTestState.INVALID || status.state === CredentialTestState.NA ? (
           <Popover
-            aria-label={`Test Result Details (${target.connectUrl})`}
+            aria-label={t('CredentialTestTable.ARIA_LABELS.STATUS_POPOVER', { connectUrl: target.connectUrl })}
             alertSeverityVariant={status.state === CredentialTestState.INVALID ? 'danger' : 'warning'}
             headerIcon={
               status.state === CredentialTestState.INVALID ? <ExclamationCircleIcon /> : <WarningTriangleIcon />
             }
-            headerContent={<div>{status.state === CredentialTestState.INVALID ? 'Test failed' : 'Caution'}</div>}
-            bodyContent={<div>{status.error?.message || 'Unknown error'}</div>}
+            headerContent={
+              <div>
+                {status.state === CredentialTestState.INVALID
+                  ? t('CredentialTestTable.TEST_FAILED')
+                  : t('CAUTION', { ns: 'common' })}
+              </div>
+            }
+            bodyContent={<div>{status.error?.message || t('UNKNOWN_ERROR', { ns: 'common' })}</div>}
             appendTo={portalRoot}
           >
             <Label style={{ cursor: 'pointer' }} color={getColor(status.state)}>
@@ -287,7 +300,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
           isDisabled={loading || isEmptyCredential}
           onClick={handleTest}
         >
-          Test
+          {t('TEST', { ns: 'common' })}
         </Button>
       </Td>
     </Tr>
@@ -310,6 +323,7 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
   searchText,
   ...props
 }) => {
+  const { t } = useTranslation();
   const [credential] = useAuthCredential();
   const [disableTest, setDisableTest] = React.useState(false);
 
@@ -332,13 +346,19 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
   }, [filters, searchText, credential, setDisableTest, matchedTargets]);
 
   return (
-    <Toolbar {...props} isSticky id="credential-test-table-toolbar" aria-label="credential-test-table-toolbar">
+    <Toolbar
+      {...props}
+      isSticky
+      id="credential-test-table-toolbar"
+      aria-label={t('CredentialTestTable.ARIA_LABELS.TOOLBAR')}
+    >
       <ToolbarContent>
         <ToolbarItem variant="search-filter">
           <SearchInput
-            aria-label="Items example search input"
             onChange={(_, value: string) => onSearch(value)}
+            placeholder={t('CredentialTestTable.SEARCH_PLACEHOLDER')}
             value={searchText}
+            style={{ minWidth: '27ch' }}
           />
         </ToolbarItem>
         <ToolbarGroup variant="filter-group">
@@ -346,9 +366,9 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
         </ToolbarGroup>
         <ToolbarItem variant="separator" />
         <ToolbarItem>
-          <Tooltip content={'Test credentials against all matching targets.'} appendTo={portalRoot}>
+          <Tooltip content={t('CredentialTestTable.TEST_ALL_TOOLTIP')} appendTo={portalRoot}>
             <Button variant="primary" onClick={handleTestAll} isAriaDisabled={disableTest}>
-              Test All
+              {t('CredentialTestTable.TEST_ALL')}
             </Button>
           </Tooltip>
         </ToolbarItem>
@@ -363,6 +383,7 @@ interface StatusFilterProps {
 }
 
 const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   const handleToggle = React.useCallback(() => setIsOpen((old) => !old), [setIsOpen]);
 
@@ -377,7 +398,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={isOpen}>
-        Status
+        {t('STATUS', { ns: 'common' })}
       </MenuToggle>
     ),
     [handleToggle, isOpen],
@@ -386,7 +407,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
   return (
     <Select
       {...props}
-      aria-label="Test Status"
+      aria-label={t('CredentialTestTable.ARIA_LABELS.STATUS_SELECT')}
       toggle={toggle}
       onSelect={handleSelect}
       isOpen={isOpen}

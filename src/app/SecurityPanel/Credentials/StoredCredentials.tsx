@@ -396,7 +396,7 @@ export const StoredCredentials = () => {
               onChange={(_event, checked: boolean) => handleRowCheck(checked)}
               isChecked={isChecked}
               id={`credentials-table-row-${idx}-check`}
-              aria-label={`credentials-table-row-${idx}-check`}
+              aria-label={t('StoredCredentials.ARIA_LABELS.ROW_CHECKBOX', { index: idx })}
             />
           </Td>
           <Td key={`credentials-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
@@ -463,11 +463,7 @@ export const StoredCredentials = () => {
         <Bullseye>
           <EmptyState>
             <EmptyStateHeader
-              titleText={
-                <>
-                  No {tableTitle} {searchText !== '' ? 'Found' : ''}
-                </>
-              }
+              titleText={<>{t('StoredCredentials.NO_CREDENTIAL_TITLE')}</>}
               icon={<EmptyStateIcon icon={SearchIcon} />}
               headingLevel="h4"
             />
@@ -478,7 +474,7 @@ export const StoredCredentials = () => {
   } else {
     content = (
       <>
-        <Table aria-label={tableTitle} isStickyHeader>
+        <Table aria-label={t('StoredCredentials.ARIA_LABELS.TABLE')} isStickyHeader>
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
@@ -557,7 +553,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
             <MenuToggleCheckbox
               id={'select-all-credentials'}
               key={'select-all-credentials'}
-              aria-label="Select all"
+              aria-label={t('StoredCredentials.ARIA_LABELS.FILTER_CHECKBOX')}
               isChecked={isSelectAll}
               onChange={onSelectAll}
             />,
