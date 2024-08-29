@@ -180,6 +180,20 @@
       "POPOVER": "automated-analysis-description-popover"
     }
   },
+  "CreateCredentialModal": {
+    "ARIA_LABELS": {
+      "HELPER_ICON": "More info for Match Expression field"
+    },
+    "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
+    "FAILING_EVALUATION": "The expression matching failed.",
+    "MATCH_EXPRESSION_HELPER_TEXT": "Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.",
+    "MATCH_EXPRESSION_HINT_BODY": "Try an expression like:",
+    "MATCH_EXPRESSION_HINT_MODAL_HEADER": "Match Expression hint",
+    "MODAL_DESCRIPTION": "Create Stored Credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required).",
+    "MODAL_TITLE": "Stored Credentials",
+    "VISUALIZER": "Visualizer",
+    "WARNING_NO_MATCH": "Warning: Match Expression matches no targets."
+  },
   "CreateRule": {
     "ABOUT": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording buffer into Cryostat's own archived storage.",
     "ARCHIVAL_PERIOD_HELPER_TEXT": "Time between copies of active Recording data being pulled into Cryostat archive storage.",

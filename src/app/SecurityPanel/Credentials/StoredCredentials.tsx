@@ -196,8 +196,6 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-const tableTitle = 'Stored Credentials';
-
 export const StoredCredentials = () => {
   const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
@@ -413,7 +411,7 @@ export const StoredCredentials = () => {
         </Tr>
       );
     });
-  }, [filteredCredentials, state.expandedCredentials, state.checkedCredentials, sortBy]);
+  }, [filteredCredentials, state.expandedCredentials, state.checkedCredentials, sortBy, t]);
 
   const targetRows = React.useMemo(() => {
     return filteredCredentials.map((credential, idx) => {
@@ -561,7 +559,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
         }}
       />
     ),
-    [handleToggle, isSelectAll, onSelectAll],
+    [handleToggle, isSelectAll, onSelectAll, t],
   );
 
   return (

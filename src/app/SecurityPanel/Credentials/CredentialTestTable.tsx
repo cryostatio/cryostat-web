@@ -401,7 +401,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
         {t('STATUS', { ns: 'common' })}
       </MenuToggle>
     ),
-    [handleToggle, isOpen],
+    [handleToggle, isOpen, t],
   );
 
   return (
