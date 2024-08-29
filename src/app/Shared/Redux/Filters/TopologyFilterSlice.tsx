@@ -104,7 +104,7 @@ export interface TopologyFilters {
   targetFilters: {
     category: string;
     filters: {
-      Agent: boolean[];
+      Agent: string[];
       Alias: string[];
       ConnectionUrl: string[];
       JvmId: string[];
