@@ -17,7 +17,7 @@
   },
   "AgentLiveProves": {
     "ARIA_LABELS": {
-      "SEARCH_PLACEHOLDER": "Active probe filter"
+      "SEARCH_INPUT": "active-probe-filter"
     }
   },
   "AgentProbeTemplates": {
@@ -183,6 +183,9 @@
   "CreateRule": {
     "ABOUT": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording buffer into Cryostat's own archived storage.",
     "ARCHIVAL_PERIOD_HELPER_TEXT": "Time between copies of active Recording data being pulled into Cryostat archive storage.",
+    "ARIA_LABELS": {
+      "HELPER_ICON": "More info for Match Expression field"
+    },
     "DESCRIPTION_HELPER_TEXT": "Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions.",
     "ENABLE_SWITCH_HELPER_TEXT": "Rules take effect when created if enabled and will be matched against all discovered target applications immediately. When new target applications appear they are checked against all enabled rules. Disabled rules have no effect but are available to be enabled in the future.",
     "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
