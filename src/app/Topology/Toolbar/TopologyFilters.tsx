@@ -399,6 +399,8 @@ export const TopologyFilterSelect: React.FC<TopologyFilterSelectProps> = ({
       }}
       onOpenChange={setIsExpanded}
       onOpenChangeKeys={['Escape']}
+      maxMenuHeight={'40vh'}
+      isScrollable
     >
       <SelectList>
         {selectOptions.length > 0 ? selectOptions : <SelectOption isDisabled>No results found</SelectOption>}
