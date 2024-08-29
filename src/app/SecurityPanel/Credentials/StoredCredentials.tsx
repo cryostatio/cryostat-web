@@ -17,6 +17,7 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { StoredCredential, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
@@ -398,7 +399,7 @@ export const StoredCredentials = () => {
             />
           </Td>
           <Td key={`credentials-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
-            {credential.matchExpression}
+            <MatchExpressionDisplay matchExpression={credential.matchExpression} />
           </Td>
           <Td key={`credentials-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
             <Button variant="plain" onClick={() => handleToggleExpanded()}>
