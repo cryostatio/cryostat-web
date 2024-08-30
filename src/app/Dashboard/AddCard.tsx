@@ -325,31 +325,33 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
         <Card
           id={title}
           key={title}
-          isClickable
           isSelectable
           isFullHeight
           isFlat
           isSelected={selection === t(title)}
           tabIndex={0}
+          onClick={(_event) => {
+            if (selection === t(title)) {
+              setToViewCard(availableCards.find((card) => t(card.title) === selection));
+            } else {
+              onSelect(_event, t(title));
+            }
+          }}
         >
           <CardHeader
             selectableActions={{
-              onClickAction: (event) => {
-                if (selection === t(title)) {
-                  setToViewCard(availableCards.find((card) => t(card.title) === selection));
-                } else {
-                  onSelect(event, t(title));
-                }
-              },
               selectableActionId: title,
+              selectableActionAriaLabelledby: title,
+              variant: 'single',
+              name: t(title),
             }}
           >
-            <Level hasGutter>
-              {icon ? <LevelItem>{icon}</LevelItem> : null}
-              <LevelItem>
+            <Flex spacer={{ default: 'spacerSm' }}>
+              {icon ? <FlexItem>{icon}</FlexItem> : null}
+              <FlexItem>
                 <CardTitle>{t(title)}</CardTitle>
-              </LevelItem>
-              <LevelItem>
+              </FlexItem>
+              <FlexItem>
                 {labels ? (
                   <LabelGroup>
                     {labels.map(({ content, icon, color }) => (
@@ -359,8 +361,8 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
                     ))}
                   </LabelGroup>
                 ) : null}
-              </LevelItem>
-            </Level>
+              </FlexItem>
+            </Flex>
           </CardHeader>
           <CardBody>{t(description)}</CardBody>
         </Card>
@@ -392,18 +394,18 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
                 <FlexItem>
                   <Title headingLevel={'h3'}>{t(title)}</Title>
                 </FlexItem>
+                <FlexItem>
+                  {labels && labels.length ? (
+                    <LabelGroup>
+                      {labels.map(({ content, icon, color }) => (
+                        <Label key={content} color={color} icon={icon}>
+                          {content}
+                        </Label>
+                      ))}
+                    </LabelGroup>
+                  ) : null}
+                </FlexItem>
               </Flex>
-            </StackItem>
-            <StackItem>
-              {labels && labels.length ? (
-                <LabelGroup>
-                  {labels.map(({ content, icon, color }) => (
-                    <Label key={content} color={color} icon={icon}>
-                      {content}
-                    </Label>
-                  ))}
-                </LabelGroup>
-              ) : null}
             </StackItem>
             <StackItem>{getFullDescription(t(title), t)}</StackItem>
             <StackItem isFilled>
