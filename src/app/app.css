@@ -118,6 +118,11 @@ body,
   padding: 0 1em 1em 1em;
 }
 
+.catalog-tile-pf-icon {
+  /* Catalog icon style is only applied if display is inline-block */
+  display: inline-block;
+}
+
 .layout-template-picker .catalog-tile-pf {
   height: 100%;
   border-top: 1.5px solid var(--pf-v5-global--palette--black-300);

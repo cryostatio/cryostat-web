@@ -185,9 +185,6 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
   return (
     <CatalogTileBadge>
       <Dropdown
-        popperProps={{
-          appendTo: portalRoot,
-        }}
         onSelect={onSelect}
         onOpenChange={setIsOpen}
         isOpen={isOpen}
