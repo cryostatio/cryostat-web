@@ -349,10 +349,10 @@
     "ITEMS_other": "{{count}} items"
   },
   "LayoutTemplatePicker": {
+    "CARD_COUNT": "Card count",
     "SORT_BY": {
       "CARD_COUNT": "Sort by: Card count",
-      "NAME": "Sort by: Name",
-      "PLACEHOLDER": "Sort by..."
+      "NAME": "Sort by: Name"
     }
   },
   "LayoutTemplateUploadModal": {

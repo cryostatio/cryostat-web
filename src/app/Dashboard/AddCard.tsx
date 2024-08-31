@@ -223,7 +223,6 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
         hasNoBodyWrapper
         showClose={false}
         appendTo={portalRoot}
-        onClose={() => setShowWizard(false)}
       >
         <Wizard
           id={'card-catalog-wizard'}

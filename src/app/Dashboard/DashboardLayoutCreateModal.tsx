@@ -208,7 +208,6 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       appendTo={portalRoot}
       isOpen={props.visible}
       showClose={true}
-      onClose={handleClose}
       header={header}
     >
       <Form onSubmit={(e) => e.preventDefault()}>
