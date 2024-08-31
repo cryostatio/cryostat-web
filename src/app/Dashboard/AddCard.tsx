@@ -48,8 +48,6 @@ import {
   GridItem,
   Label,
   LabelGroup,
-  Level,
-  LevelItem,
   Modal,
   NumberInput,
   Stack,
@@ -641,7 +639,10 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
         enableFlip: true,
         appendTo: portalRoot,
       }}
-      shouldFocusToggleOnSelect
+      isScrollable
+      maxMenuHeight={'30vh'}
+      onOpenChange={setSelectOpen}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>
         {errored
