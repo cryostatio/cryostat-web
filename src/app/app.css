@@ -120,7 +120,6 @@ body,
 
 .layout-template-picker .catalog-tile-pf {
   height: 100%;
-  color: var(--pf-v5-global--Color--100);
   border-top: 1.5px solid var(--pf-v5-global--palette--black-300);
 }
 
@@ -132,6 +131,10 @@ body,
 }
 
 .layout-template-card__featured {
+  z-index: 1;
+}
+
+.layout-template-card__action-toggle {
   z-index: 1;
 }
 

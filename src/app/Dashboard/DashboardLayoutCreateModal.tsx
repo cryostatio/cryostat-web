@@ -145,22 +145,13 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     return (
       <FormSection>
         {isCreateModal && (
-          <FormGroup label={'Template'} fieldId="template" isRequired height="35em">
-            <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '33em' }}>
+          <FormGroup label={'Template'} fieldId="template" isRequired>
+            <div style={{ border: '1px solid var(--pf-v5-global--BorderColor--100)', height: '50vh' }}>
               <LayoutTemplatePicker onTemplateSelect={onTemplateSelect} />
             </div>
           </FormGroup>
         )}
         <FormGroup label={t('DashboardLayoutCreateModal.NAME.LABEL')} fieldId="name" isRequired>
-          <FormHelperText>
-            <HelperText>
-              <HelperTextItem variant={nameValidated}>
-                {nameValidated === ValidatedOptions.error
-                  ? errorMessage
-                  : t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
-              </HelperTextItem>
-            </HelperText>
-          </FormHelperText>
           <TextInput
             isRequired
             type="text"
@@ -174,6 +165,15 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
             autoComplete="on"
             validated={nameValidated}
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={nameValidated}>
+                {nameValidated === ValidatedOptions.error
+                  ? errorMessage
+                  : t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
       </FormSection>
     );
@@ -204,8 +204,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   return (
     <Modal
       aria-label={t('DashboardLayoutCreateModal.LABEL')}
-      width={isCreateModal ? '110em' : '40%'}
-      height={isCreateModal ? '90%' : 'auto'}
+      width={isCreateModal ? '80%' : '40%'}
       appendTo={portalRoot}
       isOpen={props.visible}
       showClose={true}

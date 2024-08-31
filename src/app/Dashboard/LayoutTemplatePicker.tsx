@@ -74,7 +74,7 @@ import {
   SortAmountUpAltIcon,
   UploadIcon,
 } from '@patternfly/react-icons';
-import { InnerScrollContainer, OuterScrollContainer } from '@patternfly/react-table';
+import { InnerScrollContainer } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -208,10 +208,9 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
         variant="secondary"
         aria-label={t('DashboardLayoutToolbar.UPLOAD.LABEL')}
         onClick={handleUploadButton}
-        icon={<UploadIcon />}
         data-quickstart-id="dashboard-upload-btn"
       >
-        {t('UPLOAD', { ns: 'common' })}
+        <UploadIcon />
       </Button>
     ),
     [t, handleUploadButton],
@@ -429,9 +428,9 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   }, [t, onDrawerCloseClick, selectedTemplate]);
 
   const sortedFilteredFeatureLeveledTemplateLayoutGroup = React.useCallback(
-    (title: LayoutTemplateFilter, templates: LayoutTemplate[]) => {
-      const featuredLevelled = templates.filter((t) => smallestFeatureLevel(t.cards) >= activeLevel);
-      const sortedSearchFilteredTemplates = searchFilteredTemplates(featuredLevelled).sort((a, b) => {
+    (title: LayoutTemplateFilter, templates: LayoutTemplate[], divider: boolean = true) => {
+      const featuredLevelledTemplates = templates.filter((t) => smallestFeatureLevel(t.cards) >= activeLevel);
+      const sortedSearchFilteredTemplates = searchFilteredTemplates(featuredLevelledTemplates).sort((a, b) => {
         switch (selectedSort) {
           case 'Name':
             if (sortDirection === 'asc') {
@@ -465,13 +464,13 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               onTemplateDelete={onInnerTemplateDelete}
             />
           </StackItem>
-          <StackItem>
-            <Divider />
-          </StackItem>
+          {divider && (
+            <StackItem>
+              <Divider />
+            </StackItem>
+          )}
         </>
-      ) : (
-        <></>
-      );
+      ) : null;
     },
     [
       activeLevel,
@@ -510,120 +509,121 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
     <Drawer isExpanded={isDrawerExpanded} isInline>
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>
-          <OuterScrollContainer>
-            <InnerScrollContainer>
-              <Toolbar isSticky clearAllFilters={onClearAllFilters}>
-                <ToolbarContent>
-                  <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={'md'}>
-                    <ToolbarGroup variant="filter-group">
-                      <ToolbarItem variant="search-filter">
-                        <SearchAutocomplete values={allTemplates.map((t) => t.name)} onChange={onSearchChange} />
-                      </ToolbarItem>
-                      <ToolbarFilter chips={selectedFilters} deleteChip={onDeleteChip} categoryName="Category">
-                        <Select
-                          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                            <MenuToggle ref={toggleRef} onClick={onFilterSelectToggle} isExpanded={isFilterSelectOpen}>
-                              Template Type
-                              {selectedFilters.length ? <Badge isRead>{selectedFilters.length}</Badge> : null}
-                            </MenuToggle>
-                          )}
-                          popperProps={{
-                            appendTo: portalRoot,
-                          }}
-                          aria-label="Select template category"
-                          onSelect={onFilterSelect}
-                          selected={selectedFilters}
-                          isOpen={isFilterSelectOpen}
-                        >
-                          <SelectList>
-                            <SelectOption key="suggested" value={t('SUGGESTED', { ns: 'common' })} hasCheckbox>
-                              {t('SUGGESTED', { ns: 'common' })}
-                            </SelectOption>
-                            <SelectOption key="cryostat" value="Cryostat" hasCheckbox>
-                              Cryostat
-                            </SelectOption>
-                            <SelectOption
-                              key="user-submitted"
-                              value={t('USER_SUBMITTED', { ns: 'common' })}
-                              hasCheckbox
-                            >
-                              {t('USER_SUBMITTED', { ns: 'common' })}
-                            </SelectOption>
-                          </SelectList>
-                        </Select>
-                      </ToolbarFilter>
-                    </ToolbarGroup>
-                  </ToolbarToggleGroup>
-                  <ToolbarGroup variant="icon-button-group">
-                    <ToolbarItem>
-                      <Select
-                        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                          <MenuToggle ref={toggleRef} onClick={onSortSelectToggle} isExpanded={isSortSelectOpen}>
-                            {selectedSort ?? t('LayoutTemplatePicker.SORT_BY.PLACEHOLDER')}
-                          </MenuToggle>
-                        )}
-                        popperProps={{
-                          appendTo: portalRoot,
-                        }}
-                        aria-label="Select sorting category"
-                        onSelect={onSortSelect}
-                        selected={selectedSort}
-                        isOpen={isSortSelectOpen}
-                      >
-                        <SelectList>
-                          <SelectOption key={LayoutTemplateSort.NAME} value={LayoutTemplateSort.NAME}>
-                            {t('LayoutTemplatePicker.SORT_BY.NAME')}
-                          </SelectOption>
-                          <SelectOption key={LayoutTemplateSort.CARD_COUNT} value={LayoutTemplateSort.CARD_COUNT}>
-                            {t('LayoutTemplatePicker.SORT_BY.CARD_COUNT')}
-                          </SelectOption>
-                        </SelectList>
-                      </Select>
-                    </ToolbarItem>
-                    <ToolbarItem>
-                      <Button
-                        variant="plain"
-                        aria-label="Sort"
-                        onClick={onSortDirectionChange}
-                        isAriaDisabled={!selectedSort}
-                      >
-                        {sortArrowIcon}
-                      </Button>
-                    </ToolbarItem>
-                  </ToolbarGroup>
-                  <ToolbarGroup>
-                    <ToolbarItem>{uploadButton}</ToolbarItem>
-                  </ToolbarGroup>
-                </ToolbarContent>
-              </Toolbar>
-              <Stack>
-                {allSearchableTemplateNames.length !== 0 ? (
-                  <>
-                    {sortedFilteredFeatureLeveledTemplateLayoutGroup(t('SUGGESTED', { ns: 'common' }), [
-                      BlankLayout,
-                      ...RecentTemplates,
-                    ])}
-                    {sortedFilteredFeatureLeveledTemplateLayoutGroup('Cryostat', CryostatLayoutTemplates)}
-                    {sortedFilteredFeatureLeveledTemplateLayoutGroup(
-                      t('USER_SUBMITTED', { ns: 'common' }),
-                      userSubmittedTemplates,
+          <Toolbar isSticky clearAllFilters={onClearAllFilters}>
+            <ToolbarContent>
+              <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={'md'}>
+                <ToolbarGroup variant="filter-group">
+                  <ToolbarItem variant="search-filter">
+                    <SearchAutocomplete values={allTemplates.map((t) => t.name)} onChange={onSearchChange} />
+                  </ToolbarItem>
+                  <ToolbarFilter chips={selectedFilters} deleteChip={onDeleteChip} categoryName="Category">
+                    <Select
+                      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                        <MenuToggle ref={toggleRef} onClick={onFilterSelectToggle} isExpanded={isFilterSelectOpen}>
+                          Template Type
+                          {selectedFilters.length ? <Badge isRead>{selectedFilters.length}</Badge> : null}
+                        </MenuToggle>
+                      )}
+                      popperProps={{
+                        appendTo: portalRoot,
+                      }}
+                      aria-label="Select template category"
+                      onSelect={onFilterSelect}
+                      selected={selectedFilters}
+                      isOpen={isFilterSelectOpen}
+                    >
+                      <SelectList>
+                        <SelectOption key="suggested" value={t('SUGGESTED', { ns: 'common' })} hasCheckbox>
+                          {t('SUGGESTED', { ns: 'common' })}
+                        </SelectOption>
+                        <SelectOption key="cryostat" value="Cryostat" hasCheckbox>
+                          Cryostat
+                        </SelectOption>
+                        <SelectOption key="user-submitted" value={t('USER_SUBMITTED', { ns: 'common' })} hasCheckbox>
+                          {t('USER_SUBMITTED', { ns: 'common' })}
+                        </SelectOption>
+                      </SelectList>
+                    </Select>
+                  </ToolbarFilter>
+                </ToolbarGroup>
+              </ToolbarToggleGroup>
+              <ToolbarItem variant="separator" />
+              <ToolbarGroup variant="icon-button-group">
+                <ToolbarItem>
+                  <Select
+                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle ref={toggleRef} onClick={onSortSelectToggle} isExpanded={isSortSelectOpen}>
+                        {selectedSort ?? t('LayoutTemplatePicker.SORT_BY.PLACEHOLDER')}
+                      </MenuToggle>
                     )}
-                  </>
-                ) : (
-                  <StackItem>
-                    <EmptyState>
-                      <EmptyStateHeader
-                        titleText="No templates found"
-                        icon={<EmptyStateIcon icon={PficonTemplateIcon} />}
-                        headingLevel="h4"
-                      />
-                      <EmptyStateBody>Upload a template and try again.</EmptyStateBody>
-                    </EmptyState>
-                  </StackItem>
-                )}
-              </Stack>
-            </InnerScrollContainer>
-          </OuterScrollContainer>
+                    popperProps={{
+                      appendTo: portalRoot,
+                    }}
+                    aria-label="Select sorting category"
+                    onSelect={onSortSelect}
+                    selected={selectedSort}
+                    isOpen={isSortSelectOpen}
+                  >
+                    <SelectList>
+                      <SelectOption key={LayoutTemplateSort.NAME} value={LayoutTemplateSort.NAME}>
+                        {t('LayoutTemplatePicker.SORT_BY.NAME')}
+                      </SelectOption>
+                      <SelectOption key={LayoutTemplateSort.CARD_COUNT} value={LayoutTemplateSort.CARD_COUNT}>
+                        {t('LayoutTemplatePicker.SORT_BY.CARD_COUNT')}
+                      </SelectOption>
+                    </SelectList>
+                  </Select>
+                </ToolbarItem>
+                <ToolbarItem>
+                  <Button
+                    variant="plain"
+                    aria-label="Sort"
+                    onClick={onSortDirectionChange}
+                    isAriaDisabled={!selectedSort}
+                  >
+                    {sortArrowIcon}
+                  </Button>
+                </ToolbarItem>
+              </ToolbarGroup>
+              <ToolbarItem variant="separator" />
+              <ToolbarGroup>
+                <ToolbarItem>{uploadButton}</ToolbarItem>
+              </ToolbarGroup>
+            </ToolbarContent>
+          </Toolbar>
+          <InnerScrollContainer>
+            <Stack>
+              {allSearchableTemplateNames.length > 0 ? (
+                <>
+                  {sortedFilteredFeatureLeveledTemplateLayoutGroup(t('SUGGESTED', { ns: 'common' }), [
+                    BlankLayout,
+                    ...RecentTemplates,
+                  ])}
+                  {sortedFilteredFeatureLeveledTemplateLayoutGroup(
+                    'Cryostat',
+                    CryostatLayoutTemplates,
+                    userSubmittedTemplates.length > 0,
+                  )}
+                  {sortedFilteredFeatureLeveledTemplateLayoutGroup(
+                    t('USER_SUBMITTED', { ns: 'common' }),
+                    userSubmittedTemplates,
+                    false,
+                  )}
+                </>
+              ) : (
+                <StackItem>
+                  <EmptyState>
+                    <EmptyStateHeader
+                      titleText="No templates found"
+                      icon={<EmptyStateIcon icon={PficonTemplateIcon} />}
+                      headingLevel="h4"
+                    />
+                    <EmptyStateBody>Upload a template and try again.</EmptyStateBody>
+                  </EmptyState>
+                </StackItem>
+              )}
+            </Stack>
+          </InnerScrollContainer>
         </DrawerContentBody>
       </DrawerContent>
       {deleteWarningModal}
