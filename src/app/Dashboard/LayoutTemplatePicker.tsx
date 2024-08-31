@@ -75,6 +75,7 @@ import {
 } from '@patternfly/react-icons';
 import { InnerScrollContainer } from '@patternfly/react-table';
 import { TFunction } from 'i18next';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -145,7 +146,8 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
       if (!searchFilter) {
         return templates;
       }
-      return templates.filter((t) => t.name.toLowerCase().includes(searchFilter.toLowerCase()));
+      const reg = new RegExp(_.escapeRegExp(searchFilter), 'i');
+      return templates.filter((t) => reg.test(t.name));
     },
     [searchFilter],
   );
@@ -522,7 +524,11 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
               <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={'md'}>
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem variant="search-filter">
-                    <SearchAutocomplete values={allTemplates.map((t) => t.name)} onChange={onSearchChange} />
+                    <SearchAutocomplete
+                      values={allTemplates.map((t) => t.name)}
+                      onChange={onSearchChange}
+                      placeholder={t('LayoutTemplatePicker.SEARCH_PLACEHOLDER')}
+                    />
                   </ToolbarItem>
                   <ToolbarFilter chips={selectedFilters} deleteChip={onDeleteChip} categoryName="Category">
                     <Select

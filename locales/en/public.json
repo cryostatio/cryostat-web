@@ -350,6 +350,7 @@
   },
   "LayoutTemplatePicker": {
     "CARD_COUNT": "Card count",
+    "SEARCH_PLACEHOLDER": "Find by name...",
     "SORT_BY": {
       "CARD_COUNT": "Sort by: Card count",
       "NAME": "Sort by: Name"
