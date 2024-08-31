@@ -44,8 +44,7 @@ import {
   DropdownItem,
   DropdownList,
   MenuToggleElement,
-  Dropdown as PF5Dropdown,
-  DropdownItem as PF5DropdownItem,
+  MenuToggleAction,
 } from '@patternfly/react-core';
 import {
   EllipsisVIcon,
@@ -263,54 +262,52 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const createTemplateDropdownItems = React.useMemo(
     () => [
-      <PF5DropdownItem key="action" onClick={createBlankLayout} autoFocus icon={<FileIcon />}>
+      <DropdownItem key="action" onClick={createBlankLayout} autoFocus icon={<FileIcon />}>
         Blank Layout
-      </PF5DropdownItem>,
-      <PF5DropdownItem key="template" onClick={handleCreateModalOpen} icon={<PficonTemplateIcon />}>
+      </DropdownItem>,
+      <DropdownItem key="template" onClick={handleCreateModalOpen} icon={<PficonTemplateIcon />}>
         Choose Template
-      </PF5DropdownItem>,
-      <PF5DropdownItem key="upload" onClick={handleUploadModalOpen} icon={<UploadIcon />}>
+      </DropdownItem>,
+      <DropdownItem key="upload" onClick={handleUploadModalOpen} icon={<UploadIcon />}>
         Upload Template
-      </PF5DropdownItem>,
+      </DropdownItem>,
     ],
     [createBlankLayout, handleCreateModalOpen, handleUploadModalOpen],
   );
 
   const createTemplateButton = React.useMemo(
     () => (
-      <PF5Dropdown
+      <Dropdown
+        isOpen={isCreateDropdownOpen}
         onSelect={onCreateDropdownSelect}
-        onOpenChange={(open) => setIsCreateDropdownOpen(open)}
+        onOpenChange={setIsCreateDropdownOpen}
+        onOpenChangeKeys={['Escape']}
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
             className="dashboard-layout-create-dropdown-toggle"
+            onClick={() => setIsCreateDropdownOpen((open) => !open)}
             splitButtonOptions={{
+              variant: 'action',
               items: [
-                <DropdownItem
-                  key="action"
+                <MenuToggleAction
                   onClick={(_e) => {
                     createBlankLayout();
                     setIsSelectorOpen(false);
                   }}
+                  key="action"
                 >
-                  <span style={{ display: 'flex', alignItems: 'center' }}>
-                    <PlusCircleIcon style={{ marginRight: 'var(--pf-global--spacer--sm)' }} />
-                    {t('DashboardLayoutToolbar.NEW_LAYOUT')}
-                  </span>
-                </DropdownItem>,
+                  <PlusCircleIcon style={{ marginRight: 'var(--pf-v5-global--spacer--sm)' }} />
+                  {t('DashboardLayoutToolbar.NEW_LAYOUT')}
+                </MenuToggleAction>,
               ],
             }}
             variant="primary"
-            //splitButtonVariant="action"
-          >
-            <EllipsisVIcon />
-          </MenuToggle>
+          />
         )}
       >
-        isOpen={isCreateDropdownOpen}
         <DropdownList>{createTemplateDropdownItems}</DropdownList>
-      </PF5Dropdown>
+      </Dropdown>
     ),
     [
       t,
@@ -358,7 +355,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const dropdownItems = React.useMemo(() => {
     return (
-      <DropdownList>
+      <>
         <DropdownItem key="template" value={'template'}>
           {t('DashboardLayoutToolbar.SET_AS_TEMPLATE')}
         </DropdownItem>
@@ -368,7 +365,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         <DropdownItem key="clearAll" value={'clearAll'} isDisabled={currLayout.cards.length < 1}>
           {t('DashboardLayoutToolbar.CLEAR_LAYOUT')}
         </DropdownItem>
-      </DropdownList>
+      </>
     );
   }, [t, currLayout.cards.length]);
 
@@ -411,12 +408,8 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       <Dropdown
         isOpen={isKebabOpen}
         onSelect={onKebabSelect}
-        popperProps={{
-          minWidth: '12em',
-        }}
-        onOpenChange={(isOpen) => {
-          setIsKebabOpen(isOpen);
-        }}
+        onOpenChange={setIsKebabOpen}
+        onOpenChangeKeys={['Escape']}
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
@@ -493,6 +486,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       <Dropdown
         isOpen={isSelectorOpen}
         onOpenChange={onOpenChange}
+        onOpenChangeKeys={['Escape']}
         toggle={(toggleRef) => (
           <MenuToggle
             ref={toggleRef}
