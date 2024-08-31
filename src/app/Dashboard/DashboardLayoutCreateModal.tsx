@@ -207,7 +207,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       width={isCreateModal ? '80%' : '40%'}
       appendTo={portalRoot}
       isOpen={props.visible}
-      showClose={true}
+      showClose={false}
       header={header}
     >
       <Form onSubmit={(e) => e.preventDefault()}>
