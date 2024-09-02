@@ -54,7 +54,7 @@
       }
     },
     "USER_MENU": {
-      "LANGUAGE_PREFERENCE": "<Icon/> Language preference",
+      "LANGUAGE_PREFERENCE": "Language preference",
       "LOGOUT": "Log out"
     }
   },

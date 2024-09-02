@@ -284,7 +284,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
         <DropdownItem key={'language-preferences'} onClick={handleLanguagePref}>
-          <Trans t={t} components={{ Icon: <LanguageIcon /> }} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
+          <Trans t={t} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
         </DropdownItem>
       </FeatureFlag>,
       <DropdownItem key={'log-out'} onClick={handleLogout}>
