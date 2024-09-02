@@ -375,7 +375,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   const resizeObserver = React.useRef((): void => undefined);
-  const [cardWidth, setCardWidth] = React.useState(0);
+  const [cardWidth, setCardWidth] = React.useState(1); // Use non-zero as 0 means Infinity (invalid)
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const containerRef: React.Ref<any> = React.createRef();
 
@@ -459,9 +459,8 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
 
   const refreshButton = React.useMemo(
     () => (
-      <Tooltip content={t('CHART_CARD.BUTTONS.REFRESH_TOOLTIP')}>
+      <Tooltip key={0} content={t('CHART_CARD.BUTTONS.REFRESH_TOOLTIP')}>
         <Button
-          key={0}
           aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
           onClick={refresh}
           variant="plain"
