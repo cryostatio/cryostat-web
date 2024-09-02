@@ -95,8 +95,8 @@
         }
       }
     },
-    "WARNING_RESULTS_one": "{{count}} Warning Result",
-    "WARNING_RESULTS_other": "{{count}} Warning Results"
+   "WARNING_RESULTS_one": "{{count}} warning result",
+    "WARNING_RESULTS_other": "{{count}} warning results"
   },
   "AutomatedAnalysisConfigDrawer": {
     "INPUT_GROUP": {

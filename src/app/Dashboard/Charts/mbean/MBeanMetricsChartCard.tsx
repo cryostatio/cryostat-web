@@ -402,7 +402,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   }, [containerRef, setCardWidth]);
 
   React.useEffect(() => {
-    resizeObserver.current = getResizeObserver(containerRef.current, handleResize);
+    resizeObserver.current = getResizeObserver(containerRef.current, handleResize, true);
     handleResize();
     return resizeObserver.current;
   }, [resizeObserver, containerRef, handleResize]);
