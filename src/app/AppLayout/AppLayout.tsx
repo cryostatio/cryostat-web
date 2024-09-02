@@ -72,7 +72,6 @@ import {
   BellIcon,
   CogIcon,
   ExternalLinkAltIcon,
-  LanguageIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
   UserIcon,

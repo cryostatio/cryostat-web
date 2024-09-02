@@ -40,7 +40,7 @@ import {
   ChartLine,
   ChartVoronoiContainer,
 } from '@patternfly/react-charts';
-import { getResizeObserver, Button, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
+import { getResizeObserver, Button, CardBody, CardHeader, CardTitle, Tooltip } from '@patternfly/react-core';
 import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
@@ -459,14 +459,16 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
 
   const refreshButton = React.useMemo(
     () => (
-      <Button
-        key={0}
-        aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
-        onClick={refresh}
-        variant="plain"
-        icon={<SyncAltIcon />}
-        isDisabled={isLoading}
-      />
+      <Tooltip content={t('CHART_CARD.BUTTONS.REFRESH_TOOLTIP')}>
+        <Button
+          key={0}
+          aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
+          onClick={refresh}
+          variant="plain"
+          icon={<SyncAltIcon />}
+          isDisabled={isLoading}
+        />
+      </Tooltip>
     ),
     [t, props.chartKind, refresh, isLoading],
   );

@@ -95,7 +95,7 @@
         }
       }
     },
-   "WARNING_RESULTS_one": "{{count}} warning result",
+    "WARNING_RESULTS_one": "{{count}} warning result",
     "WARNING_RESULTS_other": "{{count}} warning results"
   },
   "AutomatedAnalysisConfigDrawer": {
@@ -139,6 +139,7 @@
       "POPOUT": {
         "LABEL": "Pop out {{chartKind}} chart"
       },
+      "REFRESH_TOOLTIP": "Refresh chart data",
       "SYNC": {
         "LABEL": "Synchronize {{chartKind}} chart"
       }
