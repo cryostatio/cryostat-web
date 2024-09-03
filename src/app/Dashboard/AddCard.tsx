@@ -320,7 +320,6 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
       const { icon, labels, title, description } = card;
       return (
         <CatalogTile
-          style={{ height: '100%' }}
           featured={selection === t(title)}
           id={title}
           key={title}
@@ -421,7 +420,7 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     <Drawer isExpanded={!!toViewCard} isInline>
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>
-          <Grid hasGutter style={{ alignItems: 'stretch', marginTop: '1em', marginRight: !toViewCard ? 0 : '1em' }}>
+          <Grid hasGutter className="dashboard-card-picker" style={{ marginRight: !toViewCard ? 0 : '1em' }}>
             {items.map((item) => (
               <GridItem span={4} key={item.key}>
                 {item}

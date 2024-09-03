@@ -114,6 +114,18 @@ body,
   overflow-y: auto;
 }
 
+.dashboard-card-picker {
+  align-items: stretch;
+  margin-top: 1em;
+  /* Ensure left border is visible*/
+  margin-left: 1px;
+}
+
+.dashboard-card-picker  .catalog-tile-pf {
+  height: 100%;
+  border-top: 1.5px solid var(--pf-v5-global--palette--black-300);
+}
+
 .layout-template-picker {
   padding: 0 1em 1em 1em;
 }
