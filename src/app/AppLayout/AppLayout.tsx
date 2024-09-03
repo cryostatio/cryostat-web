@@ -288,7 +288,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <Trans t={t} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
         </DropdownItem>
       </FeatureFlag>,
-      <DropdownItem key={'log-out'} onClick={handleLogout} icon={<LogoutIcon></LogoutIcon>}>
+      <DropdownItem key={'log-out'} onClick={handleLogout} icon={<LogoutIcon />}>
         {t('AppLayout.USER_MENU.LOGOUT')}
       </DropdownItem>,
     ],
