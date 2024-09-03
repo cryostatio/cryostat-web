@@ -544,12 +544,12 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
       }
       return (
         <FormGroup key={`${ctrl.key}`} label={t(ctrl.name)} isInline isStack>
+          {input}
           <FormHelperText>
             <HelperText>
               <HelperTextItem>{t(ctrl.description)}</HelperTextItem>
             </HelperText>
           </FormHelperText>
-          {input}
         </FormGroup>
       );
     },
