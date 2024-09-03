@@ -407,9 +407,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           >
             <Button
               variant="plain"
-              aria-label="More info for Match Expression field"
-              onClick={(e) => e.preventDefault()}
-              className="pf-c-form__group-label-help"
+              aria-label={t('CreateRule.ARIA_LABELS.HELPER_ICON')}
               data-quickstart-id="rule-matchexpr-help"
             >
               <HelpIcon />

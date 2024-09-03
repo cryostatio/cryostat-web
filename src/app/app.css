@@ -78,12 +78,32 @@ body,
   --pf-v5-c-chip__text--MaxWidth: 100ch;
 }
 
+.rules-table-outer-container {
+  height: 67.5vh;
+}
+
+.rules-table-inner-container {
+  height: 100%;
+}
+
 .recording-table-outer-container {
-  height: 67.3vh;
+  height: 64.5vh;
 }
 
 .recording-table--inner-container {
   height: 100%;
+}
+
+.archive-table-outer-container {
+  height: 75vh;
+}
+
+.archive-table-inner-container {
+  height: 100%;
+}
+
+.archive-table-outer-container .pf-v5-c-table__expandable-row {
+  z-index: 0;
 }
 
 #dashboard-layout-dropdown-toggle {
@@ -735,4 +755,8 @@ svg.topology__node-decorator-icon.progress {
 
 .theme__toggle-group .pf-v5-c-toggle-group__button.pf-m-selected {
   --pf-v5-c-toggle-group__button--m-selected--BackgroundColor: var(--pf-v5-global--palette--blue-500);
+}
+
+.match-expression-display {
+  padding: .25rem .5rem !important;
 }

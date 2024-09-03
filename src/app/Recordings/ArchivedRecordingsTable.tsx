@@ -556,11 +556,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     [checkedIndices, setShowDetailsPanel, isUploadsTable, propsDirectory, directoryRecordings],
   );
 
-  const totalArchiveSize = React.useMemo(() => {
-    let size = 0;
-    filteredRecordings.forEach((r) => (size += r.size));
-    return size;
-  }, [filteredRecordings]);
+  const totalArchiveSize = React.useMemo(
+    () => filteredRecordings.reduce((total, r) => total + r.size, 0),
+    [filteredRecordings],
+  );
 
   const columnConfig: ColumnConfig = React.useMemo(
     () => ({
@@ -731,7 +730,6 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
       id="archived-recordings-toolbar"
       aria-label="archived-recording-toolbar"
       clearAllFilters={props.handleClearFilters}
-      isSticky
     >
       <ToolbarContent>
         <RecordingFilters

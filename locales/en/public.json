@@ -12,6 +12,25 @@
     "OPEN_SOURCE_LICENSE": "Open source license",
     "VERSION": "Version"
   },
+  "AgentLiveProbes": {
+    "SEARCH_PLACEHOLDER": "Find by name, description, class, or method..."
+  },
+  "AgentLiveProves": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "active-probe-filter"
+    }
+  },
+  "AgentProbeTemplates": {
+    "SEARCH_PLACEHOLDER": "Find by name or XML content..."
+  },
+  "AllArchivedRecordingsTable": {
+    "SEARCH_PLACEHOLDER": "Find by JVM ID..."
+  },
+  "AllTargetsArchivedRecordingsTable": {
+    "HIDE_TARGET_WITH_ZERO_RECORDING": "Hide targets with zero Recordings",
+    "SEARCH_PLACEHOLDER": "Find by connection URL or alias...",
+    "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
+  },
   "AppLayout": {
     "APP_LAUNCHER": {
       "ABOUT": "About",
@@ -164,6 +183,9 @@
   "CreateRule": {
     "ABOUT": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording buffer into Cryostat's own archived storage.",
     "ARCHIVAL_PERIOD_HELPER_TEXT": "Time between copies of active Recording data being pulled into Cryostat archive storage.",
+    "ARIA_LABELS": {
+      "HELPER_ICON": "More info for Match Expression field"
+    },
     "DESCRIPTION_HELPER_TEXT": "Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions.",
     "ENABLE_SWITCH_HELPER_TEXT": "Rules take effect when created if enabled and will be matched against all discovered target applications immediately. When new target applications appear they are checked against all enabled rules. Disabled rules have no effect but are available to be enabled in the future.",
     "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
@@ -274,6 +296,12 @@
   "ErrorView": {
     "EVENT_TEMPLATES": "Error retrieving Event Templates"
   },
+  "EventTemplates": {
+    "SEARCH_PLACEHOLDER": "Find by name, description, or provider..."
+  },
+  "EventTypes": {
+    "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
+  },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected Target JVM.",
     "CARD_DESCRIPTION_FULL": "View information such as the connection URL, Labels, and Annotations belonging to the selected Target JVM.",
@@ -325,19 +353,23 @@
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
     "INVALID_UPLOADS_other": "These files do not contain valid Recording metadata:"
   },
+  "RecordingsTable": {
+    "NO_ARCHIVES": "No Archived Recordings"
+  },
   "RuleDeleteWarningModal": {
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
   "Rules": {
-    "ABOUT_BODY": "Automated Rules define a dynamic set of target JVMs to connect to and start <0>Active Recordings</0> using a specific <1>Event Template</1> when the Automated Rule is created and when any new matching target JVMs appear. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
-    "ABOUT_TITLE": "About Automated Rules",
+    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
     "ARCHIVAL_PERIOD_TOOLTIP": "Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.",
     "EVENT_SPECIFIER_TOOLTIP": "The name and location of the Event Template applied by this rule.",
     "INITIAL_DELAY_TOOLTIP": "Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.",
     "MATCH_EXPRESSION_TOOLTIP": "A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.",
     "MAX_AGE_TOOLTIP": "The maximum age in seconds for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.",
     "MAX_SIZE_TOOLTIP": "The maximum size in bytes for JFR Recordings started by this rule. Values less than 1 indicate no limit.",
-    "PRESERVED_ARCHIVES_TOOLTIP": "The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory."
+    "NO_RULES": "No Automated Rules",
+    "PRESERVED_ARCHIVES_TOOLTIP": "The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory.",
+    "SEARCH_PLACEHOLDER": "Find by name, or description..."
   },
   "RulesUploadModal": {
     "DESCRIPTION": "Select an Automated Rules definition file to upload. File must be in valid JSON format.",
@@ -386,7 +418,7 @@
       },
       "DESCRIPTION": "",
       "LOCALE_SELECT_DESCRIPTION": "Select current date locale.",
-      "SEARCH_PLACEHOLDER": "Filter by locale...",
+      "SEARCH_PLACEHOLDER": "Find by locale...",
       "TIMEZONE_SELECT_DESCRIPTION": "Select current timezone.",
       "TITLE": "Date & Time"
     },
@@ -441,7 +473,7 @@
     "CLEAR_SELECTION": "Clear selection",
     "CREATE_TARGET": "Create Target",
     "NO_SEARCH_MATCHES": "No Target found",
-    "SEARCH_PLACEHOLDER": "Filter by URL, alias, or discovery group...",
+    "SEARCH_PLACEHOLDER": "Find by URL, alias, or discovery group...",
     "TOGGLE_LABEL": "Select Target",
     "TOGGLE_PLACEHOLDER": "Select a Target"
   },
@@ -476,7 +508,7 @@
       "SELECT": "Select a timezone",
       "TYPE_AHEAD": "Search a timezone"
     },
-    "SEARCH_PLACEHOLDER": "Filter by timezone..."
+    "SEARCH_PLACEHOLDER": "Find by timezone..."
   },
   "Topology": {
     "GRAPH_VIEW": "Graph view",

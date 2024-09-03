@@ -793,7 +793,6 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       id="active-recordings-toolbar"
       aria-label="active-recording-toolbar"
       clearAllFilters={props.handleClearFilters}
-      isSticky
     >
       <ToolbarContent>
         <RecordingFilters

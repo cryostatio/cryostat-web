@@ -17,6 +17,7 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -33,6 +34,11 @@ import {
   ToolbarContent,
   ToolbarItem,
   EmptyStateHeader,
+  TextContent,
+  Text,
+  TextVariants,
+  SearchInput,
+  Bullseye,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -40,9 +46,9 @@ import {
   IAction,
   InnerScrollContainer,
   ISortBy,
+  OuterScrollContainer,
   SortByDirection,
   Table,
-  TableVariant,
   Tbody,
   Td,
   Th,
@@ -50,6 +56,7 @@ import {
   ThProps,
   Tr,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -60,7 +67,7 @@ import { RuleToDeleteOrDisable } from './types';
 
 export interface RulesTableProps {}
 
-export const RulesTable: React.FC<RulesTableProps> = (_) => {
+export const RulesTable: React.FC<RulesTableProps> = () => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
@@ -73,6 +80,7 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
@@ -313,154 +321,194 @@ export const RulesTable: React.FC<RulesTableProps> = (_) => {
       tableColumns,
     );
 
-    return sorted.map((r: Rule, index) => (
-      <Tr key={`automatic-rule-${index}`}>
-        <Td key={`automatic-rule-enabled-${index}`} dataLabel={tableColumns[0].title}>
-          <Switch
-            aria-label={`${r.name} is enabled`}
-            className={'switch-toggle-' + String(r.enabled)}
-            isChecked={r.enabled}
-            onChange={(_event, state) => handleToggle(r, state)}
-          />
-        </Td>
-        <Td key={`automatic-rule-name-${index}`} dataLabel={tableColumns[1].title}>
-          {r.name}
-        </Td>
-        <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
-          {r.description || <EmptyText text={t('NO_DESCRIPTION', { ns: 'common' })} />}
-        </Td>
-        <Td key={`automatic-rule-matchExpression-${index}`} dataLabel={tableColumns[3].title}>
-          {r.matchExpression}
-        </Td>
-        <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
-          {r.eventSpecifier}
-        </Td>
-        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[5].title}>
-          {formatDuration(r.maxAgeSeconds)}
-        </Td>
-        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[6].title}>
-          {formatBytes(r.maxSizeBytes)}
-        </Td>
-        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[7].title}>
-          {formatDuration(r.archivalPeriodSeconds)}
-        </Td>
-        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[8].title}>
-          {formatDuration(r.initialDelaySeconds)}
-        </Td>
-        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[9].title}>
-          {r.preservedArchives}
-        </Td>
-        <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-          <ActionsColumn
-            items={actionResolver(r)}
-            popperProps={{
-              appendTo: () => document.getElementById('automated-rule-toolbar') || document.body,
-              position: 'right',
-            }}
-          />
-        </Td>
-      </Tr>
-    ));
-  }, [rules, sortBy, handleToggle, actionResolver, t, tableColumns]);
+    const reg = new RegExp(_.escapeRegExp(searchTerm), 'i');
+
+    return sorted
+      .filter((rule) => reg.test(rule.name) || reg.test(rule.description))
+      .map((r: Rule, index) => (
+        <Tr key={`automatic-rule-${index}`}>
+          <Td key={`automatic-rule-enabled-${index}`} dataLabel={tableColumns[0].title}>
+            <Switch
+              aria-label={`${r.name} is enabled`}
+              className={'switch-toggle-' + String(r.enabled)}
+              isChecked={r.enabled}
+              onChange={(_event, state) => handleToggle(r, state)}
+            />
+          </Td>
+          <Td key={`automatic-rule-name-${index}`} dataLabel={tableColumns[1].title}>
+            {r.name}
+          </Td>
+          <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
+            {r.description || <EmptyText text={t('NO_DESCRIPTION', { ns: 'common' })} />}
+          </Td>
+          <Td key={`automatic-rule-matchExpression-${index}`} width={25} dataLabel={tableColumns[3].title}>
+            <MatchExpressionDisplay matchExpression={r.matchExpression} />
+          </Td>
+          <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
+            {r.eventSpecifier}
+          </Td>
+          <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[5].title}>
+            {formatDuration(r.maxAgeSeconds)}
+          </Td>
+          <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[6].title}>
+            {formatBytes(r.maxSizeBytes)}
+          </Td>
+          <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[7].title}>
+            {formatDuration(r.archivalPeriodSeconds)}
+          </Td>
+          <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[8].title}>
+            {formatDuration(r.initialDelaySeconds)}
+          </Td>
+          <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[9].title}>
+            {r.preservedArchives}
+          </Td>
+          <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
+            <ActionsColumn
+              items={actionResolver(r)}
+              popperProps={{
+                appendTo: () => document.getElementById('automated-rule-toolbar') || document.body,
+                position: 'right',
+              }}
+            />
+          </Td>
+        </Tr>
+      ));
+  }, [rules, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
+
+  const toolbar = React.useMemo(
+    () => (
+      <Toolbar id="automated-rule-toolbar">
+        <ToolbarContent>
+          <ToolbarItem>
+            <SearchInput
+              placeholder={t('Rules.SEARCH_PLACEHOLDER')}
+              value={searchTerm}
+              onChange={(_event, value) => setSearchTerm(value)}
+              onClear={() => setSearchTerm('')}
+            />
+          </ToolbarItem>
+          <ToolbarItem variant="separator" />
+          <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
+            <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
+              {t('CREATE', { ns: 'common' })}
+            </Button>
+          </ToolbarItem>
+          <ToolbarItem key="upload">
+            <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
+              <UploadIcon />
+            </Button>
+          </ToolbarItem>
+          {ruleToWarn ? (
+            <RuleDeleteWarningModal
+              warningType={
+                ruleToWarn.type === 'DELETE'
+                  ? DeleteOrDisableWarningType.DeleteAutomatedRules
+                  : DeleteOrDisableWarningType.DisableAutomatedRules
+              }
+              ruleName={ruleToWarn.rule.name}
+              visible={warningModalOpen}
+              onAccept={handleWarningModalAccept}
+              onClose={handleWarningModalClose}
+              clean={cleanRuleEnabled}
+              setClean={setCleanRuleEnabled}
+            />
+          ) : null}
+        </ToolbarContent>
+      </Toolbar>
+    ),
+    [
+      t,
+      searchTerm,
+      setSearchTerm,
+      handleCreateRule,
+      handleUploadRule,
+      ruleToWarn,
+      warningModalOpen,
+      handleWarningModalAccept,
+      handleWarningModalClose,
+      cleanRuleEnabled,
+      setCleanRuleEnabled,
+    ],
+  );
 
   const viewContent = React.useMemo(() => {
+    let view: JSX.Element;
     if (isLoading) {
-      return <LoadingView />;
+      view = <LoadingView />;
     } else if (!rules.length) {
-      return (
+      view = (
         <>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText="No Automated Rules"
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <Bullseye>
+            <EmptyState>
+              <EmptyStateHeader
+                titleText={t('Rules.NO_RULES')}
+                icon={<EmptyStateIcon icon={SearchIcon} />}
+                headingLevel="h4"
+              />
+            </EmptyState>
+          </Bullseye>
         </>
       );
     } else {
-      return (
-        <InnerScrollContainer>
-          <Table aria-label="Automated Rules Table" variant={TableVariant.compact}>
-            <Thead>
-              <Tr>
-                {tableColumns.map(({ title, tooltip, sortable }, index) => (
-                  <Th
-                    key={`automatic-rule-header-${title}`}
-                    sort={sortable ? getSortParams(index) : undefined}
-                    info={
-                      tooltip
-                        ? {
-                            tooltip: tooltip,
-                          }
-                        : undefined
-                    }
-                  >
-                    {title}
-                  </Th>
-                ))}
-              </Tr>
-            </Thead>
-            <Tbody>{ruleRows}</Tbody>
-          </Table>
-        </InnerScrollContainer>
+      view = (
+        <Table aria-label="Automated Rules Table" isStickyHeader variant="compact">
+          <Thead>
+            <Tr>
+              {tableColumns.map(({ title, tooltip, sortable }, index) => (
+                <Th
+                  key={`automatic-rule-header-${title}`}
+                  sort={sortable ? getSortParams(index) : undefined}
+                  info={
+                    tooltip
+                      ? {
+                          tooltip: tooltip,
+                        }
+                      : undefined
+                  }
+                >
+                  {title}
+                </Th>
+              ))}
+              <Th key="table-header-actions" />
+            </Tr>
+          </Thead>
+          <Tbody>{ruleRows}</Tbody>
+        </Table>
       );
     }
-  }, [getSortParams, isLoading, rules, ruleRows, tableColumns]);
+    return (
+      <OuterScrollContainer className="rules-table-outer-container">
+        {toolbar}
+        <InnerScrollContainer className="rules-table-inner-container">{view}</InnerScrollContainer>
+      </OuterScrollContainer>
+    );
+  }, [getSortParams, isLoading, rules, ruleRows, tableColumns, toolbar, t]);
 
   return (
     <>
       <BreadcrumbPage pageTitle="Automated Rules">
-        <Card data-quickstart-id="about-rules">
-          <CardTitle>{t('Rules.ABOUT_TITLE')}</CardTitle>
-          <CardBody>
-            <Trans
-              t={t}
-              components={[
-                <Link to={'/recordings'} />,
-                <Link to={'/events'} />,
-                <Link to={'/security'} />,
-                <Link to={'/archives'} />,
-              ]}
-            >
-              Rules.ABOUT_BODY
-            </Trans>
-          </CardBody>
+        <Card isFullHeight>
+          <CardTitle>
+            {t('AUTOMATED_RULES', { ns: 'common' })}
+            <TextContent>
+              <Text component={TextVariants.small}>
+                <Trans
+                  t={t}
+                  components={[
+                    <Link to={'/recordings'} />,
+                    <Link to={'/events'} />,
+                    <Link to={'/security'} />,
+                    <Link to={'/archives'} />,
+                  ]}
+                >
+                  Rules.ABOUT_BODY
+                </Trans>
+              </Text>
+            </TextContent>
+          </CardTitle>
+          <CardBody isFilled>{viewContent}</CardBody>
         </Card>
-        <Card>
-          <CardBody>
-            <Toolbar id="automated-rule-toolbar">
-              <ToolbarContent>
-                <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
-                  <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
-                    {t('CREATE', { ns: 'common' })}
-                  </Button>
-                </ToolbarItem>
-                <ToolbarItem key="upload">
-                  <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
-                    <UploadIcon />
-                  </Button>
-                </ToolbarItem>
-                {ruleToWarn ? (
-                  <RuleDeleteWarningModal
-                    warningType={
-                      ruleToWarn.type === 'DELETE'
-                        ? DeleteOrDisableWarningType.DeleteAutomatedRules
-                        : DeleteOrDisableWarningType.DisableAutomatedRules
-                    }
-                    ruleName={ruleToWarn.rule.name}
-                    visible={warningModalOpen}
-                    onAccept={handleWarningModalAccept}
-                    onClose={handleWarningModalClose}
-                    clean={cleanRuleEnabled}
-                    setClean={setCleanRuleEnabled}
-                  />
-                ) : null}
-              </ToolbarContent>
-            </Toolbar>
-            {viewContent}
-          </CardBody>
-        </Card>
+        <></>
       </BreadcrumbPage>
       <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
     </>

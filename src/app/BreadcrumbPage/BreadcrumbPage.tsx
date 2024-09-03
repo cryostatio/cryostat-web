@@ -36,7 +36,7 @@ interface BreadcrumbPageProps {
 export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({ pageTitle, breadcrumbs, children }) => {
   return (
     <PageGroup>
-      <PageSection>
+      <PageSection isFilled>
         <Breadcrumb>
           {(breadcrumbs || []).map(({ title, path }) => (
             <BreadcrumbItem key={path}>

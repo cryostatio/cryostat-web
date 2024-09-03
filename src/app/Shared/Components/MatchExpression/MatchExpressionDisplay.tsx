@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ISortBy, ThProps } from '@patternfly/react-table';
+import { ClipboardCopy } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
-export const useSort = (): [ISortBy, (columnIndex: number) => ThProps['sort']] => {
-  const [sortBy, setSortBy] = React.useState<ISortBy>({});
-  const getSortParams = React.useCallback(
-    (columnIndex: number): ThProps['sort'] => ({
-      sortBy: sortBy,
-      onSort: (_event: React.MouseEvent, index, direction) => {
-        setSortBy({
-          index: index,
-          direction: direction,
-        });
-      },
-      columnIndex,
-    }),
-    [sortBy, setSortBy],
+export interface MatchExpressionDisplayProps {
+  matchExpression: string;
+}
+
+export const MatchExpressionDisplay: React.FC<MatchExpressionDisplayProps> = ({ matchExpression }) => {
+  const { t } = useTranslation();
+  return (
+    <ClipboardCopy
+      className="match-expression-display"
+      hoverTip={t('COPY', { ns: 'common' })}
+      clickTip={t('COPIED', { ns: 'common' })}
+      variant="inline-compact"
+      isBlock
+      isCode
+      isReadOnly
+    >
+      {matchExpression}
+    </ClipboardCopy>
   );
-  return [sortBy, getSortParams];
 };

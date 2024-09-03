@@ -17,6 +17,7 @@
 import { KeyValue } from '@app/Shared/Services/api.types';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import humanizeDuration from 'humanize-duration';
+import { TFunction } from 'i18next';
 import _ from 'lodash';
 import { NavigateFunction } from 'react-router-dom';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -185,7 +186,7 @@ export interface TableColumn {
   title: string;
   tooltip?: string;
   keyPaths?: string[];
-  transform?: (value: unknown, _rec: unknown) => unknown;
+  transform?: (value: unknown, _rec: unknown, t?: TFunction) => unknown;
   sortable?: boolean;
   width?: number;
 }
@@ -267,6 +268,3 @@ export const isAssetNew = (currVer: string) => {
   const oldVer: string = getFromLocalStorage('ASSET_VERSION', '0.0.0');
   return !semverValid(oldVer) || semverGt(currVer, oldVer);
 };
-
-export const includesSubstr = (a: string, b: string): boolean =>
-  !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
