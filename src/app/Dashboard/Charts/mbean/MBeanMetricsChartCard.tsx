@@ -124,8 +124,8 @@ const SimpleChart: React.FC<{
               style={{
                 fill:
                   cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-global--palette--black-200)'
-                    : 'var(--pf-chart-global--label--Fill, #151515)',
+                    ? 'var(--pf-v5-global--palette--black-200)'
+                    : 'var(--pf-v5-chart-global--label--Fill, #151515)',
               }}
             />
           }
@@ -151,8 +151,8 @@ const SimpleChart: React.FC<{
             style={{
               fill:
                 cryostatTheme === ThemeSetting.DARK
-                  ? 'var(--pf-global--palette--black-200)'
-                  : 'var(--pf-chart-global--label--Fill, #151515)',
+                  ? 'var(--pf-v5-global--palette--black-200)'
+                  : 'var(--pf-v5-chart-global--label--Fill, #151515)',
             }}
           />
         }
@@ -297,8 +297,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
               style={{
                 fill:
                   cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-global--palette--black-200)'
-                    : 'var(--pf-chart-donut--label--title--Fill, #151515)',
+                    ? 'var(--pf-v5-global--palette--black-200)'
+                    : 'var(--pf-v5-chart-donut--label--title--Fill, #151515)',
                 fontSize: '24px',
               }}
             />

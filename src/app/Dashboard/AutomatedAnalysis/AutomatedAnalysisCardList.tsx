@@ -50,19 +50,19 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
 
   const icon = React.useCallback((score: number): JSX.Element => {
     return score == AutomatedAnalysisScore.NA_SCORE ? (
-      <span className={css('pf-m-grey', 'pf-c-label__icon')}>
+      <span className={css('pf-m-grey', 'pf-v5-c-label__icon')}>
         <InfoCircleIcon />
       </span>
     ) : score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD ? (
-      <span className={css('pf-m-green', 'pf-c-label__icon')}>
+      <span className={css('pf-m-green', 'pf-v5-c-label__icon')}>
         <CheckCircleIcon />
       </span>
     ) : score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD ? (
-      <span className={css('pf-m-orange', 'pf-c-label__icon')}>
+      <span className={css('pf-m-orange', 'pf-v5-c-label__icon')}>
         <ExclamationTriangleIcon />
       </span>
     ) : (
-      <span className={css('pf-m-red', 'pf-c-label__icon')}>
+      <span className={css('pf-m-red', 'pf-v5-c-label__icon')}>
         <ExclamationCircleIcon />
       </span>
     );
