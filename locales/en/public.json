@@ -561,7 +561,8 @@
     "ARIA_LABELS": {
       "DARK_THEME": "dark-theme",
       "LIGHT_THEME": "light-theme"
-    },
+    }
+  },
   "TimePicker": {
     "12_H": "12Hr View",
     "24_H": "24Hr View"
