@@ -186,7 +186,7 @@ export class ApiService {
     credentials?: { username?: string; password?: string },
     storeCredentials = false,
     dryrun = false,
-  ): Observable<{ status: number; body: object }> {
+  ): Observable<boolean> {
     const form = new window.FormData();
     form.append('connectUrl', target.connectUrl);
     if (target.alias && target.alias.trim()) {
@@ -206,14 +206,9 @@ export class ApiService {
       true,
     ).pipe(
       first(),
-      concatMap((resp) => resp.json().then((body) => ({ status: resp.status, body: body as object }))),
-      catchError((err: Error) => {
-        if (isHttpError(err)) {
-          return from(
-            err.httpResponse.json().then((body) => ({ status: err.httpResponse.status, body: body as object })),
-          );
-        }
-        return of({ status: 0, body: { data: { reason: err.message } } }); // Status 0 -> request is not completed
+      map((resp) => resp.ok),
+      catchError((_) => {
+        return of(false);
       }),
     );
   }
@@ -1144,7 +1139,6 @@ export class ApiService {
     ).pipe(
       first(),
       concatMap((resp: Response) => resp.json()),
-      map((body): Target[] => body.data.result.targets || []),
     );
   }
 
@@ -1250,7 +1244,7 @@ export class ApiService {
       first(),
       concatMap((resp) => resp.json()),
       map((body) => {
-        const result: string | undefined = body?.data?.result;
+        const result: string | undefined = body;
         switch (result?.toUpperCase()) {
           case 'FAILURE':
             return { error: new Error('Invalid username or password.'), severeLevel: ValidatedOptions.error };
@@ -1562,12 +1556,7 @@ export class ApiService {
       } else {
         Promise.resolve(error.xmlHttpResponse.body as string).then((detail) => {
           if (!suppressNotifications) {
-            try {
-              const body = JSON.parse(detail).data.reason;
-              this.notifications.danger(title, body);
-            } catch {
-              this.notifications.danger(title, detail);
-            }
+            this.notifications.danger(title, detail);
           }
         });
       }
