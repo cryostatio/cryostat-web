@@ -104,6 +104,7 @@ export interface TopologyFilters {
   targetFilters: {
     category: string;
     filters: {
+      Agent: string[];
       Alias: string[];
       ConnectionUrl: string[];
       JvmId: string[];
@@ -119,6 +120,8 @@ export const categoryToNodeField = (filterCategory: string): keyof EnvironmentNo
       return 'name';
     case 'Label':
       return 'labels';
+    case 'Agent':
+      return 'agent';
     case 'Annotation':
       return 'annotations';
     case 'JvmId':
@@ -139,6 +142,7 @@ export const defaultEmptyGroupFilters = {
 
 export const defaultEmptyTargetFilters = {
   // Below will be taken from node.target
+  Agent: [],
   Alias: [],
   ConnectionUrl: [],
   JvmId: [],
