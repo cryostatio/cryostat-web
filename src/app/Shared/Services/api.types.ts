@@ -22,6 +22,13 @@ export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' 
 // ======================================
 // Common Resources
 // ======================================
+
+export interface BuildInfo {
+  git: {
+    hash: string;
+  };
+}
+
 export interface KeyValue {
   key: string;
   value: string;
@@ -106,7 +113,7 @@ export class XMLHttpError extends Error {
   }
 }
 
-export type TargetStub = Omit<Target, 'jvmId' | 'labels' | 'annotations'>;
+export type TargetStub = Omit<Target, 'agent' | 'jvmId' | 'labels' | 'annotations'>;
 
 export type TargetForTest = Pick<Target, 'alias' | 'connectUrl'> & {
   labels: object;
@@ -126,6 +133,7 @@ export interface GrafanaDatasourceUrlGetResponse {
 
 export interface HealthGetResponse {
   cryostatVersion: string;
+  build: BuildInfo;
   datasourceConfigured: boolean;
   datasourceAvailable: boolean;
   dashboardConfigured: boolean;
@@ -472,6 +480,7 @@ export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this Reco
 export interface Target {
   id?: number; // present in responses but we must not include it in requests to create targets
   jvmId?: string; // present in responses, but we do not need to provide it in requests
+  agent: boolean;
   connectUrl: string;
   alias: string;
   labels: KeyValue[];

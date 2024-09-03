@@ -23,6 +23,7 @@ import { of } from 'rxjs';
 import { render, testT } from '../../utils';
 
 const mockTarget = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someUrl',
   alias: 'fooTarget',
   jvmId: 'foo',

@@ -51,6 +51,7 @@ jest.mock('@app/TargetView/TargetView', () => {
 });
 
 const mockFooTarget: Target = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someFooUrl',
   alias: 'fooTarget',
   labels: [],

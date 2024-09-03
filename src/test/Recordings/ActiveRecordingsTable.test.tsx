@@ -34,6 +34,7 @@ import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
 const mockTarget = {
+  agent: false,
   connectUrl: mockConnectUrl,
   alias: 'fooTarget',
   jvmId: mockJvmId,

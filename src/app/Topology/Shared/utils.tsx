@@ -120,6 +120,9 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
     return true;
   }
   let matched = true;
+  if (filters.Agent && filters.Agent.length) {
+    matched = matched && filters.Agent.includes(target.agent.toString());
+  }
   if (filters.Alias && filters.Alias.length) {
     matched = matched && filters.Alias.includes(target.alias);
   }

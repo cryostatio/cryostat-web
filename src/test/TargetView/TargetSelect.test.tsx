@@ -33,6 +33,7 @@ const cryostatAnnotation = [
   },
 ];
 const mockFooTarget: Target = {
+  agent: false,
   jvmId: 'abcd',
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',

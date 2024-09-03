@@ -43,6 +43,7 @@ import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecording
   notification handling in the ArchivedRecordingsTable.
 */
 export const uploadAsTarget: Target = {
+  agent: false,
   connectUrl: UPLOADS_SUBDIRECTORY,
   alias: '',
   labels: [],

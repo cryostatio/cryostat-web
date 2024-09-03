@@ -28,6 +28,7 @@ import { of } from 'rxjs';
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 
 const mockFooTarget: Target = {
+  agent: false,
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
   labels: [],

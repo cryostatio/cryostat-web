@@ -32,6 +32,7 @@ export const indexOfDirectory = (arr: RecordingDirectory[], dir: RecordingDirect
 
 export const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
   return {
+    agent: dir.connectUrl.startsWith('http'),
     connectUrl: dir.connectUrl,
     alias: dir.jvmId,
     labels: [],

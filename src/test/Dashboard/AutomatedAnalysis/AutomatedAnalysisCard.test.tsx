@@ -41,6 +41,7 @@ jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
 });
 
 const mockTarget = {
+  agent: false,
   connectUrl: 'service:jmx:rmi://someUrl',
   alias: 'fooTarget',
   jvmId: 'foo',

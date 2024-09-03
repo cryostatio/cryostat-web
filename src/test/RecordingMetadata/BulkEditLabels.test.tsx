@@ -35,6 +35,7 @@ jest.mock('@patternfly/react-core', () => ({
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
 const mockTarget: Target = {
+  agent: false,
   connectUrl: mockConnectUrl,
   alias: 'fooTarget',
   jvmId: mockJvmId,
