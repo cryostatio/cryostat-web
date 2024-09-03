@@ -56,30 +56,34 @@ export interface JFRMetricsChartCardProps extends DashboardCardTypeProps {
 
 // TODO these need to be localized
 export enum JFRMetricsChartKind {
-  'Core Count' = 1,
-  'Thread Count' = 2,
-  'CPU Load' = 3,
-  'Heap Usage' = 4,
-  'Memory Usage' = 5,
-  'Total Memory' = 6,
-  'Recording Start Time' = 7,
-  'Recording Duration' = 8,
-  'Classloading Statistics' = 9,
-  'Metaspace Summary' = 10,
-  'Network Utilization' = 11,
-  'Metaspace GC Threshold' = 12,
-  'Thread Statistics' = 13,
-  'Exception Statistics' = 14,
-  'Thread Context Switch Rate' = 15,
-  'Compiler Statistics' = 16,
+  'Recording Duration' = 2,
+  'Recording Start Time' = 3,
 
-  'Safepoint Duration' = 18,
-  'File I/O' = 19,
-  'Compiler Total Time' = 20,
+  'Core Count' = 5,
+  'Thread Count' = 6,
+  'Total Memory' = 7,
+  'CPU Load' = 8,
+  'Memory Usage' = 9,
+
+  'Network Utilization' = 11,
+
+  'File I/O' = 13,
+
+  'Thread Statistics' = 15,
+  'Thread Context Switch Rate' = 16,
+
+  'Heap Usage' = 18,
+  'Object Allocation Sample' = 19,
+  'Safepoint Duration' = 20,
+  'Metaspace Summary' = 21,
+  'Metaspace GC Threshold' = 22,
 
   'Compiler Peak Time' = 24,
+  'Compiler Total Time' = 25,
+  'Compiler Statistics' = 26,
 
-  'Object Allocation Sample' = 38,
+  'Classloading Statistics' = 28,
+  'Exception Statistics' = 29,
 }
 
 export function kindToId(kind: string): number {
