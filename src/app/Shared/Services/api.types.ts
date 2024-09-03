@@ -58,22 +58,6 @@ export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata 
   return (metadata as TargetMetadata).annotations !== undefined;
 }
 
-export interface ApiV2Response {
-  meta: {
-    status: string;
-    type: string;
-  };
-  data: unknown;
-}
-
-export interface AssetJwtResponse extends ApiV2Response {
-  data: {
-    result: {
-      resourceUrl: string;
-    };
-  };
-}
-
 export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
 
 export interface XMLHttpResponse {
@@ -146,13 +130,6 @@ export interface HealthGetResponse {
 // ======================================
 // Auth Resources
 // ======================================
-export interface AuthV2Response extends ApiV2Response {
-  data: {
-    result: {
-      username: string;
-    };
-  };
-}
 
 // ======================================
 // MBean metric resources
@@ -289,12 +266,6 @@ export interface ActiveRecordingsFilterInput {
  */
 export const UPLOADS_SUBDIRECTORY = 'uploads';
 
-export interface RecordingResponse extends ApiV2Response {
-  data: {
-    result: ActiveRecording;
-  };
-}
-
 export interface RecordingCountResponse {
   data: {
     targetNodes: {
@@ -323,18 +294,6 @@ export interface MatchedCredential {
   targets: Target[];
 }
 
-export interface CredentialResponse extends ApiV2Response {
-  data: {
-    result: MatchedCredential;
-  };
-}
-
-export interface CredentialsResponse extends ApiV2Response {
-  data: {
-    result: StoredCredential[];
-  };
-}
-
 // ======================================
 // Agent-related resources
 // ======================================
@@ -359,18 +318,6 @@ export interface EventProbe {
   fields: string;
 }
 
-export interface ProbeTemplateResponse extends ApiV2Response {
-  data: {
-    result: ProbeTemplate[];
-  };
-}
-
-export interface EventProbesResponse extends ApiV2Response {
-  data: {
-    result: EventProbe[];
-  };
-}
-
 // ======================================
 // Rule resources
 // ======================================
@@ -385,18 +332,6 @@ export interface Rule {
   preservedArchives: number;
   maxAgeSeconds: number;
   maxSizeBytes: number;
-}
-
-export interface RulesResponse extends ApiV2Response {
-  data: {
-    result: Rule[];
-  };
-}
-
-export interface RuleResponse extends ApiV2Response {
-  data: {
-    result: Rule;
-  };
 }
 
 // ======================================

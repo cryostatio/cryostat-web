@@ -39,22 +39,15 @@ import {
   Rule,
   RecordingAttributes,
   ActiveRecording,
-  RecordingResponse,
   ApiVersion,
   ProbeTemplate,
-  ProbeTemplateResponse,
   EventProbe,
-  EventProbesResponse,
   Recording,
   EventTemplate,
-  RuleResponse,
   ArchivedRecording,
   UPLOADS_SUBDIRECTORY,
   MatchedCredential,
-  CredentialResponse,
   StoredCredential,
-  CredentialsResponse,
-  RulesResponse,
   EnvironmentNode,
   ActiveRecordingsFilterInput,
   RecordingCountResponse,
@@ -400,8 +393,7 @@ export class ApiService {
         this.sendRequest('v4', `targets/${encodeURIComponent(target?.connectUrl || '')}/snapshot`, {
           method: 'POST',
         }).pipe(
-          concatMap((resp) => resp.json() as Promise<RecordingResponse>),
-          map((response) => response.data.result),
+          concatMap((resp) => resp.json() as Promise<ActiveRecording>),
           catchError((_) => of(undefined)),
           first(),
         ),
@@ -769,7 +761,6 @@ export class ApiService {
   getProbeTemplates(): Observable<ProbeTemplate[]> {
     return this.sendRequest('v4', 'probes', { method: 'GET' }).pipe(
       concatMap((resp) => resp.json()),
-      map((response: ProbeTemplateResponse) => response.data.result),
       first(),
     );
   }
@@ -787,7 +778,6 @@ export class ApiService {
           suppressNotifications,
         ).pipe(
           concatMap((resp) => resp.json()),
-          map((response: EventProbesResponse) => response.data.result),
           first(),
         ),
       ),
@@ -810,7 +800,6 @@ export class ApiService {
       skipStatusCheck,
     ).pipe(
       concatMap((resp) => resp.json()),
-      map((response: EventProbesResponse) => response.data.result),
       first(),
     );
   }
@@ -877,11 +866,8 @@ export class ApiService {
   }
 
   downloadRule(name: string): void {
-    this.doGet<RuleResponse>('rules/' + name, 'v4')
-      .pipe(
-        first(),
-        map((resp) => resp.data.result),
-      )
+    this.doGet<Rule>('rules/' + name, 'v4')
+      .pipe(first())
       .subscribe((rule) => {
         const filename = `${rule.name}.json`;
         const file = new File([JSON.stringify(rule)], filename);
@@ -1081,7 +1067,6 @@ export class ApiService {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
-      map((response: CredentialResponse) => response.data.result),
       first(),
     );
   }
@@ -1098,7 +1083,6 @@ export class ApiService {
       skipStatusCheck,
     ).pipe(
       concatMap((resp) => resp.json()),
-      map((response: CredentialsResponse) => response.data.result),
       first(),
     );
   }
@@ -1124,7 +1108,6 @@ export class ApiService {
       skipStatusCheck,
     ).pipe(
       concatMap((resp) => resp.json()),
-      map((response: RulesResponse) => response.data.result),
       first(),
     );
   }

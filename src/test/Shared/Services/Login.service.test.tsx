@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiV2Response } from '@app/Shared/Services/api.types';
 import { LoginService } from '@app/Shared/Services/Login.service';
 import { SessionState } from '@app/Shared/Services/service.types';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
@@ -69,326 +68,80 @@ describe('Login.service', () => {
       jest.restoreAllMocks();
     });
 
-    describe('with Basic AuthMethod', () => {
-      beforeEach(async () => {
-        const initAuthResp = createResponse(401, false, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
-          meta: {
-            type: 'text/plain',
-            status: 'Unauthorized',
+    beforeEach(async () => {
+      const initAuthResp = createResponse(401, false, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
+        meta: {
+          type: 'text/plain',
+          status: 'Unauthorized',
+        },
+        data: {
+          reason: 'HTTP Authorization Failure',
+        },
+      });
+      const authResp = createResponse(200, true, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
+        meta: {
+          type: 'application/json',
+          status: 'OK',
+        },
+        data: {
+          result: {
+            username: 'user',
           },
-          data: {
-            reason: 'HTTP Authorization Failure',
-          },
-        });
-        const authResp = createResponse(200, true, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
-          meta: {
-            type: 'application/json',
-            status: 'OK',
-          },
-          data: {
-            result: {
-              username: 'user',
-            },
-          },
-        });
-        const logoutResp = createResponse(200, true);
-        mockFromFetch
-          .mockReturnValueOnce(of(initAuthResp))
-          .mockReturnValueOnce(of(authResp))
-          .mockReturnValueOnce(of(logoutResp));
-        window.location.href = 'https://example.com/';
-        location.href = window.location.href;
-        svc = new LoginService(settingsSvc);
+        },
       });
+      const logoutResp = createResponse(200, true);
+      mockFromFetch
+        .mockReturnValueOnce(of(initAuthResp))
+        .mockReturnValueOnce(of(authResp))
+        .mockReturnValueOnce(of(logoutResp));
+      window.location.href = 'https://example.com/';
+      location.href = window.location.href;
+      svc = new LoginService(settingsSvc);
+    });
 
-      xit('should emit true', async () => {
-        const result = await firstValueFrom(svc.setLoggedOut());
-        expect(result).toBeTruthy();
+    it('should emit true', async () => {
+      const result = await firstValueFrom(svc.setLoggedOut());
+      expect(result).toBeTruthy();
+    });
+
+    it('should make expected API calls', async () => {
+      await firstValueFrom(svc.setLoggedOut());
+      expect(mockFromFetch).toHaveBeenCalledTimes(2);
+      expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v4/auth`, {
+        credentials: 'include',
+        mode: 'cors',
+        method: 'POST',
+        body: null,
       });
-
-      it('should make expected API calls', async () => {
-        await firstValueFrom(svc.setLoggedOut());
-        expect(mockFromFetch).toHaveBeenCalledTimes(2);
-        expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v4/auth`, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'POST',
-          body: null,
-        });
-        expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v4/logout`, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'POST',
-          body: null,
-        });
-      });
-
-      it('should emit logged-out', async () => {
-        await firstValueFrom(svc.setLoggedOut());
-        await firstValueFrom(svc.loggedOut().pipe(timeout({ first: 1000 })));
-      });
-
-      it('should reset session state', async () => {
-        const beforeState = await firstValueFrom(svc.getSessionState());
-        expect(beforeState).toEqual(SessionState.CREATING_USER_SESSION);
-        await firstValueFrom(svc.setLoggedOut());
-        const afterState = await firstValueFrom(svc.getSessionState());
-        expect(afterState).toEqual(SessionState.NO_USER_SESSION);
-      });
-
-      it('should redirect to login page', async () => {
-        await firstValueFrom(svc.setLoggedOut());
-        expect(window.location.href).toEqual('/');
+      expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v4/logout`, {
+        credentials: 'include',
+        mode: 'cors',
+        method: 'POST',
+        body: null,
       });
     });
 
-    xdescribe('with Bearer AuthMethod', () => {
-      let authResp: Response;
-      let logoutResp: Response;
-      let authRedirectResp: Response;
-      let submitSpy: jest.SpyInstance;
+    it('should emit logged-out', async () => {
+      await firstValueFrom(svc.setLoggedOut());
+      await firstValueFrom(svc.loggedOut().pipe(timeout({ first: 1000 })));
+    });
 
-      beforeEach(async () => {
-        authResp = createResponse(200, true, new Headers({ 'X-WWW-Authenticate': 'Bearer' }), {
-          meta: {
-            type: 'application/json',
-            status: 'OK',
-          },
-          data: {
-            result: {
-              username: 'kube:admin',
-            },
-          },
-        });
-        logoutResp = createResponse(
-          302,
-          true,
-          new Headers({
-            'X-Location': 'https://oauth-server.example.com/logout',
-            'access-control-expose-headers': 'Location',
-          }),
-        );
-        authRedirectResp = createResponse(
-          302,
-          true,
-          new Headers({
-            'X-Location':
-              'https://oauth-server.example.com/oauth/authorize?client_id=system%3Aserviceaccount%3Amy-namespace%3Amy-cryostat&response_type=token&response_mode=fragment&scope=user%3Acheck-access+role%3Acryostat-operator-oauth-client%3Amy-namespace',
-            'access-control-expose-headers': 'Location',
-          }),
-          {
-            meta: {
-              type: 'application/json',
-              status: 'Found',
-            },
-            data: {
-              result: undefined,
-            },
-          },
-        );
-        // Submit is unimplemented in JSDOM
-        submitSpy = jest.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation();
+    it('should reset session state', async () => {
+      const beforeState = await firstValueFrom(svc.getSessionState());
+      expect(beforeState).toEqual(SessionState.CREATING_USER_SESSION);
+      await firstValueFrom(svc.setLoggedOut());
+      const afterState = await firstValueFrom(svc.getSessionState());
+      expect(afterState).toEqual(SessionState.NO_USER_SESSION);
+    });
 
-        mockFromFetch.mockReturnValueOnce(of(authResp));
-        const token = 'sha256~helloworld';
-        window.location.href = 'https://example.com/#token_type=Bearer&access_token=' + token;
-        location.hash = 'token_type=Bearer&access_token=' + token;
-        svc = new LoginService(settingsSvc);
-        expect(mockFromFetch).toBeCalledTimes(1);
-      });
-
-      describe('with no errors', () => {
-        beforeEach(async () => {
-          mockFromFetch.mockReturnValueOnce(of(logoutResp)).mockReturnValueOnce(of(authRedirectResp));
-        });
-
-        it('should emit true', async () => {
-          const result = await firstValueFrom(svc.setLoggedOut());
-          expect(result).toBeTruthy();
-        });
-
-        it('should make expected API calls', async () => {
-          await firstValueFrom(svc.setLoggedOut());
-          expect(mockFromFetch).toHaveBeenCalledTimes(3);
-          expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v4/auth`, {
-            credentials: 'include',
-            mode: 'cors',
-            method: 'POST',
-            body: null,
-            headers: new Headers({
-              Authorization: `Bearer c2hhMjU2fmhlbGxvd29ybGQ`,
-            }),
-          });
-          expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v4/logout`, {
-            credentials: 'include',
-            mode: 'cors',
-            method: 'POST',
-            body: null,
-            headers: new Headers({
-              Authorization: `Bearer c2hhMjU2fmhlbGxvd29ybGQ`,
-            }),
-          });
-          expect(mockFromFetch).toHaveBeenNthCalledWith(3, `./api/v4/auth`, {
-            credentials: 'include',
-            mode: 'cors',
-            method: 'POST',
-            body: null,
-          });
-        });
-
-        it('should submit a form to the OAuth server', async () => {
-          await firstValueFrom(svc.setLoggedOut());
-          const rawForm = document.getElementById('logoutForm');
-          expect(rawForm).toBeInTheDocument();
-          expect(rawForm).toBeInstanceOf(HTMLFormElement);
-          const form = rawForm as HTMLFormElement;
-          expect(form.action).toEqual('https://oauth-server.example.com/logout');
-          expect(form.method.toUpperCase()).toEqual('POST');
-
-          expect(form.childElementCount).toBe(1);
-          const rawInput = form.firstChild;
-          expect(rawInput).toBeInstanceOf(HTMLInputElement);
-          const input = rawInput as HTMLInputElement;
-          expect(input.value).toEqual(
-            '/oauth/authorize?client_id=system%3Aserviceaccount%3Amy-namespace%3Amy-cryostat&response_type=token&response_mode=fragment&scope=user%3Acheck-access+role%3Acryostat-operator-oauth-client%3Amy-namespace',
-          );
-          expect(input.name).toEqual('then');
-          expect(input.type).toEqual('hidden');
-
-          expect(document.body).toContainElement(form);
-          expect(submitSpy).toHaveBeenCalled();
-        });
-
-        it('should emit logged-out', async () => {
-          await firstValueFrom(svc.setLoggedOut());
-          await firstValueFrom(svc.loggedOut().pipe(timeout({ first: 1000 })));
-        });
-
-        it('should reset session state', async () => {
-          const beforeState = await firstValueFrom(svc.getSessionState());
-          expect(beforeState).toEqual(SessionState.CREATING_USER_SESSION);
-          await firstValueFrom(svc.setLoggedOut());
-          const afterState = await firstValueFrom(svc.getSessionState());
-          expect(afterState).toEqual(SessionState.NO_USER_SESSION);
-        });
-      });
-
-      describe('with errors', () => {
-        let logSpy: jest.SpyInstance;
-        beforeEach(() => {
-          logSpy = jest.spyOn(window.console, 'error').mockImplementation();
-        });
-
-        describe('backend logout returns non-302 response', () => {
-          beforeEach(() => {
-            const badLogoutResp = createResponse(
-              200,
-              true,
-              new Headers({
-                'X-Location': 'https://oauth-server.example.com/logout',
-                'access-control-expose-headers': 'Location',
-              }),
-            );
-            mockFromFetch.mockReturnValueOnce(of(badLogoutResp)).mockReturnValueOnce(of(authRedirectResp));
-          });
-
-          it('should fail to log out', async () => {
-            const result = await firstValueFrom(svc.setLoggedOut());
-            expect(result).toBeFalsy();
-            expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth logout endpoint"'),
-            );
-          });
-        });
-
-        describe('backend logout returns 302 response without X-Location header', () => {
-          beforeEach(() => {
-            const badLogoutResp = createResponse(
-              302,
-              true,
-              new Headers({
-                'access-control-expose-headers': 'Location',
-              }),
-            );
-            mockFromFetch.mockReturnValueOnce(of(badLogoutResp)).mockReturnValueOnce(of(authRedirectResp));
-          });
-
-          it('should fail to log out', async () => {
-            const result = await firstValueFrom(svc.setLoggedOut());
-            expect(result).toBeFalsy();
-            expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth logout endpoint"'),
-            );
-          });
-        });
-
-        describe('backend auth returns non-302 response', () => {
-          beforeEach(() => {
-            const badAuthRedirectResp = createResponse(
-              200,
-              true,
-              new Headers({
-                'X-Location':
-                  'https://oauth-server.example.com/oauth/authorize?client_id=system%3Aserviceaccount%3Amy-namespace%3Amy-cryostat&response_type=token&response_mode=fragment&scope=user%3Acheck-access+role%3Acryostat-operator-oauth-client%3Amy-namespace',
-                'access-control-expose-headers': 'Location',
-              }),
-              {
-                meta: {
-                  type: 'application/json',
-                  status: 'OK',
-                },
-                data: {
-                  result: undefined,
-                },
-              },
-            );
-            mockFromFetch.mockReturnValueOnce(of(logoutResp)).mockReturnValueOnce(of(badAuthRedirectResp));
-          });
-
-          it('should fail to log out', async () => {
-            const result = await firstValueFrom(svc.setLoggedOut());
-            expect(result).toBeFalsy();
-            expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth login endpoint"'),
-            );
-          });
-        });
-
-        describe('backend auth returns 302 response without X-Location header', () => {
-          beforeEach(() => {
-            const badAuthRedirectResp = createResponse(
-              302,
-              true,
-              new Headers({
-                'access-control-expose-headers': 'Location',
-              }),
-              {
-                meta: {
-                  type: 'application/json',
-                  status: 'Found',
-                },
-                data: {
-                  result: undefined,
-                },
-              },
-            );
-            mockFromFetch.mockReturnValueOnce(of(logoutResp)).mockReturnValueOnce(of(badAuthRedirectResp));
-          });
-
-          it('should fail to log out', async () => {
-            const result = await firstValueFrom(svc.setLoggedOut());
-            expect(result).toBeFalsy();
-            expect(logSpy).toHaveBeenCalledWith(
-              expect.stringContaining('"message":"Could not find OAuth login endpoint"'),
-            );
-          });
-        });
-      });
+    it('should redirect to login page', async () => {
+      await firstValueFrom(svc.setLoggedOut());
+      expect(window.location.href).toEqual('/');
     });
   });
 });
 
-function createResponse(status: number, ok: boolean, headers?: Headers, jsonBody?: ApiV2Response): Response {
+function createResponse(status: number, ok: boolean, headers?: Headers, jsonBody?: any): Response {
   return {
     status: status,
     ok: ok,
