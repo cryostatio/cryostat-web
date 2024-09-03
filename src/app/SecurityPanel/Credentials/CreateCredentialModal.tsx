@@ -45,6 +45,7 @@ import {
 } from '@patternfly/react-core';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { catchError, combineLatest, distinctUntilChanged, interval, map, of, switchMap, tap } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
 import { TestRequest } from './types';
@@ -62,6 +63,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
   onPropsSave,
   ...props
 }) => {
+  const { t } = useTranslation();
   const matchExpreRef = React.useRef(new MatchExpressionService());
   const loadingRef = React.useRef(new StreamOf(false));
   const credentialRef = React.useRef(new StreamOf<AuthCredential>({ username: '', password: '' }));
@@ -76,15 +78,14 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
 
   return (
     <Modal
-      appendTo={portalRoot}
       isOpen={visible}
       tabIndex={0} // enable keyboard-accessible scrolling
       variant={ModalVariant.large}
       showClose={!inProgress}
       className="add-credential-modal"
       onClose={onDismiss}
-      title="Store Credentials"
-      description="Create Stored Credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
+      title={t('CreateCredentialModal.MODAL_TITLE')}
+      description={t('CreateCredentialModal.MODAL_DESCRIPTION')}
     >
       <SearchExprServiceContext.Provider value={matchExpreRef.current}>
         <CredentialContext.Provider value={credentialRef.current}>
@@ -122,6 +123,7 @@ interface AuthFormProps extends Omit<CreateCredentialModalProps, 'visible'> {
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, progressChange, ...props }) => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const matchExprService = useMatchExpressionSvc();
@@ -133,7 +135,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   const [isDisabled, setIsDisabled] = React.useState(false);
   const [evaluating, setEvaluating] = React.useState(false);
 
-  const [sampleTarget, setSampleTarget] = React.useState<Target>();
+  const [sampleTarget, setSampleTarget] = React.useState<Target | undefined>();
 
   const onSave = React.useCallback(
     (username: string, password: string) => {
@@ -159,7 +161,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             setMatchExpressionValid(ValidatedOptions.default);
           },
         }),
-        context.targets.targets().pipe(tap((ts) => setSampleTarget(ts[0]))),
+        context.targets.targets().pipe(tap((ts) => (ts && ts.length > 0 ? setSampleTarget(ts[0]) : undefined))),
       ])
         .pipe(
           switchMap(([input, targets]) =>
@@ -216,31 +218,25 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       {...props}
       onSave={onSave}
       onDismiss={onDismiss}
-      focus={false}
       loading={saving}
       isDisabled={isDisabled}
       onCredentialChange={setCredential}
     >
       <FormGroup
-        label="Match Expression"
+        label={t('MATCH_EXPRESSION', { ns: 'common' })}
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match Expression hint"
+            headerContent={t('CreateCredentialModal.MATCH_EXPRESSION_HINT_MODAL_HEADER')}
             bodyContent={
               <>
-                Try an expression like:
+                {t('CreateCredentialModal.MATCH_EXPRESSION_HINT_BODY')}
                 <MatchExpressionHint target={sampleTarget} />
               </>
             }
             hasAutoWidth
           >
-            <Button
-              variant="plain"
-              aria-label="More info for Match Expression field"
-              onClick={(e) => e.preventDefault()}
-              className="pf-c-form__group-label-help"
-            >
+            <Button variant="plain" aria-label={t('CreateCredentialModal.ARIA_LABELS.HELPER_ICON')}>
               <HelpIcon />
             </Button>
           </Popover>
@@ -253,8 +249,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           isDisabled={isDisabled}
           isRequired
           type="text"
-          id="rule-matchexpr"
-          aria-describedby="rule-matchexpr-helper"
+          id="matchexpr"
+          aria-describedby="matchexpr-helper"
           onChange={(_event, v) => {
             setMatchExpressionInput(v);
             matchExprService.setSearchExpression(v);
@@ -268,12 +264,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           <HelperText>
             <HelperTextItem variant={matchExpressionValid}>
               {evaluating
-                ? 'Evaluating Match Expression...'
+                ? t('CreateCredentialModal.EVALUATING_EXPRESSION')
                 : matchExpressionValid === ValidatedOptions.warning
-                ? `Warning: Match Expression matches no targets.`
+                ? t('CreateCredentialModal.WARNING_NO_MATCH')
                 : matchExpressionValid === ValidatedOptions.error
-                ? 'The expression matching failed.'
-                : `Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.`}
+                ? t('CreateCredentialModal.FAILING_EVALUATION')
+                : t('CreateCredentialModal.MATCH_EXPRESSION_HELPER_TEXT')}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
@@ -285,6 +281,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
 type _SupportedTab = 'visualizer' | 'test';
 
 export const FormHelper: React.FC = ({ ...props }) => {
+  const { t } = useTranslation();
   const alertOptions = React.useMemo(() => ({ hideActions: true }), []);
   const [activeTab, setActiveTab] = React.useState<_SupportedTab>('visualizer');
 
@@ -302,7 +299,7 @@ export const FormHelper: React.FC = ({ ...props }) => {
             <TabTitleIcon>
               <TopologyIcon />
             </TabTitleIcon>
-            <TabTitleText>Visualizer</TabTitleText>
+            <TabTitleText>{t('CreateCredentialModal.VISUALIZER')}</TabTitleText>
           </>
         }
       >
@@ -317,7 +314,7 @@ export const FormHelper: React.FC = ({ ...props }) => {
             <TabTitleIcon>
               <FlaskIcon />
             </TabTitleIcon>
-            <TabTitleText>Test</TabTitleText>
+            <TabTitleText>{t('TEST', { ns: 'common' })}</TabTitleText>
           </>
         }
       >

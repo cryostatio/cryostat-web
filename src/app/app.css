@@ -615,6 +615,14 @@ body,
   height: 90%;
 }
 
+.credentials-table-outer-container {
+  height: 60vh;
+}
+
+.credentials-table-inner-container {
+  height: 100%;
+}
+
 .overflow-auto {
   overflow: auto;
 }

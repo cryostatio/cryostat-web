@@ -16,30 +16,34 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { StoredCredentialsCard } from './Credentials/StoredCredentials';
 import { ListCertificates } from './ImportCertificate';
 
 export interface SecurityPanelProps {}
 
 export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
+  const { t } = useTranslation();
   const securityCards = [ListCertificates, StoredCredentialsCard].map((c) => ({
     key: c.key,
-    title: c.title,
-    description: c.description,
+    title: c.title(t),
+    description: c.description(t),
     element: React.createElement(c.content, null),
+    isFullHeight: c.isFilled,
   }));
 
   return (
     <BreadcrumbPage pageTitle="Security">
       {securityCards.map((s) => (
-        <Card key={s.key}>
+        <Card key={s.key} isFullHeight={s.isFullHeight}>
           <CardTitle>
             <Text component={TextVariants.h1}>{s.title}</Text>
             {s.description}
           </CardTitle>
-          <CardBody>{s.element}</CardBody>
+          <CardBody isFilled>{s.element}</CardBody>
         </Card>
       ))}
+      <></>
     </BreadcrumbPage>
   );
 };

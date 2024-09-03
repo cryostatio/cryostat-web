@@ -17,13 +17,13 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { StoredCredential, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources, portalRoot } from '@app/utils/utils';
 import {
-  Badge,
   Button,
   Checkbox,
   EmptyState,
@@ -32,9 +32,6 @@ import {
   Text,
   TextContent,
   TextVariants,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
   EmptyStateHeader,
   Dropdown,
   DropdownList,
@@ -42,10 +39,30 @@ import {
   MenuToggleElement,
   MenuToggle,
   MenuToggleCheckbox,
+  Icon,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  ToolbarGroup,
+  SearchInput,
+  Bullseye,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
-import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ContainerNodeIcon, OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
+import {
+  ExpandableRowContent,
+  InnerScrollContainer,
+  OuterScrollContainer,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
+import { TFunction } from 'i18next';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { forkJoin } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
@@ -170,18 +187,20 @@ const tableColumns: TableColumn[] = [
     title: 'Match Expression',
     keyPaths: ['matchExpression'],
     sortable: true,
+    width: 80,
   },
   {
     title: 'Matches',
     keyPaths: ['numMatchingTargets'],
     sortable: true,
+    width: 10,
   },
 ];
 
-const tableTitle = 'Stored Credentials';
-
 export const StoredCredentials = () => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [state, dispatch] = React.useReducer(reducer, {
     credentials: [] as StoredCredential[],
     expandedCredentials: [] as StoredCredential[],
@@ -192,7 +211,7 @@ export const StoredCredentials = () => {
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
-  const addSubscription = useSubscriptions();
+  const [searchText, setSearchText] = React.useState('');
 
   const refreshStoredCredentialsAndCounts = React.useCallback(() => {
     setIsLoading(true);
@@ -278,52 +297,75 @@ export const StoredCredentials = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const TargetCredentialsToolbar = () => {
-    const buttons = React.useMemo(() => {
-      const arr = [
-        <Button key="add" variant="primary" aria-label="add-credential" onClick={handleAuthModalOpen}>
-          Add
-        </Button>,
-        <Button
-          key="delete"
-          variant="danger"
-          aria-label="delete-selected-credential"
-          onClick={handleDeleteButton}
-          isDisabled={!state.checkedCredentials.length}
-        >
-          Delete
-        </Button>,
-      ];
-      return (
-        <>
-          {arr.map((btn, idx) => (
-            <ToolbarItem key={idx}>{btn}</ToolbarItem>
-          ))}
-        </>
-      );
-    }, []);
+  const targetCredentialsToolbar = React.useMemo(() => {
+    const buttons = [
+      <Button
+        key="add"
+        variant="primary"
+        aria-label={t('StoredCredentials.ARIA_LABELS.Add')}
+        onClick={handleAuthModalOpen}
+      >
+        {t('ADD', { ns: 'common' })}
+      </Button>,
+      <Button
+        key="delete"
+        variant="danger"
+        aria-label={t('StoredCredentials.ARIA_LABELS.Delete')}
+        onClick={handleDeleteButton}
+        isDisabled={!state.checkedCredentials.length}
+      >
+        {t('DELETE', { ns: 'common' })}
+      </Button>,
+    ];
 
-    const deleteCredentialModal = React.useMemo(() => {
-      return (
+    return (
+      <>
+        <Toolbar id="all-targets-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  placeholder={t('StoredCredentials.SEARCH_PLACEHOLDER')}
+                  value={searchText}
+                  onChange={(_, val) => setSearchText(val)}
+                  onClear={() => setSearchText('')}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarItem variant="separator" />
+            <ToolbarGroup variant="button-group">
+              {buttons.map((btn, idx) => (
+                <ToolbarItem key={idx}>{btn}</ToolbarItem>
+              ))}
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
         <DeleteWarningModal
           warningType={DeleteOrDisableWarningType.DeleteCredentials}
           visible={warningModalOpen}
           onAccept={handleDeleteCredentials}
           onClose={handleWarningModalClose}
         />
-      );
-    }, []);
-
-    return (
-      <Toolbar id="target-credentials-toolbar">
-        <ToolbarContent>{buttons}</ToolbarContent>
-        {deleteCredentialModal}
-      </Toolbar>
+      </>
     );
-  };
+  }, [
+    t,
+    handleAuthModalOpen,
+    handleDeleteButton,
+    warningModalOpen,
+    handleDeleteCredentials,
+    handleWarningModalClose,
+    state.checkedCredentials.length,
+    searchText,
+  ]);
+
+  const filteredCredentials = React.useMemo(() => {
+    const reg = new RegExp(_.escapeRegExp(searchText), 'i');
+    return state.credentials.filter((c) => reg.test(c.matchExpression));
+  }, [searchText, state.credentials]);
 
   const matchExpressionRows = React.useMemo(() => {
-    return sortResources(sortBy, state.credentials, tableColumns).map((credential, idx) => {
+    return sortResources(sortBy, filteredCredentials, tableColumns).map((credential, idx) => {
       const isExpanded = includesCredential(state.expandedCredentials, credential);
       const isChecked = includesCredential(state.checkedCredentials, credential);
 
@@ -353,22 +395,27 @@ export const StoredCredentials = () => {
               onChange={(_event, checked: boolean) => handleRowCheck(checked)}
               isChecked={isChecked}
               id={`credentials-table-row-${idx}-check`}
-              aria-label={`credentials-table-row-${idx}-check`}
+              aria-label={t('StoredCredentials.ARIA_LABELS.ROW_CHECKBOX', { index: idx })}
             />
           </Td>
           <Td key={`credentials-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
-            {credential.matchExpression}
+            <MatchExpressionDisplay matchExpression={credential.matchExpression} />
           </Td>
           <Td key={`credentials-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Badge key={`${idx}_count`}>{credential.numMatchingTargets}</Badge>
+            <Button variant="plain" onClick={() => handleToggleExpanded()}>
+              <Icon iconSize="md">
+                <ContainerNodeIcon />
+              </Icon>
+              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential.numMatchingTargets}</span>
+            </Button>
           </Td>
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials, state.checkedCredentials, sortBy]);
+  }, [filteredCredentials, state.expandedCredentials, state.checkedCredentials, sortBy, t]);
 
   const targetRows = React.useMemo(() => {
-    return state.credentials.map((credential, idx) => {
+    return filteredCredentials.map((credential, idx) => {
       const isExpanded: boolean = includesCredential(state.expandedCredentials, credential);
 
       return (
@@ -383,7 +430,7 @@ export const StoredCredentials = () => {
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials]);
+  }, [filteredCredentials, state.expandedCredentials]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -409,39 +456,37 @@ export const StoredCredentials = () => {
         <LoadingView />
       </>
     );
-  } else if (state.credentials.length === 0) {
+  } else if (matchExpressionRows.length === 0) {
     content = (
       <>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={<>No{tableTitle}</>}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
-        </EmptyState>
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateHeader
+              titleText={<>{t('StoredCredentials.NO_CREDENTIAL_TITLE')}</>}
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
+          </EmptyState>
+        </Bullseye>
       </>
     );
   } else {
     content = (
       <>
-        <Table aria-label={tableTitle}>
+        <Table aria-label={t('StoredCredentials.ARIA_LABELS.TABLE')} isStickyHeader>
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              <Th key="table-header-check-all">
+              <Th key="table-header-check-all" width={10}>
                 <CheckBoxActions
-                  isSelectAll={state.isHeaderChecked}
+                  isSelectAll={matchExpressionRows.length > 0 && state.isHeaderChecked}
                   onSelectAll={handleHeaderCheck}
                   onAtLeastOneMatchSelect={handleAtLeatOneSelect}
                   onNoMatchSelect={handleNoMatchSelect}
                 />
               </Th>
-              {tableColumns.map(({ title }, index) => (
-                <Th
-                  key={`table-header-${title}`}
-                  width={title === 'Match Expression' ? 80 : 10}
-                  sort={getSortParams(index)}
-                >
+              {tableColumns.map(({ title, width }, index) => (
+                <Th key={`table-header-${title}`} width={width} sort={getSortParams(index)}>
                   {title}
                 </Th>
               ))}
@@ -455,8 +500,10 @@ export const StoredCredentials = () => {
 
   return (
     <>
-      <TargetCredentialsToolbar />
-      {content}
+      {targetCredentialsToolbar}
+      <OuterScrollContainer className="credentials-table-outer-container">
+        <InnerScrollContainer className="credentials-table-inner-container">{content}</InnerScrollContainer>
+      </OuterScrollContainer>
       <CreateCredentialModal
         visible={showAuthModal}
         onDismiss={handleAuthModalClose}
@@ -479,6 +526,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   onSelectAll,
   isSelectAll,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleToggle = React.useCallback(() => setIsOpen((isOpen) => !isOpen), [setIsOpen]);
@@ -486,11 +534,13 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   const dropdownItems = React.useMemo(() => {
     return [
       <DropdownItem key="action" onClick={onNoMatchSelect}>
-        No Match Only
+        {t('StoredCredentials.NO_MATCH')}
       </DropdownItem>,
-      <DropdownItem key="action" onClick={onAtLeastOneMatchSelect}>{`>= 1 Match Only`}</DropdownItem>,
+      <DropdownItem key="action" onClick={onAtLeastOneMatchSelect}>
+        {t('StoredCredentials.AT_LEAST_ONE_MATCH')}
+      </DropdownItem>,
     ];
-  }, [onNoMatchSelect, onAtLeastOneMatchSelect]);
+  }, [onNoMatchSelect, onAtLeastOneMatchSelect, t]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -502,7 +552,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
             <MenuToggleCheckbox
               id={'select-all-credentials'}
               key={'select-all-credentials'}
-              aria-label="Select all"
+              aria-label={t('StoredCredentials.ARIA_LABELS.FILTER_CHECKBOX')}
               isChecked={isSelectAll}
               onChange={onSelectAll}
             />,
@@ -510,17 +560,18 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
         }}
       />
     ),
-    [handleToggle, isSelectAll, onSelectAll],
+    [handleToggle, isSelectAll, onSelectAll, t],
   );
 
   return (
     <Dropdown
-      onSelect={() => {
-        setIsOpen(false);
-      }}
+      onSelect={() => setIsOpen(false)}
       toggle={toggle}
       isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
       popperProps={{
+        enableFlip: true,
         appendTo: portalRoot,
       }}
     >
@@ -531,23 +582,25 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
 
 export const StoredCredentialsCard: SecurityCard = {
   key: 'credentials',
-  title: (
+  title: (t: TFunction) => (
     <Text>
-      Store Credentials
-      <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
+      {t('StoredCredentials.CARD_TITLE')}
+      <Popover
+        maxWidth="40rem"
+        headerContent={t('StoredCredentials.CARD_TITLE_POPOVER_HEADER')}
+        bodyContent={<JmxAuthDescription />}
+      >
         <Button variant="plain">
           <OutlinedQuestionCircleIcon />
         </Button>
       </Popover>
     </Text>
   ),
-  description: (
+  description: (t: TFunction) => (
     <TextContent>
-      <Text component={TextVariants.small}>
-        Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored in encrypted
-        storage managed by the Cryostat server.
-      </Text>
+      <Text component={TextVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Text>
     </TextContent>
   ),
   content: StoredCredentials,
+  isFilled: true,
 };
