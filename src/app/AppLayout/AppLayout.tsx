@@ -68,7 +68,6 @@ import {
   Dropdown,
 } from '@patternfly/react-core';
 import {
-  ArrowRightIcon,
   BarsIcon,
   BellIcon,
   CogIcon,
@@ -78,7 +77,6 @@ import {
   QuestionCircleIcon,
   UserIcon,
 } from '@patternfly/react-icons';
-import { css } from '@patternfly/react-styles';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
