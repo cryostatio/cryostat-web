@@ -77,6 +77,10 @@
       "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active Recording to source automated reports from."
     },
     "TOOLBAR": {
+      "ARIA_LABELS": {
+        "GRID_VIEW": "grid-view",
+        "LIST_VIEW": "list-view"
+      },
       "CHECKBOX": {
         "SHOW_NA": {
           "LABEL": "Show N/A scores"
@@ -88,12 +92,11 @@
       "LABEL": "Automated analysis toolbar",
       "REFRESH": {
         "LABEL": "Refresh automated analysis"
-      },
-      "SWITCH": {
-        "LIST_VIEW": {
-          "LABEL": "List view"
-        }
       }
+    },
+    "TOOLTIP": {
+      "CLEAR_ANALYSIS": "Clear analysis",
+      "REFRESH_ANALYSIS": "Refresh analysis"
     },
     "WARNING_RESULTS_one": "{{count}} warning result",
     "WARNING_RESULTS_other": "{{count}} warning results"

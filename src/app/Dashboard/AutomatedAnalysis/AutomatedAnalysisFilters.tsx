@@ -29,7 +29,7 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
-import { EllipsisVIcon, FilterIcon } from '@patternfly/react-icons';
+import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -128,13 +128,13 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
     return (
       <Dropdown
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle ref={toggleRef} aria-label={currentCategory} onClick={() => onCategoryToggle()}>
-            <FilterIcon />
+          <MenuToggle ref={toggleRef} aria-label={currentCategory} onClick={onCategoryToggle} icon={<FilterIcon />}>
             {getCategoryDisplay(currentCategory)}
-            <EllipsisVIcon />
           </MenuToggle>
         )}
         isOpen={isCategoryDropdownOpen}
+        onOpenChange={setIsCategoryDropdownOpen}
+        onOpenChangeKeys={['Escape']}
         popperProps={{
           position: 'left',
         }}

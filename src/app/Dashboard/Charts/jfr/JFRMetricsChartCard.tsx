@@ -338,7 +338,7 @@ export const JFRMetricsChartCardDescriptor: DashboardCardDescriptor = {
   labels: [
     {
       content: 'Beta',
-      color: 'green',
+      color: 'cyan',
     },
     {
       content: 'Metrics',

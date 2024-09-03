@@ -29,6 +29,7 @@ import {
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface AutomatedAnalysisTopicFilterProps {
@@ -60,7 +61,8 @@ export const AutomatedAnalysisTopicFilter: React.FC<AutomatedAnalysisTopicFilter
   }, [props.evaluations, props.filteredTopics]);
 
   const filteredTopicOptions = React.useMemo(() => {
-    return !filterValue ? topicOptions : topicOptions.filter((topic) => topic.includes(filterValue.toLowerCase()));
+    const reg = new RegExp(_.escapeRegExp(filterValue), 'i');
+    return !filterValue ? topicOptions : topicOptions.filter((topic) => reg.test(topic));
   }, [filterValue, topicOptions]);
 
   const selectOptionProps: SelectOptionProps[] = React.useMemo(() => {
@@ -113,6 +115,11 @@ export const AutomatedAnalysisTopicFilter: React.FC<AutomatedAnalysisTopicFilter
       popperProps={{
         appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
       }}
+      onOpenChange={setIsExpanded}
+      onOpenChangeKeys={['Escape']}
+      shouldFocusFirstItemOnOpen={false}
+      isScrollable
+      maxMenuHeight={'30vh'}
     >
       <SelectList id="typeahead-topic-filter">
         {selectOptionProps.map(({ value, children }, index) => (
