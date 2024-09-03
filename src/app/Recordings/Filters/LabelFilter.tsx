@@ -27,6 +27,7 @@ import {
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface LabelFilterProps {
@@ -65,7 +66,8 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
   }, [recordings, filteredLabels]);
 
   const filteredLabelOptions = React.useMemo(() => {
-    return !filterValue ? labelOptions : labelOptions.filter((l) => l.includes(filterValue.toLowerCase()));
+    const reg = new RegExp(_.escapeRegExp(filterValue), 'i');
+    return !filterValue ? labelOptions : labelOptions.filter((l) => reg.test(l));
   }, [filterValue, labelOptions]);
 
   const selectOptions = React.useMemo(() => {
@@ -98,13 +100,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
           />
           <TextInputGroupUtilities>
             {filterValue ? (
-              <Button
-                variant="plain"
-                onClick={() => {
-                  setFilterValue('');
-                }}
-                aria-label="Clear input value"
-              >
+              <Button variant="plain" onClick={() => setFilterValue('')} aria-label="Clear input value">
                 <TimesIcon aria-hidden />
               </Button>
             ) : null}
@@ -123,6 +119,7 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
       aria-label="Filter by label"
       onOpenChange={(isOpen) => setIsExpanded(isOpen)}
       onOpenChangeKeys={['Escape']}
+      shouldFocusFirstItemOnOpen={false}
     >
       <SelectList id="typeahead-label-select">{selectOptions}</SelectList>
     </Select>

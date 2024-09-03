@@ -27,6 +27,7 @@ import {
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface NameFilterProps {
@@ -58,7 +59,8 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
   }, [recordings, filteredNames]);
 
   const filteredNameOptions = React.useMemo(() => {
-    return !filterValue ? nameOptions : nameOptions.filter((n) => n.includes(filterValue.toLowerCase()));
+    const reg = new RegExp(_.escapeRegExp(filterValue), 'i');
+    return !filterValue ? nameOptions : nameOptions.filter((n) => reg.test(n));
   }, [filterValue, nameOptions]);
 
   const selectOptions = React.useMemo(() => {
@@ -89,13 +91,7 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
           />
           <TextInputGroupUtilities>
             {filterValue ? (
-              <Button
-                variant="plain"
-                onClick={() => {
-                  setFilterValue('');
-                }}
-                aria-label="Clear input value"
-              >
+              <Button variant="plain" onClick={() => setFilterValue('')} aria-label="Clear input value">
                 <TimesIcon aria-hidden />
               </Button>
             ) : null}
@@ -114,6 +110,7 @@ export const NameFilter: React.FC<NameFilterProps> = ({ recordings, filteredName
       aria-label="Filter by name"
       onOpenChange={(isOpen) => setIsExpanded(isOpen)}
       onOpenChangeKeys={['Escape']}
+      shouldFocusFirstItemOnOpen={false}
     >
       <SelectList>{selectOptions}</SelectList>
     </Select>
