@@ -91,9 +91,10 @@ export const TopologyFilterCategorySelect: React.FC<TopologyFilterCategorySelect
     (_, category: string) => {
       if (category) {
         dispatch(topologyUpdateCategoryIntent(isGroup, category));
+        setIsOpen(false);
       }
     },
-    [dispatch, isGroup],
+    [dispatch, isGroup, setIsOpen],
   );
 
   const handleCategoryTypeChange = React.useCallback(
@@ -398,6 +399,8 @@ export const TopologyFilterSelect: React.FC<TopologyFilterSelectProps> = ({
       }}
       onOpenChange={setIsExpanded}
       onOpenChangeKeys={['Escape']}
+      maxMenuHeight={'40vh'}
+      isScrollable
     >
       <SelectList>
         {selectOptions.length > 0 ? selectOptions : <SelectOption isDisabled>No results found</SelectOption>}

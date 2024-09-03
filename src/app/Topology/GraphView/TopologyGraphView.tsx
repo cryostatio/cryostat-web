@@ -183,6 +183,11 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
       },
     };
 
+    // Destroy old graph if any
+    if (visualization.hasGraph()) {
+      visualization.getGraph().destroy();
+    }
+
     // Initialize the controller with model to create nodes
     visualization.fromModel(model, false);
   }, [_transformData, visualization, discoveryTree]);

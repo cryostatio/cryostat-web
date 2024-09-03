@@ -49,6 +49,12 @@ export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({ visualiz
         visualization.getGraph().reset();
         // Reset layout
         visualization.getGraph().layout();
+
+        // Open collapsed groups
+        visualization
+          .getGraph()
+          .getNodes()
+          .forEach((n) => n.setCollapsed(false));
       }),
       legend: false,
     });
@@ -59,7 +65,7 @@ export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({ visualiz
         icon: <CollapseIcon />,
         tooltip: 'Collapse all groups',
         callback: action(() => {
-          // Close top-level groups
+          // Close groups
           visualization
             .getGraph()
             .getNodes()

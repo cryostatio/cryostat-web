@@ -205,7 +205,6 @@ export const getNodeById = (nodes: NodeModel[], id?: string) => {
 };
 
 // This method sets the layout of your topology view (e.g. Force, Dagre, Cola, etc.).
-// OCP is supporting only Cola
 export const layoutFactory: LayoutFactory = (type: string, graph: Graph): Layout | undefined => {
   switch (type) {
     case 'Cola':

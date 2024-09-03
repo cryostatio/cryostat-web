@@ -20,12 +20,14 @@ import { useTheme } from '@app/utils/hooks/useTheme';
 import { Icon, ToggleGroup, ToggleGroupItem } from '@patternfly/react-core';
 import { SunIcon, MoonIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface ThemeToggleProps {}
 
 export const ThemeToggle: React.FC<ThemeToggleProps> = () => {
   const context = React.useContext(ServiceContext);
   const [_theme] = useTheme();
+  const { t } = useTranslation();
 
   const handleThemeSelect = React.useCallback(
     (_, setting: ThemeSetting) => {
@@ -37,6 +39,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = () => {
   return (
     <ToggleGroup className="theme__toggle-group">
       <ToggleGroupItem
+        aria-label={t('ThemeToggle.ARIA_LABELS.LIGHT_THEME')}
         icon={
           <Icon>
             <SunIcon />
@@ -47,6 +50,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = () => {
         onClick={(e) => handleThemeSelect(e, ThemeSetting.LIGHT)}
       />
       <ToggleGroupItem
+        aria-label={t('ThemeToggle.ARIA_LABELS.DARK_THEME')}
         icon={
           <Icon>
             <MoonIcon />

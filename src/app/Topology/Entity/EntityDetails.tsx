@@ -36,6 +36,8 @@ import {
   ExpandableSection,
   Flex,
   FlexItem,
+  List,
+  ListItem,
   Stack,
   StackItem,
   Tab,
@@ -681,11 +683,11 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
               <>
                 <StackItem key={'alert-description'}>{extra?.description}</StackItem>
                 <StackItem key={'alert-call-for-action'}>
-                  <Flex>
+                  <List>
                     {extra.callForAction.map((action, index) => (
-                      <FlexItem key={index}>{action}</FlexItem>
+                      <ListItem key={index}>{action} </ListItem>
                     ))}
-                  </Flex>
+                  </List>
                 </StackItem>
               </>
             ) : null}
