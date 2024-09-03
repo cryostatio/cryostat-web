@@ -21,13 +21,12 @@ import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
   Bullseye,
   Button,
   Card,
   CardBody,
-  CardHeader,
-  CardTitle,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -320,14 +319,13 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     return availableCards.map((card) => {
       const { icon, labels, title, description } = card;
       return (
-        <Card
+        <CatalogTile
+          style={{ height: '100%' }}
+          featured={selection === t(title)}
           id={title}
           key={title}
-          isSelectable
-          isFullHeight
-          isFlat
-          isSelected={selection === t(title)}
-          tabIndex={0}
+          icon={icon}
+          title={t(title)}
           onClick={(_event) => {
             if (selection === t(title)) {
               setToViewCard(availableCards.find((card) => t(card.title) === selection));
@@ -335,35 +333,22 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
               onSelect(_event, t(title));
             }
           }}
+          badges={
+            labels && [
+              <CatalogTileBadge>
+                <LabelGroup>
+                  {labels.map(({ content, icon, color }) => (
+                    <Label key={content} color={color} icon={icon} isCompact>
+                      {content}
+                    </Label>
+                  ))}
+                </LabelGroup>
+              </CatalogTileBadge>,
+            ]
+          }
         >
-          <CardHeader
-            selectableActions={{
-              selectableActionId: title,
-              selectableActionAriaLabelledby: title,
-              variant: 'single',
-              name: t(title),
-            }}
-          >
-            <Flex spacer={{ default: 'spacerSm' }}>
-              {icon ? <FlexItem>{icon}</FlexItem> : null}
-              <FlexItem>
-                <CardTitle>{t(title)}</CardTitle>
-              </FlexItem>
-              <FlexItem>
-                {labels ? (
-                  <LabelGroup>
-                    {labels.map(({ content, icon, color }) => (
-                      <Label key={content} color={color} icon={icon} isCompact>
-                        {content}
-                      </Label>
-                    ))}
-                  </LabelGroup>
-                ) : null}
-              </FlexItem>
-            </Flex>
-          </CardHeader>
-          <CardBody>{t(description)}</CardBody>
-        </Card>
+          {t(description)}
+        </CatalogTile>
       );
     });
   }, [t, availableCards, selection, onSelect]);
