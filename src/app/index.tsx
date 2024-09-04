@@ -15,6 +15,8 @@
  */
 
 import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/react-catalog-view-extension/dist/css/react-catalog-view-extension.css';
+import '@patternfly/quickstarts/dist/quickstarts.min.css';
 import '@app/app.css';
 import '@app/Topology/styles/base.css';
 import '@i18n/config';

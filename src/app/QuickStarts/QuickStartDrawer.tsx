@@ -78,7 +78,7 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
             regex: HIGHLIGHT_REGEXP,
             replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
               if (!linkLabel || !linkType || !linkId) return text;
-              return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
+              return `<button class="pf-v5-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
             },
           },
           {

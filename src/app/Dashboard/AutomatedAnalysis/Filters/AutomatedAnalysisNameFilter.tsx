@@ -29,6 +29,7 @@ import {
   TextInputGroupUtilities,
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface AutomatedAnalysisNameFilterProps {
@@ -70,7 +71,8 @@ export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterPr
   }, [evaluations, filteredNames]);
 
   const filteredNameOptions = React.useMemo(() => {
-    return !filterValue ? nameOptions : nameOptions.filter((n) => n.includes(filterValue.toLowerCase()));
+    const reg = new RegExp(_.escapeRegExp(filterValue), 'i');
+    return !filterValue ? nameOptions : nameOptions.filter((n) => reg.test(n));
   }, [filterValue, nameOptions]);
 
   const selectOptionProps: SelectOptionProps[] = React.useMemo(() => {
@@ -124,6 +126,11 @@ export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterPr
         enableFlip: true,
         appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
       }}
+      onOpenChange={setIsExpanded}
+      onOpenChangeKeys={['Escape']}
+      shouldFocusFirstItemOnOpen={false}
+      isScrollable
+      maxMenuHeight={'30vh'}
     >
       <SelectList id="typeahead-filter-select">
         {selectOptionProps.map(({ value, children }, index) => (

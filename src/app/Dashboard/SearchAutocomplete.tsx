@@ -20,10 +20,11 @@ import * as React from 'react';
 export interface SearchAutocompleteProps {
   values: string[];
   onChange: (value: string) => void;
+  placeholder?: string;
 }
 
-export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange, ...props }) => {
-  const [value, setValue] = React.useState('');
+export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange, placeholder, ...props }) => {
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [hint, setHint] = React.useState('');
   const [autocompleteOptions, setAutocompleteOptions] = React.useState<JSX.Element[]>([]);
 
@@ -33,9 +34,9 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
   const autocompleteRef = React.useRef<HTMLDivElement>(null);
 
   const onClear = React.useCallback(() => {
-    setValue('');
+    setSearchTerm('');
     onChange('');
-  }, [setValue, onChange]);
+  }, [setSearchTerm, onChange]);
 
   const onSearchChange = React.useCallback(
     (newValue) => {
@@ -61,10 +62,10 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
         setAutocompleteOptions([]);
         setHint('');
       }
-      setValue(newValue);
+      setSearchTerm(newValue);
       onChange(newValue);
     },
-    [setValue, setHint, setIsAutocompleteOpen, setAutocompleteOptions, onChange, props.values],
+    [setSearchTerm, setHint, setIsAutocompleteOpen, setAutocompleteOptions, onChange, props.values],
   );
 
   // Whenever an autocomplete option is selected, set the search input value, close the menu, and put the browser
@@ -72,12 +73,12 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
   const onSelect = React.useCallback(
     (e, itemId) => {
       e.stopPropagation();
-      setValue(itemId);
+      setSearchTerm(itemId);
       setHint('');
       setIsAutocompleteOpen(false);
       searchInputRef.current && searchInputRef.current.focus();
     },
-    [setValue, setHint, setIsAutocompleteOpen],
+    [setSearchTerm, setHint, setIsAutocompleteOpen],
   );
 
   const handleMenuKeys = React.useCallback(
@@ -85,7 +86,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
       // If there is a hint while the browser focus is on the search input, tab or right arrow will 'accept' the hint value
       // and set it as the search input value
       if (hint && (event.key === 'Tab' || event.key === 'ArrowRight') && searchInputRef.current === event.target) {
-        setValue(hint);
+        setSearchTerm(hint);
         setHint('');
         setIsAutocompleteOpen(false);
         if (event.key === 'ArrowRight') {
@@ -150,15 +151,16 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
   const searchInput = React.useMemo(
     () => (
       <SearchInput
-        value={value}
+        value={searchTerm}
         onChange={onSearchChange}
         onClear={onClear}
         ref={searchInputRef}
         hint={hint}
+        placeholder={placeholder}
         id="cryostat-autocomplete-search"
       />
     ),
-    [value, onSearchChange, onClear, hint],
+    [searchTerm, onSearchChange, onClear, hint, placeholder],
   );
 
   const autocomplete = React.useMemo(

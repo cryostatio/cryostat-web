@@ -16,8 +16,7 @@
 import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { portalRoot } from '@app/utils/utils';
-import { CatalogTile } from '@patternfly/react-catalog-view-extension';
+import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
   Button,
   Gallery,
@@ -107,51 +106,32 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
         {props.templates.map((template) => {
           const level = smallestFeatureLevel(template.cards);
           return (
-            <div
-              key={template.name}
-              className={
-                // make sure the selected template that is **clicked** is highlighted and not any copies that may be in other categories (i.e. suggested)
+            <CatalogTile
+              featured={
                 selectedTemplate &&
                 selectedTemplate.template.name === template.name &&
                 selectedTemplate.template.vendor == template.vendor &&
                 selectedTemplate.category == props.title
-                  ? 'layout-template-card__featured'
-                  : undefined
               }
-            >
-              <CatalogTile
-                featured={
-                  selectedTemplate &&
-                  selectedTemplate.template.name === template.name &&
-                  selectedTemplate.template.vendor == template.vendor &&
-                  selectedTemplate.category == props.title
-                }
-                id={template.name}
-                key={template.name}
-                icon={iconify(template.vendor)}
-                title={template.name}
-                vendor={template.vendor}
-                onClick={() => handleTemplateSelect(template)}
-                badges={[
-                  level !== FeatureLevel.PRODUCTION && (
-                    <Label
-                      key={template.name}
-                      isCompact
-                      style={{
-                        textTransform: 'capitalize',
-                        marginTop: '1.1ch',
-                      }}
-                      color={level === FeatureLevel.BETA ? 'green' : 'red'}
-                    >
-                      {FeatureLevel[level].toLowerCase()}
+              id={template.name}
+              key={template.name}
+              icon={iconify(template.vendor)}
+              title={template.name}
+              vendor={template.vendor}
+              onClick={() => handleTemplateSelect(template)}
+              badges={[
+                level !== FeatureLevel.PRODUCTION && (
+                  <CatalogTileBadge>
+                    <Label key={template.name} isCompact color={level === FeatureLevel.BETA ? 'green' : 'red'}>
+                      {t(FeatureLevel[level])}
                     </Label>
-                  ),
-                  <KebabCatalogTileBadge template={template} onTemplateDelete={onTemplateDelete} key={template.name} />,
-                ]}
-              >
-                {template.description}
-              </CatalogTile>
-            </div>
+                  </CatalogTileBadge>
+                ),
+                <KebabCatalogTileBadge template={template} onTemplateDelete={onTemplateDelete} key={template.name} />,
+              ]}
+            >
+              {template.description}
+            </CatalogTile>
           );
         })}
       </Gallery>
@@ -173,14 +153,6 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
   const onSelect = (_event: React.MouseEvent<Element, MouseEvent> | undefined, _value: string | number | undefined) => {
     setIsOpen(false);
   };
-
-  const openKebab = React.useCallback(
-    (value, e) => {
-      e.stopPropagation();
-      setIsOpen(value);
-    },
-    [setIsOpen],
-  );
 
   const handleTemplateDownload = React.useCallback(
     (e: React.MouseEvent) => {
@@ -210,26 +182,29 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
   }, [t, handleTemplateDownload, handleTemplateDelete]);
 
   return (
-    <Dropdown
-      //menuAppendTo={portalRoot}
-      onSelect={onSelect}
-      //toggle={<KebabToggle isDisabled={template.vendor !== LayoutTemplateVendor.USER} onToggle={openKebab} />}
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          variant="plain"
-          isDisabled={template.vendor !== LayoutTemplateVendor.USER}
-          onClick={(event: React.MouseEvent) => openKebab(isOpen, event)}
-          isExpanded={isOpen}
-        >
-          <EllipsisVIcon />
-        </MenuToggle>
-      )}
-      popperProps={{
-        appendTo: portalRoot,
-      }}
-    >
-      <DropdownList>{dropdownItems}</DropdownList>
-    </Dropdown>
+    <CatalogTileBadge>
+      <Dropdown
+        onSelect={onSelect}
+        onOpenChange={setIsOpen}
+        isOpen={isOpen}
+        onOpenChangeKeys={['Escape']}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            className={'layout-template-card__action-toggle'}
+            variant="plain"
+            isDisabled={template.vendor !== LayoutTemplateVendor.USER}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen((open) => !open);
+            }}
+          >
+            <EllipsisVIcon />
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>{dropdownItems}</DropdownList>
+      </Dropdown>
+    </CatalogTileBadge>
   );
 };

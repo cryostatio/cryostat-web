@@ -51,7 +51,6 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ on
 
   return (
     <Dropdown
-      isPlain
       popperProps={{
         enableFlip: true,
         appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
@@ -60,19 +59,16 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ on
       isOpen={isOpen}
       onSelect={onSelect}
       toggle={toggle}
-      onOpenChange={(isOpen) => {
-        setIsOpen(isOpen);
-      }}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
     >
       <DropdownList>
         <DropdownItem key="View" onClick={onView}>
           {t('VIEW', { ns: 'common' })}
         </DropdownItem>
-        ,
         <DropdownItem key="Remove" onClick={onRemove}>
           {t('REMOVE', { ns: 'common' })}
         </DropdownItem>
-        ,
         <DropdownItem key="Reset Size" onClick={onResetSize}>
           {t('DashboardCardActionMenu.RESET_SIZE')}
         </DropdownItem>

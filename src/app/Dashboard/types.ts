@@ -121,6 +121,8 @@ export type LayoutTemplateRecord = Pick<LayoutTemplate, 'name' | 'vendor'>;
 export enum LayoutTemplateVersion {
   'v2.3' = 'v2.3',
   'v2.4' = 'v2.4',
+  'v3.0' = 'v3.0',
+  'v4.0' = 'v4.0',
 }
 
 export enum LayoutTemplateVendor {

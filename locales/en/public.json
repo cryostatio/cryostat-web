@@ -54,7 +54,7 @@
       }
     },
     "USER_MENU": {
-      "LANGUAGE_PREFERENCE": "<Icon/> Language preference",
+      "LANGUAGE_PREFERENCE": "Language preference",
       "LOGOUT": "Log out"
     }
   },
@@ -77,6 +77,10 @@
       "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active Recording to source automated reports from."
     },
     "TOOLBAR": {
+      "ARIA_LABELS": {
+        "GRID_VIEW": "grid-view",
+        "LIST_VIEW": "list-view"
+      },
       "CHECKBOX": {
         "SHOW_NA": {
           "LABEL": "Show N/A scores"
@@ -88,15 +92,14 @@
       "LABEL": "Automated analysis toolbar",
       "REFRESH": {
         "LABEL": "Refresh automated analysis"
-      },
-      "SWITCH": {
-        "LIST_VIEW": {
-          "LABEL": "List view"
-        }
       }
     },
-    "WARNING_RESULTS_one": "{{count}} Warning Result",
-    "WARNING_RESULTS_other": "{{count}} Warning Results"
+    "TOOLTIP": {
+      "CLEAR_ANALYSIS": "Clear analysis",
+      "REFRESH_ANALYSIS": "Refresh analysis"
+    },
+    "WARNING_RESULTS_one": "{{count}} warning result",
+    "WARNING_RESULTS_other": "{{count}} warning results"
   },
   "AutomatedAnalysisConfigDrawer": {
     "INPUT_GROUP": {
@@ -139,6 +142,7 @@
       "POPOUT": {
         "LABEL": "Pop out {{chartKind}} chart"
       },
+      "REFRESH_TOOLTIP": "Refresh chart data",
       "SYNC": {
         "LABEL": "Synchronize {{chartKind}} chart"
       }
@@ -235,7 +239,7 @@
   },
   "Dashboard": {
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your Dashboard. Some cards require additional configuration.",
-    "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
+    "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved locally for all targets viewed only on this client.",
     "CARD_CATALOG_TITLE": "Dashboard Card catalog",
     "INVALID_CARD_CONFIGURATIONS": "Invalid card configurations",
     "PAGE_TITLE": "Dashboard"
@@ -349,10 +353,11 @@
     "ITEMS_other": "{{count}} items"
   },
   "LayoutTemplatePicker": {
+    "CARD_COUNT": "Card count",
+    "SEARCH_PLACEHOLDER": "Find by name...",
     "SORT_BY": {
       "CARD_COUNT": "Sort by: Card count",
-      "NAME": "Sort by: Name",
-      "PLACEHOLDER": "Sort by..."
+      "NAME": "Sort by: Name"
     }
   },
   "LayoutTemplateUploadModal": {

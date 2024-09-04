@@ -82,6 +82,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
+import { LogoutIcon } from './LogoutIcon';
 import { ThemeToggle } from './ThemeToggle';
 
 export interface AppLayoutProps {
@@ -283,11 +284,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const userInfoItems = React.useMemo(
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownItem key={'language-preferences'} onClick={handleLanguagePref}>
-          <Trans t={t} components={{ Icon: <LanguageIcon /> }} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
+        <DropdownItem key={'language-preferences'} onClick={handleLanguagePref} icon={<LanguageIcon />}>
+          <Trans t={t} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
         </DropdownItem>
       </FeatureFlag>,
-      <DropdownItem key={'log-out'} onClick={handleLogout}>
+      <DropdownItem key={'log-out'} onClick={handleLogout} icon={<LogoutIcon />}>
         {t('AppLayout.USER_MENU.LOGOUT')}
       </DropdownItem>,
     ],

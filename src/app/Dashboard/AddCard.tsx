@@ -21,13 +21,12 @@ import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
   Bullseye,
   Button,
   Card,
   CardBody,
-  CardHeader,
-  CardTitle,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -48,8 +47,6 @@ import {
   GridItem,
   Label,
   LabelGroup,
-  Level,
-  LevelItem,
   Modal,
   NumberInput,
   Stack,
@@ -322,48 +319,35 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     return availableCards.map((card) => {
       const { icon, labels, title, description } = card;
       return (
-        <Card
+        <CatalogTile
+          featured={selection === t(title)}
           id={title}
           key={title}
-          isClickable
-          isSelectable
-          isFullHeight
-          isFlat
-          isSelected={selection === t(title)}
-          tabIndex={0}
+          icon={icon}
+          title={t(title)}
+          onClick={(_event) => {
+            if (selection === t(title)) {
+              setToViewCard(availableCards.find((card) => t(card.title) === selection));
+            } else {
+              onSelect(_event, t(title));
+            }
+          }}
+          badges={
+            labels && [
+              <CatalogTileBadge>
+                <LabelGroup>
+                  {labels.map(({ content, icon, color }) => (
+                    <Label key={content} color={color} icon={icon} isCompact>
+                      {content}
+                    </Label>
+                  ))}
+                </LabelGroup>
+              </CatalogTileBadge>,
+            ]
+          }
         >
-          <CardHeader
-            selectableActions={{
-              onClickAction: (event) => {
-                if (selection === t(title)) {
-                  setToViewCard(availableCards.find((card) => t(card.title) === selection));
-                } else {
-                  onSelect(event, t(title));
-                }
-              },
-              selectableActionId: title,
-            }}
-          >
-            <Level hasGutter>
-              {icon ? <LevelItem>{icon}</LevelItem> : null}
-              <LevelItem>
-                <CardTitle>{t(title)}</CardTitle>
-              </LevelItem>
-              <LevelItem>
-                {labels ? (
-                  <LabelGroup>
-                    {labels.map(({ content, icon, color }) => (
-                      <Label key={content} color={color} icon={icon} isCompact>
-                        {content}
-                      </Label>
-                    ))}
-                  </LabelGroup>
-                ) : null}
-              </LevelItem>
-            </Level>
-          </CardHeader>
-          <CardBody>{t(description)}</CardBody>
-        </Card>
+          {t(description)}
+        </CatalogTile>
       );
     });
   }, [t, availableCards, selection, onSelect]);
@@ -392,18 +376,18 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
                 <FlexItem>
                   <Title headingLevel={'h3'}>{t(title)}</Title>
                 </FlexItem>
+                <FlexItem>
+                  {labels && labels.length ? (
+                    <LabelGroup>
+                      {labels.map(({ content, icon, color }) => (
+                        <Label key={content} color={color} icon={icon}>
+                          {content}
+                        </Label>
+                      ))}
+                    </LabelGroup>
+                  ) : null}
+                </FlexItem>
               </Flex>
-            </StackItem>
-            <StackItem>
-              {labels && labels.length ? (
-                <LabelGroup>
-                  {labels.map(({ content, icon, color }) => (
-                    <Label key={content} color={color} icon={icon}>
-                      {content}
-                    </Label>
-                  ))}
-                </LabelGroup>
-              ) : null}
             </StackItem>
             <StackItem>{getFullDescription(t(title), t)}</StackItem>
             <StackItem isFilled>
@@ -436,7 +420,7 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     <Drawer isExpanded={!!toViewCard} isInline>
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>
-          <Grid hasGutter style={{ alignItems: 'stretch', marginTop: '1em', marginRight: !toViewCard ? 0 : '1em' }}>
+          <Grid hasGutter className="dashboard-card-picker" style={{ marginRight: !toViewCard ? 0 : '1em' }}>
             {items.map((item) => (
               <GridItem span={4} key={item.key}>
                 {item}
@@ -544,12 +528,12 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
       }
       return (
         <FormGroup key={`${ctrl.key}`} label={t(ctrl.name)} isInline isStack>
+          {input}
           <FormHelperText>
             <HelperText>
               <HelperTextItem>{t(ctrl.description)}</HelperTextItem>
             </HelperText>
           </FormHelperText>
-          {input}
         </FormGroup>
       );
     },
@@ -639,7 +623,10 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
         enableFlip: true,
         appendTo: portalRoot,
       }}
-      shouldFocusToggleOnSelect
+      isScrollable
+      maxMenuHeight={'30vh'}
+      onOpenChange={setSelectOpen}
+      onOpenChangeKeys={['Escape']}
     >
       <SelectList>
         {errored
