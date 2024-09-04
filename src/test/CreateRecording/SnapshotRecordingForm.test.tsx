@@ -16,6 +16,7 @@
 
 import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
 import { authFailMessage } from '@app/ErrorView/types';
+import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
@@ -30,6 +31,23 @@ const mockTarget = {
   jvmId: 'foo',
   labels: [],
   annotations: { cryostat: [], platform: [] },
+};
+const mockRecording: ActiveRecording = {
+  id: 100,
+  state: RecordingState.RUNNING,
+  duration: 1010,
+  startTime: 9999,
+  continuous: false,
+  toDisk: false,
+  maxSize: 55,
+  maxAge: 66,
+  remoteId: 77,
+  name: 'snapshot-10',
+  downloadUrl: 'http://localhost:8080/api/v4/targets/1/recordings/77',
+  reportUrl: 'http://localhost:8080/api/v4/targets/1/reports/77',
+  metadata: {
+    labels: [],
+  },
 };
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
@@ -67,7 +85,7 @@ describe('<SnapshotRecordingForm />', () => {
   });
 
   it('should create Recording when create is clicked', async () => {
-    const onCreateSpy = jest.spyOn(defaultServices.api, 'createSnapshot').mockReturnValue(of(true));
+    const onCreateSpy = jest.spyOn(defaultServices.api, 'createSnapshot').mockReturnValue(of(mockRecording));
     const { user } = render({
       routerConfigs: {
         routes: [

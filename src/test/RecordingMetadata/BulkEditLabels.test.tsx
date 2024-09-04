@@ -73,6 +73,7 @@ const mockActiveRecording: ActiveRecording = {
   toDisk: false,
   maxSize: 0,
   maxAge: 0,
+  remoteId: 9876,
 };
 
 const mockActiveLabelsNotification = {
