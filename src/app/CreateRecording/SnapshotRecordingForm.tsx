@@ -40,9 +40,9 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) =
       context.api
         .createSnapshot()
         .pipe(first())
-        .subscribe((success) => {
+        .subscribe((result) => {
           setLoading(false);
-          if (success) {
+          if (result) {
             exitForm();
           }
         }),

@@ -228,9 +228,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         .target()
         .pipe(
           filter((target) => !!target),
-          concatMap((target: Target) =>
-            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`),
-          ),
+          concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
           first(),
         )
         .subscribe({
@@ -391,7 +389,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
         handleRowCheck(false, r.id);
-        tasks.push(context.api.archiveRecording(r.name).pipe(first()));
+        tasks.push(context.api.archiveRecording(r.remoteId).pipe(first()));
       }
     });
     addSubscription(
@@ -417,7 +415,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       if (checkedIndices.includes(r.id)) {
         handleRowCheck(false, r.id);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
-          tasks.push(context.api.stopRecording(r.name).pipe(first()));
+          tasks.push(context.api.stopRecording(r.remoteId).pipe(first()));
         }
       }
     });
@@ -443,7 +441,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
         context.reports.delete(r);
-        tasks.push(context.api.deleteRecording(r.name).pipe(first()));
+        tasks.push(context.api.deleteRecording(r.remoteId).pipe(first()));
       }
     });
     addSubscription(
@@ -1011,7 +1009,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <RecordingActions
           index={index}
           recording={recording}
-          uploadFn={() => context.api.uploadActiveRecordingToGrafana(recording.name)}
+          uploadFn={() => context.api.uploadActiveRecordingToGrafana(recording.remoteId)}
         />
       </Tr>
     );

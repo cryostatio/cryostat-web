@@ -528,6 +528,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
     if (usingCachedReport) {
       generateReport();
     } else {
+      // FIXME this should use a GraphQL query
       addSubscription(
         context.api.deleteRecording('automated-analysis').subscribe({
           next: () => {

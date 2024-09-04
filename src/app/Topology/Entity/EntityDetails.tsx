@@ -464,7 +464,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
   const checkIfAgentDetected = React.useCallback(() => {
     addSubscription(
       context.api
-        .doGet(`targets/${encodeURIComponent(target.connectUrl)}/probes`, 'v4', undefined, true, true)
+        .getActiveProbesForTarget(target)
         .pipe(
           concatMap(() => of(true)),
           catchError(() => of(false)),

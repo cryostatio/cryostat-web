@@ -119,7 +119,7 @@ const mockArchivedRecordingsResponse = {
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockActiveRecordingResponse));
+jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of(mockActiveRecordingResponse));
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly

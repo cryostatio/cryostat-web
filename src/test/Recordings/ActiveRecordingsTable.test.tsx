@@ -98,7 +98,7 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRecording]));
+jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue(void 0);
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));

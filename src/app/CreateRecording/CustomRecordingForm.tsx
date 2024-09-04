@@ -273,10 +273,8 @@ export const CustomRecordingForm: React.FC = () => {
       }
       addSubscription(
         forkJoin({
-          templates: context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
-          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(
-            `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`,
-          ),
+          templates: context.api.doGet<EventTemplate[]>(`targets/${target.id}/event_templates`),
+          recordingOptions: context.api.doGet<AdvancedRecordingOptions>(`targets/${target.id}/recordingOptions`),
         }).subscribe({
           next: ({ templates, recordingOptions }) => {
             setErrorMessage('');

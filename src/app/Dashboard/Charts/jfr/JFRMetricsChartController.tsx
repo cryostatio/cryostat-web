@@ -116,6 +116,7 @@ export class JFRMetricsChartController {
         this._state$.next(v ? ControllerState.READY : ControllerState.NO_DATA);
         if (v) {
           this._api
+            // FIXME this should retrieve the ID given the recording name by using a GraphQL query
             .uploadActiveRecordingToGrafana(RECORDING_NAME)
             .pipe(first())
             .subscribe((_) => {

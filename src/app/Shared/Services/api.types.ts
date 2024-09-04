@@ -246,6 +246,7 @@ export interface ActiveRecording extends Recording {
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+  remoteId: number;
 }
 
 export interface ActiveRecordingsFilterInput {

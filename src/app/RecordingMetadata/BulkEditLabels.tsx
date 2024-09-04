@@ -160,9 +160,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     } else if (isTargetRecording) {
       observable = context.target.target().pipe(
         filter((target) => !!target),
-        concatMap((target: Target) =>
-          context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`),
-        ),
+        concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
         first(),
       );
     } else {

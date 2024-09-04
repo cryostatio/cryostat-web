@@ -73,7 +73,7 @@ jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValue(of(tru
 jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadTemplate').mockReturnValue(void 0);
 
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockCustomEventTemplate]));
+jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());

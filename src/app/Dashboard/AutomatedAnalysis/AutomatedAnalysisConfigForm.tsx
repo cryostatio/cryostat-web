@@ -103,13 +103,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           () => !target,
           of([]),
           context.api
-            .doGet<EventTemplate[]>(
-              `targets/${encodeURIComponent(target?.connectUrl || '')}/templates`,
-              'v4',
-              undefined,
-              undefined,
-              true,
-            )
+            .doGet<EventTemplate[]>(`targets/${target!.id}/event_templates`, undefined, undefined, true)
             .pipe(first()),
         ).subscribe({
           next: (templates: EventTemplate[]) => {

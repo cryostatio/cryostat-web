@@ -273,17 +273,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               () => targets.length > 0,
               forkJoin(
                 targets.map((t) =>
-                  context.api
-                    .doGet<EventTemplate[]>(
-                      `targets/${encodeURIComponent(t.connectUrl)}/templates`,
-                      'v4',
-                      undefined,
-                      true,
-                      true,
-                    )
-                    .pipe(
-                      catchError((_) => of<EventTemplate[]>([])), // Fail silently
-                    ),
+                  context.api.getTargetEventTemplates(t).pipe(
+                    catchError((_) => of<EventTemplate[]>([])), // Fail silently
+                  ),
                 ),
               ).pipe(
                 map((allTemplates) => {
