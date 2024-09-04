@@ -117,6 +117,7 @@ export const fakeAARecording: ActiveRecording = {
   toDisk: false,
   maxSize: 1048576,
   maxAge: 0,
+  remoteId: 567567,
 };
 
 export const fakeEvaluations: AnalysisResult[] = [
@@ -306,7 +307,7 @@ class FakeApiService extends ApiService {
     return of(true);
   }
 
-  uploadActiveRecordingToGrafana(_recordingName: string): Observable<boolean> {
+  uploadActiveRecordingToGrafana(_remoteId: number): Observable<boolean> {
     return of(true);
   }
 
@@ -379,7 +380,7 @@ class FakeApiService extends ApiService {
     });
   }
 
-  deleteRecording(_recordingName: string): Observable<boolean> {
+  deleteRecording(_remoteId: number): Observable<boolean> {
     return of(true);
   }
 }
