@@ -19,7 +19,6 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { Target } from '@app/Shared/Services/api.types';
-import { isHttpOk } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
