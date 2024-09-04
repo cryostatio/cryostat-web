@@ -66,7 +66,7 @@ jest.mock('@app/utils/LocalStorage', () => {
   };
 });
 
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockTemplate1, mockTemplate2]));
+jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockTemplate1, mockTemplate2]));
 
 jest
   .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')

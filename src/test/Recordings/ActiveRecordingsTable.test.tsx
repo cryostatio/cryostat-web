@@ -66,6 +66,7 @@ const mockRecording: ActiveRecording = {
   toDisk: false,
   maxSize: 0,
   maxAge: 0,
+  remoteId: 998877,
 };
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 1 };
 const mockCreateNotification = {
@@ -386,7 +387,7 @@ describe('<ActiveRecordingsTable />', () => {
     const archiveRequestSpy = jest.spyOn(defaultServices.api, 'archiveRecording');
 
     expect(archiveRequestSpy).toHaveBeenCalledTimes(1);
-    expect(archiveRequestSpy).toBeCalledWith('someRecording');
+    expect(archiveRequestSpy).toBeCalledWith(mockRecording.remoteId);
   });
 
   it('stops the selected Recording when Stop is clicked', async () => {
@@ -410,7 +411,7 @@ describe('<ActiveRecordingsTable />', () => {
     const stopRequestSpy = jest.spyOn(defaultServices.api, 'stopRecording');
 
     expect(stopRequestSpy).toHaveBeenCalledTimes(1);
-    expect(stopRequestSpy).toBeCalledWith('someRecording');
+    expect(stopRequestSpy).toBeCalledWith(mockRecording.remoteId);
   });
 
   it('opens the labels drawer when Edit Labels is clicked', async () => {
@@ -464,7 +465,7 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     expect(deleteRequestSpy).toBeCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someRecording');
+    expect(deleteRequestSpy).toBeCalledWith(mockRecording.remoteId);
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteActiveRecordings, false);
   });
@@ -491,7 +492,7 @@ describe('<ActiveRecordingsTable />', () => {
 
     expect(screen.queryByLabelText(DeleteActiveRecordings.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someRecording');
+    expect(deleteRequestSpy).toBeCalledWith(mockRecording.remoteId);
   });
 
   it('downloads a Recording when Download Recording is clicked', async () => {
@@ -539,7 +540,7 @@ describe('<ActiveRecordingsTable />', () => {
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana');
 
     expect(grafanaUploadSpy).toHaveBeenCalledTimes(1);
-    expect(grafanaUploadSpy).toBeCalledWith('someRecording');
+    expect(grafanaUploadSpy).toBeCalledWith(mockRecording.remoteId);
   });
 
   it('should show error view if failing to retrieve Recordings', async () => {

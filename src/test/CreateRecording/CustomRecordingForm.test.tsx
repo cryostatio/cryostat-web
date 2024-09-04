@@ -62,16 +62,8 @@ const mockResponse: Response = {
 } as Response;
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-jest
-  .spyOn(defaultServices.api, 'doGet')
-  .mockReturnValueOnce(of([mockCustomEventTemplate])) // renders correctly
-  .mockReturnValueOnce(of(mockRecordingOptions))
-
-  .mockReturnValueOnce(of([mockCustomEventTemplate])) // should create recording when form is filled and create is clicked
-  .mockReturnValueOnce(of(mockRecordingOptions))
-
-  .mockReturnValueOnce(of([mockCustomEventTemplate])) // should show correct helper texts in metadata label editor
-  .mockReturnValueOnce(of(mockRecordingOptions));
+jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
+jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingOptions));
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
