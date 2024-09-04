@@ -20,7 +20,7 @@ import { WritableDraft } from 'immer/dist/internal';
 import { getPersistedState } from '../utils';
 import { UpdateFilterOptions } from './Common';
 
-const _version = '1';
+const _version = '2';
 
 // Common action string format: "resource(s)/action"
 export enum RecordingFilterAction {
@@ -41,7 +41,7 @@ export const emptyActiveRecordingFilters = {
   State: [],
   StartedBeforeDate: [],
   StartedAfterDate: [],
-  DurationSeconds: [],
+  DurationRange: [],
 } as RecordingFiltersCategories;
 
 export const allowedActiveRecordingFilters = Object.keys(emptyActiveRecordingFilters);

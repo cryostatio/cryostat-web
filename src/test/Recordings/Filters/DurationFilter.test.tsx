@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { DurationFilter } from '@app/Recordings/Filters/DurationFilter';
+import { Duration, DurationFilter, DurationRange } from '@app/Recordings/Filters/DurationFilter';
+import { DurationUnit } from '@app/Shared/Components/DurationUnitSelect';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen } from '@testing-library/react';
 import { render, renderSnapshot } from '../../utils';
@@ -41,17 +42,19 @@ const mockRecording: ActiveRecording = {
 };
 
 const onDurationInput = jest.fn((_durationInput) => undefined);
-const onContinuousSelect = jest.fn((_continuous) => undefined);
 
 describe('<DurationFilter />', () => {
-  let emptyFilteredDuration: string[];
-  let filteredDurationsWithCont: string[];
-  let filteredDurationsWithoutCont: string[];
+  let emptyFilteredDuration: DurationRange[];
+  let filteredDurationsWithCont: DurationRange[];
+  let filteredDurationsWithoutCont: DurationRange[];
 
   beforeEach(() => {
     emptyFilteredDuration = [];
-    filteredDurationsWithCont = [`${mockRecording.duration}`, 'continuous'];
-    filteredDurationsWithoutCont = [`${mockRecording.duration}`];
+    filteredDurationsWithCont = [
+      { from: { value: mockRecording.duration, unit: DurationUnit.SECOND } },
+      { continuous: true },
+    ];
+    filteredDurationsWithoutCont = [{ from: { value: mockRecording.duration, unit: DurationUnit.SECOND } }];
   });
 
   afterEach(cleanup);
@@ -62,13 +65,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={emptyFilteredDuration}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={emptyFilteredDuration} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -82,13 +79,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={filteredDurationsWithCont}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={filteredDurationsWithCont} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -106,13 +97,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={filteredDurationsWithoutCont}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={filteredDurationsWithoutCont} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -126,7 +111,7 @@ describe('<DurationFilter />', () => {
 
   it('should select continous when clicking unchecked continuous box', async () => {
     const submitContinuous = jest.fn((_continous) => {
-      filteredDurationsWithoutCont.push('continuous');
+      filteredDurationsWithoutCont.push({ continuous: true });
     });
 
     const { user } = render({
@@ -134,13 +119,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={filteredDurationsWithoutCont}
-                onContinuousDurationSelect={submitContinuous}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={filteredDurationsWithoutCont} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -161,7 +140,7 @@ describe('<DurationFilter />', () => {
 
   it('should unselect continous when clicking checked continuous box', async () => {
     const submitContinuous = jest.fn((_continous) => {
-      filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== 'continuous');
+      filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => !v.continuous);
     });
 
     const { user } = render({
@@ -169,13 +148,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={filteredDurationsWithCont}
-                onContinuousDurationSelect={submitContinuous}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={filteredDurationsWithCont} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -203,13 +176,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={emptyFilteredDuration}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={submitDuration}
-              />
-            ),
+            element: <DurationFilter durations={emptyFilteredDuration} onDurationInput={submitDuration} />,
           },
         ],
       },
@@ -240,13 +207,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={emptyFilteredDuration}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={submitDuration}
-              />
-            ),
+            element: <DurationFilter durations={emptyFilteredDuration} onDurationInput={submitDuration} />,
           },
         ],
       },

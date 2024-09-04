@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDurationUnitDisplay } from '@app/Shared/Components/DurationUnitSelect';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   allowedActiveRecordingFilters,
@@ -21,7 +22,6 @@ import {
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { KeyValue, Recording, RecordingState, keyValueToString } from '@app/Shared/Services/api.types';
-import { useDayjs } from '@app/utils/hooks/useDayjs';
 import dayjs from '@i18n/datetime';
 import {
   ToolbarFilter,
@@ -36,10 +36,12 @@ import {
   Icon,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
+import { TFunction } from 'i18next';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimeFilter } from './Filters/DatetimeFilter';
-import { DurationFilter } from './Filters/DurationFilter';
+import { compareDuration, DurationFilter, DurationRange, filterRecordingByDuration } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
@@ -50,16 +52,60 @@ export interface RecordingFiltersCategories {
   State?: RecordingState[];
   StartedBeforeDate?: string[];
   StartedAfterDate?: string[];
-  DurationSeconds?: string[];
+  DurationRange?: DurationRange[];
 }
 
-export const categoriesToDisplayNames = {
-  Name: 'Name',
-  Label: 'Label',
-  State: 'Recording state',
-  StartedBeforeDate: 'Start time before',
-  StartedAfterDate: 'Start time after',
-  DurationSeconds: 'Duration (seconds)',
+export const getCategoryDisplay = (t: TFunction, category: string): string => {
+  switch (category) {
+    case 'Name':
+      return t('NAME', { ns: 'common' });
+    case 'Label':
+      return t('LABEL', { ns: 'common' });
+    case 'State':
+      return t('STATE', { ns: 'common' });
+    case 'DurationRange':
+      return t('DURATION', { ns: 'common' });
+    default:
+      return category;
+  }
+};
+
+export const getCategoryChipDisplay = (t: TFunction, category: string, value: unknown): string => {
+  switch (category) {
+    case 'DurationRange':
+      const range = value as DurationRange;
+      if (range.continuous) {
+        return t('RecordingFilters.FILTER_CHIP.DURATION_CONTINUOUS');
+      } else if (range.from && range.to) {
+        if (compareDuration(range.to, range.from) === 0) {
+          return t('RecordingFilters.FILTER_CHIP.DURATION_EXACT', {
+            value: range.from.value,
+            unit: getDurationUnitDisplay(t, range.from.unit, true),
+          });
+        }
+        return t('RecordingFilters.FILTER_CHIP.DURATION_FROM_TO', {
+          fromValue: range.from.value,
+          fromUnit: getDurationUnitDisplay(t, range.from.unit, true),
+          toValue: range.to.value,
+          toUnit: getDurationUnitDisplay(t, range.to.unit, true),
+        });
+      } else if (range.from) {
+        return t('RecordingFilters.FILTER_CHIP.DURATION_FROM', {
+          value: range.from.value,
+          unit: getDurationUnitDisplay(t, range.from.unit, true),
+        });
+      } else if (range.to) {
+        return t('RecordingFilters.FILTER_CHIP.DURATION_TO', {
+          value: range.to.value,
+          unit: getDurationUnitDisplay(t, range.to.unit, true),
+        });
+      }
+    case 'StartedBeforeDate':
+    case 'StartedAfterDate':
+      return dayjs(`${value}`).format('L LTS z');
+    default:
+      return `${value}`;
+  }
 };
 
 export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);
@@ -81,7 +127,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   breakpoint = 'xl',
   updateFilters,
 }) => {
-  const [formatter, _] = useDayjs();
+  const { t } = useTranslation();
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
@@ -141,7 +187,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 
   const onDurationInput = React.useCallback(
-    (duration) => updateFilters(target, { filterKey: currentCategory, filterValue: `${duration.toString()} s` }),
+    (range: DurationRange) => updateFilters(target, { filterKey: currentCategory, filterValue: range }),
     [updateFilters, currentCategory, target],
   );
 
@@ -151,11 +197,6 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       updateFilters(target, { filterKey: currentCategory, filterValue: searchState, deleted: deleted });
     },
     [updateFilters, currentCategory, target, filters.State],
-  );
-
-  const onContinuousDurationSelect = React.useCallback(
-    (cont) => updateFilters(target, { filterKey: currentCategory, filterValue: 'continuous', deleted: !cont }),
-    [updateFilters, currentCategory, target],
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -173,7 +214,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
             aria-label={currentCategory}
             onClick={() => onCategoryToggle()}
           >
-            {categoriesToDisplayNames[currentCategory]}
+            {getCategoryDisplay(t, currentCategory)}
           </MenuToggle>
         )}
         onOpenChange={(isOpen) => setIsCategoryDropdownOpen(isOpen)}
@@ -185,19 +226,14 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       >
         <DropdownList>
           {(!isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map((cat) => (
-            <DropdownItem
-              aria-label={categoriesToDisplayNames[cat]}
-              key={cat}
-              onClick={() => onCategorySelect(cat)}
-              value={cat}
-            >
-              {categoriesToDisplayNames[cat]}
+            <DropdownItem key={cat} onClick={() => onCategorySelect(cat)} value={cat}>
+              {getCategoryDisplay(t, cat)}
             </DropdownItem>
           ))}
         </DropdownList>
       </Dropdown>
     );
-  }, [isArchived, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
+  }, [isArchived, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect, t]);
 
   const filterDropdownItems = React.useMemo(
     () => [
@@ -212,12 +248,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
             />,
             <DateTimeFilter key={'datetime-before'} onSubmit={onStartedBeforeInput} />,
             <DateTimeFilter key={'datetime-after'} onSubmit={onStartedAfterInput} />,
-            <DurationFilter
-              key={'duration'}
-              durations={filters.DurationSeconds}
-              onContinuousDurationSelect={onContinuousDurationSelect}
-              onDurationInput={onDurationInput}
-            />,
+            <DurationFilter key={'duration'} durations={filters.DurationRange} onDurationInput={onDurationInput} />,
           ]
         : []),
     ],
@@ -227,13 +258,12 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       filters.Name,
       filters.Label,
       filters.State,
-      filters.DurationSeconds,
+      filters.DurationRange,
       onNameInput,
       onLabelInput,
       onRecordingStateSelectToggle,
       onStartedAfterInput,
       onStartedBeforeInput,
-      onContinuousDurationSelect,
       onDurationInput,
     ],
   );
@@ -255,21 +285,15 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
           <ToolbarFilter
             key={`${filterKey}-filter`}
             className="recording-filter__toolbar-filter"
-            chips={
-              categoryIsDate(filterKey)
-                ? filters[filterKey].map((ISOStr: string) => {
-                    return {
-                      node: formatter(ISOStr).format('L LTS z'),
-                      key: ISOStr,
-                    };
-                  })
-                : filters[filterKey].map((v) => ({ node: v, key: v }))
-            }
+            chips={filters[filterKey].map((v: unknown) => {
+              const display = getCategoryChipDisplay(t, filterKey, v);
+              return { node: display, key: display };
+            })}
             deleteChip={onDelete}
             deleteChipGroup={onDeleteGroup}
             categoryName={{
               key: filterKey,
-              name: categoriesToDisplayNames[filterKey],
+              name: getCategoryDisplay(t, filterKey),
             }}
             showToolbarItem={filterKey === currentCategory}
           >
@@ -295,15 +319,9 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
   if (!!filters.State && !!filters.State.length) {
     filtered = filtered.filter((r) => !!filters.State && filters.State.includes(r.state));
   }
-  if (!!filters.DurationSeconds && !!filters.DurationSeconds.length) {
-    filtered = filtered.filter((r) => {
-      if (!filters.DurationSeconds) return true;
-      return (
-        filters.DurationSeconds.includes(`${r.duration / 1000} s`) ||
-        (filters.DurationSeconds.includes('continuous') && r.continuous)
-      );
-    });
-  }
+
+  filtered = filterRecordingByDuration(filtered, filters.DurationRange);
+
   if (!!filters.StartedBeforeDate && !!filters.StartedBeforeDate.length) {
     filtered = filtered.filter((rec) => {
       if (!filters.StartedBeforeDate) return true;

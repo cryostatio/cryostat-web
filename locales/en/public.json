@@ -323,7 +323,12 @@
   },
   "DurationFilter": {
     "ARIA_LABELS": {
-      "SEARCH_BUTTON": "Search for duration"
+      "FROM_DURATION": "cryostat_tmp",
+      "SEARCH_BUTTON": "Search for duration",
+      "TO_DURATION": "cryostat_tmp"
+    },
+    "HELPER_TEXT": {
+      "INVALID_UPPER_BOUND": "Duration upper value must be larger than or equal to lower one"
     }
   },
   "ERROR_BOUNDARY": {
@@ -403,6 +408,15 @@
     "CATALOG_PAGE": {
       "HINT": "Quick start tutorials to get started with Cryostat.",
       "TITLE": "Quick starts"
+    }
+  },
+  "RecordingFilters": {
+    "FILTER_CHIP": {
+      "DURATION_CONTINUOUS": "Continuous",
+      "DURATION_EXACT": "{{value}}{{unit}}",
+      "DURATION_FROM": ">={{value}}{{unit}}",
+      "DURATION_FROM_TO": "{{fromValue}}{{fromUnit}}-{{toValue}}{{toUnit}}",
+      "DURATION_TO": "<={{value}}{{unit}}"
     }
   },
   "RecordingLabelFields": {

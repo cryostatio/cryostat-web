@@ -103,7 +103,7 @@ describe('<RecordingFilters />', () => {
       State: [],
       StartedBeforeDate: [],
       StartedAfterDate: [],
-      DurationSeconds: [],
+      DurationRange: [],
     } as RecordingFiltersCategories;
 
     archivedRecordingFilters = {
