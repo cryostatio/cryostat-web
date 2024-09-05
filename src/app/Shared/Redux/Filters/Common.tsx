@@ -17,6 +17,7 @@
 export interface UpdateFilterOptions {
   filterKey: string;
   filterValue?: unknown;
+  filterValueIndex?: number;
   deleted?: boolean;
   deleteOptions?: {
     all: boolean;

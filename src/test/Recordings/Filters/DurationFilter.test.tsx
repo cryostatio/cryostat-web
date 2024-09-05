@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Duration, DurationFilter, DurationRange } from '@app/Recordings/Filters/DurationFilter';
+import { DurationFilter, DurationRange } from '@app/Recordings/Filters/DurationFilter';
 import { DurationUnit } from '@app/Shared/Components/DurationUnitSelect';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen } from '@testing-library/react';

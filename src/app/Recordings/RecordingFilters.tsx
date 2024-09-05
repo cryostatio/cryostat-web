@@ -152,8 +152,8 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
 
   const onDelete = React.useCallback(
     (category, chip) => {
-      const value = typeof chip === 'string' ? chip : chip.key;
-      updateFilters(target, { filterKey: category, filterValue: value, deleted: true });
+      const index = typeof chip === 'string' ? chip : chip.key;
+      updateFilters(target, { filterKey: category, filterValueIndex: index, deleted: true });
     },
     [updateFilters, target],
   );
@@ -187,8 +187,20 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 
   const onDurationInput = React.useCallback(
-    (range: DurationRange) => updateFilters(target, { filterKey: currentCategory, filterValue: range }),
-    [updateFilters, currentCategory, target],
+    (range: DurationRange) => {
+      // Remove continuous duration filter
+      if (range.continuous !== undefined && !range.continuous) {
+        updateFilters(target, {
+          filterKey: currentCategory,
+          filterValueIndex: filters.DurationRange?.findIndex((val) => val.continuous !== undefined),
+          deleted: true,
+        });
+      } else {
+        updateFilters(target, { filterKey: currentCategory, filterValue: range });
+      }
+    },
+
+    [updateFilters, currentCategory, target, filters.DurationRange],
   );
 
   const onRecordingStateSelectToggle = React.useCallback(
@@ -281,13 +293,13 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
         <ToolbarItem style={{ alignSelf: 'start' }} key={'category-select'}>
           {categoryDropdown}
         </ToolbarItem>
-        {Object.keys(filters).map((filterKey, i) => (
+        {Object.keys(filters).map((filterKey, idx) => (
           <ToolbarFilter
             key={`${filterKey}-filter`}
             className="recording-filter__toolbar-filter"
-            chips={filters[filterKey].map((v: unknown) => {
+            chips={filters[filterKey].map((v: unknown, index) => {
               const display = getCategoryChipDisplay(t, filterKey, v);
-              return { node: display, key: display };
+              return { node: display, key: index }; // Use key to keep value index
             })}
             deleteChip={onDelete}
             deleteChipGroup={onDeleteGroup}
@@ -297,7 +309,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
             }}
             showToolbarItem={filterKey === currentCategory}
           >
-            {filterDropdownItems[i]}
+            {filterDropdownItems[idx]}
           </ToolbarFilter>
         ))}
       </ToolbarGroup>

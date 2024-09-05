@@ -46,11 +46,13 @@ export const filterRecordingByDuration = (recordings: ActiveRecording[], filters
     return filters.some((range) => {
       if (rec.continuous && range.continuous) {
         return true;
+      } else if (!rec.continuous && !range.continuous) {
+        return (
+          (!range.from || rec.duration / 1000 >= convertDurationToSeconds(range.from.value, range.from.unit)) &&
+          (!range.to || rec.duration / 1000 <= convertDurationToSeconds(range.to.value, range.to.unit))
+        );
       }
-      return (
-        (!range.from || rec.duration >= convertDurationToSeconds(range.from.value, range.from.unit)) &&
-        (!range.to || rec.duration <= convertDurationToSeconds(range.to.value, range.to.unit))
-      );
+      return false;
     });
   });
 };
@@ -67,14 +69,14 @@ export interface Duration {
 }
 
 export interface DurationRange {
-  from?: Duration;
-  to?: Duration;
+  from?: Duration; // inclusive
+  to?: Duration; // inclusive
   continuous?: boolean;
 }
 
 export interface DurationFilterProps {
   durations?: DurationRange[];
-  onDurationInput: (range: DurationRange) => void; // [from, to] range
+  onDurationInput: (range: DurationRange) => void;
 }
 
 export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDurationInput }) => {
@@ -98,7 +100,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
   const isContinuous = React.useMemo(() => durations && durations.some((dur) => dur.continuous), [durations]);
 
   const handleContinuousCheckBoxChange = React.useCallback(
-    () => onDurationInput({ continuous: true }),
+    (_, checked: boolean) => onDurationInput({ continuous: checked }),
     [onDurationInput],
   );
 
@@ -124,8 +126,8 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
             <InputGroupText>{t('FROM', { ns: 'common' })}</InputGroupText>
             <InputGroupItem>
               <TextInput
+                // Uncontrolled input
                 type="number"
-                value={fromDuration}
                 id="duration-input-from"
                 aria-label={t('DurationFilter.ARIA_LABELS.FROM_DURATION')}
                 onChange={(_, value) => setFromDuration(Number(value))}
@@ -139,8 +141,8 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
             <InputGroupText>{t('TO', { ns: 'common' })}</InputGroupText>
             <InputGroupItem>
               <TextInput
+                // Uncontrolled input
                 type="number"
-                value={toDuration}
                 id="duration-input-to"
                 aria-label={t('DurationFilter.ARIA_LABELS.TO_DURATION')}
                 onChange={(_, value) => setToDuration(Number(value))}

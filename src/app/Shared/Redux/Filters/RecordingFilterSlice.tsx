@@ -57,6 +57,7 @@ export interface RecordingFilterActionPayload {
   target: string;
   category: string;
   filter?: unknown;
+  filterIdx?: number;
   isArchived?: boolean;
 }
 
@@ -74,12 +75,13 @@ export const recordingAddFilterIntent = createAction(
 
 export const recordingDeleteFilterIntent = createAction(
   RecordingFilterAction.FILTER_DELETE,
-  (target: string, category: string, filter: unknown, isArchived: boolean) => ({
+  (target: string, category: string, isArchived: boolean, filter: unknown, filterIdx?: number) => ({
     payload: {
       target: target,
       category: category,
       filter: filter,
       isArchived: isArchived,
+      filterIdx: filterIdx,
     } as RecordingFilterActionPayload,
   }),
 );
@@ -144,7 +146,7 @@ export interface TargetRecordingFilters {
 
 export const createOrUpdateRecordingFilter = (
   old: RecordingFiltersCategories,
-  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions,
+  { filterValue, filterKey, filterValueIndex, deleted = false, deleteOptions }: UpdateFilterOptions,
 ): RecordingFiltersCategories => {
   let newFilterValues: unknown[];
   if (!old[filterKey]) {
@@ -154,6 +156,12 @@ export const createOrUpdateRecordingFilter = (
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
         newFilterValues = [];
+      } else if (filterValueIndex !== undefined) {
+        // If index is present, use it
+        newFilterValues = [
+          ...oldFilterValues.slice(0, filterValueIndex),
+          ...oldFilterValues.slice(filterValueIndex + 1),
+        ];
       } else {
         newFilterValues = oldFilterValues.filter((val) => val !== filterValue);
       }
@@ -264,6 +272,7 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
             filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
               filterKey: payload.category!,
               filterValue: payload.filter,
+              filterValueIndex: payload.filterIdx,
               deleted: true,
             }),
           },
@@ -276,6 +285,7 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
             filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
               filterKey: payload.category!,
               filterValue: payload.filter,
+              filterValueIndex: payload.filterIdx,
               deleted: true,
             }),
           },

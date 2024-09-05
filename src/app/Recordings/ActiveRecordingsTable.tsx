@@ -467,12 +467,15 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   }, [dispatch, targetConnectURL]);
 
   const updateFilters = React.useCallback(
-    (target: string, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
+    (
+      target: string,
+      { filterValue, filterKey, filterValueIndex, deleted = false, deleteOptions }: UpdateFilterOptions,
+    ) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
           dispatch(recordingDeleteCategoryFiltersIntent(target, filterKey, false));
         } else {
-          dispatch(recordingDeleteFilterIntent(target, filterKey, filterValue, false));
+          dispatch(recordingDeleteFilterIntent(target, filterKey, false, filterValue, filterValueIndex));
         }
       } else {
         dispatch(recordingAddFilterIntent(target, filterKey, filterValue, false));
