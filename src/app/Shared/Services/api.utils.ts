@@ -261,7 +261,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Recording stopped',
-      body: (evt) => `${evt.message.recording.name} was stopped`,
+      body: (evt) => `${evt.message.recording.name} in target ${evt.message.target} was stopped`,
     } as NotificationMessageMapper,
   ],
   [
@@ -269,7 +269,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Recording saved',
-      body: (evt) => `${evt.message.recording.name} was archived`,
+      body: (evt) => `${evt.message.recording.name} in target ${evt.message.target} was archived`,
     } as NotificationMessageMapper,
   ],
   [
@@ -277,7 +277,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Recording deleted',
-      body: (evt) => `${evt.message.recording.name} was deleted`,
+      body: (evt) => `${evt.message.recording.name} in target ${evt.message.target} was deleted`,
     } as NotificationMessageMapper,
   ],
   [
@@ -293,7 +293,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Snapshot deleted',
-      body: (evt) => `${evt.message.recording.name} was deleted`,
+      body: (evt) => `${evt.message.recording.name} in target ${evt.message.target} was deleted`,
     } as NotificationMessageMapper,
   ],
   [
@@ -389,7 +389,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Recording metadata updated',
-      body: (evt) => `${evt.message.recording.name} metadata was updated`,
+      body: (evt) => `${evt.message.recording.name} in target ${evt.message.target} metadata was updated`,
     } as NotificationMessageMapper,
   ],
   [
