@@ -138,10 +138,11 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
         popperProps={{
           position: 'left',
         }}
+        selected={currentCategory}
       >
         <DropdownList>
           {allowedAutomatedAnalysisFilters.map((cat) => (
-            <DropdownItem aria-label={cat} key={cat} onClick={() => onCategorySelect(cat)}>
+            <DropdownItem aria-label={cat} value={cat} key={cat} onClick={() => onCategorySelect(cat)}>
               {cat}
             </DropdownItem>
           ))}
