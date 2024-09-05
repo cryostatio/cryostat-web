@@ -130,7 +130,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
                 type="number"
                 id="duration-input-from"
                 aria-label={t('DurationFilter.ARIA_LABELS.FROM_DURATION')}
-                onChange={(_, value) => setFromDuration(Number(value))}
+                onChange={(_, value) => setFromDuration(value === '' ? undefined : Number(value))}
                 min="0"
                 style={{ maxWidth: _INPUT_MAXLENGTH }}
               />
@@ -145,7 +145,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
                 type="number"
                 id="duration-input-to"
                 aria-label={t('DurationFilter.ARIA_LABELS.TO_DURATION')}
-                onChange={(_, value) => setToDuration(Number(value))}
+                onChange={(_, value) => setToDuration(value === '' ? undefined : Number(value))}
                 min="0"
                 style={{ maxWidth: _INPUT_MAXLENGTH }}
                 validated={validated}
