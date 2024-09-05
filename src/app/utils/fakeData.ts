@@ -303,7 +303,7 @@ class FakeApiService extends ApiService {
   }
 
   // JFR Metrics card
-  targetHasRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
+  targetHasJFRMetricsRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
     return of(true);
   }
 

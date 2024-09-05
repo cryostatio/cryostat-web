@@ -1149,7 +1149,40 @@ export class ApiService {
     );
   }
 
-  targetHasRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
+  targetRecordingRemoteIdByOrigin(target: TargetStub, origin: string): Observable<number | undefined> {
+    return this.graphql<any>(
+      `
+        query ActiveRecordingIdForRecordingByOriginLabel($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
+            target {
+              activeRecordings(filter: {
+                labels: ["origin=${origin}"]
+              }) {
+                data {
+                  remoteId
+                }
+              }
+            }
+          }
+        }
+      `,
+      { id: target.id },
+    ).pipe(
+      map((resp) => {
+        const nodes = resp.data?.targetNodes ?? [];
+        if (nodes.length === 0) {
+          return undefined;
+        }
+        const data = nodes[0]?.target?.activeRecordings?.data ?? [];
+        if (data.length === 0) {
+          return undefined;
+        }
+        return data[0]?.remoteId;
+      }),
+    );
+  }
+
+  targetHasJFRMetricsRecording(target: TargetStub, filter: ActiveRecordingsFilterInput = {}): Observable<boolean> {
     return this.graphql<RecordingCountResponse>(
       `
         query ActiveRecordingsForJFRMetrics($id: BigInteger!, $recordingFilter: ActiveRecordingsFilterInput) {

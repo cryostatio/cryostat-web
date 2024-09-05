@@ -23,6 +23,7 @@ import {
   BehaviorSubject,
   concatMap,
   distinctUntilChanged,
+  filter,
   finalize,
   first,
   map,
@@ -115,10 +116,15 @@ export class JFRMetricsChartController {
       .subscribe((v) => {
         this._state$.next(v ? ControllerState.READY : ControllerState.NO_DATA);
         if (v) {
-          this._api
-            // FIXME this should retrieve the ID given the recording name by using a GraphQL query
-            .uploadActiveRecordingToGrafana(RECORDING_NAME)
-            .pipe(first())
+          this._target
+            .target()
+            .pipe(
+              filter((t) => !!t),
+              first(),
+              concatMap((t) => this._api.targetRecordingRemoteIdByOrigin(t!, RECORDING_NAME)),
+              filter((remoteId) => remoteId != null),
+              concatMap((id) => this._api.uploadActiveRecordingToGrafana(id!).pipe(first())),
+            )
             .subscribe((_) => {
               this._state$.next(ControllerState.READY);
             });
@@ -130,7 +136,7 @@ export class JFRMetricsChartController {
     if (!target) {
       return of(false);
     }
-    return this._api.targetHasRecording(target, {
+    return this._api.targetHasJFRMetricsRecording(target, {
       state: RecordingState.RUNNING,
       labels: [`origin=${RECORDING_NAME}`],
     });
