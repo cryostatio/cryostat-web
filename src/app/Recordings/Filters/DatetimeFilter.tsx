@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
+import { ActiveRecording } from '@app/Shared/Services/api.types';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
-import { Timezone } from '@i18n/datetime';
+import dayjs, { Timezone } from '@i18n/datetime';
 import {
   Button,
   ButtonVariant,
@@ -26,150 +27,239 @@ import {
   HelperTextItem,
   InputGroup,
   Popover,
-  Stack,
-  StackItem,
   TextInput,
   ValidatedOptions,
   InputGroupItem,
+  InputGroupText,
+  CalendarProps,
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
-import { t } from 'i18next';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { DATETIME_INPUT_MAXLENGTH } from './const';
 
-export interface DateTimeFilterProps {
-  onSubmit: (dateISO: string) => void;
-}
-
-const _emptyDatetimeInput: {
+interface _DatetimeState {
   text: string;
   date: Date | undefined; // Ignore timezone
   validation: ValidatedOptions;
-} = {
+}
+
+const _emptyDatetimeInput: _DatetimeState = {
   text: '',
   date: undefined,
   validation: ValidatedOptions.default,
 };
 
+export interface DateTimeRange {
+  from?: string; // ISO format
+  to?: string; // ISO format
+}
+
+export const filterRecordingByDatetime = (recordings: ActiveRecording[], filters?: DateTimeRange[]) => {
+  if (!recordings || !recordings.length || !filters || !filters.length) {
+    return recordings;
+  }
+
+  return recordings.filter((rec) => {
+    return filters.some((range) => {
+      return (
+        (!range.from || dayjs(rec.startTime).isSameOrAfter(range.from)) &&
+        (!range.to || dayjs(rec.startTime).isSameOrBefore(range.to))
+      );
+    });
+  });
+};
+
+export interface DateTimeFilterProps {
+  onSubmit: (dateTimeRange: DateTimeRange) => void;
+}
+
 export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
+  const { t } = useTranslation();
+  const [dayjs, _] = useDayjs();
+  const [fromDatetimeInput, setFromDatetimeInput] = React.useState<_DatetimeState>(_emptyDatetimeInput);
+  const [toDatetimeInput, setToDatetimeInput] = React.useState<_DatetimeState>(_emptyDatetimeInput);
+
+  const invalidErr = React.useMemo((): Error | undefined => {
+    if (
+      fromDatetimeInput.validation === ValidatedOptions.error ||
+      toDatetimeInput.validation === ValidatedOptions.error
+    ) {
+      return new Error(t('DatetimeFilter.INVALID_DATE_TEXT'));
+    }
+
+    if (fromDatetimeInput.date && toDatetimeInput.date) {
+      const _from = dayjs(fromDatetimeInput.date);
+      const _to = dayjs(toDatetimeInput.date);
+      return _from.isAfter(_to) ? new Error(t('DatetimeFilter.HELPER_TEXT.INVALID_UPPER_BOUND')) : undefined;
+    }
+
+    return undefined;
+  }, [fromDatetimeInput, toDatetimeInput, t, dayjs]);
+
+  const submitDisabled = React.useMemo(
+    () =>
+      invalidErr !== undefined ||
+      (!fromDatetimeInput.date && !toDatetimeInput.date) ||
+      fromDatetimeInput.validation === ValidatedOptions.error ||
+      toDatetimeInput.validation === ValidatedOptions.error,
+    [invalidErr, fromDatetimeInput, toDatetimeInput],
+  );
+
+  const handleSubmit = React.useCallback(() => {
+    onSubmit({
+      from: fromDatetimeInput.date ? dayjs(fromDatetimeInput.date).toISOString() : undefined,
+      to: toDatetimeInput.date ? dayjs(toDatetimeInput.date).toISOString() : undefined,
+    });
+  }, [onSubmit, fromDatetimeInput, toDatetimeInput, dayjs]);
+
+  const fromValidators = React.useMemo(() => {
+    if (toDatetimeInput.date) {
+      return [(d: Date) => dayjs(toDatetimeInput.date).startOf('day').isSameOrAfter(d)];
+    }
+    return undefined;
+  }, [dayjs, toDatetimeInput]);
+
+  const toValidators = React.useMemo(() => {
+    if (fromDatetimeInput.date) {
+      return [(d: Date) => dayjs(fromDatetimeInput.date).startOf('day').isSameOrBefore(d)];
+    }
+    return undefined;
+  }, [dayjs, fromDatetimeInput]);
+
+  return (
+    <Flex direction={{ default: 'column' }}>
+      <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+        <FlexItem>
+          <InputGroup>
+            <InputGroupText>{t('FROM', { ns: 'common' })}</InputGroupText>
+            <DateTimeInput
+              onChange={setFromDatetimeInput}
+              selectedDateTime={fromDatetimeInput}
+              dateValidators={fromValidators}
+            />
+            <InputGroupText>{t('TO', { ns: 'common' })}</InputGroupText>
+            <DateTimeInput
+              onChange={setToDatetimeInput}
+              selectedDateTime={toDatetimeInput}
+              dateValidators={toValidators}
+            />
+          </InputGroup>
+        </FlexItem>
+        <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
+          <Button
+            variant={ButtonVariant.control}
+            aria-label={t('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON')}
+            onClick={handleSubmit}
+            isDisabled={submitDisabled}
+          >
+            <SearchIcon />
+          </Button>
+        </FlexItem>
+      </Flex>
+      {invalidErr ? (
+        <FlexItem>
+          <HelperText>
+            <HelperTextItem variant="error">{invalidErr.message}</HelperTextItem>
+          </HelperText>
+        </FlexItem>
+      ) : null}
+    </Flex>
+  );
+};
+
+export interface DateTimeInputProps {
+  selectedDateTime: _DatetimeState;
+  onChange: (datetime: _DatetimeState) => void;
+  dateValidators?: CalendarProps['validators']; // Restrict selectable calendar entry
+}
+
+export const DateTimeInput: React.FC<DateTimeInputProps> = ({ selectedDateTime, dateValidators, onChange }) => {
+  const { t } = useTranslation();
   const [dayjs, datetimeContext] = useDayjs();
-  const [datetimeInput, setDatetimeInput] = React.useState(_emptyDatetimeInput);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
   const onToggleCalendar = React.useCallback(() => setIsCalendarOpen((open) => !open), [setIsCalendarOpen]);
 
   const onPopoverDismiss = React.useCallback(() => setIsCalendarOpen(false), [setIsCalendarOpen]);
 
-  const handleSubmit = React.useCallback(() => {
-    if (datetimeInput.validation === ValidatedOptions.success) {
-      // internally uses ISOString but display will be localized.
-      onSubmit(dayjs(datetimeInput.date).toISOString());
-      setDatetimeInput(_emptyDatetimeInput);
-    }
-  }, [onSubmit, datetimeInput, setDatetimeInput, dayjs]);
-
   const handleDatetimeSelect = React.useCallback(
     (date: Date, timezone: Timezone) => {
       const d = dayjs(date).tz(timezone.full, true);
-      setDatetimeInput({
+      onChange({
         text: d.toISOString(),
         date: d.toDate(),
         validation: ValidatedOptions.success,
       });
       onPopoverDismiss();
     },
-    [setDatetimeInput, onPopoverDismiss, dayjs],
+    [onChange, onPopoverDismiss, dayjs],
   );
 
   const handleTextInput = React.useCallback(
     (_, value: string) => {
-      setDatetimeInput((_) => {
-        if (value === '') {
-          return _emptyDatetimeInput;
-        }
+      let val: _DatetimeState;
+      if (value === '') {
+        val = _emptyDatetimeInput;
+      } else {
         const d = dayjs.utc(value, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]', true); // Parse ISO8601, must be in UTC
         if (d.isValid()) {
-          return {
+          val = {
             text: value,
             date: d.toDate(),
             validation: ValidatedOptions.success,
           };
         } else {
-          return {
+          val = {
             text: value,
             date: undefined,
             validation: ValidatedOptions.error,
           };
         }
-      });
+      }
+      onChange(val);
     },
-    [setDatetimeInput, dayjs],
+    [onChange, dayjs],
   );
 
   return (
-    <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-      <Flex alignSelf={{ default: 'alignSelfFlexStart' }}>
-        <FlexItem spacer={{ default: 'spacerNone' }}>
-          <Popover
-            appendTo={portalRoot}
-            bodyContent={
-              <DateTimePicker
-                onSelect={handleDatetimeSelect}
-                onDismiss={onPopoverDismiss}
-                prefilledDate={datetimeInput.date}
-              />
-            }
-            isVisible={isCalendarOpen}
-            showClose={false}
-            hasAutoWidth
-          >
-            <Stack>
-              <StackItem>
-                <InputGroup>
-                  <InputGroupItem isFill>
-                    <TextInput
-                      type="text"
-                      id="date-time"
-                      placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).toISOString()}
-                      aria-label={t('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT') || ''}
-                      value={datetimeInput.text}
-                      validated={datetimeInput.validation}
-                      onChange={handleTextInput}
-                    />
-                  </InputGroupItem>
-                  <InputGroupItem>
-                    <Button
-                      variant="control"
-                      aria-label={t('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR') || ''}
-                      onClick={onToggleCalendar}
-                    >
-                      <OutlinedCalendarAltIcon />
-                    </Button>
-                  </InputGroupItem>
-                </InputGroup>
-              </StackItem>
-              {datetimeInput.validation === ValidatedOptions.error ? (
-                <StackItem>
-                  <HelperText>
-                    <HelperTextItem variant="error">{t('DatetimeFilter.INVALID_DATE_TEXT')}</HelperTextItem>
-                  </HelperText>
-                </StackItem>
-              ) : (
-                <></>
-              )}
-            </Stack>
-          </Popover>
-        </FlexItem>
-      </Flex>
-      <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
-        <Button
-          variant={ButtonVariant.control}
-          aria-label={t('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') || ''}
-          isDisabled={datetimeInput.validation !== ValidatedOptions.success}
-          onClick={handleSubmit}
+    <>
+      <InputGroupItem isFill>
+        <Popover
+          appendTo={portalRoot}
+          bodyContent={
+            <DateTimePicker
+              onSelect={handleDatetimeSelect}
+              onDismiss={onPopoverDismiss}
+              prefilledDate={selectedDateTime.date}
+              dateValidators={dateValidators}
+            />
+          }
+          isVisible={isCalendarOpen}
+          showClose={false}
+          hasAutoWidth
         >
-          <SearchIcon />
+          <TextInput
+            type="text"
+            id="date-time"
+            placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).toISOString()}
+            aria-label={t('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT')}
+            value={selectedDateTime.text}
+            validated={selectedDateTime.validation}
+            onChange={handleTextInput}
+            style={{ maxWidth: DATETIME_INPUT_MAXLENGTH }}
+          />
+        </Popover>
+      </InputGroupItem>
+      <InputGroupItem>
+        <Button
+          variant="control"
+          aria-label={t('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR')}
+          onClick={onToggleCalendar}
+        >
+          <OutlinedCalendarAltIcon />
         </Button>
-      </FlexItem>
-    </Flex>
+      </InputGroupItem>
+    </>
   );
 };

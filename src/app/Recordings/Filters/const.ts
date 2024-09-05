@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const _INPUT_MAXLENGTH = '10ch';
+export const DURATION_INPUT_MAXLENGTH = '10ch';
+export const DATETIME_INPUT_MAXLENGTH = '23.5ch';

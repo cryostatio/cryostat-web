@@ -33,7 +33,7 @@ import {
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { _INPUT_MAXLENGTH } from './const';
+import { DURATION_INPUT_MAXLENGTH } from './const';
 
 export const CONTINUOUS_INDICATOR = 'continuous';
 
@@ -132,7 +132,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
                 aria-label={t('DurationFilter.ARIA_LABELS.FROM_DURATION')}
                 onChange={(_, value) => setFromDuration(value === '' ? undefined : Number(value))}
                 min="0"
-                style={{ maxWidth: _INPUT_MAXLENGTH }}
+                style={{ maxWidth: DURATION_INPUT_MAXLENGTH }}
               />
             </InputGroupItem>
             <InputGroupItem>
@@ -147,7 +147,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
                 aria-label={t('DurationFilter.ARIA_LABELS.TO_DURATION')}
                 onChange={(_, value) => setToDuration(value === '' ? undefined : Number(value))}
                 min="0"
-                style={{ maxWidth: _INPUT_MAXLENGTH }}
+                style={{ maxWidth: DURATION_INPUT_MAXLENGTH }}
                 validated={validated}
               />
             </InputGroupItem>

@@ -313,7 +313,10 @@
       "SEARCH_BUTTON": "Search for date",
       "TOGGLE_CALENDAR": "Toggle the calendar"
     },
-    "INVALID_DATE_TEXT": "Invalid date time"
+    "HELPER_TEXT": {
+      "INVALID_UPPER_BOUND": "From Datetime must be equal or later than To Datetime"
+    },
+    "INVALID_DATE_TEXT": "Invalid date time input. The input must have the ISO 8601 format."
   },
   "DateTimePicker": {
     "ARIA_LABELS": {
@@ -328,7 +331,7 @@
       "TO_DURATION": "cryostat_tmp"
     },
     "HELPER_TEXT": {
-      "INVALID_UPPER_BOUND": "Duration upper value must be larger than or equal to lower one"
+      "INVALID_UPPER_BOUND": "Duration upper value must be higher than or equal to lower one"
     }
   },
   "ERROR_BOUNDARY": {
@@ -416,8 +419,13 @@
       "DURATION_EXACT": "{{value}}{{unit}}",
       "DURATION_FROM": ">={{value}}{{unit}}",
       "DURATION_FROM_TO": "{{fromValue}}{{fromUnit}}-{{toValue}}{{toUnit}}",
-      "DURATION_TO": "<={{value}}{{unit}}"
-    }
+      "DURATION_TO": "<={{value}}{{unit}}",
+      "START_TIME_EXACT": "On {{value}}",
+      "START_TIME_FROM": "After {{value}}",
+      "START_TIME_FROM_TO": "From {{from}} To {{to}}",
+      "START_TIME_TO": "Before {{value}}"
+    },
+    "START_TIME": "StartTime"
   },
   "RecordingLabelFields": {
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",

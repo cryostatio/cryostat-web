@@ -101,9 +101,9 @@ describe('<RecordingFilters />', () => {
       Name: [mockActiveRecording.name],
       Label: ['someLabel:someValue'],
       State: [],
-      StartedBeforeDate: [],
+      StartTime: [],
       StartedAfterDate: [],
-      DurationRange: [],
+      Duration: [],
     } as RecordingFiltersCategories;
 
     archivedRecordingFilters = {

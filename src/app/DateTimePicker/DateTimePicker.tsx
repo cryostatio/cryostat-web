@@ -21,6 +21,7 @@ import {
   ActionGroup,
   Button,
   CalendarMonth,
+  CalendarProps,
   Divider,
   Form,
   FormGroup,
@@ -36,9 +37,15 @@ export interface DateTimePickerProps {
   onSelect?: (date: Date, timezone: Timezone) => void;
   prefilledDate?: Date; // timezone is ignored
   onDismiss: () => void;
+  dateValidators?: CalendarProps['validators'];
 }
 
-export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
+export const DateTimePicker: React.FC<DateTimePickerProps> = ({
+  onSelect,
+  onDismiss,
+  prefilledDate,
+  dateValidators,
+}) => {
   const { t } = useTranslation();
   const [dayjs, _] = useDayjs();
   const [datetime, setDatetime] = React.useState<Date>(new Date());
@@ -115,6 +122,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
               style={{ padding: 0 }}
               date={datetime}
               onChange={handleCalendarSelect}
+              validators={dateValidators}
             />
           </LevelItem>
           <Divider orientation={{ default: 'vertical' }}></Divider>

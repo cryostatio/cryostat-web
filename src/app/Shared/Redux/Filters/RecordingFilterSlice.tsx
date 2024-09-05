@@ -39,9 +39,8 @@ export const emptyActiveRecordingFilters = {
   Name: [],
   Label: [],
   State: [],
-  StartedBeforeDate: [],
-  StartedAfterDate: [],
-  DurationRange: [],
+  StartTime: [],
+  Duration: [],
 } as RecordingFiltersCategories;
 
 export const allowedActiveRecordingFilters = Object.keys(emptyActiveRecordingFilters);
