@@ -257,7 +257,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
         ),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) => old.concat([event.message.recording]));
@@ -274,7 +274,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
         ),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
 
@@ -290,7 +290,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) => {
@@ -321,7 +321,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) => {
