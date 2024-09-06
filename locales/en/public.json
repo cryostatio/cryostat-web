@@ -425,7 +425,7 @@
       "START_TIME_FROM_TO": "From: {{from}} To: {{to}}",
       "START_TIME_TO": "Before {{value}}"
     },
-    "START_TIME": "StartTime"
+    "START_TIME": "Start time"
   },
   "RecordingLabelFields": {
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
