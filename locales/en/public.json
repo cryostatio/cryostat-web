@@ -422,7 +422,7 @@
       "DURATION_TO": "<={{value}}{{unit}}",
       "START_TIME_EXACT": "On {{value}}",
       "START_TIME_FROM": "After {{value}}",
-      "START_TIME_FROM_TO": "From {{from}} To {{to}}",
+      "START_TIME_FROM_TO": "From: {{from}} To: {{to}}",
       "START_TIME_TO": "Before {{value}}"
     },
     "START_TIME": "StartTime"
