@@ -108,13 +108,14 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
 
   const handleSubmit = React.useCallback(() => {
     onDurationInput({
-      from: fromDuration
-        ? {
-            value: fromDuration,
-            unit: fromDurationUnit,
-          }
-        : undefined,
-      to: toDuration ? { value: toDuration, unit: toDurationUnit } : undefined,
+      from:
+        fromDuration !== undefined
+          ? {
+              value: fromDuration,
+              unit: fromDurationUnit,
+            }
+          : undefined,
+      to: toDuration !== undefined ? { value: toDuration, unit: toDurationUnit } : undefined,
     });
   }, [onDurationInput, fromDuration, toDuration, fromDurationUnit, toDurationUnit]);
 
@@ -180,7 +181,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
           variant={ButtonVariant.control}
           aria-label={t('DurationFilter.ARIA_LABELS.SEARCH_BUTTON')}
           onClick={handleSubmit}
-          isDisabled={validated == ValidatedOptions.error || (!fromDuration && !toDuration)}
+          isDisabled={validated == ValidatedOptions.error || (fromDuration === undefined && toDuration === undefined)}
         >
           <SearchIcon />
         </Button>
