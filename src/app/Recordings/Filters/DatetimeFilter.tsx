@@ -51,8 +51,8 @@ const _emptyDatetimeInput: _DatetimeState = {
 };
 
 export interface DateTimeRange {
-  from?: Date | string;
-  to?: Date | string;
+  from?: Date;
+  to?: Date;
 }
 
 export const filterRecordingByDatetime = (recordings: ActiveRecording[], filters?: DateTimeRange[]) => {

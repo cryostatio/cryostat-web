@@ -326,9 +326,9 @@
   },
   "DurationFilter": {
     "ARIA_LABELS": {
-      "FROM_DURATION": "cryostat_tmp",
-      "SEARCH_BUTTON": "Search for duration",
-      "TO_DURATION": "cryostat_tmp"
+      "FROM_DURATION": "duration-from",
+      "SEARCH_BUTTON": "search-for-duration",
+      "TO_DURATION": "duration-to"
     },
     "HELPER_TEXT": {
       "INVALID_UPPER_BOUND": "Duration upper value must be higher than or equal to lower one"
