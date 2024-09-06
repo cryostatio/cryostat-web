@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 /* eslint-disable  @typescript-eslint/no-non-null-assertion */
+import { DateTimeRange } from '@app/Recordings/Filters/DatetimeFilter';
 import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import dayjs from '@i18n/datetime';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
 import { getPersistedState } from '../utils';
@@ -224,7 +226,20 @@ export const defaultRecordingFilters: RecordingFilters = {
   _version: _version,
 };
 
-const INITIAL_STATE = getPersistedState('TARGET_RECORDING_FILTERS', _version, defaultRecordingFilters);
+export const sanitize = (initState: RecordingFilters): RecordingFilters => {
+  initState.list.forEach((f) => {
+    // StartTime: Convert ISO strings to Date
+    f.active.filters.StartTime?.map((range): DateTimeRange => {
+      return {
+        from: range.from ? dayjs(range.from).toDate() : undefined,
+        to: range.to ? dayjs(range.to).toDate() : undefined,
+      };
+    });
+  });
+  return initState;
+};
+
+const INITIAL_STATE = sanitize(getPersistedState('TARGET_RECORDING_FILTERS', _version, defaultRecordingFilters));
 
 export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder

@@ -40,7 +40,7 @@ import { DATETIME_INPUT_MAXLENGTH } from './const';
 
 interface _DatetimeState {
   text: string;
-  date: Date | undefined; // Ignore timezone
+  date?: Date; // Ignore timezone
   validation: ValidatedOptions;
 }
 
@@ -51,8 +51,8 @@ const _emptyDatetimeInput: _DatetimeState = {
 };
 
 export interface DateTimeRange {
-  from?: string; // ISO format
-  to?: string; // ISO format
+  from?: Date | string;
+  to?: Date | string;
 }
 
 export const filterRecordingByDatetime = (recordings: ActiveRecording[], filters?: DateTimeRange[]) => {
@@ -108,10 +108,10 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
 
   const handleSubmit = React.useCallback(() => {
     onSubmit({
-      from: fromDatetimeInput.date ? dayjs(fromDatetimeInput.date).toISOString() : undefined,
-      to: toDatetimeInput.date ? dayjs(toDatetimeInput.date).toISOString() : undefined,
+      from: fromDatetimeInput.date,
+      to: toDatetimeInput.date,
     });
-  }, [onSubmit, fromDatetimeInput, toDatetimeInput, dayjs]);
+  }, [onSubmit, fromDatetimeInput, toDatetimeInput]);
 
   const fromValidators = React.useMemo(() => {
     if (toDatetimeInput.date) {
