@@ -444,6 +444,10 @@ body,
   background-color: var(--pf-v5-global--palette--black-700);
 }
 
+:where(.pf-v5-theme-dark) .datetime-picker .pf-v5-c-panel__header {
+  background-color: var(--pf-v5-global--palette--black-700);
+}
+
 .datetime-picker__meridiem-tile {
   font-size: 1.5em;
   font-weight: 600;
@@ -455,11 +459,11 @@ body,
 
 .datetime-picker__meridiem-tile:first-child {
   border-top-width: 0.10rem;
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: 0.25rem 0.25rem 0 0;
 }
 
 .datetime-picker__meridiem-tile:last-child {
-  border-radius: 0 0 0.5rem 0.5rem;
+  border-radius: 0 0 0.25rem 0.25rem;
 }
 
 .datetime-picker__meridiem-tile.selected {
@@ -494,11 +498,11 @@ body,
 .datetime-picker__number-input input[type=number] {
   -moz-appearance: textfield;
   /* Firefox */
-  width: 3.6rem;
-  height: 3.6em;
-  background-color: var(--pf-v5-global--palette--black-100);
+  width: 100%;
+  height: 2.8em;
   text-align: center;
   font-weight: 600;
+  margin-bottom: 3px;
 }
 
 :where(.pf-v5-theme-dark) .datetime-picker__number-input input[type=number] {
@@ -515,11 +519,11 @@ body,
 }
 
 .datetime-picker__time-spin-box.up {
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: 0.25rem 0.25rem 0 0;
 }
 
 .datetime-picker__time-spin-box.down {
-  border-radius: 0 0 0.5rem 0.5rem;
+  border-radius: 0 0 0.25rem 0.25rem;
 }
 
 .datetime-picker__colon-divider {
@@ -544,6 +548,10 @@ body,
 .recording-filter__toolbar-filter {
   z-index: 199;
   /* Fix input border overlap */
+}
+
+.recording-toolbar-separator {
+  max-height: 2.25em;
 }
 
 .pf-v5-c-check__input {

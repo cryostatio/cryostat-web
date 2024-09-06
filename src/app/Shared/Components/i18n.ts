@@ -13,19 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * t('TimeSpinner.INPUT_HOUR12_VALUE')
- * t('TimeSpinner.INPUT_HOUR24_VALUE')
- * t('TimeSpinner.INPUT_MINUTE_VALUE')
- * t('TimeSpinner.INPUT_SECOND_VALUE')
- * t('TimeSpinner.INCREMENT_HOUR12_VALUE')
- * t('TimeSpinner.INCREMENT_HOUR24_VALUE')
- * t('TimeSpinner.INCREMENT_MINUTE_VALUE')
- * t('TimeSpinner.INCREMENT_SECOND_VALUE')
- * t('TimeSpinner.DECREMENT_HOUR12_VALUE')
- * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
- * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
- * t('TimeSpinner.DECREMENT_SECOND_VALUE')
- * t('DATE', { ns: 'common' })
- * t('TIME', { ns: 'common' })
+ * t('HOUR_compact', { ns: 'common' });
+ * t('MINUTE_compact', { ns: 'common' });
+ * t('SECOND_compact', { ns: 'common' });
  */

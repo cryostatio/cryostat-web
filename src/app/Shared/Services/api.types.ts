@@ -262,7 +262,7 @@ export interface ArchivedRecording extends Recording {
 export interface ActiveRecording extends Recording {
   id: number;
   state: RecordingState;
-  duration: number;
+  duration: number; // In miliseconds
   startTime: number;
   continuous: boolean;
   toDisk: boolean;

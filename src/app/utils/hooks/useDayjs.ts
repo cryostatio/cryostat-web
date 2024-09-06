@@ -19,7 +19,9 @@ import dayjs, { DatetimeFormat, defaultDatetimeFormat, getLocale } from '@i18n/d
 import * as React from 'react';
 import { concatMap, from, of, Subscription } from 'rxjs';
 
-export function useDayjs(): [typeof dayjs, DatetimeFormat] {
+export type Dayjs = typeof dayjs;
+
+export function useDayjs(): [Dayjs, DatetimeFormat] {
   const _localeSubRef = React.useRef<Subscription[]>([]);
   const _services = React.useContext(ServiceContext);
   const [datetimeContext, setDatetimeContext] = React.useState<DatetimeFormat>(defaultDatetimeFormat);

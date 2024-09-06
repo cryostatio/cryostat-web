@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 /* eslint-disable  @typescript-eslint/no-non-null-assertion */
+import { DateTimeRange } from '@app/Recordings/Filters/DatetimeFilter';
 import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import dayjs from '@i18n/datetime';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
 import { getPersistedState } from '../utils';
 import { UpdateFilterOptions } from './Common';
 
-const _version = '1';
+const _version = '2';
 
 // Common action string format: "resource(s)/action"
 export enum RecordingFilterAction {
@@ -39,9 +41,8 @@ export const emptyActiveRecordingFilters = {
   Name: [],
   Label: [],
   State: [],
-  StartedBeforeDate: [],
-  StartedAfterDate: [],
-  DurationSeconds: [],
+  StartTime: [],
+  Duration: [],
 } as RecordingFiltersCategories;
 
 export const allowedActiveRecordingFilters = Object.keys(emptyActiveRecordingFilters);
@@ -57,6 +58,7 @@ export interface RecordingFilterActionPayload {
   target: string;
   category: string;
   filter?: unknown;
+  filterIdx?: number;
   isArchived?: boolean;
 }
 
@@ -74,12 +76,13 @@ export const recordingAddFilterIntent = createAction(
 
 export const recordingDeleteFilterIntent = createAction(
   RecordingFilterAction.FILTER_DELETE,
-  (target: string, category: string, filter: unknown, isArchived: boolean) => ({
+  (target: string, category: string, isArchived: boolean, filter: unknown, filterIdx?: number) => ({
     payload: {
       target: target,
       category: category,
       filter: filter,
       isArchived: isArchived,
+      filterIdx: filterIdx,
     } as RecordingFilterActionPayload,
   }),
 );
@@ -144,7 +147,7 @@ export interface TargetRecordingFilters {
 
 export const createOrUpdateRecordingFilter = (
   old: RecordingFiltersCategories,
-  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions,
+  { filterValue, filterKey, filterValueIndex, deleted = false, deleteOptions }: UpdateFilterOptions,
 ): RecordingFiltersCategories => {
   let newFilterValues: unknown[];
   if (!old[filterKey]) {
@@ -154,6 +157,12 @@ export const createOrUpdateRecordingFilter = (
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
         newFilterValues = [];
+      } else if (filterValueIndex !== undefined) {
+        // If index is present, use it
+        newFilterValues = [
+          ...oldFilterValues.slice(0, filterValueIndex),
+          ...oldFilterValues.slice(filterValueIndex + 1),
+        ];
       } else {
         newFilterValues = oldFilterValues.filter((val) => val !== filterValue);
       }
@@ -217,7 +226,20 @@ export const defaultRecordingFilters: RecordingFilters = {
   _version: _version,
 };
 
-const INITIAL_STATE = getPersistedState('TARGET_RECORDING_FILTERS', _version, defaultRecordingFilters);
+export const sanitize = (initState: RecordingFilters): RecordingFilters => {
+  initState.list.forEach((f) => {
+    // StartTime: Convert ISO strings to Date
+    f.active.filters.StartTime?.map((range): DateTimeRange => {
+      return {
+        from: range.from ? dayjs(range.from).toDate() : undefined,
+        to: range.to ? dayjs(range.to).toDate() : undefined,
+      };
+    });
+  });
+  return initState;
+};
+
+const INITIAL_STATE = sanitize(getPersistedState('TARGET_RECORDING_FILTERS', _version, defaultRecordingFilters));
 
 export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
@@ -264,6 +286,7 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
             filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
               filterKey: payload.category!,
               filterValue: payload.filter,
+              filterValueIndex: payload.filterIdx,
               deleted: true,
             }),
           },
@@ -276,6 +299,7 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
             filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
               filterKey: payload.category!,
               filterValue: payload.filter,
+              filterValueIndex: payload.filterIdx,
               deleted: true,
             }),
           },

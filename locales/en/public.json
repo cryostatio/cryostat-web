@@ -313,15 +313,29 @@
       "SEARCH_BUTTON": "Search for date",
       "TOGGLE_CALENDAR": "Toggle the calendar"
     },
-    "INVALID_DATE_TEXT": "Invalid date time"
+    "HELPER_TEXT": {
+      "INVALID_UPPER_BOUND": "From Datetime must be equal or later than To Datetime"
+    },
+    "INVALID_DATE_TEXT": "Invalid date time input. The input must have the ISO 8601 format."
   },
   "DateTimePicker": {
     "ARIA_LABELS": {
-      "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime",
-      "TABS": "Select a date or time tab"
+      "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime"
     },
-    "SELECTED_DATETIME": "Selected Date and Time",
-    "SELECTED_TIMEZONE": "Selected Timezone"
+    "DATETIME": "Date and Time"
+  },
+  "DurationFilter": {
+    "ARIA_LABELS": {
+      "FROM_DURATION": "duration-from",
+      "SEARCH_BUTTON": "search-for-duration",
+      "TO_DURATION": "duration-to"
+    },
+    "HELPER_TEXT": {
+      "INVALID_UPPER_BOUND": "Duration upper value must be higher than or equal to lower one"
+    },
+    "TOOLTIP": {
+      "CHECKBOX_DISABLED_CONTENT": "A duration filter without upper limit (i.e. >=10s) selects Continuous Recordings"
+    }
   },
   "ERROR_BOUNDARY": {
     "ERROR_MESSAGE": "Reason: {{message}}",
@@ -401,6 +415,20 @@
       "HINT": "Quick start tutorials to get started with Cryostat.",
       "TITLE": "Quick starts"
     }
+  },
+  "RecordingFilters": {
+    "FILTER_CHIP": {
+      "DURATION_CONTINUOUS": "Continuous",
+      "DURATION_EXACT": "{{value}}{{unit}}",
+      "DURATION_FROM": ">={{value}}{{unit}}",
+      "DURATION_FROM_TO": "{{fromValue}}{{fromUnit}}-{{toValue}}{{toUnit}}",
+      "DURATION_TO": "<={{value}}{{unit}}",
+      "START_TIME_EXACT": "On {{value}}",
+      "START_TIME_FROM": "After {{value}}",
+      "START_TIME_FROM_TO": "From: {{from}} To: {{to}}",
+      "START_TIME_TO": "Before {{value}}"
+    },
+    "START_TIME": "Start time"
   },
   "RecordingLabelFields": {
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
@@ -561,8 +589,8 @@
     }
   },
   "TimePicker": {
-    "24HOUR": "24-hour",
-    "USE_24HR_TIME": "Use 24-hour time"
+    "12_H": "12Hr View",
+    "24_H": "24Hr View"
   },
   "TimeSpinner": {
     "DECREMENT_HOUR12_VALUE": "Decrement hour12 value",

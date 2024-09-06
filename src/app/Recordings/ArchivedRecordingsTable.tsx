@@ -293,12 +293,12 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   }, [dispatch, targetConnectURL]);
 
   const updateFilters = React.useCallback(
-    (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
+    (target, { filterValue, filterKey, filterValueIndex, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
           dispatch(recordingDeleteCategoryFiltersIntent(target, filterKey, true));
         } else {
-          dispatch(recordingDeleteFilterIntent(target, filterKey, filterValue, true));
+          dispatch(recordingDeleteFilterIntent(target, filterKey, true, filterValue, filterValueIndex));
         }
       } else {
         dispatch(recordingAddFilterIntent(target, filterKey, filterValue, true));
@@ -740,7 +740,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           updateFilters={props.updateFilters}
           breakpoint={'xl'}
         />
-        <ToolbarItem variant="separator" />
+        <ToolbarItem variant="separator" className="recording-toolbar-separator" />
         <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
           <ToolbarItem variant="overflow-menu">
             <OverflowMenu

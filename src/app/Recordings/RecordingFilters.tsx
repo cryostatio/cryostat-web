@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getDurationUnitDisplay } from '@app/Shared/Components/DurationUnitSelect';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   allowedActiveRecordingFilters,
@@ -21,8 +22,8 @@ import {
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { KeyValue, Recording, RecordingState, keyValueToString } from '@app/Shared/Services/api.types';
-import { useDayjs } from '@app/utils/hooks/useDayjs';
-import dayjs from '@i18n/datetime';
+import useDayjs, { Dayjs } from '@app/utils/hooks/useDayjs';
+// import dayjs from '@i18n/datetime';
 import {
   ToolbarFilter,
   ToolbarGroup,
@@ -36,10 +37,12 @@ import {
   Icon,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
+import { TFunction } from 'i18next';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { DateTimeFilter } from './Filters/DatetimeFilter';
-import { DurationFilter } from './Filters/DurationFilter';
+import { DateTimeFilter, DateTimeRange, filterRecordingByDatetime } from './Filters/DatetimeFilter';
+import { compareDuration, DurationFilter, DurationRange, filterRecordingByDuration } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
@@ -48,18 +51,82 @@ export interface RecordingFiltersCategories {
   Name: string[];
   Label: string[];
   State?: RecordingState[];
-  StartedBeforeDate?: string[];
-  StartedAfterDate?: string[];
-  DurationSeconds?: string[];
+  StartTime?: DateTimeRange[];
+  Duration?: DurationRange[];
 }
 
-export const categoriesToDisplayNames = {
-  Name: 'Name',
-  Label: 'Label',
-  State: 'Recording state',
-  StartedBeforeDate: 'Start time before',
-  StartedAfterDate: 'Start time after',
-  DurationSeconds: 'Duration (seconds)',
+export const getCategoryDisplay = (t: TFunction, category: string): string => {
+  switch (category) {
+    case 'Name':
+      return t('NAME', { ns: 'common' });
+    case 'Label':
+      return t('LABEL', { ns: 'common' });
+    case 'State':
+      return t('STATE', { ns: 'common' });
+    case 'Duration':
+      return t('DURATION', { ns: 'common' });
+    case 'StartTime':
+      return t('RecordingFilters.START_TIME');
+    default:
+      return category;
+  }
+};
+
+export const getCategoryChipDisplay = (t: TFunction, dayjs: Dayjs, category: string, value: unknown): string => {
+  switch (category) {
+    case 'Duration':
+      const durationRange = value as DurationRange;
+      if (durationRange.continuous) {
+        return t('RecordingFilters.FILTER_CHIP.DURATION_CONTINUOUS');
+      } else if (durationRange.from && durationRange.to) {
+        if (compareDuration(durationRange.to, durationRange.from) === 0) {
+          return t('RecordingFilters.FILTER_CHIP.DURATION_EXACT', {
+            value: durationRange.from.value,
+            unit: getDurationUnitDisplay(t, durationRange.from.unit, true),
+          });
+        }
+        return t('RecordingFilters.FILTER_CHIP.DURATION_FROM_TO', {
+          fromValue: durationRange.from.value,
+          fromUnit: getDurationUnitDisplay(t, durationRange.from.unit, true),
+          toValue: durationRange.to.value,
+          toUnit: getDurationUnitDisplay(t, durationRange.to.unit, true),
+        });
+      } else if (durationRange.from) {
+        return t('RecordingFilters.FILTER_CHIP.DURATION_FROM', {
+          value: durationRange.from.value,
+          unit: getDurationUnitDisplay(t, durationRange.from.unit, true),
+        });
+      } else if (durationRange.to) {
+        return t('RecordingFilters.FILTER_CHIP.DURATION_TO', {
+          value: durationRange.to.value,
+          unit: getDurationUnitDisplay(t, durationRange.to.unit, true),
+        });
+      }
+    case 'StartTime':
+      const dateTimeRange = value as DateTimeRange;
+      const format = 'L LTS z';
+      if (dateTimeRange.from && dateTimeRange.to) {
+        if (dayjs(dateTimeRange.to).isSame(dateTimeRange.from)) {
+          return t('RecordingFilters.FILTER_CHIP.START_TIME_EXACT', {
+            value: dayjs(dateTimeRange.from).format(format),
+          });
+        }
+        return t('RecordingFilters.FILTER_CHIP.START_TIME_FROM_TO', {
+          from: dayjs(dateTimeRange.from).format(format),
+          to: dayjs(dateTimeRange.to).format(format),
+        });
+      } else if (dateTimeRange.from) {
+        return t('RecordingFilters.FILTER_CHIP.START_TIME_FROM', {
+          value: dayjs(dateTimeRange.from).format(format),
+        });
+      } else if (dateTimeRange.to) {
+        return t('RecordingFilters.FILTER_CHIP.START_TIME_TO', {
+          value: dayjs(dateTimeRange.to).format(format),
+        });
+      }
+    default:
+      return `${value}`;
+  }
 };
 
 export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);
@@ -81,7 +148,8 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   breakpoint = 'xl',
   updateFilters,
 }) => {
-  const [formatter, _] = useDayjs();
+  const { t } = useTranslation();
+  const [dayjs] = useDayjs();
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
@@ -106,8 +174,8 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
 
   const onDelete = React.useCallback(
     (category, chip) => {
-      const value = typeof chip === 'string' ? chip : chip.key;
-      updateFilters(target, { filterKey: category, filterValue: value, deleted: true });
+      const index = typeof chip === 'string' ? chip : chip.key;
+      updateFilters(target, { filterKey: category, filterValueIndex: index, deleted: true });
     },
     [updateFilters, target],
   );
@@ -130,18 +198,27 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
     [updateFilters, currentCategory, target],
   );
 
-  const onStartedBeforeInput = React.useCallback(
-    (searchDate) => updateFilters(target, { filterKey: currentCategory, filterValue: searchDate }),
-    [updateFilters, currentCategory, target],
-  );
-
-  const onStartedAfterInput = React.useCallback(
-    (searchDate) => updateFilters(target, { filterKey: currentCategory, filterValue: searchDate }),
-    [updateFilters, currentCategory, target],
-  );
-
   const onDurationInput = React.useCallback(
-    (duration) => updateFilters(target, { filterKey: currentCategory, filterValue: `${duration.toString()} s` }),
+    (range: DurationRange) => {
+      // Remove continuous duration filter
+      if (range.continuous !== undefined && !range.continuous) {
+        updateFilters(target, {
+          filterKey: currentCategory,
+          filterValueIndex: filters.Duration?.findIndex((val) => val.continuous !== undefined),
+          deleted: true,
+        });
+      } else {
+        updateFilters(target, { filterKey: currentCategory, filterValue: range });
+      }
+    },
+
+    [updateFilters, currentCategory, target, filters.Duration],
+  );
+
+  const onStartTimeInput = React.useCallback(
+    (range: DateTimeRange) => {
+      updateFilters(target, { filterKey: currentCategory, filterValue: range });
+    },
     [updateFilters, currentCategory, target],
   );
 
@@ -151,11 +228,6 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       updateFilters(target, { filterKey: currentCategory, filterValue: searchState, deleted: deleted });
     },
     [updateFilters, currentCategory, target, filters.State],
-  );
-
-  const onContinuousDurationSelect = React.useCallback(
-    (cont) => updateFilters(target, { filterKey: currentCategory, filterValue: 'continuous', deleted: !cont }),
-    [updateFilters, currentCategory, target],
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -173,7 +245,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
             aria-label={currentCategory}
             onClick={() => onCategoryToggle()}
           >
-            {categoriesToDisplayNames[currentCategory]}
+            {getCategoryDisplay(t, currentCategory)}
           </MenuToggle>
         )}
         onOpenChange={(isOpen) => setIsCategoryDropdownOpen(isOpen)}
@@ -185,19 +257,14 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       >
         <DropdownList>
           {(!isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map((cat) => (
-            <DropdownItem
-              aria-label={categoriesToDisplayNames[cat]}
-              key={cat}
-              onClick={() => onCategorySelect(cat)}
-              value={cat}
-            >
-              {categoriesToDisplayNames[cat]}
+            <DropdownItem key={cat} onClick={() => onCategorySelect(cat)} value={cat}>
+              {getCategoryDisplay(t, cat)}
             </DropdownItem>
           ))}
         </DropdownList>
       </Dropdown>
     );
-  }, [isArchived, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
+  }, [isArchived, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect, t]);
 
   const filterDropdownItems = React.useMemo(
     () => [
@@ -210,14 +277,8 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
               filteredStates={filters.State}
               onSelectToggle={onRecordingStateSelectToggle}
             />,
-            <DateTimeFilter key={'datetime-before'} onSubmit={onStartedBeforeInput} />,
-            <DateTimeFilter key={'datetime-after'} onSubmit={onStartedAfterInput} />,
-            <DurationFilter
-              key={'duration'}
-              durations={filters.DurationSeconds}
-              onContinuousDurationSelect={onContinuousDurationSelect}
-              onDurationInput={onDurationInput}
-            />,
+            <DateTimeFilter key={'startTime'} onSubmit={onStartTimeInput} />,
+            <DurationFilter key={'duration'} durations={filters.Duration} onDurationInput={onDurationInput} />,
           ]
         : []),
     ],
@@ -227,14 +288,12 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
       filters.Name,
       filters.Label,
       filters.State,
-      filters.DurationSeconds,
+      filters.Duration,
       onNameInput,
       onLabelInput,
       onRecordingStateSelectToggle,
-      onStartedAfterInput,
-      onStartedBeforeInput,
-      onContinuousDurationSelect,
       onDurationInput,
+      onStartTimeInput,
     ],
   );
 
@@ -251,29 +310,23 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
         <ToolbarItem style={{ alignSelf: 'start' }} key={'category-select'}>
           {categoryDropdown}
         </ToolbarItem>
-        {Object.keys(filters).map((filterKey, i) => (
+        {Object.keys(filters).map((filterKey, idx) => (
           <ToolbarFilter
             key={`${filterKey}-filter`}
             className="recording-filter__toolbar-filter"
-            chips={
-              categoryIsDate(filterKey)
-                ? filters[filterKey].map((ISOStr: string) => {
-                    return {
-                      node: formatter(ISOStr).format('L LTS z'),
-                      key: ISOStr,
-                    };
-                  })
-                : filters[filterKey].map((v) => ({ node: v, key: v }))
-            }
+            chips={filters[filterKey].map((v: unknown, index) => {
+              const display = getCategoryChipDisplay(t, dayjs, filterKey, v);
+              return { node: display, key: index }; // Use key to keep value index
+            })}
             deleteChip={onDelete}
             deleteChipGroup={onDeleteGroup}
             categoryName={{
               key: filterKey,
-              name: categoriesToDisplayNames[filterKey],
+              name: getCategoryDisplay(t, filterKey),
             }}
             showToolbarItem={filterKey === currentCategory}
           >
-            {filterDropdownItems[i]}
+            {filterDropdownItems[idx]}
           </ToolbarFilter>
         ))}
       </ToolbarGroup>
@@ -292,42 +345,20 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
   if (filters.Name.length) {
     filtered = filtered.filter((r) => filters.Name.includes(r.name));
   }
-  if (!!filters.State && !!filters.State.length) {
-    filtered = filtered.filter((r) => !!filters.State && filters.State.includes(r.state));
-  }
-  if (!!filters.DurationSeconds && !!filters.DurationSeconds.length) {
-    filtered = filtered.filter((r) => {
-      if (!filters.DurationSeconds) return true;
-      return (
-        filters.DurationSeconds.includes(`${r.duration / 1000} s`) ||
-        (filters.DurationSeconds.includes('continuous') && r.continuous)
-      );
-    });
-  }
-  if (!!filters.StartedBeforeDate && !!filters.StartedBeforeDate.length) {
-    filtered = filtered.filter((rec) => {
-      if (!filters.StartedBeforeDate) return true;
-      return filters.StartedBeforeDate.filter((startedBefore) => {
-        const beforeDate = dayjs(startedBefore);
-        return dayjs(rec.startTime).isBefore(beforeDate);
-      }).length;
-    });
-  }
-  if (!!filters.StartedAfterDate && !!filters.StartedAfterDate.length) {
-    filtered = filtered.filter((rec) => {
-      if (!filters.StartedAfterDate) return true;
-      return filters.StartedAfterDate.filter((startedAfter) => {
-        const afterDate = dayjs(startedAfter);
-        return dayjs(rec.startTime).isSame(afterDate) || dayjs(rec.startTime).isAfter(afterDate);
-      }).length;
-    });
-  }
+
   if (filters.Label.length) {
     filtered = filtered.filter((recording) => {
       const recordingLabels = recording.metadata.labels.map((label: KeyValue) => keyValueToString(label));
       return filters.Label.some((filterLabel) => recordingLabels.includes(filterLabel));
     });
   }
+
+  if (filters.State && filters.State.length) {
+    filtered = filtered.filter((r) => !!filters.State && filters.State.includes(r.state));
+  }
+
+  filtered = filterRecordingByDuration(filtered, filters.Duration);
+  filtered = filterRecordingByDatetime(filtered, filters.StartTime);
 
   return filtered;
 };
