@@ -28,6 +28,7 @@ import {
   InputGroupItem,
   InputGroupText,
   TextInput,
+  Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
@@ -99,8 +100,6 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
     [toDuration, fromDuration, toDurationUnit, fromDurationUnit],
   );
 
-  const isContinuous = React.useMemo(() => durations && durations.some((dur) => dur.continuous), [durations]);
-
   const handleContinuousCheckBoxChange = React.useCallback(
     (_, checked: boolean) => onDurationInput({ continuous: checked }),
     [onDurationInput],
@@ -118,6 +117,28 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
       to: toDuration !== undefined ? { value: toDuration, unit: toDurationUnit } : undefined,
     });
   }, [onDurationInput, fromDuration, toDuration, fromDurationUnit, toDurationUnit]);
+
+  const checkBox = React.useMemo(() => {
+    const isChecked = durations && durations.some((dur) => dur.continuous || (dur.from && !dur.to));
+    const isDisabled = isChecked && durations.some((dur) => dur.from && !dur.to);
+
+    const element = (
+      <Checkbox
+        className="duration-filter__continuous-checkbox"
+        label="Continuous"
+        id="continuous-checkbox"
+        isChecked={isChecked}
+        onChange={handleContinuousCheckBoxChange}
+        isDisabled={isDisabled}
+      />
+    );
+
+    if (isDisabled) {
+      return <Tooltip content={t('DurationFilter.TOOLTIP.CHECKBOX_DISABLED_CONTENT')}>{element}</Tooltip>;
+    }
+
+    return element;
+  }, [durations, handleContinuousCheckBoxChange, t]);
 
   return (
     <Flex spaceItems={{ default: 'spaceItemsSm' }}>
@@ -166,15 +187,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
             </HelperText>
           </FlexItem>
         ) : null}
-        <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
-          <Checkbox
-            className="duration-filter__continuous-checkbox"
-            label="Continuous"
-            id="continuous-checkbox"
-            isChecked={isContinuous}
-            onChange={handleContinuousCheckBoxChange}
-          />
-        </FlexItem>
+        <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>{checkBox}</FlexItem>
       </Flex>
       <FlexItem>
         <Button
