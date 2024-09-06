@@ -334,7 +334,7 @@
       "INVALID_UPPER_BOUND": "Duration upper value must be higher than or equal to lower one"
     },
     "TOOLTIP": {
-      "CHECKBOX_DISABLED_CONTENT": "A duration without upper limit selects Continuous Recordings"
+      "CHECKBOX_DISABLED_CONTENT": "A duration filter upper limit (i.e. >=10s) selects Continuous Recordings"
     }
   },
   "ERROR_BOUNDARY": {
