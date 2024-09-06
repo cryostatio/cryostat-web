@@ -38,8 +38,8 @@ import { DURATION_INPUT_MAXLENGTH } from './const';
 
 export const CONTINUOUS_INDICATOR = 'continuous';
 
-export const filterRecordingByDuration = (recordings: ActiveRecording[], filters?: DurationRange[]) => {
-  if (!recordings || !recordings.length || !filters || !filters.length) {
+export const filterRecordingByDuration = (recordings?: ActiveRecording[], filters?: DurationRange[]) => {
+  if (!recordings?.length || !filters?.length) {
     return recordings;
   }
 
