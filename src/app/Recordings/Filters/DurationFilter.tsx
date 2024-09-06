@@ -99,10 +99,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
     [toDuration, fromDuration, toDurationUnit, fromDurationUnit],
   );
 
-  const isContinuous = React.useMemo(
-    () => durations && durations.some((dur) => dur.continuous || (dur.from && !dur.to)),
-    [durations],
-  );
+  const isContinuous = React.useMemo(() => durations && durations.some((dur) => dur.continuous), [durations]);
 
   const handleContinuousCheckBoxChange = React.useCallback(
     (_, checked: boolean) => onDurationInput({ continuous: checked }),
