@@ -26,15 +26,19 @@ import {
   EmptyStateActions,
   EmptyStateHeader,
   EmptyStateFooter,
+  Gallery,
+  GalleryItem,
 } from '@patternfly/react-core';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { NotFoundCard } from './NotFoundCard';
 
 export interface NotFoundProps {}
 
 export const NotFound: React.FC<NotFoundProps> = (_) => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
@@ -59,18 +63,26 @@ export const NotFound: React.FC<NotFoundProps> = (_) => {
 
   return (
     <>
-      <EmptyState className="pf-c-empty-state-not-found">
+      <EmptyState>
         <EmptyStateHeader
-          titleText="404: We couldn't find that page"
+          titleText={t('NotFound.TITLE')}
           icon={<EmptyStateIcon icon={MapMarkedAltIcon} />}
           headingLevel="h4"
         />
-        <EmptyStateBody>One of the following pages might have what you&apos;re looking for.</EmptyStateBody>
+        <EmptyStateBody>{t('NotFound.DESCRIPTION')}</EmptyStateBody>
         <EmptyStateFooter>
-          <EmptyStateActions>{cards}</EmptyStateActions>
-          <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
-            Take me home
-          </Button>
+          <EmptyStateActions>
+            <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
+              {t('NotFound.HOME_REDIRECT_BUTTON_CONTENT')}
+            </Button>
+          </EmptyStateActions>
+          <EmptyStateActions>
+            <Gallery hasGutter style={{ marginTop: '1rem' }}>
+              {cards.map((card, idx) => (
+                <GalleryItem key={idx}>{card}</GalleryItem>
+              ))}
+            </Gallery>
+          </EmptyStateActions>
         </EmptyStateFooter>
       </EmptyState>
     </>
