@@ -102,7 +102,6 @@ describe('<RecordingFilters />', () => {
       Label: ['someLabel:someValue'],
       State: [],
       StartTime: [],
-      StartedAfterDate: [],
       Duration: [],
     } as RecordingFiltersCategories;
 
