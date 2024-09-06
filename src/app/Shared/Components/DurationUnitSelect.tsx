@@ -19,25 +19,12 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export enum DurationUnit {
-  HOUR,
-  MINUTE,
-  SECOND,
+  HOUR = 60 * 60,
+  MINUTE = 60,
+  SECOND = 1,
 }
 
 const SupportedDurationUnits = Object.values(DurationUnit).filter((entry) => typeof entry === 'string');
-
-export const convertDurationToSeconds = (duration: number, unit: DurationUnit): number => {
-  switch (unit) {
-    case DurationUnit.HOUR:
-      return duration * 60 * 60;
-    case DurationUnit.MINUTE:
-      return duration * 60;
-    case DurationUnit.SECOND:
-      return duration;
-    default:
-      throw new Error(`Unknown unit enum value: ${unit}`);
-  }
-};
 
 export const getDurationUnitDisplay = (t: TFunction, unit: DurationUnit, compact?: boolean): string => {
   const suffix = compact ? 'compact' : 'other';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { convertDurationToSeconds, DurationUnit, DurationUnitSelect } from '@app/Shared/Components/DurationUnitSelect';
+import { DurationUnit, DurationUnitSelect } from '@app/Shared/Components/DurationUnitSelect';
 import { ActiveRecording } from '@app/Shared/Services/api.types';
 import {
   Button,
@@ -51,19 +51,13 @@ export const filterRecordingByDuration = (recordings?: ActiveRecording[], filter
 
       if (!range.continuous) {
         return (
-          (!range.from || rec.duration / 1000 >= convertDurationToSeconds(range.from.value, range.from.unit)) &&
-          (!range.to || rec.duration / 1000 <= convertDurationToSeconds(range.to.value, range.to.unit))
+          (!range.from || rec.duration / 1000 >= getDurationValueInUnit(range.from, DurationUnit.SECOND)) &&
+          (!range.to || rec.duration / 1000 <= getDurationValueInUnit(range.to, DurationUnit.SECOND))
         );
       }
       return false;
     });
   });
-};
-
-export const compareDuration = (d1: Duration, d2: Duration): -1 | 0 | 1 => {
-  const _d1 = convertDurationToSeconds(d1.value, d1.unit);
-  const _d2 = convertDurationToSeconds(d2.value, d2.unit);
-  return _d1 > _d2 ? 1 : _d1 < _d2 ? -1 : 0;
 };
 
 export interface Duration {
@@ -76,6 +70,16 @@ export interface DurationRange {
   to?: Duration; // inclusive
   continuous?: boolean;
 }
+
+export const compareDuration = (d1: Duration, d2: Duration): -1 | 0 | 1 => {
+  const _d1 = getDurationValueInUnit(d1, DurationUnit.SECOND);
+  const _d2 = getDurationValueInUnit(d2, DurationUnit.SECOND);
+  return _d1 > _d2 ? 1 : _d1 < _d2 ? -1 : 0;
+};
+
+export const getDurationValueInUnit = (duration: Duration, unit: DurationUnit): number => {
+  return (duration.value * duration.unit) / unit;
+};
 
 export interface DurationFilterProps {
   durations?: DurationRange[];
