@@ -391,6 +391,11 @@
       "LISTBOX": "Select AM or PM"
     }
   },
+  "NotFound": {
+    "DESCRIPTION": "The page you're trying to find was either removed, moved or maybe the URL isn't quite right. Try returning home or visit one of the following pages below.",
+    "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
+    "TITLE": "404: We couldn't find that page"
+  },
   "QuickStarts": {
     "CATALOG_PAGE": {
       "HINT": "Quick start tutorials to get started with Cryostat.",
