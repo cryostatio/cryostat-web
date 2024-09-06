@@ -44,9 +44,11 @@ export const filterRecordingByDuration = (recordings: ActiveRecording[], filters
 
   return recordings.filter((rec) => {
     return filters.some((range) => {
-      if (rec.continuous && range.continuous) {
-        return true;
-      } else if (!rec.continuous && !range.continuous) {
+      if (rec.continuous) {
+        return range.continuous || (range.from !== undefined && range.to === undefined);
+      }
+
+      if (!range.continuous) {
         return (
           (!range.from || rec.duration / 1000 >= convertDurationToSeconds(range.from.value, range.from.unit)) &&
           (!range.to || rec.duration / 1000 <= convertDurationToSeconds(range.to.value, range.to.unit))
@@ -97,26 +99,27 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
     [toDuration, fromDuration, toDurationUnit, fromDurationUnit],
   );
 
-  const isContinuous = React.useMemo(() => durations && durations.some((dur) => dur.continuous), [durations]);
+  const isContinuous = React.useMemo(
+    () => durations && durations.some((dur) => dur.continuous || (dur.from && !dur.to)),
+    [durations],
+  );
 
   const handleContinuousCheckBoxChange = React.useCallback(
     (_, checked: boolean) => onDurationInput({ continuous: checked }),
     [onDurationInput],
   );
 
-  const handleSubmit = React.useCallback(
-    () =>
-      onDurationInput({
-        from: fromDuration
-          ? {
-              value: fromDuration,
-              unit: fromDurationUnit,
-            }
-          : undefined,
-        to: toDuration ? { value: toDuration, unit: toDurationUnit } : undefined,
-      }),
-    [onDurationInput, fromDuration, toDuration, fromDurationUnit, toDurationUnit],
-  );
+  const handleSubmit = React.useCallback(() => {
+    onDurationInput({
+      from: fromDuration
+        ? {
+            value: fromDuration,
+            unit: fromDurationUnit,
+          }
+        : undefined,
+      to: toDuration ? { value: toDuration, unit: toDurationUnit } : undefined,
+    });
+  }, [onDurationInput, fromDuration, toDuration, fromDurationUnit, toDurationUnit]);
 
   return (
     <Flex spaceItems={{ default: 'spaceItemsSm' }}>
