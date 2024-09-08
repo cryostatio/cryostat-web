@@ -362,7 +362,8 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         <DropdownItem key="download" value={'download'}>
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
-        <DropdownItem key="clearAll" value={'clearAll'} isDisabled={currLayout.cards.length < 1}>
+        <Divider />
+        <DropdownItem key="clearAll" value={'clearAll'} isDisabled={currLayout.cards.length < 1} isDanger>
           {t('DashboardLayoutToolbar.CLEAR_LAYOUT')}
         </DropdownItem>
       </>

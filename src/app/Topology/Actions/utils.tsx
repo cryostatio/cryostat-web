@@ -106,6 +106,7 @@ export const nodeActions: NodeAction[] = [
   { key: '', isSeparator: true },
   {
     key: 'DELETE_TARGET',
+    isDanger: true,
     action: (element, { services }) => {
       const targetNode: TargetNode = element.getData();
       services.api.deleteTarget(targetNode.target).subscribe(() => undefined);
@@ -173,7 +174,7 @@ export const nodeActions: NodeAction[] = [
       services.api
         .graphql<GroupActionResponse>(
           `
-            query DeleteRecordingForGroup ($groupFilter: DiscoveryNodeFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
+            query ArchiveRecordingForGroup ($groupFilter: DiscoveryNodeFilterInput, $recordingFilter: ActiveRecordingsFilterInput) {
               environmentNodes(filter: $groupFilter) {
                 name
                 descendantTargets {
@@ -258,6 +259,7 @@ export const nodeActions: NodeAction[] = [
     key: 'GROUP_DELETE_RECORDING',
     title: 'Delete Recording',
     isGroup: true,
+    isDanger: true,
     action: (element, { services, notifications }) => {
       const group: EnvironmentNode = element.getData();
       services.api
@@ -361,12 +363,19 @@ export const actionFactory = (
   }
   filtered = stop >= 0 ? filtered.slice(0, stop + 1) : [];
 
-  return filtered.map(({ isSeparator, key, title, isDisabled, action }, index) => {
+  return filtered.map(({ isSeparator, key, title, isDisabled, action, isDanger }, index) => {
     if (isSeparator) {
       return <ContextMenuSeparator key={`separator-${index}`} />;
     }
     return (
-      <ContextMenuItem key={key} element={element} onClick={action} variant={variant} isDisabled={isDisabled}>
+      <ContextMenuItem
+        key={key}
+        element={element}
+        onClick={action}
+        variant={variant}
+        isDisabled={isDisabled}
+        isDanger={isDanger}
+      >
         {title}
       </ContextMenuItem>
     );

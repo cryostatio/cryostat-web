@@ -29,6 +29,7 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
+  Divider,
 } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -175,7 +176,8 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
       <DropdownItem key={'download'} onClick={handleTemplateDownload}>
         {t('DOWNLOAD', { ns: 'common' })}
       </DropdownItem>,
-      <DropdownItem key={'delete'} onClick={handleTemplateDelete}>
+      <Divider key="divider" />,
+      <DropdownItem key={'delete'} onClick={handleTemplateDelete} isDanger>
         {t('DELETE', { ns: 'common' })}
       </DropdownItem>,
     ];

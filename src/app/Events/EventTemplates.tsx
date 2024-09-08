@@ -278,6 +278,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
           {
             title: 'Delete',
             onClick: () => handleDeleteButton(t),
+            isDanger: true,
           },
         ]);
       }

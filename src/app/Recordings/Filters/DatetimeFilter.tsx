@@ -55,7 +55,7 @@ export interface DateTimeRange {
   to?: Date;
 }
 
-export const filterRecordingByDatetime = (recordings?: ActiveRecording[], filters?: DateTimeRange[]) => {
+export const filterRecordingByDatetime = (recordings: ActiveRecording[], filters?: DateTimeRange[]) => {
   if (!recordings?.length || !filters?.length) {
     return recordings;
   }

@@ -301,6 +301,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         {
           title: t('DELETE', { ns: 'common' }),
           onClick: () => handleDeleteButton(rule),
+          isDanger: true,
         },
       ];
     },
