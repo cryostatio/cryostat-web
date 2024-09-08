@@ -130,7 +130,7 @@ export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterPr
       onOpenChangeKeys={['Escape']}
       shouldFocusFirstItemOnOpen={false}
       isScrollable
-      maxMenuHeight={'30vh'}
+      maxMenuHeight="40vh"
     >
       <SelectList id="typeahead-filter-select">
         {selectOptionProps.map(({ value, children }, index) => (

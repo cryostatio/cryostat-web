@@ -126,24 +126,22 @@ const Component = () => {
             }}
             selected={datetimeFormat.dateLocale}
             onSelect={handleDateLocaleSelect}
-            menuHeight="20vh"
+            maxMenuHeight="40vh"
             isScrollable
             onOpenChange={setDateLocaleOpen}
             onOpenChangeKeys={['Escape']}
           >
-            <SelectList>
-              <MenuSearch>
-                <MenuSearchInput>
-                  <SearchInput
-                    placeholder={t('SETTINGS.DATETIME_CONTROL.SEARCH_PLACEHOLDER')}
-                    value={searchTerm}
-                    onChange={onInputChange}
-                  />
-                </MenuSearchInput>
-              </MenuSearch>
-              <Divider />
-              {dateLocaleOptions}
-            </SelectList>
+            <MenuSearch>
+              <MenuSearchInput>
+                <SearchInput
+                  placeholder={t('SETTINGS.DATETIME_CONTROL.SEARCH_PLACEHOLDER')}
+                  value={searchTerm}
+                  onChange={onInputChange}
+                />
+              </MenuSearchInput>
+            </MenuSearch>
+            <Divider />
+            <SelectList>{dateLocaleOptions}</SelectList>
           </Select>
         </FormGroup>
       </StackItem>

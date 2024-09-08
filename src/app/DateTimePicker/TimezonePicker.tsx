@@ -145,7 +145,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
       onOpenChange={(isOpen) => setIsTimezoneOpen(isOpen)}
       onOpenChangeKeys={['Escape']}
       isScrollable
-      menuHeight="20vh"
+      maxMenuHeight="40vh"
     >
       <MenuSearch>
         <MenuSearchInput>

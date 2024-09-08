@@ -624,7 +624,7 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
         appendTo: portalRoot,
       }}
       isScrollable
-      maxMenuHeight={'30vh'}
+      maxMenuHeight="40vh"
       onOpenChange={setSelectOpen}
       onOpenChangeKeys={['Escape']}
     >

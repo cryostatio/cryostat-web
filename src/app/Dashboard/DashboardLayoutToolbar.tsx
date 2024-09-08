@@ -499,7 +499,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         )}
       >
         <Menu isScrollable onSelect={onLayoutSelect} onActionClick={onActionClick}>
-          <MenuContent maxMenuHeight="21.5em" id="dashboard-layout-menu-content">
+          <MenuContent maxMenuHeight="40vh" id="dashboard-layout-menu-content">
             {menuGroups(t('DashboardLayoutToolbar.MENU.FAVORITES'), true)}
             <Divider />
             {menuGroups(t('DashboardLayoutToolbar.MENU.OTHERS'), false)}
