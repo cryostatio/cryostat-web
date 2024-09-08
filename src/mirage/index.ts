@@ -66,6 +66,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.logging = environment === 'development';
 
       this.get('health', () => ({
+        build: {
+          git: {
+            hash: "775aee4cdd61f5b8d91aa38f4601933c9750d54e"
+          }
+        },
         cryostatVersion: `${build.version.replace(/(-\w+)*$/g, '')}-0-preview`,
         dashboardAvailable: false,
         dashboardConfigured: false,
