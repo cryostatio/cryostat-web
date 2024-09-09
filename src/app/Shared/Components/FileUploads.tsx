@@ -94,11 +94,10 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
               }) as FUpload,
           ),
         ];
-        onFilesChange && onFilesChange(newFileUploads);
         return newFileUploads;
       });
     },
-    [setFileUploads, onFilesChange],
+    [setFileUploads],
   );
 
   const handleFileReject = React.useCallback(
@@ -120,12 +119,11 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
       } else {
         setFileUploads((old) => {
           const newFileUploads = old.filter((fileUpload) => fileUpload.file.name !== removedFilename);
-          onFilesChange && onFilesChange(newFileUploads);
           return newFileUploads;
         });
       }
     },
-    [fileUploads, setFileUploads, onFilesChange],
+    [fileUploads, setFileUploads],
   );
 
   const getProgressUpdateCallback = React.useCallback(
@@ -243,6 +241,10 @@ export const MultiFileUpload: React.FC<MultiFileUploadProps> = ({
   const sortedFileUploads = React.useMemo(() => {
     return fileUploads.sort((a, b) => a.file.name.localeCompare(b.file.name, undefined, { numeric: true }));
   }, [fileUploads]);
+
+  React.useEffect(() => {
+    onFilesChange && onFilesChange(fileUploads);
+  }, [onFilesChange, fileUploads]);
 
   return (
     <>

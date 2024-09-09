@@ -23,7 +23,7 @@ Array [
     }
   >
     TypeError: Cannot read properties of null (reading 'offsetWidth')
-    at /home/thvo/workspace/cryostat-web/node_modules/@patternfly/react-table/dist/js/components/Table/Td.js:136:38
+    at /home/thvo/workspace/cryostat-web/node_modules/@patternfly/react-table/dist/js/components/Table/Td.js:140:38
     at invokePassiveEffectCreate (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14504:20)
     at HTMLUnknownElement.callCallback (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11391:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)

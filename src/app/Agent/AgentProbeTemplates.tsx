@@ -34,7 +34,6 @@ import {
   ModalVariant,
   Stack,
   StackItem,
-  TextInput,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -45,6 +44,8 @@ import {
   DropdownList,
   MenuToggleElement,
   MenuToggle,
+  SearchInput,
+  Divider,
 } from '@patternfly/react-core';
 import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -291,7 +292,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
   } else {
     return (
       <>
-        <Stack hasGutter style={{ marginTop: '1em', marginBottom: '1.5em' }}>
+        <Stack hasGutter style={{ marginTop: '1em' }}>
           <StackItem>
             <AboutAgentCard />
           </StackItem>
@@ -300,13 +301,13 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
               <ToolbarContent>
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
-                    <TextInput
+                    <SearchInput
                       style={{ minWidth: '30ch' }}
                       name="templateFilter"
                       id="templateFilter"
                       type="search"
                       placeholder={t('AgentProbeTemplates.SEARCH_PLACEHOLDER')}
-                      aria-label="Probe Template filter"
+                      aria-label={t('AgentProbeTemplates.ARIA_LABELS.SEARCH_INPUT')}
                       onChange={handleFilterTextChange}
                       value={filterText}
                     />
@@ -339,7 +340,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                     ))}
                   </Tr>
                 </Thead>
-                <Tbody>{...templateRows}</Tbody>
+                <Tbody>{templateRows}</Tbody>
               </Table>
             ) : (
               <EmptyState>
@@ -364,6 +365,7 @@ export interface AgentProbeTemplateUploadModalProps {
 }
 
 export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadModalProps> = ({ onClose, isOpen }) => {
+  const { t } = useTranslation();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -476,7 +478,7 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
         <ActionGroup>
           {allOks && numOfFiles ? (
             <Button variant="primary" onClick={handleClose}>
-              Close
+              {t('CLOSE', { ns: 'common' })}
             </Button>
           ) : (
             <>
@@ -486,10 +488,10 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
                 isDisabled={!numOfFiles || uploading}
                 {...submitButtonLoadingProps}
               >
-                Submit
+                {t('SUBMIT', { ns: 'common' })}
               </Button>
               <Button variant="link" onClick={handleClose}>
-                Cancel
+                {t('CANCEL', { ns: 'common' })}
               </Button>
             </>
           )}
@@ -506,6 +508,7 @@ export interface AgentTemplateActionProps {
 }
 
 export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDelete, template }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const actionItems = React.useMemo(() => {
@@ -517,8 +520,12 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
         isDisabled: !onInsert,
       },
       {
+        isSeparator: true,
+      },
+      {
         key: 'delete-template',
         title: 'Delete',
+        isDanger: true,
         onClick: () => onDelete(template),
       },
     ];
@@ -528,32 +535,43 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
 
   const dropdownItems = React.useMemo(
     () =>
-      actionItems.map((action) => (
-        <DropdownItem
-          key={action.key}
-          onClick={() => {
-            setIsOpen(false);
-            action.onClick();
-          }}
-          isDisabled={action.isDisabled}
-        >
-          {action.title}
-        </DropdownItem>
-      )),
+      actionItems.map((action, idx) =>
+        action.isSeparator ? (
+          <Divider key={`separator-${idx}`} />
+        ) : (
+          <DropdownItem
+            aria-label={action.key}
+            key={action.key}
+            onClick={() => {
+              setIsOpen(false);
+              action.onClick && action.onClick();
+            }}
+            isAriaDisabled={action.isDisabled}
+            isDanger={action.isDanger}
+          >
+            {action.title}
+          </DropdownItem>
+        ),
+      ),
     [actionItems, setIsOpen],
   );
 
   return (
     <Dropdown
-      isPlain
       toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle ref={toggleRef} onClick={(event) => handleToggle(event, !isOpen)}>
+        <MenuToggle
+          aria-label={t('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')}
+          variant="plain"
+          ref={toggleRef}
+          onClick={(event) => handleToggle(event, !isOpen)}
+        >
           <EllipsisVIcon />
         </MenuToggle>
       )}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
       isOpen={isOpen}
       popperProps={{
-        appendTo: document.body,
         position: 'right',
         enableFlip: true,
       }}

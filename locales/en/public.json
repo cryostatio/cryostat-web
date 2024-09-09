@@ -23,6 +23,10 @@
     }
   },
   "AgentProbeTemplates": {
+    "ARIA_LABELS": {
+      "ROW_ACTION": "agent-probe-template-action-menu",
+      "SEARCH_INPUT": "agent-probe-template-search"
+    },
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
   "AllArchivedRecordingsTable": {
