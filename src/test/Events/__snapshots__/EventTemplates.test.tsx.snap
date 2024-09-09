@@ -57,7 +57,7 @@ Array [
                     </svg>
                   </span>
                   <input
-                    aria-label="Event Template filter"
+                    aria-label="event-template-search-input"
                     className="pf-v5-c-text-input-group__text-input"
                     disabled={false}
                     name="templateFilter"

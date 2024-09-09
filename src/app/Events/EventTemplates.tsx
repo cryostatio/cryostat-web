@@ -358,7 +358,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
                   id="templateFilter"
                   type="search"
                   placeholder={t('EventTemplates.SEARCH_PLACEHOLDER')}
-                  aria-label="Event Template filter"
+                  aria-label={t('EventTemplates.ARIA_LABELS.SEARCH_INPUT')}
                   onChange={(_, value: string) => setFilterText(value)}
                   value={filterText}
                   isDisabled={errorMessage != ''}

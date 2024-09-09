@@ -32,7 +32,7 @@ import { t, TOptions } from 'i18next';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import renderer, { act } from 'react-test-renderer';
+import renderer from 'react-test-renderer';
 
 export interface ProviderInstance<T> {
   kind: React.Provider<T>;
@@ -98,24 +98,32 @@ export const setupRenderEnv = ({
 
 // Note: react-test-renderer does not support ref
 // https://legacy.reactjs.org/docs/test-renderer.html#ideas
-export const createMockForPFTableRef = (_element) => ({
+export const createMockForPFTableRef = (_element: React.ReactElement) => ({
+  style: {
+    setProperty: function (propertyName, value) {
+      this[propertyName] = value;
+    },
+  },
   offsetWidth: 24,
   classList: {
-    contains: () => false
+    contains: () => false,
   },
 });
 
-export const renderSnapshot = async (options: RenderOptions & { createNodeMock?: (element: React.ReactElement) => any }) => {
+export const renderSnapshot = async ({
+  createNodeMock,
+  ...options
+}: RenderOptions & { createNodeMock?: (element: React.ReactElement) => any }) => {
   const { router, Wrapper } = setupRenderEnv(options);
   let tree: renderer.ReactTestRenderer | undefined;
-  await act(async () => {
+  await renderer.act(async () => {
     tree = renderer.create(
       <Wrapper>
         <RouterProvider router={router} />
       </Wrapper>,
-      options.createNodeMock
+      createNodeMock
         ? {
-            createNodeMock: options.createNodeMock,
+            createNodeMock,
           }
         : undefined,
     );

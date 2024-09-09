@@ -18,10 +18,9 @@ import { EventTypes } from '@app/Events/EventTypes';
 import { EventType, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
-import { act as doAct, cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { act, cleanup, screen } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { createMockForPFTableRef, render, renderSnapshot, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = {
@@ -48,8 +47,8 @@ jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 describe('<EventTypes />', () => {
   afterEach(cleanup);
 
-  it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+  it('should shown empty state when table is empty', async () => {
+    const { user } = render({
       routerConfigs: {
         routes: [
           {
@@ -59,7 +58,18 @@ describe('<EventTypes />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+
+    const filterInput = screen.getByLabelText(testT('EventTypes.ARIA_LABELS.SEARCH_INPUT'));
+    expect(filterInput).toBeInTheDocument();
+    expect(filterInput).toBeVisible();
+
+    await user.type(filterInput, 'someveryoddname');
+
+    expect(screen.queryByText('Some Event')).not.toBeInTheDocument();
+
+    const hintText = screen.getByText('No Event types');
+    expect(hintText).toBeInTheDocument();
+    expect(hintText).toBeVisible();
   });
 
   it('should show error view if failing to retrieve event types', async () => {
@@ -85,7 +95,7 @@ describe('<EventTypes />', () => {
       providers: [{ kind: ServiceContext.Provider, instance: services }],
     });
 
-    await doAct(async () => subj.next());
+    await act(async () => subj.next());
 
     const failTitle = screen.getByText('Error retrieving event types');
     expect(failTitle).toBeInTheDocument();
@@ -100,8 +110,9 @@ describe('<EventTypes />', () => {
     expect(retryButton).toBeVisible();
   });
 
-  it('should shown empty state when table is empty', async () => {
-    const { user } = render({
+  // FIXME: Do not reorder tests. Snapshot test is required to run last here.
+  it('renders correctly', async () => {
+    const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
           {
@@ -110,18 +121,8 @@ describe('<EventTypes />', () => {
           },
         ],
       },
+      createNodeMock: createMockForPFTableRef,
     });
-
-    const filterInput = screen.getByLabelText('Event filter');
-    expect(filterInput).toBeInTheDocument();
-    expect(filterInput).toBeVisible();
-
-    await user.type(filterInput, 'someveryoddname');
-
-    expect(screen.queryByText('Some Event')).not.toBeInTheDocument();
-
-    const hintText = screen.getByText('No event types');
-    expect(hintText).toBeInTheDocument();
-    expect(hintText).toBeVisible();
+    expect(tree?.toJSON()).toMatchSnapshot();
   });
 });

@@ -19,10 +19,9 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { MessageType, EventTemplate, MessageMeta, NotificationMessage, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
-import '@testing-library/jest-dom';
-import { act as doAct, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
+import { createMockForPFTableRef, render, renderSnapshot, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = {
@@ -104,9 +103,8 @@ describe('<EventTemplates />', () => {
           },
         ],
       },
-      createNodeMock: createMockForPFTableRef
-    },
-  );
+      createNodeMock: createMockForPFTableRef,
+    });
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
@@ -173,14 +171,17 @@ describe('<EventTemplates />', () => {
 
     expect(screen.queryByLabelText('Create custom Event Template')).not.toBeInTheDocument();
 
-    const buttons = screen.getAllByRole('button');
-    const uploadButton = buttons[0];
-    await user.click(uploadButton);
+    await act(async () => {
+      const buttons = screen.getAllByRole('button');
+      const uploadButton = buttons[0];
+      await user.click(uploadButton);
 
-    expect(screen.getByLabelText('Create custom Event Template'));
+      expect(screen.getByLabelText('Create custom Event Template'));
+    });
   });
 
   it('downloads an Event Template when Download is clicked on template action bar', async () => {
+    const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadTemplate');
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -192,16 +193,18 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    await user.click(screen.getByLabelText('Actions'));
-    await user.click(screen.getByText('Download'));
-
-    const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadTemplate');
+    await act(async () => {
+      await user.click(screen.getByLabelText('Kebab toggle'));
+      await user.click(screen.getByText('Download'));
+    });
 
     expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
     expect(downloadRequestSpy).toBeCalledWith(mockCustomEventTemplate);
   });
 
   it('shows a popup when Delete is clicked and then deletes the template after clicking confirmation Delete', async () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
+    const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -213,21 +216,21 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    await user.click(screen.getByLabelText('Actions'));
+    await act(async () => {
+      await user.click(screen.getByLabelText('Kebab toggle'));
 
-    expect(screen.getByText('Create Recording...'));
-    expect(screen.getByText('Download'));
-    expect(screen.getByText('Delete'));
+      expect(screen.getByText('Create Recording...'));
+      expect(screen.getByText('Download'));
+      expect(screen.getByText('Delete'));
 
-    const deleteAction = screen.getByText('Delete');
-    await user.click(deleteAction);
+      const deleteAction = screen.getByText('Delete');
+      await user.click(deleteAction);
 
-    expect(screen.getByLabelText('Event Template delete warning'));
+      expect(screen.getByLabelText('Event Template delete warning'));
 
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
-    const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    await user.click(screen.getByLabelText("Don't ask me again"));
-    await user.click(within(screen.getByLabelText('Event Template delete warning')).getByText('Delete'));
+      await user.click(screen.getByLabelText("Don't ask me again"));
+      await user.click(within(screen.getByLabelText('Event Template delete warning')).getByText('Delete'));
+    });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');
@@ -236,6 +239,7 @@ describe('<EventTemplates />', () => {
   });
 
   it('deletes the template when Delete is clicked w/o popup warning', async () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -247,15 +251,16 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    await user.click(screen.getByLabelText('Actions'));
+    await act(async () => {
+      await user.click(screen.getByLabelText('Kebab toggle'));
 
-    expect(screen.getByText('Create Recording...'));
-    expect(screen.getByText('Download'));
-    expect(screen.getByText('Delete'));
+      expect(screen.getByText('Create Recording...'));
+      expect(screen.getByText('Download'));
+      expect(screen.getByText('Delete'));
 
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
-    const deleteAction = screen.getByText('Delete');
-    await user.click(deleteAction);
+      const deleteAction = screen.getByText('Delete');
+      await user.click(deleteAction);
+    });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(screen.queryByLabelText('Event Template delete warning')).not.toBeInTheDocument();
@@ -284,7 +289,7 @@ describe('<EventTemplates />', () => {
       providers: [{ kind: ServiceContext.Provider, instance: services }],
     });
 
-    await doAct(async () => subj.next());
+    await act(async () => subj.next());
 
     const failTitle = screen.getByText('Error retrieving Event Templates');
     expect(failTitle).toBeInTheDocument();
@@ -311,7 +316,7 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    const filterInput = screen.getByLabelText('Event Template filter');
+    const filterInput = screen.getByLabelText(testT('EventTemplates.ARIA_LABELS.SEARCH_INPUT'));
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 
@@ -337,54 +342,58 @@ describe('<EventTemplates />', () => {
       },
     });
 
-    const uploadButton = screen.getByRole('button', { name: 'Upload' });
-    expect(uploadButton).toBeInTheDocument();
-    expect(uploadButton).toBeVisible();
+    await act(async () => {
+      const uploadButton = screen.getByRole('button', { name: 'Upload' });
+      expect(uploadButton).toBeInTheDocument();
+      expect(uploadButton).toBeVisible();
 
-    await user.click(uploadButton);
+      await user.click(uploadButton);
 
-    const modal = await screen.findByRole('dialog');
-    expect(modal).toBeInTheDocument();
-    expect(modal).toBeVisible();
+      const modal = await screen.findByRole('dialog');
+      expect(modal).toBeInTheDocument();
+      expect(modal).toBeVisible();
 
-    const modalTitle = await within(modal).findByText('Create custom Event Template');
-    expect(modalTitle).toBeInTheDocument();
-    expect(modalTitle).toBeVisible();
+      const modalTitle = await within(modal).findByText('Create custom Event Template');
+      expect(modalTitle).toBeInTheDocument();
+      expect(modalTitle).toBeVisible();
 
-    const dropZoneText = within(modal).getByText('Drag a file here');
-    expect(dropZoneText).toBeInTheDocument();
-    expect(dropZoneText).toBeVisible();
+      const dropZoneText = within(modal).getByText('Drag a file here');
+      expect(dropZoneText).toBeInTheDocument();
+      expect(dropZoneText).toBeVisible();
 
-    const uploadButtonInModal = within(modal).getByText('Upload');
-    expect(uploadButtonInModal).toBeInTheDocument();
-    expect(uploadButtonInModal).toBeVisible();
+      const uploadButtonInModal = within(modal).getByText('Upload');
+      expect(uploadButtonInModal).toBeInTheDocument();
+      expect(uploadButtonInModal).toBeVisible();
 
-    const uploadInput = modal.querySelector("input[accept='.xml,.jfc'][type='file']") as HTMLInputElement;
-    expect(uploadInput).toBeInTheDocument();
-    expect(uploadInput).not.toBeVisible();
+      const uploadInput = modal.querySelector(
+        "input[accept='application/xml,.xml,.jfc'][type='file']",
+      ) as HTMLInputElement;
+      expect(uploadInput).toBeInTheDocument();
+      expect(uploadInput).not.toBeVisible();
 
-    await user.click(uploadButton);
-    await user.upload(uploadInput, mockFileUpload);
+      await user.click(uploadButton);
+      await user.upload(uploadInput, mockFileUpload);
 
-    const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
-    expect(fileUploadNameText).toBeInTheDocument();
-    expect(fileUploadNameText).toBeVisible();
+      const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
+      expect(fileUploadNameText).toBeInTheDocument();
+      expect(fileUploadNameText).toBeVisible();
 
-    const submitButton = within(modal).getByText('Submit');
-    expect(submitButton).toBeInTheDocument();
-    expect(submitButton).toBeVisible();
-    expect(submitButton).not.toBeDisabled();
+      const submitButton = within(modal).getByText('Submit');
+      expect(submitButton).toBeInTheDocument();
+      expect(submitButton).toBeVisible();
+      expect(submitButton).not.toBeDisabled();
 
-    await user.click(submitButton);
+      await user.click(submitButton);
 
-    expect(createSpy).toHaveBeenCalled();
-    expect(createSpy).toHaveBeenCalledWith(mockFileUpload, expect.any(Function), expect.any(Subject));
+      expect(createSpy).toHaveBeenCalled();
+      expect(createSpy).toHaveBeenCalledWith(mockFileUpload, expect.any(Function), expect.any(Subject));
 
-    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
-    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+      expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+      expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
 
-    const closeButton = within(modal).getByText('Close');
-    expect(closeButton).toBeInTheDocument();
-    expect(closeButton).toBeVisible();
+      const closeButton = within(modal).getByText('Close');
+      expect(closeButton).toBeInTheDocument();
+      expect(closeButton).toBeVisible();
+    });
   });
 });

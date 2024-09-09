@@ -278,7 +278,7 @@ export const EventTypes: React.FC<EventTypesProps> = () => {
                 id="eventFilter"
                 type="search"
                 placeholder={t('EventTypes.SEARCH_PLACEHOLDER')}
-                aria-label="Event filter"
+                aria-label={t('EventTypes.ARIA_LABELS.SEARCH_INPUT')}
                 onChange={onFilterTextChange}
                 value={filterText}
                 isDisabled={errorMessage != ''}

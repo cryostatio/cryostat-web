@@ -349,9 +349,15 @@
     "EVENT_TEMPLATES": "Error retrieving Event Templates"
   },
   "EventTemplates": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "event-template-search-input"
+    },
     "SEARCH_PLACEHOLDER": "Find by name, description, or provider..."
   },
   "EventTypes": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "event-type-search-input"
+    },
     "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
   },
   "ImportCertificate": {
