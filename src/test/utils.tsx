@@ -96,7 +96,16 @@ export const setupRenderEnv = ({
   return { store, router, user, Wrapper: Wrapper };
 };
 
-export const renderSnapshot = async (options: RenderOptions) => {
+// Note: react-test-renderer does not support ref
+// https://legacy.reactjs.org/docs/test-renderer.html#ideas
+export const createMockForPFTableRef = (_element) => ({
+  offsetWidth: 24,
+  classList: {
+    contains: () => false
+  },
+});
+
+export const renderSnapshot = async (options: RenderOptions & { createNodeMock?: (element: React.ReactElement) => any }) => {
   const { router, Wrapper } = setupRenderEnv(options);
   let tree: renderer.ReactTestRenderer | undefined;
   await act(async () => {
@@ -104,6 +113,11 @@ export const renderSnapshot = async (options: RenderOptions) => {
       <Wrapper>
         <RouterProvider router={router} />
       </Wrapper>,
+      options.createNodeMock
+        ? {
+            createNodeMock: options.createNodeMock,
+          }
+        : undefined,
     );
   });
   return tree;

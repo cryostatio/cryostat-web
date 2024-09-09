@@ -22,7 +22,7 @@ import { TargetService } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';
 import { act as doAct, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = {
@@ -104,7 +104,9 @@ describe('<EventTemplates />', () => {
           },
         ],
       },
-    });
+      createNodeMock: createMockForPFTableRef
+    },
+  );
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
