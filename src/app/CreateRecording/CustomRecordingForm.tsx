@@ -509,8 +509,8 @@ export const CustomRecordingForm: React.FC = () => {
           toggleTextExpanded="Hide metadata options"
           toggleTextCollapsed="Show metadata options"
           data-quickstart-id="crf-metadata-opt"
-          toggleId='metadata-option-toggle'
-          contentId='metadata-options'
+          toggleId="metadata-option-toggle"
+          contentId="metadata-options"
         >
           <FormGroup
             label="Labels"
@@ -550,8 +550,8 @@ export const CustomRecordingForm: React.FC = () => {
           toggleTextExpanded="Hide advanced options"
           toggleTextCollapsed="Show advanced options"
           data-quickstart-id="crf-advanced-opt"
-          toggleId='advanced-option-toggle'
-          contentId='advanced-options'
+          toggleId="advanced-option-toggle"
+          contentId="advanced-options"
         >
           <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
           <FormGroup fieldId="To Disk">
