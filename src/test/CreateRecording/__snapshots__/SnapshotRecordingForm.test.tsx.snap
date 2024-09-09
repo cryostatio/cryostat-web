@@ -5,19 +5,23 @@ exports[`<SnapshotRecordingForm /> renders correctly 1`] = `
   className="pf-v5-c-form pf-m-horizontal"
   noValidate={true}
 >
-  <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-1"
-    data-ouia-component-type="PF5/Text"
-    data-ouia-safe={true}
-    data-pf-content={true}
+  <div
+    className="pf-v5-c-content"
   >
-    A Snapshot Recording is one which contains all information about all events that have been captured in the current session by 
-    <i>
-      other,  non-Snapshot
-    </i>
-     Recordings. Snapshots do not themselves define which events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the moment it is created.
-  </p>
+    <p
+      className=""
+      data-ouia-component-id="OUIA-Generated-Text-1"
+      data-ouia-component-type="PF5/Text"
+      data-ouia-safe={true}
+      data-pf-content={true}
+    >
+      A Snapshot Recording is one which contains all information about all events that have been captured in the current session by 
+      <i>
+        other, non-Snapshot
+      </i>
+       Recordings. Snapshots do not themselves define which events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the moment it is created.
+    </p>
+  </div>
   <div
     className="pf-v5-c-form__group pf-m-action"
   >
