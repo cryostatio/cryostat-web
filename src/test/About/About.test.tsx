@@ -62,7 +62,7 @@ describe('<About />', () => {
 
     expect(screen.getByText('About')).toBeInTheDocument();
     const logo = screen.getByRole('img');
-    expect(logo).toHaveClass('pf-c-brand cryostat-logo');
+    expect(logo).toHaveClass('pf-v5-c-brand cryostat-logo');
     expect(logo).toHaveAttribute('alt', 'Cryostat');
     expect(logo).toHaveAttribute('src', 'test-file-stub');
     expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', { ns: 'common' }))).toBeInTheDocument();
