@@ -45,7 +45,7 @@ export const HelpButton: React.FC<HelpButtonProps> = ({ visualization, ...props 
   return (
     <Popover bodyContent={content} position={'left'} {...props}>
       <Button variant="plain" className="topology__help-icon-button">
-        <Icon status="info">
+        <Icon>
           <InfoCircleIcon className="topology__help-icon" />
         </Icon>
       </Button>

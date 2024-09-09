@@ -192,6 +192,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
           <CardBody>
             <Dropdown
               isScrollable
+              maxMenuHeight="40vh"
               placeholder={t('TargetContextSelector.TOGGLE_PLACEHOLDER')}
               isOpen={isDropdownOpen}
               onOpenChange={setIsDropdownOpen}

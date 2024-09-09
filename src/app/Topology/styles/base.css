@@ -197,7 +197,7 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__help-icon {
-  color: var(--pf-v5-global--palette--blue-400);
+  color: var(--pf-v5-c-button--m-link--Color);
 }
 
 .topology__help-icon-button {

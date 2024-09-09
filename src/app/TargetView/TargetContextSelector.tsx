@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
+import { ScrollableMenuContent } from '@app/Shared/Components/ScrollableMenuContent';
 import { Target } from '@app/Shared/Services/api.types';
 import { isEqualTarget, getTargetRepresentation } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -33,8 +34,8 @@ import {
   MenuToggle,
   MenuSearch,
   MenuSearchInput,
-  Split,
-  SplitItem,
+  ActionList,
+  ActionListItem,
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
@@ -206,18 +207,18 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
 
   const selectFooter = React.useMemo(
     () => (
-      <Split hasGutter>
-        <SplitItem>
+      <ActionList>
+        <ActionListItem>
           <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
             {t('TargetContextSelector.CREATE_TARGET')}
           </Button>
-        </SplitItem>
-        <SplitItem>
-          <Button variant="tertiary" onClick={onClearSelection}>
+        </ActionListItem>
+        <ActionListItem>
+          <Button variant="link" onClick={onClearSelection}>
             {t('TargetContextSelector.CLEAR_SELECTION')}
           </Button>
-        </SplitItem>
-      </Split>
+        </ActionListItem>
+      </ActionList>
     ),
     [t, onClearSelection],
   );
@@ -230,10 +231,9 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         ) : (
           <Dropdown
             className={className}
-            isScrollable
             placeholder={t('TargetContextSelector.TOGGLE_PLACEHOLDER')}
             isOpen={isTargetOpen}
-            onOpenChange={(isOpen) => setIsTargetOpen(isOpen)}
+            onOpenChange={setIsTargetOpen}
             onOpenChangeKeys={['Escape']}
             onSelect={onSelect}
             onActionClick={onFavoriteClick}
@@ -256,17 +256,19 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
               appendTo: portalRoot,
             }}
           >
-            <MenuSearch>
-              <MenuSearchInput>
-                <SearchInput
-                  placeholder={t('TargetContextSelector.SEARCH_PLACEHOLDER')}
-                  value={searchTerm}
-                  onChange={(_, v) => setSearchTerm(v)}
-                />
-              </MenuSearchInput>
-            </MenuSearch>
-            <Divider />
-            <DropdownList>{selectOptions}</DropdownList>
+            <ScrollableMenuContent maxHeight="50vh">
+              <MenuSearch>
+                <MenuSearchInput>
+                  <SearchInput
+                    placeholder={t('TargetContextSelector.SEARCH_PLACEHOLDER')}
+                    value={searchTerm}
+                    onChange={(_, v) => setSearchTerm(v)}
+                  />
+                </MenuSearchInput>
+              </MenuSearch>
+              <Divider />
+              <DropdownList>{selectOptions}</DropdownList>
+            </ScrollableMenuContent>
             <MenuFooter>{selectFooter}</MenuFooter>
           </Dropdown>
         )}

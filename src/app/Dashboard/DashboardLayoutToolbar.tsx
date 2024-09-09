@@ -362,7 +362,8 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         <DropdownItem key="download" value={'download'}>
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
-        <DropdownItem key="clearAll" value={'clearAll'} isDisabled={currLayout.cards.length < 1}>
+        <Divider />
+        <DropdownItem key="clearAll" value={'clearAll'} isDisabled={currLayout.cards.length < 1} isDanger>
           {t('DashboardLayoutToolbar.CLEAR_LAYOUT')}
         </DropdownItem>
       </>
@@ -499,7 +500,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         )}
       >
         <Menu isScrollable onSelect={onLayoutSelect} onActionClick={onActionClick}>
-          <MenuContent maxMenuHeight="21.5em" id="dashboard-layout-menu-content">
+          <MenuContent maxMenuHeight="40vh" id="dashboard-layout-menu-content">
             {menuGroups(t('DashboardLayoutToolbar.MENU.FAVORITES'), true)}
             <Divider />
             {menuGroups(t('DashboardLayoutToolbar.MENU.OTHERS'), false)}

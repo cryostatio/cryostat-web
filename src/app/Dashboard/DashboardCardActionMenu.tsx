@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { portalRoot } from '@app/utils/utils';
-import { Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
+import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -66,11 +66,13 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ on
         <DropdownItem key="View" onClick={onView}>
           {t('VIEW', { ns: 'common' })}
         </DropdownItem>
-        <DropdownItem key="Remove" onClick={onRemove}>
-          {t('REMOVE', { ns: 'common' })}
-        </DropdownItem>
+
         <DropdownItem key="Reset Size" onClick={onResetSize}>
           {t('DashboardCardActionMenu.RESET_SIZE')}
+        </DropdownItem>
+        <Divider />
+        <DropdownItem key="Remove" onClick={onRemove} isDanger>
+          {t('REMOVE', { ns: 'common' })}
         </DropdownItem>
       </DropdownList>
     </Dropdown>

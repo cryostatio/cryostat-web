@@ -21,7 +21,7 @@ import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/M
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, formatBytes, formatDuration, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, formatDuration, sortResources, portalRoot } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -301,6 +301,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         {
           title: t('DELETE', { ns: 'common' }),
           onClick: () => handleDeleteButton(rule),
+          isDanger: true,
         },
       ];
     },
@@ -366,7 +367,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
             <ActionsColumn
               items={actionResolver(r)}
               popperProps={{
-                appendTo: () => document.getElementById('automated-rule-toolbar') || document.body,
+                appendTo: portalRoot,
                 position: 'right',
               }}
             />

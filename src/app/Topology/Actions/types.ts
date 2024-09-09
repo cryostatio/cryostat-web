@@ -71,6 +71,7 @@ export interface NodeAction {
   readonly action?: NodeActionFunction;
   readonly title?: React.ReactNode;
   readonly isSeparator?: boolean;
+  readonly isDanger?: boolean;
   readonly isDisabled?: (element: GraphElement | ListElement, actionUtils: ActionUtils) => Observable<boolean>;
   readonly allowed?: (element: GraphElement | ListElement) => boolean; // Undefined means allowing all
   readonly blocked?: (element: GraphElement | ListElement) => boolean; // Undefined means blocking none

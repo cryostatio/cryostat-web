@@ -43,6 +43,7 @@ export interface ContextMenuItemProps
   element: GraphElement | ListElement;
   variant: MenuItemVariant;
   isDisabled?: (element: GraphElement | ListElement, actionUtils: ActionUtils) => Observable<boolean>;
+  isDanger?: boolean;
 }
 
 export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
@@ -51,6 +52,7 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   onClick,
   variant,
   isDisabled,
+  isDanger,
   ...props
 }) => {
   const navigate = useNavigate();
@@ -102,7 +104,7 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   }
 
   return (
-    <Component {...props} onClick={handleOnclick} isDisabled={disabled}>
+    <Component {...props} onClick={handleOnclick} isDisabled={disabled} isDanger={!disabled && isDanger}>
       {children}
     </Component>
   );
