@@ -80,7 +80,7 @@ export class Cryostat {
 
   async selectFakeTarget() {
     const targetName = 'Fake Target';
-    const targetSelect = await this.driver.wait(until.elementLocated(By.css(`[aria-label="Options menu"]`)));
+    const targetSelect = await this.driver.wait(until.elementLocated(By.css(`[aria-label="Select Target"]`)));
     await targetSelect.click();
     const targetOption = await this.driver.wait(
       until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`)),
