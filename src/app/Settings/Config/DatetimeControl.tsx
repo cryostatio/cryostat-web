@@ -102,11 +102,17 @@ const Component = () => {
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={onToggle} isExpanded={dateLocaleOpen} isFullWidth>
+      <MenuToggle
+        aria-label={t('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={onToggle}
+        isExpanded={dateLocaleOpen}
+        isFullWidth
+      >
         {datetimeFormat.dateLocale.name}
       </MenuToggle>
     ),
-    [onToggle, dateLocaleOpen, datetimeFormat.dateLocale],
+    [t, onToggle, dateLocaleOpen, datetimeFormat.dateLocale],
   );
 
   return (

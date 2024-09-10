@@ -44,11 +44,17 @@ const Component = () => {
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleLanguageToggle} isExpanded={open} isFullWidth>
+      <MenuToggle
+        aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={handleLanguageToggle}
+        isExpanded={open}
+        isFullWidth
+      >
         {localeReadable(i18n.language)}
       </MenuToggle>
     ),
-    [handleLanguageToggle, open, i18n.language],
+    [handleLanguageToggle, open, i18n.language, t],
   );
 
   return (

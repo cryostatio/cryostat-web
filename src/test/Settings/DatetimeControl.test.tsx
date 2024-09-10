@@ -17,7 +17,7 @@
 import { DatetimeControl } from '@app/Settings/Config/DatetimeControl';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat, locales } from '@i18n/datetime';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { render, testT } from '../utils';
@@ -69,7 +69,7 @@ describe('<DatetimeControl/>', () => {
       },
     });
 
-    const optionMenu = screen.getByLabelText('Options menu');
+    const optionMenu = screen.getByLabelText(testT('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.MENU_TOGGLE'));
     expect(optionMenu).toBeInTheDocument();
     expect(optionMenu).toBeVisible();
 
@@ -100,7 +100,7 @@ describe('<DatetimeControl/>', () => {
       },
     });
 
-    const optionMenu = screen.getByLabelText('Options menu');
+    const optionMenu = screen.getByLabelText(testT('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.MENU_TOGGLE'));
     expect(optionMenu).toBeInTheDocument();
     expect(optionMenu).toBeVisible();
 
@@ -119,6 +119,8 @@ describe('<DatetimeControl/>', () => {
     await act(async () => {
       await user.click(option);
     });
+
+    await waitFor(() => expect(ul).not.toBeInTheDocument()); // Should close menu
 
     expect(defaultServices.settings.setDatetimeFormat).toHaveBeenCalledTimes(1);
     expect(defaultServices.settings.setDatetimeFormat).toHaveBeenCalledWith({

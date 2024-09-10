@@ -17,7 +17,7 @@
 import { Theme } from '@app/Settings/Config/Theme';
 import { ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, act, within } from '@testing-library/react';
+import { cleanup, screen, act, within, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { mockMediaQueryList, render, testT } from '../utils';
@@ -65,7 +65,7 @@ describe('<Theme/>', () => {
       },
     });
 
-    const themeSelect = screen.getByLabelText('Options menu');
+    const themeSelect = screen.getByLabelText(testT('SETTINGS.THEME.ARIA_LABELS.MENU_TOGGLE'));
     expect(themeSelect).toBeInTheDocument();
     expect(themeSelect).toBeVisible();
 
@@ -85,7 +85,7 @@ describe('<Theme/>', () => {
       await user.click(option);
     });
 
-    expect(ul).not.toBeInTheDocument(); // Should close menu
+    await waitFor(() => expect(ul).not.toBeInTheDocument()); // Should close menu
 
     const darkOption = screen.getByText(testT('SETTINGS.THEME.DARK'));
     expect(darkOption).toBeInTheDocument();

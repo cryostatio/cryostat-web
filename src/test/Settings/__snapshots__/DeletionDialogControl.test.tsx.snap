@@ -71,10 +71,10 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
       className="pf-v5-c-expandable-section"
     >
       <button
-        aria-controls="expandable-section-content-17259356481295ov90zs5f2"
+        aria-controls="delete-dialog-options"
         aria-expanded={false}
         className="pf-v5-c-expandable-section__toggle"
-        id="expandable-section-toggle-1725935648129cmgthvllnqg"
+        id="delete-dialog-options-toggle"
         onClick={[Function]}
         type="button"
       >
@@ -103,10 +103,10 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         </span>
       </button>
       <div
-        aria-labelledby="expandable-section-toggle-1725935648129cmgthvllnqg"
+        aria-labelledby="delete-dialog-options-toggle"
         className="pf-v5-c-expandable-section__content"
         hidden={true}
-        id="expandable-section-content-17259356481295ov90zs5f2"
+        id="delete-dialog-options"
         role="region"
       >
         <div

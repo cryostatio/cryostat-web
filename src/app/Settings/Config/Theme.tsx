@@ -55,17 +55,23 @@ const Component = () => {
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleThemeToggle} isExpanded={open} isFullWidth>
+      <MenuToggle
+        aria-label={t('SETTINGS.THEME.ARIA_LABELS.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={handleThemeToggle}
+        isExpanded={open}
+        isFullWidth
+      >
         {getThemeDisplay(themeSetting)}
       </MenuToggle>
     ),
-    [handleThemeToggle, open, getThemeDisplay, themeSetting],
+    [t, handleThemeToggle, getThemeDisplay, themeSetting, open],
   );
 
   return (
     <Select
       isOpen={open}
-      aria-label={t('SETTINGS.THEME.SELECT.LABEL')}
+      aria-label={t('SETTINGS.THEME.ARIA_LABELS.SELECT')}
       onSelect={handleThemeSelect}
       selected={themeSetting}
       popperProps={{

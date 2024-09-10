@@ -505,7 +505,8 @@
     },
     "DATETIME_CONTROL": {
       "ARIA_LABELS": {
-        "LOCALE_SELECT": "Select a datetime locale"
+        "LOCALE_SELECT": "Select a datetime locale",
+        "MENU_TOGGLE": "datetime-locale-setting-toggle"
       },
       "DESCRIPTION": "",
       "LOCALE_SELECT_DESCRIPTION": "Select current date locale.",
@@ -523,11 +524,13 @@
       "BETA_DESCRIPTION": "Experimental features",
       "DESCRIPTION": "Control which graphical features appear in the application.",
       "DEVELOPMENT_DESCRIPTION": "Under development features",
+      "MENU_TOGGLE": "feature-level-setting-toggle",
       "PRODUCTION_DESCRIPTION": "Stable production-ready features",
       "TITLE": "Feature level"
     },
     "LANGUAGE": {
       "ARIA_LABELS": {
+        "MENU_TOGGLE": "language-setting-toggle",
         "SELECT": "Select a language"
       },
       "DESCRIPTION": "Set the current language for web console.",
@@ -541,13 +544,14 @@
       "TITLE": "Notifications"
     },
     "THEME": {
+      "ARIA_LABELS": {
+        "MENU_TOGGLE": "theme-setting-toggle",
+        "SELECT": "Select a theme"
+      },
       "AUTO": "Auto",
       "DARK": "Dark",
       "DESCRIPTION": "Set the current theme for web console.",
       "LIGHT": "Light",
-      "SELECT": {
-        "LABEL": "Select a theme"
-      },
       "TITLE": "Theme"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
