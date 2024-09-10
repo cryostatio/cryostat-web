@@ -4,11 +4,6 @@ exports[`<ClickableLabel /> renders correctly 1`] = `
 <span
   aria-label="someLabel=someValue"
   className="pf-v5-c-label pf-m-blue"
-  isTruncated={true}
-  onFocus={[Function]}
-  onMouseEnter={[Function]}
-  onMouseLeave={[Function]}
-  style={Object {}}
 >
   <button
     className="pf-v5-c-label__content"
@@ -17,6 +12,11 @@ exports[`<ClickableLabel /> renders correctly 1`] = `
   >
     <span
       className="pf-v5-c-label__text"
+      style={
+        Object {
+          "--pf-v5-c-label__text--MaxWidth": "20ch",
+        }
+      }
     >
       someLabel=someValue
     </span>
