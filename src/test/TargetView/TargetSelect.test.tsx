@@ -17,9 +17,9 @@ import { Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetView/TargetSelect';
 import '@testing-library/jest-dom';
-import { cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { render } from '../utils';
+import { render, testT } from '../utils';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
@@ -75,7 +75,7 @@ describe('<TargetSelect />', () => {
     });
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
-    expect(screen.getByText(`Select a target`)).toBeInTheDocument();
+    expect(screen.getByText(testT('TargetContextSelector.TOGGLE_PLACEHOLDER'))).toBeInTheDocument();
   });
 
   it('renders empty state when expanded', async () => {
@@ -90,12 +90,12 @@ describe('<TargetSelect />', () => {
       },
     });
 
-    expect(screen.getByText('Select a target')).toBeInTheDocument();
+    expect(screen.getByText(testT('TargetContextSelector.TOGGLE_PLACEHOLDER'))).toBeInTheDocument();
 
     const expandButton = screen.getByLabelText('Details');
     await user.click(expandButton);
 
-    const articleElement = container.querySelector('article');
+    const articleElement = container.querySelector('#serialized-target-details');
     expect(articleElement).toBeInTheDocument();
     expect(articleElement).toBeVisible();
     expect(screen.getByText(`No target selected`)).toBeInTheDocument();
@@ -116,9 +116,10 @@ describe('<TargetSelect />', () => {
       },
     });
 
-    // Select a target first
-    await user.click(screen.getByLabelText('Options menu'));
-    await user.click(screen.getByText('fooTarget (service:jmx:rmi://someFooUrl)'));
+    await act(async () => {
+      await user.click(screen.getByLabelText(testT('TargetContextSelector.TOGGLE_LABEL')));
+      await user.click(screen.getByText('fooTarget'));
+    });
 
     const expandButton = screen.getByLabelText('Details');
     await user.click(expandButton);
@@ -144,12 +145,16 @@ describe('<TargetSelect />', () => {
       },
     });
 
-    await user.click(screen.getByLabelText('Options menu'));
+    await act(async () => {
+      await user.click(screen.getByLabelText(testT('TargetContextSelector.TOGGLE_LABEL')));
+    });
 
     [
       CUSTOM_TARGET_REALM,
-      'fooTarget (service:jmx:rmi://someFooUrl)',
-      'barTarget (service:jmx:rmi://someBarUrl)',
+      'fooTarget',
+      'service:jmx:rmi://someFooUrl',
+      'barTarget',
+      'service:jmx:rmi://someBarUrl',
     ].forEach((str) => {
       const element = screen.getByText(str);
       expect(element).toBeInTheDocument();

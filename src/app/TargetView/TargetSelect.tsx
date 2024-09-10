@@ -15,7 +15,7 @@
  */
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target } from '@app/Shared/Services/api.types';
-import { includesTarget, isEqualTarget } from '@app/Shared/Services/api.utils';
+import { getTargetRepresentation, includesTarget, isEqualTarget } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { SerializedTarget } from '@app/TargetView/SerializedTarget';
@@ -174,7 +174,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
         icon={<ContainerNodeIcon />}
         isFullWidth
       >
-        {selected?.alias || selected?.connectUrl}
+        {!selected ? t('TargetContextSelector.TOGGLE_PLACEHOLDER') : getTargetRepresentation(selected)}
       </MenuToggle>
     ),
     [isDropdownOpen, selected, handleToggle, t],
@@ -217,7 +217,9 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
             </Dropdown>
           </CardBody>
           <CardExpandableContent>
-            <CardBody>{!selected ? <NoTargetSelected /> : <SerializedTarget target={selected} />}</CardBody>
+            <CardBody id="serialized-target-details">
+              <SerializedTarget target={selected} />
+            </CardBody>
           </CardExpandableContent>
         </>
       )}
