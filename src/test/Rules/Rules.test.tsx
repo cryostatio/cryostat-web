@@ -20,7 +20,6 @@ import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.se
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act, act as doAct, cleanup, screen, within } from '@testing-library/react';
-import { element } from 'prop-types';
 import { of, Subject } from 'rxjs';
 import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
 
