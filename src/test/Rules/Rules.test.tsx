@@ -19,9 +19,10 @@ import { Rule, NotificationMessage, NotificationCategory } from '@app/Shared/Ser
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { act as doAct, cleanup, screen, within } from '@testing-library/react';
+import { act, act as doAct, cleanup, screen, within } from '@testing-library/react';
+import { element } from 'prop-types';
 import { of, Subject } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
 
 const mockRule: Rule = {
   name: 'mockRule',
@@ -106,13 +107,13 @@ describe('<Rules />', () => {
           },
         ],
       },
+      createNodeMock: createMockForPFTableRef,
     });
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  // TODO: Use RouterProvider
   it('opens create rule view when Create is clicked', async () => {
-    const { user } = render({
+    const { user, router } = render({
       routerConfigs: {
         routes: [
           {
@@ -124,8 +125,7 @@ describe('<Rules />', () => {
     });
 
     await user.click(screen.getByRole('button', { name: /Create/ }));
-
-    // expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/rules', '/rules/create']);
+    expect(router.state.location.pathname).toEqual('/rules/create');
   });
 
   it('opens upload modal when upload icon is clicked', async () => {
@@ -140,19 +140,21 @@ describe('<Rules />', () => {
       },
     });
 
-    await user.click(screen.getByRole('button', { name: 'Upload' }));
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Upload' }));
 
-    const modal = await screen.findByRole('dialog');
-    expect(modal).toBeInTheDocument();
-    expect(modal).toBeVisible();
+      const modal = await screen.findByRole('dialog');
+      expect(modal).toBeInTheDocument();
+      expect(modal).toBeVisible();
 
-    const modalTitle = await within(modal).findByText('Upload Automated Rules');
-    expect(modalTitle).toBeInTheDocument();
-    expect(modalTitle).toBeVisible();
+      const modalTitle = await within(modal).findByText('Upload Automated Rules');
+      expect(modalTitle).toBeInTheDocument();
+      expect(modalTitle).toBeVisible();
 
-    const dropZoneText = within(modal).getByText('Drag a file here');
-    expect(dropZoneText).toBeInTheDocument();
-    expect(dropZoneText).toBeVisible();
+      const dropZoneText = within(modal).getByText('Drag a file here');
+      expect(dropZoneText).toBeInTheDocument();
+      expect(dropZoneText).toBeVisible();
+    });
   });
 
   it('shows a popup when Delete is clicked and then deletes the Rule after clicking confirmation Delete', async () => {
@@ -170,13 +172,15 @@ describe('<Rules />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
 
-    await user.click(screen.getByLabelText('Actions'));
-    await user.click(await screen.findByText('Delete'));
+    await act(async () => {
+      await user.click(screen.getByLabelText('Kebab toggle'));
+      await user.click(await screen.findByText('Delete'));
 
-    expect(screen.getByLabelText(DeleteAutomatedRules.ariaLabel));
+      expect(screen.getByLabelText(DeleteAutomatedRules.ariaLabel));
 
-    await user.click(screen.getByLabelText("Don't ask me again"));
-    await user.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
+      await user.click(screen.getByLabelText("Don't ask me again"));
+      await user.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
+    });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
@@ -198,10 +202,13 @@ describe('<Rules />', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
 
-    await user.click(screen.getByLabelText('Actions'));
-    await user.click(await screen.findByText('Delete'));
+    await act(async () => {
+      await user.click(screen.getByLabelText('Kebab toggle'));
+      await user.click(await screen.findByText('Delete'));
 
-    expect(screen.queryByLabelText(DeleteAutomatedRules.ariaLabel)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(DeleteAutomatedRules.ariaLabel)).not.toBeInTheDocument();
+    });
+
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
   });
@@ -271,8 +278,10 @@ describe('<Rules />', () => {
       },
     });
 
-    await user.click(screen.getByLabelText('Actions'));
-    await user.click(await screen.findByText('Download'));
+    await act(async () => {
+      await user.click(screen.getByLabelText('Kebab toggle'));
+      await user.click(await screen.findByText('Download'));
+    });
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toBeCalledWith(mockRule.name);
@@ -308,12 +317,14 @@ describe('<Rules />', () => {
       },
     });
 
-    await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
+    await act(async () => {
+      await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
 
-    expect(screen.getByLabelText(DisableAutomatedRules.ariaLabel));
+      expect(screen.getByLabelText(DisableAutomatedRules.ariaLabel));
 
-    await user.click(screen.getByLabelText("Don't ask me again"));
-    await user.click(within(screen.getByLabelText(DisableAutomatedRules.ariaLabel)).getByText('Disable'));
+      await user.click(screen.getByLabelText("Don't ask me again"));
+      await user.click(within(screen.getByLabelText(DisableAutomatedRules.ariaLabel)).getByText('Disable'));
+    });
 
     expect(updateSpy).toHaveBeenCalledTimes(1);
     expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: false }, true);
@@ -331,50 +342,54 @@ describe('<Rules />', () => {
       },
     });
 
-    await user.click(screen.getByRole('button', { name: 'Upload' }));
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Upload' }));
 
-    const modal = await screen.findByRole('dialog');
-    expect(modal).toBeInTheDocument();
-    expect(modal).toBeVisible();
+      const modal = await screen.findByRole('dialog');
+      expect(modal).toBeInTheDocument();
+      expect(modal).toBeVisible();
 
-    const modalTitle = await within(modal).findByText('Upload Automated Rules');
-    expect(modalTitle).toBeInTheDocument();
-    expect(modalTitle).toBeVisible();
+      const modalTitle = await within(modal).findByText('Upload Automated Rules');
+      expect(modalTitle).toBeInTheDocument();
+      expect(modalTitle).toBeVisible();
 
-    const dropZoneText = within(modal).getByText('Drag a file here');
-    expect(dropZoneText).toBeInTheDocument();
-    expect(dropZoneText).toBeVisible();
+      const dropZoneText = within(modal).getByText('Drag a file here');
+      expect(dropZoneText).toBeInTheDocument();
+      expect(dropZoneText).toBeVisible();
 
-    const uploadButton = within(modal).getByText('Upload');
-    expect(uploadButton).toBeInTheDocument();
-    expect(uploadButton).toBeVisible();
+      const uploadButton = within(modal).getByText('Upload');
+      expect(uploadButton).toBeInTheDocument();
+      expect(uploadButton).toBeVisible();
 
-    const uploadInput = modal.querySelector("input[accept='application/json'][type='file']") as HTMLInputElement;
-    expect(uploadInput).toBeInTheDocument();
-    expect(uploadInput).not.toBeVisible();
+      const uploadInput = modal.querySelector(
+        "input[accept='application/json,.json'][type='file']",
+      ) as HTMLInputElement;
+      expect(uploadInput).toBeInTheDocument();
+      expect(uploadInput).not.toBeVisible();
 
-    await user.click(uploadButton);
-    await user.upload(uploadInput, mockFileUpload);
+      await user.click(uploadButton);
+      await user.upload(uploadInput, mockFileUpload);
 
-    const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
-    expect(fileUploadNameText).toBeInTheDocument();
-    expect(fileUploadNameText).toBeVisible();
+      const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
+      expect(fileUploadNameText).toBeInTheDocument();
+      expect(fileUploadNameText).toBeVisible();
 
-    const submitButton = within(modal).getByText('Submit');
-    expect(submitButton).toBeInTheDocument();
-    expect(submitButton).toBeVisible();
-    expect(submitButton).not.toBeDisabled();
+      const submitButton = within(modal).getByText('Submit');
+      expect(submitButton).toBeInTheDocument();
+      expect(submitButton).toBeVisible();
+      expect(submitButton).not.toBeDisabled();
 
-    await user.click(submitButton);
+      await user.click(submitButton);
 
-    expect(uploadSpy).toHaveBeenCalled();
-    expect(uploadSpy).toHaveBeenCalledWith(mockRule, expect.any(Function), expect.any(Subject));
+      expect(uploadSpy).toHaveBeenCalled();
+      expect(uploadSpy).toHaveBeenCalledWith(mockRule, expect.any(Function), expect.any(Subject));
 
-    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
-    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+      expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+      expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
 
-    const closeButton = within(modal).getByText('Close');
-    expect(closeButton).toBeInTheDocument();
-    expect(closeButton).toBeVisible();
+      const closeButton = within(modal).getByText('Close');
+      expect(closeButton).toBeInTheDocument();
+      expect(closeButton).toBeVisible();
+    });
   });
 });
