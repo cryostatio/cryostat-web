@@ -398,6 +398,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <ToolbarGroup variant="icon-button-group">
                 <ToolbarItem>
                   <NotificationBadge
+                    id="notification-badge"
                     count={unreadNotificationsCount}
                     variant={
                       errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'

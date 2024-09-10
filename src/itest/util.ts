@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Builder, By, WebDriver, WebElement, WebElementPromise, until, Actions } from 'selenium-webdriver';
+import { Builder, By, WebDriver, WebElement, WebElementPromise, until } from 'selenium-webdriver';
 import firefox from 'selenium-webdriver/firefox';
 
 const DEFAULT_FIND_ELEMENT_TIMEOUT = 5000;
@@ -95,16 +95,26 @@ export class Cryostat {
     if (skipButton) await skipButton.click();
   }
 
+  async closeNotificationAlerts(): Promise<void> {
+    const notiBadge = await this.driver.wait(until.elementLocated(By.id('notification-badge')));
+
+    // Toggle to open/close
+    await notiBadge.click();
+    return await notiBadge.click();
+  }
+
   async getLatestNotification(): Promise<ITestNotification> {
     const latestNotification = await this.driver.wait(
-      until.elementLocated(By.className('pf-c-alert-group pf-m-toast')),
+      until.elementLocated(By.className('pf-v5-c-alert-group pf-m-toast')),
     );
     return {
       title: await getDirectTextContent(
         this.driver,
-        await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__title')),
+        await latestNotification.findElement(By.css('li:last-of-type .pf-v5-c-alert__title')),
       ),
-      description: await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__description')).getText(),
+      description: await latestNotification
+        .findElement(By.css('li:last-of-type .pf-v5-c-alert__description'))
+        .getText(),
     };
   }
 }
@@ -164,10 +174,7 @@ export class Dashboard {
     const addCardButton = await getElementById(this.driver, 'dashboard-add-btn');
     // Can't use click() directly because the button is wrapped by a Tooltip
     const actions = this.driver.actions();
-    actions
-      .move({ origin: addCardButton })
-      .click()
-      .perform();
+    await actions.move({ origin: addCardButton }).click().perform();
     const twoPartCards = [CardType.AUTOMATED_ANALYSIS, CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
 
     switch (cardType) {
@@ -237,7 +244,7 @@ export class Recordings {
   }
 
   async getRecordings(): Promise<WebElement[]> {
-    const tableXPath = "//div[@class='recording-table--inner-container pf-c-scroll-inner-wrapper']";
+    const tableXPath = "//div[@class='recording-table--inner-container pf-v5-c-scroll-inner-wrapper']";
     return this.driver.findElements(By.xpath(`${tableXPath}//tbody`));
   }
 

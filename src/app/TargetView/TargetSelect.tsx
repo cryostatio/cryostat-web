@@ -17,7 +17,6 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target } from '@app/Shared/Services/api.types';
 import { getTargetRepresentation, includesTarget, isEqualTarget } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { SerializedTarget } from '@app/TargetView/SerializedTarget';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
