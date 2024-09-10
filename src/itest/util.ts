@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Builder, By, WebDriver, WebElement, WebElementPromise, until } from 'selenium-webdriver';
+import { Builder, By, WebDriver, WebElement, WebElementPromise, until, Actions } from 'selenium-webdriver';
 import firefox from 'selenium-webdriver/firefox';
 
 const DEFAULT_FIND_ELEMENT_TIMEOUT = 5000;
@@ -161,8 +161,13 @@ export class Dashboard {
   }
 
   async addCard(cardType: CardType) {
-    const addCardButton = await getElementByCSS(this.driver, `[aria-label="Add card"]`);
-    await addCardButton.click();
+    const addCardButton = await getElementById(this.driver, 'dashboard-add-btn');
+    // Can't use click() directly because the button is wrapped by a Tooltip
+    const actions = this.driver.actions();
+    actions
+      .move({ origin: addCardButton })
+      .click()
+      .perform();
     const twoPartCards = [CardType.AUTOMATED_ANALYSIS, CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
 
     switch (cardType) {
@@ -184,7 +189,7 @@ export class Dashboard {
         break;
       }
     }
-    const finishButton = await getElementByCSS(this.driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
+    const finishButton = await getElementById(this.driver, 'card-props-config-next');
     await finishButton.click();
     if (twoPartCards.includes(cardType)) {
       await finishButton.click();
@@ -201,10 +206,10 @@ export class Dashboard {
       return;
     }
 
-    const actionsButton = await getElementByCSS(this.driver, 'button[aria-label="Actions"]');
+    const actionsButton = await getElementByCSS(this.driver, 'button[aria-label="dashboard action toggle"]');
     await actionsButton.click();
 
-    const removeButton = await getElementByLinkText(this.driver, 'Remove');
+    const removeButton = await getElementByXPath(this.driver, "//li[contains(.,'Remove')]");
     await removeButton.click();
   }
 }

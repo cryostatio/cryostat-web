@@ -195,6 +195,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
             appendTo={() => document.getElementById('dashboard-catalog-btn-wrapper') || document.body}
           >
             <Button
+              id="dashboard-add-btn"
               aria-label="Add card"
               data-quickstart-id={'dashboard-add-btn'}
               variant="plain"
@@ -248,6 +249,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
                 !getCardDescriptorByTitle(selection, t).advancedConfig
                   ? 'Finish'
                   : 'Next',
+              nextButtonProps: { id: 'card-props-config-next' },
             }}
           >
             <Stack>
@@ -264,6 +266,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
             name="Configuration"
             footer={{
               nextButtonText: selection && !getCardDescriptorByTitle(selection, t).advancedConfig ? 'Finish' : 'Next',
+              nextButtonProps: { id: 'card-props-config-next' },
             }}
             isHidden={!selection || !getCardDescriptorByTitle(selection, t).propControls.length}
           >
@@ -279,7 +282,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
           <WizardStep
             id="card-adv-config"
             name="Advanced Configuration"
-            footer={{ nextButtonText: 'Finish' }}
+            footer={{ nextButtonText: 'Finish', nextButtonProps: { id: 'card-props-config-next' } }}
             isHidden={!selection || !getCardDescriptorByTitle(selection, t).advancedConfig}
           >
             <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
