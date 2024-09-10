@@ -39,6 +39,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface TimePickerProps {
+  id?: string;
   selected: {
     // controlled
     hour24: number; // In 24h format
@@ -57,6 +58,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   onSecondSelect,
   onMeridiemSelect,
   selected,
+  id,
 }) => {
   const { t } = useTranslation();
   const [is24h, setIs24h] = React.useState(true);
@@ -73,7 +75,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
   return (
     <>
-      <Panel className="datetime-picker">
+      <Panel className="datetime-picker" id={id}>
         <PanelHeader>
           <ToggleGroup>
             <ToggleGroupItem

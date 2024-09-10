@@ -622,6 +622,7 @@
   },
   "TimezonePicker": {
     "ARIA_LABELS": {
+      "MENU_TOGGLE": "timezone-select-toggle",
       "SELECT": "Select a timezone",
       "TYPE_AHEAD": "Search a timezone"
     },

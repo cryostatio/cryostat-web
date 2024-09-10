@@ -43,9 +43,7 @@ describe('<TimezonePicker/>', () => {
       },
     });
 
-    const displaySelected = screen.getByText(
-      `(UTC${dayjs().tz(supportedTimezones()[0].full).format('Z')}) ${supportedTimezones()[0].full}`,
-    );
+    const displaySelected = screen.getByText(supportedTimezones()[0].full);
     expect(displaySelected).toBeInTheDocument();
     expect(displaySelected).toBeVisible();
   });
@@ -62,7 +60,7 @@ describe('<TimezonePicker/>', () => {
       },
     });
 
-    const optionMenu = screen.getByLabelText('Options menu');
+    const optionMenu = screen.getByLabelText(testT('TimezonePicker.ARIA_LABELS.MENU_TOGGLE'));
     expect(optionMenu).toBeInTheDocument();
     expect(optionMenu).toBeVisible();
 
@@ -83,59 +81,6 @@ describe('<TimezonePicker/>', () => {
       });
   });
 
-  it('should correctly show selected in compact mode', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/recordings',
-            element: <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />,
-          },
-        ],
-      },
-    });
-
-    const displaySelected = screen.getByText(supportedTimezones()[0].short);
-    expect(displaySelected).toBeInTheDocument();
-    expect(displaySelected).toBeVisible();
-  });
-
-  it('should show correct timezone options in compact mode', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/recordings',
-            element: <TimezonePicker selected={supportedTimezones()[0]} onTimezoneChange={onTimezoneChange} />,
-          },
-        ],
-      },
-    });
-
-    const optionMenu = screen.getByLabelText('Options menu');
-    expect(optionMenu).toBeInTheDocument();
-    expect(optionMenu).toBeVisible();
-
-    await act(async () => {
-      await user.click(optionMenu);
-    });
-
-    const ul = screen.getByLabelText(testT('TimezonePicker.ARIA_LABELS.SELECT'));
-    expect(ul).toBeInTheDocument();
-    expect(ul).toBeVisible();
-
-    supportedTimezones()
-      .map((t) => t.short)
-      .forEach((short) => {
-        // Might be same full and short (e.g. UTC)
-        const optionDetails = within(ul).getAllByText(short);
-        optionDetails.forEach((d) => {
-          expect(d).toBeInTheDocument();
-          expect(d).toBeVisible();
-        });
-      });
-  });
-
   it('should select a timezone when an option is clicked', async () => {
     const { user } = render({
       routerConfigs: {
@@ -148,7 +93,7 @@ describe('<TimezonePicker/>', () => {
       },
     });
 
-    const optionMenu = screen.getByLabelText('Options menu');
+    const optionMenu = screen.getByLabelText(testT('TimezonePicker.ARIA_LABELS.MENU_TOGGLE'));
     expect(optionMenu).toBeInTheDocument();
     expect(optionMenu).toBeVisible();
 

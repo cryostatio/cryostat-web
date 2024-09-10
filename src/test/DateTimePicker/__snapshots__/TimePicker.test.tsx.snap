@@ -2,8 +2,54 @@
 
 exports[`<TimePicker/> renders correctly 1`] = `
 <div
-  className="pf-v5-c-panel"
+  className="pf-v5-c-panel datetime-picker"
 >
+  <div
+    className="pf-v5-c-panel__header"
+  >
+    <div
+      className="pf-v5-c-toggle-group"
+      role="group"
+    >
+      <div
+        className="pf-v5-c-toggle-group__item"
+      >
+        <button
+          aria-pressed={true}
+          className="pf-v5-c-toggle-group__button pf-m-selected"
+          id="24-hour-btn"
+          onClick={[Function]}
+          type="button"
+        >
+          <span
+            className="pf-v5-c-toggle-group__text"
+          >
+            24Hr View
+          </span>
+        </button>
+      </div>
+      <div
+        className="pf-v5-c-toggle-group__item"
+      >
+        <button
+          aria-pressed={false}
+          className="pf-v5-c-toggle-group__button"
+          id="12-hour-btn"
+          onClick={[Function]}
+          type="button"
+        >
+          <span
+            className="pf-v5-c-toggle-group__text"
+          >
+            12Hr View
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <hr
+    className="pf-v5-c-divider"
+  />
   <div
     className="pf-v5-c-panel__main"
     style={
@@ -51,7 +97,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 type="button"
               >
                 <span
-                  className="pf-v5-c-icon pf-m-md"
+                  className="pf-v5-c-icon pf-m-lg"
                 >
                   <span
                     className="pf-v5-c-icon__content"
@@ -115,7 +161,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 type="button"
               >
                 <span
-                  className="pf-v5-c-icon pf-m-md"
+                  className="pf-v5-c-icon pf-m-lg"
                 >
                   <span
                     className="pf-v5-c-icon__content"
@@ -180,7 +226,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 type="button"
               >
                 <span
-                  className="pf-v5-c-icon pf-m-md"
+                  className="pf-v5-c-icon pf-m-lg"
                 >
                   <span
                     className="pf-v5-c-icon__content"
@@ -244,7 +290,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 type="button"
               >
                 <span
-                  className="pf-v5-c-icon pf-m-md"
+                  className="pf-v5-c-icon pf-m-lg"
                 >
                   <span
                     className="pf-v5-c-icon__content"
@@ -309,7 +355,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 type="button"
               >
                 <span
-                  className="pf-v5-c-icon pf-m-md"
+                  className="pf-v5-c-icon pf-m-lg"
                 >
                   <span
                     className="pf-v5-c-icon__content"
@@ -373,7 +419,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 type="button"
               >
                 <span
-                  className="pf-v5-c-icon pf-m-md"
+                  className="pf-v5-c-icon pf-m-lg"
                 >
                   <span
                     className="pf-v5-c-icon__content"
@@ -399,61 +445,6 @@ exports[`<TimePicker/> renders correctly 1`] = `
           </div>
         </div>
       </div>
-    </div>
-    <hr
-      className="pf-v5-c-divider"
-    />
-    <div
-      className="pf-v5-c-panel__footer"
-    >
-      <div
-        className="pf-v5-c-helper-text"
-      >
-        <div
-          className="pf-v5-c-helper-text__item"
-        >
-          <span
-            className="pf-v5-c-helper-text__item-text"
-          >
-            Use 24-hour time
-          </span>
-        </div>
-      </div>
-      <label
-        className="pf-v5-c-switch"
-        data-ouia-component-id="OUIA-Generated-Switch-1"
-        data-ouia-component-type="PF5/Switch"
-        data-ouia-safe={true}
-        htmlFor="24-hour-switch"
-      >
-        <input
-          aria-label=""
-          aria-labelledby="24-hour-switch-on"
-          checked={true}
-          className="pf-v5-c-switch__input"
-          disabled={false}
-          id="24-hour-switch"
-          onChange={[Function]}
-          type="checkbox"
-        />
-        <span
-          className="pf-v5-c-switch__toggle"
-        />
-        <span
-          aria-hidden="true"
-          className="pf-v5-c-switch__label pf-m-on"
-          id="24-hour-switch-on"
-        >
-          24-hour
-        </span>
-        <span
-          aria-hidden="true"
-          className="pf-v5-c-switch__label pf-m-off"
-          id="24-hour-switch-off"
-        >
-          24-hour
-        </span>
-      </label>
     </div>
   </div>
 </div>
