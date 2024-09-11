@@ -115,7 +115,7 @@ exports[`<JFRMetricsChartCard /> renders correctly 1`] = `
         >
           <iframe
             className="disabled-pointer"
-            src="http://localhost:3000/d-solo/main?theme=light&panelId=3&to=now&from=now-120s&refresh=10s"
+            src="http://localhost:3000/d-solo/main?theme=light&panelId=8&to=now&from=now-120s&refresh=10s"
           />
         </div>
       </div>

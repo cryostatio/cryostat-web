@@ -9,26 +9,27 @@ Array [
     Dashboard Layout Toolbar
   </div>,
   <div
-    className="pf-c-page__main-group"
+    className="pf-v5-c-page__main-group"
   >
     <section
-      className="pf-c-page__main-section"
+      className="pf-v5-c-page__main-section pf-m-fill"
     >
       <nav
         aria-label="Breadcrumb"
-        className="pf-c-breadcrumb"
+        className="pf-v5-c-breadcrumb"
         data-ouia-component-id="OUIA-Generated-Breadcrumb-1"
-        data-ouia-component-type="PF4/Breadcrumb"
+        data-ouia-component-type="PF5/Breadcrumb"
         data-ouia-safe={true}
       >
         <ol
-          className="pf-c-breadcrumb__list"
+          className="pf-v5-c-breadcrumb__list"
+          role="list"
         >
           <li
-            className="pf-c-breadcrumb__item"
+            className="pf-v5-c-breadcrumb__item"
           >
             <h1
-              className="pf-c-breadcrumb__heading"
+              className="pf-v5-c-breadcrumb__heading"
             >
               Dashboard
             </h1>
@@ -36,20 +37,20 @@ Array [
         </ol>
       </nav>
       <div
-        className="pf-l-stack pf-m-gutter"
+        className="pf-v5-l-stack pf-m-gutter"
       >
         <div
-          className="pf-l-stack__item pf-m-fill"
+          className="pf-v5-l-stack__item pf-m-fill"
         >
           <div
-            className="pf-l-grid pf-m-gutter"
+            className="pf-v5-l-grid pf-m-gutter"
             id="dashboard-grid"
           >
             <div
-              className="pf-l-grid__item pf-m-4-col"
+              className="pf-v5-l-grid__item pf-m-4-col"
               style={
                 Object {
-                  "--pf-l-grid--item--Order": "0",
+                  "--pf-v5-l-grid--item--Order": "0",
                 }
               }
             >
@@ -62,10 +63,10 @@ Array [
                 <div
                   className="dashboard-card-resizable-wrapper"
                 >
-                  <article
-                    className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+                  <div
+                    className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
                     data-ouia-component-id="OUIA-Generated-Card-2"
-                    data-ouia-component-type="PF4/Card"
+                    data-ouia-component-type="PF5/Card"
                     data-ouia-safe={true}
                     id="Process CPU Load-chart-card"
                   >
@@ -77,90 +78,88 @@ Array [
                       onMouseLeave={[Function]}
                     >
                       <div
-                        className="pf-c-card__header"
+                        className="pf-v5-c-card__header"
                       >
                         <div
-                          className="pf-c-card__title"
-                          id="Process CPU Load-chart-card-title"
+                          className="pf-v5-c-card__actions"
                         >
-                          Process CPU Load (last 60s, every 10s)
-                        </div>
-                        <div
-                          className="pf-c-card__actions"
-                        >
-                          <button
-                            aria-disabled={false}
-                            aria-label="Synchronize Process CPU Load chart"
-                            className="pf-c-button pf-m-plain"
-                            data-ouia-component-id="OUIA-Generated-Button-plain-1"
-                            data-ouia-component-type="PF4/Button"
-                            data-ouia-safe={true}
-                            disabled={false}
-                            onClick={[Function]}
-                            role={null}
-                            type="button"
-                          >
-                            <svg
-                              aria-hidden={true}
-                              aria-labelledby={null}
-                              fill="currentColor"
-                              height="1em"
-                              role="img"
-                              style={
-                                Object {
-                                  "verticalAlign": "-0.125em",
-                                }
-                              }
-                              viewBox="0 0 512 512"
-                              width="1em"
-                            >
-                              <path
-                                d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                              />
-                            </svg>
-                          </button>
                           <div
-                            className="pf-c-dropdown pf-m-align-right"
-                            data-ouia-component-id="OUIA-Generated-Dropdown-1"
-                            data-ouia-component-type="PF4/Dropdown"
-                            data-ouia-safe={true}
+                            style={
+                              Object {
+                                "display": "contents",
+                              }
+                            }
                           >
                             <button
-                              aria-expanded={false}
-                              aria-haspopup={true}
-                              aria-label="Actions"
-                              className="pf-c-dropdown__toggle pf-m-plain"
+                              aria-disabled={false}
+                              aria-label="Synchronize Process CPU Load chart"
+                              className="pf-v5-c-button pf-m-plain"
+                              data-ouia-component-id="OUIA-Generated-Button-plain-1"
+                              data-ouia-component-type="PF5/Button"
+                              data-ouia-safe={true}
                               disabled={false}
-                              id="pf-dropdown-toggle-id-0"
                               onClick={[Function]}
-                              onKeyDown={[Function]}
+                              role={null}
                               type="button"
                             >
                               <svg
                                 aria-hidden={true}
                                 aria-labelledby={null}
+                                className="pf-v5-svg"
                                 fill="currentColor"
                                 height="1em"
                                 role="img"
-                                style={
-                                  Object {
-                                    "verticalAlign": "-0.125em",
-                                  }
-                                }
-                                viewBox="0 0 192 512"
+                                viewBox="0 0 512 512"
                                 width="1em"
                               >
                                 <path
-                                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
                                 />
                               </svg>
                             </button>
+                          </div>
+                          <button
+                            aria-expanded={false}
+                            aria-label="dashboard action toggle"
+                            className="pf-v5-c-menu-toggle pf-m-plain"
+                            disabled={false}
+                            onClick={[Function]}
+                            type="button"
+                          >
+                            <svg
+                              aria-hidden={true}
+                              aria-labelledby={null}
+                              className="pf-v5-svg"
+                              fill="currentColor"
+                              height="1em"
+                              role="img"
+                              viewBox="0 0 192 512"
+                              width="1em"
+                            >
+                              <path
+                                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <div
+                          className="pf-v5-c-card__header-main"
+                        >
+                          <div
+                            className="pf-v5-c-card__title"
+                          >
+                            <div
+                              className="pf-v5-c-card__title-text"
+                              id="Process CPU Load-chart-card-title"
+                            >
+                              Process CPU Load (last 60s, every 10s)
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div
-                      className="pf-c-card__body"
+                      className="pf-v5-c-card__body"
                     >
                       <div
                         className="disabled-pointer"
@@ -171,7 +170,7 @@ Array [
                         }
                       >
                         <div
-                          className="pf-c-chart"
+                          className="pf-v5-c-chart"
                           style={
                             Object {
                               "height": "100%",
@@ -197,8 +196,8 @@ Array [
                                 "width": "100%",
                               }
                             }
-                            viewBox="0 0 0 300"
-                            width={0}
+                            viewBox="0 0 1 300"
+                            width={1}
                           >
                             <g
                               role="presentation"
@@ -208,8 +207,8 @@ Array [
                                 shapeRendering="auto"
                                 style={
                                   Object {
-                                    "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                                    "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                                    "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                                    "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
                                     "strokeLinejoin": "round",
                                     "strokeWidth": 1,
@@ -217,7 +216,7 @@ Array [
                                 }
                                 vectorEffect="non-scaling-stroke"
                                 x1={54}
-                                x2={-30}
+                                x2={-29}
                                 y1={240}
                                 y2={240}
                               />
@@ -229,17 +228,17 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
-                                  x1={12}
-                                  x2={12}
+                                  x1={12.5}
+                                  x2={12.5}
                                   y1={240}
                                   y2={245}
                                 />
@@ -247,7 +246,7 @@ Array [
                                   direction="inherit"
                                   dx={0}
                                   id="chart-axis-0-ChartLabel-0"
-                                  x={12}
+                                  x={12.5}
                                   y={266.97}
                                 >
                                   <tspan
@@ -255,17 +254,17 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "middle",
                                       }
                                     }
                                     textAnchor="middle"
-                                    x={12}
+                                    x={12.5}
                                   >
                                     12:00:00 AM
                                   </tspan>
@@ -280,8 +279,8 @@ Array [
                                 shapeRendering="auto"
                                 style={
                                   Object {
-                                    "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                                    "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                                    "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                                    "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
                                     "strokeLinejoin": "round",
                                     "strokeWidth": 1,
@@ -296,7 +295,7 @@ Array [
                               <text
                                 direction="inherit"
                                 dx={0}
-                                id="axis-axisLabel-0"
+                                id="chart-axis-1-ChartLabel"
                                 transform="rotate(-90,14,125)"
                                 x={14}
                                 y={122.97}
@@ -306,10 +305,10 @@ Array [
                                   dy={0}
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                                      "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                                      "fill": "var(--pf-v5-chart-global--label--Fill, #151515)",
+                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                                       "fontSize": 14,
-                                      "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                                      "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                                       "stroke": "transparent",
                                       "textAnchor": "middle",
                                     }
@@ -328,16 +327,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={182.5}
                                   y2={182.5}
                                 />
@@ -346,9 +345,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -372,12 +371,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -396,16 +395,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={125}
                                   y2={125}
                                 />
@@ -414,9 +413,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -440,12 +439,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -464,16 +463,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={67.5}
                                   y2={67.5}
                                 />
@@ -482,9 +481,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -508,12 +507,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -532,16 +531,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={10}
                                   y2={10}
                                 />
@@ -550,9 +549,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -576,12 +575,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -611,8 +610,8 @@ Array [
                                     <rect
                                       height={230}
                                       vectorEffect="non-scaling-stroke"
-                                      width={84}
-                                      x={-30}
+                                      width={83}
+                                      x={-29}
                                       y={10}
                                     />
                                   </clipPath>
@@ -625,7 +624,8 @@ Array [
                                     Object {
                                       "fill": "none",
                                       "opacity": 1,
-                                      "stroke": "var(--pf-chart-theme--blue--ColorScale--100, #06c)",
+                                      "pointerEvents": "stroke",
+                                      "stroke": "var(--pf-v5-chart-theme--blue--ColorScale--100, #06c)",
                                       "strokeWidth": 2,
                                       "width": 42,
                                     }
@@ -645,7 +645,7 @@ Array [
                                 }
                                 vectorEffect="non-scaling-stroke"
                                 width={0}
-                                x={0}
+                                x={1}
                                 y={272}
                               />
                             </g>
@@ -671,14 +671,14 @@ Array [
                                   "width": "100%",
                                 }
                               }
-                              viewBox="0 0 0 300"
-                              width={0}
+                              viewBox="0 0 1 300"
+                              width={1}
                             />
                           </div>
                         </div>
                       </div>
                     </div>
-                  </article>
+                  </div>
                   <div
                     className="resizable-ref"
                     onMouseDown={[Function]}
@@ -687,10 +687,10 @@ Array [
               </div>
             </div>
             <div
-              className="pf-l-grid__item pf-m-4-col"
+              className="pf-v5-l-grid__item pf-m-4-col"
               style={
                 Object {
-                  "--pf-l-grid--item--Order": "1",
+                  "--pf-v5-l-grid--item--Order": "1",
                 }
               }
             >
@@ -703,10 +703,10 @@ Array [
                 <div
                   className="dashboard-card-resizable-wrapper"
                 >
-                  <article
-                    className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+                  <div
+                    className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
                     data-ouia-component-id="OUIA-Generated-Card-3"
-                    data-ouia-component-type="PF4/Card"
+                    data-ouia-component-type="PF5/Card"
                     data-ouia-safe={true}
                     id="Heap Memory Usage-chart-card"
                   >
@@ -718,90 +718,88 @@ Array [
                       onMouseLeave={[Function]}
                     >
                       <div
-                        className="pf-c-card__header"
+                        className="pf-v5-c-card__header"
                       >
                         <div
-                          className="pf-c-card__title"
-                          id="Heap Memory Usage-chart-card-title"
+                          className="pf-v5-c-card__actions"
                         >
-                          Heap Memory Usage (last 60s, every 10s)
-                        </div>
-                        <div
-                          className="pf-c-card__actions"
-                        >
-                          <button
-                            aria-disabled={false}
-                            aria-label="Synchronize Heap Memory Usage chart"
-                            className="pf-c-button pf-m-plain"
-                            data-ouia-component-id="OUIA-Generated-Button-plain-2"
-                            data-ouia-component-type="PF4/Button"
-                            data-ouia-safe={true}
-                            disabled={false}
-                            onClick={[Function]}
-                            role={null}
-                            type="button"
-                          >
-                            <svg
-                              aria-hidden={true}
-                              aria-labelledby={null}
-                              fill="currentColor"
-                              height="1em"
-                              role="img"
-                              style={
-                                Object {
-                                  "verticalAlign": "-0.125em",
-                                }
-                              }
-                              viewBox="0 0 512 512"
-                              width="1em"
-                            >
-                              <path
-                                d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                              />
-                            </svg>
-                          </button>
                           <div
-                            className="pf-c-dropdown pf-m-align-right"
-                            data-ouia-component-id="OUIA-Generated-Dropdown-2"
-                            data-ouia-component-type="PF4/Dropdown"
-                            data-ouia-safe={true}
+                            style={
+                              Object {
+                                "display": "contents",
+                              }
+                            }
                           >
                             <button
-                              aria-expanded={false}
-                              aria-haspopup={true}
-                              aria-label="Actions"
-                              className="pf-c-dropdown__toggle pf-m-plain"
+                              aria-disabled={false}
+                              aria-label="Synchronize Heap Memory Usage chart"
+                              className="pf-v5-c-button pf-m-plain"
+                              data-ouia-component-id="OUIA-Generated-Button-plain-2"
+                              data-ouia-component-type="PF5/Button"
+                              data-ouia-safe={true}
                               disabled={false}
-                              id="pf-dropdown-toggle-id-1"
                               onClick={[Function]}
-                              onKeyDown={[Function]}
+                              role={null}
                               type="button"
                             >
                               <svg
                                 aria-hidden={true}
                                 aria-labelledby={null}
+                                className="pf-v5-svg"
                                 fill="currentColor"
                                 height="1em"
                                 role="img"
-                                style={
-                                  Object {
-                                    "verticalAlign": "-0.125em",
-                                  }
-                                }
-                                viewBox="0 0 192 512"
+                                viewBox="0 0 512 512"
                                 width="1em"
                               >
                                 <path
-                                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
                                 />
                               </svg>
                             </button>
+                          </div>
+                          <button
+                            aria-expanded={false}
+                            aria-label="dashboard action toggle"
+                            className="pf-v5-c-menu-toggle pf-m-plain"
+                            disabled={false}
+                            onClick={[Function]}
+                            type="button"
+                          >
+                            <svg
+                              aria-hidden={true}
+                              aria-labelledby={null}
+                              className="pf-v5-svg"
+                              fill="currentColor"
+                              height="1em"
+                              role="img"
+                              viewBox="0 0 192 512"
+                              width="1em"
+                            >
+                              <path
+                                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <div
+                          className="pf-v5-c-card__header-main"
+                        >
+                          <div
+                            className="pf-v5-c-card__title"
+                          >
+                            <div
+                              className="pf-v5-c-card__title-text"
+                              id="Heap Memory Usage-chart-card-title"
+                            >
+                              Heap Memory Usage (last 60s, every 10s)
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div
-                      className="pf-c-card__body"
+                      className="pf-v5-c-card__body"
                     >
                       <div
                         className="disabled-pointer"
@@ -812,7 +810,7 @@ Array [
                         }
                       >
                         <div
-                          className="pf-c-chart"
+                          className="pf-v5-c-chart"
                           style={
                             Object {
                               "height": "100%",
@@ -838,8 +836,8 @@ Array [
                                 "width": "100%",
                               }
                             }
-                            viewBox="0 0 0 300"
-                            width={0}
+                            viewBox="0 0 1 300"
+                            width={1}
                           >
                             <g
                               role="presentation"
@@ -849,8 +847,8 @@ Array [
                                 shapeRendering="auto"
                                 style={
                                   Object {
-                                    "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                                    "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                                    "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                                    "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
                                     "strokeLinejoin": "round",
                                     "strokeWidth": 1,
@@ -858,7 +856,7 @@ Array [
                                 }
                                 vectorEffect="non-scaling-stroke"
                                 x1={54}
-                                x2={-30}
+                                x2={-29}
                                 y1={240}
                                 y2={240}
                               />
@@ -870,17 +868,17 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
-                                  x1={-30}
-                                  x2={-30}
+                                  x1={-29}
+                                  x2={-29}
                                   y1={240}
                                   y2={245}
                                 />
@@ -888,7 +886,7 @@ Array [
                                   direction="inherit"
                                   dx={0}
                                   id="chart-axis-0-ChartLabel-4"
-                                  x={-30}
+                                  x={-29}
                                   y={266.97}
                                 >
                                   <tspan
@@ -896,17 +894,17 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "middle",
                                       }
                                     }
                                     textAnchor="middle"
-                                    x={-30}
+                                    x={-29}
                                   >
                                     12:00:00 AM
                                   </tspan>
@@ -921,8 +919,8 @@ Array [
                                 shapeRendering="auto"
                                 style={
                                   Object {
-                                    "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                                    "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                                    "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                                    "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
                                     "strokeLinejoin": "round",
                                     "strokeWidth": 1,
@@ -937,7 +935,7 @@ Array [
                               <text
                                 direction="inherit"
                                 dx={0}
-                                id="axis-axisLabel-0"
+                                id="chart-axis-1-ChartLabel"
                                 transform="rotate(-90,14,125)"
                                 x={14}
                                 y={122.97}
@@ -947,10 +945,10 @@ Array [
                                   dy={0}
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                                      "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                                      "fill": "var(--pf-v5-chart-global--label--Fill, #151515)",
+                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                                       "fontSize": 14,
-                                      "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                                      "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                                       "stroke": "transparent",
                                       "textAnchor": "middle",
                                     }
@@ -969,16 +967,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={194}
                                   y2={194}
                                 />
@@ -987,9 +985,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1013,12 +1011,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1037,16 +1035,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={148}
                                   y2={148}
                                 />
@@ -1055,9 +1053,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1081,12 +1079,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1105,16 +1103,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={102}
                                   y2={102}
                                 />
@@ -1123,9 +1121,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1149,12 +1147,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1173,16 +1171,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={55.999999999999986}
                                   y2={55.999999999999986}
                                 />
@@ -1191,9 +1189,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1217,12 +1215,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1241,16 +1239,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={10}
                                   y2={10}
                                 />
@@ -1259,9 +1257,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1285,12 +1283,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1315,7 +1313,7 @@ Array [
                                 }
                                 vectorEffect="non-scaling-stroke"
                                 width={0}
-                                x={0}
+                                x={1}
                                 y={272}
                               />
                             </g>
@@ -1341,14 +1339,14 @@ Array [
                                   "width": "100%",
                                 }
                               }
-                              viewBox="0 0 0 300"
-                              width={0}
+                              viewBox="0 0 1 300"
+                              width={1}
                             />
                           </div>
                         </div>
                       </div>
                     </div>
-                  </article>
+                  </div>
                   <div
                     className="resizable-ref"
                     onMouseDown={[Function]}
@@ -1357,10 +1355,10 @@ Array [
               </div>
             </div>
             <div
-              className="pf-l-grid__item pf-m-4-col"
+              className="pf-v5-l-grid__item pf-m-4-col"
               style={
                 Object {
-                  "--pf-l-grid--item--Order": "2",
+                  "--pf-v5-l-grid--item--Order": "2",
                 }
               }
             >
@@ -1373,10 +1371,10 @@ Array [
                 <div
                   className="dashboard-card-resizable-wrapper"
                 >
-                  <article
-                    className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+                  <div
+                    className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
                     data-ouia-component-id="OUIA-Generated-Card-4"
-                    data-ouia-component-type="PF4/Card"
+                    data-ouia-component-type="PF5/Card"
                     data-ouia-safe={true}
                     id="Threads-chart-card"
                   >
@@ -1388,90 +1386,88 @@ Array [
                       onMouseLeave={[Function]}
                     >
                       <div
-                        className="pf-c-card__header"
+                        className="pf-v5-c-card__header"
                       >
                         <div
-                          className="pf-c-card__title"
-                          id="Threads-chart-card-title"
+                          className="pf-v5-c-card__actions"
                         >
-                          Threads (last 60s, every 10s)
-                        </div>
-                        <div
-                          className="pf-c-card__actions"
-                        >
-                          <button
-                            aria-disabled={false}
-                            aria-label="Synchronize Threads chart"
-                            className="pf-c-button pf-m-plain"
-                            data-ouia-component-id="OUIA-Generated-Button-plain-3"
-                            data-ouia-component-type="PF4/Button"
-                            data-ouia-safe={true}
-                            disabled={false}
-                            onClick={[Function]}
-                            role={null}
-                            type="button"
-                          >
-                            <svg
-                              aria-hidden={true}
-                              aria-labelledby={null}
-                              fill="currentColor"
-                              height="1em"
-                              role="img"
-                              style={
-                                Object {
-                                  "verticalAlign": "-0.125em",
-                                }
-                              }
-                              viewBox="0 0 512 512"
-                              width="1em"
-                            >
-                              <path
-                                d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                              />
-                            </svg>
-                          </button>
                           <div
-                            className="pf-c-dropdown pf-m-align-right"
-                            data-ouia-component-id="OUIA-Generated-Dropdown-3"
-                            data-ouia-component-type="PF4/Dropdown"
-                            data-ouia-safe={true}
+                            style={
+                              Object {
+                                "display": "contents",
+                              }
+                            }
                           >
                             <button
-                              aria-expanded={false}
-                              aria-haspopup={true}
-                              aria-label="Actions"
-                              className="pf-c-dropdown__toggle pf-m-plain"
+                              aria-disabled={false}
+                              aria-label="Synchronize Threads chart"
+                              className="pf-v5-c-button pf-m-plain"
+                              data-ouia-component-id="OUIA-Generated-Button-plain-3"
+                              data-ouia-component-type="PF5/Button"
+                              data-ouia-safe={true}
                               disabled={false}
-                              id="pf-dropdown-toggle-id-2"
                               onClick={[Function]}
-                              onKeyDown={[Function]}
+                              role={null}
                               type="button"
                             >
                               <svg
                                 aria-hidden={true}
                                 aria-labelledby={null}
+                                className="pf-v5-svg"
                                 fill="currentColor"
                                 height="1em"
                                 role="img"
-                                style={
-                                  Object {
-                                    "verticalAlign": "-0.125em",
-                                  }
-                                }
-                                viewBox="0 0 192 512"
+                                viewBox="0 0 512 512"
                                 width="1em"
                               >
                                 <path
-                                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
                                 />
                               </svg>
                             </button>
+                          </div>
+                          <button
+                            aria-expanded={false}
+                            aria-label="dashboard action toggle"
+                            className="pf-v5-c-menu-toggle pf-m-plain"
+                            disabled={false}
+                            onClick={[Function]}
+                            type="button"
+                          >
+                            <svg
+                              aria-hidden={true}
+                              aria-labelledby={null}
+                              className="pf-v5-svg"
+                              fill="currentColor"
+                              height="1em"
+                              role="img"
+                              viewBox="0 0 192 512"
+                              width="1em"
+                            >
+                              <path
+                                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <div
+                          className="pf-v5-c-card__header-main"
+                        >
+                          <div
+                            className="pf-v5-c-card__title"
+                          >
+                            <div
+                              className="pf-v5-c-card__title-text"
+                              id="Threads-chart-card-title"
+                            >
+                              Threads (last 60s, every 10s)
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div
-                      className="pf-c-card__body"
+                      className="pf-v5-c-card__body"
                     >
                       <div
                         className="disabled-pointer"
@@ -1482,7 +1478,7 @@ Array [
                         }
                       >
                         <div
-                          className="pf-c-chart"
+                          className="pf-v5-c-chart"
                           style={
                             Object {
                               "height": "100%",
@@ -1508,8 +1504,8 @@ Array [
                                 "width": "100%",
                               }
                             }
-                            viewBox="0 0 0 300"
-                            width={0}
+                            viewBox="0 0 1 300"
+                            width={1}
                           >
                             <g
                               role="presentation"
@@ -1519,8 +1515,8 @@ Array [
                                 shapeRendering="auto"
                                 style={
                                   Object {
-                                    "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                                    "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                                    "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                                    "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
                                     "strokeLinejoin": "round",
                                     "strokeWidth": 1,
@@ -1528,7 +1524,7 @@ Array [
                                 }
                                 vectorEffect="non-scaling-stroke"
                                 x1={54}
-                                x2={-30}
+                                x2={-29}
                                 y1={240}
                                 y2={240}
                               />
@@ -1540,17 +1536,17 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
-                                  x1={-30}
-                                  x2={-30}
+                                  x1={-29}
+                                  x2={-29}
                                   y1={240}
                                   y2={245}
                                 />
@@ -1558,7 +1554,7 @@ Array [
                                   direction="inherit"
                                   dx={0}
                                   id="chart-axis-0-ChartLabel-4"
-                                  x={-30}
+                                  x={-29}
                                   y={266.97}
                                 >
                                   <tspan
@@ -1566,17 +1562,17 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "middle",
                                       }
                                     }
                                     textAnchor="middle"
-                                    x={-30}
+                                    x={-29}
                                   >
                                     12:00:00 AM
                                   </tspan>
@@ -1591,8 +1587,8 @@ Array [
                                 shapeRendering="auto"
                                 style={
                                   Object {
-                                    "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                                    "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                                    "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                                    "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
                                     "strokeLinejoin": "round",
                                     "strokeWidth": 1,
@@ -1607,7 +1603,7 @@ Array [
                               <text
                                 direction="inherit"
                                 dx={0}
-                                id="axis-axisLabel-0"
+                                id="chart-axis-1-ChartLabel"
                                 transform="rotate(-90,14,125)"
                                 x={14}
                                 y={122.97}
@@ -1617,10 +1613,10 @@ Array [
                                   dy={0}
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-global--label--Fill, #151515)",
-                                      "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                                      "fill": "var(--pf-v5-chart-global--label--Fill, #151515)",
+                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                                       "fontSize": 14,
-                                      "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                                      "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                                       "stroke": "transparent",
                                       "textAnchor": "middle",
                                     }
@@ -1639,16 +1635,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={194}
                                   y2={194}
                                 />
@@ -1657,9 +1653,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1683,12 +1679,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1707,16 +1703,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={148}
                                   y2={148}
                                 />
@@ -1725,9 +1721,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1751,12 +1747,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1775,16 +1771,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={102}
                                   y2={102}
                                 />
@@ -1793,9 +1789,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1819,12 +1815,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1843,16 +1839,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={55.999999999999986}
                                   y2={55.999999999999986}
                                 />
@@ -1861,9 +1857,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1887,12 +1883,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1911,16 +1907,16 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                                      "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
-                                      "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                     }
                                   }
                                   vectorEffect="non-scaling-stroke"
                                   x1={54}
-                                  x2={-30}
+                                  x2={-29}
                                   y1={10}
                                   y2={10}
                                 />
@@ -1929,9 +1925,9 @@ Array [
                                   shapeRendering="auto"
                                   style={
                                     Object {
-                                      "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                                      "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
-                                      "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                                      "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                                       "strokeLinecap": "round",
                                       "strokeLinejoin": "round",
                                       "strokeWidth": 1,
@@ -1955,12 +1951,12 @@ Array [
                                     dy={0}
                                     style={
                                       Object {
-                                        "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                                        "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
-                                        "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                                        "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                                         "textAnchor": "end",
                                       }
                                     }
@@ -1985,7 +1981,7 @@ Array [
                                 }
                                 vectorEffect="non-scaling-stroke"
                                 width={0}
-                                x={0}
+                                x={1}
                                 y={272}
                               />
                             </g>
@@ -2011,14 +2007,14 @@ Array [
                                   "width": "100%",
                                 }
                               }
-                              viewBox="0 0 0 300"
-                              width={0}
+                              viewBox="0 0 1 300"
+                              width={1}
                             />
                           </div>
                         </div>
                       </div>
                     </div>
-                  </article>
+                  </div>
                   <div
                     className="resizable-ref"
                     onMouseDown={[Function]}
@@ -2029,7 +2025,7 @@ Array [
           </div>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         />
       </div>
     </section>
