@@ -38,6 +38,7 @@ exports[`<NameFilter /> renders correctly 1`] = `
     aria-label="Menu toggle"
     className="pf-v5-c-menu-toggle__button"
     onClick={[Function]}
+    tabIndex={-1}
     type="button"
   >
     <span

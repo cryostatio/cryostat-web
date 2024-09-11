@@ -91,7 +91,7 @@ describe('<AutomatedAnalysisCardList />', () => {
           },
         ],
       },
-      createNodeMock: createMockForPFTableRef
+      createNodeMock: createMockForPFTableRef,
     });
     expect(tree?.toJSON()).toMatchSnapshot();
   });
