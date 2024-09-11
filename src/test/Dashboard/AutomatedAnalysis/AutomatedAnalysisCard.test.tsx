@@ -27,7 +27,7 @@ import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/se
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/service.utils';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { basePreloadedState, render, testT } from '../../utils';
 
@@ -480,7 +480,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
-    const { user } = render({
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
@@ -523,16 +523,39 @@ describe('<AutomatedAnalysisCard />', () => {
       expect(screen.getByText(evaluation.topic)).toBeInTheDocument();
     });
 
-    const nameFilter = screen.getByRole('button', { name: 'Name' });
-    await user.click(nameFilter);
+    const filterToggle = screen.getByText(testT('NAME', { ns: 'common' }));
 
-    const topic = screen.getByRole('menuitem', { name: /topic/i });
-    await user.click(topic);
+    await act(async () => {
+      await user.click(filterToggle);
+    });
 
-    const filterByTopic = screen.getByRole('textbox', { name: /filter by topic\.\.\./i });
+    const selectMenu = await screen.findByRole('menu');
+    expect(selectMenu).toBeInTheDocument();
+    expect(selectMenu).toBeVisible();
 
-    await user.type(filterByTopic, 'fakeTopic');
-    await user.click(screen.getByRole('option', { name: /faketopic/i }));
+    const topic = within(selectMenu).getByText('Topic');
+
+    await act(async () => {
+      await user.click(topic);
+    });
+
+    await waitFor(() => expect(selectMenu).not.toBeInTheDocument());
+
+    const filterByTopic = container.querySelector("input[placeholder='Filter by topic...']") as HTMLInputElement;
+
+    await act(async () => {
+      await user.type(filterByTopic, 'fakeTopic');
+    });
+
+    const optionMenu = await screen.findByRole('listbox');
+    expect(optionMenu).toBeInTheDocument();
+    expect(optionMenu).toBeVisible();
+
+    await act(async () => {
+      await user.click(within(optionMenu).getByText(/faketopic/i));
+    });
+
+    await waitFor(() => expect(optionMenu).not.toBeInTheDocument());
 
     mockFilteredEvaluations
       .filter((evaluation) => evaluation.topic == 'fakeTopic')
@@ -560,14 +583,13 @@ describe('<AutomatedAnalysisCard />', () => {
       preloadedState: preloadedState,
     });
 
-    const listViewSwitch = screen.getByRole('checkbox', {
-      name: testT('AutomatedAnalysisCard.TOOLBAR.SWITCH.LIST_VIEW.LABEL'),
-    });
-    expect(listViewSwitch).toBeInTheDocument();
+    const listViewToggle = screen.getByText('List view');
+    expect(listViewToggle).toBeInTheDocument();
+    expect(listViewToggle).toBeVisible();
 
     expect(screen.queryByText('AutomatedAnalysisCardList')).not.toBeInTheDocument(); // Mocked list view
 
-    await user.click(listViewSwitch);
+    await user.click(listViewToggle);
 
     expect(screen.getByText('AutomatedAnalysisCardList')).toBeInTheDocument();
   });

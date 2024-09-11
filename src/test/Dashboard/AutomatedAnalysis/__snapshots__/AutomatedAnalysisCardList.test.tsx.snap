@@ -1,108 +1,727 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
-Array [
-  <h2>
-    Unexpected Application Error!
-  </h2>,
-  <h3
-    style={
-      Object {
-        "fontStyle": "italic",
-      }
-    }
+<div
+  className="automated-analysis-datalist-outerscroll pf-v5-c-scroll-outer-wrapper"
+>
+  <div
+    className="automated-analysis-datalist-innerscroll pf-v5-c-scroll-inner-wrapper"
   >
-    Cannot read properties of null (reading 'offsetWidth')
-  </h3>,
-  <pre
-    style={
-      Object {
-        "backgroundColor": "rgba(200,200,200, 0.5)",
-        "padding": "0.5rem",
-      }
-    }
-  >
-    TypeError: Cannot read properties of null (reading 'offsetWidth')
-    at /home/thvo/workspace/cryostat-web/node_modules/@patternfly/react-table/dist/js/components/Table/Td.js:136:38
-    at invokePassiveEffectCreate (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14504:20)
-    at HTMLUnknownElement.callCallback (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11391:14)
-    at HTMLUnknownElement.callTheUserObjectsOperation (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
-    at innerInvokeEventListeners (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:338:25)
-    at invokeEventListeners (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:274:3)
-    at HTMLUnknownElementImpl._dispatch (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:221:9)
-    at HTMLUnknownElementImpl.dispatchEvent (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:94:17)
-    at HTMLUnknownElement.dispatchEvent (/home/thvo/workspace/cryostat-web/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:231:34)
-    at Object.invokeGuardedCallbackDev (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11440:16)
-    at invokeGuardedCallback (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:11499:31)
-    at flushPassiveEffectsImpl (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14591:9)
-    at unstable_runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/scheduler/cjs/scheduler.development.js:468:12)
-    at runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2486:10)
-    at flushPassiveEffects (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14464:14)
-    at performSyncWorkOnRoot (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13380:3)
-    at /home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2537:26
-    at unstable_runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/scheduler/cjs/scheduler.development.js:468:12)
-    at runWithPriority (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2486:10)
-    at flushSyncCallbackQueueImpl (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2532:9)
-    at flushSyncCallbackQueue (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2519:3)
-    at batchedUpdates (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13459:7)
-    at act (/home/thvo/workspace/cryostat-web/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:15280:14)
-    at /home/thvo/workspace/cryostat-web/src/test/utils.tsx:102:12
-    at step (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:195:27)
-    at Object.next (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:176:57)
-    at /home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:169:75
-    at new Promise (&lt;anonymous&gt;)
-    at Object.__awaiter (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:165:16)
-    at renderSnapshot (/home/thvo/workspace/cryostat-web/src/test/utils.tsx:99:60)
-    at /home/thvo/workspace/cryostat-web/src/test/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList.test.tsx:85:38
-    at step (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:195:27)
-    at Object.next (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:176:57)
-    at /home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:169:75
-    at new Promise (&lt;anonymous&gt;)
-    at Object.__awaiter (/home/thvo/workspace/cryostat-web/node_modules/tslib/tslib.js:165:16)
-    at Object.&lt;anonymous&gt; (/home/thvo/workspace/cryostat-web/src/test/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList.test.tsx:84:27)
-    at Promise.then.completed (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/utils.js:391:28)
-    at new Promise (&lt;anonymous&gt;)
-    at callAsyncCircusFn (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/utils.js:316:10)
-    at _callCircusTest (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:218:40)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at _runTest (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:155:3)
-    at _runTestsForDescribeBlock (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:66:9)
-    at _runTestsForDescribeBlock (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:60:9)
-    at run (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/run.js:25:3)
-    at runAndTransformResultsToJestFormat (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
-    at jestAdapter (/home/thvo/workspace/cryostat-web/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
-    at runTestInternal (/home/thvo/workspace/cryostat-web/node_modules/jest-runner/build/runTest.js:389:16)
-    at runTest (/home/thvo/workspace/cryostat-web/node_modules/jest-runner/build/runTest.js:475:34)
-    at Object.worker (/home/thvo/workspace/cryostat-web/node_modules/jest-runner/build/testWorker.js:133:12)
-  </pre>,
-  <p>
-    💿 Hey developer 👋
-  </p>,
-  <p>
-    You can provide a way better UX than this when your app throws errors by providing your own 
-    <code
-      style={
-        Object {
-          "backgroundColor": "rgba(200,200,200, 0.5)",
-          "padding": "2px 4px",
-        }
-      }
+    <table
+      aria-label="Automated analysis data list"
+      className="pf-v5-c-table pf-m-grid-md pf-m-sticky-header"
+      data-ouia-component-id="OUIA-Generated-Table-1"
+      data-ouia-component-type="PF5/Table"
+      data-ouia-safe={true}
+      role="grid"
     >
-      ErrorBoundary
-    </code>
-     or
-     
-    <code
-      style={
-        Object {
-          "backgroundColor": "rgba(200,200,200, 0.5)",
-          "padding": "2px 4px",
-        }
-      }
-    >
-      errorElement
-    </code>
-     prop on your route.
-  </p>,
-]
+      <thead
+        className="pf-v5-c-table__thead"
+      >
+        <tr
+          className="pf-v5-c-table__tr"
+          data-ouia-component-id="OUIA-Generated-TableRow-1"
+          data-ouia-component-type="PF5/TableRow"
+          data-ouia-safe={true}
+          hidden={false}
+        >
+          <th
+            aria-sort="none"
+            className="pf-v5-c-table__th pf-v5-c-table__sort"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            scope="col"
+            tabIndex={-1}
+          >
+            <button
+              className="pf-v5-c-table__button"
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              type="button"
+            >
+              <div
+                className="pf-v5-c-table__button-content"
+              >
+                <span
+                  className="pf-v5-c-table__text"
+                  onMouseEnter={[Function]}
+                >
+                  Name
+                </span>
+                <span
+                  className="pf-v5-c-table__sort-indicator"
+                >
+                  <svg
+                    aria-hidden={true}
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 256 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M214.059 377.941H168V134.059h46.059c21.382 0 32.09-25.851 16.971-40.971L144.971 7.029c-9.373-9.373-24.568-9.373-33.941 0L24.971 93.088c-15.119 15.119-4.411 40.971 16.971 40.971H88v243.882H41.941c-21.382 0-32.09 25.851-16.971 40.971l86.059 86.059c9.373 9.373 24.568 9.373 33.941 0l86.059-86.059c15.12-15.119 4.412-40.971-16.97-40.971z"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </button>
+          </th>
+          <th
+            aria-sort="none"
+            className="pf-v5-c-table__th pf-m-wrap pf-v5-c-table__sort"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            scope="col"
+            tabIndex={-1}
+          >
+            <button
+              className="pf-v5-c-table__button"
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              type="button"
+            >
+              <div
+                className="pf-v5-c-table__button-content"
+              >
+                <span
+                  className="pf-v5-c-table__text"
+                  onMouseEnter={[Function]}
+                >
+                  Score
+                </span>
+                <span
+                  className="pf-v5-c-table__sort-indicator"
+                >
+                  <svg
+                    aria-hidden={true}
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 256 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M214.059 377.941H168V134.059h46.059c21.382 0 32.09-25.851 16.971-40.971L144.971 7.029c-9.373-9.373-24.568-9.373-33.941 0L24.971 93.088c-15.119 15.119-4.411 40.971 16.971 40.971H88v243.882H41.941c-21.382 0-32.09 25.851-16.971 40.971l86.059 86.059c9.373 9.373 24.568 9.373 33.941 0l86.059-86.059c15.12-15.119 4.412-40.971-16.97-40.971z"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </button>
+          </th>
+          <th
+            className="pf-v5-c-table__th pf-m-truncate"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            scope="col"
+            tabIndex={-1}
+          >
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody
+        className="pf-v5-c-table__tbody"
+        role="rowgroup"
+      >
+        <tr
+          className="pf-v5-c-table__tr"
+          data-ouia-component-id="OUIA-Generated-TableRow-2"
+          data-ouia-component-type="PF5/TableRow"
+          data-ouia-safe={true}
+          hidden={false}
+        >
+          <td
+            className="pf-v5-c-table__td pf-m-width-10"
+            data-label="Name"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            rule1
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-wrap"
+            data-label="Score"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div
+              className="pf-v5-l-flex pf-m-space-items-sm"
+            >
+              <div
+                className=""
+              >
+                100.0
+              </div>
+              <div
+                className=""
+              >
+                <span
+                  className="pf-m-red pf-v5-c-label__icon"
+                >
+                  <svg
+                    aria-hidden={true}
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-break-word"
+            data-label="Description"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-1"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Summary
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-1"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    first thing happened
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-2"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Explanation
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-2"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    first reason
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-3"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Solution
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-3"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    first solution
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-4"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Suggestions
+                  </h5>
+                  <div
+                    className="pf-v5-l-stack"
+                  >
+                    <div
+                      className="pf-v5-l-stack__item"
+                    >
+                      <h6
+                        className="pf-v5-c-title pf-m-md"
+                        data-ouia-component-id="OUIA-Generated-Title-5"
+                        data-ouia-component-type="PF5/Title"
+                        data-ouia-safe={true}
+                      >
+                        setting1
+                      </h6>
+                      <span
+                        className="pf-v5-c-label"
+                      >
+                        <span
+                          className="pf-v5-c-label__content"
+                        >
+                          <span
+                            className="pf-v5-c-label__text"
+                          >
+                            name1
+                            =
+                            value1
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </span>
+                <br />
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr
+          className="pf-v5-c-table__tr"
+          data-ouia-component-id="OUIA-Generated-TableRow-3"
+          data-ouia-component-type="PF5/TableRow"
+          data-ouia-safe={true}
+          hidden={false}
+        >
+          <td
+            className="pf-v5-c-table__td pf-m-width-10"
+            data-label="Name"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            rule3
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-wrap"
+            data-label="Score"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div
+              className="pf-v5-l-flex pf-m-space-items-sm"
+            >
+              <div
+                className=""
+              >
+                55.0
+              </div>
+              <div
+                className=""
+              >
+                <span
+                  className="pf-m-orange pf-v5-c-label__icon"
+                >
+                  <svg
+                    aria-hidden={true}
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 576 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-break-word"
+            data-label="Description"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-6"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Summary
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-4"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    third thing happened
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-7"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Explanation
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-5"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    third reason
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-8"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Solution
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-6"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    third solution
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div />
+            </div>
+          </td>
+        </tr>
+        <tr
+          className="pf-v5-c-table__tr"
+          data-ouia-component-id="OUIA-Generated-TableRow-4"
+          data-ouia-component-type="PF5/TableRow"
+          data-ouia-safe={true}
+          hidden={false}
+        >
+          <td
+            className="pf-v5-c-table__td pf-m-width-10"
+            data-label="Name"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            rule2
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-wrap"
+            data-label="Score"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div
+              className="pf-v5-l-flex pf-m-space-items-sm"
+            >
+              <div
+                className=""
+              >
+                0.0
+              </div>
+              <div
+                className=""
+              >
+                <span
+                  className="pf-m-green pf-v5-c-label__icon"
+                >
+                  <svg
+                    aria-hidden={true}
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-break-word"
+            data-label="Description"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-9"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Summary
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-7"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    second thing happened
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-10"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Explanation
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-8"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    second reason
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-11"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Solution
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-9"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    second solution
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div />
+            </div>
+          </td>
+        </tr>
+        <tr
+          className="pf-v5-c-table__tr"
+          data-ouia-component-id="OUIA-Generated-TableRow-5"
+          data-ouia-component-type="PF5/TableRow"
+          data-ouia-safe={true}
+          hidden={false}
+        >
+          <td
+            className="pf-v5-c-table__td pf-m-width-10"
+            data-label="Name"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            N/A rule
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-wrap"
+            data-label="Score"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div
+              className="pf-v5-l-flex pf-m-space-items-sm"
+            >
+              <div
+                className=""
+              >
+                N/A
+              </div>
+              <div
+                className=""
+              >
+                <span
+                  className="pf-m-grey pf-v5-c-label__icon"
+                >
+                  <svg
+                    aria-hidden={true}
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </td>
+          <td
+            className="pf-v5-c-table__td pf-m-break-word"
+            data-label="Description"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            tabIndex={-1}
+          >
+            <div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-12"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Summary
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-10"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    fourth thing happened
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-13"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Explanation
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-11"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    fourth reason
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div>
+                <span>
+                  <h5
+                    className="pf-v5-c-title pf-m-md"
+                    data-ouia-component-id="OUIA-Generated-Title-14"
+                    data-ouia-component-type="PF5/Title"
+                    data-ouia-safe={true}
+                  >
+                    Solution
+                  </h5>
+                  <p
+                    className=""
+                    data-ouia-component-id="OUIA-Generated-Text-12"
+                    data-ouia-component-type="PF5/Text"
+                    data-ouia-safe={true}
+                    data-pf-content={true}
+                  >
+                    fourth solution
+                  </p>
+                </span>
+                <br />
+              </div>
+              <div />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 `;

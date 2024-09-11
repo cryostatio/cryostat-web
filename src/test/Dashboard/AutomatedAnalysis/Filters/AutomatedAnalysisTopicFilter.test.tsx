@@ -16,7 +16,7 @@
 
 import { AutomatedAnalysisTopicFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisTopicFilter';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
-import { cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import { render } from '../../../utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
@@ -117,8 +117,8 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
 
   afterEach(cleanup);
 
-  it('display topic selections when text input is clicked', async () => {
-    const { user } = render({
+  it('should display topic selections when text input is clicked', async () => {
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
@@ -134,13 +134,16 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         ],
       },
     });
-    const nameInput = screen.getByLabelText('Filter by topic...');
-    expect(nameInput).toBeInTheDocument();
-    expect(nameInput).toBeVisible();
 
-    await user.click(nameInput);
+    const topicInput = container.querySelector("input[placeholder='Filter by topic...']") as HTMLInputElement;
+    expect(topicInput).toBeInTheDocument();
+    expect(topicInput).toBeVisible();
 
-    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by topic' });
+    await act(async () => {
+      await user.click(topicInput);
+    });
+
+    const selectMenu = await screen.findByRole('listbox');
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -151,7 +154,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
     });
   });
 
-  it('display topic selections when dropdown arrow is clicked', async () => {
+  it('should display topic selections when dropdown arrow is clicked', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -168,13 +171,15 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
         ],
       },
     });
-    const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
+    const dropDownArrow = screen.getByRole('button', { name: 'Menu toggle' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
-    await user.click(dropDownArrow);
+    await act(async () => {
+      await user.click(dropDownArrow);
+    });
 
-    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by topic' });
+    const selectMenu = await screen.findByRole('listbox');
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -203,13 +208,15 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       },
     });
 
-    const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
+    const dropDownArrow = screen.getByRole('button', { name: 'Menu toggle' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
-    await user.click(dropDownArrow);
+    await act(async () => {
+      await user.click(dropDownArrow);
+    });
 
-    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by topic' });
+    const selectMenu = await screen.findByRole('listbox');
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -219,13 +226,16 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    await user.click(dropDownArrow);
+    await act(async () => {
+      await user.click(dropDownArrow);
+    });
+
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
 
   it('should close selection menu when toggled with text input', async () => {
-    const { user } = render({
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
@@ -242,13 +252,15 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       },
     });
 
-    const nameInput = screen.getByLabelText('Filter by topic...');
-    expect(nameInput).toBeInTheDocument();
-    expect(nameInput).toBeVisible();
+    const topicInput = container.querySelector("input[placeholder='Filter by topic...']") as HTMLInputElement;
+    expect(topicInput).toBeInTheDocument();
+    expect(topicInput).toBeVisible();
 
-    await user.click(nameInput);
+    await act(async () => {
+      await user.click(topicInput);
+    });
 
-    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by topic' });
+    const selectMenu = await screen.findByRole('listbox');
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -258,13 +270,16 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    await user.click(nameInput);
+    await act(async () => {
+      await user.click(topicInput);
+    });
+
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
 
   it('should not display selected topics', async () => {
-    const { user } = render({
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
@@ -281,13 +296,15 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       },
     });
 
-    const nameInput = screen.getByLabelText('Filter by topic...');
-    expect(nameInput).toBeInTheDocument();
-    expect(nameInput).toBeVisible();
+    const topicInput = container.querySelector("input[placeholder='Filter by topic...']") as HTMLInputElement;
+    expect(topicInput).toBeInTheDocument();
+    expect(topicInput).toBeVisible();
 
-    await user.click(nameInput);
+    await act(async () => {
+      await user.click(topicInput);
+    });
 
-    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by topic' });
+    const selectMenu = await screen.findByRole('listbox');
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -298,7 +315,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
   it('should select a topic when a topic option is clicked', async () => {
     const submitNameInput = jest.fn((nameInput) => emptyFilteredTopics.push(nameInput));
 
-    const { user } = render({
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
@@ -315,13 +332,15 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       },
     });
 
-    const nameInput = screen.getByLabelText('Filter by topic...');
-    expect(nameInput).toBeInTheDocument();
-    expect(nameInput).toBeVisible();
+    const topicInput = container.querySelector("input[placeholder='Filter by topic...']") as HTMLInputElement;
+    expect(topicInput).toBeInTheDocument();
+    expect(topicInput).toBeVisible();
 
-    await user.click(nameInput);
+    await act(async () => {
+      await user.click(topicInput);
+    });
 
-    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by topic' });
+    const selectMenu = await screen.findByRole('listbox');
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -331,7 +350,9 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    await user.selectOptions(selectMenu, mockRuleEvaluation1.topic);
+    await act(async () => {
+      await user.click(screen.getByText(mockRuleEvaluation1.topic));
+    });
 
     expect(submitNameInput).toBeCalledTimes(1);
     expect(submitNameInput).toBeCalledWith(mockRuleEvaluation1.topic);

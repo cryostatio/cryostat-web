@@ -370,7 +370,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('should open the labels drawer when Edit Labels is clicked', async () => {
-    const { user, container } = render({
+    const { user } = render({
       routerConfigs: {
         routes: [
           {
