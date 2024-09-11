@@ -251,7 +251,7 @@ body,
   color: var(--pf-v5-c-popover--m-success__title-text--Color);
 }
 
-.clickable-automated-analysis-label-popover-body-score.pf-m-default {
+.clickable-automated-analysis-label-popover-body-score.pf-m-custom {
   color: var(--pf-v5-global--Color--100);
 }
 

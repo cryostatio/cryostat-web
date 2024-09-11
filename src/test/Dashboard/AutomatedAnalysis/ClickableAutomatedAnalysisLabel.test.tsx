@@ -16,7 +16,7 @@
 
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { AnalysisResult } from '@app/Shared/Services/api.types';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { render } from '../../utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
@@ -111,10 +111,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
+    const label = screen.getByText(mockRuleEvaluation1.name);
+    expect(label).toBeInTheDocument();
 
     await act(async () => {
-      await user.click(screen.getByText(mockRuleEvaluation1.name));
+      await user.click(label);
     });
 
     const closeButton = screen.getByRole('button', {
@@ -147,9 +148,12 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(within(heading).getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
 
-    await user.click(screen.getAllByText(mockRuleEvaluation1.name)[0]);
+    await act(async () => {
+      await user.click(label);
+    });
 
-    expect(summary).not.toBeInTheDocument();
+    // wait till popover to close
+    await waitFor(() => expect(summary).not.toBeInTheDocument());
     expect(explanation).not.toBeInTheDocument();
     expect(solution).not.toBeInTheDocument();
     expect(setting).not.toBeInTheDocument();
@@ -165,10 +169,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    expect(screen.getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
+    const label = screen.getByText(mockRuleEvaluation2.name);
+    expect(label).toBeInTheDocument();
 
     await act(async () => {
-      await user.click(screen.getByText(mockRuleEvaluation2.name));
+      await user.click(label);
     });
 
     const closeButton = screen.getByRole('button', {
@@ -201,9 +206,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(within(heading).getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
 
-    await user.click(screen.getAllByText(mockRuleEvaluation2.name)[0]);
+    await act(async () => {
+      await user.click(label);
+    });
 
-    expect(summary).not.toBeInTheDocument();
+    await waitFor(() => expect(summary).not.toBeInTheDocument());
     expect(explanation).not.toBeInTheDocument();
     expect(solution).not.toBeInTheDocument();
     expect(setting).not.toBeInTheDocument();
@@ -219,11 +226,13 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    expect(screen.getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
+    const label = screen.getByText(mockRuleEvaluation3.name);
+    expect(label).toBeInTheDocument();
 
     await act(async () => {
-      await user.click(screen.getByText(mockRuleEvaluation3.name));
+      await user.click(label);
     });
+
     const closeButton = screen.getByRole('button', {
       name: /close/i,
     });
@@ -254,9 +263,11 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(within(heading).getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
 
-    await user.click(screen.getAllByText(mockRuleEvaluation3.name)[0]);
+    await act(async () => {
+      await user.click(label);
+    });
 
-    expect(summary).not.toBeInTheDocument();
+    await waitFor(() => expect(summary).not.toBeInTheDocument());
     expect(explanation).not.toBeInTheDocument();
     expect(solution).not.toBeInTheDocument();
     expect(setting).not.toBeInTheDocument();
@@ -272,18 +283,20 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
       },
     });
 
-    expect(screen.getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
+    const label = screen.getByText(mockNaRuleEvaluation.name);
+    expect(label).toBeInTheDocument();
 
     await act(async () => {
-      await user.click(screen.getByText(mockNaRuleEvaluation.name));
+      await user.click(label);
     });
+
     const closeButton = screen.getByRole('button', {
       name: /close/i,
     });
 
     expect(closeButton).toBeInTheDocument();
 
-    expect(document.getElementsByClassName('pf-m-default').item(0)).toBeInTheDocument();
+    expect(document.getElementsByClassName('pf-m-custom').item(0)).toBeInTheDocument();
     const summary = screen.getByText(mockNaRuleEvaluation.evaluation.summary);
     const explanation = screen.getByText(mockNaRuleEvaluation.evaluation.explanation);
     const solution = screen.getByText(mockNaRuleEvaluation.evaluation.solution);
@@ -301,14 +314,16 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
     expect(score).toBeInTheDocument();
 
     const heading = screen.getByRole('heading', {
-      name: /default /i,
+      name: /custom N\/A rule/i,
     });
 
     expect(within(heading).getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
 
-    await user.click(screen.getAllByText(mockNaRuleEvaluation.name)[0]);
+    await act(async () => {
+      await user.click(label);
+    });
 
-    expect(summary).not.toBeInTheDocument();
+    await waitFor(() => expect(summary).not.toBeInTheDocument());
     expect(explanation).not.toBeInTheDocument();
     expect(solution).not.toBeInTheDocument();
     expect(setting).not.toBeInTheDocument();
