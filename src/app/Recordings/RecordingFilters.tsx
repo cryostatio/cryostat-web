@@ -242,7 +242,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
                 <FilterIcon />
               </Icon>
             }
-            aria-label={currentCategory}
+            aria-label={t('RecordingFilters.ARIA_LABELS.MENU_TOGGLE')}
             onClick={() => onCategoryToggle()}
           >
             {getCategoryDisplay(t, currentCategory)}

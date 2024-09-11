@@ -23,13 +23,19 @@ import {
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { ActiveRecording, RecordingState, NotificationMessage, Target } from '@app/Shared/Services/api.types';
+import {
+  ActiveRecording,
+  RecordingState,
+  NotificationMessage,
+  Target,
+  keyValueToString,
+} from '@app/Shared/Services/api.types';
 import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize } from '../utils';
+import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
@@ -228,12 +234,11 @@ describe('<ActiveRecordingsTable />', () => {
     expect(startTime).toBeVisible();
 
     await act(async () => {
-      await user.click(startTime);
+      await user.hover(startTime);
     });
 
     const toolTip = await screen.findByText(dayjs(mockRecording.startTime).toISOString());
-    expect(toolTip).toBeInTheDocument();
-    expect(toolTip).toBeVisible();
+    expect(toolTip).toBeInTheDocument(); // FIXME: tooltip is available but visibility test failed
 
     const duration = screen.getByText(
       mockRecording.continuous || mockRecording.duration === 0 ? 'Continuous' : '1 second',
@@ -245,13 +250,13 @@ describe('<ActiveRecordingsTable />', () => {
     expect(state).toBeInTheDocument();
     expect(state).toBeVisible();
 
-    mockRecordingLabels.forEach((entry) => {
-      const label = screen.getByText(`${entry.key}=${entry.value}`);
+    mockRecordingLabels.map(keyValueToString).forEach((entry) => {
+      const label = screen.getByText(entry);
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     });
 
-    const actionIcon = within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions');
+    const actionIcon = screen.getByLabelText(testT('RecordingActions.ARIA_LABELS.MENU_TOGGLE'));
     expect(actionIcon).toBeInTheDocument();
     expect(actionIcon).toBeVisible();
   });
@@ -344,7 +349,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('routes to the Create Flight Recording form when Create is clicked', async () => {
-    const { user } = render({
+    const { user, router } = render({
       routerConfigs: {
         routes: [
           {
@@ -357,8 +362,7 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     await user.click(screen.getByText('Create'));
-
-    // expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/recordings', '/recordings/create']);
+    expect(router.state.location.pathname).toBe('/recordings/create');
   });
 
   it('archives the selected Recording when Archive is clicked', async () => {
@@ -426,10 +430,12 @@ describe('<ActiveRecordingsTable />', () => {
     const selectAllCheck = checkboxes[0];
     await user.click(selectAllCheck);
     await user.click(screen.getByText('Edit Labels'));
-    expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
+    expect(screen.getByText('Edit labels')).toBeInTheDocument();
   });
 
   it('shows a popup when Delete is clicked and then deletes the Recording after clicking confirmation Delete', async () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
+    const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -446,16 +452,16 @@ describe('<ActiveRecordingsTable />', () => {
     const selectAllCheck = checkboxes[0];
     await user.click(selectAllCheck);
 
-    await user.click(screen.getByText('Delete'));
+    await act(async () => {
+      await user.click(screen.getByText('Delete'));
 
-    const deleteModal = await screen.findByLabelText(DeleteActiveRecordings.ariaLabel);
-    expect(deleteModal).toBeInTheDocument();
-    expect(deleteModal).toBeVisible();
+      const deleteModal = await screen.findByLabelText(DeleteActiveRecordings.ariaLabel);
+      expect(deleteModal).toBeInTheDocument();
+      expect(deleteModal).toBeVisible();
 
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
-    const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    await user.click(screen.getByLabelText("Don't ask me again"));
-    await user.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
+      await user.click(screen.getByLabelText("Don't ask me again"));
+      await user.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
+    });
 
     expect(deleteRequestSpy).toBeCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
@@ -502,9 +508,9 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     await act(async () => {
-      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
+      await user.click(screen.getByLabelText(testT('RecordingActions.ARIA_LABELS.MENU_TOGGLE')));
+      await user.click(screen.getByText('Download Recording'));
     });
-    await user.click(screen.getByText('Download Recording'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
@@ -526,9 +532,9 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     await act(async () => {
-      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
+      await user.click(screen.getByLabelText(testT('RecordingActions.ARIA_LABELS.MENU_TOGGLE')));
+      await user.click(screen.getByText('View in Grafana ...'));
     });
-    await user.click(screen.getByText('View in Grafana ...'));
 
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana');
 

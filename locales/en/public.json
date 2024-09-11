@@ -426,7 +426,15 @@
       "TITLE": "Quick starts"
     }
   },
+  "RecordingActions": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-action-toggle"
+    }
+  },
   "RecordingFilters": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-filters-toggle"
+    },
     "FILTER_CHIP": {
       "DURATION_CONTINUOUS": "Continuous",
       "DURATION_EXACT": "{{value}}{{unit}}",

@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { render, renderSnapshot, testT } from '../utils';
+import { createMockForPFTableRef, render, renderSnapshot, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
@@ -94,7 +94,7 @@ jest
 
 jest
   .spyOn(defaultServices.api, 'getActiveProbes')
-  // .mockReturnValueOnce(of([mockProbe])) // renders correctly
+  .mockReturnValueOnce(of([mockProbe])) // renders correctly
 
   .mockReturnValueOnce(of([])) // should disable remove button if there is no probe
 
@@ -104,8 +104,8 @@ jest
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  // .mockReturnValueOnce(of()) // renders correctly
-  // .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // should disable remove button if there is no probe
   .mockReturnValueOnce(of())
@@ -121,9 +121,10 @@ jest
 describe('<AgentLiveProbes />', () => {
   afterEach(cleanup);
 
-  it.skip('renders correctly', async () => {
+  it('renders correctly', async () => {
     const tree = await renderSnapshot({
       routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] },
+      createNodeMock: createMockForPFTableRef,
     });
     expect(tree?.toJSON()).toMatchSnapshot();
   });
