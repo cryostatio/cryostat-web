@@ -257,6 +257,5 @@ describe('<DurationFilter />', () => {
       from: { value: 30, unit: DurationUnit.SECOND },
       to: { value: 50, unit: DurationUnit.SECOND },
     });
-
   });
 });

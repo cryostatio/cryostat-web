@@ -16,7 +16,7 @@
 
 import { AutomatedAnalysisTopicFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisTopicFilter';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { render } from '../../../utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
@@ -230,7 +230,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       await user.click(dropDownArrow);
     });
 
-    expect(selectMenu).not.toBeInTheDocument();
+    await waitFor(() => expect(selectMenu).not.toBeInTheDocument());
     expect(selectMenu).not.toBeVisible();
   });
 
@@ -274,7 +274,7 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       await user.click(topicInput);
     });
 
-    expect(selectMenu).not.toBeInTheDocument();
+    await waitFor(() => expect(selectMenu).not.toBeInTheDocument());
     expect(selectMenu).not.toBeVisible();
   });
 

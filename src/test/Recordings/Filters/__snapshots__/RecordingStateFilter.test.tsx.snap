@@ -3,6 +3,7 @@
 exports[`<RecordingStateFilter /> renders correctly 1`] = `
 <button
   aria-expanded={false}
+  aria-label="recording-state-toggle"
   className="pf-v5-c-menu-toggle"
   disabled={false}
   onClick={[Function]}

@@ -455,6 +455,13 @@
   "RecordingsTable": {
     "NO_ARCHIVES": "No Archived Recordings"
   },
+  "RecordingStateFilter": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-state-toggle",
+      "SELECT": "select-by-state"
+    },
+    "FILTER_BY_STATE": "Filter by state"
+  },
   "RuleDeleteWarningModal": {
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
