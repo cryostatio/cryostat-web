@@ -209,20 +209,19 @@ export const TopologyFilter: React.FC<TopologyFilterProps> = ({ isDisabled }) =>
                     return !criteria || !criteria.includes(val);
                   }
                   return true;
-                })
-                .map<TopologyFilterSelectOption>((val) => ({
-                  value: val,
-                  render: () =>
-                    isLabelOrAnnotation(cat) ? (
-                      <Label color="grey" textMaxWidth={LABEL_TEXT_MAXWIDTH}>
-                        {val}
-                      </Label>
-                    ) : (
-                      val
-                    ),
-                })),
+                }),
             ),
-          ),
+          ).map<TopologyFilterSelectOption>((val) => ({
+            value: val,
+            render: () =>
+              isLabelOrAnnotation(cat) ? (
+                <Label color="grey" textMaxWidth={LABEL_TEXT_MAXWIDTH}>
+                  {val}
+                </Label>
+              ) : (
+                val
+              ),
+          })),
         }))
         .filter((group) => group.options && group.options.length); // Do show show empty groups
 
@@ -267,20 +266,19 @@ export const TopologyFilter: React.FC<TopologyFilterProps> = ({ isDisabled }) =>
                 .filter((val) => {
                   const criteria: string[] = targetFilters.filters[cat];
                   return !criteria || !criteria.includes(val);
-                })
-                .map<TopologyFilterSelectOption>((val) => ({
-                  value: val,
-                  render: () =>
-                    isLabelOrAnnotation(cat) ? (
-                      <Label color="grey" textMaxWidth={LABEL_TEXT_MAXWIDTH}>
-                        {val}
-                      </Label>
-                    ) : (
-                      val
-                    ),
-                })),
+                }),
             ),
-          ),
+          ).map<TopologyFilterSelectOption>((val) => ({
+            value: val,
+            render: () =>
+              isLabelOrAnnotation(cat) ? (
+                <Label color="grey" textMaxWidth={LABEL_TEXT_MAXWIDTH}>
+                  {val}
+                </Label>
+              ) : (
+                val
+              ),
+          })),
         },
       ];
 
