@@ -17,14 +17,12 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target } from '@app/Shared/Services/api.types';
 import { getTargetRepresentation, includesTarget, isEqualTarget } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { SerializedTarget } from '@app/TargetView/SerializedTarget';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { getAnnotation } from '@app/utils/utils';
 import {
   Card,
   CardBody,
-  CardExpandableContent,
   CardHeader,
   CardTitle,
   Dropdown,
@@ -215,11 +213,6 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
               <DropdownList>{selectOptions}</DropdownList>
             </Dropdown>
           </CardBody>
-          <CardExpandableContent>
-            <CardBody id="serialized-target-details">
-              <SerializedTarget target={selected} />
-            </CardBody>
-          </CardExpandableContent>
         </>
       )}
     </Card>
