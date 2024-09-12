@@ -48,7 +48,7 @@ export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filt
         {t('RecordingStateFilter.FILTER_BY_STATE')}
       </MenuToggle>
     ),
-    [filteredStates, setIsOpen, isOpen],
+    [t, filteredStates, setIsOpen, isOpen],
   );
 
   return (
