@@ -84,10 +84,6 @@ describe('<ClickableLabel />', () => {
     expect(label.classList.contains('pf-m-blue')).toBe(false);
   });
 
-  it.skip('should display hover effect when hovered', async () => {
-    // styles are now applied from css stylesheets, thus assertions cannot be done
-  });
-
   it('should update label filters when clicked', async () => {
     const { user } = render({
       routerConfigs: {
