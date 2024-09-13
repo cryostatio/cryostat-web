@@ -24,7 +24,7 @@ import { render, testT } from '../utils';
 const onSelect = jest.fn((_: Date) => undefined);
 const onDismiss = jest.fn();
 
-const prefilledDate = new Date('14 Sep 2022 00:00:00');
+const prefilledDate = new Date('10 Sep 2024 00:00:00');
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
@@ -36,8 +36,8 @@ describe('<DateTimePicker/>', () => {
 
   afterEach(cleanup);
 
-  it('should show date tab as default', async () => {
-    render({
+  it('should show calendar, time and timezone select', async () => {
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -48,13 +48,14 @@ describe('<DateTimePicker/>', () => {
       },
     });
 
-    const dateTab = screen.getByRole('tab', { name: testT('DATE', { ns: 'common' }) });
-    expect(dateTab).toBeInTheDocument();
-    expect(dateTab).toBeVisible();
-    expect(dateTab.getAttribute('aria-selected')).toBe('true');
+    ['calendar-month-view', 'time-picker', 'selected-datetime', 'timezone-picker'].forEach((id) => {
+      const element = container.querySelector(`#${id}`);
+      expect(element).toBeInTheDocument();
+      expect(element).toBeVisible();
+    });
   });
 
-  it('should render currently selected date in calendar', async () => {
+  it('should show currently selected date in calendar', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -66,12 +67,12 @@ describe('<DateTimePicker/>', () => {
       },
     });
 
-    const selectedDate = screen.getByLabelText('14 September 2022');
+    const selectedDate = screen.getByLabelText('10 September 2024');
     expect(selectedDate).toBeInTheDocument();
     expect(selectedDate).toBeVisible();
   });
 
-  it('should render currently selected datetime', async () => {
+  it('should show currently selected datetime', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -93,30 +94,6 @@ describe('<DateTimePicker/>', () => {
     expect(timezoneDisplay).toBeVisible();
   });
 
-  it('should switch to time tab when a date is selected', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/recordings',
-            element: <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />,
-          },
-        ],
-      },
-    });
-
-    const selectedDate = screen.getByLabelText('14 September 2022');
-    expect(selectedDate).toBeInTheDocument();
-    expect(selectedDate).toBeVisible();
-
-    await user.click(selectedDate);
-
-    const timeTab = screen.getByRole('tab', { name: testT('TIME', { ns: 'common' }) });
-    expect(timeTab).toBeInTheDocument();
-    expect(timeTab).toBeVisible();
-    expect(timeTab.getAttribute('aria-selected')).toBe('true');
-  });
-
   it('should update selected datetime when date or time is seleted', async () => {
     const { user } = render({
       routerConfigs: {
@@ -129,7 +106,7 @@ describe('<DateTimePicker/>', () => {
       },
     });
 
-    const selectedDate = screen.getByLabelText('13 September 2022');
+    const selectedDate = screen.getByLabelText('13 September 2024');
     expect(selectedDate).toBeInTheDocument();
     expect(selectedDate).toBeVisible();
 

@@ -78,6 +78,8 @@ describe('Recording workflow steps', function () {
     const active = await recordings.getRecordings();
     assert.equal(active.length, 1);
 
+    await cryostat.closeNotificationAlerts();
+
     await recordings.deleteRecording(active[0]);
     await sleep(10000);
     assert.equal((await recordings.getRecordings()).length, 0);

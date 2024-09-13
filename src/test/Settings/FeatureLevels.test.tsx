@@ -16,7 +16,7 @@
 import { FeatureLevels } from '@app/Settings/Config/FeatureLevels';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, act } from '@testing-library/react';
+import { cleanup, screen, act, within, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { render, testT } from '../utils';
@@ -59,7 +59,7 @@ describe('<FeatureLevels/>', () => {
       },
     });
 
-    const featureLevelSelect = screen.getByLabelText('Options menu');
+    const featureLevelSelect = screen.getByLabelText(testT('SETTINGS.FEATURE_LEVEL.MENU_TOGGLE'));
     expect(featureLevelSelect).toBeInTheDocument();
     expect(featureLevelSelect).toBeVisible();
 
@@ -71,9 +71,11 @@ describe('<FeatureLevels/>', () => {
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
-    await user.selectOptions(ul, testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }));
+    await act(async () => {
+      await user.click(within(ul).getByText(testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' })));
+    });
 
-    expect(ul).not.toBeInTheDocument(); // Should close menu
+    await waitFor(() => expect(ul).not.toBeInTheDocument()); // Should close menu
 
     const betaOption = screen.getByText(testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }));
 

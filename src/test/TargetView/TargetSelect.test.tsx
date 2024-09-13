@@ -17,9 +17,9 @@ import { Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetView/TargetSelect';
 import '@testing-library/jest-dom';
-import { cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { render } from '../utils';
+import { render, testT } from '../utils';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
@@ -52,8 +52,6 @@ jest.mock('@app/Shared/Services/Target.service', () => ({
 jest
   .spyOn(defaultServices.targets, 'targets')
   .mockReturnValueOnce(of([mockFooTarget])) // contains the correct information
-  .mockReturnValueOnce(of([mockFooTarget])) // renders empty state when expanded
-  .mockReturnValueOnce(of([mockFooTarget])) // renders serialized target when expanded
   .mockReturnValueOnce(of([mockFooTarget, mockBarTarget])) // renders dropdown of multiple discovered targets
   .mockReturnValue(of([mockFooTarget, mockBarTarget])); // other tests
 
@@ -75,61 +73,7 @@ describe('<TargetSelect />', () => {
     });
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
-    expect(screen.getByText(`Select a target`)).toBeInTheDocument();
-  });
-
-  it('renders empty state when expanded', async () => {
-    const { container, user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/',
-            element: <TargetSelect />,
-          },
-        ],
-      },
-    });
-
-    expect(screen.getByText('Select a target')).toBeInTheDocument();
-
-    const expandButton = screen.getByLabelText('Details');
-    await user.click(expandButton);
-
-    const articleElement = container.querySelector('article');
-    expect(articleElement).toBeInTheDocument();
-    expect(articleElement).toBeVisible();
-    expect(screen.getByText(`No target selected`)).toBeInTheDocument();
-    expect(screen.getByText(`No target selected`)).toBeVisible();
-    expect(screen.getByText(`To view this content, select a JVM target.`)).toBeInTheDocument();
-    expect(screen.getByText(`To view this content, select a JVM target.`)).toBeVisible();
-  });
-
-  it('renders serialized target when expanded', async () => {
-    const { container, user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/',
-            element: <TargetSelect />,
-          },
-        ],
-      },
-    });
-
-    // Select a target first
-    await user.click(screen.getByLabelText('Options menu'));
-    await user.click(screen.getByText('fooTarget (service:jmx:rmi://someFooUrl)'));
-
-    const expandButton = screen.getByLabelText('Details');
-    await user.click(expandButton);
-
-    const codeElement = container.querySelector('code');
-    expect(codeElement).toBeTruthy();
-    expect(codeElement).toBeInTheDocument();
-    expect(codeElement).toBeVisible();
-    expect(codeElement?.textContent).toBeTruthy();
-    const codeContent = codeElement?.textContent?.replace(/[\s]/g, '');
-    expect(codeContent).toEqual(JSON.stringify(mockFooTarget, null, 0).replace(/[\s]/g, ''));
+    expect(screen.getByText(testT('TargetContextSelector.TOGGLE_PLACEHOLDER'))).toBeInTheDocument();
   });
 
   it('renders dropdown of multiple discovered targets', async () => {
@@ -144,12 +88,16 @@ describe('<TargetSelect />', () => {
       },
     });
 
-    await user.click(screen.getByLabelText('Options menu'));
+    await act(async () => {
+      await user.click(screen.getByLabelText(testT('TargetContextSelector.TOGGLE_LABEL')));
+    });
 
     [
       CUSTOM_TARGET_REALM,
-      'fooTarget (service:jmx:rmi://someFooUrl)',
-      'barTarget (service:jmx:rmi://someBarUrl)',
+      'fooTarget',
+      'service:jmx:rmi://someFooUrl',
+      'barTarget',
+      'service:jmx:rmi://someBarUrl',
     ].forEach((str) => {
       const element = screen.getByText(str);
       expect(element).toBeInTheDocument();

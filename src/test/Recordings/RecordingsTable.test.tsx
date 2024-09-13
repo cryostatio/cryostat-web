@@ -165,8 +165,8 @@ describe('<RecordingsTable />', () => {
 
     const table = screen.getByLabelText('Test Table');
     expect(table).toHaveClass('pf-m-sticky-header');
-    expect(container.getElementsByClassName('pf-c-scroll-outer-wrapper').length).toBe(1);
-    expect(container.getElementsByClassName('pf-c-scroll-inner-wrapper').length).toBe(1);
+    expect(container.getElementsByClassName('pf-v5-c-scroll-outer-wrapper').length).toBe(1);
+    expect(container.getElementsByClassName('pf-v5-c-scroll-inner-wrapper').length).toBe(1);
   });
 
   it('handles the case where an error occurs', async () => {

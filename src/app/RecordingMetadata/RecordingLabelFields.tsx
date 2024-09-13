@@ -66,11 +66,11 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
   const handleLabelEdit = React.useCallback(
     (idx: number, keyValue: string) => {
       const label = getLabelFromInput(keyValue);
-      const updatedLabels = [...labels];
+      let updatedLabels = [...labels];
       if (label) {
         updatedLabels[idx] = label;
       } else {
-        updatedLabels.splice(idx);
+        updatedLabels = [...updatedLabels.slice(0, idx), ...updatedLabels.slice(idx + 1)];
       }
       setLabels(updatedLabels);
     },
@@ -200,6 +200,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
       >
         {labels.map((label, idx) => (
           <Label
+            aria-label={keyValueToString(label)}
             key={label.key}
             id={label.key}
             color={validLabels[idx] ? 'grey' : 'red'}

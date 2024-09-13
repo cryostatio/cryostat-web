@@ -40,12 +40,14 @@ const DEFAULT_NUM_OPTIONS = 10;
 const OPTION_INCREMENT = 15;
 
 export interface TimezonePickerProps {
+  id?: string;
   isFlipEnabled?: boolean;
   onTimezoneChange?: (timezone: Timezone) => void;
   selected: Timezone;
 }
 
 export const TimezonePicker: React.FC<TimezonePickerProps> = ({
+  id,
   isFlipEnabled = true,
   selected,
   onTimezoneChange = (_) => undefined,
@@ -115,6 +117,8 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
+        aria-label={t('TimezonePicker.ARIA_LABELS.MENU_TOGGLE')}
+        id={id}
         ref={toggleRef}
         onClick={onToggle}
         isExpanded={isTimezoneOpen}
@@ -128,7 +132,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
         {selected.full}
       </MenuToggle>
     ),
-    [onToggle, isTimezoneOpen, selected.full],
+    [onToggle, t, isTimezoneOpen, selected.full, id],
   );
 
   return (

@@ -113,6 +113,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         <Level hasGutter>
           <LevelItem>
             <CalendarMonth
+              id="calendar-month-view"
               className="datetime-picker__calendar"
               isDateFocused
               locale={dayjs.locale()}
@@ -128,6 +129,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           <Divider orientation={{ default: 'vertical' }}></Divider>
           <LevelItem>
             <TimePicker
+              id="time-picker"
               selected={{
                 hour24: dayjs(datetime).hour(), // 24hr format
                 minute: dayjs(datetime).minute(),
@@ -151,7 +153,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         />
       </FormGroup>
       <FormGroup label={t('TIMEZONE', { ns: 'common' })}>
-        <TimezonePicker onTimezoneChange={setTimezone} selected={timezone} />
+        <TimezonePicker id="timezone-picker" onTimezoneChange={setTimezone} selected={timezone} />
       </FormGroup>
       <ActionGroup style={{ marginTop: 0 }}>
         <Button variant="primary" onClick={handleSubmit}>

@@ -17,7 +17,7 @@
 import { Language } from '@app/Settings/Config/Language';
 import i18next, { i18nLanguages } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import * as React from 'react';
 import { render, testT } from '../utils';
 
@@ -84,7 +84,7 @@ describe('<Language/>', () => {
       },
     });
 
-    const optionMenu = screen.getByLabelText('Options menu');
+    const optionMenu = screen.getByLabelText(testT('SETTINGS.LANGUAGE.ARIA_LABELS.MENU_TOGGLE'));
     expect(optionMenu).toBeInTheDocument();
     expect(optionMenu).toBeVisible();
 
@@ -116,7 +116,7 @@ describe('<Language/>', () => {
       },
     });
 
-    const optionMenu = screen.getByLabelText('Options menu');
+    const optionMenu = screen.getByLabelText(testT('SETTINGS.LANGUAGE.ARIA_LABELS.MENU_TOGGLE'));
     expect(optionMenu).toBeInTheDocument();
     expect(optionMenu).toBeVisible();
 
@@ -135,6 +135,8 @@ describe('<Language/>', () => {
     await act(async () => {
       await user.click(option);
     });
+
+    await waitFor(() => expect(ul).not.toBeInTheDocument()); // Should close menu
 
     const defaultLocale = screen.getByText(localeReadable(i18nLanguages[1]));
     expect(defaultLocale).toBeInTheDocument();

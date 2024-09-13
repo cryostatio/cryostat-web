@@ -15,7 +15,7 @@
  */
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
-import { renderSnapshot } from '@test/utils';
+import { createMockForPFTableRef, renderSnapshot } from '@test/utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
   name: 'rule1',
@@ -91,6 +91,7 @@ describe('<AutomatedAnalysisCardList />', () => {
           },
         ],
       },
+      createNodeMock: createMockForPFTableRef,
     });
     expect(tree?.toJSON()).toMatchSnapshot();
   });

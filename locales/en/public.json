@@ -23,6 +23,10 @@
     }
   },
   "AgentProbeTemplates": {
+    "ARIA_LABELS": {
+      "ROW_ACTION": "agent-probe-template-action-menu",
+      "SEARCH_INPUT": "agent-probe-template-search"
+    },
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
   "AllArchivedRecordingsTable": {
@@ -345,9 +349,15 @@
     "EVENT_TEMPLATES": "Error retrieving Event Templates"
   },
   "EventTemplates": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "event-template-search-input"
+    },
     "SEARCH_PLACEHOLDER": "Find by name, description, or provider..."
   },
   "EventTypes": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "event-type-search-input"
+    },
     "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
   },
   "ImportCertificate": {
@@ -416,7 +426,15 @@
       "TITLE": "Quick starts"
     }
   },
+  "RecordingActions": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-action-toggle"
+    }
+  },
   "RecordingFilters": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-filters-toggle"
+    },
     "FILTER_CHIP": {
       "DURATION_CONTINUOUS": "Continuous",
       "DURATION_EXACT": "{{value}}{{unit}}",
@@ -436,6 +454,13 @@
   },
   "RecordingsTable": {
     "NO_ARCHIVES": "No Archived Recordings"
+  },
+  "RecordingStateFilter": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-state-toggle",
+      "SELECT": "select-by-state"
+    },
+    "FILTER_BY_STATE": "Filter by state"
   },
   "RuleDeleteWarningModal": {
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
@@ -495,7 +520,8 @@
     },
     "DATETIME_CONTROL": {
       "ARIA_LABELS": {
-        "LOCALE_SELECT": "Select a datetime locale"
+        "LOCALE_SELECT": "Select a datetime locale",
+        "MENU_TOGGLE": "datetime-locale-setting-toggle"
       },
       "DESCRIPTION": "",
       "LOCALE_SELECT_DESCRIPTION": "Select current date locale.",
@@ -513,11 +539,13 @@
       "BETA_DESCRIPTION": "Experimental features",
       "DESCRIPTION": "Control which graphical features appear in the application.",
       "DEVELOPMENT_DESCRIPTION": "Under development features",
+      "MENU_TOGGLE": "feature-level-setting-toggle",
       "PRODUCTION_DESCRIPTION": "Stable production-ready features",
       "TITLE": "Feature level"
     },
     "LANGUAGE": {
       "ARIA_LABELS": {
+        "MENU_TOGGLE": "language-setting-toggle",
         "SELECT": "Select a language"
       },
       "DESCRIPTION": "Set the current language for web console.",
@@ -531,13 +559,14 @@
       "TITLE": "Notifications"
     },
     "THEME": {
+      "ARIA_LABELS": {
+        "MENU_TOGGLE": "theme-setting-toggle",
+        "SELECT": "Select a theme"
+      },
       "AUTO": "Auto",
       "DARK": "Dark",
       "DESCRIPTION": "Set the current theme for web console.",
       "LIGHT": "Light",
-      "SELECT": {
-        "LABEL": "Select a theme"
-      },
       "TITLE": "Theme"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
@@ -608,6 +637,7 @@
   },
   "TimezonePicker": {
     "ARIA_LABELS": {
+      "MENU_TOGGLE": "timezone-select-toggle",
       "SELECT": "Select a timezone",
       "TYPE_AHEAD": "Search a timezone"
     },

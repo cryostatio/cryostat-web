@@ -18,7 +18,7 @@ import { EventTemplate } from '@app/Shared/Services/api.types';
 import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render, testT } from '../../utils';
 
@@ -86,11 +86,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
 
     expect(screen.getByText(/Current Configuration/i)).toBeInTheDocument();
     expect(screen.getByText('Template')).toBeInTheDocument();
-    expect(screen.getByText(/maximum size \(b\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/maximum age \(s\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/maximum size/i)).toBeInTheDocument();
+    expect(screen.getByText(/maximum age/i)).toBeInTheDocument();
   });
 
-  it('renders editing drawer view correctly', async () => {
+  it('renders editing settings view correctly', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [{ path: '/', element: <AutomatedAnalysisConfigForm useTitle /> }],
@@ -115,7 +115,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     expect(screen.getByText(/the maximum age of Recording data stored to disk./i)).toBeInTheDocument();
   });
 
-  it('renders editing settings view correctly', async () => {
+  it('renders editing settings view correctly as inline form', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [{ path: '/', element: <AutomatedAnalysisConfigForm inlineForm /> }],
@@ -166,7 +166,10 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     expect(maxAgeInput).toHaveValue(mockAutomatedAnalysisRecordingConfig.maxAge);
     expect(maxSizeInput).toHaveValue(mockAutomatedAnalysisRecordingConfig.maxSize);
 
-    await user.selectOptions(templateSelect, ['template2']);
+    await act(async () => {
+      await user.selectOptions(templateSelect, ['template2']);
+    });
+
     await user.clear(maxSizeInput);
     await user.clear(maxAgeInput);
     await user.type(maxSizeInput, '100');
@@ -183,7 +186,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: testT('AutomatedAnalysisConfigForm.SAVE_CHANGES'),
+        name: testT('SAVE', { ns: 'common' }),
       }),
     );
     expect(setConfigRequestSpy).toHaveBeenCalledWith(config);

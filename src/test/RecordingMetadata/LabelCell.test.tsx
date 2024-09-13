@@ -33,8 +33,8 @@ const mockFooTarget: Target = {
   },
 };
 
-const mockLabel = { key: 'someLabel', value: 'someValue' } as KeyValue;
-const mockAnotherLabel = { key: 'anotherLabel', value: 'anotherValue' } as KeyValue;
+const mockLabel: KeyValue = { key: 'someLabel', value: 'someValue' };
+const mockAnotherLabel: KeyValue = { key: 'anotherLabel', value: 'anotherValue' };
 const mockLabelList = [mockLabel, mockAnotherLabel];
 
 // For display
@@ -84,7 +84,7 @@ describe('<LabelCell />', () => {
     });
 
     for (const labelAsString of mockLabelStringList) {
-      const displayedLabel = screen.getByLabelText(labelAsString);
+      const displayedLabel = screen.getByText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();
       expect(displayedLabel).toBeVisible();
@@ -117,7 +117,7 @@ describe('<LabelCell />', () => {
     let count = 0;
     let index = 0;
     for (const labelAsString of mockLabelStringList) {
-      const displayedLabel = screen.getByLabelText(labelAsString);
+      const displayedLabel = screen.getByText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();
       expect(displayedLabel).toBeVisible();
@@ -146,7 +146,7 @@ describe('<LabelCell />', () => {
       },
     });
 
-    const placeHolder = screen.getByText('-');
+    const placeHolder = screen.getByText('No labels');
     expect(placeHolder).toBeInTheDocument();
     expect(placeHolder).toBeVisible();
     expect(placeHolder.onclick).toBeNull();

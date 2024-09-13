@@ -48,7 +48,13 @@ const Component = () => {
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={open} isFullWidth>
+      <MenuToggle
+        aria-label={t('SETTINGS.FEATURE_LEVEL.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={handleToggle}
+        isExpanded={open}
+        isFullWidth
+      >
         {t(FeatureLevel[featureLevel])}
       </MenuToggle>
     ),

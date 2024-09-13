@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
@@ -265,6 +265,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   it('renders correctly', async () => {
     const tree = await renderSnapshot({
       routerConfigs: { routes: [{ path: '/archives', element: <AllTargetsArchivedRecordingsTable /> }] },
+      createNodeMock: createMockForPFTableRef,
     });
     expect(tree?.toJSON()).toMatchSnapshot();
   });

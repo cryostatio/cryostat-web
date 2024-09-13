@@ -66,7 +66,7 @@ describe('<TimePicker/>', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should render correctly in 12hr mode', async () => {
+  it('should show correctly in 12hr mode when switched', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -85,12 +85,11 @@ describe('<TimePicker/>', () => {
       },
     });
 
-    const switchenable24h = screen.getByLabelText(testT('TimePicker.24HOUR'));
-    expect(switchenable24h).toBeInTheDocument();
-    expect(switchenable24h).toBeVisible();
-    expect(switchenable24h).toBeChecked();
+    const toggleBtn12hr = screen.getByText(testT('TimePicker.12_H'));
+    expect(toggleBtn12hr).toBeInTheDocument();
+    expect(toggleBtn12hr).toBeVisible();
 
-    await user.click(switchenable24h);
+    await user.click(toggleBtn12hr);
 
     const hInput = within(screen.getByLabelText(testT('HOUR', { ns: 'common' }))).getByLabelText(
       testT('TimeSpinner.INPUT_HOUR12_VALUE'),

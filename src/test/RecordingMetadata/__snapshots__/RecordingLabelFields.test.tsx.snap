@@ -1,396 +1,148 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<RecordingLabelFields /> renders correctly 1`] = `
-Array [
-  <button
-    aria-disabled={false}
-    aria-label="Add Label"
-    className="pf-v5-c-button pf-m-link"
-    data-ouia-component-id="OUIA-Generated-Button-link-1"
-    data-ouia-component-type="PF5/Button"
-    data-ouia-safe={true}
-    disabled={false}
-    onClick={[Function]}
-    role={null}
-    type="button"
+<div
+  className="pf-v5-c-label-group pf-m-category pf-m-editable"
+>
+  <div
+    className="pf-v5-c-label-group__main"
   >
     <span
-      className="pf-v5-c-button__icon pf-m-start"
+      aria-hidden="true"
+      className="pf-v5-c-label-group__label"
+      id="pf-random-id-0"
     >
-      <svg
-        aria-hidden={true}
-        aria-labelledby={null}
-        className="pf-v5-svg"
-        fill="currentColor"
-        height="1em"
-        role="img"
-        viewBox="0 0 512 512"
-        width="1em"
-      >
-        <path
-          d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"
-        />
-      </svg>
+      Recording Labels
     </span>
-    Add Label
-  </button>,
-  <div
-    className="pf-v5-l-split pf-m-gutter"
-  >
-    <div
-      className="pf-v5-l-split__item pf-m-fill"
+    <ul
+      aria-labelledby="pf-random-id-0"
+      className="pf-v5-c-label-group__list"
+      role="list"
     >
-      <span
-        className="pf-v5-c-form-control pf-m-success"
+      <li
+        className="pf-v5-c-label-group__list-item"
       >
-        <input
-          aria-describedby="label-key-input-helper"
-          aria-invalid={false}
-          aria-label="Label Key"
-          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-          data-ouia-component-type="PF5/TextInput"
-          data-ouia-safe={true}
-          disabled={false}
-          id="label-key-input"
-          name="label-key-input"
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          required={true}
-          type="text"
-          value="someLabel"
-        />
         <span
-          className="pf-v5-c-form-control__utilities"
+          aria-label="someLabel=someValue"
+          className="pf-v5-c-label pf-m-editable"
+          id="someLabel"
         >
-          <span
-            className="pf-v5-c-form-control__icon pf-m-status"
-          >
-            <svg
-              aria-hidden={true}
-              aria-labelledby={null}
-              className="pf-v5-svg"
-              fill="currentColor"
-              height="1em"
-              role="img"
-              viewBox="0 0 512 512"
-              width="1em"
-            >
-              <path
-                d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
-              />
-            </svg>
-          </span>
-        </span>
-      </span>
-      <p
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-1"
-        data-ouia-component-type="PF5/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        Key
-      </p>
-      <div
-        className="pf-v5-c-form__helper-text"
-      >
-        <div
-          className="pf-v5-c-helper-text"
-          id="label-error-text"
-        >
-          <div
-            className="pf-v5-c-helper-text__item pf-m-error"
+          <button
+            className="pf-v5-c-label__content"
+            onClick={[Function]}
+            type="button"
           >
             <span
-              className="pf-v5-c-helper-text__item-text"
+              className="pf-v5-c-label__text"
             >
-              Keys must be unique. Labels should not contain empty spaces.
+              someLabel=someValue
             </span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      className="pf-v5-l-split__item pf-m-fill"
-    >
-      <span
-        className="pf-v5-c-form-control pf-m-success"
-      >
-        <input
-          aria-describedby="label-value-input-helper"
-          aria-invalid={false}
-          aria-label="Label Value"
-          data-ouia-component-id="OUIA-Generated-TextInputBase-2"
-          data-ouia-component-type="PF5/TextInput"
-          data-ouia-safe={true}
-          disabled={false}
-          id="label-value-input"
-          name="label-value-input"
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          required={true}
-          type="text"
-          value="someValue"
-        />
-        <span
-          className="pf-v5-c-form-control__utilities"
-        >
+          </button>
           <span
-            className="pf-v5-c-form-control__icon pf-m-status"
+            className="pf-v5-c-label__actions"
           >
-            <svg
-              aria-hidden={true}
-              aria-labelledby={null}
-              className="pf-v5-svg"
-              fill="currentColor"
-              height="1em"
-              role="img"
-              viewBox="0 0 512 512"
-              width="1em"
-            >
-              <path
-                d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
-              />
-            </svg>
-          </span>
-        </span>
-      </span>
-      <p
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-2"
-        data-ouia-component-type="PF5/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        Value
-      </p>
-    </div>
-    <div
-      className="pf-v5-l-split__item"
-    >
-      <button
-        aria-disabled={false}
-        aria-label="Remove Label"
-        className="pf-v5-c-button pf-m-link"
-        data-ouia-component-id="OUIA-Generated-Button-link-2"
-        data-ouia-component-type="PF5/Button"
-        data-ouia-safe={true}
-        disabled={false}
-        onClick={[Function]}
-        role={null}
-        type="button"
-      >
-        <span
-          className="pf-v5-c-button__icon pf-m-start"
-        >
-          <span
-            className="pf-v5-c-icon pf-m-sm"
-          >
-            <span
-              className="pf-v5-c-icon__content"
+            <button
+              aria-disabled={false}
+              aria-label="Close someLabel=someValue"
+              className="pf-v5-c-button pf-m-plain"
+              data-ouia-component-id="OUIA-Generated-Button-plain-1"
+              data-ouia-component-type="PF5/Button"
+              data-ouia-safe={true}
+              disabled={false}
+              onClick={[Function]}
+              role={null}
+              type="button"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
                 className="pf-v5-svg"
-                color="gray"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                viewBox="0 0 730 1024"
+                viewBox="0 0 352 512"
                 width="1em"
               >
                 <path
-                  d="M725.499315,767.757345 L469.242169,511.500499 L725.499315,255.243653 C729.196254,251.545719 731.096195,247.248119 731,242.4498 C731,237.653479 728.997365,233.35588 725.299427,229.558002 L647.542773,151.701495 C643.743891,147.903617 639.446287,146 634.64996,146 C629.852635,146 625.55503,147.803673 621.857092,151.500607 L365.5,407.857398 L109.241857,151.500607 C105.544917,147.803673 101.246314,145.904733 96.4499876,146 C91.6526619,146.104622 87.3550577,148.002562 83.5571748,151.701495 L5.7005771,229.457058 C1.90269428,233.255936 0,237.553535 0,242.350855 C0,247.148175 1.80175055,251.444775 5.50068853,255.143709 L261.857779,511.500499 L5.50068853,767.757345 C1.80175055,771.454279 -0.0961914123,775.752878 0,779.750645 C0.103697157,784.547965 2.00263857,788.845564 5.7005771,792.642443 L83.4572306,871.299502 C87.2541139,875.096381 91.5527176,877 96.3500433,877 C101.147369,877 105.444973,875.197325 109.142912,871.499391 L365.400058,615.241545 L621.657203,871.499391 C625.355142,875.197325 629.652746,877.095265 634.449072,877 C639.246398,877 643.545002,874.997437 647.342885,871.299502 L725.099538,793.54294 C728.896421,789.745062 730.796362,785.446463 730.796362,780.649143 C731.096195,775.752878 729.196254,771.454279 725.499315,767.757345"
+                  d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
                 />
               </svg>
-               
-            </span>
+            </button>
           </span>
         </span>
-      </button>
-    </div>
-  </div>,
-  <div
-    className="pf-v5-l-split pf-m-gutter"
-  >
-    <div
-      className="pf-v5-l-split__item pf-m-fill"
-    >
-      <span
-        className="pf-v5-c-form-control pf-m-success"
+      </li>
+      <li
+        className="pf-v5-c-label-group__list-item"
       >
-        <input
-          aria-describedby="label-key-input-helper"
-          aria-invalid={false}
-          aria-label="Label Key"
-          data-ouia-component-id="OUIA-Generated-TextInputBase-3"
-          data-ouia-component-type="PF5/TextInput"
-          data-ouia-safe={true}
-          disabled={false}
-          id="label-key-input"
-          name="label-key-input"
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          required={true}
-          type="text"
-          value="anotherLabel"
-        />
         <span
-          className="pf-v5-c-form-control__utilities"
+          aria-label="anotherLabel=anotherValue"
+          className="pf-v5-c-label pf-m-editable"
+          id="anotherLabel"
         >
-          <span
-            className="pf-v5-c-form-control__icon pf-m-status"
-          >
-            <svg
-              aria-hidden={true}
-              aria-labelledby={null}
-              className="pf-v5-svg"
-              fill="currentColor"
-              height="1em"
-              role="img"
-              viewBox="0 0 512 512"
-              width="1em"
-            >
-              <path
-                d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
-              />
-            </svg>
-          </span>
-        </span>
-      </span>
-      <p
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-3"
-        data-ouia-component-type="PF5/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        Key
-      </p>
-      <div
-        className="pf-v5-c-form__helper-text"
-      >
-        <div
-          className="pf-v5-c-helper-text"
-          id="label-error-text"
-        >
-          <div
-            className="pf-v5-c-helper-text__item pf-m-error"
+          <button
+            className="pf-v5-c-label__content"
+            onClick={[Function]}
+            type="button"
           >
             <span
-              className="pf-v5-c-helper-text__item-text"
+              className="pf-v5-c-label__text"
             >
-              Keys must be unique. Labels should not contain empty spaces.
+              anotherLabel=anotherValue
             </span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div
-      className="pf-v5-l-split__item pf-m-fill"
-    >
-      <span
-        className="pf-v5-c-form-control pf-m-success"
-      >
-        <input
-          aria-describedby="label-value-input-helper"
-          aria-invalid={false}
-          aria-label="Label Value"
-          data-ouia-component-id="OUIA-Generated-TextInputBase-4"
-          data-ouia-component-type="PF5/TextInput"
-          data-ouia-safe={true}
-          disabled={false}
-          id="label-value-input"
-          name="label-value-input"
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          required={true}
-          type="text"
-          value="anotherValue"
-        />
-        <span
-          className="pf-v5-c-form-control__utilities"
-        >
+          </button>
           <span
-            className="pf-v5-c-form-control__icon pf-m-status"
+            className="pf-v5-c-label__actions"
           >
-            <svg
-              aria-hidden={true}
-              aria-labelledby={null}
-              className="pf-v5-svg"
-              fill="currentColor"
-              height="1em"
-              role="img"
-              viewBox="0 0 512 512"
-              width="1em"
-            >
-              <path
-                d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
-              />
-            </svg>
-          </span>
-        </span>
-      </span>
-      <p
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-4"
-        data-ouia-component-type="PF5/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        Value
-      </p>
-    </div>
-    <div
-      className="pf-v5-l-split__item"
-    >
-      <button
-        aria-disabled={false}
-        aria-label="Remove Label"
-        className="pf-v5-c-button pf-m-link"
-        data-ouia-component-id="OUIA-Generated-Button-link-3"
-        data-ouia-component-type="PF5/Button"
-        data-ouia-safe={true}
-        disabled={false}
-        onClick={[Function]}
-        role={null}
-        type="button"
-      >
-        <span
-          className="pf-v5-c-button__icon pf-m-start"
-        >
-          <span
-            className="pf-v5-c-icon pf-m-sm"
-          >
-            <span
-              className="pf-v5-c-icon__content"
+            <button
+              aria-disabled={false}
+              aria-label="Close anotherLabel=anotherValue"
+              className="pf-v5-c-button pf-m-plain"
+              data-ouia-component-id="OUIA-Generated-Button-plain-2"
+              data-ouia-component-type="PF5/Button"
+              data-ouia-safe={true}
+              disabled={false}
+              onClick={[Function]}
+              role={null}
+              type="button"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
                 className="pf-v5-svg"
-                color="gray"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                viewBox="0 0 730 1024"
+                viewBox="0 0 352 512"
                 width="1em"
               >
                 <path
-                  d="M725.499315,767.757345 L469.242169,511.500499 L725.499315,255.243653 C729.196254,251.545719 731.096195,247.248119 731,242.4498 C731,237.653479 728.997365,233.35588 725.299427,229.558002 L647.542773,151.701495 C643.743891,147.903617 639.446287,146 634.64996,146 C629.852635,146 625.55503,147.803673 621.857092,151.500607 L365.5,407.857398 L109.241857,151.500607 C105.544917,147.803673 101.246314,145.904733 96.4499876,146 C91.6526619,146.104622 87.3550577,148.002562 83.5571748,151.701495 L5.7005771,229.457058 C1.90269428,233.255936 0,237.553535 0,242.350855 C0,247.148175 1.80175055,251.444775 5.50068853,255.143709 L261.857779,511.500499 L5.50068853,767.757345 C1.80175055,771.454279 -0.0961914123,775.752878 0,779.750645 C0.103697157,784.547965 2.00263857,788.845564 5.7005771,792.642443 L83.4572306,871.299502 C87.2541139,875.096381 91.5527176,877 96.3500433,877 C101.147369,877 105.444973,875.197325 109.142912,871.499391 L365.400058,615.241545 L621.657203,871.499391 C625.355142,875.197325 629.652746,877.095265 634.449072,877 C639.246398,877 643.545002,874.997437 647.342885,871.299502 L725.099538,793.54294 C728.896421,789.745062 730.796362,785.446463 730.796362,780.649143 C731.096195,775.752878 729.196254,771.454279 725.499315,767.757345"
+                  d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
                 />
               </svg>
-               
-            </span>
+            </button>
           </span>
         </span>
-      </button>
-    </div>
-  </div>,
-]
+      </li>
+      <li
+        className="pf-v5-c-label-group__list-item"
+      >
+        <span
+          className="pf-v5-c-label pf-m-blue pf-m-outline"
+        >
+          <button
+            className="pf-v5-c-label__content"
+            onClick={[Function]}
+            type="button"
+          >
+            <span
+              className="pf-v5-c-label__text"
+            >
+              Add label
+            </span>
+          </button>
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>
 `;

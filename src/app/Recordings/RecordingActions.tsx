@@ -21,6 +21,7 @@ import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleEl
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
@@ -39,6 +40,7 @@ export interface RecordingActionsProps {
 }
 
 export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
@@ -111,11 +113,12 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
         isExpanded={isOpen}
         variant="plain"
         data-quickstart-id="recording-kebab"
+        aria-label={t('RecordingActions.ARIA_LABELS.MENU_TOGGLE')}
       >
         <EllipsisVIcon />
       </MenuToggle>
     ),
-    [setIsOpen, isOpen],
+    [t, setIsOpen, isOpen],
   );
 
   return (
@@ -123,11 +126,9 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
       <Dropdown
         toggle={toggle}
         popperProps={{
-          appendTo: document.body,
+          enableFlip: true,
           position: 'right',
-          direction: 'down',
         }}
-        aria-label={`${recording.name}-actions`}
         isOpen={isOpen}
         onOpenChange={(isOpen) => setIsOpen(isOpen)}
         onOpenChangeKeys={['Escape']}

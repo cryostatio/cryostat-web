@@ -198,10 +198,10 @@ exports[`<NotificationControl/> renders correctly 1`] = `
       className="pf-v5-c-expandable-section"
     >
       <button
-        aria-controls="expandable-section-content-1717748448129qag9p523vjj"
+        aria-controls="notification-options"
         aria-expanded={false}
         className="pf-v5-c-expandable-section__toggle"
-        id="expandable-section-toggle-1717748448130xo7znv5n5mo"
+        id="notification-options-toggle"
         onClick={[Function]}
         type="button"
       >
@@ -230,10 +230,10 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         </span>
       </button>
       <div
-        aria-labelledby="expandable-section-toggle-1717748448130xo7znv5n5mo"
+        aria-labelledby="notification-options-toggle"
         className="pf-v5-c-expandable-section__content"
         hidden={true}
-        id="expandable-section-content-1717748448129qag9p523vjj"
+        id="notification-options"
         role="region"
       >
         <div

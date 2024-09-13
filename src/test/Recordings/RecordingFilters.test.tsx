@@ -18,7 +18,7 @@
 const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
 jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
 
-import { RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import { getCategoryDisplay, RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   emptyActiveRecordingFilters,
@@ -30,9 +30,10 @@ import { Target, ActiveRecording, RecordingState, ArchivedRecording } from '@app
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Toolbar, ToolbarContent } from '@patternfly/react-core';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
+import { TFunction } from 'i18next';
 import { of } from 'rxjs';
-import { basePreloadedState, render } from '../utils';
+import { basePreloadedState, render, testT } from '../utils';
 
 const mockFooTarget: Target = {
   agent: false,
@@ -84,7 +85,7 @@ const mockArchivedRecordingList = [
   { ...mockArchivedRecording, name: 'anotherArchivedRecording' } as ArchivedRecording,
 ];
 
-const activeCategoryOptions = Object.keys({} as RecordingFiltersCategories);
+const activeCategoryOptions = ['Name', 'Label', 'State', 'StartTime', 'Duration'];
 const archivedCategoryOptions = ['Name', 'Label'];
 
 const updateFilters = jest.fn((_target: string, _options: UpdateFilterOptions) => undefined);
@@ -169,11 +170,11 @@ describe('<RecordingFilters />', () => {
       preloadedState: preloadedState,
     });
 
-    const categoryDropDown = screen.getByLabelText('Category Dropdown');
-    expect(categoryDropDown).toBeInTheDocument();
-    expect(categoryDropDown).toBeVisible();
+    const categoryToggle = screen.getByLabelText(testT('RecordingFilters.ARIA_LABELS.MENU_TOGGLE'));
+    expect(categoryToggle).toBeInTheDocument();
+    expect(categoryToggle).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: 'Label' });
+    const selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
   });
@@ -203,11 +204,11 @@ describe('<RecordingFilters />', () => {
       preloadedState: preloadedState,
     });
 
-    const categoryDropDown = screen.getByLabelText('Category Dropdown');
-    expect(categoryDropDown).toBeInTheDocument();
-    expect(categoryDropDown).toBeVisible();
+    const categoryToggle = screen.getByLabelText(testT('RecordingFilters.ARIA_LABELS.MENU_TOGGLE'));
+    expect(categoryToggle).toBeInTheDocument();
+    expect(categoryToggle).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: 'Name' });
+    const selectedItem = within(categoryToggle).getByText(testT('NAME', { ns: 'common' }));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
   });
@@ -238,22 +239,24 @@ describe('<RecordingFilters />', () => {
       userConfigs: { advanceTimers: jest.advanceTimersByTime },
     });
 
-    const categoryDropDown = screen.getByLabelText('Category Dropdown');
-    expect(categoryDropDown).toBeInTheDocument();
-    expect(categoryDropDown).toBeVisible();
+    const categoryToggle = screen.getByLabelText(testT('RecordingFilters.ARIA_LABELS.MENU_TOGGLE'));
+    expect(categoryToggle).toBeInTheDocument();
+    expect(categoryToggle).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: 'Label' });
+    const selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await user.click(selectedItem);
+    await act(async () => {
+      await user.click(selectedItem);
+    });
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
     activeCategoryOptions.forEach((category) => {
-      const option = within(categoryMenu).getByRole('menuitem', { name: category });
+      const option = within(categoryMenu).getByText(getCategoryDisplay(testT as TFunction, category));
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
     });
@@ -285,32 +288,26 @@ describe('<RecordingFilters />', () => {
       userConfigs: { advanceTimers: jest.advanceTimersByTime },
     });
 
-    const categoryDropDown = screen.getByLabelText('Category Dropdown');
-    expect(categoryDropDown).toBeInTheDocument();
-    expect(categoryDropDown).toBeVisible();
+    const categoryToggle = screen.getByLabelText(testT('RecordingFilters.ARIA_LABELS.MENU_TOGGLE'));
+    expect(categoryToggle).toBeInTheDocument();
+    expect(categoryToggle).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: 'Name' });
+    const selectedItem = within(categoryToggle).getByText(testT('NAME', { ns: 'common' }));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await user.click(selectedItem);
+    await act(async () => {
+      await user.click(selectedItem);
+    });
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
     archivedCategoryOptions.forEach((category) => {
-      const option = within(categoryMenu).getByRole('menuitem', { name: category });
+      const option = within(categoryMenu).getByText(getCategoryDisplay(testT as TFunction, category));
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
-    });
-
-    // Check that only Name and Label should be showned
-    activeCategoryOptions.forEach((category) => {
-      if (!archivedCategoryOptions.includes(category)) {
-        const option = within(categoryMenu).queryByRole('menuitem', { name: category });
-        expect(option).toBeInTheDocument();
-      }
     });
   });
 
@@ -340,27 +337,31 @@ describe('<RecordingFilters />', () => {
       userConfigs: { advanceTimers: jest.advanceTimersByTime },
     });
 
-    const categoryDropDown = screen.getByLabelText('Category Dropdown');
-    expect(categoryDropDown).toBeInTheDocument();
-    expect(categoryDropDown).toBeVisible();
+    const categoryToggle = screen.getByLabelText(testT('RecordingFilters.ARIA_LABELS.MENU_TOGGLE'));
+    expect(categoryToggle).toBeInTheDocument();
+    expect(categoryToggle).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: 'Label' });
+    const selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await user.click(selectedItem);
+    await act(async () => {
+      await user.click(selectedItem);
+    });
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
-    await user.click(selectedItem); // Click again
+    await act(async () => {
+      await user.click(selectedItem); // Click again
+    });
 
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
   });
 
   it('should switch filter input if a category is selected ', async () => {
-    const { user } = render({
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
@@ -385,38 +386,40 @@ describe('<RecordingFilters />', () => {
       userConfigs: { advanceTimers: jest.advanceTimersByTime },
     });
 
-    const categoryDropDown = screen.getByLabelText('Category Dropdown');
-    expect(categoryDropDown).toBeInTheDocument();
-    expect(categoryDropDown).toBeVisible();
+    const categoryToggle = screen.getByLabelText(testT('RecordingFilters.ARIA_LABELS.MENU_TOGGLE'));
+    expect(categoryToggle).toBeInTheDocument();
+    expect(categoryToggle).toBeVisible();
 
-    let selectedItem = screen.getByRole('button', { name: 'Label' });
+    let selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    await user.click(selectedItem);
+    await act(async () => {
+      await user.click(selectedItem);
+    });
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
-    activeCategoryOptions.forEach((category) => {
-      const option = within(categoryMenu).getByRole('menuitem', { name: category });
-      expect(option).toBeInTheDocument();
-      expect(option).toBeVisible();
+    const toSelectItem = within(categoryMenu).getByText(getCategoryDisplay(testT as TFunction, 'Name'));
+    expect(toSelectItem).toBeInTheDocument();
+    expect(toSelectItem).toBeVisible();
+
+    await act(async () => {
+      await user.click(toSelectItem);
     });
 
-    await user.click(within(categoryMenu).getByRole('menuitem', { name: 'Name' }));
-
-    selectedItem = screen.getByRole('button', { name: 'Name' });
+    selectedItem = within(categoryToggle).getByText(testT('NAME', { ns: 'common' }));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    const newFilterTool = screen.getByLabelText('Filter by name...');
+    const prevSelectedItem = within(categoryToggle).queryByText(testT('LABEL', { ns: 'common' }));
+    expect(prevSelectedItem).not.toBeInTheDocument();
+
+    const newFilterTool = container.querySelector("input[placeholder='Filter by name...'][type='text']");
     expect(newFilterTool).toBeInTheDocument();
     expect(newFilterTool).toBeVisible();
-
-    const prevSelectedItem = screen.queryByRole('button', { name: 'Label' });
-    expect(prevSelectedItem).not.toBeInTheDocument();
   });
 
   it('should approriate chips for filtered categories', async () => {
@@ -446,11 +449,11 @@ describe('<RecordingFilters />', () => {
     });
 
     // Label group
-    let chipGroup = screen.getByRole('group', { name: 'Label' });
+    let chipGroup = screen.getByRole('group', { name: testT('LABEL', { ns: 'common' }) });
     expect(chipGroup).toBeInTheDocument();
     expect(chipGroup).toBeVisible();
 
-    let chipGroupName = within(chipGroup).getByText('Label');
+    let chipGroupName = within(chipGroup).getByText(testT('LABEL', { ns: 'common' }));
     expect(chipGroupName).toBeInTheDocument();
     expect(chipGroupName).toBeVisible();
 
@@ -459,11 +462,11 @@ describe('<RecordingFilters />', () => {
     expect(chip).toBeVisible();
 
     // Name group
-    chipGroup = screen.getByRole('group', { name: 'Name' });
+    chipGroup = screen.getByRole('group', { name: testT('NAME', { ns: 'common' }) });
     expect(chipGroup).toBeInTheDocument();
     expect(chipGroup).toBeVisible();
 
-    chipGroupName = within(chipGroup).getByText('Name');
+    chipGroupName = within(chipGroup).getByText(testT('NAME', { ns: 'common' }));
     expect(chipGroupName).toBeInTheDocument();
     expect(chipGroupName).toBeVisible();
 
@@ -516,9 +519,7 @@ describe('<RecordingFilters />', () => {
       userConfigs: { advanceTimers: jest.advanceTimersByTime },
     });
 
-    activeCategoryOptions.forEach((category) => {
-      const chipGroup = screen.queryByRole('group', { name: category });
-      expect(chipGroup).not.toBeInTheDocument();
-    });
+    const chipGroups = screen.queryAllByRole('group');
+    expect(chipGroups).toHaveLength(0);
   });
 });

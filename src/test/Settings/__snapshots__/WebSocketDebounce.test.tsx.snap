@@ -104,7 +104,7 @@ exports[`<WebSocketDebounce/> renders correctly 1`] = `
   <div
     className="pf-v5-c-number-input__unit"
   >
-    ms
+    Milliseconds
   </div>
 </div>
 `;

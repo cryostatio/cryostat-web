@@ -95,6 +95,8 @@ const Component = () => {
             toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
             onToggle={(_, expanded: boolean) => setExpanded(expanded)}
             isExpanded={expanded}
+            toggleId="delete-dialog-options-toggle"
+            contentId="delete-dialog-options"
           >
             {switches}
           </ExpandableSection>

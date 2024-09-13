@@ -33,7 +33,7 @@ Array [
       className="pf-v5-l-split__item"
     >
       <span
-        className="pf-v5-c-form-control pf-m-disabled"
+        className="pf-v5-c-form-control pf-m-disabled duration-picker__form_select"
       >
         <select
           aria-invalid={false}

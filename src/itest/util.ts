@@ -80,7 +80,7 @@ export class Cryostat {
 
   async selectFakeTarget() {
     const targetName = 'Fake Target';
-    const targetSelect = await this.driver.wait(until.elementLocated(By.css(`[aria-label="Options menu"]`)));
+    const targetSelect = await this.driver.wait(until.elementLocated(By.css(`[aria-label="Select Target"]`)));
     await targetSelect.click();
     const targetOption = await this.driver.wait(
       until.elementLocated(By.xpath(`//*[contains(text(), '${targetName}')]`)),
@@ -95,16 +95,26 @@ export class Cryostat {
     if (skipButton) await skipButton.click();
   }
 
+  async closeNotificationAlerts(): Promise<void> {
+    const notiBadge = await this.driver.wait(until.elementLocated(By.id('notification-badge')));
+
+    // Toggle to open/close
+    await notiBadge.click();
+    return await notiBadge.click();
+  }
+
   async getLatestNotification(): Promise<ITestNotification> {
     const latestNotification = await this.driver.wait(
-      until.elementLocated(By.className('pf-c-alert-group pf-m-toast')),
+      until.elementLocated(By.className('pf-v5-c-alert-group pf-m-toast')),
     );
     return {
       title: await getDirectTextContent(
         this.driver,
-        await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__title')),
+        await latestNotification.findElement(By.css('li:last-of-type .pf-v5-c-alert__title')),
       ),
-      description: await latestNotification.findElement(By.css('li:last-of-type .pf-c-alert__description')).getText(),
+      description: await latestNotification
+        .findElement(By.css('li:last-of-type .pf-v5-c-alert__description'))
+        .getText(),
     };
   }
 }
@@ -161,8 +171,10 @@ export class Dashboard {
   }
 
   async addCard(cardType: CardType) {
-    const addCardButton = await getElementByCSS(this.driver, `[aria-label="Add card"]`);
-    await addCardButton.click();
+    const addCardButton = await getElementById(this.driver, 'dashboard-add-btn');
+    // Can't use click() directly because the button is wrapped by a Tooltip
+    const actions = this.driver.actions();
+    await actions.move({ origin: addCardButton }).click().perform();
     const twoPartCards = [CardType.AUTOMATED_ANALYSIS, CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
 
     switch (cardType) {
@@ -184,7 +196,7 @@ export class Dashboard {
         break;
       }
     }
-    const finishButton = await getElementByCSS(this.driver, 'button.pf-c-button.pf-m-primary[type="submit"]');
+    const finishButton = await getElementById(this.driver, 'card-props-config-next');
     await finishButton.click();
     if (twoPartCards.includes(cardType)) {
       await finishButton.click();
@@ -201,10 +213,10 @@ export class Dashboard {
       return;
     }
 
-    const actionsButton = await getElementByCSS(this.driver, 'button[aria-label="Actions"]');
+    const actionsButton = await getElementByCSS(this.driver, 'button[aria-label="dashboard action toggle"]');
     await actionsButton.click();
 
-    const removeButton = await getElementByLinkText(this.driver, 'Remove');
+    const removeButton = await getElementByXPath(this.driver, "//li[contains(.,'Remove')]");
     await removeButton.click();
   }
 }
@@ -232,7 +244,7 @@ export class Recordings {
   }
 
   async getRecordings(): Promise<WebElement[]> {
-    const tableXPath = "//div[@class='recording-table--inner-container pf-c-scroll-inner-wrapper']";
+    const tableXPath = "//div[@class='recording-table--inner-container pf-v5-c-scroll-inner-wrapper']";
     return this.driver.findElements(By.xpath(`${tableXPath}//tbody`));
   }
 
