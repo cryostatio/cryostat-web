@@ -244,15 +244,21 @@ export const StoredCredentials = () => {
         .messages(NotificationCategory.CredentialsStored)
         .pipe(
           concatMap(({ message }) => {
-            // FiXME: This is a workaround to correct the numMatchingTargets (i.e. notification always return 0)
-            return context.api.getCredential(message.id).pipe(map((cred) => [message.id, cred]));
+            // FIXME: This is a workaround to correct the numMatchingTargets (i.e. notification always return 0)
+            return context.api.getCredential(message.id).pipe(
+              map((cred) => ({
+                id: message.id,
+                matchExpression: cred.matchExpression,
+                numMatchingTargets: cred.targets.length,
+              })),
+            );
           }),
         )
-        .subscribe(([id, cred]) => {
+        .subscribe((cred) => {
           dispatch({
             type: Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION,
             payload: {
-              credential: { id: id, matchExpression: cred.matchExpression, numMatchingTargets: cred.targets.length },
+              credential: cred,
             },
           });
         }),
