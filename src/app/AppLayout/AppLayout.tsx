@@ -24,7 +24,7 @@ import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { GlobalQuickStartDrawer } from '@app/QuickStarts/QuickStartDrawer';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { ThemeSetting, SettingTab } from '@app/Settings/types';
-import { selectTab, tabAsParam } from '@app/Settings/utils';
+import { DARK_THEME_CLASS, selectTab, tabAsParam } from '@app/Settings/utils';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
@@ -39,14 +39,8 @@ import {
   AlertActionCloseButton,
   AlertGroup,
   AlertVariant,
-  ApplicationLauncher,
-  ApplicationLauncherItem,
   Brand,
   Button,
-  Dropdown,
-  DropdownGroup,
-  DropdownItem,
-  DropdownToggle,
   Icon,
   Label,
   Masthead,
@@ -66,22 +60,30 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  PageSidebarBody,
+  MenuToggleElement,
+  MenuToggle,
+  DropdownList,
+  DropdownItem,
+  Dropdown,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
   BellIcon,
-  CaretDownIcon,
   CogIcon,
   ExternalLinkAltIcon,
+  LanguageIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
   UserIcon,
 } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
+import { LogoutIcon } from './LogoutIcon';
+import { ThemeToggle } from './ThemeToggle';
 
 export interface AppLayoutProps {
   children?: React.ReactNode;
@@ -119,9 +121,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   React.useEffect(() => {
     if (theme === ThemeSetting.DARK) {
-      document.documentElement.classList.add('pf-theme-dark');
+      document.documentElement.classList.add(DARK_THEME_CLASS);
     } else {
-      document.documentElement.classList.remove('pf-theme-dark');
+      document.documentElement.classList.remove(DARK_THEME_CLASS);
     }
   }, [theme]);
 
@@ -166,10 +168,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     }
     const overflow = notificationsToDisplay.length - visibleNotificationsCount;
     if (overflow > 0) {
-      return `View ${overflow} more`;
+      return t('AppLayout.NOTIFICATIONS.OVERFLOW_MESSAGE', { count: overflow });
     }
     return '';
-  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount]);
+  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount, t]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -231,7 +233,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   // prevent page resize to close nav during tour
   const onPageResize = React.useCallback(
-    (props: { mobileView: boolean; windowSize: number }) => {
+    (_, props: { mobileView: boolean; windowSize: number }) => {
       if (joyState.run === false) {
         setIsMobileView(props.mobileView);
         setIsNavOpen(!props.mobileView);
@@ -282,22 +284,26 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const userInfoItems = React.useMemo(
     () => [
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownGroup key={'language-preferences'}>
-          <DropdownItem onClick={handleLanguagePref}>Language preference</DropdownItem>
-        </DropdownGroup>
+        <DropdownItem key={'language-preferences'} onClick={handleLanguagePref} icon={<LanguageIcon />}>
+          <Trans t={t} i18nKey="AppLayout.USER_MENU.LANGUAGE_PREFERENCE" />
+        </DropdownItem>
       </FeatureFlag>,
-      <DropdownGroup key={'log-out'}>
-        <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
-      </DropdownGroup>,
+      <DropdownItem key={'log-out'} onClick={handleLogout} icon={<LogoutIcon />}>
+        {t('AppLayout.USER_MENU.LOGOUT')}
+      </DropdownItem>,
     ],
-    [handleLogout, handleLanguagePref],
+    [t, handleLogout, handleLanguagePref],
   );
 
-  const UserInfoToggle = React.useMemo(
-    () => (
-      <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-        {username || <UserIcon color="white" size="sm" />}
-      </DropdownToggle>
+  const userInfoToggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle}>
+        {username || (
+          <Icon size="sm">
+            <UserIcon color="white" />
+          </Icon>
+        )}
+      </MenuToggle>
     ),
     [username, handleUserInfoToggle],
   );
@@ -326,104 +332,138 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const helpItems = React.useMemo(() => {
     return [
-      <ApplicationLauncherItem
-        key={'Quickstarts'}
-        component={<NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>}
-      />,
-      <ApplicationLauncherItem key={'Documentation'} onClick={handleOpenDocumentation}>
+      <DropdownItem key={'Quickstarts'} component={(props) => <Link {...props} to="/quickstarts" />}>
+        {t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}
+      </DropdownItem>,
+      <DropdownItem key={'Documentation'} onClick={handleOpenDocumentation}>
         <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
+      </DropdownItem>,
+      <DropdownItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
         {t('AppLayout.APP_LAUNCHER.GUIDED_TOUR')}
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'Help'} onClick={handleOpenDiscussion}>
+      </DropdownItem>,
+      <DropdownItem key={'Help'} onClick={handleOpenDiscussion}>
         {t('AppLayout.APP_LAUNCHER.HELP')}
         <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
           <ExternalLinkAltIcon color="grey" />
         </Icon>
-      </ApplicationLauncherItem>,
-      <ApplicationLauncherItem key={'About'} onClick={handleOpenAboutModal}>
+      </DropdownItem>,
+      <DropdownItem key={'About'} onClick={handleOpenAboutModal}>
         {t('AppLayout.APP_LAUNCHER.ABOUT')}
-      </ApplicationLauncherItem>,
+      </DropdownItem>,
     ];
   }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
-  const levelBadge = React.useCallback((level: FeatureLevel) => {
-    return (
-      <Label
-        isCompact
-        style={{ marginLeft: '2ch', textTransform: 'capitalize', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
-        color={level === FeatureLevel.BETA ? 'green' : 'red'}
-      >
-        {FeatureLevel[level].toLowerCase()}
-      </Label>
-    );
-  }, []);
+  const levelBadge = React.useCallback(
+    (level: FeatureLevel) => {
+      return (
+        <Label
+          isCompact
+          style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
+          color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
+        >
+          {t(FeatureLevel[level])}
+        </Label>
+      );
+    },
+    [t],
+  );
 
-  const HeaderToolbar = React.useMemo(
+  const headerToolbar = React.useMemo(
     () => (
       <>
         <Toolbar isFullHeight isStatic>
           <ToolbarContent>
-            <ToolbarGroup variant="icon-button-group" alignment={{ default: 'alignRight' }}>
+            <ToolbarGroup variant="icon-button-group" align={{ default: 'alignRight' }}>
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
                 <ToolbarItem>
                   <Button
                     variant="plain"
                     onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
-                    icon={<PlusCircleIcon size="sm" />}
+                    icon={
+                      <Icon size="sm">
+                        <PlusCircleIcon />
+                      </Icon>
+                    }
                   />
                 </ToolbarItem>
               </FeatureFlag>
+              <ToolbarGroup variant="icon-button-group" spacer={{ default: 'spacerSm' }}>
+                <ToolbarItem>
+                  <ThemeToggle />
+                </ToolbarItem>
+              </ToolbarGroup>
               <ToolbarGroup variant="icon-button-group">
                 <ToolbarItem>
                   <NotificationBadge
+                    id="notification-badge"
                     count={unreadNotificationsCount}
                     variant={
                       errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'
                     }
                     onClick={handleNotificationCenterToggle}
-                    aria-label="Notifications"
+                    aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NOTIFICATIONS')}
                   >
-                    <BellIcon />
+                    <Icon>
+                      <BellIcon />
+                    </Icon>
                   </NotificationBadge>
                 </ToolbarItem>
                 <ToolbarItem>
                   <Button
                     variant="plain"
-                    aria-label="Settings"
+                    aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.SETTINGS')}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                     component={(props) => <Link {...props} to="/settings" />}
                   >
-                    <CogIcon size="sm" />
+                    <Icon>
+                      <CogIcon />
+                    </Icon>
                   </Button>
                 </ToolbarItem>
                 <ToolbarItem>
-                  <ApplicationLauncher
-                    onSelect={handleHelpToggle}
-                    onToggle={handleHelpToggle}
+                  <Dropdown
+                    onSelect={() => handleHelpToggle()}
+                    className="application-launcher"
+                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle
+                        ref={toggleRef}
+                        variant="plain"
+                        className="application-launcher"
+                        onClick={() => handleHelpToggle()}
+                      >
+                        <Icon>
+                          <QuestionCircleIcon />
+                        </Icon>
+                      </MenuToggle>
+                    )}
                     isOpen={showHelpDropdown}
-                    items={helpItems}
-                    position="right"
-                    toggleIcon={<QuestionCircleIcon />}
-                    data-tour-id="application-launcher"
-                    data-quickstart-id="application-launcher"
-                  />
+                    onOpenChange={setShowHelpDropdown}
+                    onOpenChangeKeys={['Escape']}
+                    popperProps={{
+                      position: 'right',
+                    }}
+                  >
+                    <DropdownList>{helpItems}</DropdownList>
+                  </Dropdown>
                 </ToolbarItem>
               </ToolbarGroup>
               <ToolbarItem visibility={{ default: 'visible' }}>
                 <Dropdown
-                  isPlain
                   onSelect={() => setShowUserInfoDropdown(false)}
+                  toggle={userInfoToggle}
                   isOpen={showUserInfoDropdown}
-                  toggle={UserInfoToggle}
-                  position="right"
-                  dropdownItems={userInfoItems}
-                />
+                  onOpenChange={setShowUserInfoDropdown}
+                  onOpenChangeKeys={['Escape']}
+                  popperProps={{
+                    position: 'right',
+                  }}
+                >
+                  <DropdownList>{userInfoItems}</DropdownList>
+                </Dropdown>
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
@@ -439,26 +479,29 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       setShowUserInfoDropdown,
       showUserInfoDropdown,
       showHelpDropdown,
-      UserInfoToggle,
+      userInfoToggle,
       userInfoItems,
       helpItems,
+      t,
     ],
   );
 
-  const Header = React.useMemo(
+  const header = React.useMemo(
     () => (
       <>
         <Masthead>
           <MastheadToggle>
             <PageToggleButton
               variant="plain"
-              aria-label="Navigation"
-              isNavOpen={isNavOpen}
-              onNavToggle={onNavToggle}
+              aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NAVIGATION')}
+              isSidebarOpen={isNavOpen}
+              onSidebarToggle={onNavToggle}
               data-quickstart-id="nav-toggle-btn"
               data-tour-id="nav-toggle-btn"
             >
-              <BarsIcon />
+              <Icon>
+                <BarsIcon />
+              </Icon>
             </PageToggleButton>
           </MastheadToggle>
           <MastheadMain>
@@ -467,15 +510,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
               </Link>
             </MastheadBrand>
-
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>
-          <MastheadContent>{HeaderToolbar}</MastheadContent>
+          <MastheadContent>{headerToolbar}</MastheadContent>
         </Masthead>
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [isNavOpen, aboutModalOpen, HeaderToolbar, handleCloseAboutModal, onNavToggle, levelBadge],
+    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge, t],
   );
 
   const isActiveRoute = React.useCallback(
@@ -497,7 +539,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const Navigation = React.useMemo(
     () => (
-      <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect} aria-label="Global nav">
+      <Nav
+        id="nav-primary-simple"
+        theme="dark"
+        variant="default"
+        onSelect={mobileOnSelect}
+        aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.GLOBAL_NAVIGATION')}
+      >
         {navGroups.map((title) => {
           return (
             <NavGroup title={title} key={title}>
@@ -531,11 +579,15 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         })}
       </Nav>
     ),
-    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel],
+    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel, t],
   );
 
   const Sidebar = React.useMemo(
-    () => <PageSidebar theme="dark" nav={Navigation} isNavOpen={isNavOpen} />,
+    () => (
+      <PageSidebar theme="dark" isSidebarOpen={isNavOpen}>
+        <PageSidebarBody>{Navigation}</PageSidebarBody>
+      </PageSidebar>
+    ),
     [Navigation, isNavOpen],
   );
 
@@ -582,7 +634,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </AlertGroup>
         <Page
           mainContainerId="primary-app-container"
-          header={Header}
+          header={header}
           sidebar={Sidebar}
           notificationDrawer={NotificationDrawer}
           isNotificationDrawerExpanded={isNotificationDrawerExpanded}

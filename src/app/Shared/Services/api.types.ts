@@ -19,7 +19,6 @@ import _ from 'lodash';
 import { Observable } from 'rxjs';
 
 export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' | 'beta';
-
 // ======================================
 // Common Resources
 // ======================================
@@ -263,7 +262,7 @@ export interface ArchivedRecording extends Recording {
 export interface ActiveRecording extends Recording {
   id: number;
   state: RecordingState;
-  duration: number;
+  duration: number; // In miliseconds
   startTime: number;
   continuous: boolean;
   toDisk: boolean;

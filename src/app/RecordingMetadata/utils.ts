@@ -49,10 +49,25 @@ export const parseLabelsFromFile = (file: File): Observable<KeyValue[]> => {
 };
 export const LabelPattern = /^\S+$/;
 
-export const getValidatedOption = (isValid: boolean) => {
-  return isValid ? ValidatedOptions.success : ValidatedOptions.error;
+export const LabelInputPattern = /^(\S+)=(\S+)$/;
+
+export const getValidatedOption = (isValid: boolean) => (isValid ? ValidatedOptions.success : ValidatedOptions.error);
+
+export const getLabelFromInput = (labelInput: string): KeyValue | undefined => {
+  if (!isValidLabelInput(labelInput)) {
+    return undefined;
+  }
+  const matches = labelInput.match(LabelInputPattern);
+  if (!matches) {
+    return undefined;
+  }
+
+  return { key: matches[1], value: matches[2] };
 };
 
-export const matchesLabelSyntax = (l: KeyValue) => {
-  return l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
-};
+export const isDuplicateKey = (key: string, labels: KeyValue[]) =>
+  labels.filter((label) => label.key === key).length > 1;
+
+export const isValidLabel = (l: KeyValue) => l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
+
+export const isValidLabelInput = (labelInput: string) => LabelInputPattern.test(labelInput);

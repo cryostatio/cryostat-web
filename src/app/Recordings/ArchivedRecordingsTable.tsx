@@ -46,7 +46,7 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -54,10 +54,8 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Dropdown,
   Grid,
   GridItem,
-  KebabToggle,
   LabelGroup,
   OverflowMenu,
   OverflowMenuContent,
@@ -71,9 +69,18 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Dropdown,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
+  PanelHeader,
+  Divider,
+  Panel,
+  PanelMain,
+  PanelMainBody,
 } from '@patternfly/react-core';
-import { UploadIcon } from '@patternfly/react-icons';
-import { Tbody, Tr, Td, ExpandableRowContent, TableComposable, SortByDirection } from '@patternfly/react-table';
+import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
+import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
@@ -286,12 +293,12 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   }, [dispatch, targetConnectURL]);
 
   const updateFilters = React.useCallback(
-    (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
+    (target, { filterValue, filterKey, filterValueIndex, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
           dispatch(recordingDeleteCategoryFiltersIntent(target, filterKey, true));
         } else {
-          dispatch(recordingDeleteFilterIntent(target, filterKey, filterValue, true));
+          dispatch(recordingDeleteFilterIntent(target, filterKey, true, filterValue, filterValueIndex));
         }
       } else {
         dispatch(recordingAddFilterIntent(target, filterKey, filterValue, true));
@@ -549,11 +556,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     [checkedIndices, setShowDetailsPanel, isUploadsTable, propsDirectory, directoryRecordings],
   );
 
-  const totalArchiveSize = React.useMemo(() => {
-    let size = 0;
-    filteredRecordings.forEach((r) => (size += r.size));
-    return size;
-  }, [filteredRecordings]);
+  const totalArchiveSize = React.useMemo(
+    () => filteredRecordings.reduce((total, r) => total + r.size, 0),
+    [filteredRecordings],
+  );
 
   const columnConfig: ColumnConfig = React.useMemo(
     () => ({
@@ -572,7 +578,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             tableColumns={columnConfig}
             tableFooter={
               filteredRecordings.length > 0 && (
-                <TableComposable borders={false}>
+                <Table borders={false}>
                   <Tbody>
                     <Tr>
                       <Td></Td>
@@ -581,7 +587,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
                       </Td>
                     </Tr>
                   </Tbody>
-                </TableComposable>
+                </Table>
               )
             }
             isHeaderChecked={headerChecked}
@@ -724,7 +730,6 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
       id="archived-recordings-toolbar"
       aria-label="archived-recording-toolbar"
       clearAllFilters={props.handleClearFilters}
-      isSticky
     >
       <ToolbarContent>
         <RecordingFilters
@@ -735,6 +740,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           updateFilters={props.updateFilters}
           breakpoint={'xl'}
         />
+        <ToolbarItem variant="separator" className="recording-toolbar-separator" />
         <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
           <ToolbarItem variant="overflow-menu">
             <OverflowMenu
@@ -753,15 +759,22 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
               </OverflowMenuContent>
               <OverflowMenuControl>
                 <Dropdown
-                  aria-label={'archive-recording-actions'}
-                  isPlain
-                  isFlipEnabled
                   onSelect={() => setActionToggleOpen(false)}
-                  menuAppendTo={'parent'}
+                  toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                    <MenuToggle variant="plain" ref={toggleRef} onClick={() => handleActionToggle()}>
+                      <EllipsisVIcon />
+                    </MenuToggle>
+                  )}
+                  onOpenChange={setActionToggleOpen}
+                  onOpenChangeKeys={['Escape']}
                   isOpen={actionToggleOpen}
-                  toggle={<KebabToggle id="archive-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
-                  dropdownItems={buttons.map((b) => b.collapsed)}
-                />
+                  popperProps={{
+                    appendTo: portalRoot,
+                    enableFlip: true,
+                  }}
+                >
+                  <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
+                </Dropdown>
               </OverflowMenuControl>
             </OverflowMenu>
           </ToolbarItem>
@@ -823,7 +836,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   }, [expandedRowId, expandedRows]);
 
   const handleCheck = React.useCallback(
-    (checked: boolean) => {
+    (_, checked: boolean) => {
       handleRowCheck(checked, index);
     },
     [index, handleRowCheck],
@@ -927,35 +940,47 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
       <Tr key={`${index}_child`} isExpanded={isExpanded}>
         <Td key={`archived-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
           <ExpandableRowContent>
-            <Title headingLevel={'h5'}>Automated analysis</Title>
-            <Grid>
-              {loadingAnalysis ? (
-                <Bullseye>
-                  <Spinner />
-                </Bullseye>
-              ) : (
-                analyses.map(([topic, evaluations]) => {
-                  return (
-                    <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                      <LabelGroup
-                        className="automated-analysis-topic-label-groups"
-                        categoryName={topic}
-                        isVertical
-                        numLabels={2}
-                        isCompact
-                        key={topic}
-                      >
-                        {evaluations.map((evaluation) => {
-                          return (
-                            <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                          );
-                        })}
-                      </LabelGroup>
-                    </GridItem>
-                  );
-                })
-              )}
-            </Grid>
+            <Panel>
+              <PanelHeader>
+                <Title headingLevel={'h5'}>Automated analysis</Title>
+              </PanelHeader>
+              <Divider />
+              <PanelMain>
+                <PanelMainBody>
+                  <Grid>
+                    {loadingAnalysis ? (
+                      <Bullseye>
+                        <Spinner />
+                      </Bullseye>
+                    ) : (
+                      analyses.map(([topic, evaluations]) => {
+                        return (
+                          <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+                            <LabelGroup
+                              className="automated-analysis-topic-label-groups"
+                              categoryName={topic}
+                              isVertical
+                              numLabels={2}
+                              isCompact
+                              key={topic}
+                            >
+                              {evaluations.map((evaluation) => {
+                                return (
+                                  <ClickableAutomatedAnalysisLabel
+                                    result={evaluation}
+                                    key={clickableAutomatedAnalysisKey}
+                                  />
+                                );
+                              })}
+                            </LabelGroup>
+                          </GridItem>
+                        );
+                      })
+                    )}
+                  </Grid>
+                </PanelMainBody>
+              </PanelMain>
+            </Panel>
           </ExpandableRowContent>
         </Td>
       </Tr>

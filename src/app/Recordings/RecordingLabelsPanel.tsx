@@ -53,6 +53,7 @@ export const RecordingLabelsPanel: React.FC<RecordingLabelsPanelProps> = (props)
           isUploadsTable={props.isUploadsTable}
           directory={props.directory}
           directoryRecordings={props.directoryRecordings}
+          closePanelFn={() => props.setShowPanel(false)}
         />
       </DrawerPanelBody>
     </DrawerPanelContent>

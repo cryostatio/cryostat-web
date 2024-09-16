@@ -17,7 +17,7 @@
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
 import type { FeatureLevel } from '@app/Shared/Services/service.types';
 import { Services } from '@app/Shared/Services/Services';
-import { DropdownItemProps, LabelProps } from '@patternfly/react-core';
+import { LabelProps, DropdownItemProps } from '@patternfly/react-core';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';
 import { NavigateFunction } from 'react-router-dom';
@@ -71,6 +71,7 @@ export interface NodeAction {
   readonly action?: NodeActionFunction;
   readonly title?: React.ReactNode;
   readonly isSeparator?: boolean;
+  readonly isDanger?: boolean;
   readonly isDisabled?: (element: GraphElement | ListElement, actionUtils: ActionUtils) => Observable<boolean>;
   readonly allowed?: (element: GraphElement | ListElement) => boolean; // Undefined means allowing all
   readonly blocked?: (element: GraphElement | ListElement) => boolean; // Undefined means blocking none

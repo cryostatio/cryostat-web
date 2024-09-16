@@ -29,15 +29,17 @@ import {
   ToolbarGroup,
   ToolbarItem,
   SearchInput,
-  Badge,
   Checkbox,
   EmptyState,
   EmptyStateIcon,
-  Title,
+  EmptyStateHeader,
+  Button,
+  Icon,
+  Bullseye,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { FileIcon, SearchIcon } from '@patternfly/react-icons';
 import {
-  TableComposable,
+  Table,
   Th,
   Thead,
   Tbody,
@@ -45,8 +47,13 @@ import {
   Td,
   ExpandableRowContent,
   SortByDirection,
+  OuterScrollContainer,
+  InnerScrollContainer,
 } from '@patternfly/react-table';
+import { TFunction } from 'i18next';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -54,9 +61,11 @@ const tableColumns: TableColumn[] = [
   {
     title: 'Target',
     keyPaths: ['target'],
-    transform: (target: Target, _obj: ArchivesForTarget) => {
+    transform: (target: Target, _obj: ArchivesForTarget, t?: TFunction) => {
       return target.alias === target.connectUrl || !target.alias
         ? `${target.connectUrl}`
+        : t
+        ? t('AllTargetsArchivedRecordingsTable.TARGET_DISPLAY', { alias: target.alias, connectUrl: target.connectUrl })
         : `${target.alias} (${target.connectUrl})`;
     },
     sortable: true,
@@ -91,6 +100,8 @@ export interface AllTargetsArchivedRecordingsTableProps {}
 
 export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
+
   const [searchText, setSearchText] = React.useState('');
   const [archivesForTargets, setArchivesForTargets] = React.useState<ArchivesForTarget[]>([]);
   const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
@@ -311,31 +322,42 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   );
 
   const handleSearchInput = React.useCallback(
-    (searchInput: string) => {
+    (_, searchInput: string) => {
       setSearchText(searchInput);
     },
     [setSearchText],
+  );
+
+  const handleHideEmptyTarget = React.useCallback(
+    (_, hide: boolean) => setHideEmptyTargets(hide),
+    [setHideEmptyTargets],
   );
 
   const handleSearchInputClear = React.useCallback(() => {
     setSearchText('');
   }, [setSearchText]);
 
+  const targetDisplay = React.useCallback(
+    (target: Target): string => {
+      const _transform = tableColumns[0].transform;
+      if (_transform) {
+        return `${_transform(target, undefined, t)}`;
+      }
+      // should not occur
+      return `${target.connectUrl}`;
+    },
+    [t],
+  );
+
   React.useEffect(() => {
     refreshArchivesForTargets();
   }, [refreshArchivesForTargets]);
 
   const searchedArchivesForTargets = React.useMemo(() => {
-    let updated: ArchivesForTarget[];
-    if (!searchText) {
-      updated = archivesForTargets;
-    } else {
-      const formattedSearchText = searchText.trim().toLowerCase();
-      updated = archivesForTargets.filter(
-        ({ target: t }) =>
-          t.alias.toLowerCase().includes(formattedSearchText) ||
-          t.connectUrl.toLowerCase().includes(formattedSearchText),
-      );
+    let updated: ArchivesForTarget[] = archivesForTargets;
+    if (searchText) {
+      const reg = new RegExp(_.escapeRegExp(searchText), 'i');
+      updated = archivesForTargets.filter(({ target }) => reg.test(targetDisplay(target)));
     }
     return sortResources(
       {
@@ -345,7 +367,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       updated.filter((v) => !hideEmptyTargets || v.archiveCount > 0),
       tableColumns,
     );
-  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets]);
+  }, [searchText, archivesForTargets, sortBy, hideEmptyTargets, targetDisplay]);
 
   React.useEffect(() => {
     addSubscription(
@@ -421,17 +443,20 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
             }}
           />
           <Td key={`target-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
-            {target.alias == target.connectUrl || !target.alias
-              ? `${target.connectUrl}`
-              : `${target.alias} (${target.connectUrl})`}
+            {targetDisplay(target)}
           </Td>
           <Td key={`target-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Badge key={`${idx}_count`}>{archiveCount}</Badge>
+            <Button variant="plain" onClick={() => toggleExpanded(target)}>
+              <Icon iconSize="md">
+                <FileIcon />
+              </Icon>
+              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{archiveCount}</span>
+            </Button>
           </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, searchedArchivesForTargets, expandedTargets]);
+  }, [toggleExpanded, searchedArchivesForTargets, expandedTargets, targetDisplay]);
 
   const recordingRows = React.useMemo(() => {
     return searchedArchivesForTargets.map(({ target, targetAsObs }) => {
@@ -483,67 +508,67 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   } else if (!searchedArchivesForTargets.length) {
     view = (
       <>
-        <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No Archived Recordings
-          </Title>
-        </EmptyState>
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateHeader
+              titleText={t('RecordingsTable.NO_ARCHIVES')}
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
+          </EmptyState>
+        </Bullseye>
       </>
     );
   } else {
     view = (
-      <>
-        <TableComposable aria-label="all-targets-table">
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {tableColumns.map(({ title, width }, idx) => (
-                <Th
-                  key={`table-header-${title}`}
-                  width={width as React.ComponentProps<typeof Th>['width']}
-                  sort={getSortParams(idx)}
-                >
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>{rowPairs}</Tbody>
-        </TableComposable>
-      </>
+      <Table aria-label="all-targets-table" isStickyHeader>
+        <Thead>
+          <Tr>
+            <Th key="table-header-expand" />
+            {tableColumns.map(({ title, width }, idx) => (
+              <Th
+                key={`table-header-${title}`}
+                width={width as React.ComponentProps<typeof Th>['width']}
+                sort={getSortParams(idx)}
+              >
+                {title}
+              </Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>{rowPairs}</Tbody>
+      </Table>
     );
   }
 
   return (
-    <>
+    <OuterScrollContainer className="archive-table-outer-container">
       <Toolbar id="all-targets-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="filter-group">
             <ToolbarItem>
               <SearchInput
-                placeholder="Search"
+                style={{ minWidth: '30ch' }}
+                placeholder={t('AllTargetsArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
                 value={searchText}
                 onChange={handleSearchInput}
                 onClear={handleSearchInputClear}
               />
             </ToolbarItem>
           </ToolbarGroup>
-          <ToolbarGroup>
-            <ToolbarItem>
-              <Checkbox
-                name={`all-targets-hide-check`}
-                label="Hide targets with zero Recordings"
-                onChange={setHideEmptyTargets}
-                isChecked={hideEmptyTargets}
-                id={`all-targets-hide-check`}
-                aria-label={`all-targets-hide-check`}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
+          <ToolbarItem alignSelf="center">
+            <Checkbox
+              name={`all-targets-hide-check`}
+              label={t('AllTargetsArchivedRecordingsTable.HIDE_TARGET_WITH_ZERO_RECORDING')}
+              onChange={handleHideEmptyTarget}
+              isChecked={hideEmptyTargets}
+              id={`all-targets-hide-check`}
+              aria-label={`all-targets-hide-check`}
+            />
+          </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
-      {view}
-    </>
+      <InnerScrollContainer className="archive-table-inner-container">{view}</InnerScrollContainer>
+    </OuterScrollContainer>
   );
 };

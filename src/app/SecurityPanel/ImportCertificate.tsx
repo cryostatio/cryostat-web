@@ -22,7 +22,6 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateVariant,
-  Label,
   List,
   ListItem,
   Panel,
@@ -35,16 +34,19 @@ import {
   TextVariants,
   Title,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { TFunction } from 'i18next';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { tap } from 'rxjs/operators';
 import { SecurityCard } from './types';
 
 export const CertificateImport: React.FC = () => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(true);
-  const [certs, setCerts] = React.useState([] as string[]);
+  const [certs, setCerts] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -63,19 +65,19 @@ export const CertificateImport: React.FC = () => {
           {loading ? (
             <Spinner />
           ) : certs.length ? (
-            <List isPlain isBordered>
+            <List isPlain>
               {certs.map((cert) => (
-                <ListItem key={cert}>
-                  <Label>{cert}</Label>
+                <ListItem key={cert} icon={<FileIcon />}>
+                  {cert}
                 </ListItem>
               ))}
             </List>
           ) : (
             <EmptyState variant={EmptyStateVariant.xs}>
               <Title headingLevel="h4" size="md">
-                No certificates
+                {t('ImportCertificate.NO_CERTIFICATE_TITLE')}
               </Title>
-              <EmptyStateBody>No additional certificates are loaded.</EmptyStateBody>
+              <EmptyStateBody>{t('ImportCertificate.NO_CERTIFICATE_BODY')}</EmptyStateBody>
             </EmptyState>
           )}
         </PanelMainBody>
@@ -86,23 +88,23 @@ export const CertificateImport: React.FC = () => {
 
 export const ListCertificates: SecurityCard = {
   key: 'ssl',
-  title: (
+  title: (t: TFunction) => (
     <Text>
-      Imported SSL/TLS Certificates
-      <Popover maxWidth="40rem" headerContent="JMX over SSL/TLS" bodyContent={<JmxSslDescription />}>
+      {t('ImportCertificate.CARD_TITLE')}
+      <Popover
+        maxWidth="40rem"
+        headerContent={t('ImportCertificate.CARD_TITLE_POPOVER_HEADER')}
+        bodyContent={<JmxSslDescription />}
+      >
         <Button variant="plain">
           <OutlinedQuestionCircleIcon />
         </Button>
       </Popover>
     </Text>
   ),
-  description: (
+  description: (t: TFunction) => (
     <TextContent>
-      <Text component={TextVariants.small}>
-        The following certificates are present in Cryostat&apos;s additional trust store. Contact your Cryostat
-        administrator if your application requires a new trusted certificate. You must restart the Cryostat server to
-        reload the certificate store after adding new certificates.
-      </Text>
+      <Text component={TextVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Text>
     </TextContent>
   ),
   content: CertificateImport,

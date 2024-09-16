@@ -28,7 +28,6 @@ import { useTheme } from '@app/utils/hooks/useTheme';
 import {
   Bullseye,
   Button,
-  CardActions,
   CardBody,
   CardHeader,
   CardTitle,
@@ -37,7 +36,8 @@ import {
   EmptyStateIcon,
   EmptyStateVariant,
   Label,
-  Title,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -56,30 +56,34 @@ export interface JFRMetricsChartCardProps extends DashboardCardTypeProps {
 
 // TODO these need to be localized
 export enum JFRMetricsChartKind {
-  'Core Count' = 1,
-  'Thread Count' = 2,
-  'CPU Load' = 3,
-  'Heap Usage' = 4,
-  'Memory Usage' = 5,
-  'Total Memory' = 6,
-  'Recording Start Time' = 7,
-  'Recording Duration' = 8,
-  'Classloading Statistics' = 9,
-  'Metaspace Summary' = 10,
-  'Network Utilization' = 11,
-  'Metaspace GC Threshold' = 12,
-  'Thread Statistics' = 13,
-  'Exception Statistics' = 14,
-  'Thread Context Switch Rate' = 15,
-  'Compiler Statistics' = 16,
+  'Recording Duration' = 2,
+  'Recording Start Time' = 3,
 
-  'Safepoint Duration' = 18,
-  'File I/O' = 19,
-  'Compiler Total Time' = 20,
+  'Core Count' = 5,
+  'Thread Count' = 6,
+  'Total Memory' = 7,
+  'CPU Load' = 8,
+  'Memory Usage' = 9,
+
+  'Network Utilization' = 11,
+
+  'File I/O' = 13,
+
+  'Thread Statistics' = 15,
+  'Thread Context Switch Rate' = 16,
+
+  'Heap Usage' = 18,
+  'Object Allocation Sample' = 19,
+  'Safepoint Duration' = 20,
+  'Metaspace Summary' = 21,
+  'Metaspace GC Threshold' = 22,
 
   'Compiler Peak Time' = 24,
+  'Compiler Total Time' = 25,
+  'Compiler Statistics' = 26,
 
-  'Object Allocation Sample' = 38,
+  'Classloading Statistics' = 28,
+  'Exception Statistics' = 29,
 }
 
 export function kindToId(kind: string): number {
@@ -87,7 +91,7 @@ export function kindToId(kind: string): number {
 }
 
 export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (props) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
   const navigate = useNavigate();
@@ -193,11 +197,16 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
 
   const header = React.useMemo(() => {
     return (
-      <CardHeader>
+      <CardHeader
+        actions={{
+          actions: <>{controllerState === ControllerState.READY ? actions : props.actions}</>,
+          hasNoOffset: false,
+          className: undefined,
+        }}
+      >
         <CardTitle>
           {t('CHART_CARD.TITLE', { chartKind: props.chartKind, duration: props.duration, period: props.period })}
         </CardTitle>
-        <CardActions>{controllerState === ControllerState.READY ? actions : props.actions}</CardActions>
       </CardHeader>
     );
   }, [props.actions, props.chartKind, props.duration, props.period, t, controllerState, actions]);
@@ -246,11 +255,12 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
           </div>
         ) : (
           <Bullseye>
-            <EmptyState variant={EmptyStateVariant.large}>
-              <EmptyStateIcon icon={DataSourceIcon} />
-              <Title headingLevel="h2" size="md">
-                {t('CHART_CARD.NO_RECORDING.TITLE')}
-              </Title>
+            <EmptyState variant={EmptyStateVariant.lg}>
+              <EmptyStateHeader
+                titleText={<>{t('CHART_CARD.NO_RECORDING.TITLE')}</>}
+                icon={<EmptyStateIcon icon={DataSourceIcon} />}
+                headingLevel="h2"
+              />
               <EmptyStateBody>
                 <Trans
                   t={t}
@@ -260,9 +270,11 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
                   CHART_CARD.NO_RECORDING.DESCRIPTION
                 </Trans>
               </EmptyStateBody>
-              <Button variant="primary" onClick={handleCreateRecording}>
-                {t('CHART_CARD.BUTTONS.CREATE.LABEL')}
-              </Button>
+              <EmptyStateFooter>
+                <Button variant="primary" onClick={handleCreateRecording}>
+                  {t('CHART_CARD.BUTTONS.CREATE.LABEL')}
+                </Button>
+              </EmptyStateFooter>
             </EmptyState>
           </Bullseye>
         )}
@@ -330,7 +342,7 @@ export const JFRMetricsChartCardDescriptor: DashboardCardDescriptor = {
   labels: [
     {
       content: 'Beta',
-      color: 'green',
+      color: 'cyan',
     },
     {
       content: 'Metrics',

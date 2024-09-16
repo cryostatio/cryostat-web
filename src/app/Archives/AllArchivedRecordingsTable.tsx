@@ -28,18 +28,20 @@ import {
   ToolbarGroup,
   ToolbarItem,
   SearchInput,
-  Badge,
   EmptyState,
   EmptyStateIcon,
   Text,
-  Title,
   Tooltip,
   Split,
   SplitItem,
+  EmptyStateHeader,
+  Button,
+  Icon,
+  Bullseye,
 } from '@patternfly/react-core';
-import { HelpIcon, SearchIcon } from '@patternfly/react-icons';
+import { FileIcon, HelpIcon, SearchIcon } from '@patternfly/react-icons';
 import {
-  TableComposable,
+  Table,
   Th,
   Thead,
   Tbody,
@@ -47,8 +49,12 @@ import {
   Td,
   ExpandableRowContent,
   SortByDirection,
+  OuterScrollContainer,
+  InnerScrollContainer,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './utils';
 
@@ -76,6 +82,7 @@ export interface AllArchivedRecordingsTableProps {}
 
 export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
 
   const [directories, setDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [searchText, setSearchText] = React.useState('');
@@ -112,7 +119,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts, handleError]);
 
   const handleSearchInput = React.useCallback(
-    (searchInput: string) => {
+    (_, searchInput: string) => {
       setSearchText(searchInput);
     },
     [setSearchText],
@@ -131,11 +138,9 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     if (!searchText) {
       updatedSearchedDirectories = directories;
     } else {
-      const formattedSearchText = searchText.trim().toLowerCase();
+      const reg = new RegExp(_.escape(searchText), 'i');
       updatedSearchedDirectories = directories.filter(
-        (d: _RecordingDirectory) =>
-          d.jvmId.toLowerCase().includes(formattedSearchText) ||
-          d.connectUrl.toLowerCase().includes(formattedSearchText),
+        (d: _RecordingDirectory) => reg.test(d.jvmId) || reg.test(d.connectUrl),
       );
     }
     return sortResources(
@@ -252,7 +257,12 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
             </Split>
           </Td>
           <Td key={`directory-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Badge key={`${idx}_count`}>{dir.recordings.length || 0}</Badge>
+            <Button variant="plain" onClick={() => toggleExpanded(dir)}>
+              <Icon iconSize="md">
+                <FileIcon />
+              </Icon>
+              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{dir.recordings.length || 0}</span>
+            </Button>
           </Td>
         </Tr>
       );
@@ -315,46 +325,48 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   } else if (!searchedDirectories.length) {
     view = (
       <>
-        <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No Archived Recordings
-          </Title>
-        </EmptyState>
+        <Bullseye>
+          <EmptyState>
+            <EmptyStateHeader
+              titleText={t('RecordingsTable.NO_ARCHIVES')}
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
+          </EmptyState>
+        </Bullseye>
       </>
     );
   } else {
     view = (
-      <>
-        <TableComposable aria-label="all-archives-table">
-          <Thead>
-            <Tr>
-              <Th key="table-header-expand" />
-              {tableColumns.map(({ title, width }, index) => (
-                <Th
-                  key={`table-header-${title}`}
-                  sort={getSortParams(index)}
-                  width={width as React.ComponentProps<typeof Th>['width']}
-                >
-                  {title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>{rowPairs}</Tbody>
-        </TableComposable>
-      </>
+      <Table aria-label="all-archives-table" isStickyHeader>
+        <Thead>
+          <Tr>
+            <Th key="table-header-expand" />
+            {tableColumns.map(({ title, width }, index) => (
+              <Th
+                key={`table-header-${title}`}
+                sort={getSortParams(index)}
+                width={width as React.ComponentProps<typeof Th>['width']}
+              >
+                {title}
+              </Th>
+            ))}
+          </Tr>
+        </Thead>
+        <Tbody>{rowPairs}</Tbody>
+      </Table>
     );
   }
 
   return (
-    <>
+    <OuterScrollContainer className="archive-table-outer-container">
       <Toolbar id="all-archives-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="filter-group">
             <ToolbarItem>
               <SearchInput
-                placeholder="Search"
+                style={{ minWidth: '30ch' }}
+                placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
                 value={searchText}
                 onChange={handleSearchInput}
                 onClear={handleSearchInputClear}
@@ -363,7 +375,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           </ToolbarGroup>
         </ToolbarContent>
       </Toolbar>
-      {view}
-    </>
+      <InnerScrollContainer className="archive-table-inner-container">{view}</InnerScrollContainer>
+    </OuterScrollContainer>
   );
 };

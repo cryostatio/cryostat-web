@@ -14,60 +14,194 @@
  * limitations under the License.
  */
 
-import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
+import { DurationUnit, DurationUnitSelect } from '@app/Shared/Components/DurationUnitSelect';
+import { ActiveRecording } from '@app/Shared/Services/api.types';
+import {
+  Button,
+  ButtonVariant,
+  Checkbox,
+  Flex,
+  FlexItem,
+  HelperText,
+  HelperTextItem,
+  InputGroup,
+  InputGroupItem,
+  InputGroupText,
+  TextInput,
+  Tooltip,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { DURATION_INPUT_MAXLENGTH } from './const';
 
-export interface DurationFilterProps {
-  durations: string[] | undefined;
-  onDurationInput: (e: number) => void;
-  onContinuousDurationSelect: (checked: boolean) => void;
+export const CONTINUOUS_INDICATOR = 'continuous';
+
+export const filterRecordingByDuration = (recordings: ActiveRecording[], filters?: DurationRange[]) => {
+  if (!recordings?.length || !filters?.length) {
+    return recordings;
+  }
+
+  return recordings.filter((rec) => {
+    return filters.some((range) => {
+      if (rec.continuous) {
+        return range.continuous || (range.from !== undefined && range.to === undefined);
+      }
+
+      if (!range.continuous) {
+        return (
+          (!range.from || rec.duration / 1000 >= getDurationValueInUnit(range.from, DurationUnit.SECOND)) &&
+          (!range.to || rec.duration / 1000 <= getDurationValueInUnit(range.to, DurationUnit.SECOND))
+        );
+      }
+      return false;
+    });
+  });
+};
+
+export interface Duration {
+  value: number;
+  unit: DurationUnit;
 }
 
-export const DurationFilter: React.FC<DurationFilterProps> = ({
-  durations,
-  onDurationInput,
-  onContinuousDurationSelect,
-}) => {
-  const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
+export interface DurationRange {
+  from?: Duration; // inclusive
+  to?: Duration; // inclusive
+  continuous?: boolean;
+}
+
+export const compareDuration = (d1: Duration, d2: Duration): -1 | 0 | 1 => {
+  const _d1 = getDurationValueInUnit(d1, DurationUnit.SECOND);
+  const _d2 = getDurationValueInUnit(d2, DurationUnit.SECOND);
+  return _d1 > _d2 ? 1 : _d1 < _d2 ? -1 : 0;
+};
+
+export const getDurationValueInUnit = (duration: Duration, unit: DurationUnit): number => {
+  return (duration.value * duration.unit) / unit;
+};
+
+export interface DurationFilterProps {
+  durations?: DurationRange[];
+  onDurationInput: (range: DurationRange) => void;
+}
+
+export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDurationInput }) => {
+  const { t } = useTranslation();
+  const [fromDuration, setFromDuration] = React.useState<number | undefined>();
+  const [fromDurationUnit, setFromDurationUnit] = React.useState(DurationUnit.SECOND);
+
+  const [toDuration, setToDuration] = React.useState<number | undefined>();
+  const [toDurationUnit, setToDurationUnit] = React.useState(DurationUnit.SECOND);
+
+  const validated = React.useMemo(
+    () =>
+      toDuration === undefined ||
+      fromDuration === undefined ||
+      compareDuration({ value: toDuration, unit: toDurationUnit }, { value: fromDuration, unit: fromDurationUnit }) >= 0
+        ? ValidatedOptions.default
+        : ValidatedOptions.error,
+    [toDuration, fromDuration, toDurationUnit, fromDurationUnit],
+  );
 
   const handleContinuousCheckBoxChange = React.useCallback(
-    (checked) => {
-      onContinuousDurationSelect(checked);
-    },
-    [onContinuousDurationSelect],
+    (_, checked: boolean) => onDurationInput({ continuous: checked }),
+    [onDurationInput],
   );
 
-  const handleEnterKey = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-      onDurationInput(duration);
-    },
-    [onDurationInput, duration],
-  );
+  const handleSubmit = React.useCallback(() => {
+    onDurationInput({
+      from:
+        fromDuration !== undefined
+          ? {
+              value: fromDuration,
+              unit: fromDurationUnit,
+            }
+          : undefined,
+      to: toDuration !== undefined ? { value: toDuration, unit: toDurationUnit } : undefined,
+    });
+  }, [onDurationInput, fromDuration, toDuration, fromDurationUnit, toDurationUnit]);
+
+  const checkBox = React.useMemo(() => {
+    const isChecked = durations && durations.some((dur) => dur.continuous || (dur.from && !dur.to));
+    const isDisabled = isChecked && durations.some((dur) => dur.from && !dur.to);
+
+    const element = (
+      <Checkbox
+        className="duration-filter__continuous-checkbox"
+        label="Continuous"
+        id="continuous-checkbox"
+        isChecked={isChecked}
+        onChange={handleContinuousCheckBoxChange}
+        isDisabled={isDisabled}
+      />
+    );
+
+    if (isDisabled) {
+      return <Tooltip content={t('DurationFilter.TOOLTIP.CHECKBOX_DISABLED_CONTENT')}>{element}</Tooltip>;
+    }
+
+    return element;
+  }, [durations, handleContinuousCheckBoxChange, t]);
 
   return (
-    <Flex>
-      <FlexItem flex={{ default: 'flex_1' }}>
-        <TextInput
-          type="number"
-          value={duration}
-          id="duration-input"
-          aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
-          min="0"
-          onKeyDown={handleEnterKey}
-        />
-      </FlexItem>
+    <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+      <Flex direction={{ default: 'column' }}>
+        <FlexItem>
+          <InputGroup>
+            <InputGroupText>{t('FROM', { ns: 'common' })}</InputGroupText>
+            <InputGroupItem>
+              <TextInput
+                // Uncontrolled input
+                type="number"
+                id="duration-input-from"
+                aria-label={t('DurationFilter.ARIA_LABELS.FROM_DURATION')}
+                onChange={(_, value) => setFromDuration(value === '' ? undefined : Number(value))}
+                min="0"
+                style={{ maxWidth: DURATION_INPUT_MAXLENGTH }}
+              />
+            </InputGroupItem>
+            <InputGroupItem>
+              <DurationUnitSelect selected={fromDurationUnit} onSelect={setFromDurationUnit} />
+            </InputGroupItem>
+            <InputGroupText>{t('TO', { ns: 'common' })}</InputGroupText>
+            <InputGroupItem>
+              <TextInput
+                // Uncontrolled input
+                type="number"
+                id="duration-input-to"
+                aria-label={t('DurationFilter.ARIA_LABELS.TO_DURATION')}
+                onChange={(_, value) => setToDuration(value === '' ? undefined : Number(value))}
+                min="0"
+                style={{ maxWidth: DURATION_INPUT_MAXLENGTH }}
+                validated={validated}
+              />
+            </InputGroupItem>
+            <InputGroupItem>
+              <DurationUnitSelect selected={toDurationUnit} onSelect={setToDurationUnit} />
+            </InputGroupItem>
+          </InputGroup>
+        </FlexItem>
+        {validated === ValidatedOptions.error ? (
+          <FlexItem>
+            <HelperText>
+              <HelperTextItem variant="error" hasIcon>
+                {t('DurationFilter.HELPER_TEXT.INVALID_UPPER_BOUND')}
+              </HelperTextItem>
+            </HelperText>
+          </FlexItem>
+        ) : null}
+        <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>{checkBox}</FlexItem>
+      </Flex>
       <FlexItem>
-        <Checkbox
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={isContinuous}
-          onChange={handleContinuousCheckBoxChange}
-        />
+        <Button
+          variant={ButtonVariant.control}
+          aria-label={t('DurationFilter.ARIA_LABELS.SEARCH_BUTTON')}
+          onClick={handleSubmit}
+          isDisabled={validated == ValidatedOptions.error || (fromDuration === undefined && toDuration === undefined)}
+        >
+          <SearchIcon />
+        </Button>
       </FlexItem>
     </Flex>
   );

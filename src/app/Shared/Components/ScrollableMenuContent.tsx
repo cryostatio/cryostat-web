@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Panel, PanelMain, PanelMainBody } from '@patternfly/react-core';
+import * as React from 'react';
 
-export interface LoadingProps {
-  spinnerAriaValueText?: string; // Text describing that current loading status or progress
-  spinnerAriaLabelledBy?: string; // Id of element which describes what is being loaded
-  spinnerAriaLabel?: string; // Accessible label for the spinner to describe what is loading
-  isLoading: boolean;
+export interface ScrollableMenuContentProps {
+  maxHeight?: string;
 }
 
-export type DescriptionProps = {
-  children?: React.ReactNode;
+// Use case: Menu footer or search bar needs to be sticky.
+export const ScrollableMenuContent: React.FC<ScrollableMenuContentProps> = ({ children, maxHeight }) => {
+  return (
+    <Panel isScrollable>
+      <PanelMain maxHeight={maxHeight}>
+        <PanelMainBody style={{ padding: 0 }}>{children}</PanelMainBody>
+      </PanelMain>
+    </Panel>
+  );
 };

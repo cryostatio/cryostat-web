@@ -18,19 +18,19 @@ import { format2Digit, hourIn12HrFormat, hourIn24HrFormat, isHourIn24hAM } from 
 import {
   Button,
   Divider,
-  HelperText,
-  HelperTextItem,
+  Icon,
   Level,
   LevelItem,
   Panel,
-  PanelFooter,
+  PanelHeader,
   PanelMain,
   PanelMainBody,
   Stack,
   StackItem,
-  Switch,
   TextInput,
   Title,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@patternfly/react-core';
 import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -39,6 +39,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface TimePickerProps {
+  id?: string;
   selected: {
     // controlled
     hour24: number; // In 24h format
@@ -57,8 +58,9 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   onSecondSelect,
   onMeridiemSelect,
   selected,
+  id,
 }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const [is24h, setIs24h] = React.useState(true);
 
   const meridiemAM = React.useMemo(() => isHourIn24hAM(selected.hour24), [selected.hour24]);
@@ -73,7 +75,24 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
   return (
     <>
-      <Panel>
+      <Panel className="datetime-picker" id={id}>
+        <PanelHeader>
+          <ToggleGroup>
+            <ToggleGroupItem
+              text={t('TimePicker.24_H')}
+              buttonId="24-hour-btn"
+              isSelected={is24h}
+              onChange={() => setIs24h(true)}
+            />
+            <ToggleGroupItem
+              text={t('TimePicker.12_H')}
+              buttonId="12-hour-btn"
+              isSelected={!is24h}
+              onChange={() => setIs24h(false)}
+            />
+          </ToggleGroup>
+        </PanelHeader>
+        <Divider />
         <PanelMain>
           <PanelMainBody>
             <Level hasGutter>
@@ -107,22 +126,13 @@ export const TimePicker: React.FC<TimePickerProps> = ({
                   onChange={onSecondSelect}
                 />
               </LevelItem>
-              {is24h ? (
-                <></>
-              ) : (
+              {is24h ? null : (
                 <LevelItem key={'meridiem'}>
                   <MeridiemPicker isAM={meridiemAM} onSelect={onMeridiemSelect} />
                 </LevelItem>
               )}
             </Level>
           </PanelMainBody>
-          <Divider />
-          <PanelFooter>
-            <HelperText>
-              <HelperTextItem>{t('TimePicker.USE_24HR_TIME')}</HelperTextItem>
-            </HelperText>
-            <Switch id={'24-hour-switch'} label={t('TimePicker.24HOUR')} isChecked={is24h} onChange={setIs24h} />
-          </PanelFooter>
         </PanelMain>
       </Panel>
     </>
@@ -137,7 +147,7 @@ interface TimeSpinnerProps {
 }
 
 const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const computedMax = React.useMemo(() => {
     switch (variant) {
       case 'hour12':
@@ -166,7 +176,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
   );
 
   const handleValueChange = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       if (isNaN(Number(value))) {
         return;
       }
@@ -194,16 +204,16 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
             {label}
           </Title>
         </StackItem>
-      ) : (
-        <></>
-      )}
+      ) : null}
       <StackItem key={`${variant}-increment`}>
         <Button
           className={css('datetime-picker__time-spin-box', 'up')}
           onClick={handleIncrement}
           aria-label={t(`TimeSpinner.INCREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
-          <AngleUpIcon size="md" />
+          <Icon size="lg">
+            <AngleUpIcon />
+          </Icon>
         </Button>
       </StackItem>
       <StackItem key={`${variant}-input`}>
@@ -224,24 +234,11 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
           onClick={handleDecrement}
           aria-label={t(`TimeSpinner.DECREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
-          <AngleDownIcon size="md" />
+          <Icon size="lg">
+            <AngleDownIcon />
+          </Icon>
         </Button>
       </StackItem>
     </Stack>
   );
 };
-
-/**
- * t('TimeSpinner.INPUT_HOUR12_VALUE')
- * t('TimeSpinner.INPUT_HOUR24_VALUE')
- * t('TimeSpinner.INPUT_MINUTE_VALUE')
- * t('TimeSpinner.INPUT_SECOND_VALUE')
- * t('TimeSpinner.INCREMENT_HOUR12_VALUE')
- * t('TimeSpinner.INCREMENT_HOUR24_VALUE')
- * t('TimeSpinner.INCREMENT_MINUTE_VALUE')
- * t('TimeSpinner.INCREMENT_SECOND_VALUE')
- * t('TimeSpinner.DECREMENT_HOUR12_VALUE')
- * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
- * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
- * t('TimeSpinner.DECREMENT_SECOND_VALUE')
- */

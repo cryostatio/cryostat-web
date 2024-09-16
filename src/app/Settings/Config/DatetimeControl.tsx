@@ -16,17 +16,35 @@
 import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
+import { portalRoot } from '@app/utils/utils';
 import { locales, Timezone } from '@i18n/datetime';
-import { FormGroup, HelperText, HelperTextItem, Select, SelectOption, Stack, StackItem } from '@patternfly/react-core';
+import {
+  Divider,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+  MenuSearch,
+  MenuSearchInput,
+  MenuToggle,
+  MenuToggleElement,
+  SearchInput,
+  Select,
+  SelectList,
+  SelectOption,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
-  const [_, datetimeFormat] = useDayjs();
+  const [_dayjs, datetimeFormat] = useDayjs();
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const handleDateLocaleSelect = React.useCallback(
     (_, locale) => {
@@ -57,33 +75,44 @@ const Component = () => {
 
   const dateLocaleOptions = React.useMemo(
     () =>
-      locales.map((locale) => (
-        <SelectOption
-          key={locale.key}
-          description={locale.key}
-          value={{
-            ...locale,
-            toString: () => locale.name,
-            compareTo: (val) => locale.name === val.name,
-          }}
-        >
-          {locale.name}
-        </SelectOption>
-      )),
-    [],
+      locales
+        .filter((locale) => {
+          if (!searchTerm) {
+            return true;
+          }
+          const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
+          return matchExp.test(locale.name) || matchExp.test(locale.key);
+        })
+        .map((locale) => (
+          <SelectOption
+            key={locale.key}
+            description={locale.key}
+            value={locale}
+            isSelected={locale.key === datetimeFormat.dateLocale.key}
+          >
+            {locale.name}
+          </SelectOption>
+        )),
+    [searchTerm, datetimeFormat.dateLocale],
   );
 
-  const handleDateLocaleFilter = React.useCallback(
-    (_, value: string) => {
-      if (!value) {
-        return dateLocaleOptions;
-      }
-      const matchExp = new RegExp(value, 'i');
-      return dateLocaleOptions.filter(
-        (opt) => matchExp.test(opt.props.value.name) || matchExp.test(opt.props.description),
-      );
-    },
-    [dateLocaleOptions],
+  const onToggle = React.useCallback(() => setDateLocaleOpen((open) => !open), [setDateLocaleOpen]);
+
+  const onInputChange = React.useCallback((_, value: string) => setSearchTerm(value), [setSearchTerm]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        aria-label={t('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={onToggle}
+        isExpanded={dateLocaleOpen}
+        isFullWidth
+      >
+        {datetimeFormat.dateLocale.name}
+      </MenuToggle>
+    ),
+    [t, onToggle, dateLocaleOpen, datetimeFormat.dateLocale],
   );
 
   return (
@@ -94,22 +123,31 @@ const Component = () => {
             <HelperTextItem>{t('SETTINGS.DATETIME_CONTROL.LOCALE_SELECT_DESCRIPTION')}</HelperTextItem>
           </HelperText>
           <Select
-            aria-label={t('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT') || ''}
+            aria-label={t('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT')}
             isOpen={dateLocaleOpen}
-            onToggle={setDateLocaleOpen}
-            isFlipEnabled
-            menuAppendTo="parent"
-            selections={{
-              ...datetimeFormat.dateLocale,
-              toString: () => datetimeFormat.dateLocale.name,
-              compareTo: (val) => datetimeFormat.dateLocale.name === val.name,
+            toggle={toggle}
+            popperProps={{
+              enableFlip: true,
+              appendTo: portalRoot,
             }}
-            hasInlineFilter
-            maxHeight={'16em'}
-            onFilter={handleDateLocaleFilter}
+            selected={datetimeFormat.dateLocale}
             onSelect={handleDateLocaleSelect}
+            maxMenuHeight="40vh"
+            isScrollable
+            onOpenChange={setDateLocaleOpen}
+            onOpenChangeKeys={['Escape']}
           >
-            {dateLocaleOptions}
+            <MenuSearch>
+              <MenuSearchInput>
+                <SearchInput
+                  placeholder={t('SETTINGS.DATETIME_CONTROL.SEARCH_PLACEHOLDER')}
+                  value={searchTerm}
+                  onChange={onInputChange}
+                />
+              </MenuSearchInput>
+            </MenuSearch>
+            <Divider />
+            <SelectList>{dateLocaleOptions}</SelectList>
           </Select>
         </FormGroup>
       </StackItem>
@@ -118,12 +156,7 @@ const Component = () => {
           <HelperText>
             <HelperTextItem>{t('SETTINGS.DATETIME_CONTROL.TIMEZONE_SELECT_DESCRIPTION')}</HelperTextItem>
           </HelperText>
-          <TimezonePicker
-            selected={datetimeFormat.timeZone}
-            menuAppendTo="parent"
-            isFlipEnabled
-            onTimezoneChange={handleTimezoneSelect}
-          />
+          <TimezonePicker selected={datetimeFormat.timeZone} isFlipEnabled onTimezoneChange={handleTimezoneSelect} />
         </FormGroup>
       </StackItem>
     </Stack>

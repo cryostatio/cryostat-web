@@ -1,44 +1,69 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<LabelCell /> renders correctly 1`] = `
-Array [
-  <span
-    aria-label="someLabel=someValue"
-    className="pf-c-label"
-    onClick={[Function]}
-    onFocus={[Function]}
-    onMouseEnter={[Function]}
-    onMouseLeave={[Function]}
-    style={Object {}}
+<div
+  className="pf-v5-c-label-group"
+>
+  <div
+    className="pf-v5-c-label-group__main"
   >
-    <span
-      className="pf-c-label__content"
+    
+    <ul
+      aria-label="Label group category"
+      className="pf-v5-c-label-group__list"
+      role="list"
     >
-      <span
-        className="pf-c-label__text"
+      <li
+        className="pf-v5-c-label-group__list-item"
       >
-        someLabel=someValue
-      </span>
-    </span>
-  </span>,
-  <span
-    aria-label="anotherLabel=anotherValue"
-    className="pf-c-label"
-    onClick={[Function]}
-    onFocus={[Function]}
-    onMouseEnter={[Function]}
-    onMouseLeave={[Function]}
-    style={Object {}}
-  >
-    <span
-      className="pf-c-label__content"
-    >
-      <span
-        className="pf-c-label__text"
+        <span
+          aria-label="someLabel=someValue"
+          className="pf-v5-c-label"
+        >
+          <button
+            className="pf-v5-c-label__content"
+            onClick={[Function]}
+            type="button"
+          >
+            <span
+              className="pf-v5-c-label__text"
+              style={
+                Object {
+                  "--pf-v5-c-label__text--MaxWidth": "20ch",
+                }
+              }
+            >
+              someLabel=someValue
+            </span>
+          </button>
+        </span>
+      </li>
+      <li
+        className="pf-v5-c-label-group__list-item"
       >
-        anotherLabel=anotherValue
-      </span>
-    </span>
-  </span>,
-]
+        <span
+          aria-label="anotherLabel=anotherValue"
+          className="pf-v5-c-label"
+        >
+          <button
+            className="pf-v5-c-label__content"
+            onClick={[Function]}
+            type="button"
+          >
+            <span
+              className="pf-v5-c-label__text"
+              style={
+                Object {
+                  "--pf-v5-c-label__text--MaxWidth": "20ch",
+                }
+              }
+            >
+              anotherLabel=anotherValue
+            </span>
+          </button>
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>
 `;

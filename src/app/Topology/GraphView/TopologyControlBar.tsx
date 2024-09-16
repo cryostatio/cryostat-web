@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { css } from '@patternfly/react-styles';
 import {
   action,
   createTopologyControlButtons,
@@ -27,43 +26,38 @@ import { CollapseIcon } from '../Shared/Components/CollapseIcon';
 export interface TopologyControlBarProps {
   visualization: Visualization;
   noCollapse?: boolean;
-  className?: string;
 }
 
-export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({
-  visualization,
-  noCollapse,
-  className,
-  ...props
-}) => {
+export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({ visualization, noCollapse, ...props }) => {
   const buttonConfigs = React.useMemo(() => {
-    const base = [
-      ...createTopologyControlButtons({
-        ...defaultControlButtonsOptions,
-        zoomInCallback: action(() => {
-          visualization.getGraph().scaleBy(4 / 3);
-        }),
-        zoomInTip: 'Zoom in',
-        zoomInAriaLabel: 'Zoom in',
-        zoomOutCallback: action(() => {
-          visualization.getGraph().scaleBy(3 / 4);
-        }),
-        zoomOutTip: 'Zoom out',
-        zoomOutAriaLabel: 'Zoom out',
-        fitToScreenCallback: action(() => {
-          visualization.getGraph().fit(120);
-        }),
-        fitToScreenTip: 'Fit to screen',
-        fitToScreenAriaLabel: 'Fit to screen',
-        resetViewCallback: action(() => {
-          visualization.getGraph().reset();
-          visualization.getGraph().layout();
-        }),
-        resetViewTip: 'Reset view',
-        resetViewAriaLabel: 'Reset view',
-        legend: false,
+    const base = createTopologyControlButtons({
+      ...defaultControlButtonsOptions,
+      zoomInCallback: action(() => {
+        // Zoom in by 4 / 3
+        visualization.getGraph().scaleBy(4 / 3);
       }),
-    ];
+      zoomOutCallback: action(() => {
+        // Zoom out by 3 / 4
+        visualization.getGraph().scaleBy(3 / 4);
+      }),
+      fitToScreenCallback: action(() => {
+        // Fit entire graph in the viewable area with an 120px margin
+        visualization.getGraph().fit(120);
+      }),
+      resetViewCallback: action(() => {
+        // Scale back to 1, and re-center the graph
+        visualization.getGraph().reset();
+        // Reset layout
+        visualization.getGraph().layout();
+
+        // Open collapsed groups
+        visualization
+          .getGraph()
+          .getNodes()
+          .forEach((n) => n.setCollapsed(false));
+      }),
+      legend: false,
+    });
 
     if (!noCollapse) {
       base.push({
@@ -71,7 +65,7 @@ export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({
         icon: <CollapseIcon />,
         tooltip: 'Collapse all groups',
         callback: action(() => {
-          // Close top-level groups
+          // Close groups
           visualization
             .getGraph()
             .getNodes()
@@ -82,9 +76,5 @@ export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({
     return base;
   }, [visualization, noCollapse]);
 
-  return (
-    <div className={css('topology-control-bar', className)}>
-      <PFTopologyControlBar {...props} controlButtons={buttonConfigs} />
-    </div>
-  );
+  return <PFTopologyControlBar {...props} controlButtons={buttonConfigs} />;
 };

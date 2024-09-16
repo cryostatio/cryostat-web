@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { portalRoot } from '@app/utils/utils';
@@ -42,11 +41,12 @@ import {
   Tab,
   Tabs,
   TabTitleText,
-  Title,
+  EmptyStateHeader,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
+import _ from 'lodash';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
@@ -127,7 +127,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
   );
 
   const handleSearch = React.useCallback(
-    (input: string) => {
+    (_, input: string) => {
       setSearchText(input);
     },
     [setSearchText],
@@ -136,7 +136,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
   const filteredQuicksearches = React.useMemo(() => {
     let items = quickSearches.filter((qs) => activeLevel <= qs.featureLevel);
     if (searchText && searchText !== '') {
-      const regex = new RegExp(searchText, 'i');
+      const regex = new RegExp(_.escapeRegExp(searchText), 'i');
       items = items.filter(({ name, descriptionFull = '', descriptionShort = '', labels = [] }) => {
         let matchResult = regex.test(name) || regex.test(descriptionFull) || regex.test(descriptionShort);
 
@@ -166,7 +166,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
           placeholder="Add to view..."
           value={searchText}
           onChange={handleSearch}
-          onClear={() => handleSearch('')}
+          onClear={(e) => handleSearch(e, '')}
         />
       </StackItem>
       {filteredQuicksearches.length ? (
@@ -180,7 +180,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
                 expandable={{ default: 'nonExpandable', md: 'nonExpandable', lg: 'nonExpandable', sm: 'expandable' }}
                 isExpanded={isExpanded}
                 toggleText={isExpanded ? 'Close Tabs' : 'Open Tabs'}
-                onToggle={setIsExpanded}
+                onToggle={(_, isExpanded: boolean) => setIsExpanded(isExpanded)}
                 activeKey={activeTab}
                 onSelect={handleTabChange}
                 role={'region'}
@@ -204,10 +204,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
       ) : (
         <Bullseye>
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No Results
-            </Title>
+            <EmptyStateHeader titleText="No Results" icon={<EmptyStateIcon icon={SearchIcon} />} headingLevel="h4" />
           </EmptyState>
         </Bullseye>
       )}
@@ -217,24 +214,15 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
 
 export interface QuickSearchModalProps extends Partial<ModalProps> {}
 
-export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({
-  isOpen,
-  onClose,
-  variant = 'medium',
-  ..._props
-}) => {
-  const activeLevel = useFeatureLevel();
-
-  const guide = React.useMemo(() => {
-    if (activeLevel === FeatureLevel.PRODUCTION) {
-      return null;
-    }
+export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onClose, variant = 'medium' }) => {
+  const description = React.useMemo(() => {
     return (
       <span>
-        For quickstarts on how to create these entities, visit <Link to={'/quickstarts'}>Quick starts</Link>.
+        For quickstarts on how to create these entities, visit <Link to={'/quickstarts'}>Quick Starts</Link>.
       </span>
     );
-  }, [activeLevel]);
+  }, []);
+
   return (
     <Modal
       appendTo={portalRoot}
@@ -245,7 +233,7 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({
       title={'Topology entity catalog'}
       className={'topology__quick-search-modal'}
       id={'topology-quick-search-modal'}
-      description={<div>Select an entity to add to view. {guide}</div>}
+      description={description}
     >
       <QuickSearchPanel />
     </Modal>

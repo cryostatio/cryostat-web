@@ -23,17 +23,22 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateSecondaryActions,
-  Title,
+  EmptyStateActions,
+  EmptyStateHeader,
+  EmptyStateFooter,
+  Gallery,
+  GalleryItem,
 } from '@patternfly/react-core';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { NotFoundCard } from './NotFoundCard';
 
 export interface NotFoundProps {}
 
 export const NotFound: React.FC<NotFoundProps> = (_) => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
@@ -58,16 +63,27 @@ export const NotFound: React.FC<NotFoundProps> = (_) => {
 
   return (
     <>
-      <EmptyState className="pf-c-empty-state-not-found">
-        <EmptyStateIcon icon={MapMarkedAltIcon} />
-        <Title headingLevel="h4" size="lg">
-          404: We couldn&apos;t find that page
-        </Title>
-        <EmptyStateBody>One of the following pages might have what you&apos;re looking for.</EmptyStateBody>
-        <EmptyStateSecondaryActions>{cards}</EmptyStateSecondaryActions>
-        <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
-          Take me home
-        </Button>
+      <EmptyState>
+        <EmptyStateHeader
+          titleText={t('NotFound.TITLE')}
+          icon={<EmptyStateIcon icon={MapMarkedAltIcon} />}
+          headingLevel="h4"
+        />
+        <EmptyStateBody>{t('NotFound.DESCRIPTION')}</EmptyStateBody>
+        <EmptyStateFooter>
+          <EmptyStateActions>
+            <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
+              {t('NotFound.HOME_REDIRECT_BUTTON_CONTENT')}
+            </Button>
+          </EmptyStateActions>
+          <EmptyStateActions>
+            <Gallery hasGutter style={{ marginTop: '1rem' }}>
+              {cards.map((card, idx) => (
+                <GalleryItem key={idx}>{card}</GalleryItem>
+              ))}
+            </Gallery>
+          </EmptyStateActions>
+        </EmptyStateFooter>
       </EmptyState>
     </>
   );

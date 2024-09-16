@@ -14,6 +14,29 @@
     "OPEN_SOURCE_LICENSE": "Open source license",
     "VERSION": "Version"
   },
+  "AgentLiveProbes": {
+    "SEARCH_PLACEHOLDER": "Find by name, description, class, or method..."
+  },
+  "AgentLiveProves": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "active-probe-filter"
+    }
+  },
+  "AgentProbeTemplates": {
+    "ARIA_LABELS": {
+      "ROW_ACTION": "agent-probe-template-action-menu",
+      "SEARCH_INPUT": "agent-probe-template-search"
+    },
+    "SEARCH_PLACEHOLDER": "Find by name or XML content..."
+  },
+  "AllArchivedRecordingsTable": {
+    "SEARCH_PLACEHOLDER": "Find by JVM ID..."
+  },
+  "AllTargetsArchivedRecordingsTable": {
+    "HIDE_TARGET_WITH_ZERO_RECORDING": "Hide targets with zero Recordings",
+    "SEARCH_PLACEHOLDER": "Find by connection URL or alias...",
+    "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
+  },
   "AppLayout": {
     "APP_LAUNCHER": {
       "ABOUT": "About",
@@ -21,6 +44,22 @@
       "GUIDED_TOUR": "Guided tour",
       "HELP": "Help",
       "QUICKSTARTS": "Quick starts"
+    },
+    "NOTIFICATIONS": {
+      "OVERFLOW_MESSAGE_one": "View one more",
+      "OVERFLOW_MESSAGE_other": "View {{count}} more"
+    },
+    "TOOLBAR": {
+      "ARIA_LABELS": {
+        "GLOBAL_NAVIGATION": "Global navigation",
+        "NAVIGATION": "Navigation",
+        "NOTIFICATIONS": "Notifications",
+        "SETTINGS": "Settings"
+      }
+    },
+    "USER_MENU": {
+      "LANGUAGE_PREFERENCE": "Language preference",
+      "LOGOUT": "Log out"
     }
   },
   "AutomatedAnalysisCard": {
@@ -42,6 +81,10 @@
       "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active Recording to source automated reports from."
     },
     "TOOLBAR": {
+      "ARIA_LABELS": {
+        "GRID_VIEW": "grid-view",
+        "LIST_VIEW": "list-view"
+      },
       "CHECKBOX": {
         "SHOW_NA": {
           "LABEL": "Show N/A scores"
@@ -53,15 +96,14 @@
       "LABEL": "Automated analysis toolbar",
       "REFRESH": {
         "LABEL": "Refresh automated analysis"
-      },
-      "SWITCH": {
-        "LIST_VIEW": {
-          "LABEL": "List view"
-        }
       }
     },
-    "WARNING_RESULTS_one": "{{count}} Warning Result",
-    "WARNING_RESULTS_other": "{{count}} Warning Results"
+    "TOOLTIP": {
+      "CLEAR_ANALYSIS": "Clear analysis",
+      "REFRESH_ANALYSIS": "Refresh analysis"
+    },
+    "WARNING_RESULTS_one": "{{count}} warning result",
+    "WARNING_RESULTS_other": "{{count}} warning results"
   },
   "AutomatedAnalysisConfigDrawer": {
     "INPUT_GROUP": {
@@ -77,9 +119,8 @@
     "CURRENT_CONFIG": "Current configuration",
     "FORM_TITLE": "Profiling Recording configuration",
     "FORMATTED_TEMPLATE": "Name: {{template.name}}, Type: {{template.type}}",
-    "MAXIMUM_AGE": "Maximum age ({{unit}})",
-    "MAXIMUM_SIZE": "Maximum size ({{unit}})",
-    "SAVE_CHANGES": "Save changes",
+    "MAXIMUM_AGE": "Maximum age",
+    "MAXIMUM_SIZE": "Maximum size",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to automated analysis Recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a target template as a default template type configuration may not apply to all target JVMs if the JVMs do not support them."
   },
@@ -105,6 +146,7 @@
       "POPOUT": {
         "LABEL": "Pop out {{chartKind}} chart"
       },
+      "REFRESH_TOOLTIP": "Refresh chart data",
       "SYNC": {
         "LABEL": "Synchronize {{chartKind}} chart"
       }
@@ -148,9 +190,60 @@
       "POPOVER": "automated-analysis-description-popover"
     }
   },
+  "CreateCredentialModal": {
+    "ARIA_LABELS": {
+      "HELPER_ICON": "More info for Match Expression field"
+    },
+    "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
+    "FAILING_EVALUATION": "The expression matching failed.",
+    "MATCH_EXPRESSION_HELPER_TEXT": "Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.",
+    "MATCH_EXPRESSION_HINT_BODY": "Try an expression like:",
+    "MATCH_EXPRESSION_HINT_MODAL_HEADER": "Match Expression hint",
+    "MODAL_DESCRIPTION": "Create Stored Credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required).",
+    "MODAL_TITLE": "Stored Credentials",
+    "VISUALIZER": "Visualizer",
+    "WARNING_NO_MATCH": "Warning: Match Expression matches no targets."
+  },
+  "CreateRule": {
+    "ABOUT": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording buffer into Cryostat's own archived storage.",
+    "ARCHIVAL_PERIOD_HELPER_TEXT": "Time between copies of active Recording data being pulled into Cryostat archive storage.",
+    "ARIA_LABELS": {
+      "HELPER_ICON": "More info for Match Expression field"
+    },
+    "DESCRIPTION_HELPER_TEXT": "Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions.",
+    "ENABLE_SWITCH_HELPER_TEXT": "Rules take effect when created if enabled and will be matched against all discovered target applications immediately. When new target applications appear they are checked against all enabled rules. Disabled rules have no effect but are available to be enabled in the future.",
+    "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
+    "FAILING_EVALUATION": "The expression matching failed.",
+    "INITIAL_DELAY_HELPER_TEXT": "Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later.",
+    "MATCH_EXPRESSION_HELPER_TEXT": "Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.",
+    "MATCH_EXPRESSION_HINT_BODY": "Try an expression like:",
+    "MATCH_EXPRESSION_HINT_MODAL_HEADER": "Match Expression hint",
+    "MAXAGE_HELPER_TEXT": "The maximum age of Recording data retained in the target application's Recording buffer.",
+    "MAXSIZE_HELPER_TEXT": "The maximum size of Recording data retained in the target application's Recording buffer.",
+    "NAME_HELPER_TEXT": "Enter a rule name.",
+    "NAME_HINT": "A rule name can contain only letters, numbers, and underscores.",
+    "PRESERVED_ARCHIVES_HELPER_TEXT": "The number of Archived Recording copies to preserve in archives for each target application affected by this rule.",
+    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied by this Rule against matching target applications.",
+    "TEMPLATE_HINT": "A Template must be selected.",
+    "WARNING_NO_MATCH": "Warning: Match Expression matches no targets."
+  },
+  "CredentialTestTable": {
+    "ARIA_LABELS": {
+      "STATUS_POPOVER": "Test Result Details ({{connectUrl}})",
+      "STATUS_SELECT": "test-status-select",
+      "TOOLBAR": "credential-test-table-toolbar"
+    },
+    "CLEAR_AND_TRY_AGAIN": "Clear Match Expression and try again.",
+    "ENTER_ANOTHER": "Enter another Match Expression.",
+    "NO_TARGET_MATCHED": "No Targets Matched",
+    "SEARCH_PLACEHOLDER": "Find by connection URL or alias...",
+    "TEST_ALL": "Test All",
+    "TEST_ALL_TOOLTIP": "Test credentials against all matching targets.",
+    "TEST_FAILED": "Test failed"
+  },
   "Dashboard": {
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your Dashboard. Some cards require additional configuration.",
-    "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved for all targets viewed on this client.",
+    "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved locally for all targets viewed only on this client.",
     "CARD_CATALOG_TITLE": "Dashboard Card catalog",
     "INVALID_CARD_CONFIGURATIONS": "Invalid card configurations",
     "PAGE_TITLE": "Dashboard"
@@ -224,14 +317,29 @@
       "SEARCH_BUTTON": "Search for date",
       "TOGGLE_CALENDAR": "Toggle the calendar"
     },
-    "INVALID_DATE_TEXT": "Invalid date time"
+    "HELPER_TEXT": {
+      "INVALID_UPPER_BOUND": "From Datetime must be equal or later than To Datetime"
+    },
+    "INVALID_DATE_TEXT": "Invalid date time input. The input must have the ISO 8601 format."
   },
   "DateTimePicker": {
     "ARIA_LABELS": {
-      "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime",
-      "TABS": "Select a date or time tab"
+      "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime"
     },
-    "SELECTED_DATETIME": "Selected DateTime"
+    "DATETIME": "Date and Time"
+  },
+  "DurationFilter": {
+    "ARIA_LABELS": {
+      "FROM_DURATION": "duration-from",
+      "SEARCH_BUTTON": "search-for-duration",
+      "TO_DURATION": "duration-to"
+    },
+    "HELPER_TEXT": {
+      "INVALID_UPPER_BOUND": "Duration upper value must be higher than or equal to lower one"
+    },
+    "TOOLTIP": {
+      "CHECKBOX_DISABLED_CONTENT": "A duration filter without upper limit (i.e. >=10s) selects Continuous Recordings"
+    }
   },
   "ERROR_BOUNDARY": {
     "ERROR_MESSAGE": "Reason: {{message}}",
@@ -239,6 +347,25 @@
   },
   "ErrorView": {
     "EVENT_TEMPLATES": "Error retrieving Event Templates"
+  },
+  "EventTemplates": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "event-template-search-input"
+    },
+    "SEARCH_PLACEHOLDER": "Find by name, description, or provider..."
+  },
+  "EventTypes": {
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "event-type-search-input"
+    },
+    "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
+  },
+  "ImportCertificate": {
+    "CARD_DESCRIPTION": "The following certificates are present in Cryostat&apos's additional trust store. Contact your Cryostat administrator if your application requires a new trusted certificate. You must restart the Cryostat server to reload the certificate store after adding new certificates.",
+    "CARD_TITLE": "Imported SSL/TLS Certificates",
+    "CARD_TITLE_POPOVER_HEADER": "JMX over SSL/TLS",
+    "NO_CERTIFICATE_BODY": "No additional certificates are loaded.",
+    "NO_CERTIFICATE_TITLE": "No certificates"
   },
   "JvmDetailsCard": {
     "CARD_DESCRIPTION": "Display details about the selected Target JVM.",
@@ -250,10 +377,11 @@
     "ITEMS_other": "{{count}} items"
   },
   "LayoutTemplatePicker": {
+    "CARD_COUNT": "Card count",
+    "SEARCH_PLACEHOLDER": "Find by name...",
     "SORT_BY": {
       "CARD_COUNT": "Sort by: Card count",
-      "NAME": "Sort by: Name",
-      "PLACEHOLDER": "Sort by..."
+      "NAME": "Sort by: Name"
     }
   },
   "LayoutTemplateUploadModal": {
@@ -273,10 +401,24 @@
     },
     "TITLE": "Upload Dashboard Layout Template"
   },
+  "MATCH_EXPRESSION_VISUALIZER": {
+    "TITLE": "Match Expression visualizer"
+  },
+  "MatchedTargetsTable": {
+    "ARIA_LABELS": {
+      "TABLE": "matched-targets-table"
+    },
+    "NO_TARGET_MATCHED": "No Targets Matched"
+  },
   "MeridiemPicker": {
     "ARIA_LABELS": {
       "LISTBOX": "Select AM or PM"
     }
+  },
+  "NotFound": {
+    "DESCRIPTION": "The page you're trying to find was either removed, moved or maybe the URL isn't quite right. Try returning home or visit one of the following pages below.",
+    "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
+    "TITLE": "404: We couldn't find that page"
   },
   "QuickStarts": {
     "CATALOG_PAGE": {
@@ -284,9 +426,63 @@
       "TITLE": "Quick starts"
     }
   },
+  "RecordingActions": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-action-toggle"
+    }
+  },
+  "RecordingFilters": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-filters-toggle"
+    },
+    "FILTER_CHIP": {
+      "DURATION_CONTINUOUS": "Continuous",
+      "DURATION_EXACT": "{{value}}{{unit}}",
+      "DURATION_FROM": ">={{value}}{{unit}}",
+      "DURATION_FROM_TO": "{{fromValue}}{{fromUnit}}-{{toValue}}{{toUnit}}",
+      "DURATION_TO": "<={{value}}{{unit}}",
+      "START_TIME_EXACT": "On {{value}}",
+      "START_TIME_FROM": "After {{value}}",
+      "START_TIME_FROM_TO": "From: {{from}} To: {{to}}",
+      "START_TIME_TO": "Before {{value}}"
+    },
+    "START_TIME": "Start time"
+  },
   "RecordingLabelFields": {
     "INVALID_UPLOADS_one": "The file does not contain valid Recording metadata:",
     "INVALID_UPLOADS_other": "These files do not contain valid Recording metadata:"
+  },
+  "RecordingsTable": {
+    "NO_ARCHIVES": "No Archived Recordings"
+  },
+  "RecordingStateFilter": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "recording-state-toggle",
+      "SELECT": "select-by-state"
+    },
+    "FILTER_BY_STATE": "Filter by state"
+  },
+  "RuleDeleteWarningModal": {
+    "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
+  },
+  "Rules": {
+    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
+    "ARCHIVAL_PERIOD_TOOLTIP": "Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.",
+    "EVENT_SPECIFIER_TOOLTIP": "The name and location of the Event Template applied by this rule.",
+    "INITIAL_DELAY_TOOLTIP": "Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.",
+    "MATCH_EXPRESSION_TOOLTIP": "A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.",
+    "MAX_AGE_TOOLTIP": "The maximum age in seconds for data kept in the JFR Recordings started by this rule. Values less than 1 indicate no limit.",
+    "MAX_SIZE_TOOLTIP": "The maximum size in bytes for JFR Recordings started by this rule. Values less than 1 indicate no limit.",
+    "NO_RULES": "No Automated Rules",
+    "PRESERVED_ARCHIVES_TOOLTIP": "The number of Recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - Recordings will be started and remain only in Target JVM memory.",
+    "SEARCH_PLACEHOLDER": "Find by name, or description..."
+  },
+  "RulesUploadModal": {
+    "DESCRIPTION": "Select an Automated Rules definition file to upload. File must be in valid JSON format.",
+    "HEADER_CONTENT": "Whats this?",
+    "INVALID_RULE_CONTENT": "Automated Rule content is invalid.",
+    "JSON_FILE": "JSON File",
+    "TITLE": "Upload Automated Rules"
   },
   "SETTINGS": {
     "AUTO_REFRESH": {
@@ -296,7 +492,7 @@
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
       "DESCRIPTION": "Set the Recording configuration for automated analysis Recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
-      "TITLE": "Automated analysis Recording configuration"
+      "TITLE": "Recording configuration for Automated analysis"
     },
     "CATEGORIES": {
       "ADVANCED": "Advanced",
@@ -324,10 +520,12 @@
     },
     "DATETIME_CONTROL": {
       "ARIA_LABELS": {
-        "LOCALE_SELECT": "Select a datetime locale"
+        "LOCALE_SELECT": "Select a datetime locale",
+        "MENU_TOGGLE": "datetime-locale-setting-toggle"
       },
       "DESCRIPTION": "",
       "LOCALE_SELECT_DESCRIPTION": "Select current date locale.",
+      "SEARCH_PLACEHOLDER": "Find by locale...",
       "TIMEZONE_SELECT_DESCRIPTION": "Select current timezone.",
       "TITLE": "Date & Time"
     },
@@ -338,11 +536,16 @@
       "TITLE": "Show deletion dialogs"
     },
     "FEATURE_LEVEL": {
+      "BETA_DESCRIPTION": "Experimental features",
       "DESCRIPTION": "Control which graphical features appear in the application.",
+      "DEVELOPMENT_DESCRIPTION": "Under development features",
+      "MENU_TOGGLE": "feature-level-setting-toggle",
+      "PRODUCTION_DESCRIPTION": "Stable production-ready features",
       "TITLE": "Feature level"
     },
     "LANGUAGE": {
       "ARIA_LABELS": {
+        "MENU_TOGGLE": "language-setting-toggle",
         "SELECT": "Select a language"
       },
       "DESCRIPTION": "Set the current language for web console.",
@@ -356,13 +559,14 @@
       "TITLE": "Notifications"
     },
     "THEME": {
+      "ARIA_LABELS": {
+        "MENU_TOGGLE": "theme-setting-toggle",
+        "SELECT": "Select a theme"
+      },
       "AUTO": "Auto",
       "DARK": "Dark",
       "DESCRIPTION": "Set the current theme for web console.",
       "LIGHT": "Light",
-      "SELECT": {
-        "LABEL": "Select a theme"
-      },
       "TITLE": "Theme"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
@@ -370,9 +574,52 @@
       "TITLE": "WebSocket retry interval"
     }
   },
+  "ShortCuts": {
+    "ARIA_LABELS": {
+      "TABLE": "Shortcuts table"
+    }
+  },
+  "StoredCredentials": {
+    "ARIA_LABELS": {
+      "Add": "add-credential",
+      "Delete": "delete-selected-credential",
+      "FILTER_CHECKBOX": "select-all",
+      "ROW_CHECKBOX": "credentials-table-row-{{index}}",
+      "TABLE": "stored-credentials"
+    },
+    "AT_LEAST_ONE_MATCH": "At least 1 match",
+    "CARD_DESCRIPTION": "Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored in encrypted storage managed by the Cryostat server.",
+    "CARD_TITLE": "Stored Credentials",
+    "CARD_TITLE_POPOVER_HEADER": "JMX Authentication",
+    "NO_CREDENTIAL_TITLE": "No Stored Credentials",
+    "NO_MATCH": "No Match",
+    "SEARCH_PLACEHOLDER": "Find by Match Expression..."
+  },
+  "TargetContextSelector": {
+    "CLEAR_SELECTION": "Clear selection",
+    "CREATE_TARGET": "Create Target",
+    "NO_SEARCH_MATCHES": "No Target found",
+    "SEARCH_PLACEHOLDER": "Find by URL, alias, or discovery group...",
+    "TOGGLE_LABEL": "Select Target",
+    "TOGGLE_PLACEHOLDER": "Select a Target"
+  },
+  "TargetSelect": {
+    "ARIA_LABELS": {
+      "CARD_DETAILS": "Details"
+    },
+    "CARD": {
+      "TITLE": "Target JVM"
+    }
+  },
+  "ThemeToggle": {
+    "ARIA_LABELS": {
+      "DARK_THEME": "dark-theme",
+      "LIGHT_THEME": "light-theme"
+    }
+  },
   "TimePicker": {
-    "24HOUR": "24-hour",
-    "USE_24HR_TIME": "Use 24-hour time"
+    "12_H": "12Hr View",
+    "24_H": "24Hr View"
   },
   "TimeSpinner": {
     "DECREMENT_HOUR12_VALUE": "Decrement hour12 value",
@@ -390,9 +637,11 @@
   },
   "TimezonePicker": {
     "ARIA_LABELS": {
+      "MENU_TOGGLE": "timezone-select-toggle",
       "SELECT": "Select a timezone",
       "TYPE_AHEAD": "Search a timezone"
-    }
+    },
+    "SEARCH_PLACEHOLDER": "Find by timezone..."
   },
   "Topology": {
     "GRAPH_VIEW": "Graph view",

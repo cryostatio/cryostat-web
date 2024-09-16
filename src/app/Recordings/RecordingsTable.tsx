@@ -18,24 +18,17 @@ import { isAuthFail } from '@app/ErrorView/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import {
-  Title,
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
   Button,
-  EmptyStateSecondaryActions,
   Bullseye,
+  EmptyStateActions,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import {
-  TableComposable,
-  Thead,
-  Tr,
-  Th,
-  OuterScrollContainer,
-  InnerScrollContainer,
-  ThProps,
-} from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer, ThProps } from '@patternfly/react-table';
 import * as React from 'react';
 
 export interface ColumnConfig {
@@ -103,10 +96,11 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
     view = (
       <Bullseye>
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No {tableTitle}
-          </Title>
+          <EmptyStateHeader
+            titleText={<>No {tableTitle}</>}
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
         </EmptyState>
       </Bullseye>
     );
@@ -114,31 +108,28 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
     view = (
       <Bullseye>
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No {tableTitle} found
-          </Title>
+          <EmptyStateHeader
+            titleText={<>No {tableTitle} found</>}
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
           <EmptyStateBody>
             No results match this filter criteria. Remove all filters or clear all filters to show results.
           </EmptyStateBody>
-          <EmptyStateSecondaryActions>
-            <Button variant="link" onClick={() => clearFilters && clearFilters(null)}>
-              Clear all filters
-            </Button>
-          </EmptyStateSecondaryActions>
+          <EmptyStateFooter>
+            <EmptyStateActions>
+              <Button variant="link" onClick={() => clearFilters && clearFilters(null)}>
+                Clear all filters
+              </Button>
+            </EmptyStateActions>
+          </EmptyStateFooter>
         </EmptyState>
       </Bullseye>
     );
   } else {
     view = (
       <>
-        <TableComposable
-          {...props}
-          isStickyHeader
-          aria-label={tableTitle}
-          variant={isNestedTable ? 'compact' : undefined}
-          style={{ zIndex: 99 }} // z-index of filters Select dropdown is 100
-        >
+        <Table {...props} isStickyHeader aria-label={tableTitle} variant={isNestedTable ? 'compact' : undefined}>
           <Thead>
             <Tr>
               <Th
@@ -158,7 +149,7 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
             </Tr>
           </Thead>
           {children}
-        </TableComposable>
+        </Table>
       </>
     );
   }

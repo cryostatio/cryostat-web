@@ -15,7 +15,7 @@
  */
 import { LayoutTemplate, LayoutTemplateVendor, LayoutTemplateVersion } from './types';
 
-const CURR_VERSION: LayoutTemplateVersion = LayoutTemplateVersion['v2.4'];
+const CURR_VERSION: LayoutTemplateVersion = LayoutTemplateVersion['v3.0'];
 
 export const BlankLayout: LayoutTemplate = {
   name: 'Blank',

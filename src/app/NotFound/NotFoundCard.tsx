@@ -27,14 +27,12 @@ export interface NotFoundCardProps {
 
 export const NotFoundCard: React.FC<NotFoundCardProps> = ({ title, bodyText, linkText, linkPath }) => {
   return (
-    <>
-      <Card className="pf-c-card-not-found">
-        <CardTitle>{title}</CardTitle>
-        <CardBody>{bodyText}</CardBody>
-        <CardFooter className="pf-c-card-not-found__footer">
-          <Link to={linkPath}>{linkText}</Link>
-        </CardFooter>
-      </Card>
-    </>
+    <Card isFullHeight isCompact isFlat isRounded>
+      <CardTitle>{title}</CardTitle>
+      <CardBody isFilled>{bodyText}</CardBody>
+      <CardFooter>
+        <Link to={linkPath}>{linkText}</Link>
+      </CardFooter>
+    </Card>
   );
 };

@@ -84,9 +84,10 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
 
   return (
     <TargetView {...props} pageTitle="Recordings">
-      <Card>
-        <CardBody>{cardBody}</CardBody>
+      <Card isFullHeight>
+        <CardBody isFilled>{cardBody}</CardBody>
       </Card>
+      <></>
     </TargetView>
   );
 };

@@ -17,6 +17,7 @@
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { EnvironmentNode, NodeType } from '@app/Shared/Services/api.types';
+import { css } from '@patternfly/react-styles';
 import {
   DefaultGroup,
   Node,
@@ -36,7 +37,7 @@ export const renderGroupIcon = (width: number, height: number): React.ReactNode 
 
   return (
     <>
-      <circle cx={cx} cy={cy} r={contentSize / 2} fill="var(--pf-global--palette--white)" />
+      <circle cx={cx} cy={cy} r={contentSize / 2} fill="var(--pf-v5-global--palette--white)" />
       <image
         x={cx - mainContentSize / 2}
         y={cy - mainContentSize / 2}
@@ -99,6 +100,7 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
           collapsedHeight: collapsedHeight,
           collapsedWidth: collapsedWidth,
           badge: showBadge ? data.nodeType : undefined,
+          badgeClassName: css('topology__group-node-badge'),
           showLabel: true,
           contextMenuOpen: contextMenuOpen,
           onContextMenu: onContextMenu,

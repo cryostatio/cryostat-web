@@ -66,6 +66,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.logging = environment === 'development';
 
       this.get('health', () => ({
+        build: {
+          git: {
+            hash: '775aee4cdd61f5b8d91aa38f4601933c9750d54e',
+          },
+        },
         cryostatVersion: `${build.version.replace(/(-\w+)*$/g, '')}-0-preview`,
         dashboardAvailable: false,
         dashboardConfigured: false,
@@ -97,6 +102,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         () => new Response(400, {}, 'Resource downloads are not supported in this demo'),
       );
       this.post('api/v2/targets', (schema, request) => {
+        const params = request.queryParams;
+        if (params['dryrun']) {
+          return new Response(200);
+        }
+
         const attrs = request.requestBody as any;
         const target = schema.create(Resource.TARGET, {
           jvmId: `${Date.now().toString(16)}`,

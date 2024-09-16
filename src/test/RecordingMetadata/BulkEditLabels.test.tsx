@@ -20,6 +20,7 @@ import {
   RecordingState,
   NotificationMessage,
   Target,
+  keyValueToString,
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
@@ -81,10 +82,7 @@ const mockActiveLabelsNotification = {
       name: 'someActiveRecording',
       jvmId: mockJvmId,
       metadata: {
-        labels: [
-          { key: 'someLabel', value: 'someValue' },
-          { key: 'someNewLabel', value: 'someNewValue' },
-        ],
+        labels: [...mockRecordingLabels, { key: 'someNewLabel', value: 'someNewValue' }],
       },
     },
   },
@@ -99,10 +97,7 @@ const mockArchivedLabelsNotification = {
       name: 'someArchivedRecording_some_random',
       jvmId: mockJvmId,
       metadata: {
-        labels: [
-          { key: 'someLabel', value: 'someValue' },
-          { key: 'someNewLabel', value: 'someNewValue' },
-        ],
+        labels: [...mockRecordingLabels, { key: 'someNewLabel', value: 'someNewValue' }],
       },
     },
   },
@@ -129,7 +124,6 @@ jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of()) // should display read-only labels from selected recordings
-  .mockReturnValueOnce(of()) // should display editable labels form when in edit mode
   .mockReturnValueOnce(of()) // should not display labels for unchecked recordings
   .mockReturnValueOnce(of(mockActiveLabelsNotification)) // should update the target recording labels after receiving a notification
   .mockReturnValueOnce(of(mockArchivedLabelsNotification)) // should update the archived recording labels after receiving a notification
@@ -162,7 +156,7 @@ describe('<BulkEditLabels />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should display read-only Labels from selected Recordings', async () => {
+  it('should display labels from selected Recordings', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -174,21 +168,14 @@ describe('<BulkEditLabels />', () => {
       },
     });
 
-    const label = screen.getByLabelText('someLabel=someValue');
-    expect(label).toBeInTheDocument();
-    expect(label).toBeVisible();
-    expect(label.onclick).toBeNull();
-
-    const addLabelButton = screen.queryByRole('button', { name: 'Add Label' });
-    expect(addLabelButton).not.toBeInTheDocument();
-
-    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
-    expect(editButton).toBeInTheDocument();
-    expect(editButton).toBeVisible();
-    expect(editButton).not.toBeDisabled();
+    mockRecordingLabels.map(keyValueToString).forEach((value) => {
+      const label = screen.getByText(value);
+      expect(label).toBeInTheDocument();
+      expect(label).toBeVisible();
+    });
   });
 
-  it('should not display Labels for unchecked Recordings', async () => {
+  it('should not display labels for unchecked Recordings', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -202,53 +189,6 @@ describe('<BulkEditLabels />', () => {
 
     expect(screen.queryByText('someLabel')).not.toBeInTheDocument();
     expect(screen.queryByText('someValue')).not.toBeInTheDocument();
-
-    const placeHolder = screen.getByText('-');
-    expect(placeHolder).toBeInTheDocument();
-    expect(placeHolder).toBeVisible();
-  });
-
-  it('should display editable Labels form when in edit mode', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/recordings',
-            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
-          },
-        ],
-      },
-    });
-
-    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
-    expect(editButton).toBeInTheDocument();
-    expect(editButton).toBeVisible();
-
-    await user.click(editButton);
-
-    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
-    expect(addLabelButton).toBeInTheDocument();
-    expect(addLabelButton).toBeVisible();
-
-    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toBeInTheDocument();
-    expect(labelKeyInput).toBeVisible();
-
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toBeInTheDocument();
-    expect(labelValueInput).toBeVisible();
-
-    const saveButton = screen.getByText('Save');
-    expect(saveButton).toBeInTheDocument();
-    expect(saveButton).toBeVisible();
-
-    const cancelButton = screen.getByText('Cancel');
-    expect(cancelButton).toBeInTheDocument();
-    expect(cancelButton).toBeVisible();
   });
 
   it('should update the target Recording labels after receiving a notification', async () => {
@@ -263,11 +203,11 @@ describe('<BulkEditLabels />', () => {
       },
     });
 
-    const newLabel = screen.getByLabelText('someNewLabel=someNewValue');
+    const newLabel = screen.getByText('someNewLabel=someNewValue');
     expect(newLabel).toBeInTheDocument();
     expect(newLabel).toBeVisible();
 
-    const oldLabel = screen.getByLabelText('someLabel=someValue');
+    const oldLabel = screen.getByText('someLabel=someValue');
     expect(oldLabel).toBeInTheDocument();
     expect(oldLabel).toBeVisible();
   });
@@ -293,43 +233,24 @@ describe('<BulkEditLabels />', () => {
     expect(oldLabel).toBeVisible();
   });
 
-  it('should return to read-only view when edited Labels are cancelled', async () => {
+  it('should close panel when cancel button is clicked', async () => {
+    const closeFn = jest.fn();
     const { user } = render({
       routerConfigs: {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
+            element: (
+              <BulkEditLabels
+                checkedIndices={archivedCheckedIndices}
+                isTargetRecording={false}
+                closePanelFn={closeFn}
+              />
+            ),
           },
         ],
       },
     });
-
-    let editButton = screen.getByRole('button', { name: 'Edit Labels' });
-    expect(editButton).toBeInTheDocument();
-    expect(editButton).toBeVisible();
-
-    await user.click(editButton);
-
-    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
-    expect(addLabelButton).toBeInTheDocument();
-    expect(addLabelButton).toBeVisible();
-
-    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toBeInTheDocument();
-    expect(labelKeyInput).toBeVisible();
-
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toBeInTheDocument();
-    expect(labelValueInput).toBeVisible();
-
-    const saveButton = screen.getByText('Save');
-    expect(saveButton).toBeInTheDocument();
-    expect(saveButton).toBeVisible();
 
     const cancelButton = screen.getByText('Cancel');
     expect(cancelButton).toBeInTheDocument();
@@ -337,10 +258,7 @@ describe('<BulkEditLabels />', () => {
 
     await user.click(cancelButton);
 
-    editButton = screen.getByRole('button', { name: 'Edit Labels' });
-    expect(editButton).toBeInTheDocument();
-    expect(editButton).toBeVisible();
-    expect(addLabelButton).not.toBeInTheDocument();
+    expect(closeFn).toHaveBeenCalledTimes(1);
   });
 
   it('should save target Recording Labels when Save is clicked', async () => {
@@ -358,35 +276,9 @@ describe('<BulkEditLabels />', () => {
       },
     });
 
-    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
-    expect(editButton).toBeInTheDocument();
-    expect(editButton).toBeVisible();
-
-    await user.click(editButton);
-
-    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
-    expect(addLabelButton).toBeInTheDocument();
-    expect(addLabelButton).toBeVisible();
-
-    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toBeInTheDocument();
-    expect(labelKeyInput).toBeVisible();
-
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toBeInTheDocument();
-    expect(labelValueInput).toBeVisible();
-
     const saveButton = screen.getByText('Save');
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toBeVisible();
-
-    const cancelButton = screen.getByText('Cancel');
-    expect(cancelButton).toBeInTheDocument();
-    expect(cancelButton).toBeVisible();
 
     await user.click(saveButton);
 
@@ -408,35 +300,9 @@ describe('<BulkEditLabels />', () => {
       },
     });
 
-    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
-    expect(editButton).toBeInTheDocument();
-    expect(editButton).toBeVisible();
-
-    await user.click(editButton);
-
-    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
-    expect(addLabelButton).toBeInTheDocument();
-    expect(addLabelButton).toBeVisible();
-
-    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelKeyInput).toBeInTheDocument();
-    expect(labelKeyInput).toBeVisible();
-
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toBeInTheDocument();
-    expect(labelValueInput).toBeVisible();
-
     const saveButton = screen.getByText('Save');
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toBeVisible();
-
-    const cancelButton = screen.getByText('Cancel');
-    expect(cancelButton).toBeInTheDocument();
-    expect(cancelButton).toBeVisible();
 
     await user.click(saveButton);
 

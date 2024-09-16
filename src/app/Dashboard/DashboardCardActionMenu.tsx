@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { portalRoot } from '@app/utils/utils';
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
+import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,46 +25,56 @@ export interface DashboardCardActionProps {
   onResetSize: () => void;
 }
 
-export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({
-  onRemove,
-  onResetSize,
-  onView,
-  ...props
-}) => {
-  const [isOpen, setOpen] = React.useState(false);
+export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ onRemove, onResetSize, onView }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  const [t] = useTranslation();
+  const { t } = useTranslation();
 
-  const onSelect = React.useCallback(
-    (_) => {
-      setOpen(false);
-    },
-    [setOpen],
+  const onSelect = React.useCallback((_) => setIsOpen(false), [setIsOpen]);
+
+  const onToggle = React.useCallback(() => setIsOpen((isOpen) => !isOpen), [setIsOpen]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        aria-label="dashboard action toggle"
+        variant="plain"
+        onClick={onToggle}
+        isExpanded={isOpen}
+      >
+        <EllipsisVIcon />
+      </MenuToggle>
+    ),
+    [onToggle, isOpen],
   );
 
   return (
-    <>
-      <Dropdown
-        {...props}
-        isPlain
-        isFlipEnabled
-        menuAppendTo={() => document.getElementById('dashboard-grid') || portalRoot}
-        position={'right'}
-        isOpen={isOpen}
-        toggle={<KebabToggle onToggle={setOpen} />}
-        onSelect={onSelect}
-        dropdownItems={[
-          <DropdownItem key="View" onClick={onView}>
-            {t('VIEW', { ns: 'common' })}
-          </DropdownItem>,
-          <DropdownItem key="Remove" onClick={onRemove}>
-            {t('REMOVE', { ns: 'common' })}
-          </DropdownItem>,
-          <DropdownItem key="Reset size" onClick={onResetSize}>
-            {t('DashboardCardActionMenu.RESET_SIZE')}
-          </DropdownItem>,
-        ]}
-      />
-    </>
+    <Dropdown
+      popperProps={{
+        enableFlip: true,
+        appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
+        position: 'right',
+      }}
+      isOpen={isOpen}
+      onSelect={onSelect}
+      toggle={toggle}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
+    >
+      <DropdownList>
+        <DropdownItem key="View" onClick={onView}>
+          {t('VIEW', { ns: 'common' })}
+        </DropdownItem>
+
+        <DropdownItem key="Reset Size" onClick={onResetSize}>
+          {t('DashboardCardActionMenu.RESET_SIZE')}
+        </DropdownItem>
+        <Divider />
+        <DropdownItem key="Remove" onClick={onRemove} isDanger>
+          {t('REMOVE', { ns: 'common' })}
+        </DropdownItem>
+      </DropdownList>
+    </Dropdown>
   );
 };

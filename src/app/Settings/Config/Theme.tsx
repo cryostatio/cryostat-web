@@ -15,7 +15,8 @@
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useTheme } from '@app/utils/hooks/useTheme';
-import { Select, SelectOption } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, ThemeSetting, UserSetting } from '../types';
@@ -24,37 +25,70 @@ const Component = () => {
   const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [open, setOpen] = React.useState(false);
-  const [_theme, setting] = useTheme();
+  const [_theme, themeSetting] = useTheme();
 
   const handleThemeToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
 
   const handleThemeSelect = React.useCallback(
-    (_, v) => {
-      context.settings.setThemeSetting(v as ThemeSetting);
+    (_, setting: ThemeSetting) => {
+      context.settings.setThemeSetting(setting);
       setOpen(false);
     },
     [context.settings, setOpen],
   );
 
+  const getThemeDisplay = React.useCallback(
+    (theme: ThemeSetting) => {
+      switch (theme) {
+        case ThemeSetting.AUTO:
+          return t('SETTINGS.THEME.AUTO');
+        case ThemeSetting.DARK:
+          return t('SETTINGS.THEME.DARK');
+        case ThemeSetting.LIGHT:
+          return t('SETTINGS.THEME.LIGHT');
+        default:
+          return `${theme}`;
+      }
+    },
+    [t],
+  );
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        aria-label={t('SETTINGS.THEME.ARIA_LABELS.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={handleThemeToggle}
+        isExpanded={open}
+        isFullWidth
+      >
+        {getThemeDisplay(themeSetting)}
+      </MenuToggle>
+    ),
+    [t, handleThemeToggle, getThemeDisplay, themeSetting, open],
+  );
+
   return (
     <Select
       isOpen={open}
-      aria-label={t('SETTINGS.THEME.SELECT.LABEL')}
-      onToggle={handleThemeToggle}
+      aria-label={t('SETTINGS.THEME.ARIA_LABELS.SELECT')}
       onSelect={handleThemeSelect}
-      selections={setting}
-      isFlipEnabled
-      menuAppendTo="parent"
+      selected={themeSetting}
+      popperProps={{
+        enableFlip: true,
+        appendTo: portalRoot,
+      }}
+      toggle={toggle}
+      onOpenChange={setOpen}
+      onOpenChangeKeys={['Escape']}
     >
-      <SelectOption key="auto" value="auto">
-        {t('SETTINGS.THEME.AUTO')}
-      </SelectOption>
-      <SelectOption key="light" value="light">
-        {t('SETTINGS.THEME.LIGHT')}
-      </SelectOption>
-      <SelectOption key="dark" value="dark">
-        {t('SETTINGS.THEME.DARK')}
-      </SelectOption>
+      <SelectList>
+        {Object.values(ThemeSetting).map((theme) => (
+          <SelectOption key={theme} value={theme}>
+            {getThemeDisplay(theme)}
+          </SelectOption>
+        ))}
+      </SelectList>
     </Select>
   );
 };

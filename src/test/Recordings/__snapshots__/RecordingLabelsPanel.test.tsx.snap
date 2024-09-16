@@ -2,16 +2,16 @@
 
 exports[`<RecordingLabelsPanel /> renders correctly 1`] = `
 <div
-  className="pf-c-drawer pf-m-expanded pf-m-inline"
+  className="pf-v5-c-drawer pf-m-expanded pf-m-inline"
 >
   <div
-    className="pf-c-drawer__main"
+    className="pf-v5-c-drawer__main"
   >
     <div
-      className="pf-c-drawer__content"
+      className="pf-v5-c-drawer__content"
     />
     <div
-      className="pf-c-drawer__panel pf-m-resizable"
+      className="pf-v5-c-drawer__panel pf-m-resizable"
       hidden={false}
       id="pf-drawer-panel-0"
       onTransitionEnd={[Function]}
@@ -23,7 +23,7 @@ exports[`<RecordingLabelsPanel /> renders correctly 1`] = `
         aria-valuemax={100}
         aria-valuemin={0}
         aria-valuenow={0}
-        className="pf-c-drawer__splitter pf-m-vertical"
+        className="pf-v5-c-drawer__splitter pf-m-vertical"
         onKeyDown={[Function]}
         onMouseDown={[Function]}
         onTouchStart={[Function]}
@@ -32,32 +32,32 @@ exports[`<RecordingLabelsPanel /> renders correctly 1`] = `
       >
         <div
           aria-hidden={true}
-          className="pf-c-drawer__splitter-handle"
+          className="pf-v5-c-drawer__splitter-handle"
         />
       </div>
       <div
-        className="pf-c-drawer__panel-main"
+        className="pf-v5-c-drawer__panel-main"
       >
         <div
-          className="pf-c-drawer__body"
+          className="pf-v5-c-drawer__body"
         >
           <div
-            className="pf-c-drawer__head"
+            className="pf-v5-c-drawer__head"
           >
             <div
-              className="pf-c-drawer__actions"
+              className="pf-v5-c-drawer__actions"
             >
               <div
-                className="pf-c-drawer__close"
+                className="pf-v5-c-drawer__close"
                 data-testid="hide-table-actions-panel"
                 onClick={[Function]}
               >
                 <button
                   aria-disabled={false}
                   aria-label="hide table actions panel"
-                  className="pf-c-button pf-m-plain"
+                  className="pf-v5-c-button pf-m-plain"
                   data-ouia-component-id="OUIA-Generated-Button-plain-1"
-                  data-ouia-component-type="PF4/Button"
+                  data-ouia-component-type="PF5/Button"
                   data-ouia-safe={true}
                   disabled={false}
                   onClick={[Function]}
@@ -67,14 +67,10 @@ exports[`<RecordingLabelsPanel /> renders correctly 1`] = `
                   <svg
                     aria-hidden={true}
                     aria-labelledby={null}
+                    className="pf-v5-svg"
                     fill="currentColor"
                     height="1em"
                     role="img"
-                    style={
-                      Object {
-                        "verticalAlign": "-0.125em",
-                      }
-                    }
                     viewBox="0 0 352 512"
                     width="1em"
                   >
@@ -88,7 +84,7 @@ exports[`<RecordingLabelsPanel /> renders correctly 1`] = `
           </div>
         </div>
         <div
-          className="pf-c-drawer__body"
+          className="pf-v5-c-drawer__body"
         >
           <div>
             Bulk Edit Labels

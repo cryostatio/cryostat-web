@@ -22,9 +22,10 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateSecondaryActions,
   EmptyStateVariant,
-  Title,
+  EmptyStateActions,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -46,23 +47,23 @@ export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props
   const emptyStateContent = React.useMemo(() => {
     if (isTruelyEmpty) {
       return (
-        <EmptyStateSecondaryActions>
+        <EmptyStateActions>
           Start launching a Java application or define a{' '}
           <Link to={'/topology/create-custom-target'}>Custom Target</Link>.
-        </EmptyStateSecondaryActions>
+        </EmptyStateActions>
       );
     }
     return (
       <>
         <EmptyStateBody>Adjust your filters/searches and try again.</EmptyStateBody>
-        <EmptyStateSecondaryActions>
+        <EmptyStateActions>
           <Button variant={'link'} onClick={() => dispatch(topologyDeleteAllFiltersIntent())}>
             Clear Filters
           </Button>
           <Button variant={'link'} onClick={() => searchExprService.setSearchExpression('')}>
             Clear Searches
           </Button>
-        </EmptyStateSecondaryActions>
+        </EmptyStateActions>
       </>
     );
   }, [isTruelyEmpty, searchExprService, dispatch]);
@@ -70,11 +71,12 @@ export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props
   return (
     <Bullseye {...props}>
       <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateIcon variant="container" component={TopologyIcon} />
-        <Title headingLevel="h3" size="lg">
-          No Targets Found
-        </Title>
-        {emptyStateContent}
+        <EmptyStateHeader
+          titleText="No Targets Found"
+          icon={<EmptyStateIcon icon={TopologyIcon} />}
+          headingLevel="h3"
+        />
+        <EmptyStateFooter>{emptyStateContent}</EmptyStateFooter>
       </EmptyState>
     </Bullseye>
   );

@@ -28,10 +28,6 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Button,
   Divider,
-  Dropdown as PF4Dropdown,
-  DropdownItem as PF4DropdownItem,
-  DropdownToggle,
-  DropdownToggleAction,
   Menu,
   MenuContent,
   MenuFooter,
@@ -44,8 +40,12 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggleElement,
+  MenuToggleAction,
 } from '@patternfly/react-core';
-import { Dropdown, DropdownItem, DropdownList } from '@patternfly/react-core/dist/js/next';
 import {
   EllipsisVIcon,
   FileIcon,
@@ -262,48 +262,52 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const createTemplateDropdownItems = React.useMemo(
     () => [
-      <PF4DropdownItem key="action" onClick={createBlankLayout} autoFocus icon={<FileIcon />}>
+      <DropdownItem key="action" onClick={createBlankLayout} autoFocus icon={<FileIcon />}>
         Blank Layout
-      </PF4DropdownItem>,
-      <PF4DropdownItem key="template" onClick={handleCreateModalOpen} icon={<PficonTemplateIcon />}>
+      </DropdownItem>,
+      <DropdownItem key="template" onClick={handleCreateModalOpen} icon={<PficonTemplateIcon />}>
         Choose Template
-      </PF4DropdownItem>,
-      <PF4DropdownItem key="upload" onClick={handleUploadModalOpen} icon={<UploadIcon />}>
+      </DropdownItem>,
+      <DropdownItem key="upload" onClick={handleUploadModalOpen} icon={<UploadIcon />}>
         Upload Template
-      </PF4DropdownItem>,
+      </DropdownItem>,
     ],
     [createBlankLayout, handleCreateModalOpen, handleUploadModalOpen],
   );
 
   const createTemplateButton = React.useMemo(
     () => (
-      <PF4Dropdown
-        onSelect={onCreateDropdownSelect}
-        toggle={
-          <DropdownToggle
-            id="dashboard-layout-create-dropdown-toggle"
-            splitButtonItems={[
-              <DropdownToggleAction
-                key="action"
-                onClick={(_e) => {
-                  createBlankLayout();
-                  setIsSelectorOpen(false);
-                }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center' }}>
-                  <PlusCircleIcon style={{ marginRight: 'var(--pf-global--spacer--sm)' }} />
-                  {t('DashboardLayoutToolbar.NEW_LAYOUT')}
-                </span>
-              </DropdownToggleAction>,
-            ]}
-            toggleVariant="primary"
-            splitButtonVariant="action"
-            onToggle={(open) => setIsCreateDropdownOpen(open)}
-          />
-        }
+      <Dropdown
         isOpen={isCreateDropdownOpen}
-        dropdownItems={createTemplateDropdownItems}
-      />
+        onSelect={onCreateDropdownSelect}
+        onOpenChange={setIsCreateDropdownOpen}
+        onOpenChangeKeys={['Escape']}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            className="dashboard-layout-create-dropdown-toggle"
+            onClick={() => setIsCreateDropdownOpen((open) => !open)}
+            splitButtonOptions={{
+              variant: 'action',
+              items: [
+                <MenuToggleAction
+                  onClick={(_e) => {
+                    createBlankLayout();
+                    setIsSelectorOpen(false);
+                  }}
+                  key="action"
+                >
+                  <PlusCircleIcon style={{ marginRight: 'var(--pf-v5-global--spacer--sm)' }} />
+                  {t('DashboardLayoutToolbar.NEW_LAYOUT')}
+                </MenuToggleAction>,
+              ],
+            }}
+            variant="primary"
+          />
+        )}
+      >
+        <DropdownList>{createTemplateDropdownItems}</DropdownList>
+      </Dropdown>
     ),
     [
       t,
@@ -351,17 +355,18 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
 
   const dropdownItems = React.useMemo(() => {
     return (
-      <DropdownList>
-        <DropdownItem key="template" itemId={'template'}>
+      <>
+        <DropdownItem key="template" value={'template'}>
           {t('DashboardLayoutToolbar.SET_AS_TEMPLATE')}
         </DropdownItem>
-        <DropdownItem key="download" itemId={'download'}>
+        <DropdownItem key="download" value={'download'}>
           {t('DashboardLayoutToolbar.DOWNLOAD_AS_TEMPLATE')}
         </DropdownItem>
-        <DropdownItem key="clearAll" itemId={'clearAll'} isDisabled={currLayout.cards.length < 1}>
+        <Divider />
+        <DropdownItem key="clearAll" value={'clearAll'} isDisabled={currLayout.cards.length < 1} isDanger>
           {t('DashboardLayoutToolbar.CLEAR_LAYOUT')}
         </DropdownItem>
-      </DropdownList>
+      </>
     );
   }, [t, currLayout.cards.length]);
 
@@ -404,16 +409,14 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       <Dropdown
         isOpen={isKebabOpen}
         onSelect={onKebabSelect}
-        minWidth="12em"
-        onOpenChange={(isOpen) => {
-          setIsKebabOpen(isOpen);
-        }}
-        toggle={(toggleRef) => (
+        onOpenChange={setIsKebabOpen}
+        onOpenChangeKeys={['Escape']}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
             aria-label={t('DashboardLayoutToolbar.MENU.LABEL')}
             variant="plain"
-            onClick={() => setIsKebabOpen(!isKebabOpen)}
+            onClick={() => setIsKebabOpen((isKebabOpen) => !isKebabOpen)}
             isExpanded={isKebabOpen}
             data-quickstart-id="layout-toolbar-kebab-btn"
           >
@@ -421,7 +424,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           </MenuToggle>
         )}
       >
-        {dropdownItems}
+        <DropdownList>{dropdownItems}</DropdownList>
       </Dropdown>
     ),
     [t, onKebabSelect, setIsKebabOpen, isKebabOpen, dropdownItems],
@@ -484,6 +487,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
       <Dropdown
         isOpen={isSelectorOpen}
         onOpenChange={onOpenChange}
+        onOpenChangeKeys={['Escape']}
         toggle={(toggleRef) => (
           <MenuToggle
             ref={toggleRef}
@@ -495,13 +499,8 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           </MenuToggle>
         )}
       >
-        <Menu
-          aria-label={t('DashboardLayoutToolbar.MENU.LABEL')}
-          isScrollable
-          onSelect={onLayoutSelect}
-          onActionClick={onActionClick}
-        >
-          <MenuContent maxMenuHeight="21.5em" id="dashboard-layout-menu-content">
+        <Menu isScrollable onSelect={onLayoutSelect} onActionClick={onActionClick}>
+          <MenuContent maxMenuHeight="40vh" id="dashboard-layout-menu-content">
             {menuGroups(t('DashboardLayoutToolbar.MENU.FAVORITES'), true)}
             <Divider />
             {menuGroups(t('DashboardLayoutToolbar.MENU.OTHERS'), false)}

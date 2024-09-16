@@ -36,6 +36,8 @@ import {
   ExpandableSection,
   Flex,
   FlexItem,
+  List,
+  ListItem,
   Stack,
   StackItem,
   Tab,
@@ -45,7 +47,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationTriangleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
-import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -498,7 +500,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
               <CardTitle>{title}</CardTitle>
             </CardHeader>
             <CardBody>
-              <TableComposable variant="compact" borders={false}>
+              <Table variant="compact" borders={false}>
                 <Thead>
                   <Tr>
                     <Th />
@@ -512,7 +514,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
                 {rowData.map((val) => (
                   <TargetResourceItem key={val} targetNode={targetNode} resourceType={val} />
                 ))}
-              </TableComposable>
+              </Table>
             </CardBody>
           </Card>
         </StackItem>
@@ -654,6 +656,12 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
 }) => {
   const [status, extra] = statusContent;
   const [showBanner, setShowBanner] = React.useState(true);
+  const variant = React.useMemo(() => {
+    if (status == NodeStatus.default) {
+      return 'info';
+    }
+    return status;
+  }, [status]);
   return (
     <div className="entity-overview__header" {...props}>
       <Flex>
@@ -664,7 +672,7 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
       </Flex>
       {status && showBanner ? (
         <Alert
-          variant={status}
+          variant={variant}
           isInline
           title={extra?.title}
           className={'entity-overview__alert-banner'}
@@ -675,11 +683,11 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
               <>
                 <StackItem key={'alert-description'}>{extra?.description}</StackItem>
                 <StackItem key={'alert-call-for-action'}>
-                  <Flex>
+                  <List>
                     {extra.callForAction.map((action, index) => (
-                      <FlexItem key={index}>{action}</FlexItem>
+                      <ListItem key={index}>{action} </ListItem>
                     ))}
-                  </Flex>
+                  </List>
                 </StackItem>
               </>
             ) : null}

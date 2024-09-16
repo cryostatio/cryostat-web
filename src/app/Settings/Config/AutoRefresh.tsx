@@ -28,7 +28,7 @@ const defaultPreferences = {
 };
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(defaultPreferences);
 
@@ -41,7 +41,7 @@ const Component = () => {
   }, [setState, context.settings]);
 
   const handleAutoRefreshEnabledChange = React.useCallback(
-    (autoRefreshEnabled) => {
+    (_, autoRefreshEnabled) => {
       setState((state) => ({ ...state, autoRefreshEnabled }));
       context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
     },

@@ -18,15 +18,16 @@ import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { AnalysisResult } from '@app/Shared/Services/api.types';
 import {
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
-  DropdownToggle,
   ToolbarChipGroup,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -126,20 +127,27 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
-        aria-label={'Category Dropdown'}
-        position={DropdownPosition.left}
-        toggle={
-          <DropdownToggle aria-label={currentCategory} onToggle={onCategoryToggle}>
-            <FilterIcon /> {getCategoryDisplay(currentCategory)}
-          </DropdownToggle>
-        }
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle ref={toggleRef} aria-label={currentCategory} onClick={onCategoryToggle} icon={<FilterIcon />}>
+            {getCategoryDisplay(currentCategory)}
+          </MenuToggle>
+        )}
         isOpen={isCategoryDropdownOpen}
-        dropdownItems={allowedAutomatedAnalysisFilters.map((cat) => (
-          <DropdownItem aria-label={cat} key={cat} onClick={() => onCategorySelect(cat)}>
-            {cat}
-          </DropdownItem>
-        ))}
-      />
+        onOpenChange={setIsCategoryDropdownOpen}
+        onOpenChangeKeys={['Escape']}
+        popperProps={{
+          position: 'left',
+        }}
+        selected={currentCategory}
+      >
+        <DropdownList>
+          {allowedAutomatedAnalysisFilters.map((cat) => (
+            <DropdownItem aria-label={cat} value={cat} key={cat} onClick={() => onCategorySelect(cat)}>
+              {cat}
+            </DropdownItem>
+          ))}
+        </DropdownList>
+      </Dropdown>
     );
   }, [isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect, getCategoryDisplay]);
 

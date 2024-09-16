@@ -17,70 +17,80 @@
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Select, SelectOption } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
+import { isDevNodeEnv } from '../utils';
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [state, setState] = React.useState(FeatureLevel.PRODUCTION);
+  const [featureLevel, setFeatureLevel] = React.useState(FeatureLevel.PRODUCTION);
   const [open, setOpen] = React.useState(false);
 
   React.useLayoutEffect(() => {
-    addSubscription(context.settings.featureLevel().subscribe((level) => setState(level)));
-  }, [addSubscription, context.settings, setState]);
+    addSubscription(context.settings.featureLevel().subscribe(setFeatureLevel));
+  }, [addSubscription, context.settings, setFeatureLevel]);
 
-  const handleToggle = React.useCallback(() => {
-    setOpen((v) => !v);
-  }, [setOpen]);
+  const handleToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
 
   const handleSelect = React.useCallback(
     (_, v) => {
-      setState(v.value);
+      setFeatureLevel(v.value);
       context.settings.setFeatureLevel(v.value);
       setOpen(false);
     },
-    [setState, setOpen, context.settings],
+    [setFeatureLevel, setOpen, context.settings],
+  );
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        aria-label={t('SETTINGS.FEATURE_LEVEL.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={handleToggle}
+        isExpanded={open}
+        isFullWidth
+      >
+        {t(FeatureLevel[featureLevel])}
+      </MenuToggle>
+    ),
+    [handleToggle, open, featureLevel, t],
   );
 
   return (
     <>
       <Select
         isOpen={open}
-        onToggle={handleToggle}
-        selections={{
-          ...{ value: state },
-          toString: () => t(FeatureLevel[state]),
-          compareTo: (val) => val.value === state,
-        }}
+        selected={featureLevel}
         onSelect={handleSelect}
-        isFlipEnabled={true}
-        menuAppendTo="parent"
+        popperProps={{
+          enableFlip: true,
+          appendTo: portalRoot,
+        }}
+        toggle={toggle}
+        onOpenChange={setOpen}
+        onOpenChangeKeys={['Escape']}
       >
-        {Object.values(FeatureLevel)
-          .filter((v) => typeof v === 'string')
-          .map((v): { key: string; value: number } => ({ key: String(v), value: FeatureLevel[v] }))
-          .filter((v) => {
-            if (!process.env.CRYOSTAT_AUTHORITY) {
-              return v.value !== FeatureLevel.DEVELOPMENT;
-            }
-            return true;
-          })
-          .map((level) => (
-            <SelectOption
-              key={level.key}
-              value={{
-                ...{ value: level.value },
-                toString: () => t(level.key),
-                compareTo: (val) => val.value === level.value,
-              }}
-            >
-              {level.key}
-            </SelectOption>
-          ))}
+        <SelectList>
+          {Object.values(FeatureLevel)
+            .filter((v) => typeof v === 'string')
+            .map((v): { key: string; value: number } => ({ key: v.toString(), value: FeatureLevel[v] }))
+            .filter((v) => isDevNodeEnv() || v.value !== FeatureLevel.DEVELOPMENT)
+            .map((level) => (
+              <SelectOption
+                key={level.key}
+                value={level}
+                isSelected={featureLevel == level.value}
+                description={t(`SETTINGS.FEATURE_LEVEL.${level.key}_DESCRIPTION`)}
+              >
+                {t(level.key)}
+              </SelectOption>
+            ))}
+        </SelectList>
       </Select>
     </>
   );

@@ -2,34 +2,34 @@
 
 exports[`<DeletionDialogControl/> renders correctly 1`] = `
 <div
-  className="pf-l-stack pf-m-gutter"
+  className="pf-v5-l-stack pf-m-gutter"
 >
   <div
-    className="pf-l-stack__item"
+    className="pf-v5-l-stack__item"
   >
     <div
-      className="pf-c-form__group"
+      className="pf-v5-c-form__group"
     >
       <div
-        className="pf-c-form__group-control"
+        className="pf-v5-c-form__group-control"
       >
         <div
-          className="pf-c-helper-text"
+          className="pf-v5-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item"
+            className="pf-v5-c-helper-text__item"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v5-c-helper-text__item-text"
             >
               Enable or disable deletion dialogs by deletion type.
             </span>
           </div>
         </div>
         <label
-          className="pf-c-switch"
+          className="pf-v5-c-switch"
           data-ouia-component-id="OUIA-Generated-Switch-1"
-          data-ouia-component-type="PF4/Switch"
+          data-ouia-component-type="PF5/Switch"
           data-ouia-safe={true}
           htmlFor="all-deletion-warnings"
         >
@@ -37,60 +37,57 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
             aria-label=""
             aria-labelledby="all-deletion-warnings-on"
             checked={true}
-            className="pf-c-switch__input"
+            className="pf-v5-c-switch__input"
             disabled={false}
             id="all-deletion-warnings"
             onChange={[Function]}
             type="checkbox"
           />
           <span
-            className="pf-c-switch__toggle"
+            className="pf-v5-c-switch__toggle"
           />
           <span
             aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
+            className="pf-v5-c-switch__label pf-m-on"
             id="all-deletion-warnings-on"
           >
             All deletion warnings
           </span>
           <span
             aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
+            className="pf-v5-c-switch__label pf-m-off"
             id="all-deletion-warnings-off"
           >
             All deletion warnings
           </span>
         </label>
-        
       </div>
     </div>
   </div>
   <div
-    className="pf-l-stack__item"
+    className="pf-v5-l-stack__item"
   >
     <div
-      className="pf-c-expandable-section"
+      className="pf-v5-c-expandable-section"
     >
       <button
+        aria-controls="delete-dialog-options"
         aria-expanded={false}
-        className="pf-c-expandable-section__toggle"
+        className="pf-v5-c-expandable-section__toggle"
+        id="delete-dialog-options-toggle"
         onClick={[Function]}
         type="button"
       >
         <span
-          className="pf-c-expandable-section__toggle-icon"
+          className="pf-v5-c-expandable-section__toggle-icon"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v5-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              Object {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 256 512"
             width="1em"
           >
@@ -100,23 +97,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </svg>
         </span>
         <span
-          className="pf-c-expandable-section__toggle-text"
+          className="pf-v5-c-expandable-section__toggle-text"
         >
           Show more
         </span>
       </button>
       <div
-        className="pf-c-expandable-section__content"
+        aria-labelledby="delete-dialog-options-toggle"
+        className="pf-v5-c-expandable-section__content"
         hidden={true}
-        id=""
+        id="delete-dialog-options"
+        role="region"
       >
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-2"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteActiveRecordings"
           >
@@ -124,25 +123,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteActiveRecordings-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteActiveRecordings"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteActiveRecordings-on"
             >
               Delete Active Recording
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteActiveRecordings-off"
             >
               Delete Active Recording
@@ -150,12 +149,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-3"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteArchivedRecordings"
           >
@@ -163,25 +162,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteArchivedRecordings-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteArchivedRecordings"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteArchivedRecordings-on"
             >
               Delete Archived Recording
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteArchivedRecordings-off"
             >
               Delete Archived Recording
@@ -189,12 +188,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-4"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteAutomatedRules"
           >
@@ -202,25 +201,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteAutomatedRules-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteAutomatedRules"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteAutomatedRules-on"
             >
               Delete Automated Rule
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteAutomatedRules-off"
             >
               Delete Automated Rule
@@ -228,12 +227,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-5"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DisableAutomatedRules"
           >
@@ -241,25 +240,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DisableAutomatedRules-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DisableAutomatedRules"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DisableAutomatedRules-on"
             >
               Disable Automated Rule
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DisableAutomatedRules-off"
             >
               Disable Automated Rule
@@ -267,12 +266,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-6"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteEventTemplates"
           >
@@ -280,25 +279,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteEventTemplates-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteEventTemplates"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteEventTemplates-on"
             >
               Delete Event Template
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteEventTemplates-off"
             >
               Delete Event Template
@@ -306,12 +305,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-7"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteProbeTemplates"
           >
@@ -319,25 +318,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteProbeTemplates-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteProbeTemplates"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteProbeTemplates-on"
             >
               Delete Probe Template
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteProbeTemplates-off"
             >
               Delete Probe Template
@@ -345,12 +344,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-8"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteActiveProbes"
           >
@@ -358,25 +357,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteActiveProbes-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteActiveProbes"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteActiveProbes-on"
             >
               Remove active probes
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteActiveProbes-off"
             >
               Remove active probes
@@ -384,12 +383,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-9"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteCredentials"
           >
@@ -397,25 +396,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteCredentials-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteCredentials"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteCredentials-on"
             >
               Delete Credentials
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteCredentials-off"
             >
               Delete Credentials
@@ -423,12 +422,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-10"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteCustomTargets"
           >
@@ -436,25 +435,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteCustomTargets-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteCustomTargets"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteCustomTargets-on"
             >
               Delete Custom Targets
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteCustomTargets-off"
             >
               Delete Custom Targets
@@ -462,12 +461,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-11"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteDashboardLayout"
           >
@@ -475,25 +474,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteDashboardLayout-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteDashboardLayout"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteDashboardLayout-on"
             >
               Delete Dashboard layouts
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteDashboardLayout-off"
             >
               Delete Dashboard layouts
@@ -501,12 +500,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-12"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteLayoutTemplate"
           >
@@ -514,25 +513,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="DeleteLayoutTemplate-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="DeleteLayoutTemplate"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="DeleteLayoutTemplate-on"
             >
               Delete Layout Template
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="DeleteLayoutTemplate-off"
             >
               Delete Layout Template
@@ -540,12 +539,12 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
           </label>
         </div>
         <div
-          className="pf-l-stack__item"
+          className="pf-v5-l-stack__item"
         >
           <label
-            className="pf-c-switch"
+            className="pf-v5-c-switch"
             data-ouia-component-id="OUIA-Generated-Switch-13"
-            data-ouia-component-type="PF4/Switch"
+            data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ClearDashboardLayout"
           >
@@ -553,25 +552,25 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
               aria-label=""
               aria-labelledby="ClearDashboardLayout-on"
               checked={true}
-              className="pf-c-switch__input"
+              className="pf-v5-c-switch__input"
               disabled={false}
               id="ClearDashboardLayout"
               onChange={[Function]}
               type="checkbox"
             />
             <span
-              className="pf-c-switch__toggle"
+              className="pf-v5-c-switch__toggle"
             />
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-on"
+              className="pf-v5-c-switch__label pf-m-on"
               id="ClearDashboardLayout-on"
             >
               Clear Dashboard Layout
             </span>
             <span
               aria-hidden="true"
-              className="pf-c-switch__label pf-m-off"
+              className="pf-v5-c-switch__label pf-m-off"
               id="ClearDashboardLayout-off"
             >
               Clear Dashboard Layout

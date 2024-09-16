@@ -15,10 +15,23 @@
  */
 
 import { useDayjs } from '@app/utils/hooks/useDayjs';
+import { portalRoot } from '@app/utils/utils';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import {
+  Divider,
+  Icon,
+  MenuSearch,
+  MenuSearchInput,
+  MenuToggle,
+  MenuToggleElement,
+  SearchInput,
+  Select,
+  SelectList,
+  SelectOption,
+} from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,38 +40,40 @@ const DEFAULT_NUM_OPTIONS = 10;
 const OPTION_INCREMENT = 15;
 
 export interface TimezonePickerProps {
+  id?: string;
   isFlipEnabled?: boolean;
-  isCompact?: boolean;
-  menuAppendTo?: HTMLElement | (() => HTMLElement) | 'inline' | 'parent' | undefined;
   onTimezoneChange?: (timezone: Timezone) => void;
   selected: Timezone;
 }
 
 export const TimezonePicker: React.FC<TimezonePickerProps> = ({
+  id,
   isFlipEnabled = true,
-  isCompact,
-  menuAppendTo = 'parent',
   selected,
   onTimezoneChange = (_) => undefined,
 }) => {
-  const [t] = useTranslation();
-  const [dayjs, _] = useDayjs();
+  const { t } = useTranslation();
+  const [dayjs, _dateFormat] = useDayjs();
   const [numOfOptions, setNumOfOptions] = React.useState(DEFAULT_NUM_OPTIONS);
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   const onSelect = React.useCallback(
-    (_, timezone, isPlaceholder) => {
-      if (isPlaceholder) {
-        return;
+    (_, timezone) => {
+      if (timezone) {
+        setIsTimezoneOpen(false);
+        onTimezoneChange({
+          full: timezone.full,
+          short: timezone.short,
+        });
       }
-      setIsTimezoneOpen(false);
-      onTimezoneChange({
-        full: timezone.full,
-        short: timezone.short,
-      });
     },
     [onTimezoneChange, setIsTimezoneOpen],
   );
+
+  const onToggle = React.useCallback(() => setIsTimezoneOpen((isOpen) => !isOpen), [setIsTimezoneOpen]);
+
+  const onInputChange = React.useCallback((_, inputVal: string) => setSearchTerm(inputVal), [setSearchTerm]);
 
   const timezones = React.useMemo(() => supportedTimezones(), []);
 
@@ -69,77 +84,98 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
     [setNumOfOptions, timezones],
   );
 
-  const mapToSelection = React.useCallback(
-    (timezone: Timezone, isCompact?: boolean) => {
-      return (
-        <SelectOption
-          key={timezone.full}
-          value={{
-            ...timezone,
-            toString: () => timezone.full,
-            compareTo: (val) => timezone.full === val.full,
-          }}
-          description={isCompact ? timezone.full : timezone.short}
-        >
-          {isCompact ? timezone.short : `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
-        </SelectOption>
-      );
-    },
+  const getTimezoneDisplay = React.useCallback(
+    (timezone: Timezone) => `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`,
     [dayjs],
   );
 
-  const options = React.useMemo(() => {
-    return timezones
-      .slice(0, numOfOptions)
-      .map((timezone) => mapToSelection(timezone, isCompact))
-      .concat(
-        numOfOptions < timezones.length
-          ? [
-              <SelectOption key="view-more" isPlaceholder onClick={handleViewMore}>
-                <span className={css('pf-c-button', 'pf-m-link', 'pf-m-inline')}>
-                  {t('VIEW_MORE', { ns: 'common' })}
-                </span>
-              </SelectOption>,
-            ]
-          : [],
+  const mapToSelection = React.useCallback(
+    (timezone: Timezone) => {
+      return (
+        <SelectOption
+          key={timezone.full}
+          value={timezone}
+          description={timezone.short}
+          isSelected={selected.full === timezone.full}
+        >
+          {getTimezoneDisplay(timezone)}
+        </SelectOption>
       );
-  }, [isCompact, timezones, numOfOptions, t, handleViewMore, mapToSelection]);
-
-  const onFilter = React.useCallback(
-    (_: React.ChangeEvent<HTMLInputElement> | null, value: string) => {
-      if (!value) {
-        return options;
-      }
-      const matchExp = new RegExp(value.replace(/([+])/gi, `\\$1`), 'i');
-      return timezones
-        .filter((op) => matchExp.test(op.full) || matchExp.test(op.short))
-        .map((t) => mapToSelection(t, isCompact));
     },
-    [timezones, options, isCompact, mapToSelection],
+    [selected, getTimezoneDisplay],
+  );
+
+  const filteredTimezones = React.useMemo(() => {
+    let _opts = timezones;
+    if (searchTerm) {
+      const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
+      _opts = _opts.filter((tz) => matchExp.test(getTimezoneDisplay(tz)));
+    }
+    return _opts.slice(0, numOfOptions);
+  }, [timezones, numOfOptions, searchTerm, getTimezoneDisplay]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        aria-label={t('TimezonePicker.ARIA_LABELS.MENU_TOGGLE')}
+        id={id}
+        ref={toggleRef}
+        onClick={onToggle}
+        isExpanded={isTimezoneOpen}
+        isFullWidth
+        icon={
+          <Icon>
+            <GlobeIcon />
+          </Icon>
+        }
+      >
+        {selected.full}
+      </MenuToggle>
+    ),
+    [onToggle, t, isTimezoneOpen, selected.full, id],
   );
 
   return (
     <Select
-      variant={SelectVariant.single}
-      onToggle={setIsTimezoneOpen}
-      isFlipEnabled={isFlipEnabled}
-      menuAppendTo={menuAppendTo}
-      maxHeight="16em"
-      width={isCompact ? '8.5em' : undefined}
-      selections={{
-        ...selected,
-        toString: () => selected.full,
-        compareTo: (val) => selected.full === val.full,
+      toggle={toggle}
+      popperProps={{
+        enableFlip: isFlipEnabled,
+        preventOverflow: true,
+        appendTo: portalRoot,
       }}
       onSelect={onSelect}
-      onFilter={onFilter}
-      hasInlineFilter
-      aria-label={t('TimezonePicker.ARIA_LABELS.SELECT') || ''}
-      typeAheadAriaLabel={t('TimezonePicker.ARIA_LABELS.TYPE_AHEAD') || ''}
+      aria-label={t('TimezonePicker.ARIA_LABELS.SELECT')}
       isOpen={isTimezoneOpen}
-      toggleIndicator={<GlobeIcon />}
+      onOpenChange={(isOpen) => setIsTimezoneOpen(isOpen)}
+      onOpenChangeKeys={['Escape']}
+      isScrollable
+      maxMenuHeight="40vh"
     >
-      {options}
+      <MenuSearch>
+        <MenuSearchInput>
+          <SearchInput
+            placeholder={t('TimezonePicker.SEARCH_PLACEHOLDER')}
+            value={searchTerm}
+            onChange={onInputChange}
+            aria-label={t('TimezonePicker.ARIA_LABELS.TYPE_AHEAD')}
+          />
+        </MenuSearchInput>
+      </MenuSearch>
+      <Divider />
+      <SelectList>
+        {filteredTimezones.length > 0 ? (
+          filteredTimezones.map(mapToSelection)
+        ) : (
+          <SelectOption isDisabled>No results found</SelectOption>
+        )}
+        {numOfOptions < timezones.length && filteredTimezones.length > 0 ? (
+          <SelectOption key="view-more" onClick={handleViewMore} value={undefined}>
+            <span className={css('pf-v5-c-button', 'pf-m-link', 'pf-m-inline')}>
+              {t('VIEW_MORE', { ns: 'common' })}
+            </span>
+          </SelectOption>
+        ) : null}
+      </SelectList>
     </Select>
   );
 };

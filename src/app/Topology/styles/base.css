@@ -18,22 +18,18 @@ limitations under the License.
 Below CSS rules only apply to Topology components
 */
 
-.topology__view-switcher {
-  font-size: 1.8em !important;
-}
-
 .sample-node-donut__node-wrapper {
   position: relative;
   width: 12em;
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 1px solid var(--pf-global--palette--black-300);
-  background-color: var(--pf-global--palette--white);
+  border: 1px solid var(--pf-v5-global--palette--black-300);
+  background-color: var(--pf-v5-global--palette--white);
   margin: 1em;
 }
 
-:where(.pf-theme-dark) .sample-node-donut__node-wrapper {
-  background-color: var(--pf-global--BackgroundColor--dark-300);
+:where(.pf-v5-theme-dark) .sample-node-donut__node-wrapper {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__node-icon {
@@ -42,10 +38,11 @@ Below CSS rules only apply to Topology components
   aspect-ratio: 1;
   top: 50%;
   left: 50%;
-  margin: -45% 0 0 -45%; /* Ensure true center */
+  /* Ensure true center */
+  margin: -45% 0 0 -45%;
   border-radius: 50%;
   padding: 1em;
-  border: 0.8em solid var(--pf-global--palette--blue-400);
+  border: 0.8em solid var(--pf-v5-global--palette--blue-400);
 }
 
 .sample-node-donut__node-wrapper.active:hover {
@@ -54,11 +51,11 @@ Below CSS rules only apply to Topology components
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__node-icon.success {
-  border: 0.8em solid var(--pf-global--success-color--100);
+  border: 0.8em solid var(--pf-v5-global--success-color--100);
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__node-icon.error {
-  border: 0.8em solid var(--pf-global--danger-color--100);
+  border: 0.8em solid var(--pf-v5-global--danger-color--100);
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
@@ -69,12 +66,12 @@ Below CSS rules only apply to Topology components
   border-radius: 50%;
   top: 75%;
   left: 10%;
-  border: 1px solid var(--pf-global--palette--black-300);
-  background-color: var(--pf-global--palette--white);
+  border: 1px solid var(--pf-v5-global--palette--black-300);
+  background-color: var(--pf-v5-global--palette--white);
 }
 
-:where(.pf-theme-dark) .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
-  background-color: var(--pf-global--BackgroundColor--dark-300);
+:where(.pf-v5-theme-dark) .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
 .sample-node-donut__node-wrapper .sample-node-donut__status-indicator svg {
@@ -91,17 +88,17 @@ Below CSS rules only apply to Topology components
   box-shadow: 0 0.25rem 0.5rem 0rem rgba(3, 3, 3, 0.16), 0 0 0.25rem 0 rgba(3, 3, 3, 0.06);
   font-weight: 700;
   word-break: break-all;
-  background-color: var(--pf-global--palette--white);
+  background-color: var(--pf-v5-global--palette--white);
 }
 
-:where(.pf-theme-dark) .sample-node-donut__node-label {
-  background-color: var(--pf-global--BackgroundColor--dark-300);
+:where(.pf-v5-theme-dark) .sample-node-donut__node-label {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
 .sample-node-donut__node-label-badge {
   position: relative;
-  background-color: var(--pf-global--palette--blue-500);
-  color: var(--pf-global--palette--white);
+  background-color: var(--pf-v5-global--palette--blue-500);
+  color: var(--pf-v5-global--palette--white);
   padding: 2px 12px 2px 12px;
   margin-right: 8px;
   text-align: center;
@@ -109,7 +106,7 @@ Below CSS rules only apply to Topology components
 }
 
 .empty-text {
-  color: var(--pf-global--palette--black-400);
+  color: var(--pf-v5-global--palette--black-400);
 }
 
 .entity-overview {
@@ -118,31 +115,30 @@ Below CSS rules only apply to Topology components
   flex-direction: column;
 }
 
-.entity-overview .pf-c-tab-content {
+.entity-overview .pf-v5-c-tab-content {
   flex: 1 1 0;
   overflow: auto;
 }
 
-.dashboard-card-preview .entity-overview .pf-c-tab-content {
+.dashboard-card-preview .entity-overview .pf-v5-c-tab-content {
   overflow: hidden;
 }
-
 
 .entity-overview__wrapper {
   padding: 1.5em;
   padding-right: 0.5em;
 }
 
-.entity-overview .pf-c-tabs__item-text {
+.entity-overview .pf-v5-c-tabs__item-text {
   font-size: 1.1em;
 }
 
-.entity-overview .pf-c-tabs__item.pf-m-current .pf-c-tabs__item-text {
-  color: var(--pf-global--palette--blue-400);
+.entity-overview .pf-v5-c-tabs__item.pf-m-current .pf-v5-c-tabs__item-text {
+  color: var(--pf-v5-global--palette--blue-400);
 }
 
 .entity-overview__displayed-keyvalues-wrapper {
-  border: 1px solid var(--pf-global--palette--black-200);
+  border: 1px solid var(--pf-v5-global--palette--black-200);
   padding: 4px;
   width: fit-content;
 }
@@ -154,16 +150,16 @@ Below CSS rules only apply to Topology components
 .entity-overview__entity-title-wrapper {
   font-weight: 700;
   font-size: 1.2em;
-  color:  var(--pf-global--palette--blue-500);
+  color: var(--pf-v5-global--palette--blue-500);
 }
 
-:where(.pf-theme-dark) .entity-overview__entity-title-wrapper {
-  color: var(--pf-global--palette--blue-300);
+:where(.pf-v5-theme-dark) .entity-overview__entity-title-wrapper {
+  color: var(--pf-v5-global--palette--blue-300);
 }
 
 .entity-overview__entity-title-badge {
-  background-color: var(--pf-global--palette--blue-500);
-  color: var(--pf-global--palette--white);
+  background-color: var(--pf-v5-global--palette--blue-500);
+  color: var(--pf-v5-global--palette--white);
   padding: 2px 12px 2px 12px;
   margin-right: 8px;
   text-align: center;
@@ -187,21 +183,21 @@ Below CSS rules only apply to Topology components
 }
 
 .entity-overview__action-menu {
-  background-color: var(--pf-global--palette--white);
+  background-color: var(--pf-v5-global--palette--white);
 }
 
 .topology-listview__realm-title {
   font-size: 1.2em;
-  color:  var(--pf-global--palette--blue-500);
+  color: var(--pf-v5-global--palette--blue-500);
   margin-right: 0.5em;
 }
 
-:where(.pf-theme-dark) .topology-listview__realm-title {
-  color: var(--pf-global--palette--blue-300);
+:where(.pf-v5-theme-dark) .topology-listview__realm-title {
+  color: var(--pf-v5-global--palette--blue-300);
 }
 
 .topology__help-icon {
-  color: var(--pf-global--palette--blue-400);
+  color: var(--pf-v5-c-button--m-link--Color);
 }
 
 .topology__help-icon-button {
@@ -209,10 +205,14 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__shortcut-command {
-  border: 1px solid var(--pf-global--palette--black-300);
+  border: 1px solid var(--pf-v5-global--palette--black-300);
   padding: 2px 4px;
   border-radius: 4px;
-  color: var(--pf-global--palette--black-600);
+  color: var(--pf-v5-global--palette--black-600);
+}
+
+:where(.pf-v5-theme-dark) .topology__shortcut-command  {
+  color: var(--pf-v5-global--palette--white);
 }
 
 .topology__shortcut-command-icon {
@@ -223,12 +223,24 @@ Below CSS rules only apply to Topology components
   margin: 0 0.5em
 }
 
+:where(.pf-v5-theme-dark) .topology__short-cuts.pf-v5-c-table {
+  --pf-v5-c-table--BackgroundColor: var(--pf-v5-global--BackgroundColor--300);
+}
+
 .topology__node-badge text {
-  fill: var(--pf-global--palette--white);
+  fill: var(--pf-v5-global--palette--white) !important;
   font-weight: 700;
 }
 
-#topology__visualization-container.topology__main-container  {
+.topology__group-node-badge {
+  fill: var(--pf-v5-global--palette--white);
+}
+
+:where(.pf-v5-theme-dark) .topology__group-node-badge {
+  fill: var(--pf-v5-global--palette--black-300);
+}
+
+#topology__visualization-container.topology__main-container {
   padding: 1em;
 }
 
@@ -249,23 +261,13 @@ Below CSS rules only apply to Topology components
   fill-opacity: 0.5;
 }
 
-.topology__display-option-menu {
-  width: max-content;
-}
-
-.topology__display-option-menu-item {
-  margin-top: var(--pf-c-select__menu-group-title--PaddingTop);
-  margin-right: var(--pf-c-select__menu-group-title--PaddingRight);
-  margin-bottom: var(--pf-c-select__menu-group-title--PaddingBottom);
-  margin-left: var(--pf-c-select__menu-group-title--PaddingLeft);
-}
-
 .topology__toolbar-container {
-  padding: 0.4em 0 0.2em 0 !important;
+  padding: 0.8em 0 0.4em 0 !important;
 }
 
 .topology__toolbar-chip-content {
-  padding: 0 0.5em 0.4em 1em; /* Subtract 0.5em chip group right margin */
+  padding: 0 0.5em 0.4em 1em;
+  /* Subtract 0.5em chip group right margin */
 }
 
 .topology__filter-chip-group {
@@ -278,11 +280,11 @@ Below CSS rules only apply to Topology components
   box-sizing: border-box;
   border-radius: 8px;
   padding: 4px;
-  background-color: var(--pf-global--palette--white);
+  background-color: var(--pf-v5-global--palette--white);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tab-icon {
-  background-color: var(--pf-global--BackgroundColor--dark-400);
+:where(.pf-v5-theme-dark) .topology__quicksearch__tab-icon {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-400);
 }
 
 .topology__quicksearch__tab-text {
@@ -293,24 +295,24 @@ Below CSS rules only apply to Topology components
   margin: 0 !important;
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tabs {
-    background-color: var(--pf-global--BackgroundColor--dark-300);
+:where(.pf-v5-theme-dark) .topology__quicksearch__tabs {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tabs .pf-c-label {
-  background-color: var(--pf-global--BackgroundColor--dark-200);
+:where(.pf-v5-theme-dark) .topology__quicksearch__tabs .pf-v5-c-label {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-200);
 }
 
 .topology__quicksearch__tab.pf-m-current {
-  background-color: var(--pf-global--BackgroundColor--200);
+  background-color: var(--pf-v5-global--BackgroundColor--200);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tab.pf-m-current {
-  background-color: var(--pf-global--BackgroundColor--100);
+:where(.pf-v5-theme-dark) .topology__quicksearch__tab.pf-m-current {
+  background-color: var(--pf-v5-global--BackgroundColor--100);
 }
 
-:where(.pf-theme-dark) .topology__quicksearch__tab-content {
-  background-color: var(--pf-global--BackgroundColor--dark-300);
+:where(.pf-v5-theme-dark) .topology__quicksearch__tab-content {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-300);
 }
 
 .topology__quicksearch__tab-content-title {
@@ -339,13 +341,13 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__list-view__entity-details {
-  background-color: var(--pf-global--palette--white);
+  background-color: var(--pf-v5-global--palette--white);
   padding: 1em;
   height: 25em !important;
 }
 
-:where(.pf-theme-dark) .topology__list-view__entity-details {
-  background-color: var(--pf-global--BackgroundColor--dark-100);
+:where(.pf-v5-theme-dark) .topology__list-view__entity-details {
+  background-color: var(--pf-v5-global--BackgroundColor--dark-100);
 }
 
 .topology__treeview-container {
@@ -353,6 +355,6 @@ Below CSS rules only apply to Topology components
 }
 
 /* tree node container should span entire width */
-.topology__treeview-container .pf-c-tree-view__node-content {
+.topology__treeview-container .pf-v5-c-tree-view__node-content {
   width: 100%;
 }

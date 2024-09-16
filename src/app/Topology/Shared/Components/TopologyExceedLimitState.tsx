@@ -19,8 +19,9 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateSecondaryActions,
-  Title,
+  EmptyStateActions,
+  EmptyStateHeader,
+  EmptyStateFooter,
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -36,18 +37,23 @@ export const TopologyExceedLimitState: React.FC<TopologyExceedLimitStateProps> =
   return (
     <Bullseye {...props}>
       <EmptyState>
-        <EmptyStateIcon variant="container" component={TopologyIcon} />
-        <Title headingLevel="h4">Loading of application topology is taking longer than expected</Title>
+        <EmptyStateHeader
+          titleText="Loading of application topology is taking longer than expected"
+          icon={<EmptyStateIcon icon={TopologyIcon} />}
+          headingLevel="h4"
+        />
         <EmptyStateBody>
           We are working on loading the topology of your applications. Since the data to be displayed is large, the
           rendering is taking more time. To see a smaller subset of your applications, use the filters to select the
           parameters or click Continue to keep waiting.
         </EmptyStateBody>
-        <EmptyStateSecondaryActions>
-          <Button variant="link" onClick={onShowTopologyAnyway}>
-            Continue
-          </Button>
-        </EmptyStateSecondaryActions>
+        <EmptyStateFooter>
+          <EmptyStateActions>
+            <Button variant="link" onClick={onShowTopologyAnyway}>
+              Continue
+            </Button>
+          </EmptyStateActions>
+        </EmptyStateFooter>
       </EmptyState>
     </Bullseye>
   );

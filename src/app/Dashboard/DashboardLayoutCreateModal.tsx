@@ -26,7 +26,10 @@ import {
   Button,
   Form,
   FormGroup,
+  FormHelperText,
   FormSection,
+  HelperText,
+  HelperTextItem,
   Modal,
   TextInput,
   Title,
@@ -66,7 +69,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   }, [props.oldName]);
 
   const handleNameChange = React.useCallback(
-    (value: string) => {
+    (_, value: string) => {
       setName(value);
       if (value.length === 0) {
         setNameValidated(ValidatedOptions.error);
@@ -90,7 +93,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   );
 
   const handleClose = React.useCallback(
-    (ev?: React.MouseEvent) => {
+    (ev?: React.MouseEvent<Element, MouseEvent> | KeyboardEvent) => {
       ev && ev.stopPropagation();
       setName(props.oldName || '');
       setNameValidated(ValidatedOptions.default);
@@ -142,20 +145,13 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     return (
       <FormSection>
         {isCreateModal && (
-          <FormGroup label={'Template'} fieldId="template" isRequired height="35em" validated={nameValidated}>
-            <div style={{ border: '1px solid var(--pf-global--BorderColor--100)', height: '33em' }}>
+          <FormGroup label={'Template'} fieldId="template" isRequired>
+            <div style={{ border: '1px solid var(--pf-v5-global--BorderColor--100)', height: '50vh' }}>
               <LayoutTemplatePicker onTemplateSelect={onTemplateSelect} />
             </div>
           </FormGroup>
         )}
-        <FormGroup
-          label={t('DashboardLayoutCreateModal.NAME.LABEL')}
-          fieldId="name"
-          helperText={t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
-          helperTextInvalid={errorMessage}
-          isRequired
-          validated={nameValidated}
-        >
+        <FormGroup label={t('DashboardLayoutCreateModal.NAME.LABEL')} fieldId="name" isRequired>
           <TextInput
             isRequired
             type="text"
@@ -169,6 +165,15 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
             autoComplete="on"
             validated={nameValidated}
           />
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant={nameValidated}>
+                {nameValidated === ValidatedOptions.error
+                  ? errorMessage
+                  : t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
       </FormSection>
     );
@@ -199,12 +204,10 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   return (
     <Modal
       aria-label={t('DashboardLayoutCreateModal.LABEL')}
-      width={isCreateModal ? '110em' : '40%'}
-      height={isCreateModal ? '90%' : 'auto'}
+      width={isCreateModal ? '80%' : '40%'}
       appendTo={portalRoot}
       isOpen={props.visible}
-      showClose={true}
-      onClose={handleClose}
+      showClose={false}
       header={header}
     >
       <Form onSubmit={(e) => e.preventDefault()}>

@@ -15,6 +15,7 @@
  */
 
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
+import { LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
 import { Label } from '@patternfly/react-core';
 import * as React from 'react';
 
@@ -25,22 +26,7 @@ export interface ClickableLabelCellProps {
 }
 
 export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSelected, onLabelClick }) => {
-  const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const labelColor = React.useMemo(() => (isSelected ? 'blue' : 'grey'), [isSelected]);
-
-  const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
-  const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
-
-  const style = React.useMemo(() => {
-    if (isHoveredOrFocused) {
-      const defaultStyle = { cursor: 'pointer', '--pf-c-label__content--before--BorderWidth': '2.5px' };
-      if (isSelected) {
-        return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#06c' };
-      }
-      return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#8a8d90' };
-    }
-    return {};
-  }, [isSelected, isHoveredOrFocused]);
 
   const handleLabelClicked = React.useCallback(() => onLabelClick(label), [label, onLabelClick]);
 
@@ -48,11 +34,7 @@ export const ClickableLabel: React.FC<ClickableLabelCellProps> = ({ label, isSel
     <>
       <Label
         aria-label={keyValueToString(label)}
-        style={style}
-        isTruncated
-        onMouseEnter={handleHoveredOrFocused}
-        onMouseLeave={handleNonHoveredOrFocused}
-        onFocus={handleHoveredOrFocused}
+        textMaxWidth={LABEL_TEXT_MAXWIDTH}
         onClick={handleLabelClicked}
         key={label.key}
         color={labelColor}

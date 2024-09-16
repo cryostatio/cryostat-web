@@ -15,7 +15,7 @@
  */
 
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
+import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
@@ -33,10 +33,10 @@ export const CreateRecording: React.FC = () => {
       <Card>
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={onTabSelect}>
-            <Tab eventKey={0} title="Custom Flight Recording">
+            <Tab eventKey={0} title={<TabTitleText>Custom Flight Recording</TabTitleText>}>
               <CustomRecordingForm />
             </Tab>
-            <Tab eventKey={1} title="Snapshot Recording">
+            <Tab eventKey={1} title={<TabTitleText>Snapshot Recording</TabTitleText>}>
               <SnapshotRecordingForm />
             </Tab>
           </Tabs>

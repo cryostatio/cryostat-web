@@ -22,6 +22,7 @@ import {
   Card,
   Form,
   FormGroup,
+  FormHelperText,
   HelperText,
   HelperTextItem,
   Label,
@@ -53,7 +54,7 @@ import { paramAsTab, tabAsParam, getGroupFeatureLevel } from './utils';
 export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
 
   const settings = React.useMemo(
     () =>
@@ -165,21 +166,20 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                                     marginLeft: '1ch',
                                     textTransform: 'capitalize',
                                   }}
-                                  color={s.featureLevel === FeatureLevel.BETA ? 'green' : 'red'}
+                                  color={s.featureLevel === FeatureLevel.BETA ? 'cyan' : 'red'}
                                 >
                                   {FeatureLevel[s.featureLevel].toLowerCase()}
                                 </Label>
                               )}
                             </Title>
                           }
-                          helperText={
+                          key={`${grp.groupLabel}-${s.title}-${index}`}
+                        >
+                          <FormHelperText>
                             <HelperText>
                               <HelperTextItem>{s.description}</HelperTextItem>
                             </HelperText>
-                          }
-                          isHelperTextBeforeField
-                          key={`${grp.groupLabel}-${s.title}-${index}`}
-                        >
+                          </FormHelperText>
                           {s.element}
                         </FormGroup>
                       </FeatureFlag>

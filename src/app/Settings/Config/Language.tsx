@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { portalRoot } from '@app/utils/utils';
 import { i18nLanguages, i18nResources } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
-import { Select, SelectOption } from '@patternfly/react-core';
+import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
@@ -28,8 +29,8 @@ const Component = () => {
   const handleLanguageToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
 
   const handleLanguageSelect = React.useCallback(
-    (_, v) => {
-      i18n.changeLanguage(v);
+    (_, language: string) => {
+      i18n.changeLanguage(language);
       setOpen(false);
     },
     [i18n, setOpen],
@@ -41,21 +42,42 @@ const Component = () => {
     }
   }, [i18n, i18n.language]);
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.MENU_TOGGLE')}
+        ref={toggleRef}
+        onClick={handleLanguageToggle}
+        isExpanded={open}
+        isFullWidth
+      >
+        {localeReadable(i18n.language)}
+      </MenuToggle>
+    ),
+    [handleLanguageToggle, open, i18n.language, t],
+  );
+
   return (
     <Select
       isOpen={open}
-      aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT') || ''}
-      onToggle={handleLanguageToggle}
+      aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT')}
+      toggle={toggle}
       onSelect={handleLanguageSelect}
-      selections={i18n.language}
-      isFlipEnabled
-      menuAppendTo="parent"
+      selected={i18n.language}
+      popperProps={{
+        enableFlip: true,
+        appendTo: portalRoot,
+      }}
+      onOpenChange={setOpen}
+      onOpenChangeKeys={['Escape']}
     >
-      {Object.keys(i18nResources).map((l) => (
-        <SelectOption key={l} value={l}>
-          {localeReadable(l)}
-        </SelectOption>
-      ))}
+      <SelectList>
+        {Object.keys(i18nResources).map((l) => (
+          <SelectOption key={l} value={l}>
+            {localeReadable(l)}
+          </SelectOption>
+        ))}
+      </SelectList>
     </Select>
   );
 };

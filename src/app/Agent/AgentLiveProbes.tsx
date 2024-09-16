@@ -29,12 +29,12 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  TextInput,
   Stack,
   StackItem,
   EmptyState,
   EmptyStateIcon,
-  Title,
+  EmptyStateHeader,
+  SearchInput,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
@@ -42,14 +42,16 @@ import {
   ISortBy,
   SortByDirection,
   ThProps,
-  TableComposable,
+  Table,
   Tbody,
   Th,
   Thead,
   Tr,
   Td,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { combineLatest } from 'rxjs';
 import { AboutAgentCard } from './AboutAgentCard';
 
@@ -85,8 +87,9 @@ const tableColumns: TableColumn[] = [
 
 export interface AgentLiveProbesProps {}
 
-export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
+export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
   const addSubscription = useSubscriptions();
 
   const [probes, setProbes] = React.useState<EventProbe[]>([]);
@@ -176,6 +179,8 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
     }
   }, [context.settings, setWarningModalOpen, handleDeleteAllProbes]);
 
+  const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
+
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe(() => {
@@ -243,14 +248,14 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
     if (!filterText) {
       filtered = probes;
     } else {
-      const ft = filterText.trim().toLowerCase();
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
       filtered = probes.filter(
         (t: EventProbe) =>
-          t.name.toLowerCase().includes(ft) ||
-          t.description.toLowerCase().includes(ft) ||
-          t.clazz.toLowerCase().includes(ft) ||
-          t.methodDescriptor.toLowerCase().includes(ft) ||
-          t.methodName.toLowerCase().includes(ft),
+          reg.test(t.name) ||
+          reg.test(t.description) ||
+          reg.test(t.clazz) ||
+          reg.test(t.methodDescriptor) ||
+          reg.test(t.methodName),
       );
     }
 
@@ -323,16 +328,18 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
               <ToolbarContent>
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
-                    <TextInput
+                    <SearchInput
+                      style={{ minWidth: '36ch' }}
                       name="activeProbeFilter"
                       id="activeProbeFilter"
                       type="search"
-                      placeholder="Filter..."
-                      aria-label="Active probe filter"
-                      onChange={setFilterText}
+                      placeholder={t('AgentLiveProbes.SEARCH_PLACEHOLDER')}
+                      aria-label={t('AgentLiveProves.ARIA_LABELS.SEARCH_INPUT')}
+                      onChange={handleFilterTextChange}
                     />
                   </ToolbarItem>
                 </ToolbarGroup>
+                <ToolbarItem variant="separator" />
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
                     <Button
@@ -355,7 +362,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
               />
             </Toolbar>
             {probeRows.length ? (
-              <TableComposable aria-label="Active probe table" variant={TableVariant.compact}>
+              <Table aria-label="Active probe table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
                     {tableColumns.map(({ title, sortable }, index) => (
@@ -366,13 +373,14 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
                   </Tr>
                 </Thead>
                 <Tbody>{probeRows}</Tbody>
-              </TableComposable>
+              </Table>
             ) : (
               <EmptyState>
-                <EmptyStateIcon icon={SearchIcon} />
-                <Title headingLevel="h4" size="lg">
-                  No active probes
-                </Title>
+                <EmptyStateHeader
+                  titleText="No active probes"
+                  icon={<EmptyStateIcon icon={SearchIcon} />}
+                  headingLevel="h4"
+                />
               </EmptyState>
             )}
           </StackItem>

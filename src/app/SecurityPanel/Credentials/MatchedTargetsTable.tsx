@@ -19,20 +19,12 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
-import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
+import { EmptyState, EmptyStateIcon, EmptyStateHeader } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import {
-  InnerScrollContainer,
-  SortByDirection,
-  TableComposable,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@patternfly/react-table';
+import { InnerScrollContainer, SortByDirection, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface MatchedTargetsTableProps {
   id: number;
@@ -54,6 +46,7 @@ const tableColumns: TableColumn[] = [
 
 export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [sortBy, getSortParams] = useSort();
@@ -119,10 +112,11 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
     view = (
       <>
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            No Targets
-          </Title>
+          <EmptyStateHeader
+            titleText={t('MatchedTargetsTable.NO_TARGET_MATCHED')}
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
         </EmptyState>
       </>
     );
@@ -130,7 +124,12 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
     view = (
       <>
         <InnerScrollContainer style={{ maxHeight: '24em' }}>
-          <TableComposable aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
+          <Table
+            aria-label={t('MatchedTargetsTable.ARIA_LABELS.TABLE')}
+            isStickyHeader
+            variant={'compact'}
+            borders={false}
+          >
             <Thead>
               <Tr>
                 {tableColumns.map(({ title }, index) => (
@@ -141,7 +140,7 @@ export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, ma
               </Tr>
             </Thead>
             <Tbody>{targetRows}</Tbody>
-          </TableComposable>
+          </Table>
         </InnerScrollContainer>
       </>
     );

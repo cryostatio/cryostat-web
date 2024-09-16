@@ -36,7 +36,7 @@ const min = 0;
 const max = 10;
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
@@ -48,8 +48,8 @@ const Component = () => {
   }, [addSubscription, context.settings, setVisibleNotificationsCount]);
 
   const handleCheckboxChange = React.useCallback(
-    (checked, element) => {
-      state.set(NotificationCategory[element.target.id], checked);
+    (id, checked) => {
+      state.set(NotificationCategory[id], checked);
       context.settings.setNotificationsEnabled(state);
       setState(new Map(state));
     },
@@ -57,7 +57,7 @@ const Component = () => {
   );
 
   const handleCheckAll = React.useCallback(
-    (checked) => {
+    (_, checked) => {
       const newState = new Map();
       Array.from(state.entries()).forEach((v) => newState.set(v[0], checked));
       context.settings.setNotificationsEnabled(newState);
@@ -104,7 +104,12 @@ const Component = () => {
   const switches = React.useMemo(() => {
     return Array.from(state.entries(), ([key, value]) => (
       <StackItem key={key}>
-        <Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} />
+        <Switch
+          id={key}
+          label={labels.get(key)}
+          isChecked={value}
+          onChange={(_, checked) => handleCheckboxChange(key, checked)}
+        />
       </StackItem>
     ));
   }, [handleCheckboxChange, state, labels]);
@@ -143,9 +148,11 @@ const Component = () => {
         </StackItem>
         <StackItem key={'expandable-noti-switch-list'}>
           <ExpandableSection
-            toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
-            onToggle={setExpanded}
+            toggleText={expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })}
+            onToggle={(_, expanded: boolean) => setExpanded(expanded)}
             isExpanded={expanded}
+            toggleId="notification-options-toggle"
+            contentId="notification-options"
           >
             {switches}
           </ExpandableSection>

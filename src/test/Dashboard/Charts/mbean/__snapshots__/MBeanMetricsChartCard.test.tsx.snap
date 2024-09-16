@@ -10,10 +10,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-1"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="Process CPU Load-chart-card"
     >
@@ -25,53 +25,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="Process CPU Load-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            Process CPU Load (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize Process CPU Load chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-1"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize Process CPU Load chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-1"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="Process CPU Load-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                Process CPU Load (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -82,7 +94,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -108,8 +120,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 300"
-              width={0}
+              viewBox="0 0 1 300"
+              width={1}
             >
               <g
                 role="presentation"
@@ -119,8 +131,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -128,7 +140,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   x1={54}
-                  x2={-30}
+                  x2={-29}
                   y1={240}
                   y2={240}
                 />
@@ -140,17 +152,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-30}
-                    x2={-30}
+                    x1={-29}
+                    x2={-29}
                     y1={240}
                     y2={245}
                   />
@@ -158,7 +170,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-30}
+                    x={-29}
                     y={266.97}
                   >
                     <tspan
@@ -166,17 +178,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "middle",
                         }
                       }
                       textAnchor="middle"
-                      x={-30}
+                      x={-29}
                     >
                       12:00:00 AM
                     </tspan>
@@ -191,8 +203,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -207,7 +219,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                 <text
                   direction="inherit"
                   dx={0}
-                  id="axis-axisLabel-0"
+                  id="chart-axis-1-ChartLabel"
                   transform="rotate(-90,14,125)"
                   x={14}
                   y={122.97}
@@ -217,10 +229,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-global--palette--black-200)",
-                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                        "fill": "var(--pf-v5-global--palette--black-200)",
+                        "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                         "stroke": "transparent",
                         "textAnchor": "middle",
                       }
@@ -239,16 +251,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={194}
                     y2={194}
                   />
@@ -257,9 +269,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -283,12 +295,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -307,16 +319,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={148}
                     y2={148}
                   />
@@ -325,9 +337,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -351,12 +363,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -375,16 +387,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={102}
                     y2={102}
                   />
@@ -393,9 +405,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -419,12 +431,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -443,16 +455,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={55.999999999999986}
                     y2={55.999999999999986}
                   />
@@ -461,9 +473,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -487,12 +499,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -511,16 +523,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={10}
                     y2={10}
                   />
@@ -529,9 +541,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -555,12 +567,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -585,7 +597,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   width={0}
-                  x={0}
+                  x={1}
                   y={272}
                 />
               </g>
@@ -611,14 +623,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 300"
-                width={0}
+                viewBox="0 0 1 300"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -637,10 +649,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-2"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="System Load Average-chart-card"
     >
@@ -652,53 +664,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="System Load Average-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            System Load Average (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize System Load Average chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-2"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize System Load Average chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-2"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="System Load Average-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                System Load Average (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -709,7 +733,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -735,8 +759,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 300"
-              width={0}
+              viewBox="0 0 1 300"
+              width={1}
             >
               <g
                 role="presentation"
@@ -746,8 +770,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -755,7 +779,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   x1={54}
-                  x2={-30}
+                  x2={-29}
                   y1={240}
                   y2={240}
                 />
@@ -767,17 +791,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-30}
-                    x2={-30}
+                    x1={-29}
+                    x2={-29}
                     y1={240}
                     y2={245}
                   />
@@ -785,7 +809,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-30}
+                    x={-29}
                     y={266.97}
                   >
                     <tspan
@@ -793,17 +817,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "middle",
                         }
                       }
                       textAnchor="middle"
-                      x={-30}
+                      x={-29}
                     >
                       12:00:00 AM
                     </tspan>
@@ -818,8 +842,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -839,16 +863,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={194}
                     y2={194}
                   />
@@ -857,9 +881,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -883,12 +907,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -907,16 +931,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={148}
                     y2={148}
                   />
@@ -925,9 +949,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -951,12 +975,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -975,16 +999,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={102}
                     y2={102}
                   />
@@ -993,9 +1017,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1019,12 +1043,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1043,16 +1067,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={55.999999999999986}
                     y2={55.999999999999986}
                   />
@@ -1061,9 +1085,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1087,12 +1111,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1111,16 +1135,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={10}
                     y2={10}
                   />
@@ -1129,9 +1153,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1155,12 +1179,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1185,7 +1209,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   width={0}
-                  x={0}
+                  x={1}
                   y={272}
                 />
               </g>
@@ -1211,14 +1235,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 300"
-                width={0}
+                viewBox="0 0 1 300"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -1237,10 +1261,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-3"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="System CPU Load-chart-card"
     >
@@ -1252,53 +1276,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="System CPU Load-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            System CPU Load (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize System CPU Load chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-3"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize System CPU Load chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-3"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="System CPU Load-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                System CPU Load (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -1309,7 +1345,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -1335,8 +1371,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 300"
-              width={0}
+              viewBox="0 0 1 300"
+              width={1}
             >
               <g
                 role="presentation"
@@ -1346,8 +1382,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -1355,7 +1391,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   x1={54}
-                  x2={-30}
+                  x2={-29}
                   y1={240}
                   y2={240}
                 />
@@ -1367,17 +1403,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-30}
-                    x2={-30}
+                    x1={-29}
+                    x2={-29}
                     y1={240}
                     y2={245}
                   />
@@ -1385,7 +1421,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-30}
+                    x={-29}
                     y={266.97}
                   >
                     <tspan
@@ -1393,17 +1429,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "middle",
                         }
                       }
                       textAnchor="middle"
-                      x={-30}
+                      x={-29}
                     >
                       12:00:00 AM
                     </tspan>
@@ -1418,8 +1454,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -1434,7 +1470,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                 <text
                   direction="inherit"
                   dx={0}
-                  id="axis-axisLabel-0"
+                  id="chart-axis-1-ChartLabel"
                   transform="rotate(-90,14,125)"
                   x={14}
                   y={122.97}
@@ -1444,10 +1480,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-global--palette--black-200)",
-                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                        "fill": "var(--pf-v5-global--palette--black-200)",
+                        "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                         "stroke": "transparent",
                         "textAnchor": "middle",
                       }
@@ -1466,16 +1502,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={194}
                     y2={194}
                   />
@@ -1484,9 +1520,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1510,12 +1546,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1534,16 +1570,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={148}
                     y2={148}
                   />
@@ -1552,9 +1588,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1578,12 +1614,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1602,16 +1638,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={102}
                     y2={102}
                   />
@@ -1620,9 +1656,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1646,12 +1682,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1670,16 +1706,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={55.999999999999986}
                     y2={55.999999999999986}
                   />
@@ -1688,9 +1724,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1714,12 +1750,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1738,16 +1774,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={10}
                     y2={10}
                   />
@@ -1756,9 +1792,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -1782,12 +1818,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -1812,7 +1848,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   width={0}
-                  x={0}
+                  x={1}
                   y={272}
                 />
               </g>
@@ -1838,14 +1874,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 300"
-                width={0}
+                viewBox="0 0 1 300"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -1864,10 +1900,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-4"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="Physical Memory-chart-card"
     >
@@ -1879,53 +1915,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="Physical Memory-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            Physical Memory (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize Physical Memory chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-4"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize Physical Memory chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-4"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="Physical Memory-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                Physical Memory (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -1936,7 +1984,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -1962,8 +2010,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 300"
-              width={0}
+              viewBox="0 0 1 300"
+              width={1}
             >
               <g
                 role="presentation"
@@ -1973,8 +2021,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -1982,7 +2030,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   x1={54}
-                  x2={-30}
+                  x2={-29}
                   y1={240}
                   y2={240}
                 />
@@ -1994,17 +2042,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-30}
-                    x2={-30}
+                    x1={-29}
+                    x2={-29}
                     y1={240}
                     y2={245}
                   />
@@ -2012,7 +2060,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-30}
+                    x={-29}
                     y={266.97}
                   >
                     <tspan
@@ -2020,17 +2068,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "middle",
                         }
                       }
                       textAnchor="middle"
-                      x={-30}
+                      x={-29}
                     >
                       12:00:00 AM
                     </tspan>
@@ -2045,8 +2093,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -2061,7 +2109,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                 <text
                   direction="inherit"
                   dx={0}
-                  id="axis-axisLabel-0"
+                  id="chart-axis-1-ChartLabel"
                   transform="rotate(-90,14,125)"
                   x={14}
                   y={122.97}
@@ -2071,10 +2119,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-global--palette--black-200)",
-                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                        "fill": "var(--pf-v5-global--palette--black-200)",
+                        "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                         "stroke": "transparent",
                         "textAnchor": "middle",
                       }
@@ -2093,16 +2141,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={194}
                     y2={194}
                   />
@@ -2111,9 +2159,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2137,12 +2185,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2161,16 +2209,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={148}
                     y2={148}
                   />
@@ -2179,9 +2227,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2205,12 +2253,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2229,16 +2277,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={102}
                     y2={102}
                   />
@@ -2247,9 +2295,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2273,12 +2321,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2297,16 +2345,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={55.999999999999986}
                     y2={55.999999999999986}
                   />
@@ -2315,9 +2363,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2341,12 +2389,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2365,16 +2413,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={10}
                     y2={10}
                   />
@@ -2383,9 +2431,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2409,12 +2457,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2439,7 +2487,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   width={0}
-                  x={0}
+                  x={1}
                   y={272}
                 />
               </g>
@@ -2465,14 +2513,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 300"
-                width={0}
+                viewBox="0 0 1 300"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -2491,10 +2539,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-5"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="Heap Memory Usage-chart-card"
     >
@@ -2506,53 +2554,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="Heap Memory Usage-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            Heap Memory Usage (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize Heap Memory Usage chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-5"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize Heap Memory Usage chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-5"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="Heap Memory Usage-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                Heap Memory Usage (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -2563,7 +2623,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -2589,8 +2649,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 300"
-              width={0}
+              viewBox="0 0 1 300"
+              width={1}
             >
               <g
                 role="presentation"
@@ -2600,8 +2660,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -2609,7 +2669,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   x1={54}
-                  x2={-30}
+                  x2={-29}
                   y1={240}
                   y2={240}
                 />
@@ -2621,17 +2681,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-30}
-                    x2={-30}
+                    x1={-29}
+                    x2={-29}
                     y1={240}
                     y2={245}
                   />
@@ -2639,7 +2699,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-30}
+                    x={-29}
                     y={266.97}
                   >
                     <tspan
@@ -2647,17 +2707,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "middle",
                         }
                       }
                       textAnchor="middle"
-                      x={-30}
+                      x={-29}
                     >
                       12:00:00 AM
                     </tspan>
@@ -2672,8 +2732,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -2688,7 +2748,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                 <text
                   direction="inherit"
                   dx={0}
-                  id="axis-axisLabel-0"
+                  id="chart-axis-1-ChartLabel"
                   transform="rotate(-90,14,125)"
                   x={14}
                   y={122.97}
@@ -2698,10 +2758,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-global--palette--black-200)",
-                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                        "fill": "var(--pf-v5-global--palette--black-200)",
+                        "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                         "stroke": "transparent",
                         "textAnchor": "middle",
                       }
@@ -2720,16 +2780,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={194}
                     y2={194}
                   />
@@ -2738,9 +2798,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2764,12 +2824,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2788,16 +2848,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={148}
                     y2={148}
                   />
@@ -2806,9 +2866,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2832,12 +2892,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2856,16 +2916,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={102}
                     y2={102}
                   />
@@ -2874,9 +2934,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2900,12 +2960,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2924,16 +2984,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={55.999999999999986}
                     y2={55.999999999999986}
                   />
@@ -2942,9 +3002,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -2968,12 +3028,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -2992,16 +3052,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={10}
                     y2={10}
                   />
@@ -3010,9 +3070,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -3036,12 +3096,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -3066,7 +3126,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   width={0}
-                  x={0}
+                  x={1}
                   y={272}
                 />
               </g>
@@ -3092,14 +3152,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 300"
-                width={0}
+                viewBox="0 0 1 300"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -3118,10 +3178,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-6"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="Heap Usage Percentage-chart-card"
     >
@@ -3133,53 +3193,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="Heap Usage Percentage-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            Heap Usage Percentage (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize Heap Usage Percentage chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-6"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize Heap Usage Percentage chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-6"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="Heap Usage Percentage-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                Heap Usage Percentage (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -3190,7 +3262,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -3211,8 +3283,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 230"
-              width={0}
+              viewBox="0 0 1 230"
+              width={1}
             >
               <g>
                 <path
@@ -3227,13 +3299,13 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-theme--blue--ColorScale--100, #06c)",
+                      "fill": "var(--pf-v5-chart-theme--blue--ColorScale--100, #06c)",
                       "padding": 8,
-                      "stroke": "var(--pf-chart-pie--data--stroke--Color, transparent)",
+                      "stroke": "var(--pf-v5-chart-pie--data--stroke--Color, transparent)",
                       "strokeWidth": 1,
                     }
                   }
-                  transform="translate(0, 115)"
+                  transform="translate(0.5, 115)"
                 />
                 <path
                   d="M0,0Z"
@@ -3247,19 +3319,19 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-donut--threshold--first--Color, #f0f0f0)",
+                      "fill": "var(--pf-v5-chart-donut--threshold--first--Color, #f0f0f0)",
                       "padding": 8,
-                      "stroke": "var(--pf-chart-pie--data--stroke--Color, transparent)",
+                      "stroke": "var(--pf-v5-chart-pie--data--stroke--Color, transparent)",
                       "strokeWidth": 1,
                     }
                   }
-                  transform="translate(0, 115)"
+                  transform="translate(0.5, 115)"
                 />
               </g>
               <text
                 direction="inherit"
                 dx={0}
-                x={0}
+                x={0.5}
                 y={123.52}
               >
                 <tspan
@@ -3267,16 +3339,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
                   dy={0}
                   style={
                     Object {
-                      "fill": "var(--pf-global--palette--black-200)",
-                      "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                      "fill": "var(--pf-v5-global--palette--black-200)",
+                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                       "fontSize": 24,
-                      "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                      "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                       "stroke": "transparent",
                       "textAnchor": "middle",
                     }
                   }
                   textAnchor="middle"
-                  x={0}
+                  x={0.5}
                 >
                   0.00%
                 </tspan>
@@ -3303,14 +3375,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 230"
-                width={0}
+                viewBox="0 0 1 230"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -3329,10 +3401,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-7"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="Non-Heap Memory Usage-chart-card"
     >
@@ -3344,53 +3416,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="Non-Heap Memory Usage-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            Non-Heap Memory Usage (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize Non-Heap Memory Usage chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-7"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize Non-Heap Memory Usage chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-7"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="Non-Heap Memory Usage-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                Non-Heap Memory Usage (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -3401,7 +3485,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -3427,8 +3511,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 300"
-              width={0}
+              viewBox="0 0 1 300"
+              width={1}
             >
               <g
                 role="presentation"
@@ -3438,8 +3522,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -3447,7 +3531,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   x1={54}
-                  x2={-30}
+                  x2={-29}
                   y1={240}
                   y2={240}
                 />
@@ -3459,17 +3543,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-30}
-                    x2={-30}
+                    x1={-29}
+                    x2={-29}
                     y1={240}
                     y2={245}
                   />
@@ -3477,7 +3561,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-30}
+                    x={-29}
                     y={266.97}
                   >
                     <tspan
@@ -3485,17 +3569,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "middle",
                         }
                       }
                       textAnchor="middle"
-                      x={-30}
+                      x={-29}
                     >
                       12:00:00 AM
                     </tspan>
@@ -3510,8 +3594,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -3526,7 +3610,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                 <text
                   direction="inherit"
                   dx={0}
-                  id="axis-axisLabel-0"
+                  id="chart-axis-1-ChartLabel"
                   transform="rotate(-90,14,125)"
                   x={14}
                   y={122.97}
@@ -3536,10 +3620,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-global--palette--black-200)",
-                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                        "fill": "var(--pf-v5-global--palette--black-200)",
+                        "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                         "stroke": "transparent",
                         "textAnchor": "middle",
                       }
@@ -3558,16 +3642,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={194}
                     y2={194}
                   />
@@ -3576,9 +3660,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -3602,12 +3686,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -3626,16 +3710,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={148}
                     y2={148}
                   />
@@ -3644,9 +3728,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -3670,12 +3754,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -3694,16 +3778,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={102}
                     y2={102}
                   />
@@ -3712,9 +3796,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -3738,12 +3822,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -3762,16 +3846,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={55.999999999999986}
                     y2={55.999999999999986}
                   />
@@ -3780,9 +3864,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -3806,12 +3890,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -3830,16 +3914,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={10}
                     y2={10}
                   />
@@ -3848,9 +3932,9 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -3874,12 +3958,12 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -3904,7 +3988,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   }
                   vectorEffect="non-scaling-stroke"
                   width={0}
-                  x={0}
+                  x={1}
                   y={272}
                 />
               </g>
@@ -3930,14 +4014,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 300"
-                width={0}
+                viewBox="0 0 1 300"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -3956,10 +4040,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-8"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="Heap Usage Percentage-chart-card"
     >
@@ -3971,53 +4055,65 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="Heap Usage Percentage-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            Heap Usage Percentage (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={false}
+                aria-label="Synchronize Heap Usage Percentage chart"
+                className="pf-v5-c-button pf-m-plain"
+                data-ouia-component-id="OUIA-Generated-Button-plain-8"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                role={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={false}
-              aria-label="Synchronize Heap Usage Percentage chart"
-              className="pf-c-button pf-m-plain"
-              data-ouia-component-id="OUIA-Generated-Button-plain-8"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="Heap Usage Percentage-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                Heap Usage Percentage (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -4028,7 +4124,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -4049,8 +4145,8 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 230"
-              width={0}
+              viewBox="0 0 1 230"
+              width={1}
             >
               <g>
                 <path
@@ -4065,13 +4161,13 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-theme--blue--ColorScale--100, #06c)",
+                      "fill": "var(--pf-v5-chart-theme--blue--ColorScale--100, #06c)",
                       "padding": 8,
-                      "stroke": "var(--pf-chart-pie--data--stroke--Color, transparent)",
+                      "stroke": "var(--pf-v5-chart-pie--data--stroke--Color, transparent)",
                       "strokeWidth": 1,
                     }
                   }
-                  transform="translate(0, 115)"
+                  transform="translate(0.5, 115)"
                 />
                 <path
                   d="M0,0Z"
@@ -4085,19 +4181,19 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-donut--threshold--first--Color, #f0f0f0)",
+                      "fill": "var(--pf-v5-chart-donut--threshold--first--Color, #f0f0f0)",
                       "padding": 8,
-                      "stroke": "var(--pf-chart-pie--data--stroke--Color, transparent)",
+                      "stroke": "var(--pf-v5-chart-pie--data--stroke--Color, transparent)",
                       "strokeWidth": 1,
                     }
                   }
-                  transform="translate(0, 115)"
+                  transform="translate(0.5, 115)"
                 />
               </g>
               <text
                 direction="inherit"
                 dx={0}
-                x={0}
+                x={0.5}
                 y={123.52}
               >
                 <tspan
@@ -4105,16 +4201,16 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
                   dy={0}
                   style={
                     Object {
-                      "fill": "var(--pf-global--palette--black-200)",
-                      "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                      "fill": "var(--pf-v5-global--palette--black-200)",
+                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                       "fontSize": 24,
-                      "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                      "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                       "stroke": "transparent",
                       "textAnchor": "middle",
                     }
                   }
                   textAnchor="middle"
-                  x={0}
+                  x={0.5}
                 >
                   0.00%
                 </tspan>
@@ -4141,14 +4237,14 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 230"
-                width={0}
+                viewBox="0 0 1 230"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}
@@ -4167,10 +4263,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
   <div
     className="dashboard-card-resizable-wrapper"
   >
-    <article
-      className="pf-c-card pf-m-compact pf-m-rounded dashboard-card"
+    <div
+      className="pf-v5-c-card pf-m-compact pf-m-rounded dashboard-card"
       data-ouia-component-id="OUIA-Generated-Card-9"
-      data-ouia-component-type="PF4/Card"
+      data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="Process CPU Load-chart-card"
     >
@@ -4182,54 +4278,66 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
         onMouseLeave={[Function]}
       >
         <div
-          className="pf-c-card__header"
+          className="pf-v5-c-card__header"
         >
           <div
-            className="pf-c-card__title"
-            id="Process CPU Load-chart-card-title"
+            className="pf-v5-c-card__actions"
           >
-            Process CPU Load (last 120s, every 10s)
+            <div
+              style={
+                Object {
+                  "display": "contents",
+                }
+              }
+            >
+              <button
+                aria-disabled={true}
+                aria-label="Synchronize Process CPU Load chart"
+                className="pf-v5-c-button pf-m-plain pf-m-disabled"
+                data-ouia-component-id="OUIA-Generated-Button-plain-9"
+                data-ouia-component-type="PF5/Button"
+                data-ouia-safe={true}
+                disabled={true}
+                onClick={[Function]}
+                role={null}
+                tabIndex={null}
+                type="button"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div
-            className="pf-c-card__actions"
+            className="pf-v5-c-card__header-main"
           >
-            <button
-              aria-disabled={true}
-              aria-label="Synchronize Process CPU Load chart"
-              className="pf-c-button pf-m-plain pf-m-disabled"
-              data-ouia-component-id="OUIA-Generated-Button-plain-9"
-              data-ouia-component-type="PF4/Button"
-              data-ouia-safe={true}
-              disabled={true}
-              onClick={[Function]}
-              role={null}
-              tabIndex={null}
-              type="button"
+            <div
+              className="pf-v5-c-card__title"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  Object {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                className="pf-v5-c-card__title-text"
+                id="Process CPU Load-chart-card-title"
               >
-                <path
-                  d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"
-                />
-              </svg>
-            </button>
+                Process CPU Load (last 120s, every 10s)
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-card__body"
+        className="pf-v5-c-card__body"
       >
         <div
           className="disabled-pointer"
@@ -4240,7 +4348,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
           }
         >
           <div
-            className="pf-c-chart"
+            className="pf-v5-c-chart"
             style={
               Object {
                 "height": "100%",
@@ -4266,8 +4374,8 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   "width": "100%",
                 }
               }
-              viewBox="0 0 0 300"
-              width={0}
+              viewBox="0 0 1 300"
+              width={1}
             >
               <g
                 role="presentation"
@@ -4277,8 +4385,8 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -4286,7 +4394,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   }
                   vectorEffect="non-scaling-stroke"
                   x1={54}
-                  x2={-30}
+                  x2={-29}
                   y1={240}
                   y2={240}
                 />
@@ -4298,17 +4406,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-30}
-                    x2={-30}
+                    x1={-29}
+                    x2={-29}
                     y1={240}
                     y2={245}
                   />
@@ -4316,7 +4424,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-30}
+                    x={-29}
                     y={266.97}
                   >
                     <tspan
@@ -4324,17 +4432,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "middle",
                         }
                       }
                       textAnchor="middle"
-                      x={-30}
+                      x={-29}
                     >
                       12:00:00 AM
                     </tspan>
@@ -4349,8 +4457,8 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   shapeRendering="auto"
                   style={
                     Object {
-                      "fill": "var(--pf-chart-axis--axis--Fill, transparent)",
-                      "stroke": "var(--pf-chart-axis--axis--stroke--Color, #d2d2d2)",
+                      "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
+                      "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                       "strokeLinecap": "round",
                       "strokeLinejoin": "round",
                       "strokeWidth": 1,
@@ -4365,7 +4473,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                 <text
                   direction="inherit"
                   dx={0}
-                  id="axis-axisLabel-0"
+                  id="chart-axis-1-ChartLabel"
                   transform="rotate(-90,14,125)"
                   x={14}
                   y={122.97}
@@ -4375,10 +4483,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     dy={0}
                     style={
                       Object {
-                        "fill": "var(--pf-global--palette--black-200)",
-                        "fontFamily": "var(--pf-chart-global--FontFamily, \\"RedHatText\\", \\"Overpass\\", overpass, helvetica, arial, sans-serif)",
+                        "fill": "var(--pf-v5-global--palette--black-200)",
+                        "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
                         "fontSize": 14,
-                        "letterSpacing": "var(--pf-chart-global--letter-spacing, normal)",
+                        "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                         "stroke": "transparent",
                         "textAnchor": "middle",
                       }
@@ -4397,16 +4505,16 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={194}
                     y2={194}
                   />
@@ -4415,9 +4523,9 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -4441,12 +4549,12 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -4465,16 +4573,16 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={148}
                     y2={148}
                   />
@@ -4483,9 +4591,9 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -4509,12 +4617,12 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -4533,16 +4641,16 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={102}
                     y2={102}
                   />
@@ -4551,9 +4659,9 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -4577,12 +4685,12 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -4601,16 +4709,16 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={55.999999999999986}
                     y2={55.999999999999986}
                   />
@@ -4619,9 +4727,9 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -4645,12 +4753,12 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -4669,16 +4777,16 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--grid--Fill, none)",
+                        "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                         "pointerEvents": "painted",
-                        "stroke": "var(--pf-chart-axis--grid--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                       }
                     }
                     vectorEffect="non-scaling-stroke"
                     x1={54}
-                    x2={-30}
+                    x2={-29}
                     y1={10}
                     y2={10}
                   />
@@ -4687,9 +4795,9 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     shapeRendering="auto"
                     style={
                       Object {
-                        "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
+                        "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                         "size": 5,
-                        "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
+                        "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
                         "strokeLinecap": "round",
                         "strokeLinejoin": "round",
                         "strokeWidth": 1,
@@ -4713,12 +4821,12 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       dy={0}
                       style={
                         Object {
-                          "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                          "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
+                          "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
+                          "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
                           "fontSize": 14,
                           "letterSpacing": "normal",
                           "padding": 10,
-                          "stroke": "var(--pf-chart-global--label--stroke, transparent)",
+                          "stroke": "var(--pf-v5-chart-global--label--stroke, transparent)",
                           "textAnchor": "end",
                         }
                       }
@@ -4743,7 +4851,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   }
                   vectorEffect="non-scaling-stroke"
                   width={0}
-                  x={0}
+                  x={1}
                   y={272}
                 />
               </g>
@@ -4769,14 +4877,14 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     "width": "100%",
                   }
                 }
-                viewBox="0 0 0 300"
-                width={0}
+                viewBox="0 0 1 300"
+                width={1}
               />
             </div>
           </div>
         </div>
       </div>
-    </article>
+    </div>
     <div
       className="resizable-ref"
       onMouseDown={[Function]}

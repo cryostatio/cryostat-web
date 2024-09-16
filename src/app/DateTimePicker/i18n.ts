@@ -13,7 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export interface FormProps {
-  onSubmit: (evt: Event, token: string, authMethod: string, rememberMe: boolean) => void;
-}
+/**
+ * t('TimeSpinner.INPUT_HOUR12_VALUE')
+ * t('TimeSpinner.INPUT_HOUR24_VALUE')
+ * t('TimeSpinner.INPUT_MINUTE_VALUE')
+ * t('TimeSpinner.INPUT_SECOND_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.INCREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.INCREMENT_SECOND_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.DECREMENT_SECOND_VALUE')
+ * t('DATE', { ns: 'common' })
+ * t('TIME', { ns: 'common' })
+ */

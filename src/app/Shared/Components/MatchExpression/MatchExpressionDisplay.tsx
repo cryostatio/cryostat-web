@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Target } from '@app/Shared/Services/api.types';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
-import { CodeBlock, CodeBlockCode } from '@patternfly/react-core';
+import { ClipboardCopy } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
-export interface SerializedTargetProps {
-  target?: Target;
-  indentLevel?: number;
+export interface MatchExpressionDisplayProps {
+  matchExpression: string;
 }
 
-export const SerializedTarget: React.FC<SerializedTargetProps> = ({ target, indentLevel }) => {
+export const MatchExpressionDisplay: React.FC<MatchExpressionDisplayProps> = ({ matchExpression }) => {
+  const { t } = useTranslation();
   return (
-    <>
-      {!target ? (
-        <NoTargetSelected />
-      ) : (
-        <CodeBlock>
-          <CodeBlockCode>{JSON.stringify(target, null, indentLevel || 2)}</CodeBlockCode>
-        </CodeBlock>
-      )}
-    </>
+    <ClipboardCopy
+      className="match-expression-display"
+      hoverTip={t('COPY', { ns: 'common' })}
+      clickTip={t('COPIED', { ns: 'common' })}
+      variant="inline-compact"
+      isBlock
+      isCode
+      isReadOnly
+    >
+      {matchExpression}
+    </ClipboardCopy>
   );
 };

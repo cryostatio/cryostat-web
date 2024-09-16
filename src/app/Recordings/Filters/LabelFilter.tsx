@@ -13,9 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Recording, keyValueToString } from '@app/Shared/Services/api.types';
-import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import {
+  Button,
+  Label,
+  MenuToggle,
+  MenuToggleElement,
+  Select,
+  SelectList,
+  SelectOption,
+  TextInputGroup,
+  TextInputGroupMain,
+  TextInputGroupUtilities,
+} from '@patternfly/react-core';
+import { TimesIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface LabelFilterProps {
@@ -26,10 +38,11 @@ export interface LabelFilterProps {
 
 export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLabels, onSubmit }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [filterValue, setFilterValue] = React.useState('');
 
   const onSelect = React.useCallback(
-    (_, selection, isPlaceholder) => {
-      if (!isPlaceholder) {
+    (_, selection: string) => {
+      if (selection) {
         setIsExpanded(false);
         onSubmit(selection);
       }
@@ -37,7 +50,11 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
     [onSubmit, setIsExpanded],
   );
 
-  const labels = React.useMemo(() => {
+  const onToggle = React.useCallback(() => setIsExpanded((isExpanded) => !isExpanded), [setIsExpanded]);
+
+  const onInputChange = React.useCallback((_, inputVal: string) => setFilterValue(inputVal), [setFilterValue]);
+
+  const labelOptions = React.useMemo(() => {
     const labels = new Set<string>();
     recordings.forEach((r) => {
       if (!r || !r.metadata || !r.metadata.labels) return;
@@ -48,24 +65,63 @@ export const LabelFilter: React.FC<LabelFilterProps> = ({ recordings, filteredLa
       .sort();
   }, [recordings, filteredLabels]);
 
+  const filteredLabelOptions = React.useMemo(() => {
+    const reg = new RegExp(_.escapeRegExp(filterValue), 'i');
+    return !filterValue ? labelOptions : labelOptions.filter((l) => reg.test(l));
+  }, [filterValue, labelOptions]);
+
+  const selectOptions = React.useMemo(() => {
+    if (!filteredLabelOptions.length) {
+      return <SelectOption isDisabled>No results found</SelectOption>;
+    }
+    return filteredLabelOptions.map((l, index) => (
+      <SelectOption key={index} value={l}>
+        <Label key={l} color="grey">
+          {l}
+        </Label>
+      </SelectOption>
+    ));
+  }, [filteredLabelOptions]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} variant="typeahead" onClick={onToggle} isExpanded={isExpanded} isFullWidth>
+        <TextInputGroup isPlain>
+          <TextInputGroupMain
+            value={filterValue}
+            onClick={onToggle}
+            onChange={onInputChange}
+            autoComplete="off"
+            placeholder="Filter by label..."
+            isExpanded={isExpanded}
+            role="combobox"
+            id="typeahead-label-filter"
+            aria-controls="typeahead-label-select"
+          />
+          <TextInputGroupUtilities>
+            {filterValue ? (
+              <Button variant="plain" onClick={() => setFilterValue('')} aria-label="Clear input value">
+                <TimesIcon aria-hidden />
+              </Button>
+            ) : null}
+          </TextInputGroupUtilities>
+        </TextInputGroup>
+      </MenuToggle>
+    ),
+    [onToggle, isExpanded, filterValue, onInputChange, setFilterValue],
+  );
+
   return (
     <Select
-      variant={SelectVariant.typeahead}
-      onToggle={setIsExpanded}
+      toggle={toggle}
       onSelect={onSelect}
       isOpen={isExpanded}
       aria-label="Filter by label"
-      typeAheadAriaLabel="Filter by label..."
-      placeholderText="Filter by label..."
-      maxHeight="16em"
+      onOpenChange={(isOpen) => setIsExpanded(isOpen)}
+      onOpenChangeKeys={['Escape']}
+      shouldFocusFirstItemOnOpen={false}
     >
-      {labels.map((option, index) => (
-        <SelectOption key={index} value={option}>
-          <Label key={option} color="grey">
-            {option}
-          </Label>
-        </SelectOption>
-      ))}
+      <SelectList id="typeahead-label-select">{selectOptions}</SelectList>
     </Select>
   );
 };

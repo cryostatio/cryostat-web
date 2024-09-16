@@ -183,6 +183,11 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
       },
     };
 
+    // Destroy old graph if any
+    if (visualization.hasGraph()) {
+      visualization.getGraph().destroy();
+    }
+
     // Initialize the controller with model to create nodes
     visualization.fromModel(model, false);
   }, [_transformData, visualization, discoveryTree]);
@@ -207,27 +212,35 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
         contextMenu.style.display = 'none';
       }
     };
+
     const showMenu = (e: MouseEvent) => {
       e.preventDefault();
 
       const contextMenu = document.getElementById('topology-context-menu');
       if (contextMenu) {
+        // FIXME: This is a magic workaround.
+        // Position of context menu should be absolute to the document. Currently, it is relative to the container.
+        contextMenu.style.top = `${e.offsetY + 80}px`;
+        contextMenu.style.left = `${e.offsetX + 15}px`;
         contextMenu.style.display = 'block';
-        contextMenu.style.top = `${e.clientY}px`;
-        contextMenu.style.left = `${e.clientX}px`;
       }
     };
+
+    document.addEventListener('click', hideMenu);
 
     // Visualize surface needs time to intialize.
     // Workaround: find drawer body which is already ready and tightly wraps the surface.
     const container: HTMLElement | null = document.querySelector(
-      '#topology__visualization-container .pf-c-drawer__content',
+      '#topology__visualization-container .pf-v5-c-drawer__content',
     );
     if (container) {
       container.addEventListener('contextmenu', showMenu);
     }
-    document.addEventListener('click', hideMenu);
-    return () => document.removeEventListener('click', hideMenu);
+
+    return () => {
+      document.removeEventListener('click', hideMenu);
+      container?.removeEventListener('contextmenu', showMenu);
+    };
   }, []);
 
   const sidebar = React.useMemo(

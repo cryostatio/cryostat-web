@@ -239,23 +239,23 @@ describe('<CreateRule />', () => {
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
 
-    const maxSizeInput = screen.getByLabelText('Maximum size');
+    const maxSizeInput = screen.getByLabelText('Maximum Size');
     expect(maxSizeInput).toBeInTheDocument();
     expect(maxSizeInput).toBeVisible();
 
-    const maxAgeInput = screen.getByLabelText('Maximum age');
+    const maxAgeInput = screen.getByLabelText('Maximum Age');
     expect(maxAgeInput).toBeInTheDocument();
     expect(maxAgeInput).toBeVisible();
 
-    const archivalPeriodInput = screen.getByLabelText('Archival period');
+    const archivalPeriodInput = screen.getByLabelText('Archival Period');
     expect(archivalPeriodInput).toBeInTheDocument();
     expect(archivalPeriodInput).toBeVisible();
 
-    const preservedArchivesInput = screen.getByLabelText('Preserved archives');
+    const preservedArchivesInput = screen.getByLabelText('Preserved Archives');
     expect(preservedArchivesInput).toBeInTheDocument();
     expect(preservedArchivesInput).toBeVisible();
 
-    const initialDelayInput = screen.getByLabelText('Initial delay');
+    const initialDelayInput = screen.getByLabelText('Initial Delay');
     expect(initialDelayInput).toBeInTheDocument();
     expect(initialDelayInput).toBeVisible();
 

@@ -31,14 +31,14 @@ import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const Component = () => {
-  const [t] = useTranslation();
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(context.settings.deletionDialogsEnabled());
   const [expanded, setExpanded] = React.useState(false);
 
   const handleCheckboxChange = React.useCallback(
-    (checked, element) => {
-      state.set(DeleteOrDisableWarningType[element.target.id], checked);
+    (id, checked) => {
+      state.set(DeleteOrDisableWarningType[id], checked);
       context.settings.setDeletionDialogsEnabled(state);
       setState(new Map(state));
     },
@@ -46,7 +46,7 @@ const Component = () => {
   );
 
   const handleCheckAll = React.useCallback(
-    (checked) => {
+    (_, checked) => {
       const newState = new Map();
       Array.from(state.entries()).forEach((v) => newState.set(v[0], checked));
       context.settings.setDeletionDialogsEnabled(newState);
@@ -68,7 +68,7 @@ const Component = () => {
           id={key}
           label={getFromWarningMap(key)?.label || key.toString()}
           isChecked={value}
-          onChange={handleCheckboxChange}
+          onChange={(_, checked) => handleCheckboxChange(key, checked)}
         />
       </StackItem>
     ));
@@ -93,8 +93,10 @@ const Component = () => {
         <StackItem key={'expandable-delete-warning-switch-list'}>
           <ExpandableSection
             toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
-            onToggle={setExpanded}
+            onToggle={(_, expanded: boolean) => setExpanded(expanded)}
             isExpanded={expanded}
+            toggleId="delete-dialog-options-toggle"
+            contentId="delete-dialog-options"
           >
             {switches}
           </ExpandableSection>

@@ -21,24 +21,24 @@ import { getCategoryString } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { hashCode, includesSubstr, sortResources, TableColumn } from '@app/utils/utils';
+import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
   ToolbarItem,
   ToolbarItemVariant,
   Pagination,
-  TextInput,
   EmptyState,
   EmptyStateIcon,
-  Title,
   Text,
+  EmptyStateHeader,
+  SearchInput,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
   ExpandableRowContent,
   SortByDirection,
-  TableComposable,
+  Table,
   TableVariant,
   Tbody,
   Td,
@@ -46,7 +46,9 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { concatMap, filter, first } from 'rxjs/operators';
 
 interface RowData {
@@ -81,9 +83,10 @@ const tableColumns: TableColumn[] = [
 
 export interface EventTypesProps {}
 
-export const EventTypes: React.FC<EventTypesProps> = (_) => {
+export const EventTypes: React.FC<EventTypesProps> = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
   const prevPerPage = React.useRef(10);
 
   const [types, setTypes] = React.useState<EventType[]>([]);
@@ -145,12 +148,13 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   }, [addSubscription, context.target]);
 
   const filterTypesByText = React.useMemo(() => {
+    const reg = new RegExp(_.escapeRegExp(filterText), 'i');
     const withFilters = (t: EventType) =>
       filterText === '' ||
-      includesSubstr(t.name, filterText) ||
-      includesSubstr(t.typeId, filterText) ||
-      includesSubstr(t.description, filterText) ||
-      includesSubstr(getCategoryString(t), filterText);
+      reg.test(t.name) ||
+      reg.test(t.typeId) ||
+      reg.test(t.description) ||
+      reg.test(getCategoryString(t));
     return sortResources(
       {
         index: sortBy.index ?? 0,
@@ -213,7 +217,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
   );
 
   const onFilterTextChange = React.useCallback(
-    (filterText: string) => {
+    (_, filterText: string) => {
       setFilterText(filterText);
       setCurrentPage(1);
     },
@@ -268,13 +272,15 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         <Toolbar id="event-types-toolbar">
           <ToolbarContent>
             <ToolbarItem>
-              <TextInput
+              <SearchInput
+                style={{ minWidth: '38ch' }}
                 name="eventFilter"
                 id="eventFilter"
                 type="search"
-                placeholder="Filter..."
-                aria-label="Event filter"
+                placeholder={t('EventTypes.SEARCH_PLACEHOLDER')}
+                aria-label={t('EventTypes.ARIA_LABELS.SEARCH_INPUT')}
                 onChange={onFilterTextChange}
+                value={filterText}
                 isDisabled={errorMessage != ''}
               />
             </ToolbarItem>
@@ -292,7 +298,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
         </Toolbar>
         {typeRowPairs.length ? (
           // TODO replace table with data list so collapsed event options can be custom formatted
-          <TableComposable aria-label="Event types table" variant={TableVariant.compact}>
+          <Table aria-label="Event types Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 <Th />
@@ -304,13 +310,14 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
               </Tr>
             </Thead>
             {typeRowPairs}
-          </TableComposable>
+          </Table>
         ) : (
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No event types
-            </Title>
+            <EmptyStateHeader
+              titleText="No Event types"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
           </EmptyState>
         )}
       </>

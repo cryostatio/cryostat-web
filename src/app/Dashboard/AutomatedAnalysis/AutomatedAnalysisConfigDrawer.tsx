@@ -36,6 +36,7 @@ import {
   InputGroup,
   Stack,
   StackItem,
+  InputGroupItem,
 } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -124,7 +125,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
   const inputGroup = React.useMemo(() => {
     return (
       <InputGroup>
-        <div style={{ margin: 'auto' }}>
+        <InputGroupItem style={{ margin: 'auto' }}>
           <Button
             aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL')}
             variant="control"
@@ -141,7 +142,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
               {t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
             </span>
           </Button>
-        </div>
+        </InputGroupItem>
       </InputGroup>
     );
   }, [t, onCogSelect, onDefaultRecordingStart]);

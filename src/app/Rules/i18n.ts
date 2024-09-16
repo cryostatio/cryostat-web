@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
-import * as React from 'react';
-
-export const ConnectionError: React.FC = () => (
-  <EmptyState>
-    <EmptyStateIcon variant="container" component={ExclamationCircleIcon} />
-    <Title size="lg" headingLevel="h4">
-      Unable to connect to the server
-    </Title>
-    <EmptyStateBody>Check your connection and reload the page.</EmptyStateBody>
-  </EmptyState>
-);
+// t('DISABLE', { ns: "common"})

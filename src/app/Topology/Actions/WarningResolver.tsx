@@ -81,7 +81,7 @@ export const WarningResolverAsCredModal: React.FC<WarningResolverAsCredModalProp
         onPropsSave={handleAuthModalClose}
         {...props}
       />
-      <div onClick={handleAuthModalOpen}>{children}</div>
+      <span onClick={handleAuthModalOpen}>{children}</span>
     </>
   );
 };

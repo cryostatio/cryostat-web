@@ -39,6 +39,8 @@ In order to render the component under test into its HTML DOM representation and
 
 * To search for a localized text, for example, with `getByText`, use `testTranslate` function from `@test/Common.tsx` to return a translated text. Tests are configued to use `en` locale as default.
 
+* If any of the test codes cause the changes in React states (e.g. open/close a action menu or modal), wrap them in [`act`](https://testing-library.com/docs/react-testing-library/api/#act) function, imported from `@testing-library/react`. The `act` function allows flushing all pending state changes.
+
 ## MOCKING
 
 ### Overview
@@ -83,6 +85,8 @@ Where the `-u` flag tells Jest to update the snapshot and the `-t` flag specifie
 
 * Some PatternFly components use random, dynamic strings as `ids` which will then be displayed as elements in the rendered React virtual DOM. These strings change upon every render, causing snapshots to fail even though the component under test is still functionally the same. This can be remedied by supplying [custom `ids` as props](https://github.com/patternfly/patternfly-react/issues/3518) to the culprit PatternFly child components inside the source file of the component under test. 
 
+* Since `react-test-renderer` does not support the use of `ref` (see [reference](https://github.com/facebook/react/issues/7740)), the tests might fail if any third-party codes use `ref` unsafely (without checking `null`). To workaround that, use [`createNodeMock`](https://legacy.reactjs.org/docs/test-renderer.html#ideas) to construct a mock `ref` when calling `renderSnapshot`. 
+
 
 ## INTEGRATION TESTING
 
@@ -107,6 +111,7 @@ This will automatically start a Mirage dev server, run the integration tests on 
 
 ### Tips
 * Running the integration tests will open a Firefox browser and simulate any actions that you instruct the browser to perform. That means we must first navigate to the local Cryostat Web page, before performing any useful testing.
+
 * In our `beforeAll` jest declaration, we setup our web driver with the [default configurations](src/itest/util.ts)), and then use that driver to create our first **Page Object**. A Page Object is an abstraction that acts as an interface to your web pages. For more info on the **Page Object Model** in Selenium, see https://www.selenium.dev/documentation/test_practices/encouraged/page_object_models/.
 ```ts
  beforeAll(async function () {

@@ -26,30 +26,32 @@ import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownPosition,
   EmptyState,
   EmptyStateIcon,
   Form,
   FormGroup,
-  KebabToggle,
   Modal,
   ModalVariant,
   Stack,
   StackItem,
-  TextInput,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggleElement,
+  MenuToggle,
+  SearchInput,
+  Divider,
 } from '@patternfly/react-core';
-import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
+import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
   SortByDirection,
-  TableComposable,
+  Table,
   TableVariant,
   Tbody,
   Td,
@@ -58,7 +60,9 @@ import {
   ThProps,
   Tr,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, defaultIfEmpty, first, tap } from 'rxjs/operators';
 import { AboutAgentCard } from './AboutAgentCard';
@@ -82,6 +86,7 @@ export interface AgentProbeTemplatesProps {
 
 export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentDetected }) => {
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
   const addSubscription = useSubscriptions();
 
   const [templates, setTemplates] = React.useState<ProbeTemplate[]>([]);
@@ -165,6 +170,8 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
     setUploadModalOpen(false);
   }, [setUploadModalOpen]);
 
+  const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
+
   React.useEffect(() => {
     refreshTemplates();
   }, [refreshTemplates]);
@@ -209,10 +216,8 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
     if (!filterText) {
       filtered = templates;
     } else {
-      const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter(
-        (t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft),
-      );
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
+      filtered = templates.filter((t: ProbeTemplate) => reg.test(t.name) || reg.test(t.xml));
     }
 
     setFilteredTemplates(
@@ -287,7 +292,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
   } else {
     return (
       <>
-        <Stack hasGutter style={{ marginTop: '1em', marginBottom: '1.5em' }}>
+        <Stack hasGutter style={{ marginTop: '1em' }}>
           <StackItem>
             <AboutAgentCard />
           </StackItem>
@@ -296,17 +301,19 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
               <ToolbarContent>
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
-                    <TextInput
+                    <SearchInput
+                      style={{ minWidth: '30ch' }}
                       name="templateFilter"
                       id="templateFilter"
                       type="search"
-                      placeholder="Filter..."
-                      aria-label="Probe Template filter"
-                      onChange={setFilterText}
+                      placeholder={t('AgentProbeTemplates.SEARCH_PLACEHOLDER')}
+                      aria-label={t('AgentProbeTemplates.ARIA_LABELS.SEARCH_INPUT')}
+                      onChange={handleFilterTextChange}
                       value={filterText}
                     />
                   </ToolbarItem>
                 </ToolbarGroup>
+                <ToolbarItem variant="separator" />
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
                     <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleTemplateUpload}>
@@ -323,7 +330,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
               </ToolbarContent>
             </Toolbar>
             {templateRows.length ? (
-              <TableComposable aria-label="Probe Templates table" variant={TableVariant.compact}>
+              <Table aria-label="Probe Templates table" variant={TableVariant.compact}>
                 <Thead>
                   <Tr>
                     {tableColumns.map(({ title, sortable }, index) => (
@@ -333,14 +340,15 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                     ))}
                   </Tr>
                 </Thead>
-                <Tbody>{...templateRows}</Tbody>
-              </TableComposable>
+                <Tbody>{templateRows}</Tbody>
+              </Table>
             ) : (
               <EmptyState>
-                <EmptyStateIcon icon={SearchIcon} />
-                <Title headingLevel="h4" size="lg">
-                  No Probe Templates
-                </Title>
+                <EmptyStateHeader
+                  titleText="No Probe Templates"
+                  icon={<EmptyStateIcon icon={SearchIcon} />}
+                  headingLevel="h4"
+                />
               </EmptyState>
             )}
             <AgentProbeTemplateUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
@@ -357,6 +365,7 @@ export interface AgentProbeTemplateUploadModalProps {
 }
 
 export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadModalProps> = ({ onClose, isOpen }) => {
+  const { t } = useTranslation();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -458,6 +467,9 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
+            dropZoneAccepts={{
+              'application/xml': ['.xml'],
+            }}
             displayAccepts={['XML']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}
@@ -466,7 +478,7 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
         <ActionGroup>
           {allOks && numOfFiles ? (
             <Button variant="primary" onClick={handleClose}>
-              Close
+              {t('CLOSE', { ns: 'common' })}
             </Button>
           ) : (
             <>
@@ -476,10 +488,10 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
                 isDisabled={!numOfFiles || uploading}
                 {...submitButtonLoadingProps}
               >
-                Submit
+                {t('SUBMIT', { ns: 'common' })}
               </Button>
               <Button variant="link" onClick={handleClose}>
-                Cancel
+                {t('CANCEL', { ns: 'common' })}
               </Button>
             </>
           )}
@@ -496,6 +508,7 @@ export interface AgentTemplateActionProps {
 }
 
 export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDelete, template }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const actionItems = React.useMemo(() => {
@@ -507,33 +520,63 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
         isDisabled: !onInsert,
       },
       {
+        isSeparator: true,
+      },
+      {
         key: 'delete-template',
         title: 'Delete',
+        isDanger: true,
         onClick: () => onDelete(template),
       },
     ];
   }, [onInsert, onDelete, template]);
 
+  const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
+
+  const dropdownItems = React.useMemo(
+    () =>
+      actionItems.map((action, idx) =>
+        action.isSeparator ? (
+          <Divider key={`separator-${idx}`} />
+        ) : (
+          <DropdownItem
+            aria-label={action.key}
+            key={action.key}
+            onClick={() => {
+              setIsOpen(false);
+              action.onClick && action.onClick();
+            }}
+            isAriaDisabled={action.isDisabled}
+            isDanger={action.isDanger}
+          >
+            {action.title}
+          </DropdownItem>
+        ),
+      ),
+    [actionItems, setIsOpen],
+  );
+
   return (
     <Dropdown
-      isPlain
-      isOpen={isOpen}
-      toggle={<KebabToggle id="probe-template-toggle-kebab" onToggle={setIsOpen} />}
-      menuAppendTo={document.body}
-      position={DropdownPosition.right}
-      isFlipEnabled
-      dropdownItems={actionItems.map((action) => (
-        <DropdownItem
-          key={action.key}
-          onClick={() => {
-            setIsOpen(false);
-            action.onClick();
-          }}
-          isDisabled={action.isDisabled}
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          aria-label={t('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')}
+          variant="plain"
+          ref={toggleRef}
+          onClick={(event) => handleToggle(event, !isOpen)}
         >
-          {action.title}
-        </DropdownItem>
-      ))}
-    />
+          <EllipsisVIcon />
+        </MenuToggle>
+      )}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
+      isOpen={isOpen}
+      popperProps={{
+        position: 'right',
+        enableFlip: true,
+      }}
+    >
+      <DropdownList>{dropdownItems}</DropdownList>
+    </Dropdown>
   );
 };

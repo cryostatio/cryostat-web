@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { DurationFilter } from '@app/Recordings/Filters/DurationFilter';
+import { DurationFilter, DurationRange } from '@app/Recordings/Filters/DurationFilter';
+import { DurationUnit } from '@app/Shared/Components/DurationUnitSelect';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
-import { cleanup, screen } from '@testing-library/react';
-import { render, renderSnapshot } from '../../utils';
+import { cleanup, screen, waitFor, act } from '@testing-library/react';
+import { render, renderSnapshot, testT } from '../../utils';
 
 const mockRecordingLabels = [
   {
@@ -33,25 +34,30 @@ const mockRecording: ActiveRecording = {
   startTime: 1234567890,
   id: 0,
   state: RecordingState.RUNNING,
-  duration: 30,
+  duration: 30000,
   continuous: false,
   toDisk: false,
   maxSize: 0,
   maxAge: 0,
 };
 
+const durationRangeWithoutUpperLimit = { from: { value: mockRecording.duration / 1000, unit: DurationUnit.SECOND } };
+const durationRanegeWithLimits = {
+  from: { value: mockRecording.duration / 1000, unit: DurationUnit.SECOND },
+  to: { value: mockRecording.duration / 1000 + 30, unit: DurationUnit.SECOND },
+};
+const durationContinuous = { continuous: true };
+
 const onDurationInput = jest.fn((_durationInput) => undefined);
-const onContinuousSelect = jest.fn((_continuous) => undefined);
 
 describe('<DurationFilter />', () => {
-  let emptyFilteredDuration: string[];
-  let filteredDurationsWithCont: string[];
-  let filteredDurationsWithoutCont: string[];
+  let emptyDurationFilters: DurationRange[];
+  let mockDurationFilters: DurationRange[];
 
   beforeEach(() => {
-    emptyFilteredDuration = [];
-    filteredDurationsWithCont = [`${mockRecording.duration}`, 'continuous'];
-    filteredDurationsWithoutCont = [`${mockRecording.duration}`];
+    emptyDurationFilters = [];
+    mockDurationFilters = [durationRanegeWithLimits];
+    jest.mocked(onDurationInput).mockClear();
   });
 
   afterEach(cleanup);
@@ -62,13 +68,7 @@ describe('<DurationFilter />', () => {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={emptyFilteredDuration}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={emptyDurationFilters} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -84,8 +84,7 @@ describe('<DurationFilter />', () => {
             path: '/recordings',
             element: (
               <DurationFilter
-                durations={filteredDurationsWithCont}
-                onContinuousDurationSelect={onContinuousSelect}
+                durations={mockDurationFilters.concat(durationContinuous)}
                 onDurationInput={onDurationInput}
               />
             ),
@@ -100,19 +99,13 @@ describe('<DurationFilter />', () => {
     expect(checkBox).toHaveAttribute('checked');
   });
 
-  it('should not check continous box if continous is in filter', async () => {
+  it('should not check continous box if continous is not in filter', async () => {
     render({
       routerConfigs: {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={filteredDurationsWithoutCont}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={mockDurationFilters} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -124,23 +117,40 @@ describe('<DurationFilter />', () => {
     expect(checkBox).not.toHaveAttribute('checked');
   });
 
-  it('should select continous when clicking unchecked continuous box', async () => {
-    const submitContinuous = jest.fn((_continous) => {
-      filteredDurationsWithoutCont.push('continuous');
-    });
-
+  it('should check and disable continous box if duration filters have one entry without upper limit', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={filteredDurationsWithoutCont}
-                onContinuousDurationSelect={submitContinuous}
-                onDurationInput={onDurationInput}
-              />
-            ),
+            element: <DurationFilter durations={[durationRangeWithoutUpperLimit]} onDurationInput={onDurationInput} />,
+          },
+        ],
+      },
+    });
+
+    const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
+    expect(checkBox).toBeInTheDocument();
+    expect(checkBox).toBeVisible();
+    expect(checkBox).toHaveAttribute('checked');
+    expect(checkBox).toHaveAttribute('disabled');
+
+    await act(async () => {
+      await user.hover(checkBox);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText(testT('DurationFilter.TOOLTIP.CHECKBOX_DISABLED_CONTENT'))).toBeInTheDocument(),
+    );
+  });
+
+  it('should add filter with continous when clicking unchecked continuous box', async () => {
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DurationFilter durations={mockDurationFilters} onDurationInput={onDurationInput} />,
           },
         ],
       },
@@ -153,17 +163,11 @@ describe('<DurationFilter />', () => {
 
     await user.click(checkBox);
 
-    expect(submitContinuous).toHaveBeenCalledTimes(1);
-    expect(submitContinuous).toHaveBeenCalledWith(true);
-
-    expect(filteredDurationsWithoutCont).toStrictEqual([`${mockRecording.duration}`, 'continuous']);
+    expect(onDurationInput).toHaveBeenCalledTimes(1);
+    expect(onDurationInput).toHaveBeenCalledWith(durationContinuous);
   });
 
-  it('should unselect continous when clicking checked continuous box', async () => {
-    const submitContinuous = jest.fn((_continous) => {
-      filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== 'continuous');
-    });
-
+  it('should remove filter with continous when clicking checked continuous box', async () => {
     const { user } = render({
       routerConfigs: {
         routes: [
@@ -171,8 +175,7 @@ describe('<DurationFilter />', () => {
             path: '/recordings',
             element: (
               <DurationFilter
-                durations={filteredDurationsWithCont}
-                onContinuousDurationSelect={submitContinuous}
+                durations={mockDurationFilters.concat(durationContinuous)}
                 onDurationInput={onDurationInput}
               />
             ),
@@ -188,81 +191,71 @@ describe('<DurationFilter />', () => {
 
     await user.click(checkBox);
 
-    expect(submitContinuous).toHaveBeenCalledTimes(1);
-    expect(submitContinuous).toHaveBeenCalledWith(false);
-    expect(filteredDurationsWithCont).toStrictEqual([`${mockRecording.duration}`]);
+    expect(onDurationInput).toHaveBeenCalledTimes(1);
+    expect(onDurationInput).toHaveBeenCalledWith({ continuous: false });
   });
 
-  it('should select a duration when pressing Enter', async () => {
-    const submitDuration = jest.fn((duration) => {
-      emptyFilteredDuration.push(duration);
-    });
-
-    const { user } = render({
+  it('should show error text when upper limit is smaller than lower one', async () => {
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={emptyFilteredDuration}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={submitDuration}
-              />
-            ),
+            element: <DurationFilter durations={emptyDurationFilters} onDurationInput={onDurationInput} />,
           },
         ],
       },
     });
 
-    const durationInput = screen.getByLabelText('duration filter');
-    expect(durationInput).toBeInTheDocument();
-    expect(durationInput).toBeVisible();
+    const fromInput = container.querySelector("input[aria-label='duration-from'][type='number']") as HTMLInputElement;
+    expect(fromInput).toBeInTheDocument();
+    expect(fromInput).toBeVisible();
 
-    await user.clear(durationInput);
-    await user.type(durationInput, '50');
+    const toInput = container.querySelector("input[aria-label='duration-to'][type='number']") as HTMLInputElement;
+    expect(fromInput).toBeInTheDocument();
+    expect(fromInput).toBeVisible();
 
-    // Press enter
-    await user.type(durationInput, '{enter}');
+    await user.type(fromInput, '50');
+    await user.type(toInput, '30');
 
-    expect(submitDuration).toHaveBeenCalledTimes(1);
-    expect(submitDuration).toHaveBeenCalledWith(Number('50'));
-    expect(emptyFilteredDuration).toStrictEqual([50]);
+    const errorText = screen.getByText(testT('DurationFilter.HELPER_TEXT.INVALID_UPPER_BOUND'));
+    expect(errorText).toBeInTheDocument();
+    expect(errorText).toBeVisible();
   });
 
-  it('should not select a duration when pressing other keys', async () => {
-    const submitDuration = jest.fn((duration) => {
-      emptyFilteredDuration.push(duration);
-    });
-
-    const { user } = render({
+  it('should add the correct filter when valid inputs are entered and search button is clicked', async () => {
+    const { user, container } = render({
       routerConfigs: {
         routes: [
           {
             path: '/recordings',
-            element: (
-              <DurationFilter
-                durations={emptyFilteredDuration}
-                onContinuousDurationSelect={onContinuousSelect}
-                onDurationInput={submitDuration}
-              />
-            ),
+            element: <DurationFilter durations={emptyDurationFilters} onDurationInput={onDurationInput} />,
           },
         ],
       },
     });
 
-    const durationInput = screen.getByLabelText('duration filter');
-    expect(durationInput).toBeInTheDocument();
-    expect(durationInput).toBeVisible();
+    const fromInput = container.querySelector("input[aria-label='duration-from'][type='number']") as HTMLInputElement;
+    expect(fromInput).toBeInTheDocument();
+    expect(fromInput).toBeVisible();
 
-    await user.clear(durationInput);
-    await user.type(durationInput, '50');
+    const toInput = container.querySelector("input[aria-label='duration-to'][type='number']") as HTMLInputElement;
+    expect(fromInput).toBeInTheDocument();
+    expect(fromInput).toBeVisible();
 
-    // Press shift
-    await user.type(durationInput, '{shift}');
+    await user.type(fromInput, '30');
+    await user.type(toInput, '50');
 
-    expect(submitDuration).toHaveBeenCalledTimes(0);
-    expect(emptyFilteredDuration).toStrictEqual([]);
+    const searchBtn = screen.getByLabelText(testT('DurationFilter.ARIA_LABELS.SEARCH_BUTTON'));
+    expect(searchBtn).toBeInTheDocument();
+    expect(searchBtn).toBeVisible();
+
+    await user.click(searchBtn);
+
+    expect(onDurationInput).toHaveBeenCalledTimes(1);
+    expect(onDurationInput).toHaveBeenCalledWith({
+      from: { value: 30, unit: DurationUnit.SECOND },
+      to: { value: 50, unit: DurationUnit.SECOND },
+    });
   });
 });

@@ -39,9 +39,8 @@ import {
   ChartLegend,
   ChartLine,
   ChartVoronoiContainer,
-  getResizeObserver,
 } from '@patternfly/react-charts';
-import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
+import { getResizeObserver, Button, CardBody, CardHeader, CardTitle, Tooltip } from '@patternfly/react-core';
 import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
@@ -125,8 +124,8 @@ const SimpleChart: React.FC<{
               style={{
                 fill:
                   cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-global--palette--black-200)'
-                    : 'var(--pf-chart-global--label--Fill, #151515)',
+                    ? 'var(--pf-v5-global--palette--black-200)'
+                    : 'var(--pf-v5-chart-global--label--Fill, #151515)',
               }}
             />
           }
@@ -152,8 +151,8 @@ const SimpleChart: React.FC<{
             style={{
               fill:
                 cryostatTheme === ThemeSetting.DARK
-                  ? 'var(--pf-global--palette--black-200)'
-                  : 'var(--pf-chart-global--label--Fill, #151515)',
+                  ? 'var(--pf-v5-global--palette--black-200)'
+                  : 'var(--pf-v5-chart-global--label--Fill, #151515)',
             }}
           />
         }
@@ -298,8 +297,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
               style={{
                 fill:
                   cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-global--palette--black-200)'
-                    : 'var(--pf-chart-donut--label--title--Fill, #151515)',
+                    ? 'var(--pf-v5-global--palette--black-200)'
+                    : 'var(--pf-v5-chart-donut--label--title--Fill, #151515)',
                 fontSize: '24px',
               }}
             />
@@ -376,7 +375,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   const resizeObserver = React.useRef((): void => undefined);
-  const [cardWidth, setCardWidth] = React.useState(0);
+  const [cardWidth, setCardWidth] = React.useState(1); // Use non-zero as 0 means Infinity (invalid)
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const containerRef: React.Ref<any> = React.createRef();
 
@@ -403,7 +402,8 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   }, [containerRef, setCardWidth]);
 
   React.useEffect(() => {
-    resizeObserver.current = getResizeObserver(containerRef.current, handleResize);
+    resizeObserver.current = getResizeObserver(containerRef.current, handleResize, true);
+    handleResize();
     return resizeObserver.current;
   }, [resizeObserver, containerRef, handleResize]);
 
@@ -459,14 +459,15 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
 
   const refreshButton = React.useMemo(
     () => (
-      <Button
-        key={0}
-        aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
-        onClick={refresh}
-        variant="plain"
-        icon={<SyncAltIcon />}
-        isDisabled={isLoading}
-      />
+      <Tooltip key={0} content={t('CHART_CARD.BUTTONS.REFRESH_TOOLTIP')}>
+        <Button
+          aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
+          onClick={refresh}
+          variant="plain"
+          icon={<SyncAltIcon />}
+          isDisabled={isLoading}
+        />
+      </Tooltip>
     ),
     [t, props.chartKind, refresh, isLoading],
   );
@@ -478,11 +479,10 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
 
   const header = React.useMemo(
     () => (
-      <CardHeader>
+      <CardHeader actions={{ actions: <>{actions}</>, hasNoOffset: false, className: undefined }}>
         <CardTitle>
           {t('CHART_CARD.TITLE', { chartKind: props.chartKind, duration: props.duration, period: props.period })}
         </CardTitle>
-        <CardActions>{actions}</CardActions>
       </CardHeader>
     ),
     [t, props.chartKind, props.duration, props.period, actions],

@@ -49,14 +49,18 @@ describe('<DatetimeFilter/>', () => {
       },
     });
 
-    const calendarIcon = screen.getByRole('button', {
+    const calendarIcons = screen.getAllByRole('button', {
       name: testT('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR'),
     });
-    expect(calendarIcon).toBeInTheDocument();
-    expect(calendarIcon).toBeVisible();
+
+    expect(calendarIcons).toHaveLength(2);
+    calendarIcons.forEach((icon) => {
+      expect(icon).toBeInTheDocument();
+      expect(icon).toBeVisible();
+    });
 
     await act(async () => {
-      await user.click(calendarIcon);
+      await user.click(calendarIcons[0]);
     });
 
     const modal = await screen.findByRole('dialog');
@@ -68,7 +72,7 @@ describe('<DatetimeFilter/>', () => {
     expect(calendarContent).toBeVisible();
 
     await act(async () => {
-      await user.click(calendarIcon);
+      await user.click(calendarIcons[0]);
     });
 
     expect(modal).not.toBeVisible();
@@ -104,7 +108,7 @@ describe('<DatetimeFilter/>', () => {
       },
     });
 
-    const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
+    const dateInput = screen.getAllByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'))[0];
     expect(dateInput).toBeInTheDocument();
     expect(dateInput).toBeVisible();
 
@@ -130,12 +134,17 @@ describe('<DatetimeFilter/>', () => {
       },
     });
 
-    const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
-    expect(dateInput).toBeInTheDocument();
-    expect(dateInput).toBeVisible();
+    const dateInputs = screen.getAllByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
 
+    expect(dateInputs).toHaveLength(2);
+    dateInputs.forEach((input) => {
+      expect(input).toBeInTheDocument();
+      expect(input).toBeVisible();
+    });
+
+    const fromInput = dateInputs[0];
     await act(async () => {
-      await user.type(dateInput, '001/13/2023 25:13:60');
+      await user.type(fromInput, '001/13/2023 25:13:60');
     });
 
     const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
@@ -144,6 +153,42 @@ describe('<DatetimeFilter/>', () => {
     expect(searchIcon).toBeDisabled();
 
     const errorMessage = await screen.findByText(testT('DatetimeFilter.INVALID_DATE_TEXT'));
+    expect(errorMessage).toBeInTheDocument();
+    expect(errorMessage).toBeVisible();
+  });
+
+  it('should show error when upper limit is smaller than lower one', async () => {
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: <DateTimeFilter onSubmit={onDateTimeSelect} />,
+          },
+        ],
+      },
+    });
+
+    const dateInputs = screen.getAllByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
+    expect(dateInputs).toHaveLength(2);
+    dateInputs.forEach((input) => {
+      expect(input).toBeInTheDocument();
+      expect(input).toBeVisible();
+    });
+
+    const [fromInput, toInput] = dateInputs;
+
+    await act(async () => {
+      await user.type(fromInput, '2023-01-24T16:06:41.945Z');
+      await user.type(toInput, '2023-01-23T16:06:41.945Z');
+    });
+
+    const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
+    expect(searchIcon).toBeInTheDocument();
+    expect(searchIcon).toBeVisible();
+    expect(searchIcon).toBeDisabled();
+
+    const errorMessage = await screen.findByText(testT('DatetimeFilter.HELPER_TEXT.INVALID_UPPER_BOUND'));
     expect(errorMessage).toBeInTheDocument();
     expect(errorMessage).toBeVisible();
   });
@@ -160,12 +205,18 @@ describe('<DatetimeFilter/>', () => {
       },
     });
 
-    const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
-    expect(dateInput).toBeInTheDocument();
-    expect(dateInput).toBeVisible();
+    const dateInputs = screen.getAllByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
+    expect(dateInputs).toHaveLength(2);
+    dateInputs.forEach((input) => {
+      expect(input).toBeInTheDocument();
+      expect(input).toBeVisible();
+    });
+
+    const [fromInput, toInput] = dateInputs;
 
     await act(async () => {
-      await user.type(dateInput, '2023-01-24T16:06:41.945Z');
+      await user.type(fromInput, '2023-01-24T16:06:41.945Z');
+      await user.type(toInput, '2023-01-25T16:06:41.945Z');
     });
 
     const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
@@ -178,6 +229,9 @@ describe('<DatetimeFilter/>', () => {
     });
 
     expect(onDateTimeSelect).toHaveBeenCalledTimes(1);
-    expect(onDateTimeSelect).toHaveBeenCalledWith('2023-01-24T16:06:41.945Z');
+    expect(onDateTimeSelect).toHaveBeenCalledWith({
+      from: new Date('2023-01-24T16:06:41.945Z'),
+      to: new Date('2023-01-25T16:06:41.945Z'),
+    });
   });
 });

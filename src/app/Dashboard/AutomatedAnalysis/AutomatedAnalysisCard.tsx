@@ -53,7 +53,6 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { calculateAnalysisTimer, portalRoot } from '@app/utils/utils';
 import {
   Button,
-  CardActions,
   CardBody,
   CardExpandableContent,
   CardHeader,
@@ -62,25 +61,27 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateSecondaryActions,
   Grid,
   GridItem,
   Label,
   LabelGroup,
-  Level,
-  LevelItem,
   Stack,
   StackItem,
-  Switch,
   Text,
   TextContent,
   TextVariants,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   Tooltip,
+  EmptyStateActions,
+  EmptyStateHeader,
+  EmptyStateFooter,
+  Flex,
+  FlexItem,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
@@ -601,22 +602,25 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
     if (filtered.length === 0) {
       return (
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h4" size="lg">
-            {t(`AutomatedAnalysisCard.NO_RESULTS`)}
-          </Title>
+          <EmptyStateHeader
+            titleText={<>{t(`AutomatedAnalysisCard.NO_RESULTS`)}</>}
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
           <EmptyStateBody>{t('AutomatedAnalysisCard.NO_RESULTS_BODY')}</EmptyStateBody>
-          <EmptyStateSecondaryActions>
-            <Button variant="link" onClick={handleClearFilters}>
-              {t('CLEAR_FILTERS', { ns: 'common' })}
-            </Button>
-            <Button variant="link" onClick={showUnavailableScores}>
-              {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
-            </Button>
-            <Button variant="link" onClick={handleResetScoreFilter}>
-              {t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
-            </Button>
-          </EmptyStateSecondaryActions>
+          <EmptyStateFooter>
+            <EmptyStateActions>
+              <Button variant="link" onClick={handleClearFilters}>
+                {t('CLEAR_FILTERS', { ns: 'common' })}
+              </Button>
+              <Button variant="link" onClick={showUnavailableScores}>
+                {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+              </Button>
+              <Button variant="link" onClick={handleResetScoreFilter}>
+                {t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
+              </Button>
+            </EmptyStateActions>
+          </EmptyStateFooter>
         </EmptyState>
       );
     }
@@ -670,45 +674,61 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
             filters={targetAutomatedAnalysisFilters}
             updateFilters={updateFilters}
           />
-          <ToolbarGroup style={{ margin: '0.5em 0 0.5em 0' }}>
+          <ToolbarItem>
+            <Checkbox
+              label={t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+              isChecked={showNAScores}
+              onChange={(_, checked: boolean) => setShowNAScores(checked)}
+              id="show-na-scores"
+              name="show-na-scores"
+              style={{ alignSelf: 'center' }}
+            />
+          </ToolbarItem>
+          <ToolbarItem variant="separator" />
+          <ToolbarGroup variant="icon-button-group">
             <ToolbarItem>
-              <Button
-                isSmall
-                isDisabled={isLoading || usingCachedReport || usingArchivedReport}
-                isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
-                aria-label={t('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL')}
-                onClick={generateReport}
-                variant="control"
-                icon={<Spinner2Icon />}
-              />
-              <Button
-                isSmall
-                isDisabled={isLoading}
-                isAriaDisabled={isLoading}
-                aria-label={t('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL')}
-                onClick={clearAnalysis}
-                variant="control"
-                icon={<TrashIcon />}
-              />
-            </ToolbarItem>
-            <ToolbarItem>
-              <Checkbox
-                label={t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
-                isChecked={showNAScores}
-                onChange={setShowNAScores}
-                id="show-na-scores"
-                name="show-na-scores"
-              />
-            </ToolbarItem>
-            <ToolbarItem>
-              <Switch
-                label={t('AutomatedAnalysisCard.TOOLBAR.SWITCH.LIST_VIEW.LABEL')}
-                isChecked={showListView}
-                onChange={setShowListView}
-                id="show-list-view"
-              />
+              <Tooltip content={t('AutomatedAnalysisCard.TOOLTIP.REFRESH_ANALYSIS')}>
+                <Button
+                  size="sm"
+                  isDisabled={isLoading || usingCachedReport || usingArchivedReport}
+                  isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
+                  aria-label={t('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL')}
+                  onClick={generateReport}
+                  variant="control"
+                  icon={<Spinner2Icon />}
+                />
+              </Tooltip>
+              <Tooltip content={t('AutomatedAnalysisCard.TOOLTIP.CLEAR_ANALYSIS')}>
+                <Button
+                  size="sm"
+                  isDisabled={isLoading}
+                  isAriaDisabled={isLoading}
+                  aria-label={t('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL')}
+                  onClick={clearAnalysis}
+                  variant="control"
+                  icon={<TrashIcon />}
+                />
+              </Tooltip>
             </ToolbarItem>
           </ToolbarGroup>
+          <ToolbarItem>
+            <ToggleGroup>
+              <ToggleGroupItem
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.GRID_VIEW')}
+                text="Grid view"
+                buttonId="grid-view-btn"
+                isSelected={!showListView}
+                onClick={() => setShowListView(false)}
+              />
+              <ToggleGroupItem
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.LIST_VIEW')}
+                text="List view"
+                buttonId="list-view-btn"
+                isSelected={showListView}
+                onClick={() => setShowListView(true)}
+              />
+            </ToggleGroup>
+          </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
     );
@@ -818,6 +838,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const header = React.useMemo(() => {
     return (
       <CardHeader
+        actions={{ actions: <>{...props.actions || []}</>, hasNoOffset: false, className: undefined }}
         onExpand={onCardExpand}
         toggleButtonProps={{
           id: 'automated-analysis-toggle-details',
@@ -826,13 +847,12 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           'aria-expanded': isCardExpanded,
         }}
       >
-        <CardActions>{...props.actions || []}</CardActions>
-        <Level hasGutter>
-          <LevelItem>
+        <Flex>
+          <FlexItem>
             <CardTitle component="h4">{t('AutomatedAnalysisCard.CARD_TITLE')}</CardTitle>
-          </LevelItem>
-          <LevelItem>{headerLabels}</LevelItem>
-        </Level>
+          </FlexItem>
+          <FlexItem>{headerLabels}</FlexItem>
+        </Flex>
       </CardHeader>
     );
   }, [t, onCardExpand, isCardExpanded, headerLabels, props.actions]);

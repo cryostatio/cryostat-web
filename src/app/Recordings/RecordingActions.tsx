@@ -17,16 +17,19 @@ import { Recording, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
+import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 export interface RowAction {
-  title: string | React.ReactNode;
-  key: string;
-  onClick: () => void;
+  title?: string | React.ReactNode;
+  key?: string;
+  onClick?: () => void;
+  isSeparator?: boolean;
 }
 
 export interface RecordingActionsProps {
@@ -36,7 +39,8 @@ export interface RecordingActionsProps {
   uploadFn: () => Observable<boolean>;
 }
 
-export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
+export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
+  const { t } = useTranslation();
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
@@ -54,14 +58,13 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
   }, [context.api, setGrafanaEnabled, addSubscription]);
 
   const grafanaUpload = React.useCallback(() => {
-    notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
+    notifications.info('Upload Started', `Recording "${recording.name}" uploading...`);
     addSubscription(
-      props
-        .uploadFn()
+      uploadFn()
         .pipe(first())
         .subscribe((success) => {
           if (success) {
-            notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
+            notifications.success('Upload Success', `Recording "${recording.name}" uploaded`);
             context.api
               .grafanaDashboardUrl()
               .pipe(first())
@@ -69,11 +72,11 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
           }
         }),
     );
-  }, [addSubscription, notifications, props, context.api]);
+  }, [addSubscription, notifications, context.api, recording, uploadFn]);
 
   const handleDownloadRecording = React.useCallback(() => {
-    context.api.downloadRecording(props.recording);
-  }, [context.api, props.recording]);
+    context.api.downloadRecording(recording);
+  }, [context.api, recording]);
 
   const actionItems = React.useMemo(() => {
     const actionItems = [
@@ -90,33 +93,58 @@ export const RecordingActions: React.FC<RecordingActionsProps> = (props) => {
         onClick: grafanaUpload,
       });
     }
+
     return actionItems;
   }, [handleDownloadRecording, grafanaEnabled, grafanaUpload]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {
       setIsOpen(false);
-      action.onClick();
+      action.onClick && action.onClick();
     },
     [setIsOpen],
   );
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={() => setIsOpen((isOpen) => !isOpen)}
+        isExpanded={isOpen}
+        variant="plain"
+        data-quickstart-id="recording-kebab"
+        aria-label={t('RecordingActions.ARIA_LABELS.MENU_TOGGLE')}
+      >
+        <EllipsisVIcon />
+      </MenuToggle>
+    ),
+    [t, setIsOpen, isOpen],
+  );
+
   return (
-    <Td isActionCell>
+    <Td {...props} isActionCell>
       <Dropdown
-        aria-label={`${props.recording.name}-actions`}
-        menuAppendTo={document.body}
-        position="right"
-        direction="down"
-        toggle={<KebabToggle id="toggle-kebab" onToggle={setIsOpen} data-quickstart-id="recording-kebab" />}
-        isPlain
+        toggle={toggle}
+        popperProps={{
+          enableFlip: true,
+          position: 'right',
+        }}
         isOpen={isOpen}
-        dropdownItems={actionItems.map((action) => (
-          <DropdownItem key={action.key} onClick={() => onSelect(action)} data-quickstart-id={action.key}>
-            {action.title}
-          </DropdownItem>
-        ))}
-      />
+        onOpenChange={(isOpen) => setIsOpen(isOpen)}
+        onOpenChangeKeys={['Escape']}
+      >
+        <DropdownList>
+          {actionItems.map((action) =>
+            action.isSeparator ? (
+              <Divider />
+            ) : (
+              <DropdownItem key={action.key} onClick={() => onSelect(action)} data-quickstart-id={action.key}>
+                {action.title}
+              </DropdownItem>
+            ),
+          )}
+        </DropdownList>
+      </Dropdown>
     </Td>
   );
 };

@@ -35,12 +35,12 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
-  TextInput,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  EmptyStateHeader,
+  SearchInput,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -48,7 +48,7 @@ import {
   IAction,
   ISortBy,
   SortByDirection,
-  TableComposable,
+  Table,
   TableVariant,
   Tbody,
   Td,
@@ -57,7 +57,9 @@ import {
   ThProps,
   Tr,
 } from '@patternfly/react-table';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
@@ -87,9 +89,10 @@ const tableColumns: TableColumn[] = [
 
 export interface EventTemplatesProps {}
 
-export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
+export const EventTemplates: React.FC<EventTemplatesProps> = () => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [filteredTemplates, setFilteredTemplates] = React.useState<EventTemplate[]>([]);
@@ -121,12 +124,9 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
     if (!filterText) {
       filtered = templates;
     } else {
-      const ft = filterText.trim().toLowerCase();
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
       filtered = templates.filter(
-        (t: EventTemplate) =>
-          t.name.toLowerCase().includes(ft) ||
-          t.description.toLowerCase().includes(ft) ||
-          t.provider.toLowerCase().includes(ft),
+        (t: EventTemplate) => reg.test(t.name) || reg.test(t.description) || reg.test(t.provider),
       );
     }
 
@@ -278,6 +278,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           {
             title: 'Delete',
             onClick: () => handleDeleteButton(t),
+            isDanger: true,
           },
         ]);
       }
@@ -351,18 +352,20 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           <ToolbarContent>
             <ToolbarGroup variant="filter-group">
               <ToolbarItem>
-                <TextInput
+                <SearchInput
+                  style={{ minWidth: '30ch' }}
                   name="templateFilter"
                   id="templateFilter"
                   type="search"
-                  placeholder="Filter..."
-                  aria-label="Event Template filter"
-                  onChange={setFilterText}
+                  placeholder={t('EventTemplates.SEARCH_PLACEHOLDER')}
+                  aria-label={t('EventTemplates.ARIA_LABELS.SEARCH_INPUT')}
+                  onChange={(_, value: string) => setFilterText(value)}
                   value={filterText}
                   isDisabled={errorMessage != ''}
                 />
               </ToolbarItem>
             </ToolbarGroup>
+            <ToolbarItem variant="separator" />
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
                 <Button
@@ -385,7 +388,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
           </ToolbarContent>
         </Toolbar>
         {templateRows.length ? (
-          <TableComposable aria-label="Event Templates Table" variant={TableVariant.compact}>
+          <Table aria-label="Event Templates Table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 {tableColumns.map(({ title, sortable }, index) => (
@@ -396,13 +399,14 @@ export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
               </Tr>
             </Thead>
             <Tbody>{templateRows}</Tbody>
-          </TableComposable>
+          </Table>
         ) : (
           <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No Event Templates
-            </Title>
+            <EmptyStateHeader
+              titleText="No Event Templates"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
           </EmptyState>
         )}
         <EventTemplatesUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
@@ -518,6 +522,9 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
             submitRef={submitRef}
             abortRef={abortRef}
             uploading={uploading}
+            dropZoneAccepts={{
+              'application/xml': ['.xml', '.jfc'],
+            }}
             displayAccepts={['XML', 'JFC']}
             onFileSubmit={onFileSubmit}
             onFilesChange={onFilesChange}

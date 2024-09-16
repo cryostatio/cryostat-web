@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { TFunction } from 'i18next';
+
 export interface SecurityCard {
   key: string;
-  title: JSX.Element;
-  description: JSX.Element;
+  title: (t: TFunction) => JSX.Element;
+  description: (t: TFunction) => JSX.Element;
   content: React.FC;
+  isFilled?: boolean;
 }

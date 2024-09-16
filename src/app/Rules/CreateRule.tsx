@@ -36,10 +36,13 @@ import {
   CardTitle,
   Form,
   FormGroup,
+  FormHelperText,
   FormSelect,
   FormSelectOption,
   Grid,
   GridItem,
+  HelperText,
+  HelperTextItem,
   Popover,
   Split,
   SplitItem,
@@ -53,6 +56,7 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
@@ -65,6 +69,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
@@ -124,7 +129,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   }, [formData]);
 
   const handleNameChange = React.useCallback(
-    (name: string) =>
+    (_, name: string) =>
       setFormData((old) => ({
         ...old,
         name,
@@ -138,12 +143,12 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 
   const handleDescriptionChange = React.useCallback(
-    (description: string) => setFormData((old) => ({ ...old, description })),
+    (_, description: string) => setFormData((old) => ({ ...old, description })),
     [setFormData],
   );
 
   const handleMatchExpressionChange = React.useCallback(
-    (matchExpression: string) => {
+    (_, matchExpression: string) => {
       matchExprService.setSearchExpression(matchExpression);
       setFormData((old) => ({ ...old, matchExpression }));
     },
@@ -156,52 +161,53 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 
   const handleEnabledChange = React.useCallback(
-    (enabled: boolean) => setFormData((old) => ({ ...old, enabled })),
+    (_, enabled: boolean) => setFormData((old) => ({ ...old, enabled })),
     [setFormData],
   );
 
   const handleMaxAgeChange = React.useCallback(
-    (maxAge: string) => setFormData((old) => ({ ...old, maxAge: Number(maxAge) })),
+    (_, maxAge: string) => setFormData((old) => ({ ...old, maxAge: Number(maxAge) })),
     [setFormData],
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
-    (maxAgeUnit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(maxAgeUnit) })),
+    (_, maxAgeUnit: string) => setFormData((old) => ({ ...old, maxAgeUnit: Number(maxAgeUnit) })),
     [setFormData],
   );
 
   const handleMaxSizeChange = React.useCallback(
-    (maxSize: string) => setFormData((old) => ({ ...old, maxSize: Number(maxSize) })),
+    (_, maxSize: string) => setFormData((old) => ({ ...old, maxSize: Number(maxSize) })),
     [setFormData],
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
-    (maxSizeUnit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(maxSizeUnit) })),
+    (_, maxSizeUnit: string) => setFormData((old) => ({ ...old, maxSizeUnit: Number(maxSizeUnit) })),
     [setFormData],
   );
 
   const handleArchivalPeriodChange = React.useCallback(
-    (archivalPeriod: string) => setFormData((old) => ({ ...old, archivalPeriod: Number(archivalPeriod) })),
+    (_, archivalPeriod: string) => setFormData((old) => ({ ...old, archivalPeriod: Number(archivalPeriod) })),
     [setFormData],
   );
 
   const handleArchivalPeriodUnitsChange = React.useCallback(
-    (archivalPeriodUnit: string) => setFormData((old) => ({ ...old, archivalPeriodUnit: Number(archivalPeriodUnit) })),
+    (_, archivalPeriodUnit: string) =>
+      setFormData((old) => ({ ...old, archivalPeriodUnit: Number(archivalPeriodUnit) })),
     [setFormData],
   );
 
   const handleInitialDelayChange = React.useCallback(
-    (initialDelay: string) => setFormData((old) => ({ ...old, initialDelay: Number(initialDelay) })),
+    (_, initialDelay: string) => setFormData((old) => ({ ...old, initialDelay: Number(initialDelay) })),
     [setFormData],
   );
 
   const handleInitialDelayUnitsChanged = React.useCallback(
-    (initialDelayUnit: string) => setFormData((old) => ({ ...old, initialDelayUnit: Number(initialDelayUnit) })),
+    (_, initialDelayUnit: string) => setFormData((old) => ({ ...old, initialDelayUnit: Number(initialDelayUnit) })),
     [setFormData],
   );
 
   const handlePreservedArchivesChange = React.useCallback(
-    (preservedArchives: string) => setFormData((old) => ({ ...old, preservedArchives: Number(preservedArchives) })),
+    (_, preservedArchives: string) => setFormData((old) => ({ ...old, preservedArchives: Number(preservedArchives) })),
     [setFormData],
   );
 
@@ -342,21 +348,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
 
   return (
     <Form>
-      <Text component={TextVariants.small}>
-        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching Target JVM
-        applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
-        kept in the application Recording buffer, and how frequently Cryostat should copy the application Recording
-        buffer into Cryostat&apos;s own archived storage.
-      </Text>
-      <FormGroup
-        label="Name"
-        isRequired
-        fieldId="rule-name"
-        helperText="Enter a rule name."
-        helperTextInvalid="A rule name can contain only letters, numbers, and underscores."
-        validated={formData.nameValid}
-        data-quickstart-id="rule-name"
-      >
+      <Text component={TextVariants.small}>{t('CreateRule.ABOUT')}</Text>
+      <FormGroup label={t('NAME', { ns: 'common' })} isRequired fieldId="rule-name" data-quickstart-id="rule-name">
         <TextInput
           value={formData.name}
           isDisabled={loading}
@@ -367,11 +360,19 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           onChange={handleNameChange}
           validated={formData.nameValid}
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={formData.nameValid}>
+              {formData.nameValid === ValidatedOptions.error
+                ? t('CreateRule.NAME_HINT')
+                : t('CreateRule.NAME_HELPER_TEXT')}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <FormGroup
-        label="Description"
+        label={t('DESCRIPTION', { ns: 'common' })}
         fieldId="rule-description"
-        helperText="Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions."
         data-quickstart-id="rule-description"
       >
         <TextArea
@@ -384,16 +385,21 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           autoResize
           onChange={handleDescriptionChange}
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.DESCRIPTION_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <FormGroup
-        label="Match Expression"
+        label={t('MATCH_EXPRESSION', { ns: 'common' })}
         labelIcon={
           <Popover
             appendTo={portalRoot}
-            headerContent="Match Expression hint"
+            headerContent={t('CreateRule.MATCH_EXPRESSION_HINT_MODAL_HEADER')}
             bodyContent={
               <>
-                Try an expression like:
+                {t('CreateRule.MATCH_EXPRESSION_HINT_BODY')}
                 <MatchExpressionHint target={sampleTarget} />
               </>
             }
@@ -401,9 +407,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           >
             <Button
               variant="plain"
-              aria-label="More info for Match Expression field"
-              onClick={(e) => e.preventDefault()}
-              className="pf-c-form__group-label-help"
+              aria-label={t('CreateRule.ARIA_LABELS.HELPER_ICON')}
               data-quickstart-id="rule-matchexpr-help"
             >
               <HelpIcon />
@@ -412,17 +416,6 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         }
         isRequired
         fieldId="rule-matchexpr"
-        helperText={
-          evaluating
-            ? 'Evaluating Match Expression...'
-            : formData.matchExpressionValid === ValidatedOptions.warning
-            ? `Warning: Match Expression matches no targets.`
-            : `
-  Enter a Match Expression. This is a Java-like code snippet that is evaluated against each target
-  application to determine whether the rule should be applied.`
-        }
-        helperTextInvalid="The expression matching failed."
-        validated={formData.matchExpressionValid}
         data-quickstart-id="rule-matchexpr"
       >
         <TextArea
@@ -437,16 +430,21 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           onChange={handleMatchExpressionChange}
           validated={formData.matchExpressionValid}
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={formData.matchExpressionValid}>
+              {evaluating
+                ? t('CreateRule.EVALUATING_EXPRESSION')
+                : formData.matchExpressionValid === ValidatedOptions.warning
+                ? t('CreateRule.WARNING_NO_MATCH')
+                : formData.matchExpressionValid === ValidatedOptions.error
+                ? t('CreateRule.FAILING_EVALUATION')
+                : t('CreateRule.MATCH_EXPRESSION_HELPER_TEXT')}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label="Enabled"
-        isRequired
-        fieldId="rule-enabled"
-        helperText={`Rules take effect when created if enabled and will be matched against all
-discovered target applications immediately. When new target applications appear they are
-checked against all enabled rules. Disabled rules have no effect but are available to be
-enabled in the future.`}
-      >
+      <FormGroup label={t('ENABLED', { ns: 'common' })} isRequired fieldId="rule-enabled">
         <Switch
           id="rule-enabled"
           isDisabled={loading}
@@ -454,14 +452,16 @@ enabled in the future.`}
           isChecked={formData.enabled}
           onChange={handleEnabledChange}
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.ENABLE_SWITCH_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <FormGroup
-        label="Template"
+        label={t('TEMPLATE', { ns: 'common' })}
         isRequired
         fieldId="recording-template"
-        validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
-        helperText="The Event Template to be applied by this Rule against matching target applications."
-        helperTextInvalid="A Template must be selected"
         data-quickstart-id="rule-evt-template"
       >
         <SelectTemplateSelectorForm
@@ -471,13 +471,15 @@ enabled in the future.`}
           templates={templates}
           onSelect={handleTemplateChange}
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
+              {!formData.template?.name ? t('CreateRule.TEMPLATE_HINT') : t('CreateRule.TEMPLATE_HELPER_TEXT')}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label="Maximum size"
-        fieldId="maxSize"
-        helperText="The maximum size of Recording data retained in the target application's Recording buffer."
-        data-quickstart-id="rule-max-size"
-      >
+      <FormGroup label={t('MAXIMUM_SIZE', { ns: 'common' })} fieldId="maxSize" data-quickstart-id="rule-max-size">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -493,6 +495,7 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.maxSizeUnit}
               isDisabled={loading}
               onChange={handleMaxSizeUnitChange}
@@ -504,13 +507,13 @@ enabled in the future.`}
             </FormSelect>
           </SplitItem>
         </Split>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.MAXSIZE_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label="Maximum age"
-        fieldId="maxAge"
-        helperText="The maximum age of Recording data retained in the target application's Recording buffer."
-        data-quickstart-id="rule-max-age"
-      >
+      <FormGroup label={t('MAXIMUM_AGE', { ns: 'common' })} fieldId="maxAge" data-quickstart-id="rule-max-age">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -526,22 +529,27 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.maxAgeUnit}
               isDisabled={loading}
               onChange={handleMaxAgeUnitChange}
               aria-label="Max Age units Input"
             >
-              <FormSelectOption key="1" value="1" label="Seconds" />
-              <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
             </FormSelect>
           </SplitItem>
         </Split>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.MAXAGE_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <FormGroup
-        label="Archival period"
+        label={t('ARCHIVAL_PERIOD', { ns: 'common' })}
         fieldId="archivalPeriod"
-        helperText="Time between copies of active Recording data being pulled into Cryostat archive storage."
         data-quickstart-id="rule-archival-period"
       >
         <Split hasGutter={true}>
@@ -559,22 +567,27 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.archivalPeriodUnit}
               isDisabled={loading}
               onChange={handleArchivalPeriodUnitsChange}
               aria-label="archival period units input"
             >
-              <FormSelectOption key="1" value="1" label="Seconds" />
-              <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
             </FormSelect>
           </SplitItem>
         </Split>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.ARCHIVAL_PERIOD_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <FormGroup
-        label="Initial delay"
+        label={t('INITIAL_DELAY', { ns: 'common' })}
         fieldId="initialDelay"
-        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later."
         data-quickstart-id="rule-initial-delay"
       >
         <Split hasGutter={true}>
@@ -592,22 +605,27 @@ enabled in the future.`}
           </SplitItem>
           <SplitItem>
             <FormSelect
+              className="rules_form_select"
               value={formData.initialDelayUnit}
               isDisabled={loading}
               onChange={handleInitialDelayUnitsChanged}
               aria-label="initial delay units input"
             >
-              <FormSelectOption key="1" value="1" label="Seconds" />
-              <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
             </FormSelect>
           </SplitItem>
         </Split>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.INITIAL_DELAY_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <FormGroup
-        label="Preserved archives"
+        label={t('PRESERVED_ARCHIVES', { ns: 'common' })}
         fieldId="preservedArchives"
-        helperText="The number of Archived Recording copies to preserve in archives for each target application affected by this rule."
         data-quickstart-id="rule-preserved-archives"
       >
         <TextInput
@@ -620,6 +638,11 @@ enabled in the future.`}
           onChange={handlePreservedArchivesChange}
           min="0"
         />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.PRESERVED_ARCHIVES_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
       <ActionGroup>
         <Button
@@ -635,10 +658,10 @@ enabled in the future.`}
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}
         >
-          {loading ? 'Creating' : 'Create'}
+          {t(loading ? 'CREATING' : 'CREATE', { ns: 'common' })}
         </Button>
         <Button variant="secondary" onClick={exitForm} isAriaDisabled={loading}>
-          Cancel
+          {t('CANCEL', { ns: 'common' })}
         </Button>
       </ActionGroup>
     </Form>
@@ -647,15 +670,16 @@ enabled in the future.`}
 
 export const CreateRule: React.FC = () => {
   const matchExpreRef = React.useRef(new MatchExpressionService());
+  const { t } = useTranslation();
 
   const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
     () => [
       {
-        title: 'Automated Rules',
+        title: t('AUTOMATED_RULES', { ns: 'common' }),
         path: '/rules',
       },
     ],
-    [],
+    [t],
   );
 
   const gridStyles: React.CSSProperties = React.useMemo(
@@ -667,7 +691,7 @@ export const CreateRule: React.FC = () => {
   );
 
   return (
-    <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
+    <BreadcrumbPage pageTitle={t('CREATE', { ns: 'common' })} breadcrumbs={breadcrumbs}>
       <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
         <Grid hasGutter style={gridStyles}>
           <GridItem xl={5} order={{ xl: '0', default: '1' }}>
@@ -679,7 +703,7 @@ export const CreateRule: React.FC = () => {
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
-              <CardTitle>Match Expression visualizer</CardTitle>
+              <CardTitle>{t('MATCH_EXPRESSION_VISUALIZER.TITLE')}</CardTitle>
               <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
                 <MatchExpressionVisualizer />
               </CardBody>

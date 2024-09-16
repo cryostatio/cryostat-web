@@ -21,13 +21,12 @@ import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
   Bullseye,
   Button,
   Card,
   CardBody,
-  CardHeader,
-  CardTitle,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -48,13 +47,8 @@ import {
   GridItem,
   Label,
   LabelGroup,
-  Level,
-  LevelItem,
   Modal,
   NumberInput,
-  Select,
-  SelectOption,
-  SelectOptionObject,
   Stack,
   StackItem,
   Switch,
@@ -63,16 +57,24 @@ import {
   TextInput,
   Title,
   Tooltip,
-} from '@patternfly/react-core';
-import {
-  CustomWizardNavFunction,
   Wizard,
-  WizardControlStep,
   WizardHeader,
   WizardNav,
-  WizardNavItem,
   WizardStep,
-} from '@patternfly/react-core/dist/js/next';
+  WizardNavItem,
+  EmptyStateHeader,
+  EmptyStateFooter,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  WizardStepType,
+  CustomWizardNavFunction,
+  Select,
+  SelectOption,
+  SelectList,
+  MenuToggle,
+  MenuToggleElement,
+} from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import { nanoid } from 'nanoid';
@@ -84,7 +86,7 @@ import { ChartContext } from './Charts/context';
 import { CardConfig, DashboardCardDescriptor, PropControl } from './types';
 import { getCardDescriptorByTitle, getDashboardCards } from './utils';
 
-interface AddCardProps {
+export interface AddCardProps {
   variant: 'card' | 'icon-button';
 }
 
@@ -137,23 +139,23 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
   const customNav: CustomWizardNavFunction = React.useCallback(
     (
       isExpanded: boolean,
-      steps: WizardControlStep[],
-      activeStep: WizardControlStep,
+      steps: WizardStepType[],
+      activeStep: WizardStepType,
       goToStepByIndex: (index: number) => void,
     ) => {
       return (
         <WizardNav isExpanded={isExpanded}>
           {steps
             .filter((step) => !step.isHidden)
-            .map((step, idx) => (
+            .map((step) => (
               <WizardNavItem
                 key={step.id}
                 id={step.id}
                 content={step.name}
                 isCurrent={activeStep.id === step.id}
-                isDisabled={step.isDisabled || (idx > 0 && !selection)}
+                isDisabled={step.isDisabled || (step.index > 0 && !selection)}
                 stepIndex={step.index}
-                onNavItemClick={goToStepByIndex}
+                onClick={() => goToStepByIndex(step.index)}
               />
             ))}
         </WizardNav>
@@ -169,15 +171,18 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
           <Card isRounded isCompact isFullHeight>
             <CardBody>
               <Bullseye>
-                <EmptyState variant={EmptyStateVariant.large}>
-                  <EmptyStateIcon icon={PlusCircleIcon} />
-                  <Title headingLevel="h2" size="md">
-                    Add a new card
-                  </Title>
+                <EmptyState variant={EmptyStateVariant.lg}>
+                  <EmptyStateHeader
+                    titleText="Add a new card"
+                    icon={<EmptyStateIcon icon={PlusCircleIcon} />}
+                    headingLevel="h2"
+                  />
                   <EmptyStateBody>{t('Dashboard.CARD_CATALOG_DESCRIPTION')}</EmptyStateBody>
-                  <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
-                    Add
-                  </Button>
+                  <EmptyStateFooter>
+                    <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
+                      Add
+                    </Button>
+                  </EmptyStateFooter>
                 </EmptyState>
               </Bullseye>
             </CardBody>
@@ -190,6 +195,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
             appendTo={() => document.getElementById('dashboard-catalog-btn-wrapper') || document.body}
           >
             <Button
+              id="dashboard-add-btn"
               aria-label="Add card"
               data-quickstart-id={'dashboard-add-btn'}
               variant="plain"
@@ -243,6 +249,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
                 !getCardDescriptorByTitle(selection, t).advancedConfig
                   ? 'Finish'
                   : 'Next',
+              nextButtonProps: { id: 'card-props-config-next' },
             }}
           >
             <Stack>
@@ -259,6 +266,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
             name="Configuration"
             footer={{
               nextButtonText: selection && !getCardDescriptorByTitle(selection, t).advancedConfig ? 'Finish' : 'Next',
+              nextButtonProps: { id: 'card-props-config-next' },
             }}
             isHidden={!selection || !getCardDescriptorByTitle(selection, t).propControls.length}
           >
@@ -274,7 +282,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
           <WizardStep
             id="card-adv-config"
             name="Advanced Configuration"
-            footer={{ nextButtonText: 'Finish' }}
+            footer={{ nextButtonText: 'Finish', nextButtonProps: { id: 'card-props-config-next' } }}
             isHidden={!selection || !getCardDescriptorByTitle(selection, t).advancedConfig}
           >
             <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
@@ -297,7 +305,10 @@ const getFullDescription = (selection: string, t: TFunction) => {
 
 export interface CardGalleryProps {
   selection: string; // Translated card title
-  onSelect: (event: React.MouseEvent, selection: string) => void;
+  onSelect: (
+    event: React.MouseEvent<Element, MouseEvent> | React.FormEvent<HTMLInputElement>,
+    selection: string,
+  ) => void;
 }
 
 export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect }) => {
@@ -311,43 +322,35 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     return availableCards.map((card) => {
       const { icon, labels, title, description } = card;
       return (
-        <Card
+        <CatalogTile
+          featured={selection === t(title)}
           id={title}
           key={title}
-          hasSelectableInput
-          isSelectableRaised
-          onClick={(event) => {
+          icon={icon}
+          title={t(title)}
+          onClick={(_event) => {
             if (selection === t(title)) {
               setToViewCard(availableCards.find((card) => t(card.title) === selection));
             } else {
-              onSelect(event, t(title));
+              onSelect(_event, t(title));
             }
           }}
-          isFullHeight
-          isFlat
-          isSelected={selection === t(title)}
+          badges={
+            labels && [
+              <CatalogTileBadge>
+                <LabelGroup>
+                  {labels.map(({ content, icon, color }) => (
+                    <Label key={content} color={color} icon={icon} isCompact>
+                      {content}
+                    </Label>
+                  ))}
+                </LabelGroup>
+              </CatalogTileBadge>,
+            ]
+          }
         >
-          <CardHeader>
-            <Level hasGutter>
-              {icon ? <LevelItem>{icon}</LevelItem> : null}
-              <LevelItem>
-                <CardTitle>{t(title)}</CardTitle>
-              </LevelItem>
-              <LevelItem>
-                {labels ? (
-                  <LabelGroup>
-                    {labels.map(({ content, icon, color }) => (
-                      <Label key={content} color={color} icon={icon} isCompact>
-                        {content}
-                      </Label>
-                    ))}
-                  </LabelGroup>
-                ) : null}
-              </LevelItem>
-            </Level>
-          </CardHeader>
-          <CardBody>{t(description)}</CardBody>
-        </Card>
+          {t(description)}
+        </CatalogTile>
       );
     });
   }, [t, availableCards, selection, onSelect]);
@@ -376,18 +379,18 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
                 <FlexItem>
                   <Title headingLevel={'h3'}>{t(title)}</Title>
                 </FlexItem>
+                <FlexItem>
+                  {labels && labels.length ? (
+                    <LabelGroup>
+                      {labels.map(({ content, icon, color }) => (
+                        <Label key={content} color={color} icon={icon}>
+                          {content}
+                        </Label>
+                      ))}
+                    </LabelGroup>
+                  ) : null}
+                </FlexItem>
               </Flex>
-            </StackItem>
-            <StackItem>
-              {labels && labels.length ? (
-                <LabelGroup>
-                  {labels.map(({ content, icon, color }) => (
-                    <Label key={content} color={color} icon={icon}>
-                      {content}
-                    </Label>
-                  ))}
-                </LabelGroup>
-              ) : null}
             </StackItem>
             <StackItem>{getFullDescription(t(title), t)}</StackItem>
             <StackItem isFilled>
@@ -420,7 +423,7 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
     <Drawer isExpanded={!!toViewCard} isInline>
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>
-          <Grid hasGutter style={{ alignItems: 'stretch', marginTop: '1em', marginRight: !toViewCard ? 0 : '1em' }}>
+          <Grid hasGutter className="dashboard-card-picker" style={{ marginRight: !toViewCard ? 0 : '1em' }}>
             {items.map((item) => (
               <GridItem span={4} key={item.key}>
                 {item}
@@ -527,8 +530,13 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
           break;
       }
       return (
-        <FormGroup key={`${ctrl.key}`} label={t(ctrl.name)} helperText={t(ctrl.description)} isInline isStack>
+        <FormGroup key={`${ctrl.key}`} label={t(ctrl.name)} isInline isStack>
           {input}
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{t(ctrl.description)}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
       );
     },
@@ -552,10 +560,11 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
 interface SelectControlProps {
   handleChange: (selection: string) => void;
   control: PropControl;
-  selectedConfig: string | SelectOptionObject;
+  selectedConfig: string;
+  isDisabled?: boolean;
 }
 
-const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, selectedConfig }) => {
+const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, selectedConfig, isDisabled }) => {
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
@@ -563,14 +572,14 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
   const [errored, setErrored] = React.useState(false);
 
   const handleSelect = React.useCallback(
-    (_, selection, isPlaceholder) => {
-      if (!isPlaceholder) {
-        handleChange(selection);
-      }
+    (_, selection) => {
+      handleChange(selection);
       setSelectOpen(false);
     },
     [handleChange, setSelectOpen],
   );
+
+  const handleToggle = React.useCallback((_) => setSelectOpen((isOpen) => !isOpen), [setSelectOpen]);
 
   React.useEffect(() => {
     let obs;
@@ -598,27 +607,43 @@ const SelectControl: React.FC<SelectControlProps> = ({ handleChange, control, se
     );
   }, [addSubscription, setOptions, setErrored, control, control.values]);
 
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={selectOpen} isDisabled={isDisabled}>
+        {selectedConfig}
+      </MenuToggle>
+    ),
+    [handleToggle, isDisabled, selectOpen, selectedConfig],
+  );
+
   return (
     <Select
-      onToggle={setSelectOpen}
+      toggle={toggle}
       isOpen={selectOpen}
       onSelect={handleSelect}
-      selections={selectedConfig}
-      menuAppendTo={portalRoot}
-      isFlipEnabled
-      maxHeight={'16em'}
+      selected={selectedConfig}
+      popperProps={{
+        enableFlip: true,
+        appendTo: portalRoot,
+      }}
+      isScrollable
+      maxMenuHeight="40vh"
+      onOpenChange={setSelectOpen}
+      onOpenChangeKeys={['Escape']}
     >
-      {errored
-        ? [<SelectOption key={0} value={`Load error: ${options[0]}`} isPlaceholder isDisabled />]
-        : options.map((choice, idx) => {
-            const display =
-              control.extras && control.extras.displayMapper ? control.extras.displayMapper(choice) : choice;
-            return (
-              <SelectOption key={idx + 1} value={choice}>
-                {display}
-              </SelectOption>
-            );
-          })}
+      <SelectList>
+        {errored
+          ? [<SelectOption key={0} value={`Load error: ${options[0]}`} isDisabled isDanger />]
+          : options.map((choice, idx) => {
+              const display =
+                control.extras && control.extras.displayMapper ? control.extras.displayMapper(choice) : choice;
+              return (
+                <SelectOption key={idx + 1} value={choice}>
+                  {display}
+                </SelectOption>
+              );
+            })}
+      </SelectList>
     </Select>
   );
 };

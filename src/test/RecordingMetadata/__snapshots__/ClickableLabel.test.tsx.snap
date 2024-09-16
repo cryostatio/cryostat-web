@@ -3,21 +3,23 @@
 exports[`<ClickableLabel /> renders correctly 1`] = `
 <span
   aria-label="someLabel=someValue"
-  className="pf-c-label pf-m-blue"
-  onClick={[Function]}
-  onFocus={[Function]}
-  onMouseEnter={[Function]}
-  onMouseLeave={[Function]}
-  style={Object {}}
+  className="pf-v5-c-label pf-m-blue"
 >
-  <span
-    className="pf-c-label__content"
+  <button
+    className="pf-v5-c-label__content"
+    onClick={[Function]}
+    type="button"
   >
     <span
-      className="pf-c-label__text"
+      className="pf-v5-c-label__text"
+      style={
+        Object {
+          "--pf-v5-c-label__text--MaxWidth": "20ch",
+        }
+      }
     >
       someLabel=someValue
     </span>
-  </span>
+  </button>
 </span>
 `;

@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { KeyValue } from '@app/Shared/Services/api.types';
+import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {
+  ActionList,
+  ActionListItem,
   Button,
-  FormHelperText,
   HelperText,
   HelperTextItem,
+  Label,
+  LabelGroup,
   List,
   ListItem,
   Popover,
-  Split,
-  SplitItem,
   Text,
-  TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
+import { ExclamationCircleIcon, FileIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
-import { matchesLabelSyntax, getValidatedOption, LabelPattern, parseLabelsFromFile } from './utils';
+import { isValidLabel, getValidatedOption, isDuplicateKey, parseLabelsFromFile, getLabelFromInput } from './utils';
 
 export interface RecordingLabelFieldsProps {
   labels: KeyValue[];
@@ -59,27 +59,23 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
   const [loading, setLoading] = React.useState(false);
   const [invalidUploads, setInvalidUploads] = React.useState<string[]>([]);
 
-  const handleKeyChange = React.useCallback(
-    (idx: number, key: string) => {
-      const updatedLabels = [...labels];
-      updatedLabels[idx].key = key;
-      setLabels(updatedLabels);
-    },
-    [labels, setLabels],
-  );
-
-  const handleValueChange = React.useCallback(
-    (idx: number, value: string) => {
-      const updatedLabels = [...labels];
-      updatedLabels[idx].value = value;
-      setLabels(updatedLabels);
-    },
-    [labels, setLabels],
-  );
-
   const handleAddLabelButtonClick = React.useCallback(() => {
-    setLabels([...labels, { key: '', value: '' } as KeyValue]);
+    setLabels([...labels, { key: 'key', value: 'value' }]);
   }, [labels, setLabels]);
+
+  const handleLabelEdit = React.useCallback(
+    (idx: number, keyValue: string) => {
+      const label = getLabelFromInput(keyValue);
+      let updatedLabels = [...labels];
+      if (label) {
+        updatedLabels[idx] = label;
+      } else {
+        updatedLabels = [...updatedLabels.slice(0, idx), ...updatedLabels.slice(idx + 1)];
+      }
+      setLabels(updatedLabels);
+    },
+    [labels, setLabels],
+  );
 
   const handleDeleteLabelButtonClick = React.useCallback(
     (idx: number) => {
@@ -90,38 +86,10 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
     [labels, setLabels],
   );
 
-  const isDuplicateKey = React.useCallback(
-    (key: string, labels: KeyValue[]) => labels.filter((label) => label.key === key).length > 1,
-    [],
-  );
-
-  const validKeys = React.useMemo(() => {
-    const arr = Array(labels.length).fill(ValidatedOptions.default);
-    labels.forEach((label, index) => {
-      if (label.key.length > 0) {
-        arr[index] = getValidatedOption(LabelPattern.test(label.key) && !isDuplicateKey(label.key, labels));
-      } // Ignore initial empty key inputs
-    });
-    return arr;
-  }, [labels, isDuplicateKey]);
-
-  const validValues = React.useMemo(() => {
-    const arr = Array(labels.length).fill(ValidatedOptions.default);
-    labels.forEach((label, index) => {
-      if (label.value.length > 0) {
-        arr[index] = getValidatedOption(LabelPattern.test(label.value));
-      } // Ignore initial empty value inputs
-    });
-    return arr;
-  }, [labels]);
-
   React.useEffect(() => {
-    const valid = labels.reduce(
-      (prev, curr) => matchesLabelSyntax(curr) && !isDuplicateKey(curr.key, labels) && prev,
-      true,
-    );
+    const valid = labels.reduce((prev, curr) => isValidLabel(curr) && !isDuplicateKey(curr.key, labels) && prev, true);
     setValid(getValidatedOption(valid));
-  }, [setValid, labels, isDuplicateKey]);
+  }, [setValid, labels]);
 
   const handleUploadLabel = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,118 +125,100 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
     inputRef.current && inputRef.current.click();
   }, [inputRef]);
 
+  const validLabels: boolean[] = React.useMemo(() => {
+    const arr = Array(labels.length).fill(false);
+    labels.forEach((label, index) => {
+      if (label.key.length > 0) {
+        arr[index] = isValidLabel(label) && !isDuplicateKey(label.key, labels);
+      } // Ignore initial empty key inputs
+    });
+    return arr;
+  }, [labels]);
+
   return loading ? (
     <LoadingView />
   ) : (
     <>
-      <Button
-        aria-label="Add Label"
-        onClick={handleAddLabelButtonClick}
-        variant="link"
-        icon={<PlusCircleIcon />}
-        isDisabled={isDisabled}
-      >
-        Add Label
-      </Button>
       {isUploadable && (
         <>
-          <Popover
-            appendTo={portalRoot}
-            isVisible={!!invalidUploads.length}
-            aria-label="uploading warning"
-            alertSeverityVariant="danger"
-            headerContent="Invalid Selection"
-            headerComponent="h1"
-            shouldClose={closeWarningPopover}
-            headerIcon={<ExclamationCircleIcon />}
-            bodyContent={
-              <>
-                <Text component="h4">
-                  {t('RecordingLabelFields.INVALID_UPLOADS', { count: invalidUploads.length })}
-                </Text>
-                <List>
-                  {invalidUploads.map((uploadName) => (
-                    <ListItem key={uploadName} icon={<FileIcon />}>
-                      {uploadName}
-                    </ListItem>
-                  ))}
-                </List>
-              </>
-            }
-          >
-            <Button
-              aria-label="Upload Labels"
-              onClick={openLabelFileBrowse}
-              variant="link"
-              icon={<UploadIcon />}
-              isDisabled={isDisabled}
-            >
-              Upload Labels
-            </Button>
-          </Popover>
-          <input
-            ref={inputRef}
-            accept={'.json'}
-            type="file"
-            style={{ display: 'none' }}
-            onChange={handleUploadLabel}
-            multiple
-          />
+          <ActionList style={{ marginBottom: '1em' }}>
+            <ActionListItem>
+              <Popover
+                appendTo={portalRoot}
+                isVisible={!!invalidUploads.length}
+                aria-label="uploading warning"
+                alertSeverityVariant="danger"
+                headerContent="Invalid Selection"
+                headerComponent="h1"
+                shouldClose={closeWarningPopover}
+                headerIcon={<ExclamationCircleIcon />}
+                bodyContent={
+                  <>
+                    <Text component="h4">
+                      {t('RecordingLabelFields.INVALID_UPLOADS', { count: invalidUploads.length })}
+                    </Text>
+                    <List>
+                      {invalidUploads.map((uploadName) => (
+                        <ListItem key={uploadName} icon={<FileIcon />}>
+                          {uploadName}
+                        </ListItem>
+                      ))}
+                    </List>
+                  </>
+                }
+              >
+                <Button
+                  aria-label="Upload Labels"
+                  onClick={openLabelFileBrowse}
+                  variant="secondary"
+                  isDisabled={isDisabled}
+                >
+                  <UploadIcon />
+                </Button>
+              </Popover>
+              <input
+                ref={inputRef}
+                accept={'.json'}
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleUploadLabel}
+                multiple
+              />
+            </ActionListItem>
+          </ActionList>
         </>
       )}
-      {labels.map((label, idx) => (
-        <Split hasGutter key={idx}>
-          <SplitItem isFilled>
-            <TextInput
-              isRequired
-              type="text"
-              id="label-key-input"
-              name="label-key-input"
-              aria-describedby="label-key-input-helper"
-              aria-label="Label Key"
-              value={label.key ?? ''}
-              onChange={(key) => handleKeyChange(idx, key)}
-              validated={validKeys[idx]}
-              isDisabled={isDisabled}
-            />
-            <Text>Key</Text>
-            <FormHelperText
-              isHidden={validKeys[idx] !== ValidatedOptions.error && validValues[idx] !== ValidatedOptions.error}
-              component="div"
-            >
-              <HelperText id="label-error-text">
-                <HelperTextItem variant="error">
-                  Keys must be unique. Labels should not contain empty spaces.
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          </SplitItem>
-          <SplitItem isFilled>
-            <TextInput
-              isRequired
-              type="text"
-              id="label-value-input"
-              name="label-value-input"
-              aria-describedby="label-value-input-helper"
-              aria-label="Label Value"
-              value={label.value ?? ''}
-              onChange={(value) => handleValueChange(idx, value)}
-              validated={validValues[idx]}
-              isDisabled={isDisabled}
-            />
-            <Text>Value</Text>
-          </SplitItem>
-          <SplitItem>
-            <Button
-              onClick={() => handleDeleteLabelButtonClick(idx)}
-              variant="link"
-              aria-label="Remove Label"
-              isDisabled={isDisabled}
-              icon={<CloseIcon color="gray" size="sm" />}
-            />
-          </SplitItem>
-        </Split>
-      ))}
+      <LabelGroup
+        categoryName="Recording Labels"
+        numLabels={10}
+        isEditable
+        addLabelControl={
+          <Label color="blue" variant="outline" isDisabled={isDisabled} onClick={handleAddLabelButtonClick}>
+            Add label
+          </Label>
+        }
+      >
+        {labels.map((label, idx) => (
+          <Label
+            aria-label={keyValueToString(label)}
+            key={label.key}
+            id={label.key}
+            color={validLabels[idx] ? 'grey' : 'red'}
+            isEditable
+            onClose={() => handleDeleteLabelButtonClick(idx)}
+            isDisabled={isDisabled}
+            onEditCancel={(_, prevText) => handleLabelEdit(idx, prevText)}
+            onEditComplete={(_, newText) => handleLabelEdit(idx, newText)}
+          >
+            {keyValueToString(label)}
+          </Label>
+        ))}
+      </LabelGroup>
+      {validLabels.some((v) => !v) ? (
+        <HelperText>
+          <HelperTextItem variant="error">Keys must be unique. Labels should not contain empty spaces.</HelperTextItem>
+        </HelperText>
+      ) : null}
     </>
   );
 };
