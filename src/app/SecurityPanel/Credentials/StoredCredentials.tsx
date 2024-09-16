@@ -63,7 +63,7 @@ import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { forkJoin } from 'rxjs';
+import { concatMap, forkJoin, map } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
@@ -240,9 +240,28 @@ export const StoredCredentials = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
-        dispatch({ type: Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION, payload: { credential: v.message } });
-      }),
+      context.notificationChannel
+        .messages(NotificationCategory.CredentialsStored)
+        .pipe(
+          concatMap(({ message }) => {
+            // FIXME: This is a workaround to correct the numMatchingTargets (i.e. notification always return 0)
+            return context.api.getCredential(message.id).pipe(
+              map((cred) => ({
+                id: message.id,
+                matchExpression: cred.matchExpression,
+                numMatchingTargets: cred.targets.length,
+              })),
+            );
+          }),
+        )
+        .subscribe((cred) => {
+          dispatch({
+            type: Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION,
+            payload: {
+              credential: cred,
+            },
+          });
+        }),
     );
   }, [addSubscription, context, context.notificationChannel]);
 
