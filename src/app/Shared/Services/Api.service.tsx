@@ -1345,7 +1345,11 @@ export class ApiService {
     );
   }
 
-  getTargetEventTypes(target: TargetStub, suppressNotifications = false, skipStatusCheck = false): Observable<EventType[]> {
+  getTargetEventTypes(
+    target: TargetStub,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<EventType[]> {
     return this.doGet<EventType[]>(
       `targets/${target.id}/events`,
       'v4',
