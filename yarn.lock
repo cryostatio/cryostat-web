@@ -1427,6 +1427,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/react-core@npm:^5.4.0":
+  version: 5.4.0
+  resolution: "@patternfly/react-core@npm:5.4.0"
+  dependencies:
+    "@patternfly/react-icons": ^5.4.0
+    "@patternfly/react-styles": ^5.4.0
+    "@patternfly/react-tokens": ^5.4.0
+    focus-trap: 7.5.4
+    react-dropzone: ^14.2.3
+    tslib: ^2.6.3
+  peerDependencies:
+    react: ^17 || ^18
+    react-dom: ^17 || ^18
+  checksum: cc8a1fb450af157469d1cbfb31c3cf2c21268d90dc13ba658fac740b94e3f2a379bc831bb6465a1f30f017578b79b2cd6c0dfaf34c2f97e3e0ab41ba6b839334
+  languageName: node
+  linkType: hard
+
 "@patternfly/react-icons@npm:^5.1.1":
   version: 5.1.1
   resolution: "@patternfly/react-icons@npm:5.1.1"
@@ -1444,6 +1461,16 @@ __metadata:
     react: ^17 || ^18
     react-dom: ^17 || ^18
   checksum: 0d6f2c47905015fd70b1d2a53bb85844b04250742a37f067b42731f609bafda1f2819d77398985e4db0ac5662e24523b459013b312b9fde9a30df1f3de6bc15c
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-icons@npm:^5.4.0":
+  version: 5.4.0
+  resolution: "@patternfly/react-icons@npm:5.4.0"
+  peerDependencies:
+    react: ^17 || ^18
+    react-dom: ^17 || ^18
+  checksum: aa5c4a95ecf9eb72b6e63af4e23204c5752f27be2305c67ff55ccd308738a3c05ffbe48902ba32344fb868b0666a6285f17cf3a6c26620aff78532ab4c246386
   languageName: node
   linkType: hard
 
@@ -4335,7 +4362,7 @@ __metadata:
     "@patternfly/quickstarts": ^5.3.0
     "@patternfly/react-catalog-view-extension": ^5.0.0
     "@patternfly/react-charts": ^7.4.0
-    "@patternfly/react-core": ^5.3.4
+    "@patternfly/react-core": ^5.4.0
     "@patternfly/react-icons": ^5.3.2
     "@patternfly/react-styles": ^5.3.1
     "@patternfly/react-table": ^5.3.4
@@ -6509,6 +6536,15 @@ __metadata:
   dependencies:
     tabbable: ^6.2.0
   checksum: 1eee29d18c152ef08849a5cfd6d462a6741ec15f08938a9d87336d47807f07dbfff2e6405b16b5ce96745eb86b60f3dcdd87b63f0ad240e47252254d2c248d40
+  languageName: node
+  linkType: hard
+
+"focus-trap@npm:7.5.4":
+  version: 7.5.4
+  resolution: "focus-trap@npm:7.5.4"
+  dependencies:
+    tabbable: ^6.2.0
+  checksum: 9589ae0c8ad2f0bb0610c23e949571ef956424f1e7f7e1981c0d95ce518ea97b8bdd3d43b68c6113cbbcf35c9d36d521ffc2841610f7d5cc1746e2aa84faf578
   languageName: node
   linkType: hard
 
