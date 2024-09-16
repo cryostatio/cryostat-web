@@ -3265,11 +3265,11 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 6`] = `
             className="pf-v5-c-chart"
             style={
               Object {
-                "height": "100%",
+                "height": undefined,
                 "pointerEvents": "none",
                 "position": "relative",
                 "touchAction": "none",
-                "width": "100%",
+                "width": undefined,
               }
             }
           >
@@ -4127,11 +4127,11 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 8`] = `
             className="pf-v5-c-chart"
             style={
               Object {
-                "height": "100%",
+                "height": undefined,
                 "pointerEvents": "none",
                 "position": "relative",
                 "touchAction": "none",
-                "width": "100%",
+                "width": undefined,
               }
             }
           >
