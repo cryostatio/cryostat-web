@@ -504,7 +504,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.post('api/v4/credentials', (schema, request) => {
         const credential = schema.create(Resource.CREDENTIAL, {
           matchExpression: (request.requestBody as any).get('matchExpression'),
-          numMatchingTargets: 0,
+          targets: [],
         });
         websocket.send(
           JSON.stringify({
@@ -515,7 +515,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             message: {
               id: credential.id,
               matchExpression: credential.matchExpression,
-              numMatchingTargets: credential.numMatchingTargets,
+              targets: [],
             },
           }),
         );

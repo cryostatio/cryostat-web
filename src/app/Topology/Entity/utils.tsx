@@ -18,7 +18,7 @@ import { ApiService } from '@app/Shared/Services/Api.service';
 import {
   TargetNode,
   Rule,
-  StoredCredential,
+  MatchedCredential,
   NotificationCategory,
   NotificationMessage,
   Recording,
@@ -108,7 +108,7 @@ export const getTargetOwnedResources = (
             apiService.isTargetMatched(crd.matchExpression, target).pipe(map((ok) => (ok ? [crd] : []))),
           );
           return forkJoin(tasks).pipe(
-            defaultIfEmpty([[] as StoredCredential[]]),
+            defaultIfEmpty([[] as MatchedCredential[]]),
             map((credentials) => credentials.reduce((prev, curr) => prev.concat(curr))),
           );
         }),
@@ -217,8 +217,8 @@ export const getResourceListPatchFn = (
         );
       };
     case 'credentials':
-      return (arr: StoredCredential[], eventData: NotificationMessage, removed?: boolean) => {
-        const credential: StoredCredential = eventData.message;
+      return (arr: MatchedCredential[], eventData: NotificationMessage, removed?: boolean) => {
+        const credential: MatchedCredential = eventData.message;
 
         return apiService.isTargetMatched(credential.matchExpression, target).pipe(
           map((ok) => {

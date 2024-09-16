@@ -284,13 +284,8 @@ export interface RecordingCountResponse {
 // ======================================
 // Credential resources
 // ======================================
-export interface StoredCredential {
-  id: number;
-  matchExpression: string;
-  numMatchingTargets: number;
-}
-
 export interface MatchedCredential {
+  id: number;
   matchExpression: string;
   targets: Target[];
 }

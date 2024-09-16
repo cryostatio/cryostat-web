@@ -28,7 +28,7 @@ import {
   EventTemplate,
   EventProbe,
   Rule,
-  StoredCredential,
+  MatchedCredential,
   RecordingAttributes,
   NullableTarget,
   EventType,
@@ -345,7 +345,7 @@ class FakeApiService extends ApiService {
     return of([]);
   }
 
-  getCredentials(_suppressNotifications?: boolean, _skipStatusCheck?: boolean): Observable<StoredCredential[]> {
+  getCredentials(_suppressNotifications?: boolean, _skipStatusCheck?: boolean): Observable<MatchedCredential[]> {
     return of([]);
   }
 

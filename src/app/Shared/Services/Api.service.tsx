@@ -47,7 +47,6 @@ import {
   ArchivedRecording,
   UPLOADS_SUBDIRECTORY,
   MatchedCredential,
-  StoredCredential,
   EnvironmentNode,
   ActiveRecordingsFilterInput,
   RecordingCountResponse,
@@ -1028,7 +1027,7 @@ export class ApiService {
     );
   }
 
-  getCredentials(suppressNotifications = false, skipStatusCheck = false): Observable<StoredCredential[]> {
+  getCredentials(suppressNotifications = false, skipStatusCheck = false): Observable<MatchedCredential[]> {
     return this.sendRequest(
       'v4',
       `credentials`,
