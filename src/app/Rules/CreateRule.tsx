@@ -56,12 +56,12 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { RuleFormData } from './types';
-import { isRuleNameValid } from './utils';
+import { CEL_SPEC_HREF, isRuleNameValid } from './utils';
 
 export interface CreateRuleFormProps {}
 
@@ -433,13 +433,17 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem variant={formData.matchExpressionValid}>
-              {evaluating
-                ? t('CreateRule.EVALUATING_EXPRESSION')
-                : formData.matchExpressionValid === ValidatedOptions.warning
-                ? t('CreateRule.WARNING_NO_MATCH')
-                : formData.matchExpressionValid === ValidatedOptions.error
-                ? t('CreateRule.FAILING_EVALUATION')
-                : t('CreateRule.MATCH_EXPRESSION_HELPER_TEXT')}
+              {evaluating ? (
+                t('CreateRule.EVALUATING_EXPRESSION')
+              ) : formData.matchExpressionValid === ValidatedOptions.warning ? (
+                t('CreateRule.WARNING_NO_MATCH')
+              ) : formData.matchExpressionValid === ValidatedOptions.error ? (
+                t('CreateRule.FAILING_EVALUATION')
+              ) : (
+                <Trans t={t} components={{ a: <a target="_blank" href={CEL_SPEC_HREF} /> }}>
+                  CreateRule.MATCH_EXPRESSION_HELPER_TEXT
+                </Trans>
+              )}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CEL_SPEC_HREF } from '@app/Rules/utils';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CryostatIcon, conclusion } from '../quickstart-utils';
@@ -64,7 +65,7 @@ Automated Rules are configurations that instruct [APP] to create JDK Flight Reco
         description: `
 To create a new rule, use the Automated Rule creation form to fill in the required fields.
 
-The [Match Expression]{{highlight rule-matchexpr}} field is a Java-like code snippet that is matched against each Target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the Match Expression: \`true\`{{copy}}. You can also match targets more specifically with a Match Expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
+The [Match Expression]{{highlight rule-matchexpr}} field is a <a target="_blank" href="${CEL_SPEC_HREF}">Common Expression Language (CEL)</a> code snippet that is matched against each Target JVM. This allows you to create rules that run on specific target JVMs. For example, you can create a rule that runs on all target JVMs with the Match Expression: \`true\`{{copy}}. You can also match targets more specifically with a Match Expression like \`target.annotations.cryostat['PORT'] == 9091\`{{copy}}, which will match targets that are connected to [APP] on port 9091.
 
 
 To create a new rule, you must fill out the following required fields:
