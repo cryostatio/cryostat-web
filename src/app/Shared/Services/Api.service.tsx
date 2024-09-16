@@ -181,7 +181,7 @@ export class ApiService {
   }
 
   getTargets(): Observable<Target[]> {
-    return this.doGet('targets', 'v3');
+    return this.doGet('targets', 'v4');
   }
 
   createTarget(
