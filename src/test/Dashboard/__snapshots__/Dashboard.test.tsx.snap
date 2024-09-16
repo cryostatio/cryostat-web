@@ -594,7 +594,7 @@ Array [
                             </g>
                             <g>
                               <g
-                                clipPath="url(#victory-clip-4)"
+                                clipPath="url(#victory-clip-5)"
                                 style={
                                   Object {
                                     "height": "100%",
@@ -605,7 +605,7 @@ Array [
                               >
                                 <defs>
                                   <clipPath
-                                    id="victory-clip-4"
+                                    id="victory-clip-5"
                                   >
                                     <rect
                                       height={230}
