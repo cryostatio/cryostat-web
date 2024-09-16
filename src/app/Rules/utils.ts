@@ -28,3 +28,5 @@ export const isRule = (obj: object): boolean => {
 export const RuleNamePattern = /^[\w_]+$/;
 
 export const isRuleNameValid = (name: string) => RuleNamePattern.test(name);
+
+export const CEL_SPEC_HREF = 'https://github.com/google/cel-spec/blob/master/doc/langdef.md';

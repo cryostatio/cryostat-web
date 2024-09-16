@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { AuthCredential, CredentialAuthForm } from '@app/AppLayout/CredentialAuthForm';
+import { CEL_SPEC_HREF } from '@app/Rules/utils';
 import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
 import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
 import { Target } from '@app/Shared/Services/api.types';
@@ -45,7 +46,7 @@ import {
 } from '@patternfly/react-core';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { catchError, combineLatest, distinctUntilChanged, interval, map, of, switchMap, tap } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
 import { TestRequest } from './types';
@@ -263,13 +264,17 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         <FormHelperText>
           <HelperText>
             <HelperTextItem variant={matchExpressionValid}>
-              {evaluating
-                ? t('CreateCredentialModal.EVALUATING_EXPRESSION')
-                : matchExpressionValid === ValidatedOptions.warning
-                ? t('CreateCredentialModal.WARNING_NO_MATCH')
-                : matchExpressionValid === ValidatedOptions.error
-                ? t('CreateCredentialModal.FAILING_EVALUATION')
-                : t('CreateCredentialModal.MATCH_EXPRESSION_HELPER_TEXT')}
+              {evaluating ? (
+                t('CreateCredentialModal.EVALUATING_EXPRESSION')
+              ) : matchExpressionValid === ValidatedOptions.warning ? (
+                t('CreateCredentialModal.WARNING_NO_MATCH')
+              ) : matchExpressionValid === ValidatedOptions.error ? (
+                t('CreateCredentialModal.FAILING_EVALUATION')
+              ) : (
+                <Trans t={t} components={{ a: <a target="_blank" href={CEL_SPEC_HREF} /> }}>
+                  CreateRule.MATCH_EXPRESSION_HELPER_TEXT
+                </Trans>
+              )}
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
