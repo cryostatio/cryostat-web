@@ -65,8 +65,11 @@ const tableColumns: TableColumn[] = [
       return target.alias === target.connectUrl || !target.alias
         ? `${target.connectUrl}`
         : t
-        ? t('AllTargetsArchivedRecordingsTable.TARGET_DISPLAY', { alias: target.alias, connectUrl: target.connectUrl })
-        : `${target.alias} (${target.connectUrl})`;
+          ? t('AllTargetsArchivedRecordingsTable.TARGET_DISPLAY', {
+              alias: target.alias,
+              connectUrl: target.connectUrl,
+            })
+          : `${target.alias} (${target.connectUrl})`;
     },
     sortable: true,
     width: 80,

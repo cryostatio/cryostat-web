@@ -180,10 +180,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             err
               ? ValidatedOptions.error
               : !ts
-              ? ValidatedOptions.default
-              : ts.length
-              ? ValidatedOptions.success
-              : ValidatedOptions.warning,
+                ? ValidatedOptions.default
+                : ts.length
+                  ? ValidatedOptions.success
+                  : ValidatedOptions.warning,
           );
         }),
     );

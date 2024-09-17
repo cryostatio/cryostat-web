@@ -136,8 +136,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         nameValid: !name
           ? ValidatedOptions.default
           : isRuleNameValid(name)
-          ? ValidatedOptions.success
-          : ValidatedOptions.error,
+            ? ValidatedOptions.success
+            : ValidatedOptions.error,
       })),
     [setFormData],
   );
@@ -274,13 +274,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               forkJoin(
                 targets.map((t) =>
                   context.api
-                    .doGet<EventTemplate[]>(
-                      `targets/${encodeURIComponent(t.connectUrl)}/templates`,
-                      'v1',
-                      undefined,
-                      true,
-                      true,
-                    )
+                    .doGet<
+                      EventTemplate[]
+                    >(`targets/${encodeURIComponent(t.connectUrl)}/templates`, 'v1', undefined, true, true)
                     .pipe(
                       catchError((_) => of<EventTemplate[]>([])), // Fail silently
                     ),
@@ -336,10 +332,10 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             matchExpressionValid: err
               ? ValidatedOptions.error
               : !ts
-              ? ValidatedOptions.default
-              : ts.length
-              ? ValidatedOptions.success
-              : ValidatedOptions.warning,
+                ? ValidatedOptions.default
+                : ts.length
+                  ? ValidatedOptions.success
+                  : ValidatedOptions.warning,
           }));
           matchedTargets.next(ts || []);
         }),

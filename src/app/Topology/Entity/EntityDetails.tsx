@@ -319,9 +319,7 @@ const MBeanDetails: React.FC<{
         helperDescription: 'The time when this JVM process started.',
         content:
           (mbeanMetrics?.runtime?.startTime || 0) > 0 ? (
-            dayjs(mbeanMetrics?.runtime?.startTime)
-              .tz(dateTimeFormat.timeZone.full)
-              .format('LLLL')
+            dayjs(mbeanMetrics?.runtime?.startTime).tz(dateTimeFormat.timeZone.full).format('LLLL')
           ) : (
             <EmptyText text="Unknown start time" />
           ),
