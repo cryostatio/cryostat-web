@@ -71,7 +71,7 @@
     "raw-loader": "^4.0.2",
     "react-test-renderer": "^17.0.2",
     "regenerator-runtime": "^0.13.11",
-    "rimraf": "^4.1.2",
+    "rimraf": "^6.0.1",
     "selenium-webdriver": "^4.15.0",
     "style-loader": "^3.3.3",
     "svg-url-loader": "^8.0.0",
