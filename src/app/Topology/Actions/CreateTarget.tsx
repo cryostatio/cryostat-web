@@ -132,8 +132,8 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           connectUrl === ''
             ? ValidatedOptions.default
             : isValidTargetConnectURL(connectUrl)
-            ? ValidatedOptions.success
-            : ValidatedOptions.error,
+              ? ValidatedOptions.success
+              : ValidatedOptions.error,
       }));
       resetTestState();
     },
@@ -461,11 +461,11 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
           message: 'Target definition is valid.',
         }
       : validation.option === ValidatedOptions.error
-      ? {
-          icon: <ExclamationCircleIcon color="var(--pf-global--danger-color--100)" />,
-          message: validation.errorMessage,
-        }
-      : { icon: <PendingIcon />, message: '' };
+        ? {
+            icon: <ExclamationCircleIcon color="var(--pf-global--danger-color--100)" />,
+            message: validation.errorMessage,
+          }
+        : { icon: <PendingIcon />, message: '' };
   }, [validation, testing]);
 
   return (
