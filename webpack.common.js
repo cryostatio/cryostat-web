@@ -23,7 +23,6 @@ module.exports = (env) => {
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
     optimization: {
       runtimeChunk: 'single', //  create a runtime file to be shared for all generated chunks
-      moduleIds: 'deterministic', // avoid changing module.id of vendor bundles: https://webpack.js.org/guides/caching/#module-identifiers
       splitChunks: {
         chunks: 'all', // https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkschunks
         maxInitialRequests: Infinity,
@@ -152,7 +151,6 @@ module.exports = (env) => {
       filename: '[name].[contenthash].bundle.js',
       chunkFilename: '[id].[contenthash].bundle.js', // lazy-load modules
       hashFunction: "xxhash64",
-      path: path.resolve(__dirname, 'dist'),
       publicPath: 'auto',
       clean: true
     },
