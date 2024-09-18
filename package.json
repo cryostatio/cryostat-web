@@ -99,7 +99,7 @@
     "@patternfly/react-table": "^5.3.4",
     "@patternfly/react-topology": "^5.4.0",
     "@reduxjs/toolkit": "^1.9.3",
-    "@types/lodash": "^4.14.202",
+    "@types/lodash": "^4.17.7",
     "@types/react": "^17.0.69",
     "dayjs": "^1.11.7",
     "humanize-duration": "^3.32.1",
