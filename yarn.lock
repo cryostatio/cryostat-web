@@ -4383,7 +4383,7 @@ __metadata:
     react-redux: ^8.0.5
     react-router-dom: ^6.17.0
     react-test-renderer: ^17.0.2
-    regenerator-runtime: ^0.13.11
+    regenerator-runtime: ^0.14.1
     rimraf: ^6.0.1
     rxjs: ^7.8.1
     selenium-webdriver: ^4.15.0
@@ -11305,7 +11305,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.14.0":
+"regenerator-runtime@npm:^0.14.0, regenerator-runtime@npm:^0.14.1":
   version: 0.14.1
   resolution: "regenerator-runtime@npm:0.14.1"
   checksum: 9f57c93277b5585d3c83b0cf76be47b473ae8c6d9142a46ce8b0291a04bb2cf902059f0f8445dcabb3fb7378e5fe4bb4ea1e008876343d42e46d3b484534ce38
