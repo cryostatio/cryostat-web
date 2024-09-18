@@ -74,7 +74,7 @@
     "selenium-webdriver": "^4.15.0",
     "style-loader": "^3.3.3",
     "svg-url-loader": "^8.0.0",
-    "terser-webpack-plugin": "^5.3.9",
+    "terser-webpack-plugin": "^5.3.10",
     "ts-jest": "^27.0.5",
     "ts-loader": "^9.4.2",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
