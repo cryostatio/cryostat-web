@@ -89,10 +89,10 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
       <Split>
         <SplitItem>
           <Title headingLevel="h2" size="lg" style={{ padding: '1em' }}>
-            {props.title} ({t('LayoutTemplateGroup.ITEMS', { count: props.templates.length })})
+            {t(props.title, { ns: 'common' })} ({t('LayoutTemplateGroup.ITEMS', { count: props.templates.length })})
           </Title>
         </SplitItem>
-        {props.title === t('SUGGESTED', { ns: 'common' }) && props.templates.length !== 1 && (
+        {props.title === 'Suggested' && props.templates.length !== 1 && (
           <>
             <SplitItem isFilled></SplitItem>
             <SplitItem>
