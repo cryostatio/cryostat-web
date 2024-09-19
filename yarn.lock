@@ -530,6 +530,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bazel/runfiles@npm:^5.8.1":
+  version: 5.8.1
+  resolution: "@bazel/runfiles@npm:5.8.1"
+  checksum: b1067d3dec8b2d853f883fe34b663f07e44742d2688103db1da322a47013eb04f1acad0d79c7d6fc9f75fc2798b1de41ba1a03999ac6354fb1288fdd8407be4d
+  languageName: node
+  linkType: hard
+
 "@bcoe/v8-coverage@npm:^0.2.3":
   version: 0.2.3
   resolution: "@bcoe/v8-coverage@npm:0.2.3"
@@ -2500,12 +2507,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/selenium-webdriver@npm:^4.1.20":
-  version: 4.1.20
-  resolution: "@types/selenium-webdriver@npm:4.1.20"
+"@types/selenium-webdriver@npm:^4.1.26":
+  version: 4.1.26
+  resolution: "@types/selenium-webdriver@npm:4.1.26"
   dependencies:
+    "@types/node": "*"
     "@types/ws": "*"
-  checksum: 822e21af7413ce9e154ae2bb90c43193b305a3730955592489c7e2098831136891bde7c5bd92ce3e551b554c76d6973822e0d7fde1ff47ef342bc0ca43efa934
+  checksum: a0ee71c11a67b4b21a0f31826391627b91e1e3838c15a0c5def1cacc6957f57716b11edc21aa368b3dbb38fb94005dd0b3cd13eb5d7f071d73dc600e1f81287f
   languageName: node
   linkType: hard
 
@@ -4452,7 +4460,7 @@ __metadata:
     "@types/lodash": ^4.17.7
     "@types/react": ^17.0.69
     "@types/react-test-renderer": ^17.0.7
-    "@types/selenium-webdriver": ^4.1.20
+    "@types/selenium-webdriver": ^4.1.26
     "@typescript-eslint/eslint-plugin": ^6.14.0
     "@typescript-eslint/parser": ^6.7.3
     concurrently: ^9.0.1
@@ -4494,7 +4502,7 @@ __metadata:
     regenerator-runtime: ^0.14.1
     rimraf: ^6.0.1
     rxjs: ^7.8.1
-    selenium-webdriver: ^4.15.0
+    selenium-webdriver: ^4.24.1
     semver: ^7.6.0
     showdown: ^2.1.0
     style-loader: ^3.3.3
@@ -12294,14 +12302,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:^4.15.0":
-  version: 4.15.0
-  resolution: "selenium-webdriver@npm:4.15.0"
+"selenium-webdriver@npm:^4.24.1":
+  version: 4.24.1
+  resolution: "selenium-webdriver@npm:4.24.1"
   dependencies:
+    "@bazel/runfiles": ^5.8.1
     jszip: ^3.10.1
-    tmp: ^0.2.1
-    ws: ">=8.14.2"
-  checksum: 81ccce6f0035197063d017c8543975fa2d4e6e948b4bd54264ab98e446b49bfe5851de1e02e3ddecefa151cfa20bcdfbc3e8c936cbb877bc69b92e22ac28710a
+    tmp: ^0.2.3
+    ws: ^8.18.0
+  checksum: d366ac01cd3ad2864d2fe62df61129b035349c907c9659d1716ad03845214c4d41d48e936cde22e037af80d1257d35d35a26c03b5095f1b00cf17642849747cd
   languageName: node
   linkType: hard
 
@@ -13423,12 +13432,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "tmp@npm:0.2.1"
-  dependencies:
-    rimraf: ^3.0.0
-  checksum: 8b1214654182575124498c87ca986ac53dc76ff36e8f0e0b67139a8d221eaecfdec108c0e6ec54d76f49f1f72ab9325500b246f562b926f85bcdfca8bf35df9e
+"tmp@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "tmp@npm:0.2.3"
+  checksum: 73b5c96b6e52da7e104d9d44afb5d106bb1e16d9fa7d00dbeb9e6522e61b571fbdb165c756c62164be9a3bbe192b9b268c236d370a2a0955c7689cd2ae377b95
   languageName: node
   linkType: hard
 
@@ -14992,21 +14999,6 @@ __metadata:
     signal-exit: ^3.0.2
     typedarray-to-buffer: ^3.1.5
   checksum: c55b24617cc61c3a4379f425fc62a386cc51916a9b9d993f39734d005a09d5a4bb748bc251f1304e7abd71d0a26d339996c275955f527a131b1dcded67878280
-  languageName: node
-  linkType: hard
-
-"ws@npm:>=8.14.2":
-  version: 8.14.2
-  resolution: "ws@npm:8.14.2"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 3ca0dad26e8cc6515ff392b622a1467430814c463b3368b0258e33696b1d4bed7510bc7030f7b72838b9fdeb8dbd8839cbf808367d6aae2e1d668ce741d4308b
   languageName: node
   linkType: hard
 

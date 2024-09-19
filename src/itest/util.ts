@@ -42,7 +42,7 @@ export async function setupDriver(): Promise<WebDriver> {
   const headless = process.env.HEADLESS_BROWSER === 'true';
   const options = new firefox.Options();
   if (headless) {
-    options.headless();
+    options.addArguments('--headless');
   }
   options.setAcceptInsecureCerts(true);
   options.addArguments('--width=1920', '--height=1080');
