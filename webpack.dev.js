@@ -46,6 +46,9 @@ module.exports = merge(common('development'), {
         use: ['style-loader', 'css-loader']
       }
     ]
+  },
+  output: {
+    publicPath: "/"
   }
 });
 
