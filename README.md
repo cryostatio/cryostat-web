@@ -21,7 +21,7 @@ cluster as well as exposing the Cryostat API as Kubernetes Custom Resources.
 
 ## REQUIREMENTS
 
-- Node v16+
+- Node v20+
 - Yarn v3.3.0+
 
 ## BUILD
