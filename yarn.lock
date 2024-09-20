@@ -1330,19 +1330,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/quickstarts@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "@patternfly/quickstarts@npm:5.3.0"
+"@patternfly/quickstarts@npm:^5.4.0":
+  version: 5.4.0
+  resolution: "@patternfly/quickstarts@npm:5.4.0"
   dependencies:
     "@patternfly/react-catalog-view-extension": ^5.0.0
-    dompurify: ^2.2.6
+    dompurify: ^2.4.9
     history: ^5.0.0
   peerDependencies:
     "@patternfly/react-core": ">=5.0.0"
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
     showdown: ">=2.1.0"
-  checksum: 9fcca01c7e15e32926c7ea3e6da1c6c4ac277048445bcc5df08920421b2e2802476d623e00999fdefb6a061ffcbb64cc58632c2e9ffba898cb18dea7abf92208
+  checksum: fd8ee2eee08d6adc14000fc208814b2961eb21eca4f3064fe9e5394ea7794354079dcb8b5bf09a08333bc77ad42e3d5a142e085c3704929af0869feb65598584
   languageName: node
   linkType: hard
 
@@ -4384,7 +4384,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cryostat-web@workspace:."
   dependencies:
-    "@patternfly/quickstarts": ^5.3.0
+    "@patternfly/quickstarts": ^5.4.0
     "@patternfly/react-catalog-view-extension": ^5.0.0
     "@patternfly/react-charts": ^7.4.0
     "@patternfly/react-core": ^5.4.0
@@ -5504,7 +5504,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^2.2.6":
+"dompurify@npm:^2.4.9":
   version: 2.5.6
   resolution: "dompurify@npm:2.5.6"
   checksum: 1d329fe79928aa86c61539b758bdbc53df58dd90bdc5b74032a2a3a22a436e84178d8f6ad8b022c8f6fac46b26d6e7e553c0cd131a37ed5105bbed6bf87be226
