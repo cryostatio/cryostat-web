@@ -22,7 +22,6 @@ import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilter
 import { enumValues as TopologyFilterActions } from '../Filters/TopologyFilterSlice';
 import type { RootState } from '../ReduxStore';
 
-/* eslint-disable-next-line  @typescript-eslint/ban-types*/
 export const persistMiddleware: Middleware<{}, RootState> =
   ({ getState }) =>
   (next) =>

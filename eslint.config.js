@@ -75,7 +75,7 @@ module.exports = [{
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
       "unused-imports/no-unused-imports": "warn",
-      "unused-imports/no-unused-vars": [
+      "no-unused-vars": [
         "warn",
         { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
       ]
