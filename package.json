@@ -95,7 +95,7 @@
     "@patternfly/react-core": "^5.4.0",
     "@patternfly/react-icons": "^5.4.0",
     "@patternfly/react-styles": "^5.4.0",
-    "@patternfly/react-table": "^5.3.4",
+    "@patternfly/react-table": "^5.4.0",
     "@patternfly/react-topology": "^5.4.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@types/lodash": "^4.17.7",
