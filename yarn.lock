@@ -4414,7 +4414,7 @@ __metadata:
     regenerator-runtime: ^0.14.1
     rimraf: ^6.0.1
     rxjs: ^7.8.1
-    selenium-webdriver: ^4.24.1
+    selenium-webdriver: ^4.25.0
     semver: ^7.6.0
     showdown: ^2.1.0
     style-loader: ^4.0.0
@@ -12233,15 +12233,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:^4.24.1":
-  version: 4.24.1
-  resolution: "selenium-webdriver@npm:4.24.1"
+"selenium-webdriver@npm:^4.25.0":
+  version: 4.25.0
+  resolution: "selenium-webdriver@npm:4.25.0"
   dependencies:
     "@bazel/runfiles": ^5.8.1
     jszip: ^3.10.1
     tmp: ^0.2.3
     ws: ^8.18.0
-  checksum: d366ac01cd3ad2864d2fe62df61129b035349c907c9659d1716ad03845214c4d41d48e936cde22e037af80d1257d35d35a26c03b5095f1b00cf17642849747cd
+  checksum: d58098dff8911830481a40754b782495db1e2ad860911e0b0435362dbbd4a84924e554162bc1977a957ed2388247cbef26f62ed621fde0d652d71f6a46238af2
   languageName: node
   linkType: hard
 
