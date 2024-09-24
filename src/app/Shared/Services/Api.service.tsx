@@ -673,16 +673,16 @@ export class ApiService {
 
   runGC(): Observable<boolean> {
     return this.target.target().pipe(
-      concatMap((target) => 
+      concatMap((target) =>
         this.sendRequest('beta', `diagnostics/targets/${target?.id}/gc`, {
           method: 'POST',
         }).pipe(
           map((resp) => resp.ok),
           catchError(() => of(false)),
           first(),
-          ),
         ),
-      );
+      ),
+    );
   }
 
   insertProbes(templateName: string): Observable<boolean> {
