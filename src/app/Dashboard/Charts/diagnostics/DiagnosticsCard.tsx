@@ -76,7 +76,7 @@ export interface DiagnosticsCardProps extends DashboardCardTypeProps {
     
     const handleGC = React.useCallback(() => {
         addSubscription(
-            serviceContext.api.getActiveProbes(true).subscribe({
+            serviceContext.api.runGC().subscribe({
             error: (err) => handleError(err),
         }),
     );
