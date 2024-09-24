@@ -157,6 +157,10 @@
     "MBEAN_METRICS_CARD_DESCRIPTION": "Display common performance metrics from current MBean data.",
     "MBEAN_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported MBeans.",
     "MBEAN_METRICS_CARD_TITLE": "MBean Metrics Chart",
+    "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
+    "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
+    "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
+    "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
     "NO_RECORDING": {
       "DESCRIPTION": "Metrics cards display data taken from running Flight Recordings with the label <label>origin={{recordingName}}</label>. No such Recordings are currently available.",
       "TITLE": "No source Recording"

@@ -671,6 +671,20 @@ export class ApiService {
     );
   }
 
+  runGC(): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) => 
+        this.sendRequest('beta', `diagnostics/targets/${encodeURIComponent(target?.connectUrl || '')}`, {
+          method: 'POST',
+        }).pipe(
+          map((resp) => resp.ok),
+          catchError(() => of(false)),
+          first(),
+          ),
+        ),
+      );
+  }
+
   insertProbes(templateName: string): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
