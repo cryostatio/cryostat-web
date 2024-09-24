@@ -68,7 +68,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
           let template: SerialLayoutTemplate;
           try {
             template = JSON.parse(content);
-          } catch (err) {
+          } catch (_) {
             throw new Error(t('LayoutTemplateUploadModal.ERROR.PARSE'));
           }
           if (
@@ -170,7 +170,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                   onSingleSuccess(fileUpload.file.name);
                 }
                 return of(template);
-              } catch (err) {
+              } catch (_) {
                 // template name already taken from previous upload
                 onSingleFailure(
                   fileUpload.file.name,
