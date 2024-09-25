@@ -53,20 +53,20 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
     return result.score == AutomatedAnalysisScore.NA_SCORE
       ? 'grey'
       : result.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
-      ? 'green'
-      : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
-      ? 'orange'
-      : 'red';
+        ? 'green'
+        : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
+          ? 'orange'
+          : 'red';
   }, [result.score]);
 
   const alertPopoverVariant = React.useMemo(() => {
     return result.score == AutomatedAnalysisScore.NA_SCORE
       ? 'custom'
       : result.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
-      ? 'success'
-      : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
-      ? 'warning'
-      : 'danger';
+        ? 'success'
+        : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
+          ? 'warning'
+          : 'danger';
   }, [result.score]);
 
   const icon = React.useMemo(() => {

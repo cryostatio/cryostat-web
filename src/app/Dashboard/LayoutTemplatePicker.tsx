@@ -626,20 +626,13 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
             <Stack>
               {allSearchableTemplateNames.length > 0 ? (
                 <>
-                  {sortedFilteredFeatureLeveledTemplateLayoutGroup(t('SUGGESTED', { ns: 'common' }), [
-                    BlankLayout,
-                    ...RecentTemplates,
-                  ])}
+                  {sortedFilteredFeatureLeveledTemplateLayoutGroup('Suggested', [BlankLayout, ...RecentTemplates])}
                   {sortedFilteredFeatureLeveledTemplateLayoutGroup(
                     'Cryostat',
                     CryostatLayoutTemplates,
                     userSubmittedTemplates.length > 0,
                   )}
-                  {sortedFilteredFeatureLeveledTemplateLayoutGroup(
-                    t('USER_SUBMITTED', { ns: 'common' }),
-                    userSubmittedTemplates,
-                    false,
-                  )}
+                  {sortedFilteredFeatureLeveledTemplateLayoutGroup('User-submitted', userSubmittedTemplates, false)}
                 </>
               ) : (
                 <StackItem>

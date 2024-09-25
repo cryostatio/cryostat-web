@@ -371,14 +371,14 @@ export const CustomRecordingForm: React.FC = () => {
       nameValid: !name
         ? ValidatedOptions.default
         : isRecordingNameValid(name)
-        ? ValidatedOptions.success
-        : ValidatedOptions.error,
+          ? ValidatedOptions.success
+          : ValidatedOptions.error,
       template,
       restart: restart ?? false,
       continuous: continuous || false,
       labels: labels ?? [],
       labelsValid: ValidatedOptions.default, // RecordingLabelFields component handles validating
-      duration: continuous ? 0 : duration ?? 30,
+      duration: continuous ? 0 : (duration ?? 30),
       durationUnit: durationUnit ?? 1000,
       durationValid:
         skipDurationCheck || continuous || (duration ?? 30) > 0 ? ValidatedOptions.success : ValidatedOptions.error,
@@ -477,10 +477,10 @@ export const CustomRecordingForm: React.FC = () => {
                 {formData.durationValid === ValidatedOptions.error
                   ? 'The Recording duration must be a positive integer.'
                   : formData.continuous
-                  ? 'A continuous recording will never be automatically stopped.'
-                  : formData.archiveOnStop
-                  ? 'Time before the Recording is automatically stopped and copied to archive.'
-                  : 'Time before the Recording is automatically stopped.'}
+                    ? 'A continuous recording will never be automatically stopped.'
+                    : formData.archiveOnStop
+                      ? 'Time before the Recording is automatically stopped and copied to archive.'
+                      : 'Time before the Recording is automatically stopped.'}
               </HelperTextItem>
             </HelperText>
           </FormHelperText>

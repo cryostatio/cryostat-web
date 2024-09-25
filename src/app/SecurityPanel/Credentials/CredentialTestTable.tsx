@@ -249,8 +249,8 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
           state: !err
             ? CredentialTestState.VALID
             : err.severeLevel === ValidatedOptions.warning
-            ? CredentialTestState.NA
-            : CredentialTestState.INVALID,
+              ? CredentialTestState.NA
+              : CredentialTestState.INVALID,
         });
       }),
     );

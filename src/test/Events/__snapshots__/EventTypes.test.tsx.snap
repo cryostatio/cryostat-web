@@ -94,57 +94,58 @@ Array [
                
               
             </div>
-            <div>
-              <button
-                aria-expanded={false}
-                aria-haspopup="listbox"
-                className="pf-v5-c-menu-toggle pf-m-plain pf-m-text"
-                disabled={false}
-                id="event-types-pagination-top-toggle"
-                onClick={[Function]}
-                type="button"
+            <button
+              aria-expanded={false}
+              aria-haspopup="listbox"
+              className="pf-v5-c-menu-toggle pf-m-plain pf-m-text"
+              data-ouia-component-id="OUIA-Generated-MenuToggle-plainText-3"
+              data-ouia-component-type="PF5/MenuToggle"
+              data-ouia-safe={true}
+              disabled={false}
+              id="event-types-pagination-top-toggle"
+              onClick={[Function]}
+              type="button"
+            >
+              <span
+                className="pf-v5-c-menu-toggle__text"
+              >
+                <b>
+                  1
+                   - 
+                  1
+                </b>
+                 
+                of
+                 
+                <b>
+                  1
+                </b>
+                 
+                
+              </span>
+              <span
+                className="pf-v5-c-menu-toggle__controls"
               >
                 <span
-                  className="pf-v5-c-menu-toggle__text"
+                  className="pf-v5-c-menu-toggle__toggle-icon"
                 >
-                  <b>
-                    1
-                     - 
-                    1
-                  </b>
-                   
-                  of
-                   
-                  <b>
-                    1
-                  </b>
-                   
-                  
-                </span>
-                <span
-                  className="pf-v5-c-menu-toggle__controls"
-                >
-                  <span
-                    className="pf-v5-c-menu-toggle__toggle-icon"
+                  <svg
+                    aria-hidden={true}
+                    aria-labelledby={null}
+                    className="pf-v5-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 320 512"
+                    width="1em"
                   >
-                    <svg
-                      aria-hidden={true}
-                      aria-labelledby={null}
-                      className="pf-v5-svg"
-                      fill="currentColor"
-                      height="1em"
-                      role="img"
-                      viewBox="0 0 320 512"
-                      width="1em"
-                    >
-                      <path
-                        d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                    />
+                  </svg>
                 </span>
-              </button>
-            </div>
+              </span>
+            </button>
             <nav
               aria-label="Pagination"
               className="pf-v5-c-pagination__nav"
@@ -157,7 +158,7 @@ Array [
                   aria-label="Go to first page"
                   className="pf-v5-c-button pf-m-plain pf-m-disabled"
                   data-action="first"
-                  data-ouia-component-id="OUIA-Generated-Button-plain-11"
+                  data-ouia-component-id="OUIA-Generated-Button-plain-9"
                   data-ouia-component-type="PF5/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -190,7 +191,7 @@ Array [
                   aria-label="Go to previous page"
                   className="pf-v5-c-button pf-m-plain pf-m-disabled"
                   data-action="previous"
-                  data-ouia-component-id="OUIA-Generated-Button-plain-12"
+                  data-ouia-component-id="OUIA-Generated-Button-plain-10"
                   data-ouia-component-type="PF5/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -255,7 +256,7 @@ Array [
                   aria-label="Go to next page"
                   className="pf-v5-c-button pf-m-plain pf-m-disabled"
                   data-action="next"
-                  data-ouia-component-id="OUIA-Generated-Button-plain-13"
+                  data-ouia-component-id="OUIA-Generated-Button-plain-11"
                   data-ouia-component-type="PF5/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -288,7 +289,7 @@ Array [
                   aria-label="Go to last page"
                   className="pf-v5-c-button pf-m-plain pf-m-disabled"
                   data-action="last"
-                  data-ouia-component-id="OUIA-Generated-Button-plain-14"
+                  data-ouia-component-id="OUIA-Generated-Button-plain-12"
                   data-ouia-component-type="PF5/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -563,7 +564,7 @@ Array [
             aria-label="Details"
             aria-labelledby="simple-node0 expandable-event-type-row-00"
             className="pf-v5-c-button pf-m-plain"
-            data-ouia-component-id="OUIA-Generated-Button-plain-15"
+            data-ouia-component-id="OUIA-Generated-Button-plain-3"
             data-ouia-component-type="PF5/Button"
             data-ouia-safe={true}
             disabled={false}
