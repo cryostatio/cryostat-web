@@ -49,7 +49,6 @@ export interface DiagnosticsCardProps extends DashboardCardTypeProps {
   period: number;
 }
 
-// TODO are these needed?
 export enum DiagnosticsCardKind {}
 
 export function kindToId(kind: string): number {
@@ -60,10 +59,15 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const { t } = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
-  const handleError = React.useCallback((error) => {
-    return <ErrorView title={'Error executing diagnostic command'} message={`${error.message}`} />;
-  }, []);
+  const handleError = React.useCallback(
+    (error) => {
+      setErrorMessage(error.message);
+    },
+    [setErrorMessage],
+  );
 
   const handleGC = React.useCallback(() => {
     addSubscription(
@@ -107,7 +111,9 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     );
   }, [props.chartKind, props.duration, props.period, t, actions]);
 
-  return (
+  return isError ? (
+    <ErrorView title={'Error executing diagnostic command'} message={`${errorMessage}`} />
+  ) : (
     <DashboardCard
       id={props.chartKind + '-chart-card'}
       dashboardId={props.dashboardId}
@@ -128,11 +134,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
               headingLevel="h2"
             />
             <EmptyStateBody>
-              <Trans
-                t={t}
-                values={{ recordingName: 'RECORDING_NAME' }}
-                components={{ label: <Label color="blue" isCompact /> }}
-              >
+              <Trans t={t} components={{ label: <Label color="blue" isCompact /> }}>
                 CHART_CARD.DIAGNOSTICS_CARD_DESCRIPTION
               </Trans>
             </EmptyStateBody>
