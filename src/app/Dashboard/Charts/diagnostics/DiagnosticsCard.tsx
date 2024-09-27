@@ -22,6 +22,7 @@ import {
 } from '@app/Dashboard/types';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { LoadingProps } from '@app/Shared/Components/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
@@ -60,6 +61,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const serviceContext = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [running, setRunning] = React.useState(false);
   const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   const handleError = React.useCallback(
@@ -94,6 +96,16 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     const a = props.actions || [];
     return [GCButton, ...a];
   }, [props.actions, GCButton]);
+
+  const gcButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Invoke GC',
+        spinnerAriaLabel: 'saving-credentials',
+        isLoading: running,
+      }) as LoadingProps,
+    [running],
+  );
 
   const header = React.useMemo(() => {
     return (
@@ -139,7 +151,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
               </Trans>
             </EmptyStateBody>
             <EmptyStateFooter>
-              <Button variant="primary" onClick={handleGC}>
+              <Button variant="primary" onClick={handleGC} {...gcButtonLoadingProps}>
                 {t('CHART_CARD.DIAGNOSTICS_GC_BUTTON')}
               </Button>
             </EmptyStateFooter>
