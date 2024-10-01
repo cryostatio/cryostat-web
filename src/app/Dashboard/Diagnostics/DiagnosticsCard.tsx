@@ -71,35 +71,19 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     );
   }, [addSubscription, serviceContext.api, handleError, setRunning]);
 
-  const gcButtonLoadingProps = React.useMemo(
-    () =>
-      ({
-        spinnerAriaValueText: 'Invoke GC',
-        spinnerAriaLabel: 'invoke-gc',
-        isLoading: running,
-      }) as LoadingProps,
-    [running],
-  );
-
   const header = React.useMemo(() => {
     return (
       <CardHeader actions={{ actions: <>{...props.actions || []}</>, hasNoOffset: false, className: undefined }}>
-        <CardTitle>
-          {t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE', {
-            chartKind: props.chartKind,
-            duration: props.duration,
-            period: props.period,
-          })}
-        </CardTitle>
+        <CardTitle>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</CardTitle>
       </CardHeader>
     );
-  }, [props.chartKind, props.duration, props.period, t]);
+  }, [t]);
 
   return isError ? (
     <ErrorView title={'Error executing diagnostic command'} message={`${errorMessage}`} />
   ) : (
     <DashboardCard
-      id={props.chartKind + '-chart-card'}
+      id={'diagnostics-card'}
       dashboardId={props.dashboardId}
       cardSizes={DiagnosticsCardSizes}
       isCompact
@@ -119,7 +103,13 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
             />
             <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
             <EmptyStateFooter>
-              <Button variant="primary" onClick={handleGC} {...gcButtonLoadingProps}>
+              <Button
+                variant="primary"
+                onClick={handleGC}
+                spinnerAriaValueText="Invoke GC"
+                spinnerAriaLabel="invoke-gc"
+                isLoading={running}
+              >
                 {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
               </Button>
             </EmptyStateFooter>
