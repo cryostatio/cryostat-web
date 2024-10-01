@@ -88,7 +88,6 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
       cardSizes={DiagnosticsCardSizes}
       isCompact
       cardHeader={header}
-      title={props.chartKind}
       isDraggable={props.isDraggable}
       isResizable={props.isResizable}
       isFullHeight={props.isFullHeight}
