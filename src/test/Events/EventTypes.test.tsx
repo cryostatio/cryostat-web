@@ -40,7 +40,7 @@ const mockEventType: EventType = {
   options: [{ some_key: { name: 'some_name', description: 'a_desc', defaultValue: 'some_value' } }],
 };
 
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventType]));
+jest.spyOn(defaultServices.api, 'getTargetEventTypes').mockReturnValue(of([mockEventType]));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 

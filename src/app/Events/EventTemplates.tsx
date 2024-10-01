@@ -167,9 +167,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
         .pipe(
           filter((target) => !!target),
           first(),
-          concatMap((target: Target) =>
-            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
-          ),
+          concatMap((target: Target) => context.api.getTargetEventTemplates(target)),
         )
         .subscribe({
           next: handleTemplates,

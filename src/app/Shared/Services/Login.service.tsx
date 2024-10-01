@@ -29,7 +29,7 @@ export class LoginService {
     this.authority = process.env.CRYOSTAT_AUTHORITY || '.';
     this.sessionState.next(SessionState.CREATING_USER_SESSION);
 
-    fromFetch(`${this.authority}/api/v2.1/auth`, {
+    fromFetch(`${this.authority}/api/v4/auth`, {
       credentials: 'include',
       mode: 'cors',
       method: 'POST',
@@ -39,14 +39,14 @@ export class LoginService {
         concatMap((response) => {
           let gapAuth = response?.headers?.get('Gap-Auth');
           if (gapAuth) {
-            return new Promise<any>((r) => r({ data: { result: { username: gapAuth } } } as any));
+            return new Promise<any>((r) => r({ username: gapAuth } as any));
           }
           return response.json();
         }),
-        catchError(() => of({ data: { result: { username: '' } } } as any)),
+        catchError(() => of({ username: '' } as any)),
       )
       .subscribe((v) => {
-        this.username.next(v?.data?.result?.username ?? '');
+        this.username.next(v?.username ?? '');
       });
   }
 
@@ -65,7 +65,7 @@ export class LoginService {
   }
 
   setLoggedOut(): Observable<boolean> {
-    return fromFetch(`${this.authority}/api/v2.1/logout`, {
+    return fromFetch(`${this.authority}/api/v4/logout`, {
       credentials: 'include',
       mode: 'cors',
       method: 'POST',

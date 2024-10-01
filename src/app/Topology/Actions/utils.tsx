@@ -26,7 +26,7 @@ import { getAllLeaves, isTargetNode } from '@app/Shared/Services/api.utils';
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
 import { ContextMenuSeparator } from '@patternfly/react-topology';
 import { merge, filter, map, debounceTime } from 'rxjs';
-import { getConnectUrlFromEvent } from '../Entity/utils';
+import { getJvmIdFromEvent } from '../Entity/utils';
 import { GraphElement, ListElement } from '../Shared/types';
 import { ContextMenuItem } from './NodeActions';
 import type { ActionUtils, NodeAction, NodeActionKey, GroupActionResponse, MenuItemVariant } from './types';
@@ -40,11 +40,11 @@ export const isQuickRecording = (recording: ActiveRecording) => {
 };
 
 export const isQuickRecordingExist = (group: EnvironmentNode, { services }: ActionUtils) => {
-  const svcUrls = new Set(getAllLeaves(group).map((tn) => tn.target.connectUrl));
+  const jvmIds = new Set(getAllLeaves(group).map((tn) => tn.target.jvmId));
   const filterFn = (e: NotificationMessage) => {
-    const targetId = getConnectUrlFromEvent(e);
+    const jvmId = getJvmIdFromEvent(e);
     const recording = e.message.recording;
-    return targetId !== undefined && svcUrls.has(targetId) && isQuickRecording(recording);
+    return jvmId !== undefined && jvmIds.has(jvmId) && isQuickRecording(recording);
   };
 
   return merge(

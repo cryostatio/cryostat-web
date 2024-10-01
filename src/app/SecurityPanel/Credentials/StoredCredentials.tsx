@@ -18,7 +18,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
-import { StoredCredential, NotificationCategory } from '@app/Shared/Services/api.types';
+import { MatchedCredential, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -68,7 +68,7 @@ import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
-export const includesCredential = (credentials: StoredCredential[], credential: StoredCredential): boolean => {
+export const includesCredential = (credentials: MatchedCredential[], credential: MatchedCredential): boolean => {
   return credentials.some((cred) => cred.id === credential.id);
 };
 
@@ -84,16 +84,16 @@ const enum Actions {
 }
 
 interface State {
-  credentials: StoredCredential[];
-  expandedCredentials: StoredCredential[];
-  checkedCredentials: StoredCredential[];
+  credentials: MatchedCredential[];
+  expandedCredentials: MatchedCredential[];
+  checkedCredentials: MatchedCredential[];
   isHeaderChecked: boolean;
 }
 
 const reducer = (state: State, action) => {
   switch (action.type) {
     case Actions.HANDLE_REFRESH: {
-      const credentials: StoredCredential[] = action.payload.credentials;
+      const credentials: MatchedCredential[] = action.payload.credentials;
       const updatedCheckedCredentials = state.checkedCredentials.filter((cred) =>
         includesCredential(credentials, cred),
       );
@@ -118,7 +118,7 @@ const reducer = (state: State, action) => {
       };
     }
     case Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION: {
-      const deletedCredential: StoredCredential = action.payload.credential;
+      const deletedCredential: MatchedCredential = action.payload.credential;
       const updatedCheckedCredentials = state.checkedCredentials.filter((o) => o.id !== deletedCredential.id);
 
       return {
@@ -155,8 +155,8 @@ const reducer = (state: State, action) => {
     case Actions.HANDLE_ATLEAST_ONE_MATCH_ROW_CHECK:
     case Actions.HANDLE_NO_MATCH_ROW_CHECK: {
       const noMatch = action.payload.noMatch;
-      const checkedCredentials = state.credentials.filter(({ numMatchingTargets }) =>
-        noMatch ? numMatchingTargets === 0 : numMatchingTargets > 0,
+      const checkedCredentials = state.credentials.filter(({ targets }) =>
+        noMatch ? targets.length === 0 : targets.length > 0,
       );
       return {
         ...state,
@@ -165,7 +165,7 @@ const reducer = (state: State, action) => {
       };
     }
     case Actions.HANDLE_TOGGLE_EXPANDED: {
-      const credential: StoredCredential = action.payload.credential;
+      const credential: MatchedCredential = action.payload.credential;
       const matched = state.expandedCredentials.some((o) => o.id === credential.id);
       const updated = state.expandedCredentials.filter((o) => o.id !== credential.id);
       if (!matched) {
@@ -202,9 +202,9 @@ export const StoredCredentials = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, dispatch] = React.useReducer(reducer, {
-    credentials: [] as StoredCredential[],
-    expandedCredentials: [] as StoredCredential[],
-    checkedCredentials: [] as StoredCredential[],
+    credentials: [] as MatchedCredential[],
+    expandedCredentials: [] as MatchedCredential[],
+    checkedCredentials: [] as MatchedCredential[],
     isHeaderChecked: false,
   } as State);
   const [sortBy, getSortParams] = useSort();
@@ -216,7 +216,7 @@ export const StoredCredentials = () => {
   const refreshStoredCredentialsAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
+      context.api.getCredentials().subscribe((credentials: MatchedCredential[]) => {
         dispatch({ type: Actions.HANDLE_REFRESH, payload: { credentials: credentials } });
         setIsLoading(false);
       }),
@@ -425,7 +425,7 @@ export const StoredCredentials = () => {
               <Icon iconSize="md">
                 <ContainerNodeIcon />
               </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential.numMatchingTargets}</span>
+              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential.targets.length}</span>
             </Button>
           </Td>
         </Tr>

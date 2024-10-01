@@ -123,9 +123,7 @@ export const EventTypes: React.FC<EventTypesProps> = () => {
         .pipe(
           filter((target) => !!target),
           first(),
-          concatMap((target: Target) =>
-            context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`),
-          ),
+          concatMap((target: Target) => context.api.getTargetEventTypes(target)),
         )
         .subscribe({
           next: handleTypes,
