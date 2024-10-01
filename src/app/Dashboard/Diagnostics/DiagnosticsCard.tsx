@@ -20,8 +20,7 @@ import {
   DashboardCardSizes,
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
-import { ErrorView } from '@app/ErrorView/ErrorView';
-import { LoadingProps } from '@app/Shared/Components/types';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -42,7 +41,6 @@ import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardCard } from '../DashboardCard';
-import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -57,7 +55,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     (kind, error) => {
       notifications.danger(t('DiagnosticsCard.DIAGNOSTICS_ACTION_FAILURE', { kind }), error?.message || error);
     },
-    [notifications],
+    [notifications, t],
   );
 
   const handleGC = React.useCallback(() => {
@@ -76,7 +74,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         <CardTitle>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</CardTitle>
       </CardHeader>
     );
-  }, [t]);
+  }, [props.actions, t]);
 
   return (
     <>
