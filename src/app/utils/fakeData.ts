@@ -28,7 +28,7 @@ import {
   EventTemplate,
   EventProbe,
   Rule,
-  StoredCredential,
+  MatchedCredential,
   RecordingAttributes,
   NullableTarget,
   EventType,
@@ -90,9 +90,9 @@ export const fakeTarget: Target = {
 export const fakeAARecording: ActiveRecording = {
   name: 'automated-analysis',
   downloadUrl:
-    'https://clustercryostat-sample-default.apps.ci-ln-25fg5f2-76ef8.origin-ci-int-aws.dev.rhcloud.com:443/api/v1/targets/service:jmx:rmi:%2F%2F%2Fjndi%2Frmi:%2F%2F10-128-2-27.my-namespace.pod:9097%2Fjmxrmi/recordings/automated-analysis',
+    'https://clustercryostat-sample-default.apps.ci-ln-25fg5f2-76ef8.origin-ci-int-aws.dev.rhcloud.com:443/api/v4/targets/service:jmx:rmi:%2F%2F%2Fjndi%2Frmi:%2F%2F10-128-2-27.my-namespace.pod:9097%2Fjmxrmi/recordings/automated-analysis',
   reportUrl:
-    'https://clustercryostat-sample-default.apps.ci-ln-25fg5f2-76ef8.origin-ci-int-aws.dev.rhcloud.com:443/api/v1/targets/service:jmx:rmi:%2F%2F%2Fjndi%2Frmi:%2F%2F10-128-2-27.my-namespace.pod:9097%2Fjmxrmi/reports/automated-analysis',
+    'https://clustercryostat-sample-default.apps.ci-ln-25fg5f2-76ef8.origin-ci-int-aws.dev.rhcloud.com:443/api/v4/targets/service:jmx:rmi:%2F%2F%2Fjndi%2Frmi:%2F%2F10-128-2-27.my-namespace.pod:9097%2Fjmxrmi/reports/automated-analysis',
   metadata: {
     labels: [
       {
@@ -117,6 +117,7 @@ export const fakeAARecording: ActiveRecording = {
   toDisk: false,
   maxSize: 1048576,
   maxAge: 0,
+  remoteId: 567567,
 };
 
 export const fakeEvaluations: AnalysisResult[] = [
@@ -302,11 +303,11 @@ class FakeApiService extends ApiService {
   }
 
   // JFR Metrics card
-  targetHasRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
+  targetHasJFRMetricsRecording(_target: Target, _filter?: ActiveRecordingsFilterInput): Observable<boolean> {
     return of(true);
   }
 
-  uploadActiveRecordingToGrafana(_recordingName: string): Observable<boolean> {
+  uploadActiveRecordingToGrafana(_remoteId: number): Observable<boolean> {
     return of(true);
   }
 
@@ -344,7 +345,7 @@ class FakeApiService extends ApiService {
     return of([]);
   }
 
-  getCredentials(_suppressNotifications?: boolean, _skipStatusCheck?: boolean): Observable<StoredCredential[]> {
+  getCredentials(_suppressNotifications?: boolean, _skipStatusCheck?: boolean): Observable<MatchedCredential[]> {
     return of([]);
   }
 
@@ -379,7 +380,7 @@ class FakeApiService extends ApiService {
     });
   }
 
-  deleteRecording(_recordingName: string): Observable<boolean> {
+  deleteRecording(_remoteId: number): Observable<boolean> {
     return of(true);
   }
 }

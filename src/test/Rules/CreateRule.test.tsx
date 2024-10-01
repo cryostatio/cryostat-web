@@ -64,7 +64,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
+jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockEventTemplate]));
 
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
 jest.spyOn(defaultServices.api, 'matchTargetsWithExpr').mockImplementation((matchExpression, _targets) => {
@@ -262,7 +262,7 @@ describe('<CreateRule />', () => {
     await user.type(nameInput, mockRule.name);
     await user.type(descriptionInput, mockRule.description);
     await user.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
-    await waitFor(() => expect(defaultServices.api.doGet).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(defaultServices.api.getTargetEventTemplates).toHaveBeenCalledTimes(1));
     await user.selectOptions(templateSelect, ['Profiling']);
 
     await user.type(maxSizeInput, `${mockRule.maxSizeBytes}`);

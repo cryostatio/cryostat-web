@@ -18,7 +18,7 @@ import { ApiService } from '@app/Shared/Services/Api.service';
 import {
   TargetNode,
   Rule,
-  StoredCredential,
+  MatchedCredential,
   NotificationCategory,
   NotificationMessage,
   Recording,
@@ -80,13 +80,13 @@ export const getTargetOwnedResources = (
 ): Observable<ResourceTypes[]> => {
   switch (resourceType) {
     case 'activeRecordings':
-      return apiService.getTargetActiveRecordings(target);
+      return apiService.getTargetActiveRecordings(target, true, true);
     case 'archivedRecordings':
       return apiService.getTargetArchivedRecordings(target);
     case 'eventTemplates':
-      return apiService.getTargetEventTemplates(target);
+      return apiService.getTargetEventTemplates(target, true, true);
     case 'eventTypes':
-      return apiService.getTargetEventTypes(target);
+      return apiService.getTargetEventTypes(target, true, true);
     case 'agentProbes':
       return apiService.getActiveProbesForTarget(target, true, true);
     case 'automatedRules':
@@ -108,7 +108,7 @@ export const getTargetOwnedResources = (
             apiService.isTargetMatched(crd.matchExpression, target).pipe(map((ok) => (ok ? [crd] : []))),
           );
           return forkJoin(tasks).pipe(
-            defaultIfEmpty([[] as StoredCredential[]]),
+            defaultIfEmpty([[] as MatchedCredential[]]),
             map((credentials) => credentials.reduce((prev, curr) => prev.concat(curr))),
           );
         }),
@@ -217,8 +217,8 @@ export const getResourceListPatchFn = (
         );
       };
     case 'credentials':
-      return (arr: StoredCredential[], eventData: NotificationMessage, removed?: boolean) => {
-        const credential: StoredCredential = eventData.message;
+      return (arr: MatchedCredential[], eventData: NotificationMessage, removed?: boolean) => {
+        const credential: MatchedCredential = eventData.message;
 
         return apiService.isTargetMatched(credential.matchExpression, target).pipe(
           map((ok) => {
@@ -272,9 +272,6 @@ export const getExpandedResourceDetails = (
   }
 };
 
-export const getConnectUrlFromEvent = (event: NotificationMessage): string | undefined => {
-  return event.message.target || event.message.targetId;
-};
 export const getJvmIdFromEvent = (event: NotificationMessage): string | undefined => {
   return event.message.jvmId;
 };
@@ -347,14 +344,9 @@ export const useResources = <R = ResourceTypes,>(
             ),
           )
           .subscribe(([targetNode, event]) => {
-            const extractedUrl = getConnectUrlFromEvent(event);
             const extractedJvmId = getJvmIdFromEvent(event);
             const isOwned = isOwnedResource(resourceType);
-            if (
-              !isOwned ||
-              (extractedUrl && extractedUrl === targetNode.target.connectUrl) ||
-              (extractedJvmId && extractedJvmId === targetNode.target.jvmId)
-            ) {
+            if (!isOwned || (extractedJvmId && extractedJvmId === targetNode.target.jvmId)) {
               setLoading(true);
               setResources((old) => {
                 // Avoid accessing state directly, which

@@ -18,7 +18,8 @@ import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
 
-export type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'v2.4' | 'v3' | 'beta';
+export type ApiVersion = 'v4' | 'beta';
+
 // ======================================
 // Common Resources
 // ======================================
@@ -55,22 +56,6 @@ export type TargetMetadata = Metadata & {
 
 export function isTargetMetadata(metadata: Metadata | TargetMetadata): metadata is TargetMetadata {
   return (metadata as TargetMetadata).annotations !== undefined;
-}
-
-export interface ApiV2Response {
-  meta: {
-    status: string;
-    type: string;
-  };
-  data: unknown;
-}
-
-export interface AssetJwtResponse extends ApiV2Response {
-  data: {
-    result: {
-      resourceUrl: string;
-    };
-  };
 }
 
 export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
@@ -145,13 +130,6 @@ export interface HealthGetResponse {
 // ======================================
 // Auth Resources
 // ======================================
-export interface AuthV2Response extends ApiV2Response {
-  data: {
-    result: {
-      username: string;
-    };
-  };
-}
 
 // ======================================
 // MBean metric resources
@@ -268,6 +246,7 @@ export interface ActiveRecording extends Recording {
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+  remoteId: number;
 }
 
 export interface ActiveRecordingsFilterInput {
@@ -288,12 +267,6 @@ export interface ActiveRecordingsFilterInput {
  */
 export const UPLOADS_SUBDIRECTORY = 'uploads';
 
-export interface RecordingResponse extends ApiV2Response {
-  data: {
-    result: ActiveRecording;
-  };
-}
-
 export interface RecordingCountResponse {
   data: {
     targetNodes: {
@@ -311,27 +284,10 @@ export interface RecordingCountResponse {
 // ======================================
 // Credential resources
 // ======================================
-export interface StoredCredential {
+export interface MatchedCredential {
   id: number;
   matchExpression: string;
-  numMatchingTargets: number;
-}
-
-export interface MatchedCredential {
-  matchExpression: string;
   targets: Target[];
-}
-
-export interface CredentialResponse extends ApiV2Response {
-  data: {
-    result: MatchedCredential;
-  };
-}
-
-export interface CredentialsResponse extends ApiV2Response {
-  data: {
-    result: StoredCredential[];
-  };
 }
 
 // ======================================
@@ -358,18 +314,6 @@ export interface EventProbe {
   fields: string;
 }
 
-export interface ProbeTemplateResponse extends ApiV2Response {
-  data: {
-    result: ProbeTemplate[];
-  };
-}
-
-export interface EventProbesResponse extends ApiV2Response {
-  data: {
-    result: EventProbe[];
-  };
-}
-
 // ======================================
 // Rule resources
 // ======================================
@@ -384,18 +328,6 @@ export interface Rule {
   preservedArchives: number;
   maxAgeSeconds: number;
   maxSizeBytes: number;
-}
-
-export interface RulesResponse extends ApiV2Response {
-  data: {
-    result: Rule[];
-  };
-}
-
-export interface RuleResponse extends ApiV2Response {
-  data: {
-    result: Rule;
-  };
 }
 
 // ======================================

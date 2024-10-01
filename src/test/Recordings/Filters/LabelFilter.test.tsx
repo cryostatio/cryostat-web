@@ -46,6 +46,7 @@ const mockRecording: ActiveRecording = {
   toDisk: false,
   maxSize: 0,
   maxAge: 0,
+  remoteId: 6543,
 };
 const mockAnotherRecording = {
   ...mockRecording,
