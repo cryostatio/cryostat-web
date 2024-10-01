@@ -361,6 +361,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -376,6 +377,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -395,6 +397,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -410,6 +413,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -424,6 +428,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -451,6 +456,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -467,6 +473,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -617,6 +624,27 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
+    );
+  }
+
+  runGC(suppressNotifications = false): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/gc`,
+          {
+            method: 'POST',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          map((resp) => resp.ok),
+          first(),
+        ),
+      ),
+      first(),
     );
   }
 
@@ -640,6 +668,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 
@@ -736,6 +765,7 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
     );
   }
 

@@ -29,6 +29,7 @@ import { useDispatch } from 'react-redux';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
+import { DiagnosticsCardDescriptor } from './Diagnostics/DiagnosticsCard';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 import {
   SerialLayoutTemplate,
@@ -165,6 +166,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     AutomatedAnalysisCardDescriptor,
     JFRMetricsChartCardDescriptor,
     MBeanMetricsChartCardDescriptor,
+    DiagnosticsCardDescriptor,
   ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };

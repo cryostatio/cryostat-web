@@ -196,7 +196,6 @@
     },
     "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
     "FAILING_EVALUATION": "The expression matching failed.",
-    "MATCH_EXPRESSION_HELPER_TEXT": "Enter a Match Expression. This is a <a>Common Expression Language (CEL)</a> code snippet that is evaluated against each target application to determine whether the rule should be applied.",
     "MATCH_EXPRESSION_HINT_BODY": "Try an expression like:",
     "MATCH_EXPRESSION_HINT_MODAL_HEADER": "Match Expression hint",
     "MODAL_DESCRIPTION": "Create Stored Credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required).",
@@ -327,6 +326,16 @@
       "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime"
     },
     "DATETIME": "Date and Time"
+  },
+  "DiagnosticsCard": {
+    "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
+    "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
+    "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
+    "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
+    "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
+    "KINDS": {
+      "GC": "Garbage Collection"
+    }
   },
   "DurationFilter": {
     "ARIA_LABELS": {
