@@ -83,13 +83,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
 
   const header = React.useMemo(() => {
     return (
-      <CardHeader
-        actions={{
-          actions: <>{}</>,
-          hasNoOffset: false,
-          className: undefined,
-        }}
-      >
+      <CardHeader actions={{ actions: <>{...props.actions || []}</>, hasNoOffset: false, className: undefined }}>
         <CardTitle>
           {t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE', {
             chartKind: props.chartKind,
