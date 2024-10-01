@@ -42,28 +42,28 @@ import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardCard } from '../DashboardCard';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
 export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) => {
   const { t } = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
-  const [errorMessage, setErrorMessage] = React.useState('');
   const [running, setRunning] = React.useState(false);
-  const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   const handleError = React.useCallback(
     (error) => {
-      setErrorMessage(error?.message ?? t('DiagnosticsCard.UNKNOWN_FAILURE'));
+      notifications.danger(t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE'), error);
     },
-    [setErrorMessage],
+    [notifications],
   );
 
   const handleGC = React.useCallback(() => {
     setRunning(true);
     addSubscription(
-      serviceContext.api.runGC().subscribe({
+      serviceContext.api.runGC(true).subscribe({
         error: (err) => handleError(err),
         complete: () => setRunning(false),
       }),
@@ -78,43 +78,43 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     );
   }, [t]);
 
-  return isError ? (
-    <ErrorView title={'Error executing diagnostic command'} message={`${errorMessage}`} />
-  ) : (
-    <DashboardCard
-      id={'diagnostics-card'}
-      dashboardId={props.dashboardId}
-      cardSizes={DiagnosticsCardSizes}
-      isCompact
-      cardHeader={header}
-      isDraggable={props.isDraggable}
-      isResizable={props.isResizable}
-      isFullHeight={props.isFullHeight}
-    >
-      <CardBody>
-        <Bullseye>
-          <EmptyState variant={EmptyStateVariant.lg}>
-            <EmptyStateHeader
-              titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
-              icon={<EmptyStateIcon icon={WrenchIcon} />}
-              headingLevel="h2"
-            />
-            <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
-            <EmptyStateFooter>
-              <Button
-                variant="primary"
-                onClick={handleGC}
-                spinnerAriaValueText="Invoke GC"
-                spinnerAriaLabel="invoke-gc"
-                isLoading={running}
-              >
-                {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
-              </Button>
-            </EmptyStateFooter>
-          </EmptyState>
-        </Bullseye>
-      </CardBody>
-    </DashboardCard>
+  return (
+    <>
+      <DashboardCard
+        id={'diagnostics-card'}
+        dashboardId={props.dashboardId}
+        cardSizes={DiagnosticsCardSizes}
+        isCompact
+        cardHeader={header}
+        isDraggable={props.isDraggable}
+        isResizable={props.isResizable}
+        isFullHeight={props.isFullHeight}
+      >
+        <CardBody>
+          <Bullseye>
+            <EmptyState variant={EmptyStateVariant.lg}>
+              <EmptyStateHeader
+                titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
+                icon={<EmptyStateIcon icon={WrenchIcon} />}
+                headingLevel="h2"
+              />
+              <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
+              <EmptyStateFooter>
+                <Button
+                  variant="primary"
+                  onClick={handleGC}
+                  spinnerAriaValueText="Invoke GC"
+                  spinnerAriaLabel="invoke-gc"
+                  isLoading={running}
+                >
+                  {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
+                </Button>
+              </EmptyStateFooter>
+            </EmptyState>
+          </Bullseye>
+        </CardBody>
+      </DashboardCard>
+    </>
   );
 };
 

@@ -628,14 +628,13 @@ export class ApiService {
     );
   }
 
-  runGC(): Observable<boolean> {
+  runGC(suppressNotifications = false): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('beta', `diagnostics/targets/${target?.id}/gc`, {
+        this.sendRequest('beta', `diagnostics/targets/${target?.id}/gcd`, {
           method: 'POST',
-        }).pipe(
+        }, undefined, suppressNotifications).pipe(
           map((resp) => resp.ok),
-          catchError(() => of(false)),
           first(),
         ),
       ),
