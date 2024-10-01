@@ -43,17 +43,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardCard } from '../DashboardCard';
 
-export interface DiagnosticsCardProps extends DashboardCardTypeProps {
-  chartKind: string;
-  duration: number;
-  period: number;
-}
-
-export enum DiagnosticsCardKind {}
-
-export function kindToId(kind: string): number {
-  return DiagnosticsCardKind[kind];
-}
+export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
 export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) => {
   const { t } = useTranslation();
