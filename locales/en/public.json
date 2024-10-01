@@ -142,7 +142,8 @@
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
     "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
-    "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection"
+    "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
+    "UNKNOWN_FAILURE": "Action failed for unknown reason"
   },
   "CHART_CARD": {
     "BUTTONS": {

@@ -55,18 +55,17 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
 
   const handleError = React.useCallback(
     (error) => {
-      setErrorMessage(error.message);
-      setRunning(false);
+      setErrorMessage(error?.message ?? t('DiagnosticsCard.UNKNOWN_FAILURE'));
     },
-    [setErrorMessage, setRunning],
+    [setErrorMessage],
   );
 
   const handleGC = React.useCallback(() => {
     setRunning(true);
     addSubscription(
       serviceContext.api.runGC().subscribe({
-        next: () => setRunning(false),
         error: (err) => handleError(err),
+        complete: () => setRunning(false),
       }),
     );
   }, [addSubscription, serviceContext.api, handleError, setRunning]);
