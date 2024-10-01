@@ -42,7 +42,7 @@ import {
 import { DataSourceIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { DashboardCard } from '../../DashboardCard';
+import { DashboardCard } from '../DashboardCard';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {
   chartKind: string;
@@ -83,7 +83,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     return (
       <Button
         key={0}
-        aria-label={t('DIAGNOSTICS_GC_BUTTON', { chartKind: props.chartKind })}
+        aria-label={t('DaignosticsCard.DIAGNOSTICS_GC_BUTTON', { chartKind: props.chartKind })}
         onClick={handleGC}
         variant="plain"
         icon={<SyncAltIcon />}
@@ -117,7 +117,11 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         }}
       >
         <CardTitle>
-          {t('CHART_CARD.TITLE', { chartKind: props.chartKind, duration: props.duration, period: props.period })}
+          {t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE', {
+            chartKind: props.chartKind,
+            duration: props.duration,
+            period: props.period,
+          })}
         </CardTitle>
       </CardHeader>
     );
@@ -141,18 +145,18 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         <Bullseye>
           <EmptyState variant={EmptyStateVariant.lg}>
             <EmptyStateHeader
-              titleText={<>{t('CHART_CARD.DIAGNOSTICS_CARD_TITLE')}</>}
+              titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
               icon={<EmptyStateIcon icon={DataSourceIcon} />}
               headingLevel="h2"
             />
             <EmptyStateBody>
               <Trans t={t} components={{ label: <Label color="blue" isCompact /> }}>
-                CHART_CARD.DIAGNOSTICS_CARD_DESCRIPTION
+                DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION
               </Trans>
             </EmptyStateBody>
             <EmptyStateFooter>
               <Button variant="primary" onClick={handleGC} {...gcButtonLoadingProps}>
-                {t('CHART_CARD.DIAGNOSTICS_GC_BUTTON')}
+                {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
               </Button>
             </EmptyStateFooter>
           </EmptyState>
@@ -180,10 +184,10 @@ export const DiagnosticsCardSizes: DashboardCardSizes = {
 
 export const DiagnosticsCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.BETA,
-  title: 'CHART_CARD.DIAGNOSTICS_CARD_TITLE',
+  title: 'DiagnosticsCard.DIAGNOSTICS_CARD_TITLE',
   cardSizes: DiagnosticsCardSizes,
-  description: 'CHART_CARD.DIAGNOSTICS_CARD_DESCRIPTION',
-  descriptionFull: 'CHART_CARD.DIAGNOSTICS_CARD_DESCRIPTION_FULL',
+  description: 'DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION',
+  descriptionFull: 'DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION_FULL',
   component: DiagnosticsCard,
   propControls: [],
   icon: <TachometerAltIcon />,
