@@ -54,8 +54,8 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const [running, setRunning] = React.useState(false);
 
   const handleError = React.useCallback(
-    (error) => {
-      notifications.danger(t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE'), error);
+    (kind, error) => {
+      notifications.danger(t('DiagnosticsCard.DIAGNOSTICS_ACTION_FAILURE', { kind }), error?.message || error);
     },
     [notifications],
   );
@@ -64,11 +64,11 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     setRunning(true);
     addSubscription(
       serviceContext.api.runGC(true).subscribe({
-        error: (err) => handleError(err),
+        error: (err) => handleError(t('DiagnosticsCard.KINDS.GC'), err),
         complete: () => setRunning(false),
       }),
     );
-  }, [addSubscription, serviceContext.api, handleError, setRunning]);
+  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
 
   const header = React.useMemo(() => {
     return (
