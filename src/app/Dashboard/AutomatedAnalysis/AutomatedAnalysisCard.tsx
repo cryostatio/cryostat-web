@@ -98,7 +98,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { filter, first, map, tap } from 'rxjs';
+import { concatMap, filter, first, map, tap } from 'rxjs';
 import { DashboardCard } from '../DashboardCard';
 import { DashboardCardDescriptor, DashboardCardFC, DashboardCardSizes, DashboardCardTypeProps } from '../types';
 import { AutomatedAnalysisCardList } from './AutomatedAnalysisCardList';
@@ -529,20 +529,28 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       generateReport();
     } else {
       addSubscription(
-        context.api.deleteRecording('automated-analysis').subscribe({
-          next: () => {
-            generateReport();
-          },
-          error: (error) => {
-            handleStateErrors(error.message);
-          },
-        }),
+        context.target
+          .target()
+          .pipe(
+            filter((t) => !!t),
+            concatMap((t) => context.api.targetRecordingRemoteIdByOrigin(t!, automatedAnalysisRecordingName)),
+            concatMap((id) => context.api.deleteRecording(id!)),
+          )
+          .subscribe({
+            next: () => {
+              generateReport();
+            },
+            error: (error) => {
+              handleStateErrors(error.message);
+            },
+          }),
       );
     }
   }, [
     addSubscription,
     context.api,
     context.reports,
+    context.target,
     targetConnectURL,
     usingCachedReport,
     usingArchivedReport,

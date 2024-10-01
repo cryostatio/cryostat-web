@@ -39,6 +39,7 @@ const mockRecording: ActiveRecording = {
   toDisk: false,
   maxSize: 0,
   maxAge: 0,
+  remoteId: 8765,
 };
 
 const durationRangeWithoutUpperLimit = { from: { value: mockRecording.duration / 1000, unit: DurationUnit.SECOND } };

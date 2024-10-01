@@ -19,7 +19,6 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { Target } from '@app/Shared/Services/api.types';
-import { isHttpOk } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -179,13 +178,13 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           credentials,
           true,
         )
-        .subscribe(({ status, body }) => {
+        .subscribe((success) => {
           setLoading(false);
-          const option = isHttpOk(status) ? ValidatedOptions.success : ValidatedOptions.error;
+          const option = success ? ValidatedOptions.success : ValidatedOptions.error;
           if (option === ValidatedOptions.success) {
             exitForm();
           } else {
-            let errorMessage = (body as any)?.data?.reason || 'Connection test failure';
+            let errorMessage = 'Connection test failure';
             setValidation({
               option: option,
               errorMessage,
@@ -210,12 +209,12 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
           false,
           true,
         )
-        .subscribe(({ status, body }) => {
+        .subscribe((success) => {
           setTesting(false);
-          const option = isHttpOk(status) ? ValidatedOptions.success : ValidatedOptions.error;
+          const option = success ? ValidatedOptions.success : ValidatedOptions.error;
           setValidation({
             option: option,
-            errorMessage: option !== ValidatedOptions.success ? body['data']['reason'] : '',
+            errorMessage: option !== ValidatedOptions.success ? '' : 'Connection test failure',
           });
         }),
     );

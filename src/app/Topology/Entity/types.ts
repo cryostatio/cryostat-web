@@ -21,7 +21,7 @@ import type {
   NotificationMessage,
   Recording,
   Rule,
-  StoredCredential,
+  MatchedCredential,
 } from '@app/Shared/Services/api.types';
 import { Observable } from 'rxjs';
 
@@ -38,7 +38,7 @@ export type PatchFn = (
   removed?: boolean,
 ) => Observable<ResourceTypes[]>;
 
-export type ResourceTypes = Recording | EventTemplate | EventType | EventProbe | Rule | StoredCredential;
+export type ResourceTypes = Recording | EventTemplate | EventType | EventProbe | Rule | MatchedCredential;
 
 // Note: Values will be word split to used as display names
 export const TargetOwnedResourceTypeAsArray = [

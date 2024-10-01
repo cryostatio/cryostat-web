@@ -19,7 +19,6 @@ import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, first, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { Target, NotificationCategory, TargetDiscoveryEvent } from './api.types';
-import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { NotificationService } from './Notifications.service';
 
@@ -29,7 +28,6 @@ export class TargetsService {
   constructor(
     private readonly api: ApiService,
     private readonly notifications: NotificationService,
-    login: LoginService,
     notificationChannel: NotificationChannel,
   ) {
     // just trigger a startup query
@@ -60,7 +58,7 @@ export class TargetsService {
   }
 
   queryForTargets(): Observable<void> {
-    return this.api.doGet<Target[]>(`targets`).pipe(
+    return this.api.getTargets().pipe(
       first(),
       tap((targets) => this._targets$.next(targets)),
       map(() => undefined),

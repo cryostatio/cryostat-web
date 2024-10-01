@@ -326,7 +326,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
         ),
       ]).subscribe(([currentTarget, event]) => {
-        if (currentTarget?.connectUrl != event.message.target && currentTarget?.jvmId != event.message.jvmId) {
+        if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
         setRecordings((old) =>
