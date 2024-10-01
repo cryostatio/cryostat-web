@@ -21,8 +21,8 @@ import {
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
@@ -39,7 +39,7 @@ import {
   EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
-import { DataSourceIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
+import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { DashboardCard } from '../DashboardCard';
@@ -67,41 +67,26 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const handleError = React.useCallback(
     (error) => {
       setErrorMessage(error.message);
+      setRunning(false);
     },
-    [setErrorMessage],
+    [setErrorMessage, setRunning],
   );
 
   const handleGC = React.useCallback(() => {
+    setRunning(true);
     addSubscription(
       serviceContext.api.runGC().subscribe({
+        next: () => setRunning(false),
         error: (err) => handleError(err),
       }),
     );
-  }, [addSubscription, serviceContext.api, handleError]);
-
-  const GCButton = React.useMemo(() => {
-    return (
-      <Button
-        key={0}
-        aria-label={t('DaignosticsCard.DIAGNOSTICS_GC_BUTTON', { chartKind: props.chartKind })}
-        onClick={handleGC}
-        variant="plain"
-        icon={<SyncAltIcon />}
-        isDisabled={false}
-      />
-    );
-  }, [t, props.chartKind, handleGC]);
-
-  const actions = React.useMemo(() => {
-    const a = props.actions || [];
-    return [GCButton, ...a];
-  }, [props.actions, GCButton]);
+  }, [addSubscription, serviceContext.api, handleError, setRunning]);
 
   const gcButtonLoadingProps = React.useMemo(
     () =>
       ({
         spinnerAriaValueText: 'Invoke GC',
-        spinnerAriaLabel: 'saving-credentials',
+        spinnerAriaLabel: 'invoke-gc',
         isLoading: running,
       }) as LoadingProps,
     [running],
@@ -111,7 +96,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     return (
       <CardHeader
         actions={{
-          actions: <>{actions}</>,
+          actions: <>{}</>,
           hasNoOffset: false,
           className: undefined,
         }}
@@ -125,7 +110,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         </CardTitle>
       </CardHeader>
     );
-  }, [props.chartKind, props.duration, props.period, t, actions]);
+  }, [props.chartKind, props.duration, props.period, t]);
 
   return isError ? (
     <ErrorView title={'Error executing diagnostic command'} message={`${errorMessage}`} />
@@ -146,7 +131,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
           <EmptyState variant={EmptyStateVariant.lg}>
             <EmptyStateHeader
               titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
-              icon={<EmptyStateIcon icon={DataSourceIcon} />}
+              icon={<EmptyStateIcon icon={WrenchIcon} />}
               headingLevel="h2"
             />
             <EmptyStateBody>
@@ -190,7 +175,7 @@ export const DiagnosticsCardDescriptor: DashboardCardDescriptor = {
   descriptionFull: 'DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION_FULL',
   component: DiagnosticsCard,
   propControls: [],
-  icon: <TachometerAltIcon />,
+  icon: <WrenchIcon />,
   labels: [
     {
       content: 'Beta',

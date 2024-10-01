@@ -27,9 +27,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
-import { DiagnosticsCardDescriptor } from './Diagnostics/DiagnosticsCard';
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
 import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
+import { DiagnosticsCardDescriptor } from './Diagnostics/DiagnosticsCard';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 import {
   SerialLayoutTemplate,
