@@ -35,13 +35,12 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
-  Label,
   EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { DashboardCard } from '../DashboardCard';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {
@@ -134,11 +133,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
               icon={<EmptyStateIcon icon={WrenchIcon} />}
               headingLevel="h2"
             />
-            <EmptyStateBody>
-              <Trans t={t} components={{ label: <Label color="blue" isCompact /> }}>
-                DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION
-              </Trans>
-            </EmptyStateBody>
+            <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
             <EmptyStateFooter>
               <Button variant="primary" onClick={handleGC} {...gcButtonLoadingProps}>
                 {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
