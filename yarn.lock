@@ -1359,9 +1359,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-charts@npm:^7.4.0":
-  version: 7.4.1
-  resolution: "@patternfly/react-charts@npm:7.4.1"
+"@patternfly/react-charts@npm:^7.4.3":
+  version: 7.4.3
+  resolution: "@patternfly/react-charts@npm:7.4.3"
   dependencies:
     "@patternfly/react-styles": ^5.4.0
     "@patternfly/react-tokens": ^5.4.0
@@ -1388,7 +1388,7 @@ __metadata:
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: eb39e1d5d8fb535d5a47a0c7e08b13311778302f5e91bba60ee36073846a7fedb9d9c5cbea001feb402f792a11b039b5f6974372783e162a86270eade123cbfd
+  checksum: 65053458284f6cc970cf5ad7f289ecc7fe3607def1434b4b8f29d45b6af781dcd7b855a60e0c2ea767975f65938598532493640a12f538dc8dcef57b15d64b76
   languageName: node
   linkType: hard
 
@@ -4401,7 +4401,7 @@ __metadata:
   dependencies:
     "@patternfly/quickstarts": ^5.4.0
     "@patternfly/react-catalog-view-extension": ^5.0.0
-    "@patternfly/react-charts": ^7.4.0
+    "@patternfly/react-charts": ^7.4.3
     "@patternfly/react-core": ^5.4.0
     "@patternfly/react-icons": ^5.4.0
     "@patternfly/react-styles": ^5.4.0
