@@ -1409,23 +1409,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "@patternfly/react-core@npm:5.4.0"
-  dependencies:
-    "@patternfly/react-icons": ^5.4.0
-    "@patternfly/react-styles": ^5.4.0
-    "@patternfly/react-tokens": ^5.4.0
-    focus-trap: 7.5.4
-    react-dropzone: ^14.2.3
-    tslib: ^2.6.3
-  peerDependencies:
-    react: ^17 || ^18
-    react-dom: ^17 || ^18
-  checksum: cc8a1fb450af157469d1cbfb31c3cf2c21268d90dc13ba658fac740b94e3f2a379bc831bb6465a1f30f017578b79b2cd6c0dfaf34c2f97e3e0ab41ba6b839334
-  languageName: node
-  linkType: hard
-
 "@patternfly/react-core@npm:^5.4.1":
   version: 5.4.1
   resolution: "@patternfly/react-core@npm:5.4.1"
@@ -4402,7 +4385,7 @@ __metadata:
     "@patternfly/quickstarts": ^5.4.0
     "@patternfly/react-catalog-view-extension": ^5.0.0
     "@patternfly/react-charts": ^7.4.3
-    "@patternfly/react-core": ^5.4.0
+    "@patternfly/react-core": ^5.4.1
     "@patternfly/react-icons": ^5.4.0
     "@patternfly/react-styles": ^5.4.0
     "@patternfly/react-table": ^5.4.0
