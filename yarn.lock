@@ -4371,7 +4371,7 @@ __metadata:
     file-loader: ^6.2.0
     html-webpack-plugin: ^5.6.0
     humanize-duration: ^3.32.1
-    i18next: ^23.15.1
+    i18next: ^23.15.2
     i18next-browser-languagedetector: ^8.0.0
     i18next-parser: ^9.0.2
     imagemin: ^9.0.0
@@ -7718,12 +7718,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^23.15.1":
-  version: 23.15.1
-  resolution: "i18next@npm:23.15.1"
+"i18next@npm:^23.15.2":
+  version: 23.15.2
+  resolution: "i18next@npm:23.15.2"
   dependencies:
     "@babel/runtime": ^7.23.2
-  checksum: f946168f00eeb8b7bd2d52c64489492810a95047bd22392b5d9aa747ad4dbe8294a89c8840ceed53b85598d71c52e6329c6289f44034783a5d3ca724d6934d9b
+  checksum: 0f7294ca7df2e926039a0e1bbacf18e64cbc4e9886ce7c1611e423900207da28cedf1dac5af690472bb8e6a98bed85efba908c1c972d20395363d4d82850b528
   languageName: node
   linkType: hard
 
