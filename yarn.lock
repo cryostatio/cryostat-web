@@ -2425,12 +2425,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-test-renderer@npm:^17.0.7":
-  version: 17.0.7
-  resolution: "@types/react-test-renderer@npm:17.0.7"
+"@types/react-test-renderer@npm:^18.3.0":
+  version: 18.3.0
+  resolution: "@types/react-test-renderer@npm:18.3.0"
   dependencies:
-    "@types/react": ^17
-  checksum: edd51f3e7409a3b3fc8a661380d98cd4e403afd9c48e0c9a705f17001782338b3022dc77495bc9df570ea949b54aab6ccfe60d12bb31debe8e497d16abad44de
+    "@types/react": "*"
+  checksum: c53683990bd194cb68e3987bda79c78eff41517f7a747e92f3e54217c2ce3addd031b8a45bf631982c909cc2caeeb905372f322758e05bb76c03754a3f24426e
   languageName: node
   linkType: hard
 
@@ -4354,7 +4354,7 @@ __metadata:
     "@types/js-base64": 3.3.1
     "@types/lodash": ^4.17.10
     "@types/react": ^17.0.69
-    "@types/react-test-renderer": ^17.0.7
+    "@types/react-test-renderer": ^18.3.0
     "@types/selenium-webdriver": ^4.1.26
     "@typescript-eslint/eslint-plugin": ^8.10.0
     "@typescript-eslint/parser": ^8.10.0
@@ -4393,7 +4393,7 @@ __metadata:
     react-joyride: ^2.9.2
     react-redux: ^8.0.5
     react-router-dom: ^6.26.2
-    react-test-renderer: ^17.0.2
+    react-test-renderer: ^18.3.1
     regenerator-runtime: ^0.14.1
     rimraf: ^6.0.1
     rxjs: ^7.8.1
@@ -11467,10 +11467,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^17.0.1, react-is@npm:^17.0.2":
+"react-is@npm:^17.0.1":
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react-is@npm:18.3.1"
+  checksum: e20fe84c86ff172fc8d898251b7cc2c43645d108bf96d0b8edf39b98f9a2cae97b40520ee7ed8ee0085ccc94736c4886294456033304151c3f94978cec03df21
   languageName: node
   linkType: hard
 
@@ -11567,7 +11574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-shallow-renderer@npm:^16.13.1":
+"react-shallow-renderer@npm:^16.15.0":
   version: 16.15.0
   resolution: "react-shallow-renderer@npm:16.15.0"
   dependencies:
@@ -11579,17 +11586,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-test-renderer@npm:^17.0.2":
-  version: 17.0.2
-  resolution: "react-test-renderer@npm:17.0.2"
+"react-test-renderer@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react-test-renderer@npm:18.3.1"
   dependencies:
-    object-assign: ^4.1.1
-    react-is: ^17.0.2
-    react-shallow-renderer: ^16.13.1
-    scheduler: ^0.20.2
+    react-is: ^18.3.1
+    react-shallow-renderer: ^16.15.0
+    scheduler: ^0.23.2
   peerDependencies:
-    react: 17.0.2
-  checksum: e6b5c6ed2a0bde2c34f1ab9523ff9bc4c141a271daf730d6b852374e83acc0155d58ab71a318251e953ebfa65b8bebb9c5dce3eba1ccfcbef7cc4e1e8261c401
+    react: ^18.3.1
+  checksum: e8e58e738835fab3801afb63f6bfe0fcf6e68ea39619fae5bdf47feefc36b1e4acb48c9dd139c7533611466eff1dfce6ffdda4b317e06aee663dda7d91438f26
   languageName: node
   linkType: hard
 
@@ -12147,6 +12153,15 @@ __metadata:
     loose-envify: ^1.1.0
     object-assign: ^4.1.1
   checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.23.2":
+  version: 0.23.2
+  resolution: "scheduler@npm:0.23.2"
+  dependencies:
+    loose-envify: ^1.1.0
+  checksum: 3e82d1f419e240ef6219d794ff29c7ee415fbdc19e038f680a10c067108e06284f1847450a210b29bbaf97b9d8a97ced5f624c31c681248ac84c80d56ad5a2c4
   languageName: node
   linkType: hard
 
