@@ -4435,7 +4435,7 @@ __metadata:
     raw-loader: ^4.0.2
     react: ^17.0.2
     react-dom: ^17.0.2
-    react-i18next: ^15.0.3
+    react-i18next: ^15.1.0
     react-joyride: ^2.9.2
     react-redux: ^8.0.5
     react-router-dom: ^6.26.2
@@ -11471,9 +11471,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^15.0.3":
-  version: 15.0.3
-  resolution: "react-i18next@npm:15.0.3"
+"react-i18next@npm:^15.1.0":
+  version: 15.1.0
+  resolution: "react-i18next@npm:15.1.0"
   dependencies:
     "@babel/runtime": ^7.25.0
     html-parse-stringify: ^3.0.1
@@ -11485,7 +11485,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 6309dba571b4b2a793c23a93cfa2e0c55a5856e21efa3bfa9dcc70151cbffdab23d5d8e2486acbdcfbe0eef5dd7c6599e5370a6b2177b93f9f8e54128da77efb
+  checksum: 0e6efb45960a505fc3a531c64976208bc0620782855dfc4de077e47caf9485745ad25c8eab6c9940e6bd20f9192d9e0f2af7e7fb00cceae84cdf53ff163cff81
   languageName: node
   linkType: hard
 
