@@ -1463,13 +1463,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "@patternfly/react-styles@npm:5.4.0"
-  checksum: 15e34643e16f183ea4410b6345aba70eb2f0040a0fcac512554d2920e61762b5c5eae60492833dbfb4e78be628a5a4f8dfa4311a6e2cbc22c5ef7e33cec1a082
-  languageName: node
-  linkType: hard
-
 "@patternfly/react-styles@npm:^5.4.1":
   version: 5.4.1
   resolution: "@patternfly/react-styles@npm:5.4.1"
