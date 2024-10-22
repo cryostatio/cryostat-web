@@ -1359,15 +1359,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-charts@npm:^7.4.3":
-  version: 7.4.3
-  resolution: "@patternfly/react-charts@npm:7.4.3"
+"@patternfly/react-charts@npm:^7.4.5":
+  version: 7.4.5
+  resolution: "@patternfly/react-charts@npm:7.4.5"
   dependencies:
-    "@patternfly/react-styles": ^5.4.0
-    "@patternfly/react-tokens": ^5.4.0
+    "@patternfly/react-styles": ^5.4.1
+    "@patternfly/react-tokens": ^5.4.1
     hoist-non-react-statics: ^3.3.2
     lodash: ^4.17.21
-    tslib: ^2.6.3
+    tslib: ^2.7.0
     victory-area: ^37.1.1
     victory-axis: ^37.1.1
     victory-bar: ^37.1.1
@@ -1388,7 +1388,7 @@ __metadata:
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: 65053458284f6cc970cf5ad7f289ecc7fe3607def1434b4b8f29d45b6af781dcd7b855a60e0c2ea767975f65938598532493640a12f538dc8dcef57b15d64b76
+  checksum: a841b2b1e9b31e36612e9b974f8cab4c9614b70ab925e1ec87210e3a09fe08b3670719cbabc1b869fb7dc7f9ac7510090d3cd215ff023c9b0c4e9fb88be29a63
   languageName: node
   linkType: hard
 
@@ -1498,13 +1498,6 @@ __metadata:
   version: 5.1.1
   resolution: "@patternfly/react-tokens@npm:5.1.1"
   checksum: 6e87e7cc411d6b4ec1f52b813d2361e8401d604718a31cd4325143fdd2771554d65927b85eedcc4c3a99caa2cb1756286679f4194af4e950064b9f85a3ca33f1
-  languageName: node
-  linkType: hard
-
-"@patternfly/react-tokens@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "@patternfly/react-tokens@npm:5.4.0"
-  checksum: 325a132d87c970dd91a7276f3631fe4d38dd5b6ea919505cfde23dea5f0bc0ae157a9cc66bf61b446a505fc9867aca9f5ea04be1554ebe6aa4d9ecab0bf6286a
   languageName: node
   linkType: hard
 
@@ -4362,7 +4355,7 @@ __metadata:
   dependencies:
     "@patternfly/quickstarts": ^5.4.0
     "@patternfly/react-catalog-view-extension": ^5.0.0
-    "@patternfly/react-charts": ^7.4.3
+    "@patternfly/react-charts": ^7.4.5
     "@patternfly/react-core": ^5.4.2
     "@patternfly/react-icons": ^5.4.0
     "@patternfly/react-styles": ^5.4.0
@@ -13596,13 +13589,6 @@ __metadata:
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.6.3":
-  version: 2.7.0
-  resolution: "tslib@npm:2.7.0"
-  checksum: 1606d5c89f88d466889def78653f3aab0f88692e80bb2066d090ca6112ae250ec1cfa9dbfaab0d17b60da15a4186e8ec4d893801c67896b277c17374e36e1d28
   languageName: node
   linkType: hard
 
