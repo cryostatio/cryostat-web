@@ -1409,24 +1409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "@patternfly/react-core@npm:5.4.1"
-  dependencies:
-    "@patternfly/react-icons": ^5.4.0
-    "@patternfly/react-styles": ^5.4.0
-    "@patternfly/react-tokens": ^5.4.0
-    focus-trap: 7.5.4
-    react-dropzone: ^14.2.3
-    tslib: ^2.6.3
-  peerDependencies:
-    react: ^17 || ^18
-    react-dom: ^17 || ^18
-  checksum: 0500a8a0c4fd0b6200152793fbdf9c28f132de4182ac081d5602f17587fc2b42c7138c6aa4d69232c347af65fb9803e537f3538346b62c3bd9e6e144691505c7
-  languageName: node
-  linkType: hard
-
-"@patternfly/react-core@npm:^5.4.2":
+"@patternfly/react-core@npm:^5.4.2, @patternfly/react-core@npm:^5.4.8":
   version: 5.4.8
   resolution: "@patternfly/react-core@npm:5.4.8"
   dependencies:
@@ -1494,20 +1477,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-table@npm:^5.4.0":
-  version: 5.4.1
-  resolution: "@patternfly/react-table@npm:5.4.1"
+"@patternfly/react-table@npm:^5.4.8":
+  version: 5.4.8
+  resolution: "@patternfly/react-table@npm:5.4.8"
   dependencies:
-    "@patternfly/react-core": ^5.4.1
-    "@patternfly/react-icons": ^5.4.0
-    "@patternfly/react-styles": ^5.4.0
-    "@patternfly/react-tokens": ^5.4.0
+    "@patternfly/react-core": ^5.4.8
+    "@patternfly/react-icons": ^5.4.2
+    "@patternfly/react-styles": ^5.4.1
+    "@patternfly/react-tokens": ^5.4.1
     lodash: ^4.17.21
-    tslib: ^2.6.3
+    tslib: ^2.7.0
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: 3acc4615a8a823252bbaedce900a2afa88798a32fa59958fe2699e49ad04bec2399dcd0ffea28fc9e575540262a84f5312a109293b29b76d3e3d8cbed7b88a0b
+  checksum: 12c279b68367db9b3db44e01631b1d15c8dced087df1555e8327d82243236c35450e696074856381f9e3f984587a08106c48a6f2e7646abaacb1d751c2c5ab1d
   languageName: node
   linkType: hard
 
@@ -4383,7 +4366,7 @@ __metadata:
     "@patternfly/react-core": ^5.4.2
     "@patternfly/react-icons": ^5.4.0
     "@patternfly/react-styles": ^5.4.0
-    "@patternfly/react-table": ^5.4.0
+    "@patternfly/react-table": ^5.4.8
     "@patternfly/react-topology": ^5.4.0
     "@reduxjs/toolkit": ^1.9.3
     "@testing-library/dom": ^10.4.0
@@ -6755,15 +6738,6 @@ __metadata:
   dependencies:
     tabbable: ^6.2.0
   checksum: 1eee29d18c152ef08849a5cfd6d462a6741ec15f08938a9d87336d47807f07dbfff2e6405b16b5ce96745eb86b60f3dcdd87b63f0ad240e47252254d2c248d40
-  languageName: node
-  linkType: hard
-
-"focus-trap@npm:7.5.4":
-  version: 7.5.4
-  resolution: "focus-trap@npm:7.5.4"
-  dependencies:
-    tabbable: ^6.2.0
-  checksum: 9589ae0c8ad2f0bb0610c23e949571ef956424f1e7f7e1981c0d95ce518ea97b8bdd3d43b68c6113cbbcf35c9d36d521ffc2841610f7d5cc1746e2aa84faf578
   languageName: node
   linkType: hard
 
