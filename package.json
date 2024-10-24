@@ -102,7 +102,7 @@
     "@types/react": "^17.0.69",
     "dayjs": "^1.11.13",
     "humanize-duration": "^3.32.1",
-    "i18next": "^23.16.2",
+    "i18next": "^23.16.3",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-parser": "^9.0.2",
     "js-base64": "3.7.7",
