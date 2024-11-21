@@ -21,7 +21,6 @@ import {
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
