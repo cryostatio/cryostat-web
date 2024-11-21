@@ -43,7 +43,12 @@ export class ReportService {
       headers,
     }).pipe(
       concatMap((resp) => {
+        // 200 indicates that the backend has the report cached and it will return
+        // the json in the response.
         if (resp.ok) {
+          if (resp.status == 202) {
+            this.notifications.info('Report generation in progress', 'Report is being generated');
+          }
           return from(
             resp
               .text()
