@@ -143,14 +143,6 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
     addSubscription(interval(props.period * 1000).subscribe(() => refresh()));
   }, [addSubscription, props.period, refresh]);
 
-  React.useEffect(() => {
-    addSubscription(
-      serviceContext.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess).subscribe(() => {
-        refresh();
-      }),
-    );
-  }, [addSubscription, serviceContext.notificationChannel, refresh]);
-
   const popout = React.useCallback(() => {
     if (chartSrc && dashboardUrl) {
       window.open(chartSrc, '_blank');
