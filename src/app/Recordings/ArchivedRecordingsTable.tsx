@@ -341,10 +341,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       combineLatest([
         propsTarget,
         context.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess),
-      ]).subscribe((event) => {
+      ]).subscribe(() => {
         refreshRecordingList();
-      })
-    )
+      }),
+    );
   }, [addSubscription, context.notificationChannel, propsTarget, refreshRecordingList]);
 
   React.useEffect(() => {
