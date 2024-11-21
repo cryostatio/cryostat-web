@@ -21,6 +21,7 @@ import {
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -47,7 +48,6 @@ import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from '../context';
 import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';
-import { NotificationCategory } from '@app/Shared/Services/api.types';
 
 export interface JFRMetricsChartCardProps extends DashboardCardTypeProps {
   chartKind: string;
@@ -145,10 +145,10 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
 
   React.useEffect(() => {
     addSubscription(
-        serviceContext.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess)
-        .subscribe((event) => {
+      serviceContext.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess).subscribe(() => {
         refresh();
-      }))
+      }),
+    );
   }, [addSubscription, serviceContext.notificationChannel, refresh]);
 
   const popout = React.useCallback(() => {
