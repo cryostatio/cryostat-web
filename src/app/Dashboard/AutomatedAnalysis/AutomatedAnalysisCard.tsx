@@ -44,6 +44,7 @@ import {
   RECORDING_FAILURE_MESSAGE,
   AutomatedAnalysisScore,
   AnalysisResult,
+  NotificationCategory,
 } from '@app/Shared/Services/api.types';
 import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
@@ -460,6 +461,14 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
     },
     [t, startProfilingRecording, generateReport],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ReportSuccess).subscribe(() => {
+        generateReport();
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, generateReport]);
 
   React.useEffect(() => {
     addSubscription(context.target.authRetry().subscribe(generateReport));
