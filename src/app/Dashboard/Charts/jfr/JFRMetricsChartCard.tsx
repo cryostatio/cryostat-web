@@ -47,6 +47,7 @@ import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from '../context';
 import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';
+import { NotificationCategory } from '@app/Shared/Services/api.types';
 
 export interface JFRMetricsChartCardProps extends DashboardCardTypeProps {
   chartKind: string;
@@ -141,6 +142,14 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
     refresh();
     addSubscription(interval(props.period * 1000).subscribe(() => refresh()));
   }, [addSubscription, props.period, refresh]);
+
+  React.useEffect(() => {
+    addSubscription(
+        serviceContext.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess)
+        .subscribe((event) => {
+        refresh();
+      }))
+  }, [addSubscription, serviceContext.notificationChannel, refresh]);
 
   const popout = React.useCallback(() => {
     if (chartSrc && dashboardUrl) {
