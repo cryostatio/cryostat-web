@@ -97,7 +97,7 @@
     "@patternfly/react-styles": "^5.4.1",
     "@patternfly/react-table": "^5.4.8",
     "@patternfly/react-topology": "^5.4.0",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@reduxjs/toolkit": "^2.4.0",
     "@types/lodash": "^4.17.12",
     "@types/react": "^17.0.69",
     "dayjs": "^1.11.13",
