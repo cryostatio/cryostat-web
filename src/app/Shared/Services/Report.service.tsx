@@ -28,6 +28,8 @@ export class ReportService {
     private notifications: NotificationService,
   ) {}
 
+  jobIds = new Array<String>;
+
   reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
     if (!recording.reportUrl) {
       return throwError(() => new Error('No Recording report URL'));
@@ -48,6 +50,7 @@ export class ReportService {
         if (resp.ok) {
           if (resp.status == 202) {
             this.notifications.info('Report generation in progress', 'Report is being generated');
+            resp.text().then((value) => this.jobIds.push(value));
           }
           return from(
             resp
