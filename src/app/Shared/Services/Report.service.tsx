@@ -28,7 +28,7 @@ export class ReportService {
     private notifications: NotificationService,
   ) {}
 
-  jobIds = new Array<String>;
+  jobIds = new Array<String>();
 
   reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
     if (!recording.reportUrl) {
