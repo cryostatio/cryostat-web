@@ -930,7 +930,8 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ReportSuccess).subscribe(() => {
+      context.notificationChannel.messages(NotificationCategory.ReportSuccess).subscribe((notification) => {
+        if (context.reports.jobIds.includes(notification.message.jobId))
         handleLoadAnalysis();
       }),
     );
