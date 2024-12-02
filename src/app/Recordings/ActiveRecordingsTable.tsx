@@ -931,11 +931,10 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ReportSuccess).subscribe((notification) => {
-        if (context.reports.jobIds.includes(notification.message.jobId))
-        handleLoadAnalysis();
+        if (context.reports.jobIds.includes(notification.message.jobId)) handleLoadAnalysis();
       }),
     );
-  }, [addSubscription, context.notificationChannel, handleLoadAnalysis]);
+  }, [addSubscription, context.notificationChannel, context.reports.jobIds, handleLoadAnalysis]);
 
   const recordingOptions = (recording: ActiveRecording): KeyValue[] => {
     const options: KeyValue[] = [];
