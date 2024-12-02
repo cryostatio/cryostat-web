@@ -177,6 +177,7 @@ jest
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of()) // renders the recording table correctly
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -186,13 +187,16 @@ jest
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // updates the recording labels after receiving a notification
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockLabelsNotification))
 
   .mockReturnValueOnce(of()) // removes a recording after receiving a notification
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteNotification))
 
