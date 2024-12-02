@@ -478,6 +478,96 @@ exports[`<NotificationControl/> renders correctly 1`] = `
             data-ouia-component-id="OUIA-Generated-Switch-8"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
+            htmlFor="ArchiveRecordingSuccess"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ArchiveRecordingSuccess-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="ArchiveRecordingSuccess"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            >
+              <div
+                aria-hidden="true"
+                className="pf-v5-c-switch__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  />
+                </svg>
+              </div>
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-9"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="ArchiveRecordingFailure"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ArchiveRecordingFailure-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="ArchiveRecordingFailure"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            >
+              <div
+                aria-hidden="true"
+                className="pf-v5-c-switch__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  />
+                </svg>
+              </div>
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-10"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
             htmlFor="SnapshotCreated"
           >
             <input
@@ -514,7 +604,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-9"
+            data-ouia-component-id="OUIA-Generated-Switch-11"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="SnapshotDeleted"
@@ -553,7 +643,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-10"
+            data-ouia-component-id="OUIA-Generated-Switch-12"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ArchivedRecordingCreated"
@@ -592,7 +682,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-11"
+            data-ouia-component-id="OUIA-Generated-Switch-13"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ArchivedRecordingDeleted"
@@ -631,7 +721,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-12"
+            data-ouia-component-id="OUIA-Generated-Switch-14"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TemplateUploaded"
@@ -670,7 +760,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-13"
+            data-ouia-component-id="OUIA-Generated-Switch-15"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TemplateDeleted"
@@ -709,7 +799,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-14"
+            data-ouia-component-id="OUIA-Generated-Switch-16"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbeTemplateUploaded"
@@ -748,7 +838,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-15"
+            data-ouia-component-id="OUIA-Generated-Switch-17"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbeTemplateDeleted"
@@ -787,7 +877,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-16"
+            data-ouia-component-id="OUIA-Generated-Switch-18"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbeTemplateApplied"
@@ -826,7 +916,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-17"
+            data-ouia-component-id="OUIA-Generated-Switch-19"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ProbesRemoved"
@@ -865,7 +955,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-18"
+            data-ouia-component-id="OUIA-Generated-Switch-20"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RuleCreated"
@@ -904,7 +994,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-19"
+            data-ouia-component-id="OUIA-Generated-Switch-21"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RuleUpdated"
@@ -943,7 +1033,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-20"
+            data-ouia-component-id="OUIA-Generated-Switch-22"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RuleDeleted"
@@ -982,7 +1072,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-21"
+            data-ouia-component-id="OUIA-Generated-Switch-23"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="RecordingMetadataUpdated"
@@ -1021,7 +1111,97 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-22"
+            data-ouia-component-id="OUIA-Generated-Switch-24"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="GrafanaUploadSuccess"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="GrafanaUploadSuccess-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="GrafanaUploadSuccess"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            >
+              <div
+                aria-hidden="true"
+                className="pf-v5-c-switch__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  />
+                </svg>
+              </div>
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-25"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="GrafanaUploadFailure"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="GrafanaUploadFailure-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="GrafanaUploadFailure"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            >
+              <div
+                aria-hidden="true"
+                className="pf-v5-c-switch__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  />
+                </svg>
+              </div>
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-26"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="GrafanaConfiguration"
@@ -1060,7 +1240,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-23"
+            data-ouia-component-id="OUIA-Generated-Switch-27"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="LayoutTemplateCreated"
@@ -1099,7 +1279,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-24"
+            data-ouia-component-id="OUIA-Generated-Switch-28"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TargetCredentialsStored"
@@ -1138,7 +1318,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-25"
+            data-ouia-component-id="OUIA-Generated-Switch-29"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="TargetCredentialsDeleted"
@@ -1177,7 +1357,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-26"
+            data-ouia-component-id="OUIA-Generated-Switch-30"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsStored"
@@ -1216,7 +1396,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-27"
+            data-ouia-component-id="OUIA-Generated-Switch-31"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsDeleted"
@@ -1247,6 +1427,96 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               id="CredentialsDeleted-off"
             >
               Credentials deleted
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-32"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="ReportSuccess"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ReportSuccess-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="ReportSuccess"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            >
+              <div
+                aria-hidden="true"
+                className="pf-v5-c-switch__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  />
+                </svg>
+              </div>
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-33"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="ReportFailure"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ReportFailure-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="ReportFailure"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            >
+              <div
+                aria-hidden="true"
+                className="pf-v5-c-switch__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v5-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                  />
+                </svg>
+              </div>
             </span>
           </label>
         </div>

@@ -115,6 +115,10 @@ export class ReportService {
     };
   }
 
+  getJobIds(): Array<String> {
+    return this.jobIds;
+  }
+
   delete(recording: Recording): void {
     sessionStorage.removeItem(this.key(recording));
   }
