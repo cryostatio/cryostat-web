@@ -108,8 +108,7 @@ jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of(true));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
-jest.spyOn(defaultServices.reports, 'getJobIds')
-.mockReturnValue(mockJobIdList);
+jest.spyOn(defaultServices.reports, 'getJobIds').mockReturnValue(mockJobIdList);
 
 jest.spyOn(defaultServices.reports, 'delete').mockReturnValue(void 0);
 

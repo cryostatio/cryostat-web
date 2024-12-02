@@ -215,8 +215,7 @@ jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 jest
   .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')
   .mockReturnValue(defaultAutomatedAnalysisRecordingConfig);
-  jest.spyOn(defaultServices.reports, 'getJobIds')
-  .mockReturnValue(mockJobIdList);
+jest.spyOn(defaultServices.reports, 'getJobIds').mockReturnValue(mockJobIdList);
 
 describe('<AutomatedAnalysisCard />', () => {
   let preloadedState: RootState;
@@ -244,13 +243,15 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders report generation error view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of());
-    jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValueOnce(of())
-    .mockReturnValueOnce(of())
-    .mockReturnValueOnce(of())
-    .mockReturnValueOnce(of())
-    .mockReturnValueOnce(of())
-    .mockReturnValueOnce(of())
-    .mockReturnValueOnce(of());
+    jest
+      .spyOn(defaultServices.notificationChannel, 'messages')
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of());
     render({
       routerConfigs: {
         routes: [
