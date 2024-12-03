@@ -44,7 +44,6 @@ import {
   RECORDING_FAILURE_MESSAGE,
   AutomatedAnalysisScore,
   AnalysisResult,
-  NotificationCategory,
 } from '@app/Shared/Services/api.types';
 import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
@@ -464,11 +463,11 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ReportSuccess).subscribe((notification) => {
-        if (context.reports.getJobIds().includes(notification.message.jobId)) generateReport();
+      context.reports.getJobIds().subscribe(() => {
+        generateReport();
       }),
     );
-  }, [addSubscription, context.notificationChannel, context.reports, generateReport]);
+  }, [addSubscription, context.notificationChannel, context.reports, context.reports.getJobIds, generateReport]);
 
   React.useEffect(() => {
     addSubscription(context.target.authRetry().subscribe(generateReport));

@@ -207,15 +207,13 @@ const mockEmptyArchivedRecordingsResponse = {
   },
 };
 
-const mockJobIdList = new Array<String>();
-
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 jest
   .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')
   .mockReturnValue(defaultAutomatedAnalysisRecordingConfig);
-jest.spyOn(defaultServices.reports, 'getJobIds').mockReturnValue(mockJobIdList);
+jest.spyOn(defaultServices.reports, 'getJobIds').mockReturnValue(of());
 
 describe('<AutomatedAnalysisCard />', () => {
   let preloadedState: RootState;

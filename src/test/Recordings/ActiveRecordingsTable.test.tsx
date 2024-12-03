@@ -86,7 +86,6 @@ const mockStopNotification = {
   message: { target: mockConnectUrl, recording: mockRecording, jvmId: mockJvmId },
 } as NotificationMessage;
 const mockDeleteNotification = mockStopNotification;
-const mockJobIdList = new Array<String>();
 
 jest.mock('@app/Recordings/RecordingFilters', () => {
   // Already tested separately
@@ -108,7 +107,7 @@ jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of(true));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
-jest.spyOn(defaultServices.reports, 'getJobIds').mockReturnValue(mockJobIdList);
+jest.spyOn(defaultServices.reports, 'getJobIds').mockReturnValue(of());
 
 jest.spyOn(defaultServices.reports, 'delete').mockReturnValue(void 0);
 
@@ -128,10 +127,8 @@ jest
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockCreateNotification)) // adds a recording table after receiving a notification
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -143,11 +140,9 @@ jest
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockLabelsNotification))
 
   .mockReturnValueOnce(of()) // stops a recording after receiving a notification
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -155,7 +150,6 @@ jest
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // removes a recording after receiving a notification
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteNotification))
   .mockReturnValue(of()); // all other tests
