@@ -17,18 +17,25 @@ import { Base64 } from 'js-base64';
 import { Observable, from, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
-import { Recording, CachedReportValue, GenerationError, AnalysisResult } from './api.types';
+import { Recording, CachedReportValue, GenerationError, AnalysisResult, NotificationCategory } from './api.types';
 import { isActiveRecording, isQuotaExceededError, isGenerationError } from './api.utils';
 import type { LoginService } from './Login.service';
+import { NotificationChannel } from './NotificationChannel.service';
 import type { NotificationService } from './Notifications.service';
 
 export class ReportService {
   constructor(
     private login: LoginService,
     private notifications: NotificationService,
-  ) {}
+    private channel: NotificationChannel,
+  ) {
+    this.channel = channel;
+    this.channel.messages(NotificationCategory.ReportSuccess).subscribe((v) => {
+      this.trackJobId(v.message.jobId);
+    });
+  }
 
-  jobIds = new Array<String>();
+  private readonly jobIds = new Array<String>();
 
   reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
     if (!recording.reportUrl) {
@@ -115,8 +122,12 @@ export class ReportService {
     };
   }
 
-  getJobIds(): Array<String> {
-    return this.jobIds;
+  getJobIds(): Observable<String> {
+    return from(this.jobIds);
+  }
+
+  trackJobId(jobId: String): void {
+    this.jobIds.push(jobId);
   }
 
   delete(recording: Recording): void {
