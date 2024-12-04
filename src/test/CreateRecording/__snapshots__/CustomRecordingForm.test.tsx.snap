@@ -383,7 +383,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           <optgroup
             className=""
             disabled={false}
-            label="Custom Templates"
+            label="Custom templates"
           >
             <option
               className=""
@@ -391,6 +391,19 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               value="someEventTemplate,CUSTOM"
             >
               someEventTemplate
+            </option>
+          </optgroup>
+          <optgroup
+            className=""
+            disabled={false}
+            label="Preset templates"
+          >
+            <option
+              className=""
+              disabled={true}
+              value=""
+            >
+              No templates
             </option>
           </optgroup>
         </select>
@@ -442,7 +455,6 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
   >
     <button
       aria-controls="metadata-options"
-      aria-expanded={false}
       className="pf-v5-c-expandable-section__toggle"
       id="metadata-option-toggle"
       onClick={[Function]}
@@ -624,7 +636,6 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
   >
     <button
       aria-controls="advanced-options"
-      aria-expanded={false}
       className="pf-v5-c-expandable-section__toggle"
       id="advanced-option-toggle"
       onClick={[Function]}
