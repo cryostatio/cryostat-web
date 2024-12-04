@@ -44,6 +44,13 @@ const mockCustomEventTemplate: EventTemplate = {
 
 const mockAnotherTemplate = { ...mockCustomEventTemplate, name: 'anotherEventTemplate' };
 
+const mockPresetEventTemplate: EventTemplate = {
+  name: 'presetEventTemplate',
+  description: 'Some Description',
+  provider: 'Cryostat',
+  type: 'PRESET',
+};
+
 const mockCreateTemplateNotification = {
   meta: {
     category: 'TemplateCreated',
@@ -73,7 +80,7 @@ jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValue(of(tru
 jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadTemplate').mockReturnValue(void 0);
 
-jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
+jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockCustomEventTemplate, mockPresetEventTemplate]));
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
