@@ -38,7 +38,7 @@ const settings = new SettingsService();
 const login = new LoginService(settings);
 const api = new ApiService(target, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
-const reports = new ReportService(login, NotificationsInstance, notificationChannel);
+const reports = new ReportService(NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 
 const defaultServices: Services = {

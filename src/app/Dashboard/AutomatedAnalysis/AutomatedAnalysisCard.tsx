@@ -463,11 +463,11 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
 
   React.useEffect(() => {
     addSubscription(
-      context.reports.getJobIds().subscribe(() => {
+      context.reports.onJobCompletion().subscribe(() => {
         generateReport();
       }),
     );
-  }, [addSubscription, context.notificationChannel, context.reports, context.reports.getJobIds, generateReport]);
+  }, [addSubscription, context.notificationChannel, context.reports, context.reports.onJobCompletion, generateReport]);
 
   React.useEffect(() => {
     addSubscription(context.target.authRetry().subscribe(generateReport));
