@@ -221,8 +221,8 @@ class FakeTargetService extends TargetService {
 }
 
 class FakeReportService extends ReportService {
-  constructor(notifications: NotificationService, login: LoginService, channel: NotificationChannel) {
-    super(login, notifications, channel);
+  constructor(notifications: NotificationService, channel: NotificationChannel) {
+    super(notifications, channel);
   }
 
   reportJson(_recording: Recording, _connectUrl: string): Observable<AnalysisResult[]> {
