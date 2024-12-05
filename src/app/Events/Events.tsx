@@ -25,24 +25,48 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { concatMap, filter } from 'rxjs';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 
 export interface EventsProps {}
 
 export const Events: React.FC<EventsProps> = ({ ...props }) => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [targetSelected, setTargetSelected] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTargetSelected(!!t)));
+  }, [context, context.target, setTargetSelected]);
+
   return (
-    <TargetView {...props} pageTitle="Events">
-      <Card isFullHeight>
-        <CardBody isFilled>
-          <EventTabs />
-        </CardBody>
-      </Card>
-      <Card isFullHeight>
-        <CardBody isFilled>
-          <AgentTabs />
-        </CardBody>
-      </Card>
-      <></>
-    </TargetView>
+    <>
+      <TargetContextSelector />
+      <BreadcrumbPage {...props} pageTitle="Events">
+        {targetSelected ? (
+          <>
+            <Card>
+              <CardBody isFilled>
+                <EventTabs targetSelected={targetSelected} />
+              </CardBody>
+            </Card>
+            <Card isFullHeight>
+              <CardBody isFilled>
+                <AgentTabs />
+              </CardBody>
+            </Card>
+          </>
+        ) : (
+          <>
+            <Card>
+              <CardBody isFilled>
+                <EventTabs targetSelected={targetSelected} />
+              </CardBody>
+            </Card>
+          </>
+        )}
+      </BreadcrumbPage>
+    </>
   );
 };
 
@@ -51,7 +75,11 @@ enum EventTab {
   EVENT_TYPE = 'event-type',
 }
 
-export const EventTabs: React.FC = () => {
+export interface EventTabsProps {
+  targetSelected: boolean;
+}
+
+export const EventTabs: React.FC<EventTabsProps> = (props: EventTabsProps) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -70,9 +98,11 @@ export const EventTabs: React.FC = () => {
       <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
         <EventTemplates />
       </Tab>
-      <Tab eventKey={EventTab.EVENT_TYPE} title="Event types">
-        <EventTypes />
-      </Tab>
+      {props?.targetSelected && (
+        <Tab eventKey={EventTab.EVENT_TYPE} title="Event types">
+          <EventTypes />
+        </Tab>
+      )}
     </Tabs>
   );
 };
