@@ -86,11 +86,9 @@ export const EventTabs: React.FC<TabsProps> = ({ targetSelected }) => {
       <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
         <EventTemplates />
       </Tab>
-      {targetSelected && (
-        <Tab eventKey={EventTab.EVENT_TYPE} title="Event types">
-          <EventTypes />
-        </Tab>
-      )}
+      <Tab isAriaDisabled={!targetSelected} eventKey={EventTab.EVENT_TYPE} title="Event types">
+        <EventTypes />
+      </Tab>
     </Tabs>
   );
 };
@@ -136,20 +134,18 @@ export const AgentTabs: React.FC<TabsProps> = ({ targetSelected }) => {
       <Tab eventKey={AgentTab.AGENT_TEMPLATE} title="Probe Templates">
         <AgentProbeTemplates agentDetected={agentDetected} />
       </Tab>
-      {targetSelected && (
-        <Tab
-          eventKey={AgentTab.AGENT_PROBE}
-          title="Live Configuration"
-          isAriaDisabled={!agentDetected}
-          tooltip={
-            agentDetected ? undefined : (
-              <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
-            )
-          }
-        >
-          <AgentLiveProbes />
-        </Tab>
-      )}
+      <Tab
+        eventKey={AgentTab.AGENT_PROBE}
+        title="Live Configuration"
+        isAriaDisabled={!targetSelected || !agentDetected}
+        tooltip={
+          agentDetected ? undefined : (
+            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
+          )
+        }
+      >
+        <AgentLiveProbes />
+      </Tab>
     </Tabs>
   );
 };
