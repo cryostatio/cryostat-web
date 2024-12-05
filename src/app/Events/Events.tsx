@@ -16,7 +16,6 @@
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, Tooltip } from '@patternfly/react-core';
@@ -31,26 +30,18 @@ import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 export interface EventsProps {}
 
 export const Events: React.FC<EventsProps> = ({ ...props }) => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const [targetSelected, setTargetSelected] = React.useState(false);
-
-  React.useEffect(() => {
-    addSubscription(context.target.target().subscribe((t) => setTargetSelected(!!t)));
-  }, [context, context.target, setTargetSelected]);
-
   return (
     <>
       <TargetContextSelector />
       <BreadcrumbPage {...props} pageTitle="Events">
-        <Card>
+        <Card isFullHeight>
           <CardBody isFilled>
-            <EventTabs targetSelected={targetSelected} />
+            <EventTabs />
           </CardBody>
         </Card>
         <Card isFullHeight>
           <CardBody isFilled>
-            <AgentTabs targetSelected={targetSelected} />
+            <AgentTabs />
           </CardBody>
         </Card>
       </BreadcrumbPage>
@@ -63,13 +54,18 @@ enum EventTab {
   EVENT_TYPE = 'event-type',
 }
 
-export interface TabsProps {
-  targetSelected: boolean;
-}
+export const EventTabs: React.FC = () => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
-export const EventTabs: React.FC<TabsProps> = ({ targetSelected }) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
+
+  const [targetSelected, setTargetSelected] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTargetSelected(!!t)));
+  }, [addSubscription, context, context.target]);
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'eventTab', Object.values(EventTab), EventTab.EVENT_TEMPLATE);
@@ -98,12 +94,18 @@ enum AgentTab {
   AGENT_PROBE = 'agent-probe',
 }
 
-export const AgentTabs: React.FC<TabsProps> = ({ targetSelected }) => {
+export const AgentTabs: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
+
+  const [targetSelected, setTargetSelected] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTargetSelected(!!t)));
+  }, [addSubscription, context, context.target]);
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'agentTab', Object.values(AgentTab), AgentTab.AGENT_TEMPLATE);
