@@ -43,28 +43,16 @@ export const Events: React.FC<EventsProps> = ({ ...props }) => {
     <>
       <TargetContextSelector />
       <BreadcrumbPage {...props} pageTitle="Events">
-        {targetSelected ? (
-          <>
-            <Card>
-              <CardBody isFilled>
-                <EventTabs targetSelected={targetSelected} />
-              </CardBody>
-            </Card>
-            <Card isFullHeight>
-              <CardBody isFilled>
-                <AgentTabs />
-              </CardBody>
-            </Card>
-          </>
-        ) : (
-          <>
-            <Card>
-              <CardBody isFilled>
-                <EventTabs targetSelected={targetSelected} />
-              </CardBody>
-            </Card>
-          </>
-        )}
+        <Card>
+          <CardBody isFilled>
+            <EventTabs targetSelected={targetSelected} />
+          </CardBody>
+        </Card>
+        <Card isFullHeight>
+          <CardBody isFilled>
+            <AgentTabs targetSelected={targetSelected} />
+          </CardBody>
+        </Card>
       </BreadcrumbPage>
     </>
   );
@@ -75,11 +63,11 @@ enum EventTab {
   EVENT_TYPE = 'event-type',
 }
 
-export interface EventTabsProps {
+export interface TabsProps {
   targetSelected: boolean;
 }
 
-export const EventTabs: React.FC<EventTabsProps> = (props: EventTabsProps) => {
+export const EventTabs: React.FC<TabsProps> = ({ targetSelected }) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -98,7 +86,7 @@ export const EventTabs: React.FC<EventTabsProps> = (props: EventTabsProps) => {
       <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
         <EventTemplates />
       </Tab>
-      {props?.targetSelected && (
+      {targetSelected && (
         <Tab eventKey={EventTab.EVENT_TYPE} title="Event types">
           <EventTypes />
         </Tab>
@@ -112,7 +100,7 @@ enum AgentTab {
   AGENT_PROBE = 'agent-probe',
 }
 
-export const AgentTabs: React.FC = () => {
+export const AgentTabs: React.FC<TabsProps> = ({ targetSelected }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -148,18 +136,20 @@ export const AgentTabs: React.FC = () => {
       <Tab eventKey={AgentTab.AGENT_TEMPLATE} title="Probe Templates">
         <AgentProbeTemplates agentDetected={agentDetected} />
       </Tab>
-      <Tab
-        eventKey={AgentTab.AGENT_PROBE}
-        title="Live Configuration"
-        isAriaDisabled={!agentDetected}
-        tooltip={
-          agentDetected ? undefined : (
-            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
-          )
-        }
-      >
-        <AgentLiveProbes />
-      </Tab>
+      {targetSelected && (
+        <Tab
+          eventKey={AgentTab.AGENT_PROBE}
+          title="Live Configuration"
+          isAriaDisabled={!agentDetected}
+          tooltip={
+            agentDetected ? undefined : (
+              <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
+            )
+          }
+        >
+          <AgentLiveProbes />
+        </Tab>
+      )}
     </Tabs>
   );
 };
