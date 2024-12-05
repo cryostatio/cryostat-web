@@ -285,7 +285,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
                     : [];
                 }),
               ),
-              of([]),
+              context.api.getEventTemplates().pipe(catchError((_) => of<EventTemplate[]>([]))),
             ),
           ),
         )

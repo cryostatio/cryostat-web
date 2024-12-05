@@ -43,6 +43,12 @@ const mockEventTemplate: EventTemplate = {
   provider: 'some provider',
   description: 'some description',
 };
+const mockCustomEventTemplate: EventTemplate = {
+  name: 'CustomTemplate',
+  type: 'CUSTOM',
+  provider: 'some provider',
+  description: 'some description',
+};
 
 const mockRule: Rule = {
   name: 'mockRule',
@@ -64,6 +70,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
+jest.spyOn(defaultServices.api, 'getEventTemplates').mockReturnValue(of([mockCustomEventTemplate]));
 jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockEventTemplate]));
 
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));

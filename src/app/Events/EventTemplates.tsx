@@ -62,7 +62,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
+import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
   {
@@ -165,9 +165,10 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
       context.target
         .target()
         .pipe(
-          filter((target) => !!target),
           first(),
-          concatMap((target: Target) => context.api.getTargetEventTemplates(target)),
+          concatMap((target: Target) =>
+            target ? context.api.getTargetEventTemplates(target) : context.api.getEventTemplates(),
+          ),
         )
         .subscribe({
           next: handleTemplates,
