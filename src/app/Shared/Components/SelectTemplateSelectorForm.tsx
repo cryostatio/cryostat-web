@@ -58,9 +58,18 @@ export const SelectTemplateSelectorForm: React.FC<SelectTemplateSelectorFormProp
             })),
         },
         {
-          groupLabel: 'Custom Templates',
+          groupLabel: 'Custom templates',
           options: templates
             .filter((t) => t.type === 'CUSTOM')
+            .map((t) => ({
+              value: `${t.name},${t.type}`,
+              label: t.name,
+            })),
+        },
+        {
+          groupLabel: 'Preset templates',
+          options: templates
+            .filter((t) => t.type === 'PRESET')
             .map((t) => ({
               value: `${t.name},${t.type}`,
               label: t.name,

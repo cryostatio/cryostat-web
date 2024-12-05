@@ -383,7 +383,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           <optgroup
             className=""
             disabled={false}
-            label="Custom Templates"
+            label="Custom templates"
           >
             <option
               className=""
@@ -391,6 +391,19 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               value="someEventTemplate,CUSTOM"
             >
               someEventTemplate
+            </option>
+          </optgroup>
+          <optgroup
+            className=""
+            disabled={false}
+            label="Preset templates"
+          >
+            <option
+              className=""
+              disabled={true}
+              value=""
+            >
+              No templates
             </option>
           </optgroup>
         </select>
