@@ -874,7 +874,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
-  const addSubscription = useSubscriptions();
   const { t } = useTranslation();
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
@@ -927,14 +926,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     }
     handleLoadAnalysis();
   }, [isExpanded, handleLoadAnalysis]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.reports.onJobCompletion().subscribe(() => {
-        handleLoadAnalysis();
-      }),
-    );
-  }, [addSubscription, context.reports, context.reports.onJobCompletion, handleLoadAnalysis]);
 
   const recordingOptions = (recording: ActiveRecording): KeyValue[] => {
     const options: KeyValue[] = [];

@@ -16,7 +16,7 @@
 import { Base64 } from 'js-base64';
 import { Observable, Subject, from, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { concatMap, first, tap } from 'rxjs/operators';
+import { concatMap, filter, first, tap } from 'rxjs/operators';
 import { Recording, CachedReportValue, GenerationError, AnalysisResult, NotificationCategory } from './api.types';
 import { isActiveRecording, isQuotaExceededError, isGenerationError } from './api.utils';
 import { NotificationChannel } from './NotificationChannel.service';
@@ -28,14 +28,14 @@ export class ReportService {
     channel: NotificationChannel,
   ) {
     channel.messages(NotificationCategory.ReportSuccess).subscribe((v) => {
-      if (this.jobIds.delete(v.message.jobId)) {
-        this._jobCompletion.next();
+      if (this.jobIds.has(v.message.jobId)) {
+        this._jobCompletion.next(v.message.jobId);
       }
     });
   }
 
-  private readonly jobIds: Set<string> = new Set();
-  private readonly _jobCompletion: Subject<void> = new Subject();
+  private readonly jobIds: Map<string, string> = new Map();
+  private readonly _jobCompletion: Subject<string> = new Subject();
 
   reportJson(recording: Recording, connectUrl: string): Observable<AnalysisResult[]> {
     if (!recording.reportUrl) {
@@ -55,15 +55,45 @@ export class ReportService {
         // 200 indicates that the backend has the report cached and it will return
         // the json in the response.
         if (resp.ok) {
+          // 202 indicates that the backend does not have the report cached and will return an
+          // async job ID in the response immediately, then emit a notification with the same
+          // job ID later to inform us that the report is now ready and can be retrieved by
+          // sending a follow-up GET to the Location header value
           if (resp.status == 202) {
-            resp.text().then((value) => this.jobIds.add(value));
-            const ge: GenerationError = {
-              name: `Report Generation in progress`,
-              message: `Report is being generated`,
-              messageDetail: from(resp.text()),
-              status: resp.status,
-            };
-            throw ge;
+            let subj = new Subject<AnalysisResult[]>();
+            resp.text().then((jobId) => {
+              this.jobIds.set(jobId, resp.headers.get('Location') || recording.reportUrl);
+              this._jobCompletion
+                .asObservable()
+                .pipe(filter((id) => id === jobId))
+                .subscribe((id) => {
+                  const jobUrl = this.jobIds.get(id);
+                  if (!jobUrl) throw new Error(`Unknown job ID: ${id}`);
+                  this.jobIds.delete(id);
+                  fromFetch(jobUrl, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers,
+                  }).subscribe((resp) => {
+                    if (resp.ok && resp.status === 200) {
+                      resp
+                        .text()
+                        .then(JSON.parse)
+                        .then((obj) => subj.next(Object.values(obj) as AnalysisResult[]));
+                    } else {
+                      const ge: GenerationError = {
+                        name: `Report Failure (${recording.name})`,
+                        message: resp.statusText,
+                        messageDetail: from(resp.text()),
+                        status: resp.status,
+                      };
+                      subj.error(ge);
+                    }
+                  });
+                });
+            });
+            return subj.asObservable();
           }
           return from(
             resp
@@ -128,10 +158,6 @@ export class ReportService {
       report: [],
       timestamp: 0,
     };
-  }
-
-  onJobCompletion(): Observable<void> {
-    return this._jobCompletion.asObservable();
   }
 
   delete(recording: Recording): void {
