@@ -592,7 +592,7 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('template', file);
-    return this.sendLegacyRequest('v4', 'templates', 'Template Upload Failed', {
+    return this.sendLegacyRequest('v4', 'event_templates', 'Template Upload Failed', {
       body: body,
       method: 'POST',
       headers: {},
