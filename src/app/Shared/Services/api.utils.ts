@@ -424,4 +424,58 @@ export const messageKeys = new Map([
       body: (evt) => `Credentials deleted for: ${evt.message.matchExpression}`,
     } as NotificationMessageMapper,
   ],
+  [
+    NotificationCategory.ReportSuccess,
+    {
+      variant: AlertVariant.info,
+      title: 'Report Success',
+      body: (evt) => `Report generated successfully for job: ${evt.message.jobId}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ReportFail,
+    {
+      variant: AlertVariant.warning,
+      title: 'Report Generation Failed',
+      body: (evt) => `Report generation failed for job: ${evt.message.jobId}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.GrafanaUploadSuccess,
+    {
+      variant: AlertVariant.success,
+      title: 'Grafana Upload Success',
+      body: (evt) => `Recording successfully uploaded to Grafana for job: ${evt.message.jobId}`,
+      hidden: false,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.GrafanaUploadFail,
+    {
+      variant: AlertVariant.warning,
+      title: 'Grafana Upload Failed',
+      body: (evt) => `Grafana upload failed for job: ${evt.message.jobId}`,
+      hidden: false,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ArchiveRecordingSuccess,
+    {
+      variant: AlertVariant.warning,
+      title: 'Recording Archive Success',
+      body: (evt) => `Recording: ${evt.message.recording} successfully archived.`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ArchiveRecordingFail,
+    {
+      variant: AlertVariant.warning,
+      title: 'Recording Archive Failed',
+      body: (evt) => `Grafana upload failed for job: ${evt.message.jobId}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
 ]);
