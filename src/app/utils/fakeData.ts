@@ -388,11 +388,7 @@ class FakeApiService extends ApiService {
 
 const target = new FakeTargetService();
 const api = new FakeApiService(target, NotificationsInstance, defaultServices.login);
-const reports = new FakeReportService(
-  NotificationsInstance,
-  defaultServices.login,
-  defaultServices.notificationChannel,
-);
+const reports = new FakeReportService(NotificationsInstance, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 
 export const fakeServices: Services = {
