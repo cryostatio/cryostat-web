@@ -56,8 +56,14 @@ export class ReportService {
         // the json in the response.
         if (resp.ok) {
           if (resp.status == 202) {
-            this.notifications.info('Report generation in progress', 'Report is being generated');
             resp.text().then((value) => this.jobIds.add(value));
+            const ge: GenerationError = {
+              name: `Report Generation in progress`,
+              message: `Report is being generated`,
+              messageDetail: from(resp.text()),
+              status: resp.status,
+            };
+            throw ge;
           }
           return from(
             resp
@@ -99,6 +105,8 @@ export class ReportService {
               this.notifications.warning(`Report generation failure: ${detail}`);
               this.deleteCachedAnalysisReport(connectUrl);
             });
+          } else if (isGenerationError(err) && err.status == 202) {
+            this.notifications.info('Report generation in progress', 'Report is being generated');
           } else {
             this.notifications.danger(err.name, err.message);
           }
