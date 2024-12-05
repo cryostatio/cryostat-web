@@ -213,7 +213,6 @@ jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 jest
   .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')
   .mockReturnValue(defaultAutomatedAnalysisRecordingConfig);
-jest.spyOn(defaultServices.reports, 'onJobCompletion').mockReturnValue(of());
 
 describe('<AutomatedAnalysisCard />', () => {
   let preloadedState: RootState;
