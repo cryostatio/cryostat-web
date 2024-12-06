@@ -445,7 +445,7 @@ export class ApiService {
     );
   }
 
-  uploadActiveRecordingToGrafana(remoteId: number): Observable<String> {
+  uploadActiveRecordingToGrafana(remoteId: number): Observable<string> {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
@@ -463,7 +463,7 @@ export class ApiService {
   uploadArchivedRecordingToGrafana(
     sourceTarget: Observable<Target | undefined>,
     recordingName: string,
-  ): Observable<String> {
+  ): Observable<string> {
     return sourceTarget.pipe(
       concatMap((target) =>
         this.sendRequest('v4', `grafana/${window.btoa((target!.jvmId ?? 'uploads') + '/' + recordingName)}`, {
@@ -478,7 +478,7 @@ export class ApiService {
   }
 
   // from file system path functions
-  uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<String> {
+  uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<string> {
     return this.sendRequest('v4', `grafana/${window.btoa((jvmId ?? 'uploads') + '/' + recordingName)}`, {
       method: 'POST',
     }).pipe(
