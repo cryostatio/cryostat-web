@@ -308,7 +308,7 @@ class FakeApiService extends ApiService {
     return of(true);
   }
 
-  uploadActiveRecordingToGrafana(_remoteId: number): Observable<String> {
+  uploadActiveRecordingToGrafana(_remoteId: number): Observable<string> {
     return of();
   }
 
