@@ -478,11 +478,11 @@ export class ApiService {
   }
 
   // from file system path functions
-  uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<boolean> {
+  uploadArchivedRecordingToGrafanaFromPath(jvmId: string, recordingName: string): Observable<String> {
     return this.sendRequest('v4', `grafana/${window.btoa((jvmId ?? 'uploads') + '/' + recordingName)}`, {
       method: 'POST',
     }).pipe(
-      map((resp) => resp.ok),
+      concatMap((resp) => resp.text()),
       first(),
     );
   }

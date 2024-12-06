@@ -308,8 +308,8 @@ class FakeApiService extends ApiService {
     return of(true);
   }
 
-  uploadActiveRecordingToGrafana(_remoteId: number): Observable<boolean> {
-    return of(true);
+  uploadActiveRecordingToGrafana(_remoteId: number): Observable<String> {
+    return of();
   }
 
   grafanaDashboardUrl(): Observable<string> {
