@@ -445,14 +445,14 @@ export class ApiService {
     );
   }
 
-  uploadActiveRecordingToGrafana(remoteId: number): Observable<boolean> {
+  uploadActiveRecordingToGrafana(remoteId: number): Observable<String> {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
         this.sendRequest('v4', `targets/${target!.id}/recordings/${remoteId}/upload`, {
           method: 'POST',
         }).pipe(
-          map((resp) => resp.ok),
+          concatMap((resp) => resp.text()),
           first(),
         ),
       ),
@@ -463,13 +463,13 @@ export class ApiService {
   uploadArchivedRecordingToGrafana(
     sourceTarget: Observable<Target | undefined>,
     recordingName: string,
-  ): Observable<boolean> {
+  ): Observable<String> {
     return sourceTarget.pipe(
       concatMap((target) =>
         this.sendRequest('v4', `grafana/${window.btoa((target!.jvmId ?? 'uploads') + '/' + recordingName)}`, {
           method: 'POST',
         }).pipe(
-          map((resp) => resp.ok),
+          concatMap((resp) => resp.text()),
           first(),
         ),
       ),
