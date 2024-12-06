@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Recording, Target } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -59,20 +59,17 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
 
   const grafanaUpload = React.useCallback(() => {
     notifications.info('Upload Started', `Recording "${recording.name}" uploading...`);
+    uploadFn();
     addSubscription(
-      uploadFn()
-        .pipe(first())
-        .subscribe((success) => {
-          if (success) {
-            notifications.success('Upload Success', `Recording "${recording.name}" uploaded`);
-            context.api
-              .grafanaDashboardUrl()
-              .pipe(first())
-              .subscribe((url) => window.open(url, '_blank'));
-          }
-        }),
+      context.notificationChannel.messages(NotificationCategory.GrafanaUploadSuccess).subscribe(() => {
+        notifications.success('Upload Success', `Recording "${recording.name}" uploaded`);
+        context.api
+          .grafanaDashboardUrl()
+          .pipe(first())
+          .subscribe((url) => window.open(url, '_blank'));
+      }),
     );
-  }, [addSubscription, notifications, context.api, recording, uploadFn]);
+  }, [addSubscription, notifications, context.api, context.notificationChannel, recording, uploadFn]);
 
   const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(recording);
