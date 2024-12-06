@@ -167,7 +167,7 @@ jest.spyOn(defaultServices.api, 'graphql').mockImplementation((query: string) =>
     return of(mockAllArchivedRecordingsResponse);
   }
 });
-jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of(true));
+jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of());
 
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')

@@ -104,7 +104,7 @@ jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue(void 0);
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
 jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
-jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of(true));
+jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
