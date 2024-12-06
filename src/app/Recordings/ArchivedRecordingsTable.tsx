@@ -340,6 +340,17 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     addSubscription(
       combineLatest([
         propsTarget,
+        context.notificationChannel.messages(NotificationCategory.ArchiveRecordingSuccess),
+      ]).subscribe(() => {
+        refreshRecordingList();
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, propsTarget, refreshRecordingList]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        propsTarget,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ]).subscribe(([currentTarget, event]) => {
         const eventConnectUrlLabel = event.message.recording.metadata.labels.find(

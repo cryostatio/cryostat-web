@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Recording, Target } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -36,7 +36,7 @@ export interface RecordingActionsProps {
   index: number;
   recording: Recording;
   sourceTarget?: Observable<Target>;
-  uploadFn: () => Observable<boolean>;
+  uploadFn: () => Observable<string>;
 }
 
 export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
@@ -45,6 +45,10 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const jobIds: Array<string> = React.useMemo(() => {
+    return new Array<string>();
+  }, []);
 
   const addSubscription = useSubscriptions();
 
@@ -58,21 +62,28 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
   }, [context.api, setGrafanaEnabled, addSubscription]);
 
   const grafanaUpload = React.useCallback(() => {
-    notifications.info('Upload Started', `Recording "${recording.name}" uploading...`);
     addSubscription(
-      uploadFn()
-        .pipe(first())
-        .subscribe((success) => {
-          if (success) {
-            notifications.success('Upload Success', `Recording "${recording.name}" uploaded`);
-            context.api
-              .grafanaDashboardUrl()
-              .pipe(first())
-              .subscribe((url) => window.open(url, '_blank'));
-          }
-        }),
+      uploadFn().subscribe((jobId) => {
+        notifications.info('Upload Started', `Recording "${recording.name}" uploading...`);
+        jobIds.push(jobId);
+        addSubscription(
+          context.notificationChannel.messages(NotificationCategory.GrafanaUploadSuccess).subscribe((notification) => {
+            if (jobIds.includes(notification.message.jobId)) {
+              notifications.success('Upload Success', `Recording "${recording.name}" uploaded`);
+              const jobIdx = jobIds.findIndex((val) => {
+                val == jobId;
+              });
+              jobIds.splice(jobIdx, 1);
+              context.api
+                .grafanaDashboardUrl()
+                .pipe(first())
+                .subscribe((url) => window.open(url, '_blank'));
+            }
+          }),
+        );
+      }),
     );
-  }, [addSubscription, notifications, context.api, recording, uploadFn]);
+  }, [addSubscription, jobIds, notifications, context.api, context.notificationChannel, recording, uploadFn]);
 
   const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(recording);

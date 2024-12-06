@@ -240,6 +240,15 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders report generation error view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of());
+    jest
+      .spyOn(defaultServices.notificationChannel, 'messages')
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of())
+      .mockReturnValueOnce(of());
     render({
       routerConfigs: {
         routes: [

@@ -509,6 +509,8 @@ export enum NotificationCategory {
   ActiveRecordingStopped = 'ActiveRecordingStopped',
   ActiveRecordingSaved = 'ActiveRecordingSaved',
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
+  ArchiveRecordingSuccess = 'ArchiveRecordingSuccess',
+  ArchiveRecordingFail = 'ArchiveRecordingFailure',
   SnapshotCreated = 'SnapshotCreated',
   SnapshotDeleted = 'SnapshotDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
@@ -523,12 +525,16 @@ export enum NotificationCategory {
   RuleUpdated = 'RuleUpdated',
   RuleDeleted = 'RuleDeleted',
   RecordingMetadataUpdated = 'RecordingMetadataUpdated',
+  GrafanaUploadSuccess = 'GrafanaUploadSuccess',
+  GrafanaUploadFail = 'GrafanaUploadFailure',
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
   LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
+  ReportSuccess = 'ReportSuccess',
+  ReportFail = 'ReportFailure',
 }
 
 export enum CloseStatus {
