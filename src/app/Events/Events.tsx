@@ -15,8 +15,9 @@
  */
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, Tooltip } from '@patternfly/react-core';
@@ -30,19 +31,21 @@ export interface EventsProps {}
 
 export const Events: React.FC<EventsProps> = ({ ...props }) => {
   return (
-    <TargetView {...props} pageTitle="Events">
-      <Card isFullHeight>
-        <CardBody isFilled>
-          <EventTabs />
-        </CardBody>
-      </Card>
-      <Card isFullHeight>
-        <CardBody isFilled>
-          <AgentTabs />
-        </CardBody>
-      </Card>
-      <></>
-    </TargetView>
+    <>
+      <TargetContextSelector />
+      <BreadcrumbPage {...props} pageTitle="Events">
+        <Card isFullHeight>
+          <CardBody isFilled>
+            <EventTabs />
+          </CardBody>
+        </Card>
+        <Card isFullHeight>
+          <CardBody isFilled>
+            <AgentTabs />
+          </CardBody>
+        </Card>
+      </BreadcrumbPage>
+    </>
   );
 };
 
@@ -52,8 +55,17 @@ enum EventTab {
 }
 
 export const EventTabs: React.FC = () => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
+
+  const [targetSelected, setTargetSelected] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTargetSelected(!!t)));
+  }, [addSubscription, context, context.target]);
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'eventTab', Object.values(EventTab), EventTab.EVENT_TEMPLATE);
@@ -70,7 +82,7 @@ export const EventTabs: React.FC = () => {
       <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
         <EventTemplates />
       </Tab>
-      <Tab eventKey={EventTab.EVENT_TYPE} title="Event types">
+      <Tab isAriaDisabled={!targetSelected} eventKey={EventTab.EVENT_TYPE} title="Event types">
         <EventTypes />
       </Tab>
     </Tabs>
@@ -88,6 +100,12 @@ export const AgentTabs: React.FC = () => {
 
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
+
+  const [targetSelected, setTargetSelected] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTargetSelected(!!t)));
+  }, [addSubscription, context, context.target]);
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'agentTab', Object.values(AgentTab), AgentTab.AGENT_TEMPLATE);
@@ -121,7 +139,7 @@ export const AgentTabs: React.FC = () => {
       <Tab
         eventKey={AgentTab.AGENT_PROBE}
         title="Live Configuration"
-        isAriaDisabled={!agentDetected}
+        isAriaDisabled={!targetSelected || !agentDetected}
         tooltip={
           agentDetected ? undefined : (
             <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
