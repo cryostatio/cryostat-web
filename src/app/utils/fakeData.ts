@@ -37,6 +37,7 @@ import {
   SimpleResponse,
 } from '@app/Shared/Services/api.types';
 import { LoginService } from '@app/Shared/Services/Login.service';
+import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ReportService } from '@app/Shared/Services/Report.service';
 import { ChartControllerConfig } from '@app/Shared/Services/service.types';
@@ -220,8 +221,8 @@ class FakeTargetService extends TargetService {
 }
 
 class FakeReportService extends ReportService {
-  constructor(notifications: NotificationService, login: LoginService) {
-    super(login, notifications);
+  constructor(notifications: NotificationService, channel: NotificationChannel) {
+    super(notifications, channel);
   }
 
   reportJson(_recording: Recording, _connectUrl: string): Observable<AnalysisResult[]> {
@@ -307,8 +308,8 @@ class FakeApiService extends ApiService {
     return of(true);
   }
 
-  uploadActiveRecordingToGrafana(_remoteId: number): Observable<boolean> {
-    return of(true);
+  uploadActiveRecordingToGrafana(_remoteId: number): Observable<string> {
+    return of();
   }
 
   grafanaDashboardUrl(): Observable<string> {
@@ -387,7 +388,7 @@ class FakeApiService extends ApiService {
 
 const target = new FakeTargetService();
 const api = new FakeApiService(target, NotificationsInstance, defaultServices.login);
-const reports = new FakeReportService(NotificationsInstance, defaultServices.login);
+const reports = new FakeReportService(NotificationsInstance, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 
 export const fakeServices: Services = {

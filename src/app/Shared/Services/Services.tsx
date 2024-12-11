@@ -26,9 +26,9 @@ import { TargetsService } from './Targets.service';
 export interface Services {
   target: TargetService;
   targets: TargetsService;
+  reports: ReportService;
   api: ApiService;
   notificationChannel: NotificationChannel;
-  reports: ReportService;
   settings: SettingsService;
   login: LoginService;
 }
@@ -38,15 +38,15 @@ const settings = new SettingsService();
 const login = new LoginService(settings);
 const api = new ApiService(target, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
-const reports = new ReportService(login, NotificationsInstance);
+const reports = new ReportService(NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 
 const defaultServices: Services = {
   target,
   targets,
+  reports,
   api,
   notificationChannel,
-  reports,
   settings,
   login,
 };

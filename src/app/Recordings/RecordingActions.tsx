@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Recording, Target } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -23,7 +23,7 @@ import { Td } from '@patternfly/react-table';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Observable } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { concatMap, filter, first, tap } from 'rxjs/operators';
 
 export interface RowAction {
   title?: string | React.ReactNode;
@@ -36,7 +36,7 @@ export interface RecordingActionsProps {
   index: number;
   recording: Recording;
   sourceTarget?: Observable<Target>;
-  uploadFn: () => Observable<boolean>;
+  uploadFn: () => Observable<string>;
 }
 
 export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
@@ -58,21 +58,21 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
   }, [context.api, setGrafanaEnabled, addSubscription]);
 
   const grafanaUpload = React.useCallback(() => {
-    notifications.info('Upload Started', `Recording "${recording.name}" uploading...`);
     addSubscription(
       uploadFn()
-        .pipe(first())
-        .subscribe((success) => {
-          if (success) {
-            notifications.success('Upload Success', `Recording "${recording.name}" uploaded`);
-            context.api
-              .grafanaDashboardUrl()
-              .pipe(first())
-              .subscribe((url) => window.open(url, '_blank'));
-          }
-        }),
+        .pipe(
+          tap(() => notifications.info('Upload Started', `Recording "${recording.name}" uploading...`)),
+          concatMap((jobId) =>
+            context.notificationChannel
+              .messages(NotificationCategory.GrafanaUploadSuccess)
+              .pipe(filter((n) => n.message.jobId === jobId)),
+          ),
+          tap(() => notifications.success('Upload Success', `Recording ${recording.name} uploaded`)),
+          concatMap(() => context.api.grafanaDashboardUrl()),
+        )
+        .subscribe((url) => window.open(url, '_blank')),
     );
-  }, [addSubscription, notifications, context.api, recording, uploadFn]);
+  }, [addSubscription, notifications, context.api, context.notificationChannel, recording, uploadFn]);
 
   const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(recording);
