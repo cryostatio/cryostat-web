@@ -463,10 +463,10 @@ export const messageKeys = new Map([
   [
     NotificationCategory.ArchiveRecordingSuccess,
     {
-      variant: AlertVariant.warning,
+      variant: AlertVariant.success,
       title: 'Recording Archive Success',
-      body: (evt) => `Recording: ${evt.message.recording} successfully archived.`,
-      hidden: true,
+      body: (evt) => `Recording for job: ${evt.message.jobId} successfully archived.`,
+      hidden: false,
     } as NotificationMessageMapper,
   ],
   [

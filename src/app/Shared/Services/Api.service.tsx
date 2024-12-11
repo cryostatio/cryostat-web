@@ -385,7 +385,7 @@ export class ApiService {
     return this.archiveEnabled.asObservable();
   }
 
-  archiveRecording(remoteId: number): Observable<boolean> {
+  archiveRecording(remoteId: number): Observable<string> {
     return this.target.target().pipe(
       filter((t) => !!t),
       concatMap((target) =>
@@ -393,7 +393,7 @@ export class ApiService {
           method: 'PATCH',
           body: 'SAVE',
         }).pipe(
-          map((resp) => resp.ok),
+          concatMap((resp) => resp.text()),
           first(),
         ),
       ),

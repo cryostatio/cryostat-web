@@ -97,7 +97,7 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
   };
 });
 
-jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
+jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(''));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue(void 0);

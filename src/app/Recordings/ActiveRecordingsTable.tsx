@@ -385,7 +385,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
 
   const handleArchiveRecordings = React.useCallback(() => {
     setActionLoadings((old) => ({ ...old, ARCHIVE: true }));
-    const tasks: Observable<boolean>[] = [];
+    const tasks: Observable<string>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
         handleRowCheck(false, r.id);
@@ -394,13 +394,24 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     });
     addSubscription(
       forkJoin(tasks).subscribe({
-        next: () => handlePostActions('ARCHIVE'),
+        next: (jobIds) => {
+          addSubscription(
+            context.notificationChannel
+              .messages(NotificationCategory.ArchiveRecordingSuccess)
+              .subscribe((notification) => {
+                if (jobIds.includes(notification.message.jobId)) {
+                  handlePostActions('ARCHIVE');
+                }
+              }),
+          );
+        },
         error: () => handlePostActions('ARCHIVE'),
       }),
     );
   }, [
     filteredRecordings,
     checkedIndices,
+    context.notificationChannel,
     handleRowCheck,
     context.api,
     addSubscription,
