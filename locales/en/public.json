@@ -367,7 +367,7 @@
     "ARIA_LABELS": {
       "SEARCH_INPUT": "event-type-search-input"
     },
-    "SEARCH_PLACEHOLDER": "Find by name, description, typeId, or description..."
+    "SEARCH_PLACEHOLDER": "Find by name, typeId, or description..."
   },
   "ImportCertificate": {
     "CARD_DESCRIPTION": "The following certificates are present in Cryostat&apos's additional trust store. Contact your Cryostat administrator if your application requires a new trusted certificate. You must restart the Cryostat server to reload the certificate store after adding new certificates.",

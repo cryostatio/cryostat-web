@@ -59,7 +59,7 @@ Array [
                   disabled={false}
                   name="eventFilter"
                   onChange={[Function]}
-                  placeholder="Find by name, description, typeId, or description..."
+                  placeholder="Find by name, typeId, or description..."
                   type="text"
                   value=""
                 />
