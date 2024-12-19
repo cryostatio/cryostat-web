@@ -81,7 +81,7 @@ export class NotificationChannel {
 
           const url = new URL(window.location.href);
           url.protocol = url.protocol.replace('http', 'ws');
-          url.pathname = '/api/notifications';
+          url.pathname = 'api/notifications';
           this.ws = webSocket({
             url: url.toString(),
             protocol: '',
