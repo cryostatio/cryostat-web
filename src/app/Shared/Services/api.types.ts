@@ -347,7 +347,7 @@ export interface EventType {
   options: { [key: string]: OptionDescriptor }[];
 }
 
-export type TemplateType = 'TARGET' | 'CUSTOM';
+export type TemplateType = 'TARGET' | 'CUSTOM' | 'PRESET';
 
 export interface EventTemplate {
   name: string;
