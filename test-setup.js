@@ -1,4 +1,4 @@
-// Mock out the services shared across the app in order to help isolate 
+// Mock out the services shared across the app in order to help isolate
 // components from the ServiceContext
 import '@i18n/config';
 
@@ -27,7 +27,7 @@ jest.mock('@i18n/datetime', () => ({
         short: 'EST',
       },
     ],
-  defaultDatetimeFormat: 
+  defaultDatetimeFormat:
     {
       dateLocale: {
         key: 'en',
@@ -51,3 +51,6 @@ jest.mock('@i18n/datetime', () => ({
     }
   ]
 }));
+jest.mock('nanoid', () => {
+  return { nanoid: () => '1234' };
+});
