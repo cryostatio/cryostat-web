@@ -83,7 +83,7 @@ jobs:
     - uses: actions/setup-java@v3
       with:
         java-version: '21'
-        distribution: 'temurn'
+        distribution: 'temurin'
         cache: 'maven'
     - name: Add CRIU PPA
       run: sudo add-apt-repository ppa:criu/ppa && sudo apt update
