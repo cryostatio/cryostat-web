@@ -51,6 +51,7 @@ jest.mock('@i18n/datetime', () => ({
     }
   ]
 }));
+// https://github.com/ai/nanoid/issues/365#issuecomment-2035498047
 jest.mock('nanoid', () => {
   return { nanoid: () => '1234' };
 });
