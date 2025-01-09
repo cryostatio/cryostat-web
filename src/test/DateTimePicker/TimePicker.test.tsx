@@ -91,9 +91,7 @@ describe('<TimePicker/>', () => {
 
     await user.click(toggleBtn12hr);
 
-    const hInput = within(screen.getByLabelText(testT('HOUR'))).getByLabelText(
-      testT('TimeSpinner.INPUT_HOUR12_VALUE'),
-    );
+    const hInput = within(screen.getByLabelText(testT('HOUR'))).getByLabelText(testT('TimeSpinner.INPUT_HOUR12_VALUE'));
     expect(hInput).toBeInTheDocument();
     expect(hInput).toBeVisible();
     expect(hInput.getAttribute('value')).toBe(format2Digit(mockSelectedIn12hr.hour12));
@@ -223,9 +221,7 @@ describe('<TimePicker/>', () => {
       },
     });
 
-    const hInput = within(screen.getByLabelText(testT('HOUR'))).getByLabelText(
-      testT('TimeSpinner.INPUT_HOUR24_VALUE'),
-    );
+    const hInput = within(screen.getByLabelText(testT('HOUR'))).getByLabelText(testT('TimeSpinner.INPUT_HOUR24_VALUE'));
     expect(hInput).toBeInTheDocument();
     expect(hInput).toBeVisible();
 

@@ -397,11 +397,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           <CardHeader
             actions={{
               actions: (
-                <Button
-                  variant="plain"
-                  onClick={toggleEdit}
-                  aria-label={editing ? t('CANCEL') : t('EDIT')}
-                >
+                <Button variant="plain" onClick={toggleEdit} aria-label={editing ? t('CANCEL') : t('EDIT')}>
                   {editing ? <CloseIcon /> : <PencilAltIcon />}
                 </Button>
               ),

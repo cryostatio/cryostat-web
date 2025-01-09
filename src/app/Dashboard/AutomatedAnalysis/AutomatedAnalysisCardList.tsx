@@ -133,9 +133,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
                   <Td dataLabel={t('SCORE')} modifier="wrap">
                     <Flex spaceItems={{ default: 'spaceItemsSm' }}>
                       <FlexItem>
-                        {result.score == AutomatedAnalysisScore.NA_SCORE
-                          ? t('N/A')
-                          : result.score.toFixed(1)}
+                        {result.score == AutomatedAnalysisScore.NA_SCORE ? t('N/A') : result.score.toFixed(1)}
                       </FlexItem>
                       <FlexItem>{icon(result.score)}</FlexItem>
                     </Flex>

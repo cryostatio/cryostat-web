@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useTranslation, UseTranslationResponse } from "react-i18next";
+import { useTranslation, UseTranslationResponse } from 'react-i18next';
 
 import en_common from '../../locales/en/common.json';
 import en_public from '../../locales/en/public.json';

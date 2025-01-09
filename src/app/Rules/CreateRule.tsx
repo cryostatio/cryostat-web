@@ -363,11 +363,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('DESCRIPTION')}
-        fieldId="rule-description"
-        data-quickstart-id="rule-description"
-      >
+      <FormGroup label={t('DESCRIPTION')} fieldId="rule-description" data-quickstart-id="rule-description">
         <TextArea
           value={formData.description}
           isDisabled={loading}
@@ -455,12 +451,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('TEMPLATE')}
-        isRequired
-        fieldId="recording-template"
-        data-quickstart-id="rule-evt-template"
-      >
+      <FormGroup label={t('TEMPLATE')} isRequired fieldId="recording-template" data-quickstart-id="rule-evt-template">
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           disabled={loading}
@@ -544,11 +535,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('ARCHIVAL_PERIOD')}
-        fieldId="archivalPeriod"
-        data-quickstart-id="rule-archival-period"
-      >
+      <FormGroup label={t('ARCHIVAL_PERIOD')} fieldId="archivalPeriod" data-quickstart-id="rule-archival-period">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -582,11 +569,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('INITIAL_DELAY')}
-        fieldId="initialDelay"
-        data-quickstart-id="rule-initial-delay"
-      >
+      <FormGroup label={t('INITIAL_DELAY')} fieldId="initialDelay" data-quickstart-id="rule-initial-delay">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput

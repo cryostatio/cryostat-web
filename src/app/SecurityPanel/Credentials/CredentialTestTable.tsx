@@ -277,9 +277,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
             }
             headerContent={
               <div>
-                {status.state === CredentialTestState.INVALID
-                  ? t('CredentialTestTable.TEST_FAILED')
-                  : t('CAUTION')}
+                {status.state === CredentialTestState.INVALID ? t('CredentialTestTable.TEST_FAILED') : t('CAUTION')}
               </div>
             }
             bodyContent={<div>{status.error?.message || t('UNKNOWN_ERROR')}</div>}

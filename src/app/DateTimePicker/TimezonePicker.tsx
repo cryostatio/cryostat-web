@@ -170,9 +170,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
         )}
         {numOfOptions < timezones.length && filteredTimezones.length > 0 ? (
           <SelectOption key="view-more" onClick={handleViewMore} value={undefined}>
-            <span className={css('pf-v5-c-button', 'pf-m-link', 'pf-m-inline')}>
-              {t('VIEW_MORE')}
-            </span>
+            <span className={css('pf-v5-c-button', 'pf-m-link', 'pf-m-inline')}>{t('VIEW_MORE')}</span>
           </SelectOption>
         ) : null}
       </SelectList>
