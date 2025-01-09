@@ -16,13 +16,13 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, ThemeSetting, UserSetting } from '../types';
 
 const Component = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [open, setOpen] = React.useState(false);
   const [_theme, themeSetting] = useTheme();

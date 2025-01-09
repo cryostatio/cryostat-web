@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Table, Tbody, Td, Tr } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface IShortcut {
   id: string;
@@ -29,7 +29,7 @@ export interface ShortcutsProps {
 }
 
 export const Shortcuts: React.FC<ShortcutsProps> = ({ shortcuts, ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   return (
     <Table
       className="topology__short-cuts"

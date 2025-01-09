@@ -34,6 +34,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { cleanDataId, isAssetNew, openTabForUrl, portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Alert,
   AlertActionCloseButton,
@@ -79,7 +80,7 @@ import {
 } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { LogoutIcon } from './LogoutIcon';
@@ -93,7 +94,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const {
     setState: setJoyState,
     state: joyState,

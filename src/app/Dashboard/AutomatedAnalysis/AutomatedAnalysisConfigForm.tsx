@@ -24,6 +24,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetView/TargetSelect';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, formatDuration } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionList,
   ActionListItem,
@@ -58,7 +59,6 @@ import {
 } from '@patternfly/react-core';
 import { CloseIcon, PencilAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { first, iif, of, ReplaySubject, take } from 'rxjs';
 import { AutomatedAnalysisConfigFormData } from './types';
 
@@ -73,7 +73,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const _targetSubjectRef = React.useRef(new ReplaySubject<NullableTarget>(1));
   const _targetSubject = _targetSubjectRef.current;
@@ -225,7 +225,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       return (
         <Grid hasGutter lg={4} md={12}>
           <GridItem>
-            <FormGroup label={t(`TEMPLATE`, { ns: 'common' })} isRequired fieldId="recording-template">
+            <FormGroup label={t(`TEMPLATE`)} isRequired fieldId="recording-template">
               {isLoading ? (
                 <Spinner size="md" />
               ) : errorMessage != '' ? (
@@ -256,7 +256,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             </FormGroup>
           </GridItem>
           <GridItem>
-            <FormGroup label={t('MAXIMUM_SIZE', { ns: 'common' })} fieldId="maxSize">
+            <FormGroup label={t('MAXIMUM_SIZE')} fieldId="maxSize">
               <Split hasGutter={true}>
                 <SplitItem isFilled>
                   <TextInput
@@ -264,7 +264,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                     isRequired
                     type="number"
                     id="maxSize"
-                    aria-label={t('AriaLabels.MAXIMUM_SIZE', { ns: 'common' })}
+                    aria-label={t('AriaLabels.MAXIMUM_SIZE')}
                     onChange={handleMaxSizeChange}
                     min="0"
                   />
@@ -273,7 +273,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                   <FormSelect
                     value={formData.maxSizeUnit}
                     onChange={handleMaxSizeUnitChange}
-                    aria-label={t('AriaLabels.MAXIMUM_SIZE_UNITS_INPUT', { ns: 'common' })}
+                    aria-label={t('AriaLabels.MAXIMUM_SIZE_UNITS_INPUT')}
                   >
                     <FormSelectOption key="1" value="1" label="B" />
                     <FormSelectOption key="2" value={1024} label="KiB" />
@@ -283,13 +283,13 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
               </Split>
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem>{t('MAXIMUM_SIZE_HELPER_TEXT', { ns: 'common' })}</HelperTextItem>
+                  <HelperTextItem>{t('MAXIMUM_SIZE_HELPER_TEXT')}</HelperTextItem>
                 </HelperText>
               </FormHelperText>
             </FormGroup>
           </GridItem>
           <GridItem>
-            <FormGroup label={t('MAXIMUM_AGE', { ns: 'common' })} fieldId="maxAge">
+            <FormGroup label={t('MAXIMUM_AGE')} fieldId="maxAge">
               <Split hasGutter={true}>
                 <SplitItem isFilled>
                   <TextInput
@@ -297,7 +297,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                     isRequired
                     type="number"
                     id="maxAgeDuration"
-                    aria-label={t('AriaLabels.MAXIMUM_AGE', { ns: 'common' })}
+                    aria-label={t('AriaLabels.MAXIMUM_AGE')}
                     onChange={handleMaxAgeChange}
                     min="0"
                   />
@@ -307,7 +307,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                     className={`${automatedAnalysisRecordingName}__form_select`}
                     value={formData.maxAgeUnit}
                     onChange={handleMaxAgeUnitChange}
-                    aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT', { ns: 'common' })}
+                    aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT')}
                   >
                     <FormSelectOption key="1" value="1" label={t('SECOND', { count: 0, ns: 'common' })} />
                     <FormSelectOption key="2" value={60} label={t('MINUTE', { count: 0, ns: 'common' })} />
@@ -318,7 +318,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem>{t('MAXIMUM_AGE_HELPER_TEXT', { ns: 'common' })}</HelperTextItem>
+                  <HelperTextItem>{t('MAXIMUM_AGE_HELPER_TEXT')}</HelperTextItem>
                 </HelperText>
               </FormHelperText>
             </FormGroup>
@@ -329,7 +329,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     return (
       <DescriptionList isCompact isAutoFit>
         <DescriptionListGroup>
-          <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
+          <DescriptionListTerm>{t('TEMPLATE')}</DescriptionListTerm>
           <DescriptionListDescription>
             {t('AutomatedAnalysisConfigForm.FORMATTED_TEMPLATE', { template: recordingConfig.template })}
           </DescriptionListDescription>
@@ -400,7 +400,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 <Button
                   variant="plain"
                   onClick={toggleEdit}
-                  aria-label={editing ? t('CANCEL', { ns: 'common' }) : t('EDIT', { ns: 'common' })}
+                  aria-label={editing ? t('CANCEL') : t('EDIT')}
                 >
                   {editing ? <CloseIcon /> : <PencilAltIcon />}
                 </Button>
@@ -427,12 +427,12 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                       variant={'primary'}
                       isDisabled={!formData.template?.name || !formData.template?.type}
                     >
-                      {t('SAVE', { ns: 'common' })}
+                      {t('SAVE')}
                     </Button>
                   </ActionListItem>
                   <ActionListItem>
                     <Button variant="secondary" onClick={toggleEdit}>
-                      {t('CANCEL', { ns: 'common' })}
+                      {t('CANCEL')}
                     </Button>
                   </ActionListItem>
                 </ActionList>

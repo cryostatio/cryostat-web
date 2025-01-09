@@ -175,7 +175,7 @@ describe('<RecordingFilters />', () => {
     expect(categoryToggle).toBeInTheDocument();
     expect(categoryToggle).toBeVisible();
 
-    const selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
+    const selectedItem = within(categoryToggle).getByText(testT('LABEL'));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
   });
@@ -209,7 +209,7 @@ describe('<RecordingFilters />', () => {
     expect(categoryToggle).toBeInTheDocument();
     expect(categoryToggle).toBeVisible();
 
-    const selectedItem = within(categoryToggle).getByText(testT('NAME', { ns: 'common' }));
+    const selectedItem = within(categoryToggle).getByText(testT('NAME'));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
   });
@@ -244,7 +244,7 @@ describe('<RecordingFilters />', () => {
     expect(categoryToggle).toBeInTheDocument();
     expect(categoryToggle).toBeVisible();
 
-    const selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
+    const selectedItem = within(categoryToggle).getByText(testT('LABEL'));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
@@ -293,7 +293,7 @@ describe('<RecordingFilters />', () => {
     expect(categoryToggle).toBeInTheDocument();
     expect(categoryToggle).toBeVisible();
 
-    const selectedItem = within(categoryToggle).getByText(testT('NAME', { ns: 'common' }));
+    const selectedItem = within(categoryToggle).getByText(testT('NAME'));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
@@ -342,7 +342,7 @@ describe('<RecordingFilters />', () => {
     expect(categoryToggle).toBeInTheDocument();
     expect(categoryToggle).toBeVisible();
 
-    const selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
+    const selectedItem = within(categoryToggle).getByText(testT('LABEL'));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
@@ -391,7 +391,7 @@ describe('<RecordingFilters />', () => {
     expect(categoryToggle).toBeInTheDocument();
     expect(categoryToggle).toBeVisible();
 
-    let selectedItem = within(categoryToggle).getByText(testT('LABEL', { ns: 'common' }));
+    let selectedItem = within(categoryToggle).getByText(testT('LABEL'));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
@@ -411,11 +411,11 @@ describe('<RecordingFilters />', () => {
       await user.click(toSelectItem);
     });
 
-    selectedItem = within(categoryToggle).getByText(testT('NAME', { ns: 'common' }));
+    selectedItem = within(categoryToggle).getByText(testT('NAME'));
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    const prevSelectedItem = within(categoryToggle).queryByText(testT('LABEL', { ns: 'common' }));
+    const prevSelectedItem = within(categoryToggle).queryByText(testT('LABEL'));
     expect(prevSelectedItem).not.toBeInTheDocument();
 
     const newFilterTool = container.querySelector("input[placeholder='Filter by name...'][type='text']");
@@ -450,11 +450,11 @@ describe('<RecordingFilters />', () => {
     });
 
     // Label group
-    let chipGroup = screen.getByRole('group', { name: testT('LABEL', { ns: 'common' }) });
+    let chipGroup = screen.getByRole('group', { name: testT('LABEL') });
     expect(chipGroup).toBeInTheDocument();
     expect(chipGroup).toBeVisible();
 
-    let chipGroupName = within(chipGroup).getByText(testT('LABEL', { ns: 'common' }));
+    let chipGroupName = within(chipGroup).getByText(testT('LABEL'));
     expect(chipGroupName).toBeInTheDocument();
     expect(chipGroupName).toBeVisible();
 
@@ -463,11 +463,11 @@ describe('<RecordingFilters />', () => {
     expect(chip).toBeVisible();
 
     // Name group
-    chipGroup = screen.getByRole('group', { name: testT('NAME', { ns: 'common' }) });
+    chipGroup = screen.getByRole('group', { name: testT('NAME') });
     expect(chipGroup).toBeInTheDocument();
     expect(chipGroup).toBeVisible();
 
-    chipGroupName = within(chipGroup).getByText(testT('NAME', { ns: 'common' }));
+    chipGroupName = within(chipGroup).getByText(testT('NAME'));
     expect(chipGroupName).toBeInTheDocument();
     expect(chipGroupName).toBeVisible();
 

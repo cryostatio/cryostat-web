@@ -17,6 +17,7 @@ import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/Autom
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { AnalysisResult } from '@app/Shared/Services/api.types';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ToolbarChipGroup,
   ToolbarFilter,
@@ -31,7 +32,6 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilter';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
@@ -60,7 +60,7 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
   ..._props
 }) => {
   const dispatch = useDispatch<StateDispatch>();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const currentCategory = useSelector((state: RootState) => {
     const targetAutomatedAnalysisFilters = state.automatedAnalysisFilters.targetFilters.filter(
@@ -114,9 +114,9 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
     (category: string) => {
       switch (category) {
         case 'Name':
-          return t('FILTER_NAME', { ns: 'common' });
+          return t('FILTER_NAME');
         case 'Topic':
-          return t('FILTER_TOPIC', { ns: 'common' });
+          return t('FILTER_TOPIC');
         default:
           throw new Error(`Unknown automated analysis filter category: ${category}`);
       }

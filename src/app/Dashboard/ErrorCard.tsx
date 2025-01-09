@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   CardBody,
@@ -31,7 +32,6 @@ import {
 } from '@patternfly/react-core';
 import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { DashboardCard } from './DashboardCard';
 import { CardConfig, CardValidationResult, DashboardCardFC, DashboardCardSizes, DashboardCardTypeProps } from './types';
 
@@ -48,7 +48,7 @@ export const ErrorCard: DashboardCardFC<ErrorCardProps> = ({
   actions,
   ...props
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const { errors, callForAction } = validationResult;
 
   const errorDescription = React.useMemo(() => {

@@ -25,6 +25,7 @@ import {
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Divider,
@@ -56,7 +57,6 @@ import {
   UploadIcon,
 } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddCard } from './AddCard';
 import { DEFAULT_DASHBOARD_NAME } from './const';
@@ -79,7 +79,7 @@ const DefaultSelectedTemplate: SelectedLayoutTemplate = {
 export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_props) => {
   const dispatch = useDispatch<StateDispatch>();
   const context = React.useContext(ServiceContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
 
   const [selectedTemplate, setSelectedTemplate] = React.useState<SelectedLayoutTemplate>({
@@ -347,7 +347,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         icon={<TrashIcon />}
         data-quickstart-id="dashboard-delete-btn"
       >
-        {t('DELETE', { ns: 'common' })}
+        {t('DELETE')}
       </Button>
     ),
     [t, handleDeleteButton, currLayout.name],
@@ -558,7 +558,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         visible={showClearConfirmation}
         onClose={() => setShowClearConfirmation(false)}
         onAccept={handleConfirmClearDashboardLayout}
-        acceptButtonText={t('CLEAR', { ns: 'common' })}
+        acceptButtonText={t('CLEAR')}
       />
     );
   }, [showClearConfirmation, handleConfirmClearDashboardLayout, t]);

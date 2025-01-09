@@ -44,7 +44,8 @@ module.exports = merge(common('production'), {
     }),
     new EnvironmentPlugin({
       CRYOSTAT_AUTHORITY: process.env.PREVIEW ? 'http://localhost:8181' : '',
-      PREVIEW: process.env.PREVIEW || 'false'
+      PREVIEW: process.env.PREVIEW || 'false',
+      I18N_NAMESPACE: process.env.I18N_NAMESPACE || ''
     })
   ],
   module: {

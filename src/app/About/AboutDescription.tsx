@@ -19,9 +19,9 @@ import { BuildInfo } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export const VERSION_REGEX = /^(v?[0-9]+\.[0-9]+\.[0-9]+)(?:-(.+))?$/;
 
@@ -30,7 +30,7 @@ export const AboutDescription: React.FC = () => {
   const notificationsContext = React.useContext(NotificationsContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
   const [buildInfo, setBuildInfo] = React.useState<BuildInfo>({ git: { hash: '' } });
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {

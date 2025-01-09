@@ -15,9 +15,9 @@
  */
 
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { NumberInput } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const defaultPreferences = {
@@ -28,7 +28,7 @@ const debounceMin = 1;
 const debounceMax = 1000;
 
 const Component = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(defaultPreferences);
 
@@ -89,7 +89,7 @@ const Component = () => {
         onChange={handleWebSocketDebounceChange}
         onMinus={handleWebSocketDebounceMinus}
         onPlus={handleWebSocketDebouncePlus}
-        unit={t('MILLISECOND_other', { ns: 'common' })}
+        unit={t('MILLISECOND_other')}
       />
     </>
   );

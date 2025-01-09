@@ -16,12 +16,12 @@
 
 import { AutomatedAnalysisScore, AnalysisResult } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { transformAADescription } from './utils';
 
 export interface ClickableAutomatedAnalysisLabelProps {
@@ -31,7 +31,7 @@ export interface ClickableAutomatedAnalysisLabelProps {
 export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label';
 
 export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ result }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const [isDescriptionVisible, setIsDescriptionVisible] = React.useState(false);

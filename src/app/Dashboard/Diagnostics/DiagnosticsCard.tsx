@@ -24,6 +24,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
@@ -39,13 +40,12 @@ import {
 } from '@patternfly/react-core';
 import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { DashboardCard } from '../DashboardCard';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
 export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();

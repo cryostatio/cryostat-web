@@ -17,6 +17,7 @@
 import { automatedAnalysisAddGlobalFilterIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { AutomatedAnalysisScore } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Level,
@@ -28,14 +29,13 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 export interface AutomatedAnalysisScoreFilterProps {}
 
 export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilterProps> = (_) => {
   const dispatch = useDispatch<StateDispatch>();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const currentScore = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.globalFilters.filters;
     if (!filters) return 0;
@@ -44,14 +44,14 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
 
   const steps = [
     { value: 0, label: '0' },
-    { value: 12.5, label: t('OK', { ns: 'common' }) }, // some hacks that work with css to get bolded and coloured labels above slider
+    { value: 12.5, label: t('OK') }, // some hacks that work with css to get bolded and coloured labels above slider
     {
       value: AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD,
       label: String(AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD),
     },
-    { value: 50, label: t('WARNING', { ns: 'common' }) },
+    { value: 50, label: t('WARNING') },
     { value: AutomatedAnalysisScore.RED_SCORE_THRESHOLD, label: String(AutomatedAnalysisScore.RED_SCORE_THRESHOLD) },
-    { value: 87.5, label: t('CRITICAL', { ns: 'common' }) },
+    { value: 87.5, label: t('CRITICAL') },
     { value: 100, label: '100' },
   ] as SliderStepObject[];
 
@@ -104,7 +104,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
         startActions={
           <Level hasGutter>
             <LevelItem>
-              <Text component={TextVariants.small}>{t('RESET', { ns: 'common' })}:</Text>
+              <Text component={TextVariants.small}>{t('RESET')}:</Text>
             </LevelItem>
             <LevelItem>
               <Button
@@ -135,7 +135,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
         areCustomStepsContinuous
         customSteps={steps}
         isInputVisible
-        inputLabel={t('SCORE', { ns: 'common' })}
+        inputLabel={t('SCORE')}
         inputValue={currentScore}
         value={currentScore}
         onChange={onChange}

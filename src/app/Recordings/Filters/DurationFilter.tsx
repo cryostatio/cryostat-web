@@ -16,6 +16,7 @@
 
 import { DurationUnit, DurationUnitSelect } from '@app/Shared/Components/DurationUnitSelect';
 import { ActiveRecording } from '@app/Shared/Services/api.types';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   ButtonVariant,
@@ -33,7 +34,6 @@ import {
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { DURATION_INPUT_MAXLENGTH } from './const';
 
 export const CONTINUOUS_INDICATOR = 'continuous';
@@ -87,7 +87,7 @@ export interface DurationFilterProps {
 }
 
 export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDurationInput }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [fromDuration, setFromDuration] = React.useState<number | undefined>();
   const [fromDurationUnit, setFromDurationUnit] = React.useState(DurationUnit.SECOND);
 
@@ -149,7 +149,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
       <Flex direction={{ default: 'column' }}>
         <FlexItem>
           <InputGroup>
-            <InputGroupText>{t('FROM', { ns: 'common' })}</InputGroupText>
+            <InputGroupText>{t('FROM')}</InputGroupText>
             <InputGroupItem>
               <TextInput
                 // Uncontrolled input
@@ -164,7 +164,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
             <InputGroupItem>
               <DurationUnitSelect selected={fromDurationUnit} onSelect={setFromDurationUnit} />
             </InputGroupItem>
-            <InputGroupText>{t('TO', { ns: 'common' })}</InputGroupText>
+            <InputGroupText>{t('TO')}</InputGroupText>
             <InputGroupItem>
               <TextInput
                 // Uncontrolled input

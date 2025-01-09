@@ -15,15 +15,14 @@
  */
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { portalRoot } from '@app/utils/utils';
-import { i18nLanguages, i18nResources } from '@i18n/config';
-import { localeReadable } from '@i18n/i18nextUtil';
+import { i18nLanguages, i18nResources, localeReadable } from '@i18n/i18nextUtil';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const Component = () => {
-  const [t, i18n] = useTranslation();
+  const [t, i18n] = useCryostatTranslation();
   const [open, setOpen] = React.useState(false);
 
   const handleLanguageToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);

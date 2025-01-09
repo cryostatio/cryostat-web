@@ -47,6 +47,7 @@ import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
@@ -86,7 +87,6 @@ import {
 import { EllipsisVIcon, RedoIcon } from '@patternfly/react-icons';
 import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
@@ -885,7 +885,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
@@ -1054,7 +1054,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
                     isDisabled={loadingAnalysis}
                     onClick={handleLoadAnalysis}
                     icon={
-                      <Tooltip content={t('REFRESH', { ns: 'common' })}>
+                      <Tooltip content={t('REFRESH')}>
                         <RedoIcon />
                       </Tooltip>
                     }

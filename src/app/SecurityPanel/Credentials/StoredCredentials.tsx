@@ -23,6 +23,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources, portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Checkbox,
@@ -62,7 +63,6 @@ import {
 import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { concatMap, forkJoin, map } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
@@ -198,7 +198,7 @@ const tableColumns: TableColumn[] = [
 ];
 
 export const StoredCredentials = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, dispatch] = React.useReducer(reducer, {
@@ -324,7 +324,7 @@ export const StoredCredentials = () => {
         aria-label={t('StoredCredentials.ARIA_LABELS.Add')}
         onClick={handleAuthModalOpen}
       >
-        {t('ADD', { ns: 'common' })}
+        {t('ADD')}
       </Button>,
       <Button
         key="delete"
@@ -333,7 +333,7 @@ export const StoredCredentials = () => {
         onClick={handleDeleteButton}
         isDisabled={!state.checkedCredentials.length}
       >
-        {t('DELETE', { ns: 'common' })}
+        {t('DELETE')}
       </Button>,
     ];
 
@@ -545,7 +545,7 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   onSelectAll,
   isSelectAll,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleToggle = React.useCallback(() => setIsOpen((isOpen) => !isOpen), [setIsOpen]);

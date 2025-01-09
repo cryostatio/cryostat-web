@@ -4,9 +4,9 @@ Cryostat-web uses [i18next](https://www.i18next.com/) as an internationalization
 
 ### Adding a new translation
 
-The current list of language locales supported in Cryostat can be found in `src/i18n/config.ts`. The translations themselves can be found in `locales/{LOCALE_CODE}` 
+The current list of language locales supported in Cryostat can be found in `src/i18n/i18nextUtil.ts`. The translations themselves can be found in `locales/{LOCALE_CODE}` 
 
-To add a new language, add a new entry to the `i18nResources` object in `src/i18n.ts`. The key should be the language locale, and the value should be the translation object containing the corresponding namespace json files in `locales`.
+To add a new language, add a new entry to the `i18nResources` object in `src/i18nextUtil.ts`. The key should be the language locale, and the value should be the translation object containing the corresponding namespace json files in `locales`.
 
 To add a new localization key for a user-facing string in `cryostat-web`, use the `t` function from `react-i18next`:
 

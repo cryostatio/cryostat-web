@@ -53,7 +53,7 @@ describe('<MeridiemPicker/>', () => {
       },
     });
 
-    const pm = screen.getByText(testT('MERIDIEM_PM', { ns: 'common' }));
+    const pm = screen.getByText(testT('MERIDIEM_PM'));
     expect(pm).toBeInTheDocument();
     expect(pm).toBeVisible();
 

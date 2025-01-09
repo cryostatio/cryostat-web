@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { MenuToggle, MenuToggleElement, Select, SelectList, SelectOption } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export enum DurationUnit {
   HOUR = 60 * 60,
@@ -30,11 +30,11 @@ export const getDurationUnitDisplay = (t: TFunction, unit: DurationUnit, compact
   const suffix = compact ? 'compact' : 'other';
   switch (unit) {
     case DurationUnit.HOUR:
-      return t(`HOUR_${suffix}`, { ns: 'common' });
+      return t(`HOUR_${suffix}`);
     case DurationUnit.MINUTE:
-      return t(`MINUTE_${suffix}`, { ns: 'common' });
+      return t(`MINUTE_${suffix}`);
     case DurationUnit.SECOND:
-      return t(`SECOND_${suffix}`, { ns: 'common' });
+      return t(`SECOND_${suffix}`);
     default:
       throw new Error(`Unknown unit enum value: ${unit}`);
   }
@@ -46,7 +46,7 @@ export interface DurationUnitSelectProps {
 }
 
 export const DurationUnitSelect: React.FC<DurationUnitSelectProps> = ({ onSelect, selected, ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [open, setOpen] = React.useState(false);
 
   const handleToggle = React.useCallback(() => setOpen((open) => !open), [setOpen]);

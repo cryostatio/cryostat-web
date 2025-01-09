@@ -17,6 +17,7 @@
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { getFromWarningMap } from '@app/Modal/utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ExpandableSection,
   FormGroup,
@@ -27,11 +28,10 @@ import {
   Switch,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const Component = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(context.settings.deletionDialogsEnabled());
   const [expanded, setExpanded] = React.useState(false);
@@ -92,7 +92,7 @@ const Component = () => {
         </StackItem>
         <StackItem key={'expandable-delete-warning-switch-list'}>
           <ExpandableSection
-            toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
+            toggleText={(expanded ? t('SHOW_LESS') : t('SHOW_MORE')) || ''}
             onToggle={(_, expanded: boolean) => setExpanded(expanded)}
             isExpanded={expanded}
             toggleId="delete-dialog-options-toggle"

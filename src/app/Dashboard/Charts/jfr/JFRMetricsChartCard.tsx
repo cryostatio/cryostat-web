@@ -25,6 +25,7 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
@@ -41,7 +42,7 @@ import {
 } from '@patternfly/react-core';
 import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
@@ -91,7 +92,7 @@ export function kindToId(kind: string): number {
 }
 
 export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (props) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
   const navigate = useNavigate();

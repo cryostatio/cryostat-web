@@ -17,9 +17,9 @@ import bkgImg from '@app/assets/cryostat_icon_bg.svg';
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { AboutModal } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { AboutDescription } from './AboutDescription';
 
 export interface AboutCryostatModalProps {
@@ -28,7 +28,7 @@ export interface AboutCryostatModalProps {
 }
 
 export const AboutCryostatModal: React.FC<AboutCryostatModalProps> = ({ isOpen, onClose }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   return (
     <AboutModal
       appendTo={portalRoot}
@@ -37,7 +37,7 @@ export const AboutCryostatModal: React.FC<AboutCryostatModalProps> = ({ isOpen, 
       brandImageAlt="Cryostat Logo"
       isOpen={isOpen}
       onClose={onClose}
-      trademark={t('CRYOSTAT_TRADEMARK', { ns: 'common' })}
+      trademark={t('CRYOSTAT_TRADEMARK')}
       backgroundImageSrc={bkgImg}
     >
       <AboutDescription />

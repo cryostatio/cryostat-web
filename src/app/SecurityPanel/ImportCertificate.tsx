@@ -17,6 +17,7 @@
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   EmptyState,
@@ -37,12 +38,11 @@ import {
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { tap } from 'rxjs/operators';
 import { SecurityCard } from './types';
 
 export const CertificateImport: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(true);

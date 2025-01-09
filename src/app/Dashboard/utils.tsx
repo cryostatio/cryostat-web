@@ -19,12 +19,12 @@ import cryostatLogoDark from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import { dashboardConfigDeleteCardIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { withThemedIcon } from '@app/utils/withThemedIcon';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Button, ButtonVariant } from '@patternfly/react-core';
 import { FileIcon, UnknownIcon, UserIcon } from '@patternfly/react-icons';
 import { nanoid } from '@reduxjs/toolkit';
 import { TFunction } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
@@ -173,7 +173,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
 
 export const RemoveCardAction: React.FC<{ cardIndex: number }> = ({ cardIndex }) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const handleClick = React.useCallback(() => {
     dispatch(dashboardConfigDeleteCardIntent(cardIndex));
@@ -181,7 +181,7 @@ export const RemoveCardAction: React.FC<{ cardIndex: number }> = ({ cardIndex })
 
   return (
     <Button onClick={handleClick} variant={ButtonVariant.danger}>
-      {t('REMOVE', { ns: 'common' })}
+      {t('REMOVE')}
     </Button>
   );
 };

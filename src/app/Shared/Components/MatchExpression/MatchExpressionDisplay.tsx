@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { ClipboardCopy } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface MatchExpressionDisplayProps {
   matchExpression: string;
 }
 
 export const MatchExpressionDisplay: React.FC<MatchExpressionDisplayProps> = ({ matchExpression }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   return (
     <ClipboardCopy
       className="match-expression-display"
-      hoverTip={t('COPY', { ns: 'common' })}
-      clickTip={t('COPIED', { ns: 'common' })}
+      hoverTip={t('COPY')}
+      clickTip={t('COPIED')}
       variant="inline-compact"
       isBlock
       isCode

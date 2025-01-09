@@ -23,6 +23,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Toolbar,
   ToolbarContent,
@@ -53,7 +54,6 @@ import {
 import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -103,7 +103,7 @@ export interface AllTargetsArchivedRecordingsTableProps {}
 
 export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [searchText, setSearchText] = React.useState('');
   const [archivesForTargets, setArchivesForTargets] = React.useState<ArchivesForTarget[]>([]);

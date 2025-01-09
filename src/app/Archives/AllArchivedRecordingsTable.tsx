@@ -22,6 +22,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Toolbar,
   ToolbarContent,
@@ -54,7 +55,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './utils';
 
@@ -82,7 +82,7 @@ export interface AllArchivedRecordingsTableProps {}
 
 export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [directories, setDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [searchText, setSearchText] = React.useState('');

@@ -24,6 +24,7 @@ import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Sh
 import { KeyValue, Recording, RecordingState, keyValueToString } from '@app/Shared/Services/api.types';
 import useDayjs, { Dayjs } from '@app/utils/hooks/useDayjs';
 // import dayjs from '@i18n/datetime';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ToolbarFilter,
   ToolbarGroup,
@@ -39,7 +40,6 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { DateTimeFilter, DateTimeRange, filterRecordingByDatetime } from './Filters/DatetimeFilter';
 import { compareDuration, DurationFilter, DurationRange, filterRecordingByDuration } from './Filters/DurationFilter';
@@ -58,13 +58,13 @@ export interface RecordingFiltersCategories {
 export const getCategoryDisplay = (t: TFunction, category: string): string => {
   switch (category) {
     case 'Name':
-      return t('NAME', { ns: 'common' });
+      return t('NAME');
     case 'Label':
-      return t('LABEL', { ns: 'common' });
+      return t('LABEL');
     case 'State':
-      return t('STATE', { ns: 'common' });
+      return t('STATE');
     case 'Duration':
-      return t('DURATION', { ns: 'common' });
+      return t('DURATION');
     case 'StartTime':
       return t('RecordingFilters.START_TIME');
     default:
@@ -148,7 +148,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   breakpoint = 'xl',
   updateFilters,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [dayjs] = useDayjs();
   const dispatch = useDispatch<StateDispatch>();
 

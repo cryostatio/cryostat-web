@@ -19,10 +19,10 @@ import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redu
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover, Text } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
@@ -53,7 +53,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
   const dispatch = useDispatch();
   const { setSelectedTemplate } = React.useContext(LayoutTemplateContext);
   const customTemplates = useSelector((state: RootState) => state.dashboardConfigs.customTemplates);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
 
@@ -221,7 +221,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
   const submitButtonLoadingProps = React.useMemo(
     () =>
       ({
-        spinnerAriaValueText: t('SUBMITTING', { ns: 'common' }),
+        spinnerAriaValueText: t('SUBMITTING'),
         spinnerAriaLabel: 'submitting-layout-templates',
         isLoading: uploading,
       }) as LoadingProps,
@@ -239,11 +239,11 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
       description={t(`LayoutTemplateUploadModal.DESCRIPTION`)}
       help={
         <Popover
-          headerContent={<div>{t('WHATS_THIS', { ns: 'common' })}</div>}
+          headerContent={<div>{t('WHATS_THIS')}</div>}
           bodyContent={<div>{t(`LayoutTemplateUploadModal.HELP.CONTENT`)}</div>}
           appendTo={portalRoot}
         >
-          <Button variant="plain" aria-label={t('HELP', { ns: 'common' })}>
+          <Button variant="plain" aria-label={t('HELP')}>
             <HelpIcon />
           </Button>
         </Popover>
@@ -266,7 +266,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
         <ActionGroup>
           {allOks && numOfFiles ? (
             <Button variant="primary" onClick={handleClose}>
-              {t('CLOSE', { ns: 'common' })}
+              {t('CLOSE')}
             </Button>
           ) : (
             <>
@@ -276,10 +276,10 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                 isDisabled={!numOfFiles || uploading}
                 {...submitButtonLoadingProps}
               >
-                {t('SUBMIT', { ns: 'common' })}
+                {t('SUBMIT')}
               </Button>
               <Button variant="link" onClick={handleClose}>
-                {t('CANCEL', { ns: 'common' })}
+                {t('CANCEL')}
               </Button>
             </>
           )}

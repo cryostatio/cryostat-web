@@ -17,17 +17,17 @@
 import { ThemeSetting } from '@app/Settings/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Icon, ToggleGroup, ToggleGroupItem } from '@patternfly/react-core';
 import { SunIcon, MoonIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface ThemeToggleProps {}
 
 export const ThemeToggle: React.FC<ThemeToggleProps> = () => {
   const context = React.useContext(ServiceContext);
   const [_theme] = useTheme();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const handleThemeSelect = React.useCallback(
     (_, setting: ThemeSetting) => {

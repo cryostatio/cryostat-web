@@ -19,6 +19,7 @@ import { RootState, dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redu
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
@@ -77,7 +78,6 @@ import { InnerScrollContainer } from '@patternfly/react-table';
 import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChartContext } from './Charts/context';
 import { CryostatLayoutTemplates, BlankLayout } from './cryostat-dashboard-templates';
@@ -133,7 +133,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   const [isDeleteWarningModalOpen, setIsDeleteWarningModalOpen] = React.useState(false);
   const [toDelete, setToDelete] = React.useState<string>('');
 
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const recentTemplateRecords: LayoutTemplateRecord[] = useSelector(
     (state: RootState) => state.dashboardConfigs.templateHistory,
   );
@@ -556,7 +556,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                           hasCheckbox
                           isSelected={selectedFilters.includes('Suggested')}
                         >
-                          {t('SUGGESTED', { ns: 'common' })}
+                          {t('SUGGESTED')}
                         </SelectOption>
                         <SelectOption
                           key="cryostat"
@@ -572,7 +572,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                           hasCheckbox
                           isSelected={selectedFilters.includes('User-submitted')}
                         >
-                          {t('USER_SUBMITTED', { ns: 'common' })}
+                          {t('USER_SUBMITTED')}
                         </SelectOption>
                       </SelectList>
                     </Select>
@@ -597,7 +597,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                   >
                     <SelectList>
                       <SelectOption key={LayoutTemplateSort.NAME} value={LayoutTemplateSort.NAME}>
-                        {t('NAME', { ns: 'common' })}
+                        {t('NAME')}
                       </SelectOption>
                       <SelectOption key={LayoutTemplateSort.CARD_COUNT} value={LayoutTemplateSort.CARD_COUNT}>
                         {t('LayoutTemplatePicker.CARD_COUNT')}

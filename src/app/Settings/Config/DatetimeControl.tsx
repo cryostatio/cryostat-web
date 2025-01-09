@@ -18,6 +18,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { locales, Timezone } from '@i18n/datetime';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Divider,
   FormGroup,
@@ -36,11 +37,10 @@ import {
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const Component = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
   const [_dayjs, datetimeFormat] = useDayjs();

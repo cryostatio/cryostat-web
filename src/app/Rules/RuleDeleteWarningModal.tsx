@@ -15,10 +15,10 @@
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
 import { getFromWarningMap } from '../Modal/utils';
 
@@ -37,7 +37,7 @@ export const RuleDeleteWarningModal = ({
   clean,
   setClean,
 }: RuleDeleteWarningProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
@@ -66,10 +66,10 @@ export const RuleDeleteWarningModal = ({
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
-              {t(warningType.match(/disable/i) ? 'DISABLE' : 'DELETE', { ns: 'common' })}
+              {t(warningType.match(/disable/i) ? 'DISABLE' : 'DELETE')}
             </Button>
             <Button variant="link" onClick={onClose}>
-              {t('CANCEL', { ns: 'common' })}
+              {t('CANCEL')}
             </Button>
           </Split>
         </Stack>,
@@ -78,14 +78,14 @@ export const RuleDeleteWarningModal = ({
       <Stack hasGutter key="modal-checkboxes-stack">
         <Checkbox
           id="clean-rule-enabled"
-          label={t('CLEAN', { ns: 'common' })}
+          label={t('CLEAN')}
           description={t('RuleDeleteWarningModal.CLEAN_DESCRIPTION', { ruleName: ruleName })}
           isChecked={clean}
           onChange={(_, checked) => setClean(checked)}
         />
         <Checkbox
           id="do-not-ask-enabled"
-          label={t('DONOT_ASK_AGAIN', { ns: 'common' })}
+          label={t('DONOT_ASK_AGAIN')}
           isChecked={doNotAsk}
           onChange={(_event, checked) => setDoNotAsk(checked)}
         />

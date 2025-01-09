@@ -21,6 +21,7 @@ import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
@@ -59,7 +60,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { TestPoolContext, useAuthCredential } from './utils';
 
@@ -82,7 +82,7 @@ const tableColumns: TableColumn[] = [
 export interface CredentialTestTableProps {}
 
 export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const matchExprService = useMatchExpressionSvc();
@@ -145,9 +145,9 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
         <Table {...props}>
           <Thead>
             <Tr>
-              <Th sort={getSortParams(0)}>{t('TARGET', { ns: 'common' })}</Th>
+              <Th sort={getSortParams(0)}>{t('TARGET')}</Th>
               <Th textCenter width={20}>
-                {t('STATUS', { ns: 'common' })}
+                {t('STATUS')}
               </Th>
             </Tr>
           </Thead>
@@ -209,7 +209,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
   searchText = '',
   ...props
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [status, setStatus] = React.useState<TestStatus>({
     state: CredentialTestState.NO_STATUS,
     error: undefined,
@@ -258,12 +258,12 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
 
   return isShowed ? (
     <Tr {...props} id={`${target.connectUrl}-test-row`}>
-      <Td dataLabel={t('TARGET', { ns: 'common' })}>
+      <Td dataLabel={t('TARGET')}>
         {!target.alias || target.alias === target.connectUrl
           ? target.connectUrl
           : `${target.alias} (${target.connectUrl})`}
       </Td>
-      <Td dataLabel={t('STATUS', { ns: 'common' })} textCenter>
+      <Td dataLabel={t('STATUS')} textCenter>
         {loading ? (
           <Bullseye>
             <LinearDotSpinner />
@@ -279,10 +279,10 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
               <div>
                 {status.state === CredentialTestState.INVALID
                   ? t('CredentialTestTable.TEST_FAILED')
-                  : t('CAUTION', { ns: 'common' })}
+                  : t('CAUTION')}
               </div>
             }
-            bodyContent={<div>{status.error?.message || t('UNKNOWN_ERROR', { ns: 'common' })}</div>}
+            bodyContent={<div>{status.error?.message || t('UNKNOWN_ERROR')}</div>}
             appendTo={portalRoot}
           >
             <Label style={{ cursor: 'pointer' }} color={getColor(status.state)}>
@@ -300,7 +300,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
           isDisabled={loading || isEmptyCredential}
           onClick={handleTest}
         >
-          {t('TEST', { ns: 'common' })}
+          {t('TEST')}
         </Button>
       </Td>
     </Tr>
@@ -323,7 +323,7 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
   searchText,
   ...props
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [credential] = useAuthCredential();
   const [disableTest, setDisableTest] = React.useState(false);
 
@@ -383,7 +383,7 @@ interface StatusFilterProps {
 }
 
 const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
   const handleToggle = React.useCallback(() => setIsOpen((old) => !old), [setIsOpen]);
 
@@ -398,7 +398,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ onChange, filters, ...props
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle ref={toggleRef} onClick={handleToggle} isExpanded={isOpen}>
-        {t('STATUS', { ns: 'common' })}
+        {t('STATUS')}
       </MenuToggle>
     ),
     [handleToggle, isOpen, t],

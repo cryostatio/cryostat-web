@@ -15,6 +15,7 @@
  */
 
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   FormGroup,
   FormHelperText,
@@ -25,13 +26,12 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const min = 1;
 
 const Component = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
 
   const [minRefresh, setMinRefresh] = React.useState(context.settings.chartControllerConfig().minRefresh);
@@ -75,7 +75,7 @@ const Component = () => {
             onChange={handleChange}
             onMinus={handleVisibleStep(-1)}
             onPlus={handleVisibleStep(1)}
-            unit={t('SECOND_other', { ns: 'common' })}
+            unit={t('SECOND_other')}
           />
         </FormGroup>
       </StackItem>

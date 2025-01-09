@@ -42,7 +42,7 @@ describe('<FeatureLevels/>', () => {
       },
     });
 
-    const productionOption = screen.getByText(testT(FeatureLevel[FeatureLevel.PRODUCTION], { ns: 'common' }));
+    const productionOption = screen.getByText(testT(FeatureLevel[FeatureLevel.PRODUCTION]));
     expect(productionOption).toBeInTheDocument();
     expect(productionOption).toBeVisible();
   });
@@ -72,17 +72,17 @@ describe('<FeatureLevels/>', () => {
     expect(ul).toBeVisible();
 
     await act(async () => {
-      await user.click(within(ul).getByText(testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' })));
+      await user.click(within(ul).getByText(testT(FeatureLevel[FeatureLevel.BETA])));
     });
 
     await waitFor(() => expect(ul).not.toBeInTheDocument()); // Should close menu
 
-    const betaOption = screen.getByText(testT(FeatureLevel[FeatureLevel.BETA], { ns: 'common' }));
+    const betaOption = screen.getByText(testT(FeatureLevel[FeatureLevel.BETA]));
 
     expect(betaOption).toBeInTheDocument();
     expect(betaOption).toBeVisible();
 
-    const productionOption = screen.queryByText(testT(FeatureLevel[FeatureLevel.PRODUCTION], { ns: 'common' }));
+    const productionOption = screen.queryByText(testT(FeatureLevel[FeatureLevel.PRODUCTION]));
     expect(productionOption).not.toBeInTheDocument();
   });
 });

@@ -15,6 +15,7 @@
  */
 import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { format2Digit, hourIn12HrFormat, hourIn24HrFormat, isHourIn24hAM } from '@i18n/datetimeUtils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Divider,
@@ -36,7 +37,6 @@ import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface TimePickerProps {
   id?: string;
@@ -60,7 +60,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   selected,
   id,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [is24h, setIs24h] = React.useState(true);
 
   const meridiemAM = React.useMemo(() => isHourIn24hAM(selected.hour24), [selected.hour24]);
@@ -99,7 +99,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
               <LevelItem key={'hour'}>
                 <TimeSpinner
                   variant={is24h ? 'hour24' : 'hour12'}
-                  label={t('HOUR', { ns: 'common' })}
+                  label={t('HOUR')}
                   selected={is24h ? selected.hour24 : hourIn12HrFormat(selected.hour24)[0]}
                   onChange={handleHourSelect}
                 />
@@ -110,7 +110,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
               <LevelItem key={'minute'}>
                 <TimeSpinner
                   variant={'minute'}
-                  label={t('MINUTE', { ns: 'common' })}
+                  label={t('MINUTE')}
                   selected={selected.minute}
                   onChange={onMinuteSelect}
                 />
@@ -121,7 +121,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
               <LevelItem key={'second'}>
                 <TimeSpinner
                   variant={'second'}
-                  label={t('SECOND', { ns: 'common' })}
+                  label={t('SECOND')}
                   selected={selected.second}
                   onChange={onSecondSelect}
                 />
@@ -147,7 +147,7 @@ interface TimeSpinnerProps {
 }
 
 const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const computedMax = React.useMemo(() => {
     switch (variant) {
       case 'hour12':

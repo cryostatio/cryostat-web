@@ -22,6 +22,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Toolbar,
   ToolbarContent,
@@ -48,7 +49,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { concatMap, filter, first } from 'rxjs/operators';
 
 interface RowData {
@@ -86,7 +86,7 @@ export interface EventTypesProps {}
 export const EventTypes: React.FC<EventTypesProps> = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const prevPerPage = React.useRef(10);
 
   const [types, setTypes] = React.useState<EventType[]>([]);
