@@ -1,0 +1,152 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AboutDescription /> renders correctly 1`] = `
+<div
+  className="pf-v5-c-content"
+>
+  <dl
+    className=""
+  >
+    <dt
+      className=""
+    >
+      Version
+    </dt>
+    <dd
+      className=""
+    >
+      <a
+        className=""
+        data-ouia-component-id="OUIA-Generated-Text-1"
+        data-ouia-component-type="PF5/Text"
+        data-ouia-safe={true}
+        data-pf-content={true}
+        href="https://github.com/cryostatio/cryostat/releases/tag/v1.2.3"
+        target="_blank"
+      >
+        v1.2.3-snapshot
+      </a>
+    </dd>
+    <dt
+      className=""
+    >
+      Build Information
+    </dt>
+    <dd
+      className=""
+    >
+      <a
+        className=""
+        data-ouia-component-id="OUIA-Generated-Text-2"
+        data-ouia-component-type="PF5/Text"
+        data-ouia-safe={true}
+        data-pf-content={true}
+        href="https://github.com/cryostatio/cryostat/commit/abcd1234"
+        target="_blank"
+      >
+        commit abcd1234
+      </a>
+    </dd>
+    <dt
+      className=""
+    >
+      Homepage
+    </dt>
+    <dd
+      className=""
+    >
+      <a
+        className=""
+        data-ouia-component-id="OUIA-Generated-Text-3"
+        data-ouia-component-type="PF5/Text"
+        data-ouia-safe={true}
+        data-pf-content={true}
+        href="https://cryostat.io"
+        target="_blank"
+      >
+        cryostat.io
+      </a>
+    </dd>
+    <dt
+      className=""
+    >
+      Bugs
+    </dt>
+    <dd
+      className=""
+    >
+      <p
+        className=""
+        data-ouia-component-id="OUIA-Generated-Text-4"
+        data-ouia-component-type="PF5/Text"
+        data-ouia-safe={true}
+        data-pf-content={true}
+      >
+        <a
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-5"
+          data-ouia-component-type="PF5/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+          href="https://github.com/cryostatio/cryostat/issues"
+          target="_blank"
+        >
+          Known issues
+        </a>
+         | 
+        <a
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-6"
+          data-ouia-component-type="PF5/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+          href="https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+v1.2.3-snapshot"
+          target="_blank"
+        >
+          File a report
+        </a>
+      </p>
+    </dd>
+    <dt
+      className=""
+    >
+      Mailing list
+    </dt>
+    <dd
+      className=""
+    >
+      <a
+        className=""
+        data-ouia-component-id="OUIA-Generated-Text-7"
+        data-ouia-component-type="PF5/Text"
+        data-ouia-safe={true}
+        data-pf-content={true}
+        href="https://groups.google.com/g/cryostat-development"
+        target="_blank"
+      >
+        Google Groups
+      </a>
+    </dd>
+    <dt
+      className=""
+    >
+      Open source license
+    </dt>
+    <dd
+      className=""
+    >
+      <a
+        className=""
+        data-ouia-component-id="OUIA-Generated-Text-8"
+        data-ouia-component-type="PF5/Text"
+        data-ouia-safe={true}
+        data-pf-content={true}
+        href="https://github.com/cryostatio/cryostat/blob/main/LICENSE.txt"
+        target="_blank"
+      >
+        License
+      </a>
+    </dd>
+  </dl>
+</div>
+`;
