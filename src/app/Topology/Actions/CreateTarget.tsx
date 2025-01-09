@@ -23,6 +23,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getAnnotation, portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Accordion,
   AccordionContent,
@@ -54,7 +55,6 @@ import {
 import { CheckCircleIcon, ExclamationCircleIcon, PendingIcon, SyncAltIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);
@@ -72,7 +72,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [example, setExample] = React.useState('');
   const [{ connectUrl, alias, validConnectUrl, username, password }, setFormData] = React.useState({
@@ -411,10 +411,10 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
                 {...createButtonLoadingProps}
                 data-quickstart-id="ct-create-btn"
               >
-                {loading ? t('CREATING', { ns: 'common' }) : t('CREATE', { ns: 'common' })}
+                {loading ? t('CREATING') : t('CREATE')}
               </Button>
               <Button variant="secondary" onClick={exitForm}>
-                {t('CANCEL', { ns: 'common' })}
+                {t('CANCEL')}
               </Button>
             </ActionGroup>
           </Form>

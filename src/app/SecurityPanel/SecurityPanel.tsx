@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { StoredCredentialsCard } from './Credentials/StoredCredentials';
 import { ListCertificates } from './ImportCertificate';
 
 export interface SecurityPanelProps {}
 
 export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const securityCards = [ListCertificates, StoredCredentialsCard].map((c) => ({
     key: c.key,
     title: c.title(t),

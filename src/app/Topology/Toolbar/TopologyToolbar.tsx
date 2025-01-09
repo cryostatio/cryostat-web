@@ -15,11 +15,11 @@
  */
 import { topologyConfigSetViewModeIntent, topologyDeleteAllFiltersIntent } from '@app/Shared/Redux/ReduxStore';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Button, Icon, Popover, Toolbar, ToolbarContent, ToolbarItem, Tooltip } from '@patternfly/react-core';
 import { TopologyIcon, ListIcon, MouseIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import { Visualization } from '@patternfly/react-topology';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { QuickSearchModal } from '../Actions/QuickSearchPanel';
 import Shortcuts, { ShortcutCommand } from '../Shared/Components/Shortcuts';
@@ -44,7 +44,7 @@ export interface TopologyToolbarProps {
 export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visualization, isDisabled, ...props }) => {
   const isGraphView = variant === TopologyToolbarVariant.Graph;
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [quicksearchOpen, setQuicksearchOpen] = React.useState(false);
 

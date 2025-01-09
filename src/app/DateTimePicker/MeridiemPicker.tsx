@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface MeridiemPickerProps {
   onSelect?: (isAM: boolean) => void;
@@ -23,7 +23,7 @@ export interface MeridiemPickerProps {
 }
 
 export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () => undefined, isAM = true }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const handleSelectAM = React.useCallback(() => {
     onSelect(true);
   }, [onSelect]);
@@ -39,10 +39,10 @@ export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () =>
       className="datetime-picker__meridiem-title-stack"
     >
       <div className={css('datetime-picker__meridiem-tile', `${isAM ? '' : 'un'}selected`)} onClick={handleSelectAM}>
-        {t('MERIDIEM_AM', { ns: 'common' })}
+        {t('MERIDIEM_AM')}
       </div>
       <div className={css('datetime-picker__meridiem-tile', `${isAM ? 'un' : ''}selected`)} onClick={handleSelectPM}>
-        {t('MERIDIEM_PM', { ns: 'common' })}
+        {t('MERIDIEM_PM')}
       </div>
     </div>
   );

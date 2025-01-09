@@ -15,6 +15,7 @@
  */
 
 import { CategorizedRuleEvaluations, AutomatedAnalysisScore } from '@app/Shared/Services/api.types';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Flex, FlexItem } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
@@ -36,7 +37,6 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { transformAADescription } from './utils';
 
 export interface AutomatedAnalysisCardListProps {
@@ -44,7 +44,7 @@ export interface AutomatedAnalysisCardListProps {
 }
 
 export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps> = ({ evaluations }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
 
@@ -116,31 +116,29 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
         <Table aria-label={'Automated analysis data list'} gridBreakPoint={'grid-md'} isStickyHeader>
           <Thead>
             <Tr>
-              <Th sort={getSortParams(0)}>{t('NAME', { ns: 'common' })}</Th>
+              <Th sort={getSortParams(0)}>{t('NAME')}</Th>
               <Th modifier="wrap" sort={getSortParams(1)}>
-                {t('SCORE', { ns: 'common' })}
+                {t('SCORE')}
               </Th>
-              <Th modifier="truncate">{t('DESCRIPTION', { ns: 'common' })}</Th>
+              <Th modifier="truncate">{t('DESCRIPTION')}</Th>
             </Tr>
           </Thead>
           <Tbody>
             {flatFiltered.map((result) => {
               return (
                 <Tr key={result.name}>
-                  <Td dataLabel={t('NAME', { ns: 'common' })} width={10}>
+                  <Td dataLabel={t('NAME')} width={10}>
                     {result.name}
                   </Td>
-                  <Td dataLabel={t('SCORE', { ns: 'common' })} modifier="wrap">
+                  <Td dataLabel={t('SCORE')} modifier="wrap">
                     <Flex spaceItems={{ default: 'spaceItemsSm' }}>
                       <FlexItem>
-                        {result.score == AutomatedAnalysisScore.NA_SCORE
-                          ? t('N/A', { ns: 'common' })
-                          : result.score.toFixed(1)}
+                        {result.score == AutomatedAnalysisScore.NA_SCORE ? t('N/A') : result.score.toFixed(1)}
                       </FlexItem>
                       <FlexItem>{icon(result.score)}</FlexItem>
                     </Flex>
                   </Td>
-                  <Td modifier="breakWord" dataLabel={t('DESCRIPTION', { ns: 'common' })}>
+                  <Td modifier="breakWord" dataLabel={t('DESCRIPTION')}>
                     {transformAADescription(result)}
                   </Td>
                 </Tr>

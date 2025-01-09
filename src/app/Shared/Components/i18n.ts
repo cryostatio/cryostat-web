@@ -15,7 +15,7 @@
  */
 
 /**
- * t('HOUR_compact', { ns: 'common' });
- * t('MINUTE_compact', { ns: 'common' });
- * t('SECOND_compact', { ns: 'common' });
+ * t('HOUR_compact');
+ * t('MINUTE_compact');
+ * t('SECOND_compact');
  */

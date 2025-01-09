@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface DashboardCardActionProps {
   onRemove: () => void;
@@ -28,7 +28,7 @@ export interface DashboardCardActionProps {
 export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ onRemove, onResetSize, onView }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const onSelect = React.useCallback((_) => setIsOpen(false), [setIsOpen]);
 
@@ -64,7 +64,7 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ on
     >
       <DropdownList>
         <DropdownItem key="View" onClick={onView}>
-          {t('VIEW', { ns: 'common' })}
+          {t('VIEW')}
         </DropdownItem>
 
         <DropdownItem key="Reset Size" onClick={onResetSize}>
@@ -72,7 +72,7 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ on
         </DropdownItem>
         <Divider />
         <DropdownItem key="Remove" onClick={onRemove} isDanger>
-          {t('REMOVE', { ns: 'common' })}
+          {t('REMOVE')}
         </DropdownItem>
       </DropdownList>
     </Dropdown>

@@ -58,12 +58,13 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 
 export interface RulesTableProps {}
 
@@ -71,7 +72,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
@@ -85,51 +86,51 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
       {
-        title: t('ENABLED', { ns: 'common' }),
+        title: t('ENABLED'),
         keyPaths: ['enabled'],
       },
       {
-        title: t('NAME', { ns: 'common' }),
+        title: t('NAME'),
         keyPaths: ['name'],
         sortable: true,
       },
       {
-        title: t('DESCRIPTION', { ns: 'common' }),
+        title: t('DESCRIPTION'),
         keyPaths: ['description'],
       },
       {
-        title: t('MATCH_EXPRESSION', { ns: 'common' }),
+        title: t('MATCH_EXPRESSION'),
         keyPaths: ['matchExpression'],
         sortable: true,
         tooltip: t('Rules.MATCH_EXPRESSION_TOOLTIP'),
       },
       {
-        title: t('EVENT_SPECIFIER', { ns: 'common' }),
+        title: t('EVENT_SPECIFIER'),
         keyPaths: ['eventSpecifier'],
         tooltip: t('Rules.EVENT_SPECIFIER_TOOLTIP'),
       },
       {
-        title: t('MAXIMUM_AGE', { ns: 'common' }),
+        title: t('MAXIMUM_AGE'),
         keyPaths: ['maxAgeSeconds'],
         tooltip: t('Rules.MAX_AGE_TOOLTIP'),
       },
       {
-        title: t('MAXIMUM_SIZE', { ns: 'common' }),
+        title: t('MAXIMUM_SIZE'),
         keyPaths: ['maxSizeBytes'],
         tooltip: t('Rules.MAX_SIZE_TOOLTIP'),
       },
       {
-        title: t('ARCHIVAL_PERIOD', { ns: 'common' }),
+        title: t('ARCHIVAL_PERIOD'),
         keyPaths: ['archivalPeriodSeconds'],
         tooltip: t('Rules.ARCHIVAL_PERIOD_TOOLTIP'),
       },
       {
-        title: t('INITIAL_DELAY', { ns: 'common' }),
+        title: t('INITIAL_DELAY'),
         keyPaths: ['initialDelaySeconds'],
         tooltip: t('Rules.INITIAL_DELAY_TOOLTIP'),
       },
       {
-        title: t('PRESERVED_ARCHIVES', { ns: 'common' }),
+        title: t('PRESERVED_ARCHIVES'),
         keyPaths: ['preservedArchives'],
         tooltip: t('Rules.PRESERVED_ARCHIVES_TOOLTIP'),
       },
@@ -292,14 +293,14 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     (rule: Rule): IAction[] => {
       return [
         {
-          title: t('DOWNLOAD', { ns: 'common' }),
+          title: t('DOWNLOAD'),
           onClick: () => context.api.downloadRule(rule.name),
         },
         {
           isSeparator: true,
         },
         {
-          title: t('DELETE', { ns: 'common' }),
+          title: t('DELETE'),
           onClick: () => handleDeleteButton(rule),
           isDanger: true,
         },
@@ -340,7 +341,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
             {r.name}
           </Td>
           <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
-            {r.description || <EmptyText text={t('NO_DESCRIPTION', { ns: 'common' })} />}
+            {r.description || <EmptyText text={t('NO_DESCRIPTION')} />}
           </Td>
           <Td key={`automatic-rule-matchExpression-${index}`} width={25} dataLabel={tableColumns[3].title}>
             <MatchExpressionDisplay matchExpression={r.matchExpression} />
@@ -391,7 +392,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           <ToolbarItem variant="separator" />
           <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
             <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
-              {t('CREATE', { ns: 'common' })}
+              {t('CREATE')}
             </Button>
           </ToolbarItem>
           <ToolbarItem key="upload">
@@ -490,7 +491,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       <BreadcrumbPage pageTitle="Automated Rules">
         <Card isFullHeight>
           <CardTitle>
-            {t('AUTOMATED_RULES', { ns: 'common' })}
+            {t('AUTOMATED_RULES')}
             <TextContent>
               <Text component={TextVariants.small}>
                 <Trans

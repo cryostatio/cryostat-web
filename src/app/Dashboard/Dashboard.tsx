@@ -26,9 +26,9 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Grid, GridItem } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AddCard } from './AddCard';
@@ -46,7 +46,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
   const navigate = useNavigate();
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const dashboardConfigs: DashboardConfig = useSelector((state: RootState) => state.dashboardConfigs);
   const jfrChartController = React.useRef(
     new JFRMetricsChartController(

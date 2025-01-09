@@ -20,6 +20,7 @@ import { SessionState } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   QuickStartContext,
   QuickStartDrawer,
@@ -27,7 +28,6 @@ import {
   useValuesForQuickStartContext,
 } from '@patternfly/quickstarts';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 const LINK_LABEL = "[\\d\\w\\s-()$!&']+"; // has extra &' in matcher
 const HIGHLIGHT_ACTIONS = ['highlight']; // use native quickstarts highlight markdown extension
@@ -40,7 +40,7 @@ export interface GlobalQuickStartDrawerProps {
 }
 
 export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { i18n } = useTranslation();
+  const { i18n } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');

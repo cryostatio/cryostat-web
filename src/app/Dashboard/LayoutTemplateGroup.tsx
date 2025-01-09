@@ -16,6 +16,7 @@
 import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
   Button,
@@ -33,7 +34,6 @@ import {
 } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import {
   LayoutTemplateFilter,
@@ -64,7 +64,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
   onTemplateDelete,
   ...props
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const dispatch = useDispatch();
   const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
 
@@ -89,7 +89,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
       <Split>
         <SplitItem>
           <Title headingLevel="h2" size="lg" style={{ padding: '1em' }}>
-            {t(props.title, { ns: 'common' })} ({t('LayoutTemplateGroup.ITEMS', { count: props.templates.length })})
+            {t(props.title)} ({t('LayoutTemplateGroup.ITEMS', { count: props.templates.length })})
           </Title>
         </SplitItem>
         {props.title === 'Suggested' && props.templates.length !== 1 && (
@@ -97,7 +97,7 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
             <SplitItem isFilled></SplitItem>
             <SplitItem>
               <Button variant="link" onClick={handleClearRecent}>
-                {t('CLEAR_RECENT', { ns: 'common' })}
+                {t('CLEAR_RECENT')}
               </Button>
             </SplitItem>
           </>
@@ -147,7 +147,7 @@ export interface KebabCatalogTileBadgeProps {
 
 export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ template, onTemplateDelete }) => {
   const serviceContext = React.useContext(ServiceContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
@@ -174,11 +174,11 @@ export const KebabCatalogTileBadge: React.FC<KebabCatalogTileBadgeProps> = ({ te
   const dropdownItems = React.useMemo(() => {
     return [
       <DropdownItem key={'download'} onClick={handleTemplateDownload}>
-        {t('DOWNLOAD', { ns: 'common' })}
+        {t('DOWNLOAD')}
       </DropdownItem>,
       <Divider key="divider" />,
       <DropdownItem key={'delete'} onClick={handleTemplateDelete} isDanger>
-        {t('DELETE', { ns: 'common' })}
+        {t('DELETE')}
       </DropdownItem>,
     ];
   }, [t, handleTemplateDownload, handleTemplateDelete]);

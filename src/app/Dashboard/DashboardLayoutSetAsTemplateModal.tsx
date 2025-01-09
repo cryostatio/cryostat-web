@@ -18,6 +18,7 @@ import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -33,7 +34,6 @@ import {
 } from '@patternfly/react-core';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { LAYOUT_TEMPLATE_DESCRIPTION_WORD_LIMIT } from './const';
 import { DashboardLayoutNamePattern, LayoutTemplateDescriptionPattern, templatize } from './utils';
@@ -54,7 +54,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
   const templates = dashboardConfigs.customTemplates;
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
 
@@ -216,10 +216,10 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
             onClick={handleSubmit}
             isDisabled={nameValidated !== ValidatedOptions.success || descriptionValidated === ValidatedOptions.error}
           >
-            {downloadModal ? t('DOWNLOAD', { ns: 'common' }) : t('SUBMIT', { ns: 'common' })}
+            {downloadModal ? t('DOWNLOAD') : t('SUBMIT')}
           </Button>
           <Button variant="link" onClick={handleClose}>
-            {t('CANCEL', { ns: 'common' })}
+            {t('CANCEL')}
           </Button>
         </ActionGroup>
       </Form>

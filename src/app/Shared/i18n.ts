@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * t('PRODUCTION', { ns: 'common' })
- * t('DEVELOPMENT', { ns: 'common' })
- * t('BETA', { ns: 'common' })
+ * t('PRODUCTION')
+ * t('DEVELOPMENT')
+ * t('BETA')
  */

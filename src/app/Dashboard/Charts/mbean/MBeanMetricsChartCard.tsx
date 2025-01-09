@@ -29,6 +29,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Chart,
   ChartArea,
@@ -44,7 +45,6 @@ import { getResizeObserver, Button, CardBody, CardHeader, CardTitle, Tooltip } f
 import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from '../context';
@@ -364,7 +364,7 @@ function getChartKindByName(name: string): MBeanMetricsChartKind {
 }
 
 export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> = (props) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [theme] = useTheme();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);

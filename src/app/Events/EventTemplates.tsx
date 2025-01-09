@@ -26,6 +26,7 @@ import { EventTemplate, NotificationCategory, Target } from '@app/Shared/Service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -59,7 +60,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
@@ -92,7 +92,7 @@ export interface EventTemplatesProps {}
 export const EventTemplates: React.FC<EventTemplatesProps> = () => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [filteredTemplates, setFilteredTemplates] = React.useState<EventTemplate[]>([]);

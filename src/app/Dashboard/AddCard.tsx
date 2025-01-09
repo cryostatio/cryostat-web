@@ -21,6 +21,7 @@ import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
   Bullseye,
@@ -79,7 +80,6 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import { nanoid } from 'nanoid';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { ChartContext } from './Charts/context';
@@ -92,7 +92,7 @@ export interface AddCardProps {
 
 export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
   const dispatch = useDispatch<StateDispatch>();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [showWizard, setShowWizard] = React.useState(false);
   const [selection, setSelection] = React.useState('');
@@ -240,7 +240,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
         >
           <WizardStep
             id="card-type-select"
-            name={t('CARD_TYPE', { ns: 'common' })}
+            name={t('CARD_TYPE')}
             footer={{
               isNextDisabled: !selection,
               nextButtonText:
@@ -312,7 +312,7 @@ export interface CardGalleryProps {
 }
 
 export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const activeLevel = useFeatureLevel();
   const [toViewCard, setToViewCard] = React.useState<DashboardCardDescriptor>();
 
@@ -444,7 +444,7 @@ interface PropsConfigFormProps {
 }
 
 const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const handleChange = React.useCallback(
     (k: string) => (e: unknown) => {
       const copy = { ...props.config };

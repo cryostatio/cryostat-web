@@ -16,9 +16,9 @@
 
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Checkbox } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const defaultPreferences = {
@@ -28,7 +28,7 @@ const defaultPreferences = {
 };
 
 const Component = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(defaultPreferences);
 

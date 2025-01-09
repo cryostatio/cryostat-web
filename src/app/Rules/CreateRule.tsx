@@ -28,6 +28,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -56,7 +57,7 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
@@ -69,7 +70,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
@@ -341,7 +342,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   return (
     <Form>
       <Text component={TextVariants.small}>{t('CreateRule.ABOUT')}</Text>
-      <FormGroup label={t('NAME', { ns: 'common' })} isRequired fieldId="rule-name" data-quickstart-id="rule-name">
+      <FormGroup label={t('NAME')} isRequired fieldId="rule-name" data-quickstart-id="rule-name">
         <TextInput
           value={formData.name}
           isDisabled={loading}
@@ -362,11 +363,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('DESCRIPTION', { ns: 'common' })}
-        fieldId="rule-description"
-        data-quickstart-id="rule-description"
-      >
+      <FormGroup label={t('DESCRIPTION')} fieldId="rule-description" data-quickstart-id="rule-description">
         <TextArea
           value={formData.description}
           isDisabled={loading}
@@ -384,7 +381,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         </FormHelperText>
       </FormGroup>
       <FormGroup
-        label={t('MATCH_EXPRESSION', { ns: 'common' })}
+        label={t('MATCH_EXPRESSION')}
         labelIcon={
           <Popover
             appendTo={portalRoot}
@@ -440,7 +437,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label={t('ENABLED', { ns: 'common' })} isRequired fieldId="rule-enabled">
+      <FormGroup label={t('ENABLED')} isRequired fieldId="rule-enabled">
         <Switch
           id="rule-enabled"
           isDisabled={loading}
@@ -454,12 +451,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('TEMPLATE', { ns: 'common' })}
-        isRequired
-        fieldId="recording-template"
-        data-quickstart-id="rule-evt-template"
-      >
+      <FormGroup label={t('TEMPLATE')} isRequired fieldId="recording-template" data-quickstart-id="rule-evt-template">
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           disabled={loading}
@@ -475,7 +467,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label={t('MAXIMUM_SIZE', { ns: 'common' })} fieldId="maxSize" data-quickstart-id="rule-max-size">
+      <FormGroup label={t('MAXIMUM_SIZE')} fieldId="maxSize" data-quickstart-id="rule-max-size">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -509,7 +501,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup label={t('MAXIMUM_AGE', { ns: 'common' })} fieldId="maxAge" data-quickstart-id="rule-max-age">
+      <FormGroup label={t('MAXIMUM_AGE')} fieldId="maxAge" data-quickstart-id="rule-max-age">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -531,9 +523,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               onChange={handleMaxAgeUnitChange}
               aria-label="Max Age units Input"
             >
-              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
-              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
-              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other')} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other')} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other')} />
             </FormSelect>
           </SplitItem>
         </Split>
@@ -543,11 +535,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('ARCHIVAL_PERIOD', { ns: 'common' })}
-        fieldId="archivalPeriod"
-        data-quickstart-id="rule-archival-period"
-      >
+      <FormGroup label={t('ARCHIVAL_PERIOD')} fieldId="archivalPeriod" data-quickstart-id="rule-archival-period">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -569,9 +557,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               onChange={handleArchivalPeriodUnitsChange}
               aria-label="archival period units input"
             >
-              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
-              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
-              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other')} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other')} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other')} />
             </FormSelect>
           </SplitItem>
         </Split>
@@ -581,11 +569,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           </HelperText>
         </FormHelperText>
       </FormGroup>
-      <FormGroup
-        label={t('INITIAL_DELAY', { ns: 'common' })}
-        fieldId="initialDelay"
-        data-quickstart-id="rule-initial-delay"
-      >
+      <FormGroup label={t('INITIAL_DELAY')} fieldId="initialDelay" data-quickstart-id="rule-initial-delay">
         <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
@@ -607,9 +591,9 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
               onChange={handleInitialDelayUnitsChanged}
               aria-label="initial delay units input"
             >
-              <FormSelectOption key="1" value="1" label={t('SECOND_other', { ns: 'common' })} />
-              <FormSelectOption key="2" value={60} label={t('MINUTE_other', { ns: 'common' })} />
-              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other', { ns: 'common' })} />
+              <FormSelectOption key="1" value="1" label={t('SECOND_other')} />
+              <FormSelectOption key="2" value={60} label={t('MINUTE_other')} />
+              <FormSelectOption key="3" value={60 * 60} label={t('HOUR_other')} />
             </FormSelect>
           </SplitItem>
         </Split>
@@ -620,7 +604,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         </FormHelperText>
       </FormGroup>
       <FormGroup
-        label={t('PRESERVED_ARCHIVES', { ns: 'common' })}
+        label={t('PRESERVED_ARCHIVES')}
         fieldId="preservedArchives"
         data-quickstart-id="rule-preserved-archives"
       >
@@ -654,10 +638,10 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}
         >
-          {t(loading ? 'CREATING' : 'CREATE', { ns: 'common' })}
+          {t(loading ? 'CREATING' : 'CREATE')}
         </Button>
         <Button variant="secondary" onClick={exitForm} isAriaDisabled={loading}>
-          {t('CANCEL', { ns: 'common' })}
+          {t('CANCEL')}
         </Button>
       </ActionGroup>
     </Form>
@@ -666,12 +650,12 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
 
 export const CreateRule: React.FC = () => {
   const matchExpreRef = React.useRef(new MatchExpressionService());
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
     () => [
       {
-        title: t('AUTOMATED_RULES', { ns: 'common' }),
+        title: t('AUTOMATED_RULES'),
         path: '/rules',
       },
     ],
@@ -687,7 +671,7 @@ export const CreateRule: React.FC = () => {
   );
 
   return (
-    <BreadcrumbPage pageTitle={t('CREATE', { ns: 'common' })} breadcrumbs={breadcrumbs}>
+    <BreadcrumbPage pageTitle={t('CREATE')} breadcrumbs={breadcrumbs}>
       <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
         <Grid hasGutter style={gridStyles}>
           <GridItem xl={5} order={{ xl: '0', default: '1' }}>

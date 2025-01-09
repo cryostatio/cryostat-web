@@ -23,6 +23,7 @@ import { EventProbe, NotificationCategory } from '@app/Shared/Services/api.types
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { sortResources, TableColumn } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Toolbar,
@@ -51,7 +52,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { combineLatest } from 'rxjs';
 import { AboutAgentCard } from './AboutAgentCard';
 
@@ -89,7 +89,7 @@ export interface AgentLiveProbesProps {}
 
 export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
   const context = React.useContext(ServiceContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
 
   const [probes, setProbes] = React.useState<EventProbe[]>([]);

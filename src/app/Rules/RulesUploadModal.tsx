@@ -19,11 +19,11 @@ import { Rule } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
 import { isRule } from './utils';
@@ -51,7 +51,7 @@ export const parseRule = (file: File, t: TFunction): Observable<Rule> => {
 
 export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
@@ -172,7 +172,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
         <ActionGroup>
           {allOks && numOfFiles ? (
             <Button variant="primary" onClick={handleClose}>
-              {t('CLOSE', { ns: 'common' })}
+              {t('CLOSE')}
             </Button>
           ) : (
             <>
@@ -182,10 +182,10 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
                 isDisabled={!numOfFiles || uploading}
                 {...submitButtonLoadingProps}
               >
-                {t('SUBMIT', { ns: 'common' })}
+                {t('SUBMIT')}
               </Button>
               <Button variant="link" onClick={handleClose}>
-                {t('CANCEL', { ns: 'common' })}
+                {t('CANCEL')}
               </Button>
             </>
           )}

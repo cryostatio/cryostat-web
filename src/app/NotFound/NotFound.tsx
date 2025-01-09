@@ -18,6 +18,7 @@ import { IAppRoute, routes, flatten } from '@app/routes';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   EmptyState,
@@ -31,14 +32,13 @@ import {
 } from '@patternfly/react-core';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { NotFoundCard } from './NotFoundCard';
 
 export interface NotFoundProps {}
 
 export const NotFound: React.FC<NotFoundProps> = (_) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);

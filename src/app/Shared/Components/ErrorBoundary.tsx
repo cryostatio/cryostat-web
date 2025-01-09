@@ -16,6 +16,7 @@
 
 import build from '@app/build.json';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   EmptyState,
@@ -28,7 +29,7 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { ServiceContext } from '../Services/Services';
 
 export interface ErrorBoundaryProps {
@@ -68,7 +69,7 @@ export interface DefaultFallBackProps {
 }
 
 export const DefaultFallBack: React.FC<DefaultFallBackProps> = ({ error, ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const addSubcription = useSubscriptions();
   const serviceContext = React.useContext(ServiceContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
@@ -81,7 +82,7 @@ export const DefaultFallBack: React.FC<DefaultFallBackProps> = ({ error, ...prop
     <Bullseye {...props}>
       <EmptyState variant={EmptyStateVariant.lg}>
         <EmptyStateHeader
-          titleText={<>{t('SOMETHING_WENT_WRONG', { ns: 'common' })}</>}
+          titleText={<>{t('SOMETHING_WENT_WRONG')}</>}
           icon={<EmptyStateIcon icon={ExclamationCircleIcon} color="red" />}
           headingLevel={'h1'}
         />

@@ -186,7 +186,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: testT('SAVE', { ns: 'common' }),
+        name: testT('SAVE'),
       }),
     );
     expect(setConfigRequestSpy).toHaveBeenCalledWith(config);

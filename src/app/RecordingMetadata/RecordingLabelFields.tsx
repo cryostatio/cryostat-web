@@ -17,6 +17,7 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionList,
   ActionListItem,
@@ -33,7 +34,6 @@ import {
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, FileIcon, UploadIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { catchError, Observable, of, zip } from 'rxjs';
 import { isValidLabel, getValidatedOption, isDuplicateKey, parseLabelsFromFile, getLabelFromInput } from './utils';
 
@@ -54,7 +54,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
 }) => {
   const inputRef = React.useRef<HTMLInputElement>(null); // Use ref to refer to child component
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [loading, setLoading] = React.useState(false);
   const [invalidUploads, setInvalidUploads] = React.useState<string[]>([]);

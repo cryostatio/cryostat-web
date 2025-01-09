@@ -22,6 +22,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { getAnnotation } from '@app/utils/utils';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Divider,
@@ -39,7 +40,6 @@ import {
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 export interface TargetContextSelectorProps {
@@ -50,7 +50,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [targets, setTargets] = React.useState<Target[]>([]);
   const [selectedTarget, setSelectedTarget] = React.useState<Target>();
   const [favorites, setFavorites] = React.useState<string[]>(getFromLocalStorage('TARGET_FAVORITES', []));

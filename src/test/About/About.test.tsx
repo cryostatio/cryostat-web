@@ -65,6 +65,6 @@ describe('<About />', () => {
     expect(logo).toHaveClass('pf-v5-c-brand cryostat-logo');
     expect(logo).toHaveAttribute('alt', 'Cryostat');
     expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', { ns: 'common' }))).toBeInTheDocument();
+    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK'))).toBeInTheDocument();
   });
 });

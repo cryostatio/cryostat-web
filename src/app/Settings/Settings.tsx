@@ -18,6 +18,7 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Card,
   Form,
@@ -36,7 +37,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AutomatedAnalysis } from './Config/AutomatedAnalysis';
 import { AutoRefresh } from './Config/AutoRefresh';
@@ -54,7 +55,7 @@ import { paramAsTab, tabAsParam, getGroupFeatureLevel } from './utils';
 export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const settings = React.useMemo(
     () =>
@@ -208,7 +209,7 @@ interface SettingTabProps extends TabProps {
 
 // Workaround to the Tabs component requiring children to be React.FC<TabProps>
 const WrappedTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, title, children }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   return (
     <FeatureFlag level={featureLevelConfig.level} strict={featureLevelConfig.strict}>

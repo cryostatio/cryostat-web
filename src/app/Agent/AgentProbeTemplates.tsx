@@ -23,6 +23,7 @@ import { ProbeTemplate, NotificationCategory } from '@app/Shared/Services/api.ty
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -62,7 +63,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, defaultIfEmpty, first, tap } from 'rxjs/operators';
 import { AboutAgentCard } from './AboutAgentCard';
@@ -86,7 +86,7 @@ export interface AgentProbeTemplatesProps {
 
 export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentDetected }) => {
   const context = React.useContext(ServiceContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
 
   const [templates, setTemplates] = React.useState<ProbeTemplate[]>([]);
@@ -365,7 +365,7 @@ export interface AgentProbeTemplateUploadModalProps {
 }
 
 export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadModalProps> = ({ onClose, isOpen }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -478,7 +478,7 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
         <ActionGroup>
           {allOks && numOfFiles ? (
             <Button variant="primary" onClick={handleClose}>
-              {t('CLOSE', { ns: 'common' })}
+              {t('CLOSE')}
             </Button>
           ) : (
             <>
@@ -488,10 +488,10 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
                 isDisabled={!numOfFiles || uploading}
                 {...submitButtonLoadingProps}
               >
-                {t('SUBMIT', { ns: 'common' })}
+                {t('SUBMIT')}
               </Button>
               <Button variant="link" onClick={handleClose}>
-                {t('CANCEL', { ns: 'common' })}
+                {t('CANCEL')}
               </Button>
             </>
           )}
@@ -508,7 +508,7 @@ export interface AgentTemplateActionProps {
 }
 
 export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDelete, template }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const actionItems = React.useMemo(() => {

@@ -21,6 +21,7 @@ import {
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -37,7 +38,6 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { DEFAULT_DASHBOARD_NAME } from './const';
 import { BlankLayout } from './cryostat-dashboard-templates';
@@ -53,7 +53,7 @@ export interface DashboardLayoutCreateModalProps {
 
 export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProps> = ({ onClose, ...props }) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
   const [nameValidated, setNameValidated] = React.useState<ValidatedOptions>(ValidatedOptions.default);
   const [errorMessage, setErrorMessage] = React.useState<string>('');
@@ -183,10 +183,10 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     return (
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit} isAriaDisabled={nameValidated !== 'success'}>
-          {isCreateModal ? t('CREATE', { ns: 'common' }) : t('RENAME', { ns: 'common' })}
+          {isCreateModal ? t('CREATE') : t('RENAME')}
         </Button>
         <Button variant="link" onClick={handleClose}>
-          {t('CANCEL', { ns: 'common' })}
+          {t('CANCEL')}
         </Button>
       </ActionGroup>
     );

@@ -113,7 +113,7 @@ describe('<DateTimePicker/>', () => {
     await user.click(selectedDate);
 
     // Switched to time now
-    const mInput = within(screen.getByLabelText(testT('MINUTE', { ns: 'common' }))).getByLabelText(
+    const mInput = within(screen.getByLabelText(testT('MINUTE'))).getByLabelText(
       testT('TimeSpinner.INPUT_MINUTE_VALUE'),
     );
     expect(mInput).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe('<DateTimePicker/>', () => {
       },
     });
 
-    const submitButton = screen.getByText(testT('SELECT', { ns: 'common' }));
+    const submitButton = screen.getByText(testT('SELECT'));
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
 
@@ -161,7 +161,7 @@ describe('<DateTimePicker/>', () => {
       },
     });
 
-    const dismissButton = screen.getByText(testT('CANCEL', { ns: 'common' }));
+    const dismissButton = screen.getByText(testT('CANCEL'));
     expect(dismissButton).toBeInTheDocument();
     expect(dismissButton).toBeVisible();
 

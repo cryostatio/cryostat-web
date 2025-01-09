@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { QuickStartCatalogPage } from '@patternfly/quickstarts';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface QuickStartsCatalogPageProps {}
 
 const QuickStartsCatalogPage: React.FC<QuickStartsCatalogPageProps> = (_) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   // TODO: Quick start categories (patternfly/quickstarts supports this through individual components)
   // e.g. Dashboard Quick starts, Topology Quick starts, Recording Quick starts, etc.

@@ -15,9 +15,9 @@
  */
 
 import { RecordingState } from '@app/Shared/Services/api.types';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Badge, MenuToggle, MenuToggleElement, Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface RecordingStateFilterProps {
   filteredStates: RecordingState[] | undefined;
@@ -25,7 +25,7 @@ export interface RecordingStateFilterProps {
 }
 
 export const RecordingStateFilter: React.FC<RecordingStateFilterProps> = ({ filteredStates, onSelectToggle }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const onSelect = React.useCallback(

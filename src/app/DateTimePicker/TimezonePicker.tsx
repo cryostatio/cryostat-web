@@ -17,6 +17,7 @@
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { supportedTimezones, Timezone } from '@i18n/datetime';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Divider,
   Icon,
@@ -33,7 +34,6 @@ import { GlobeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 const DEFAULT_NUM_OPTIONS = 10;
 
@@ -52,7 +52,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
   selected,
   onTimezoneChange = (_) => undefined,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [dayjs, _dateFormat] = useDayjs();
   const [numOfOptions, setNumOfOptions] = React.useState(DEFAULT_NUM_OPTIONS);
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
@@ -170,9 +170,7 @@ export const TimezonePicker: React.FC<TimezonePickerProps> = ({
         )}
         {numOfOptions < timezones.length && filteredTimezones.length > 0 ? (
           <SelectOption key="view-more" onClick={handleViewMore} value={undefined}>
-            <span className={css('pf-v5-c-button', 'pf-m-link', 'pf-m-inline')}>
-              {t('VIEW_MORE', { ns: 'common' })}
-            </span>
+            <span className={css('pf-v5-c-button', 'pf-m-link', 'pf-m-inline')}>{t('VIEW_MORE')}</span>
           </SelectOption>
         ) : null}
       </SelectList>

@@ -20,6 +20,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { getAnnotation } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Card,
   CardBody,
@@ -39,7 +40,6 @@ import {
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface TargetSelectProps {
   simple?: boolean; // Display a simple, non-expandable component
@@ -51,7 +51,7 @@ export const TargetSelect: React.FC<TargetSelectProps> = ({ onSelect, simple, ..
   const addSubscription = useSubscriptions();
   const firstLoadRef = React.useRef(false);
 
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [isExpanded, setExpanded] = React.useState(false);
   const [selected, setSelected] = React.useState<Target>();
   const [targets, setTargets] = React.useState<Target[]>([]);

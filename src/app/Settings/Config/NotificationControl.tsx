@@ -18,6 +18,7 @@ import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { messageKeys } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ExpandableSection,
   Switch,
@@ -29,14 +30,13 @@ import {
   HelperTextItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SettingTab, UserSetting } from '../types';
 
 const min = 0;
 const max = 10;
 
 const Component = () => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
@@ -148,7 +148,7 @@ const Component = () => {
         </StackItem>
         <StackItem key={'expandable-noti-switch-list'}>
           <ExpandableSection
-            toggleText={expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })}
+            toggleText={expanded ? t('SHOW_LESS') : t('SHOW_MORE')}
             onToggle={(_, expanded: boolean) => setExpanded(expanded)}
             isExpanded={expanded}
             toggleId="notification-options-toggle"

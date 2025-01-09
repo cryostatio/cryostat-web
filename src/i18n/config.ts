@@ -17,30 +17,7 @@
 import i18next from 'i18next';
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
-
-import en_common from '../../locales/en/common.json';
-import en_public from '../../locales/en/public.json';
-// import zh_common from '../../locales/zh/common.json';
-// import zh_public from '../../locales/zh/public.json';
-
-// TODO: .use(Backend) eventually store translations on backend?
-// Openshift console does this already:
-// https://github.com/openshift/console/blob/master/frontend/public/i18n.js
-export const i18nResources = {
-  en: {
-    public: en_public,
-    common: en_common,
-  },
-  // zh: {
-  //   // TODO: add zh translation (and other languages)?
-  //   // public: zh_public,
-  //   // common: zh_common,
-  // },
-} as const;
-
-export const i18nNamespaces = ['public', 'common'];
-
-export const i18nLanguages = Object.keys(i18nResources);
+import { i18nNamespaces, i18nResources } from './i18nextUtil';
 
 // eslint-disable-next-line import/no-named-as-default-member
 i18next

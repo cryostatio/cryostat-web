@@ -18,6 +18,7 @@ import { ActiveRecording } from '@app/Shared/Services/api.types';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import dayjs, { Timezone } from '@i18n/datetime';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   ButtonVariant,
@@ -35,7 +36,6 @@ import {
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { DATETIME_INPUT_MAXLENGTH } from './const';
 
 interface _DatetimeState {
@@ -75,7 +75,7 @@ export interface DateTimeFilterProps {
 }
 
 export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [dayjs, _] = useDayjs();
   const [fromDatetimeInput, setFromDatetimeInput] = React.useState<_DatetimeState>(_emptyDatetimeInput);
   const [toDatetimeInput, setToDatetimeInput] = React.useState<_DatetimeState>(_emptyDatetimeInput);
@@ -132,13 +132,13 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
       <Flex spaceItems={{ default: 'spaceItemsSm' }}>
         <FlexItem>
           <InputGroup>
-            <InputGroupText>{t('FROM', { ns: 'common' })}</InputGroupText>
+            <InputGroupText>{t('FROM')}</InputGroupText>
             <DateTimeInput
               onChange={setFromDatetimeInput}
               selectedDateTime={fromDatetimeInput}
               dateValidators={fromValidators}
             />
-            <InputGroupText>{t('TO', { ns: 'common' })}</InputGroupText>
+            <InputGroupText>{t('TO')}</InputGroupText>
             <DateTimeInput
               onChange={setToDatetimeInput}
               selectedDateTime={toDatetimeInput}
@@ -175,7 +175,7 @@ export interface DateTimeInputProps {
 }
 
 export const DateTimeInput: React.FC<DateTimeInputProps> = ({ selectedDateTime, dateValidators, onChange }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [dayjs, datetimeContext] = useDayjs();
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 

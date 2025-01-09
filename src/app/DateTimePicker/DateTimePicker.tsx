@@ -17,6 +17,7 @@ import { TimePicker } from '@app/DateTimePicker/TimePicker';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { Timezone, defaultDatetimeFormat } from '@i18n/datetime';
 import { isHourIn24hAM } from '@i18n/datetimeUtils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -30,7 +31,6 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { TimezonePicker } from './TimezonePicker';
 
 export interface DateTimePickerProps {
@@ -46,7 +46,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   prefilledDate,
   dateValidators,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const [dayjs, _] = useDayjs();
   const [datetime, setDatetime] = React.useState<Date>(new Date());
   const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone); // Not affected by user preferences
@@ -152,15 +152,15 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           value={selectedDatetimeDisplay}
         />
       </FormGroup>
-      <FormGroup label={t('TIMEZONE', { ns: 'common' })}>
+      <FormGroup label={t('TIMEZONE')}>
         <TimezonePicker id="timezone-picker" onTimezoneChange={setTimezone} selected={timezone} />
       </FormGroup>
       <ActionGroup style={{ marginTop: 0 }}>
         <Button variant="primary" onClick={handleSubmit}>
-          {t('SELECT', { ns: 'common' })}
+          {t('SELECT')}
         </Button>
         <Button variant="link" onClick={onDismiss}>
-          {t('CANCEL', { ns: 'common' })}
+          {t('CANCEL')}
         </Button>
       </ActionGroup>
     </Form>

@@ -319,7 +319,7 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME'))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
       name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
@@ -377,7 +377,7 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME'))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
       name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
@@ -449,7 +449,7 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME'))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
       name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
@@ -532,7 +532,7 @@ describe('<AutomatedAnalysisCard />', () => {
       expect(screen.getByText(evaluation.topic)).toBeInTheDocument();
     });
 
-    const filterToggle = screen.getByText(testT('NAME', { ns: 'common' }));
+    const filterToggle = screen.getByText(testT('NAME'));
 
     await act(async () => {
       await user.click(filterToggle);

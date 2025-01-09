@@ -51,6 +51,7 @@ import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Servic
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { calculateAnalysisTimer, portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   CardBody,
@@ -96,7 +97,6 @@ import {
 } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { concatMap, filter, first, map, tap } from 'rxjs';
 import { DashboardCard } from '../DashboardCard';
@@ -119,7 +119,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [targetConnectURL, setTargetConnectURL] = React.useState('');
   const [results, setResults] = React.useState<AnalysisResult[]>([]);
@@ -445,7 +445,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         if (errorMessage === NO_RECORDINGS_MESSAGE) {
           return [undefined, undefined];
         } else if (isAuthFail(errorMessage)) {
-          return [t('RETRY', { ns: 'common' }), generateReport];
+          return [t('RETRY'), generateReport];
         } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
           return [t('AutomatedAnalysisCard.RETRY_STARTING'), startProfilingRecording];
         } else if (errorMessage === FAILED_REPORT_MESSAGE) {
@@ -453,7 +453,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         } else if (errorMessage === TEMPLATE_UNSUPPORTED_MESSAGE) {
           return [undefined, undefined];
         } else {
-          return [t('RETRY', { ns: 'common' }), generateReport];
+          return [t('RETRY'), generateReport];
         }
       }
       return [undefined, undefined];
@@ -619,7 +619,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           <EmptyStateFooter>
             <EmptyStateActions>
               <Button variant="link" onClick={handleClearFilters}>
-                {t('CLEAR_FILTERS', { ns: 'common' })}
+                {t('CLEAR_FILTERS')}
               </Button>
               <Button variant="link" onClick={showUnavailableScores}>
                 {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
@@ -672,7 +672,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         id="automated-analysis-toolbar"
         aria-label={t('AutomatedAnalysisCard.TOOLBAR.LABEL')}
         clearAllFilters={handleClearFilters}
-        clearFiltersButtonText={t('CLEAR_FILTERS', { ns: 'common' })}
+        clearFiltersButtonText={t('CLEAR_FILTERS')}
         isFullHeight
       >
         <ToolbarContent>
@@ -906,7 +906,7 @@ export interface AutomatedAnalysisHeaderLabelProps {
 
 export const AutomatedAnalysisHeaderLabel: React.FC<AutomatedAnalysisHeaderLabelProps> = (props) => {
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);

@@ -24,6 +24,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, StreamOf } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Card,
@@ -46,7 +47,7 @@ import {
 } from '@patternfly/react-core';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { catchError, combineLatest, distinctUntilChanged, interval, map, of, switchMap, tap } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
 import { TestRequest } from './types';
@@ -64,7 +65,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
   onPropsSave,
   ...props
 }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const matchExpreRef = React.useRef(new MatchExpressionService());
   const loadingRef = React.useRef(new StreamOf(false));
   const credentialRef = React.useRef(new StreamOf<AuthCredential>({ username: '', password: '' }));
@@ -124,7 +125,7 @@ interface AuthFormProps extends Omit<CreateCredentialModalProps, 'visible'> {
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, progressChange, ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const matchExprService = useMatchExpressionSvc();
@@ -224,7 +225,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       onCredentialChange={setCredential}
     >
       <FormGroup
-        label={t('MATCH_EXPRESSION', { ns: 'common' })}
+        label={t('MATCH_EXPRESSION')}
         labelIcon={
           <Popover
             appendTo={portalRoot}
@@ -286,7 +287,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
 type _SupportedTab = 'visualizer' | 'test';
 
 export const FormHelper: React.FC = ({ ...props }) => {
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
   const alertOptions = React.useMemo(() => ({ hideActions: true }), []);
   const [activeTab, setActiveTab] = React.useState<_SupportedTab>('visualizer');
 
@@ -319,7 +320,7 @@ export const FormHelper: React.FC = ({ ...props }) => {
             <TabTitleIcon>
               <FlaskIcon />
             </TabTitleIcon>
-            <TabTitleText>{t('TEST', { ns: 'common' })}</TabTitleText>
+            <TabTitleText>{t('TEST')}</TabTitleText>
           </>
         }
       >

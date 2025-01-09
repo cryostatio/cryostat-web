@@ -23,6 +23,7 @@ import {
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Drawer,
@@ -40,7 +41,6 @@ import {
 } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
 interface AutomatedAnalysisConfigDrawerProps {
@@ -57,7 +57,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);

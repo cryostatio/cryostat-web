@@ -20,15 +20,15 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import build from '@app/build.json';
 import { ThemeSetting } from '@app/Settings/types';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { AboutDescription } from './AboutDescription';
 
 export interface AboutProps {}
 
 export const About: React.FC<AboutProps> = (_) => {
-  const { t } = useTranslation('public');
+  const { t } = useCryostatTranslation();
   const [theme] = useTheme();
 
   const logo = React.useMemo(() => (theme === ThemeSetting.DARK ? cryostatLogoDark : cryostatLogo), [theme]);
@@ -42,7 +42,7 @@ export const About: React.FC<AboutProps> = (_) => {
         <CardBody>
           <AboutDescription />
         </CardBody>
-        <CardFooter>{t('CRYOSTAT_TRADEMARK', { ns: 'common' })}</CardFooter>
+        <CardFooter>{t('CRYOSTAT_TRADEMARK')}</CardFooter>
       </Card>
     </BreadcrumbPage>
   );

@@ -19,12 +19,12 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { EmptyState, EmptyStateIcon, EmptyStateHeader } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, SortByDirection, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
 export interface MatchedTargetsTableProps {
   id: number;
@@ -46,7 +46,7 @@ const tableColumns: TableColumn[] = [
 
 export const MatchedTargetsTable: React.FC<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
   const context = React.useContext(ServiceContext);
-  const { t } = useTranslation();
+  const { t } = useCryostatTranslation();
 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [sortBy, getSortParams] = useSort();
