@@ -11,10 +11,10 @@ To add a new language, add a new entry to the `i18nResources` object in `src/i18
 To add a new localization key for a user-facing string in `cryostat-web`, use the `t` function from `react-i18next`:
 
 ```tsx
-import { useTranslation } from 'react-i18next';
+import { useCryostatTranslation } from 'react-i18next';
 ...
 export const SomeFC = (props) => {
-    const { t } = useTranslation();
+    const { t } = useCryostatTranslation();
 
     return (
         <div>
