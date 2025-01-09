@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { mockMediaQueryList, render, renderSnapshot, testT } from '../utils';
+import { mockMediaQueryList, render, renderSnapshot } from '../utils';
 
 jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.DARK));
 jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
