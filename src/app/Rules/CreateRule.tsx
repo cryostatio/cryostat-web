@@ -58,7 +58,7 @@ import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { RuleFormData } from './types';

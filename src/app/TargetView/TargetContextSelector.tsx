@@ -40,7 +40,7 @@ import {
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom-v5-compat';
 
 export interface TargetContextSelectorProps {
   className?: string;

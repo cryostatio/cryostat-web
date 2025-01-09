@@ -30,8 +30,8 @@ jest.mock('@patternfly/react-core', () => ({
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
   useNavigate: () => mockNavigate,
 }));
 

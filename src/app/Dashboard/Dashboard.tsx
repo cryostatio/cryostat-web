@@ -30,7 +30,7 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Grid, GridItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { AddCard } from './AddCard';
 import { ChartContext } from './Charts/context';
 import { JFRMetricsChartController } from './Charts/jfr/JFRMetricsChartController';
