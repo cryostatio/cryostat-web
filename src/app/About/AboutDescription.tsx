@@ -23,6 +23,8 @@ import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patter
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
+export const VERSION_REGEX = /^(?<tag>v?[0-9]+\.[0-9]+\.[0-9]+)(?:-(?<build>.+))?$/;
+
 export const AboutDescription: React.FC = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
@@ -40,8 +42,7 @@ export const AboutDescription: React.FC = () => {
     if (!cryostatVersion) {
       return;
     }
-    const expr = /^(v[0-9]+\.[0-9]+\.[0-9]+)(?:-snapshot)?$/;
-    const result = cryostatVersion.match(expr);
+    const result = cryostatVersion.match(VERSION_REGEX);
     if (!result) {
       notificationsContext.warning(
         'Cryostat version parse failure',
