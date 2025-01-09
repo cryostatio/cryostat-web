@@ -23,7 +23,7 @@ import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patter
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const VERSION_REGEX = /^(?<tag>v?[0-9]+\.[0-9]+\.[0-9]+)(?:-(?<build>.+))?$/;
+export const VERSION_REGEX = /^(v?[0-9]+\.[0-9]+\.[0-9]+)(?:-(.+))?$/;
 
 export const AboutDescription: React.FC = () => {
   const serviceContext = React.useContext(ServiceContext);
@@ -50,7 +50,7 @@ export const AboutDescription: React.FC = () => {
       );
       return;
     }
-    return result.groups?.tag;
+    return result[1];
   }, [cryostatVersion, notificationsContext]);
 
   const versionComponent = React.useMemo(() => {

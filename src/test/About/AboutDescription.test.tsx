@@ -75,9 +75,8 @@ describe('<AboutDescription />', () => {
       expect(VERSION_REGEX.test(version.str)).toBeTruthy();
       const result = version.str.match(VERSION_REGEX);
       expect(result).toBeTruthy();
-      expect(result!.groups).toBeTruthy();
-      expect(result!.groups!.tag).toEqual(version.version);
-      expect(result!.groups!.build).toEqual(version.build);
+      expect(result![1]).toEqual(version.version);
+      expect(result![2]).toEqual(version.build);
     });
   });
 
