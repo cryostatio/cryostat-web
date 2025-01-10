@@ -249,6 +249,7 @@ export const StoredCredentials = () => {
               map((cred) => ({
                 id: message.id,
                 matchExpression: cred.matchExpression,
+                targets: cred.targets,
                 numMatchingTargets: cred.targets.length,
               })),
             );
@@ -425,7 +426,7 @@ export const StoredCredentials = () => {
               <Icon iconSize="md">
                 <ContainerNodeIcon />
               </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential.targets.length}</span>
+              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential?.targets?.length ?? 0}</span>
             </Button>
           </Td>
         </Tr>
