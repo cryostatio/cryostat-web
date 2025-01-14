@@ -55,7 +55,7 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';

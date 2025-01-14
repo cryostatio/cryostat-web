@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useLocation, Route, Routes } from 'react-router-dom';
+import { useLocation, Route, Routes } from 'react-router-dom-v5-compat';
 import About from './About/About';
 import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';

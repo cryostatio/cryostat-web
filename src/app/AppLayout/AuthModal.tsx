@@ -18,7 +18,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom-v5-compat';
 import { Observable, filter, first, map, mergeMap } from 'rxjs';
 import { CredentialAuthForm } from './CredentialAuthForm';
 
