@@ -26,6 +26,7 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Grid, GridItem } from '@patternfly/react-core';
 import * as React from 'react';
@@ -130,7 +131,7 @@ export const Dashboard: React.FC<DashboardComponentProps> = (_) => {
                       key={`${cfg.name}-actions`}
                       onRemove={() => handleRemove(idx)}
                       onResetSize={() => handleResetSize(idx)}
-                      onView={() => navigate(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
+                      onView={() => navigate(toPath(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`))}
                     />,
                   ],
                 })

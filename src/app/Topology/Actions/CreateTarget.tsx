@@ -22,7 +22,7 @@ import { Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { getAnnotation, portalRoot } from '@app/utils/utils';
+import { getAnnotation, portalRoot, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Accordion,
@@ -286,7 +286,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   }, [validConnectUrl, example]);
 
   return (
-    <BreadcrumbPage pageTitle={'Create Custom Target'} breadcrumbs={[{ title: 'Topology', path: '/topology' }]}>
+    <BreadcrumbPage pageTitle={'Create Custom Target'} breadcrumbs={[{ title: 'Topology', path: toPath('/topology') }]}>
       <Card isFullHeight>
         <CardTitle>Create Custom Target</CardTitle>
         <CardBody>

@@ -27,7 +27,7 @@ import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { portalRoot } from '@app/utils/utils';
+import { portalRoot, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
@@ -656,7 +656,7 @@ export const CreateRule: React.FC = () => {
     () => [
       {
         title: t('AUTOMATED_RULES'),
-        path: '/rules',
+        path: toPath('/rules'),
       },
     ],
     [t],

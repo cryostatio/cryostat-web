@@ -33,7 +33,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
-import { cleanDataId, isAssetNew, openTabForUrl, portalRoot } from '@app/utils/utils';
+import { cleanDataId, isAssetNew, openTabForUrl, portalRoot, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Alert,
@@ -272,7 +272,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     if (location.pathname === '/settings') {
       selectTab(SettingTab.GENERAL);
     } else {
-      navigate(`/settings?${new URLSearchParams({ tab: tabAsParam(SettingTab.GENERAL) })}`);
+      navigate(toPath(`/settings?${new URLSearchParams({ tab: tabAsParam(SettingTab.GENERAL) })}`));
     }
   }, [location, navigate]);
 

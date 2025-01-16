@@ -35,7 +35,7 @@ import CreateTarget from './Topology/Actions/CreateTarget';
 import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
-import { accessibleRouteChangeHandler } from './utils/utils';
+import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -57,56 +57,51 @@ const routes: IAppRoute[] = [
   {
     component: About,
     label: 'About',
-    path: '/about',
+    path: toPath('/about'),
     title: 'About',
     description: 'Get information, help, or support for Cryostat.',
     navGroup: OVERVIEW,
   },
   {
     component: Dashboard,
-
     label: 'Dashboard',
-    path: '/',
+    path: toPath('/'),
     title: 'Dashboard',
     navGroup: OVERVIEW,
     children: [
       {
         component: DashboardSolo,
 
-        path: '/d-solo',
+        path: toPath('/d-solo'),
         title: 'Dashboard',
       },
     ],
   },
   {
     component: QuickStarts,
-
     label: 'Quick starts',
-    path: '/quickstarts',
+    path: toPath('/quickstarts'),
     title: 'Quick starts',
     description: 'Get started with Cryostat.',
   },
   {
     component: Topology,
-
     label: 'Topology',
-    path: '/topology',
+    path: toPath('/topology'),
     title: 'Topology',
     navGroup: OVERVIEW,
     children: [
       {
         component: CreateTarget,
-
-        path: '/topology/create-custom-target',
+        path: toPath('/topology/create-custom-target'),
         title: 'Create Custom Target',
       },
     ],
   },
   {
     component: RulesTable,
-
     label: 'Automated Rules',
-    path: '/rules',
+    path: toPath('/rules'),
     title: 'Automated Rules',
     description:
       'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
@@ -114,34 +109,30 @@ const routes: IAppRoute[] = [
     children: [
       {
         component: CreateRule,
-
-        path: '/rules/create',
+        path: toPath('/rules/create'),
         title: 'Create Automated Rule',
       },
     ],
   },
   {
     component: Recordings,
-
     label: 'Recordings',
-    path: '/recordings',
+    path: toPath('/recordings'),
     title: 'Recordings',
     description: 'Create, view and archive JFR Recordings on single target JVMs.',
     navGroup: CONSOLE,
     children: [
       {
         component: CreateRecording,
-
-        path: '/recordings/create',
+        path: toPath('/recordings/create'),
         title: 'Create Recording',
       },
     ],
   },
   {
     component: Archives,
-
     label: 'Archives',
-    path: '/archives',
+    path: toPath('/archives'),
     title: 'Archives',
     description:
       'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
@@ -149,26 +140,23 @@ const routes: IAppRoute[] = [
   },
   {
     component: Events,
-
     label: 'Events',
-    path: '/events',
+    path: toPath('/events'),
     title: 'Events',
     description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
     navGroup: CONSOLE,
   },
   {
     component: SecurityPanel,
-
     label: 'Security',
-    path: '/security',
+    path: toPath('/security'),
     title: 'Security',
     description: 'Upload SSL/TLS certificates for Cryostat to trust when communicating with target applications.',
     navGroup: CONSOLE,
   },
   {
     component: Settings,
-
-    path: '/settings',
+    path: toPath('/settings'),
     title: 'Settings',
     description: 'View or modify Cryostat web-client application settings.',
   },
@@ -176,7 +164,10 @@ const routes: IAppRoute[] = [
 
 const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   const ret: IAppRoute[] = [];
-  for (const r of routes) {
+  for (var r of routes) {
+    if (BASEPATH) {
+      r.path = `/${BASEPATH}/${r.path}`;
+    }
     ret.push(r);
     if (r.children) {
       ret.push(...flatten(r.children));
