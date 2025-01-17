@@ -25,6 +25,7 @@ import semverGt from 'semver/functions/gt';
 import semverValid from 'semver/functions/valid';
 import { getFromLocalStorage } from './LocalStorage';
 
+export const BASEPATH = process.env.BASEPATH || '';
 const SECOND_MILLIS = 1000;
 const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
@@ -267,4 +268,17 @@ export const clickOutside = () => document.body.click();
 export const isAssetNew = (currVer: string) => {
   const oldVer: string = getFromLocalStorage('ASSET_VERSION', '0.0.0');
   return !semverValid(oldVer) || semverGt(currVer, oldVer);
+};
+
+/**
+ * Formats a route path by prepending a basepath if necessary
+ * @param {string} path - the target path within cryostat-web
+ */
+export const toPath = (path: string) => {
+  if (BASEPATH) {
+    // incoming path already includes /, so don't add another one here
+    return `/${BASEPATH}${path}`;
+  } else {
+    return path;
+  }
 };

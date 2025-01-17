@@ -15,6 +15,7 @@
  */
 
 import { TargetView } from '@app/TargetView/TargetView';
+import { toPath } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { CustomRecordingForm } from './CustomRecordingForm';
@@ -29,7 +30,7 @@ export const CreateRecording: React.FC = () => {
   );
 
   return (
-    <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: '/recordings' }]}>
+    <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: toPath('/recordings') }]}>
       <Card>
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={onTabSelect}>

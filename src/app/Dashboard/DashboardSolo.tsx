@@ -15,6 +15,7 @@
  */
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { TargetView } from '@app/TargetView/TargetView';
+import { toPath } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -69,7 +70,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = () => {
               Provide valid <code>layout</code> and <code>cardId</code> query parameters and try again.
             </EmptyStateBody>
             <EmptyStateFooter>
-              <Button variant="primary" onClick={() => navigate('/')}>
+              <Button variant="primary" onClick={() => navigate(toPath('/'))}>
                 Back to Dashboard
               </Button>
             </EmptyStateFooter>
@@ -80,7 +81,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = () => {
       const { name, span, props } = cardConfig;
       return (
         // Use default chart controller
-        <TargetView pageTitle={cardConfig.id} breadcrumbs={[{ path: '/', title: 'Dashboard' }]}>
+        <TargetView pageTitle={cardConfig.id} breadcrumbs={[{ path: toPath('/'), title: 'Dashboard' }]}>
           <div data-full-height style={{ height: '100%' }}>
             {React.createElement(getCardDescriptorByName(name).component, {
               span: span,

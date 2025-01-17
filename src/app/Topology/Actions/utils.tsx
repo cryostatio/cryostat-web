@@ -24,6 +24,7 @@ import {
 } from '@app/Shared/Services/api.types';
 import { getAllLeaves, isTargetNode } from '@app/Shared/Services/api.utils';
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
+import { toPath } from '@app/utils/utils';
 import { ContextMenuSeparator } from '@patternfly/react-topology';
 import { merge, filter, map, debounceTime } from 'rxjs';
 import { getJvmIdFromEvent } from '../Entity/utils';
@@ -68,7 +69,7 @@ export const nodeActions: NodeAction[] = [
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      navigate('/');
+      navigate(toPath('/'));
     },
     title: 'View Dashboard',
   },
@@ -78,7 +79,7 @@ export const nodeActions: NodeAction[] = [
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      navigate('/recordings');
+      navigate(toPath('/recordings'));
     },
     title: 'View Recordings',
   },
@@ -89,7 +90,7 @@ export const nodeActions: NodeAction[] = [
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      navigate('/recordings/create');
+      navigate(toPath('/recordings/create'));
     },
     title: 'Create Recordings',
   },
@@ -99,7 +100,7 @@ export const nodeActions: NodeAction[] = [
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      navigate('/rules/create');
+      navigate(toPath('/rules/create'));
     },
     title: 'Create Automated Rules',
   },

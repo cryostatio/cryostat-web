@@ -25,6 +25,7 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
@@ -213,7 +214,7 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
   }, [props.actions, props.chartKind, props.duration, props.period, t, controllerState, actions]);
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate('/recordings/create', {
+    navigate(toPath('/recordings/create'), {
       state: {
         name: RECORDING_NAME,
         template: {

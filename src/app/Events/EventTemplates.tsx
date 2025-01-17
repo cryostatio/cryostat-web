@@ -25,7 +25,7 @@ import { LoadingProps } from '@app/Shared/Components/types';
 import { EventTemplate, NotificationCategory, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
+import { portalRoot, sortResources, TableColumn, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
@@ -255,7 +255,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
         {
           title: 'Create Recording...',
           onClick: () =>
-            navigate('/recordings/create', {
+            navigate(toPath('/recordings/create'), {
               state: { template: { name: t.name, type: t.type } } as Partial<CustomRecordingFormData>,
             }),
         },

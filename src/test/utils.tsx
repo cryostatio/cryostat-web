@@ -25,6 +25,7 @@ import {
 } from '@app/Shared/Redux/ReduxStore';
 import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { toPath } from '@app/utils/utils';
 import { PreloadedState } from '@reduxjs/toolkit';
 import { render as tlrRender } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -70,7 +71,7 @@ const _setupProviders = (providers: ProviderInstance<unknown>[]) => {
 
 const _setupRoutes = ({ routes, options }: RenderOptions['routerConfigs']) => {
   if (!routes.some((r) => r.path === '/')) {
-    routes = [{ path: '/', element: <>Root</> }, ...routes];
+    routes = [{ path: toPath('/'), element: <>Root</> }, ...routes];
   }
   options = options ?? { initialEntries: routes.map((r) => r.path ?? '').filter((p) => p != '') };
   return { routes, options };
