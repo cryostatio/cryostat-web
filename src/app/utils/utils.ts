@@ -271,7 +271,7 @@ export const isAssetNew = (currVer: string) => {
 };
 
 /**
- * Formats a route path by prepending a basepath if necessary 
+ * Formats a route path by prepending a basepath if necessary
  * @param {string} path - the target path within cryostat-web
  */
 export const toPath = (path: string) => {
@@ -281,4 +281,4 @@ export const toPath = (path: string) => {
   } else {
     return path;
   }
-}
+};
