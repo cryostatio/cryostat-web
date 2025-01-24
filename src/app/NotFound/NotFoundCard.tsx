@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { Card, CardTitle, CardBody, CardFooter } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
-
 export interface NotFoundCardProps {
   title: React.ReactNode;
   bodyText: React.ReactNode;
@@ -31,7 +30,7 @@ export const NotFoundCard: React.FC<NotFoundCardProps> = ({ title, bodyText, lin
       <CardTitle>{title}</CardTitle>
       <CardBody isFilled>{bodyText}</CardBody>
       <CardFooter>
-        <Link to={linkPath}>{linkText}</Link>
+        <CryostatLink to={linkPath}>{linkText}</CryostatLink>
       </CardFooter>
     </Card>
   );

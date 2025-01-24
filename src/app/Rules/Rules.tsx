@@ -15,6 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
@@ -60,7 +61,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
@@ -497,10 +498,10 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
                 <Trans
                   t={t}
                   components={[
-                    <Link to={'/recordings'} />,
-                    <Link to={'/events'} />,
-                    <Link to={'/security'} />,
-                    <Link to={'/archives'} />,
+                    <CryostatLink to={'/recordings'} />,
+                    <CryostatLink to={'/events'} />,
+                    <CryostatLink to={'/security'} />,
+                    <CryostatLink to={'/archives'} />,
                   ]}
                 >
                   Rules.ABOUT_BODY

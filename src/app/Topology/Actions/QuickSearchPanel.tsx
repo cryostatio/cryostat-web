@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
@@ -48,7 +49,7 @@ import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
 import _ from 'lodash';
 import * as React from 'react';
-import { Link, useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 import quickSearches, { QuickSearchId, quickSearchIds } from './quicksearches/all-quick-searches';
 import { QuickSearchItem } from './types';
@@ -218,7 +219,8 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onCl
   const description = React.useMemo(() => {
     return (
       <span>
-        For quickstarts on how to create these entities, visit <Link to={'/quickstarts'}>Quick Starts</Link>.
+        For quickstarts on how to create these entities, visit{' '}
+        <CryostatLink to={'/quickstarts'}>Quick Starts</CryostatLink>.
       </span>
     );
   }, []);
