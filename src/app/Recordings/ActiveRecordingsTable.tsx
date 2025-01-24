@@ -277,8 +277,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
-
-        setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
+        setRecordings((old) => old.filter((r) => r.id !== event.message.recording.id));
         setCheckedIndices((old) => old.filter((idx) => idx !== event.message.recording.id));
       }),
     );
