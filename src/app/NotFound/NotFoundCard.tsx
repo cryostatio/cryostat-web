@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { toPath } from '@app/utils/utils';
 import { Card, CardTitle, CardBody, CardFooter } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom-v5-compat';
@@ -31,7 +32,7 @@ export const NotFoundCard: React.FC<NotFoundCardProps> = ({ title, bodyText, lin
       <CardTitle>{title}</CardTitle>
       <CardBody isFilled>{bodyText}</CardBody>
       <CardFooter>
-        <Link to={linkPath}>{linkText}</Link>
+        <Link to={toPath(linkPath)}>{linkText}</Link>
       </CardFooter>
     </Card>
   );

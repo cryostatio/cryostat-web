@@ -16,6 +16,7 @@
 import { topologyDeleteAllFiltersIntent } from '@app/Shared/Redux/ReduxStore';
 import { getAllLeaves } from '@app/Shared/Services/api.utils';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
+import { toPath } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -49,7 +50,7 @@ export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props
       return (
         <EmptyStateActions>
           Start launching a Java application or define a{' '}
-          <Link to={'/topology/create-custom-target'}>Custom Target</Link>.
+          <Link to={toPath('/topology/create-custom-target')}>Custom Target</Link>.
         </EmptyStateActions>
       );
     }

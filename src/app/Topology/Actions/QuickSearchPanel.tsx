@@ -16,7 +16,7 @@
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
-import { portalRoot } from '@app/utils/utils';
+import { portalRoot, toPath } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -218,7 +218,7 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onCl
   const description = React.useMemo(() => {
     return (
       <span>
-        For quickstarts on how to create these entities, visit <Link to={'/quickstarts'}>Quick Starts</Link>.
+        For quickstarts on how to create these entities, visit <Link to={toPath('/quickstarts')}>Quick Starts</Link>.
       </span>
     );
   }, []);

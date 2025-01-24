@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { toPath } from '@app/utils/utils';
 import {
   Breadcrumb,
   BreadcrumbHeading,
@@ -40,7 +41,7 @@ export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({ pageTitle, bread
         <Breadcrumb>
           {(breadcrumbs || []).map(({ title, path }) => (
             <BreadcrumbItem key={path}>
-              <Link to={path}>{title}</Link>
+              <Link to={toPath(path)}>{title}</Link>
             </BreadcrumbItem>
           ))}
           <BreadcrumbHeading>{pageTitle}</BreadcrumbHeading>

@@ -21,7 +21,7 @@ import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/M
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, formatBytes, formatDuration, sortResources, portalRoot } from '@app/utils/utils';
+import { TableColumn, formatBytes, formatDuration, sortResources, portalRoot, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
@@ -497,10 +497,10 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
                 <Trans
                   t={t}
                   components={[
-                    <Link to={'/recordings'} />,
-                    <Link to={'/events'} />,
-                    <Link to={'/security'} />,
-                    <Link to={'/archives'} />,
+                    <Link to={toPath('/recordings')} />,
+                    <Link to={toPath('/events')} />,
+                    <Link to={toPath('/security')} />,
+                    <Link to={toPath('/archives')} />,
                   ]}
                 >
                   Rules.ABOUT_BODY

@@ -507,7 +507,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </MastheadToggle>
           <MastheadMain>
             <MastheadBrand component={'div'}>
-              <Link to="/">
+              <Link to={toPath("/")}>
                 <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
               </Link>
             </MastheadBrand>
