@@ -52,6 +52,7 @@ import { Link, useNavigate } from 'react-router-dom-v5-compat';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 import quickSearches, { QuickSearchId, quickSearchIds } from './quicksearches/all-quick-searches';
 import { QuickSearchItem } from './types';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export const QuickSearchTabContent: React.FC<{ item?: QuickSearchItem }> = ({ item, ...props }) => {
   const navigate = useNavigate();
@@ -218,7 +219,8 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onCl
   const description = React.useMemo(() => {
     return (
       <span>
-        For quickstarts on how to create these entities, visit <Link to={toPath('/quickstarts')}>Quick Starts</Link>.
+        For quickstarts on how to create these entities, visit{' '}
+        <CryostatLink to={'/quickstarts'}>Quick Starts</CryostatLink>.
       </span>
     );
   }, []);

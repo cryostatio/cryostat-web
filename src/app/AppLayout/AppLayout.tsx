@@ -85,6 +85,7 @@ import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router
 import { map } from 'rxjs/operators';
 import { LogoutIcon } from './LogoutIcon';
 import { ThemeToggle } from './ThemeToggle';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export interface AppLayoutProps {
   children?: React.ReactNode;
@@ -507,9 +508,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </MastheadToggle>
           <MastheadMain>
             <MastheadBrand component={'div'}>
-              <Link to={toPath("/")}>
+              <CryostatLink to={'/'}>
                 <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
-              </Link>
+              </CryostatLink>
             </MastheadBrand>
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>

@@ -27,6 +27,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom-v5-compat';
 import { BreadcrumbTrail } from './types';
 import { isItemFilled } from './utils';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 interface BreadcrumbPageProps {
   pageTitle: string;
@@ -41,7 +42,7 @@ export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({ pageTitle, bread
         <Breadcrumb>
           {(breadcrumbs || []).map(({ title, path }) => (
             <BreadcrumbItem key={path}>
-              <Link to={toPath(path)}>{title}</Link>
+              <CryostatLink to={path}>{title}</CryostatLink>
             </BreadcrumbItem>
           ))}
           <BreadcrumbHeading>{pageTitle}</BreadcrumbHeading>

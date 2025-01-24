@@ -33,6 +33,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom-v5-compat';
 import { DiscoveryTreeContext } from '../utils';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export interface TopologyEmptyStateProps {}
 
@@ -50,7 +51,7 @@ export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props
       return (
         <EmptyStateActions>
           Start launching a Java application or define a{' '}
-          <Link to={toPath('/topology/create-custom-target')}>Custom Target</Link>.
+          <CryostatLink to={'/topology/create-custom-target'}>Custom Target</CryostatLink>.
         </EmptyStateActions>
       );
     }

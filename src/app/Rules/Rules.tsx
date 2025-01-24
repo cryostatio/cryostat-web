@@ -65,6 +65,7 @@ import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export interface RulesTableProps {}
 
@@ -497,10 +498,10 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
                 <Trans
                   t={t}
                   components={[
-                    <Link to={toPath('/recordings')} />,
-                    <Link to={toPath('/events')} />,
-                    <Link to={toPath('/security')} />,
-                    <Link to={toPath('/archives')} />,
+                    <CryostatLink to={'/recordings'} />,
+                    <CryostatLink to={'/events'} />,
+                    <CryostatLink to={'/security'} />,
+                    <CryostatLink to={'/archives'} />,
                   ]}
                 >
                   Rules.ABOUT_BODY
