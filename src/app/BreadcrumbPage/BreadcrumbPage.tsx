@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { toPath } from '@app/utils/utils';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import {
   Breadcrumb,
   BreadcrumbHeading,
@@ -24,10 +24,8 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
 import { BreadcrumbTrail } from './types';
 import { isItemFilled } from './utils';
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 interface BreadcrumbPageProps {
   pageTitle: string;

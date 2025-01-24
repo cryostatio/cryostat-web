@@ -25,6 +25,7 @@ import { GlobalQuickStartDrawer } from '@app/QuickStarts/QuickStartDrawer';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { ThemeSetting, SettingTab } from '@app/Settings/types';
 import { DARK_THEME_CLASS, selectTab, tabAsParam } from '@app/Settings/utils';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
@@ -85,7 +86,6 @@ import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router
 import { map } from 'rxjs/operators';
 import { LogoutIcon } from './LogoutIcon';
 import { ThemeToggle } from './ThemeToggle';
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export interface AppLayoutProps {
   children?: React.ReactNode;

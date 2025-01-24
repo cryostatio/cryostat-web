@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
-import { portalRoot, toPath } from '@app/utils/utils';
+import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -48,11 +49,10 @@ import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
 import _ from 'lodash';
 import * as React from 'react';
-import { Link, useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 import quickSearches, { QuickSearchId, quickSearchIds } from './quicksearches/all-quick-searches';
 import { QuickSearchItem } from './types';
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export const QuickSearchTabContent: React.FC<{ item?: QuickSearchItem }> = ({ item, ...props }) => {
   const navigate = useNavigate();

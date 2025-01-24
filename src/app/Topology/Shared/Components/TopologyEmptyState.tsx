@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { topologyDeleteAllFiltersIntent } from '@app/Shared/Redux/ReduxStore';
 import { getAllLeaves } from '@app/Shared/Services/api.utils';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
-import { toPath } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -31,9 +31,7 @@ import {
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom-v5-compat';
 import { DiscoveryTreeContext } from '../utils';
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export interface TopologyEmptyStateProps {}
 
