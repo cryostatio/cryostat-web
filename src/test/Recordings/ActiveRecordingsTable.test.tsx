@@ -68,11 +68,6 @@ const mockRecording: ActiveRecording = {
   maxAge: 0,
   remoteId: 998877,
 };
-const mockStoppedRecording = { ...mockRecording, state: RecordingState.STOPPED };
-const mockUpdatedRecording = {
-  ...mockRecording,
-  metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
-};
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 1 };
 const mockCreateNotification = {
   message: { target: mockConnectUrl, recording: mockAnotherRecording, jvmId: mockJvmId },
@@ -104,6 +99,7 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(''));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
+jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue(void 0);
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
@@ -111,17 +107,6 @@ jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
-
-jest
-  .spyOn(defaultServices.api, 'getTargetActiveRecordings')
-  .mockReturnValueOnce(of([mockRecording])) // renders the recording table correctly
-  .mockReturnValueOnce(of([mockRecording]))
-  .mockReturnValueOnce(of([mockRecording, mockAnotherRecording])) // adds a recording after receiving a notification
-  .mockReturnValueOnce(of([mockAnotherRecording])) // removes a recording after receiving a notification
-  .mockReturnValueOnce(of([mockStoppedRecording]))
-  .mockReturnValueOnce(of([mockRecording]))
-  .mockReturnValueOnce(of([mockUpdatedRecording]))
-  .mockReturnValue(of([mockRecording])); // all other tests
 
 jest.spyOn(defaultServices.reports, 'delete').mockReturnValue(void 0);
 
@@ -294,7 +279,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
   });
 
-  it('removes a Recording after receiving a notification', async () => {
+  it('updates the Recording labels after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -307,7 +292,8 @@ describe('<ActiveRecordingsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
+    expect(screen.getByText('someLabel=someUpdatedValue')).toBeInTheDocument();
+    expect(screen.queryByText('someLabel=someValue')).not.toBeInTheDocument();
   });
 
   it('stops a Recording after receiving a notification', async () => {
@@ -327,7 +313,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(screen.queryByText('RUNNING')).not.toBeInTheDocument();
   });
 
-  it('updates the Recording labels after receiving a notification', async () => {
+  it('removes a Recording after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -340,8 +326,7 @@ describe('<ActiveRecordingsTable />', () => {
       preloadedState: preloadedState,
     });
 
-    expect(screen.getByText('someLabel=someUpdatedValue')).toBeInTheDocument();
-    expect(screen.queryByText('someLabel=someValue')).not.toBeInTheDocument();
+    expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
   });
 
   it('displays the toolbar buttons', async () => {

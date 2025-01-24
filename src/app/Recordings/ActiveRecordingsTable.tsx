@@ -260,10 +260,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
-        refreshRecordingList();
+        setRecordings((old) => old.concat([event.message.recording]));
       }),
     );
-  }, [addSubscription, context, context.notificationChannel, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
@@ -277,11 +277,11 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         if (currentTarget?.jvmId != event.message.jvmId) {
           return;
         }
+        setRecordings((old) => old.filter((r) => r.id !== event.message.recording.id));
         setCheckedIndices((old) => old.filter((idx) => idx !== event.message.recording.id));
-        refreshRecordingList();
       }),
     );
-  }, [addSubscription, context, context.notificationChannel, setCheckedIndices, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
