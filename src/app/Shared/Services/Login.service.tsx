@@ -23,10 +23,11 @@ export class LoginService {
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
   private readonly sessionState = new ReplaySubject<SessionState>(1);
-  readonly authority: string;
 
-  constructor(private readonly settings: SettingsService) {
-    this.authority = process.env.CRYOSTAT_AUTHORITY || '.';
+  constructor(
+    private readonly authority: string,
+    private readonly settings: SettingsService,
+  ) {
     this.sessionState.next(SessionState.CREATING_USER_SESSION);
 
     fromFetch(`${this.authority}/api/v4/auth`, {

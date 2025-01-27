@@ -33,10 +33,20 @@ export interface Services {
   login: LoginService;
 }
 
+export interface CryostatContext {
+  url(path?: string): string;
+  headers(): Headers;
+}
+
+export const defaultContext: CryostatContext = {
+  url: (path?: string): string => `${process.env.CRYOSTAT_AUTHORITY || '.'}/${path}`,
+  headers: () => new Headers(),
+};
+
 const target = new TargetService();
 const settings = new SettingsService();
-const login = new LoginService(settings);
-const api = new ApiService(target, NotificationsInstance, login);
+const login = new LoginService(defaultContext.url(), settings);
+const api = new ApiService(defaultContext, target, NotificationsInstance);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);

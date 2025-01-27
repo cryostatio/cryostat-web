@@ -77,9 +77,9 @@ import {
   isGraphQLError,
   GraphQLError,
 } from './api.utils';
-import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { TargetService } from './Target.service';
+import { CryostatContext } from './Services';
 
 export class ApiService {
   private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
@@ -89,9 +89,9 @@ export class ApiService {
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
 
   constructor(
+    private readonly ctx: CryostatContext,
     private readonly target: TargetService,
     private readonly notifications: NotificationService,
-    private readonly login: LoginService,
   ) {
     this.doGet('recordings')
       .pipe(
@@ -103,12 +103,12 @@ export class ApiService {
       .subscribe();
 
     const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v4/grafana_datasource_url`,
+      this.ctx.url('/api/v4/grafana_datasource_url'),
     ).pipe(concatMap((resp) => from(resp.json())));
     const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v4/grafana_dashboard_url`,
+      this.ctx.url('/api/v4/grafana_dashboard_url'),
     ).pipe(concatMap((resp) => from(resp.json())));
-    const health: Observable<HealthGetResponse> = fromFetch(`${this.login.authority}/health`).pipe(
+    const health: Observable<HealthGetResponse> = fromFetch(this.ctx.url('/health')).pipe(
       tap((resp: Response) => {
         if (!resp.ok) {
           window.console.error(resp);
@@ -233,7 +233,7 @@ export class ApiService {
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
-    const headers = {};
+    const headers = this.ctx.headers();
     headers['Content-Type'] = 'application/json';
     return this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
       method: 'POST',
@@ -256,7 +256,7 @@ export class ApiService {
   }
 
   createRule(rule: Rule): Observable<boolean> {
-    const headers = new Headers();
+    const headers = this.ctx.headers();
     headers.set('Content-Type', 'application/json');
     return this.sendRequest('v4', 'rules', {
       method: 'POST',
@@ -270,7 +270,7 @@ export class ApiService {
   }
 
   updateRule(rule: Rule, clean = true): Observable<boolean> {
-    const headers = new Headers();
+    const headers = this.ctx.headers();
     headers.set('Content-Type', 'application/json');
     return this.sendRequest(
       'v4',
@@ -595,7 +595,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', 'event_templates', 'Template Upload Failed', {
       body: body,
       method: 'POST',
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -684,7 +684,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
       method: 'POST',
       body: body,
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -795,7 +795,7 @@ export class ApiService {
     suppressNotifications?: boolean,
     skipStatusCheck?: boolean,
   ): Observable<T> {
-    const headers = new Headers();
+    const headers = this.ctx.headers();
     headers.set('Content-Type', 'application/json');
     const req = () =>
       this.sendRequest(
@@ -841,9 +841,8 @@ export class ApiService {
         first(),
         map(
           (target) =>
-            `${this.login.authority}/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(
-              template.type,
-            )}/${encodeURIComponent(template.name)}`,
+            this.ctx.url(`/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent( template.type)}/${encodeURIComponent(template.name)} `)
+          ,
         ),
       )
       .subscribe((resourceUrl) => {
@@ -878,7 +877,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', 'recordings', 'Recording Upload Failed', {
       method: 'POST',
       body: body,
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -912,7 +911,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', 'certificates', 'Certificate Upload Failed', {
       method: 'POST',
       body,
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -1113,7 +1112,7 @@ export class ApiService {
       matchExpression,
       targets: targets.map((t) => this.transformTarget(t)),
     });
-    const headers = new Headers();
+    const headers = this.ctx.headers();
     headers.set('Content-Type', 'application/json');
 
     return this.sendRequest(
@@ -1448,8 +1447,14 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<Response> {
+    if (!config) {
+      config = {};
+    }
+    if (!config.headers) {
+      config.headers = this.ctx.headers();
+    }
     const req = () =>
-      fromFetch(`${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, config).pipe(
+    fromFetch(this.ctx.url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`), config).pipe(
         map((resp) => {
           if (resp.ok) return resp;
           throw new HttpError(resp);
@@ -1505,7 +1510,7 @@ export class ApiService {
     apiVersion: ApiVersion,
     path: string,
     title: string,
-    { method = 'GET', body, headers = {}, listeners, abortSignal }: XMLHttpRequestConfig,
+    { method = 'GET', body, headers = this.ctx.headers(), listeners, abortSignal }: XMLHttpRequestConfig,
     params?: URLSearchParams,
     suppressNotifications = false,
     skipStatusCheck = false,
@@ -1514,7 +1519,7 @@ export class ApiService {
       from(
         new Promise<XMLHttpResponse>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
-          xhr.open(method, `${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, true);
+          xhr.open(method, this.ctx.url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`), true);
 
           listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
 
