@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import * as React from 'react';
+import { Observable, of } from 'rxjs';
 import { ApiService } from './Api.service';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
@@ -22,7 +23,6 @@ import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
-import { Observable, of } from 'rxjs';
 
 export interface Services {
   target: TargetService;

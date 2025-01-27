@@ -78,8 +78,8 @@ import {
   GraphQLError,
 } from './api.utils';
 import { NotificationService } from './Notifications.service';
-import { TargetService } from './Target.service';
 import { CryostatContext } from './Services';
+import { TargetService } from './Target.service';
 
 export class ApiService {
   private readonly archiveEnabled = new BehaviorSubject<boolean>(true);

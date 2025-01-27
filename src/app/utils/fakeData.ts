@@ -36,12 +36,11 @@ import {
   AnalysisResult,
   SimpleResponse,
 } from '@app/Shared/Services/api.types';
-import { LoginService } from '@app/Shared/Services/Login.service';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ReportService } from '@app/Shared/Services/Report.service';
 import { ChartControllerConfig } from '@app/Shared/Services/service.types';
-import { CryostatContext, defaultServices, Services } from '@app/Shared/Services/Services';
+import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { Observable, of } from 'rxjs';
