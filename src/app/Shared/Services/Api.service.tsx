@@ -241,8 +241,9 @@ export class ApiService {
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
-    const headers = this.ctx.headers();
-    headers['Content-Type'] = 'application/json';
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
       method: 'POST',
       body: JSON.stringify(rule),
@@ -264,8 +265,9 @@ export class ApiService {
   }
 
   createRule(rule: Rule): Observable<boolean> {
-    const headers = this.ctx.headers();
-    headers.set('Content-Type', 'application/json');
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendRequest('v4', 'rules', {
       method: 'POST',
       body: JSON.stringify(rule),
@@ -278,8 +280,9 @@ export class ApiService {
   }
 
   updateRule(rule: Rule, clean = true): Observable<boolean> {
-    const headers = this.ctx.headers();
-    headers.set('Content-Type', 'application/json');
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendRequest(
       'v4',
       `rules/${rule.name}`,
@@ -803,8 +806,9 @@ export class ApiService {
     suppressNotifications?: boolean,
     skipStatusCheck?: boolean,
   ): Observable<T> {
-    const headers = this.ctx.headers();
-    headers.set('Content-Type', 'application/json');
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     const req = () =>
       this.sendRequest(
         'v4',
@@ -1120,9 +1124,9 @@ export class ApiService {
       matchExpression,
       targets: targets.map((t) => this.transformTarget(t)),
     });
-    const headers = this.ctx.headers();
-    headers.set('Content-Type', 'application/json');
-
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendRequest(
       'v4',
       'matchExpressions',
