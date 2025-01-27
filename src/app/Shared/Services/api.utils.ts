@@ -474,7 +474,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.warning,
       title: 'Recording Archive Failed',
-      body: (evt) => `Grafana upload failed for job: ${evt.message.jobId}`,
+      body: (evt) => `Failed to archive recording for job: ${evt.message.jobId}`,
       hidden: true,
     } as NotificationMessageMapper,
   ],
