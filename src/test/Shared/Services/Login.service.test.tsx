@@ -96,7 +96,7 @@ describe('Login.service', () => {
         .mockReturnValueOnce(of(logoutResp));
       window.location.href = 'https://example.com/';
       location.href = window.location.href;
-      svc = new LoginService(settingsSvc);
+      svc = new LoginService((p) => of(`/${p}`), settingsSvc);
     });
 
     it('should emit true', async () => {
