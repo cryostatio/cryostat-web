@@ -41,7 +41,7 @@ import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.se
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ReportService } from '@app/Shared/Services/Report.service';
 import { ChartControllerConfig } from '@app/Shared/Services/service.types';
-import { defaultServices, Services } from '@app/Shared/Services/Services';
+import { CryostatContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { Observable, of } from 'rxjs';
@@ -247,8 +247,15 @@ class FakeSetting extends SettingsService {
 }
 
 class FakeApiService extends ApiService {
-  constructor(target: TargetService, notifications: NotificationService, login: LoginService) {
-    super(target, notifications, login);
+  constructor(target: TargetService, notifications: NotificationService) {
+    super(
+      {
+        url: (path) => of(`/${path}`),
+        headers: () => new Headers(),
+      },
+      target,
+      notifications,
+    );
   }
 
   // MBean Metrics card
@@ -387,7 +394,7 @@ class FakeApiService extends ApiService {
 }
 
 const target = new FakeTargetService();
-const api = new FakeApiService(target, NotificationsInstance, defaultServices.login);
+const api = new FakeApiService(target, NotificationsInstance);
 const reports = new FakeReportService(NotificationsInstance, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 
