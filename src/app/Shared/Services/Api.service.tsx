@@ -102,13 +102,20 @@ export class ApiService {
       )
       .subscribe();
 
-    const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
-      this.ctx.url('/api/v4/grafana_datasource_url'),
-    ).pipe(concatMap((resp) => from(resp.json())));
-    const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = fromFetch(
-      this.ctx.url('/api/v4/grafana_dashboard_url'),
-    ).pipe(concatMap((resp) => from(resp.json())));
-    const health: Observable<HealthGetResponse> = fromFetch(this.ctx.url('/health')).pipe(
+    const getDatasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
+      .url('/api/v4/grafana_datasource_url')
+      .pipe(
+        concatMap((u) => fromFetch(u)),
+        concatMap((resp) => from(resp.json())),
+      );
+    const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
+      .url('/api/v4/grafana_dashboard_url')
+      .pipe(
+        concatMap((u) => fromFetch(u)),
+        concatMap((resp) => from(resp.json())),
+      );
+    const health: Observable<HealthGetResponse> = this.ctx.url('/health').pipe(
+      concatMap((u) => fromFetch(u)),
       tap((resp: Response) => {
         if (!resp.ok) {
           window.console.error(resp);
@@ -118,6 +125,7 @@ export class ApiService {
       concatMap((resp: Response) => from(resp.json())),
       shareReplay(),
     );
+
     health
       .pipe(
         concatMap((jsonResp) => {
@@ -839,10 +847,10 @@ export class ApiService {
       .pipe(
         filter((t) => !!t),
         first(),
-        map(
-          (target) =>
-            this.ctx.url(`/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent( template.type)}/${encodeURIComponent(template.name)} `)
-          ,
+        concatMap((target) =>
+          this.ctx.url(
+            `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+          ),
         ),
       )
       .subscribe((resourceUrl) => {
@@ -1454,7 +1462,8 @@ export class ApiService {
       config.headers = this.ctx.headers();
     }
     const req = () =>
-    fromFetch(this.ctx.url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`), config).pipe(
+      this.ctx.url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`).pipe(
+        concatMap((u) => fromFetch(u, config)),
         map((resp) => {
           if (resp.ok) return resp;
           throw new HttpError(resp);
@@ -1519,52 +1528,57 @@ export class ApiService {
       from(
         new Promise<XMLHttpResponse>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
-          xhr.open(method, this.ctx.url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`), true);
+          this.ctx
+            .url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`)
+            .pipe(first())
+            .subscribe((u) => {
+              xhr.open(method, u, true);
 
-          listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
+              listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
 
-          abortSignal && abortSignal.subscribe(() => xhr.abort()); // Listen to abort signal if any
+              abortSignal && abortSignal.subscribe(() => xhr.abort()); // Listen to abort signal if any
 
-          xhr.addEventListener('readystatechange', () => {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-              if (xhr.status === 0) {
-                // aborted
-                reject(new Error('Aborted'));
-              }
-              const ok = isHttpOk(xhr.status);
-              const respHeaders = {};
-              const arr = xhr
-                .getAllResponseHeaders()
-                .trim()
-                .split(/[\r\n]+/);
-              arr.forEach((line) => {
-                const parts = line.split(': ');
-                const header = parts.shift();
-                const value = parts.join(': ');
-                if (header) {
-                  respHeaders[header] = value;
-                } else {
-                  reject(new Error('Invalid header'));
+              xhr.addEventListener('readystatechange', () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                  if (xhr.status === 0) {
+                    // aborted
+                    reject(new Error('Aborted'));
+                  }
+                  const ok = isHttpOk(xhr.status);
+                  const respHeaders = {};
+                  const arr = xhr
+                    .getAllResponseHeaders()
+                    .trim()
+                    .split(/[\r\n]+/);
+                  arr.forEach((line) => {
+                    const parts = line.split(': ');
+                    const header = parts.shift();
+                    const value = parts.join(': ');
+                    if (header) {
+                      respHeaders[header] = value;
+                    } else {
+                      reject(new Error('Invalid header'));
+                    }
+                  });
+
+                  resolve({
+                    body: xhr.response,
+                    headers: respHeaders,
+                    respType: xhr.responseType,
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    ok: ok,
+                  } as XMLHttpResponse);
                 }
               });
 
-              resolve({
-                body: xhr.response,
-                headers: respHeaders,
-                respType: xhr.responseType,
-                status: xhr.status,
-                statusText: xhr.statusText,
-                ok: ok,
-              } as XMLHttpResponse);
-            }
-          });
+              // Populate headers
+              headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
+              xhr.withCredentials = true;
 
-          // Populate headers
-          headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
-          xhr.withCredentials = true;
-
-          // Send request
-          xhr.send(body);
+              // Send request
+              xhr.send(body);
+            });
         }),
       ).pipe(
         map((resp) => {

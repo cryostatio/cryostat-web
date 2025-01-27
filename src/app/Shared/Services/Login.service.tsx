@@ -25,18 +25,21 @@ export class LoginService {
   private readonly sessionState = new ReplaySubject<SessionState>(1);
 
   constructor(
-    private readonly authority: string,
+    private readonly authority: (path: string) => Observable<string>,
     private readonly settings: SettingsService,
   ) {
     this.sessionState.next(SessionState.CREATING_USER_SESSION);
 
-    fromFetch(`${this.authority}/api/v4/auth`, {
-      credentials: 'include',
-      mode: 'cors',
-      method: 'POST',
-      body: null,
-    })
+    authority('/api/v4/auth')
       .pipe(
+        concatMap((u) =>
+          fromFetch(u, {
+            credentials: 'include',
+            mode: 'cors',
+            method: 'POST',
+            body: null,
+          }),
+        ),
         concatMap((response) => {
           let gapAuth = response?.headers?.get('Gap-Auth');
           if (gapAuth) {
@@ -66,12 +69,15 @@ export class LoginService {
   }
 
   setLoggedOut(): Observable<boolean> {
-    return fromFetch(`${this.authority}/api/v4/logout`, {
-      credentials: 'include',
-      mode: 'cors',
-      method: 'POST',
-      body: null,
-    }).pipe(
+    return this.authority('/api/v4/logout').pipe(
+      concatMap((u) =>
+        fromFetch(u, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'POST',
+          body: null,
+        }),
+      ),
       concatMap((response) => {
         return of(response).pipe(
           map((response) => response.ok),

@@ -22,6 +22,7 @@ import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
+import { Observable, of } from 'rxjs';
 
 export interface Services {
   target: TargetService;
@@ -34,18 +35,18 @@ export interface Services {
 }
 
 export interface CryostatContext {
-  url(path?: string): string;
+  url(path?: string): Observable<string>;
   headers(): Headers;
 }
 
 export const defaultContext: CryostatContext = {
-  url: (path?: string): string => `${process.env.CRYOSTAT_AUTHORITY || '.'}/${path}`,
+  url: (path?: string): Observable<string> => of(`${process.env.CRYOSTAT_AUTHORITY || '.'}/${path}`),
   headers: () => new Headers(),
 };
 
 const target = new TargetService();
 const settings = new SettingsService();
-const login = new LoginService(defaultContext.url(), settings);
+const login = new LoginService(defaultContext.url, settings);
 const api = new ApiService(defaultContext, target, NotificationsInstance);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(NotificationsInstance, notificationChannel);
