@@ -1459,9 +1459,10 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<Response> {
-    if (config && !config.headers) {
-      config.headers = this.ctx.headers();
+    if (!config) {
+      config = {};
     }
+    config.headers = this.ctx.headers(config.headers);
     const req = () =>
       this.ctx.url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`).pipe(
         concatMap((u) => fromFetch(u, config)),
