@@ -26,7 +26,6 @@ import {
   ObservableInput,
   of,
   ReplaySubject,
-  shareReplay,
   throwError,
 } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
@@ -114,17 +113,7 @@ export class ApiService {
         concatMap((u) => fromFetch(u)),
         concatMap((resp) => from(resp.json())),
       );
-    const health: Observable<HealthGetResponse> = this.ctx.url('/health').pipe(
-      concatMap((u) => fromFetch(u)),
-      tap((resp: Response) => {
-        if (!resp.ok) {
-          window.console.error(resp);
-          this.notifications.danger('API /health request failed', resp.statusText);
-        }
-      }),
-      concatMap((resp: Response) => from(resp.json())),
-      shareReplay(),
-    );
+    const health: Observable<HealthGetResponse> = this.doGet('/health', 'unversioned');
 
     health
       .pipe(
@@ -1463,8 +1452,9 @@ export class ApiService {
       config = {};
     }
     config.headers = this.ctx.headers(config.headers);
+    const p = apiVersion === 'unversioned' ? path : `/api/${apiVersion}/${path}`;
     const req = () =>
-      this.ctx.url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`).pipe(
+      this.ctx.url(`${p}${params ? '?' + params : ''}`).pipe(
         concatMap((u) => fromFetch(u, config)),
         map((resp) => {
           if (resp.ok) return resp;
@@ -1521,7 +1511,7 @@ export class ApiService {
     apiVersion: ApiVersion,
     path: string,
     title: string,
-    { method = 'GET', body, headers = this.ctx.headers(), listeners, abortSignal }: XMLHttpRequestConfig,
+    { method = 'GET', body, headers, listeners, abortSignal }: XMLHttpRequestConfig,
     params?: URLSearchParams,
     suppressNotifications = false,
     skipStatusCheck = false,
