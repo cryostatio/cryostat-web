@@ -91,16 +91,9 @@ export class ApiService {
     private readonly ctx: CryostatContext,
     private readonly target: TargetService,
     private readonly notifications: NotificationService,
-  ) {
-    this.doGet('recordings')
-      .pipe(
-        catchError(() => {
-          this.archiveEnabled.next(false);
-          return EMPTY;
-        }),
-      )
-      .subscribe();
+  ) {}
 
+  testHealth() {
     const getDatasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
       .url('/api/v4/grafana_datasource_url')
       .pipe(
@@ -379,6 +372,17 @@ export class ApiService {
       ),
       first(),
     );
+  }
+
+  testArchiveAvailability() {
+    this.doGet('recordings')
+      .pipe(
+        catchError(() => {
+          this.archiveEnabled.next(false);
+          return EMPTY;
+        }),
+      )
+      .subscribe();
   }
 
   isArchiveEnabled(): Observable<boolean> {
