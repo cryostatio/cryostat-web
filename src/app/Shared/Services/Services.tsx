@@ -53,9 +53,6 @@ const notificationChannel = new NotificationChannel(NotificationsInstance, login
 const reports = new ReportService(NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 
-api.testHealth();
-api.testArchiveAvailability();
-
 const defaultServices: Services = {
   target,
   targets,

@@ -93,7 +93,12 @@ export class ApiService {
     private readonly notifications: NotificationService,
   ) {}
 
-  testHealth() {
+  testBaseServer() {
+    this.testHealth();
+    this.testArchiveAvailability();
+  }
+
+  private testHealth() {
     const getDatasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
       .url('/api/v4/grafana_datasource_url')
       .pipe(
@@ -168,6 +173,17 @@ export class ApiService {
           }
         },
       });
+  }
+
+  private testArchiveAvailability() {
+    this.doGet('recordings')
+      .pipe(
+        catchError(() => {
+          this.archiveEnabled.next(false);
+          return EMPTY;
+        }),
+      )
+      .subscribe();
   }
 
   getTargets(): Observable<Target[]> {
@@ -372,17 +388,6 @@ export class ApiService {
       ),
       first(),
     );
-  }
-
-  testArchiveAvailability() {
-    this.doGet('recordings')
-      .pipe(
-        catchError(() => {
-          this.archiveEnabled.next(false);
-          return EMPTY;
-        }),
-      )
-      .subscribe();
   }
 
   isArchiveEnabled(): Observable<boolean> {

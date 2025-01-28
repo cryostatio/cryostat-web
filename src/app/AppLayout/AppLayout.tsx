@@ -130,6 +130,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, [theme]);
 
   React.useEffect(() => {
+    serviceContext.api.testBaseServer();
+  }, [serviceContext.api]);
+
+  React.useEffect(() => {
     addSubscription(
       serviceContext.target.authFailure().subscribe(() => {
         setShowAuthModal(true);
