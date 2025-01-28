@@ -1459,10 +1459,7 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<Response> {
-    if (!config) {
-      config = {};
-    }
-    if (!config.headers) {
+    if (config && !config.headers) {
       config.headers = this.ctx.headers();
     }
     const req = () =>
