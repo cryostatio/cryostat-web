@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import * as React from 'react';
+import { Observable, of } from 'rxjs';
 import { ApiService } from './Api.service';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
@@ -33,10 +34,21 @@ export interface Services {
   login: LoginService;
 }
 
+export interface CryostatContext {
+  url: (path?: string) => Observable<string>;
+  headers: (init?: HeadersInit) => Headers;
+}
+
+const authority: string = process.env.CRYOSTAT_AUTHORITY || '.';
+export const defaultContext: CryostatContext = {
+  url: (path?: string): Observable<string> => of(`${authority}/${path}`.replace(/([^:]\/)\/+/g, '$1')),
+  headers: (init?: HeadersInit) => new Headers(init),
+};
+
 const target = new TargetService();
 const settings = new SettingsService();
-const login = new LoginService(settings);
-const api = new ApiService(target, NotificationsInstance, login);
+const login = new LoginService(defaultContext.url, settings);
+const api = new ApiService(defaultContext, target, NotificationsInstance);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);

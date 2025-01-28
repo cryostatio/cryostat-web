@@ -36,7 +36,6 @@ import {
   AnalysisResult,
   SimpleResponse,
 } from '@app/Shared/Services/api.types';
-import { LoginService } from '@app/Shared/Services/Login.service';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ReportService } from '@app/Shared/Services/Report.service';
@@ -247,8 +246,15 @@ class FakeSetting extends SettingsService {
 }
 
 class FakeApiService extends ApiService {
-  constructor(target: TargetService, notifications: NotificationService, login: LoginService) {
-    super(target, notifications, login);
+  constructor(target: TargetService, notifications: NotificationService) {
+    super(
+      {
+        url: (path) => of(`/${path}`),
+        headers: () => new Headers(),
+      },
+      target,
+      notifications,
+    );
   }
 
   // MBean Metrics card
@@ -387,7 +393,7 @@ class FakeApiService extends ApiService {
 }
 
 const target = new FakeTargetService();
-const api = new FakeApiService(target, NotificationsInstance, defaultServices.login);
+const api = new FakeApiService(target, NotificationsInstance);
 const reports = new FakeReportService(NotificationsInstance, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 

@@ -26,7 +26,6 @@ import {
   ObservableInput,
   of,
   ReplaySubject,
-  shareReplay,
   throwError,
 } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
@@ -77,8 +76,8 @@ import {
   isGraphQLError,
   GraphQLError,
 } from './api.utils';
-import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
+import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
 
 export class ApiService {
@@ -89,35 +88,31 @@ export class ApiService {
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
 
   constructor(
+    private readonly ctx: CryostatContext,
     private readonly target: TargetService,
     private readonly notifications: NotificationService,
-    private readonly login: LoginService,
-  ) {
-    this.doGet('recordings')
-      .pipe(
-        catchError(() => {
-          this.archiveEnabled.next(false);
-          return EMPTY;
-        }),
-      )
-      .subscribe();
+  ) {}
 
-    const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v4/grafana_datasource_url`,
-    ).pipe(concatMap((resp) => from(resp.json())));
-    const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = fromFetch(
-      `${this.login.authority}/api/v4/grafana_dashboard_url`,
-    ).pipe(concatMap((resp) => from(resp.json())));
-    const health: Observable<HealthGetResponse> = fromFetch(`${this.login.authority}/health`).pipe(
-      tap((resp: Response) => {
-        if (!resp.ok) {
-          window.console.error(resp);
-          this.notifications.danger('API /health request failed', resp.statusText);
-        }
-      }),
-      concatMap((resp: Response) => from(resp.json())),
-      shareReplay(),
-    );
+  testBaseServer() {
+    this.testHealth();
+    this.testArchiveAvailability();
+  }
+
+  private testHealth() {
+    const getDatasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
+      .url('/api/v4/grafana_datasource_url')
+      .pipe(
+        concatMap((u) => fromFetch(u)),
+        concatMap((resp) => from(resp.json())),
+      );
+    const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
+      .url('/api/v4/grafana_dashboard_url')
+      .pipe(
+        concatMap((u) => fromFetch(u)),
+        concatMap((resp) => from(resp.json())),
+      );
+    const health: Observable<HealthGetResponse> = this.doGet('/health', 'unversioned');
+
     health
       .pipe(
         concatMap((jsonResp) => {
@@ -180,6 +175,17 @@ export class ApiService {
       });
   }
 
+  private testArchiveAvailability() {
+    this.doGet('recordings')
+      .pipe(
+        catchError(() => {
+          this.archiveEnabled.next(false);
+          return EMPTY;
+        }),
+      )
+      .subscribe();
+  }
+
   getTargets(): Observable<Target[]> {
     return this.doGet('targets', 'v4');
   }
@@ -233,8 +239,9 @@ export class ApiService {
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
-    const headers = {};
-    headers['Content-Type'] = 'application/json';
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
       method: 'POST',
       body: JSON.stringify(rule),
@@ -256,8 +263,9 @@ export class ApiService {
   }
 
   createRule(rule: Rule): Observable<boolean> {
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendRequest('v4', 'rules', {
       method: 'POST',
       body: JSON.stringify(rule),
@@ -270,8 +278,9 @@ export class ApiService {
   }
 
   updateRule(rule: Rule, clean = true): Observable<boolean> {
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendRequest(
       'v4',
       `rules/${rule.name}`,
@@ -595,7 +604,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', 'event_templates', 'Template Upload Failed', {
       body: body,
       method: 'POST',
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -684,7 +693,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
       method: 'POST',
       body: body,
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -795,8 +804,9 @@ export class ApiService {
     suppressNotifications?: boolean,
     skipStatusCheck?: boolean,
   ): Observable<T> {
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     const req = () =>
       this.sendRequest(
         'v4',
@@ -839,11 +849,10 @@ export class ApiService {
       .pipe(
         filter((t) => !!t),
         first(),
-        map(
-          (target) =>
-            `${this.login.authority}/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(
-              template.type,
-            )}/${encodeURIComponent(template.name)}`,
+        concatMap((target) =>
+          this.ctx.url(
+            `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+          ),
         ),
       )
       .subscribe((resourceUrl) => {
@@ -878,7 +887,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', 'recordings', 'Recording Upload Failed', {
       method: 'POST',
       body: body,
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -912,7 +921,7 @@ export class ApiService {
     return this.sendLegacyRequest('v4', 'certificates', 'Certificate Upload Failed', {
       method: 'POST',
       body,
-      headers: {},
+      headers: this.ctx.headers(),
       listeners: {
         onUploadProgress: (event) => {
           onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
@@ -1113,9 +1122,9 @@ export class ApiService {
       matchExpression,
       targets: targets.map((t) => this.transformTarget(t)),
     });
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
-
+    const headers = this.ctx.headers({
+      'Content-Type': 'application/json',
+    });
     return this.sendRequest(
       'v4',
       'matchExpressions',
@@ -1448,8 +1457,14 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<Response> {
+    if (!config) {
+      config = {};
+    }
+    config.headers = this.ctx.headers(config.headers);
+    const p = apiVersion === 'unversioned' ? path : `/api/${apiVersion}/${path}`;
     const req = () =>
-      fromFetch(`${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, config).pipe(
+      this.ctx.url(`${p}${params ? '?' + params : ''}`).pipe(
+        concatMap((u) => fromFetch(u, config)),
         map((resp) => {
           if (resp.ok) return resp;
           throw new HttpError(resp);
@@ -1505,7 +1520,7 @@ export class ApiService {
     apiVersion: ApiVersion,
     path: string,
     title: string,
-    { method = 'GET', body, headers = {}, listeners, abortSignal }: XMLHttpRequestConfig,
+    { method = 'GET', body, headers, listeners, abortSignal }: XMLHttpRequestConfig,
     params?: URLSearchParams,
     suppressNotifications = false,
     skipStatusCheck = false,
@@ -1514,52 +1529,57 @@ export class ApiService {
       from(
         new Promise<XMLHttpResponse>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
-          xhr.open(method, `${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, true);
+          this.ctx
+            .url(`/api/${apiVersion}/${path}${params ? '?' + params : ''}`)
+            .pipe(first())
+            .subscribe((u) => {
+              xhr.open(method, u, true);
 
-          listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
+              listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
 
-          abortSignal && abortSignal.subscribe(() => xhr.abort()); // Listen to abort signal if any
+              abortSignal && abortSignal.subscribe(() => xhr.abort()); // Listen to abort signal if any
 
-          xhr.addEventListener('readystatechange', () => {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-              if (xhr.status === 0) {
-                // aborted
-                reject(new Error('Aborted'));
-              }
-              const ok = isHttpOk(xhr.status);
-              const respHeaders = {};
-              const arr = xhr
-                .getAllResponseHeaders()
-                .trim()
-                .split(/[\r\n]+/);
-              arr.forEach((line) => {
-                const parts = line.split(': ');
-                const header = parts.shift();
-                const value = parts.join(': ');
-                if (header) {
-                  respHeaders[header] = value;
-                } else {
-                  reject(new Error('Invalid header'));
+              xhr.addEventListener('readystatechange', () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                  if (xhr.status === 0) {
+                    // aborted
+                    reject(new Error('Aborted'));
+                  }
+                  const ok = isHttpOk(xhr.status);
+                  const respHeaders = {};
+                  const arr = xhr
+                    .getAllResponseHeaders()
+                    .trim()
+                    .split(/[\r\n]+/);
+                  arr.forEach((line) => {
+                    const parts = line.split(': ');
+                    const header = parts.shift();
+                    const value = parts.join(': ');
+                    if (header) {
+                      respHeaders[header] = value;
+                    } else {
+                      reject(new Error('Invalid header'));
+                    }
+                  });
+
+                  resolve({
+                    body: xhr.response,
+                    headers: respHeaders,
+                    respType: xhr.responseType,
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    ok: ok,
+                  } as XMLHttpResponse);
                 }
               });
 
-              resolve({
-                body: xhr.response,
-                headers: respHeaders,
-                respType: xhr.responseType,
-                status: xhr.status,
-                statusText: xhr.statusText,
-                ok: ok,
-              } as XMLHttpResponse);
-            }
-          });
+              // Populate headers
+              headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
+              xhr.withCredentials = true;
 
-          // Populate headers
-          headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
-          xhr.withCredentials = true;
-
-          // Send request
-          xhr.send(body);
+              // Send request
+              xhr.send(body);
+            });
         }),
       ).pipe(
         map((resp) => {

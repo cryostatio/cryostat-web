@@ -22,7 +22,7 @@ import { fromFetch } from 'rxjs/fetch';
 
 jest.mock('rxjs/fetch', () => {
   return {
-    fromFetch: jest.fn((_url: unknown, _opts: unknown): unknown => undefined),
+    fromFetch: jest.fn((_url: unknown, _opts: unknown): unknown => of()),
   };
 });
 
@@ -96,7 +96,7 @@ describe('Login.service', () => {
         .mockReturnValueOnce(of(logoutResp));
       window.location.href = 'https://example.com/';
       location.href = window.location.href;
-      svc = new LoginService(settingsSvc);
+      svc = new LoginService((p) => of(`.${p}`), settingsSvc);
     });
 
     it('should emit true', async () => {
@@ -105,14 +105,15 @@ describe('Login.service', () => {
     });
 
     it('should make expected API calls', async () => {
-      await firstValueFrom(svc.setLoggedOut());
-      expect(mockFromFetch).toHaveBeenCalledTimes(2);
+      expect(mockFromFetch).toHaveBeenCalledTimes(1);
       expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v4/auth`, {
         credentials: 'include',
         mode: 'cors',
         method: 'POST',
         body: null,
       });
+      await firstValueFrom(svc.setLoggedOut());
+      expect(mockFromFetch).toHaveBeenCalledTimes(2);
       expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v4/logout`, {
         credentials: 'include',
         mode: 'cors',
