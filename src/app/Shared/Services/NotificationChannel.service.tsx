@@ -16,7 +16,7 @@
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
-import { distinctUntilChanged, filter, first, map } from 'rxjs/operators';
+import { concatMap, distinctUntilChanged, filter, first, map } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { NotificationMessage, ReadyState, CloseStatus, NotificationCategory } from './api.types';
 import { messageKeys } from './api.utils';
@@ -76,35 +76,36 @@ export class NotificationChannel {
             const wsUrl = new URL(u);
             // set the proper protocol for WebSocket connection upgrade
             wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
-
-            // set the instance namespace and name headers as query parameters instead.
-            // This is not used by normal Cryostat Web operation, where the instance is
-            // always the server that is hosting the web instance itself. In the console
-            // plugin case, the <namespace, name> instance selector is normally sent to
-            // the plugin backend by custom HTTP request headers so that the plugin backend
-            // can proxy to the correct Cryostat server instance. We cannot set custom
-            // request headers in the WebSocket connection request, so we set them as query
-            // parameters instead so that the plugin backend can fall back to finding those.
-            const headers = this.ctx.headers();
-            if (headers.has('CRYOSTAT-SVC-NS')) {
-              wsUrl.searchParams.append('ns', headers.get('CRYOSTAT-SVC-NS')!);
-            }
-            if (headers.has('CRYOSTAT-SVC-NAME')) {
-              wsUrl.searchParams.append('name', headers.get('CRYOSTAT-SVC-NAME')!);
-            }
             return wsUrl.toString();
           } catch (e) {
             // wasn't a URL - assume it was a relative path alone, which is OK
-            const headers = this.ctx.headers();
-            const searchParams = new URLSearchParams();
-            if (headers.has('CRYOSTAT-SVC-NS')) {
-              searchParams.append('ns', headers.get('CRYOSTAT-SVC-NS')!);
-            }
-            if (headers.has('CRYOSTAT-SVC-NAME')) {
-              searchParams.append('name', headers.get('CRYOSTAT-SVC-NAME')!);
-            }
-            return `${u}?${searchParams}`;
+            return u;
           }
+        }),
+        concatMap((url) => {
+          // set the instance namespace and name headers as query parameters instead.
+          // This is not used by normal Cryostat Web operation, where the instance is
+          // always the server that is hosting the web instance itself. In the console
+          // plugin case, the <namespace, name> instance selector is normally sent to
+          // the plugin backend by custom HTTP request headers so that the plugin backend
+          // can proxy to the correct Cryostat server instance. We cannot set custom
+          // request headers in the WebSocket connection request, so we set them as query
+          // parameters instead so that the plugin backend can fall back to finding those.
+          return this.ctx.headers().pipe(
+            map((headers) => {
+              const searchParams = new URLSearchParams();
+              if (headers.has('CRYOSTAT-SVC-NS')) {
+                searchParams.append('ns', headers.get('CRYOSTAT-SVC-NS')!);
+              }
+              if (headers.has('CRYOSTAT-SVC-NAME')) {
+                searchParams.append('name', headers.get('CRYOSTAT-SVC-NAME')!);
+              }
+              if (searchParams.size > 0) {
+                return `${url}?${searchParams}`;
+              }
+              return url;
+            }),
+          );
         }),
       ),
       timer(0, 5000),

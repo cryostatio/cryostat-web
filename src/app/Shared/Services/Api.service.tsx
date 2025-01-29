@@ -19,6 +19,7 @@ import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import {
   BehaviorSubject,
+  combineLatest,
   EMPTY,
   forkJoin,
   from,
@@ -238,62 +239,74 @@ export class ApiService {
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-
-    const headers = this.ctx.headers({
-      'Content-Type': 'application/json',
-    });
-    return this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
-      method: 'POST',
-      body: JSON.stringify(rule),
-      headers: headers,
-      listeners: {
-        onUploadProgress: (event) => {
-          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-        },
-      },
-      abortSignal,
-    }).pipe(
-      map((resp) => resp.ok),
-      tap({
-        next: () => (window.onbeforeunload = null),
-        error: () => (window.onbeforeunload = null),
-      }),
-      first(),
-    );
+    return this.ctx
+      .headers({
+        'Content-Type': 'application/json',
+      })
+      .pipe(
+        concatMap((headers) =>
+          this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
+            method: 'POST',
+            body: JSON.stringify(rule),
+            headers,
+            listeners: {
+              onUploadProgress: (event) => {
+                onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+              },
+            },
+            abortSignal,
+          }),
+        ),
+        map((resp) => resp.ok),
+        tap({
+          next: () => (window.onbeforeunload = null),
+          error: () => (window.onbeforeunload = null),
+        }),
+        first(),
+      );
   }
 
   createRule(rule: Rule): Observable<boolean> {
-    const headers = this.ctx.headers({
-      'Content-Type': 'application/json',
-    });
-    return this.sendRequest('v4', 'rules', {
-      method: 'POST',
-      body: JSON.stringify(rule),
-      headers,
-    }).pipe(
-      map((resp) => resp.ok),
-      catchError((_) => of(false)),
-      first(),
-    );
+    return this.ctx
+      .headers({
+        'Content-Type': 'application/json',
+      })
+      .pipe(
+        concatMap((headers) =>
+          this.sendRequest('v4', 'rules', {
+            method: 'POST',
+            body: JSON.stringify(rule),
+            headers,
+          }),
+        ),
+        map((resp) => resp.ok),
+        catchError((_) => of(false)),
+        first(),
+      );
   }
 
   updateRule(rule: Rule, clean = true): Observable<boolean> {
-    const headers = this.ctx.headers({
-      'Content-Type': 'application/json',
-    });
-    return this.sendRequest(
-      'v4',
-      `rules/${rule.name}`,
-      {
-        method: 'PATCH',
-        body: JSON.stringify(rule),
-        headers,
-      },
-      new URLSearchParams({ clean: String(clean) }),
-    ).pipe(
-      map((resp) => resp.ok),
-      first(),
-    );
+    return this.ctx
+      .headers({
+        'Content-Type': 'application/json',
+      })
+      .pipe(
+        concatMap((headers) =>
+          this.sendRequest(
+            'v4',
+            `rules/${rule.name}`,
+            {
+              method: 'PATCH',
+              body: JSON.stringify(rule),
+              headers,
+            },
+            new URLSearchParams({ clean: String(clean) }),
+          ),
+        ),
+
+        map((resp) => resp.ok),
+        first(),
+      );
   }
 
   deleteRule(name: string, clean = true): Observable<boolean> {
@@ -598,20 +611,22 @@ export class ApiService {
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-
     const body = new window.FormData();
     body.append('template', file);
-    return this.sendLegacyRequest('v4', 'event_templates', 'Template Upload Failed', {
-      body: body,
-      method: 'POST',
-      headers: this.ctx.headers(),
-      listeners: {
-        onUploadProgress: (event) => {
-          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-        },
-      },
-      abortSignal,
-    }).pipe(
+    return this.ctx.headers().pipe(
+      concatMap((headers) =>
+        this.sendLegacyRequest('v4', 'event_templates', 'Template Upload Failed', {
+          body: body,
+          method: 'POST',
+          headers,
+          listeners: {
+            onUploadProgress: (event) => {
+              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+            },
+          },
+          abortSignal,
+        }),
+      ),
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -687,20 +702,22 @@ export class ApiService {
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-
     const body = new window.FormData();
     body.append('probeTemplate', file);
-    return this.sendLegacyRequest('v4', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
-      method: 'POST',
-      body: body,
-      headers: this.ctx.headers(),
-      listeners: {
-        onUploadProgress: (event) => {
-          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-        },
-      },
-      abortSignal,
-    }).pipe(
+    return this.ctx.headers().pipe(
+      concatMap((headers) =>
+        this.sendLegacyRequest('v4', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
+          method: 'POST',
+          body: body,
+          headers,
+          listeners: {
+            onUploadProgress: (event) => {
+              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+            },
+          },
+          abortSignal,
+        }),
+      ),
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -804,34 +821,38 @@ export class ApiService {
     suppressNotifications?: boolean,
     skipStatusCheck?: boolean,
   ): Observable<T> {
-    const headers = this.ctx.headers({
-      'Content-Type': 'application/json',
-    });
     const req = () =>
-      this.sendRequest(
-        'v4',
-        'graphql',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            query: query.replace(/[\s]+/g, ' '),
-            variables,
+      this.ctx
+        .headers({
+          'Content-Type': 'application/json',
+        })
+        .pipe(
+          concatMap((headers) =>
+            this.sendRequest(
+              'v4',
+              'graphql',
+              {
+                method: 'POST',
+                body: JSON.stringify({
+                  query: query.replace(/[\s]+/g, ' '),
+                  variables,
+                }),
+                headers,
+              },
+              undefined,
+              suppressNotifications,
+              skipStatusCheck,
+            ),
+          ),
+          map((resp) => resp.json()),
+          concatMap(from),
+          tap((resp) => {
+            if (isGraphQLError(resp)) {
+              this.handleError(new GraphQLError(resp.errors), req);
+            }
           }),
-          headers,
-        },
-        undefined,
-        suppressNotifications,
-        skipStatusCheck,
-      ).pipe(
-        map((resp) => resp.json()),
-        concatMap(from),
-        tap((resp) => {
-          if (isGraphQLError(resp)) {
-            this.handleError(new GraphQLError(resp.errors), req);
-          }
-        }),
-        first(),
-      );
+          first(),
+        );
     return req();
   }
 
@@ -884,17 +905,20 @@ export class ApiService {
     body.append('recording', file);
     body.append('labels', JSON.stringify(labels));
 
-    return this.sendLegacyRequest('v4', 'recordings', 'Recording Upload Failed', {
-      method: 'POST',
-      body: body,
-      headers: this.ctx.headers(),
-      listeners: {
-        onUploadProgress: (event) => {
-          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-        },
-      },
-      abortSignal,
-    }).pipe(
+    return this.ctx.headers().pipe(
+      concatMap((headers) =>
+        this.sendLegacyRequest('v4', 'recordings', 'Recording Upload Failed', {
+          method: 'POST',
+          body: body,
+          headers,
+          listeners: {
+            onUploadProgress: (event) => {
+              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+            },
+          },
+          abortSignal,
+        }),
+      ),
       map((resp) => {
         if (resp.ok) {
           return resp.body as string;
@@ -918,17 +942,20 @@ export class ApiService {
 
     const body = new window.FormData();
     body.append('cert', file);
-    return this.sendLegacyRequest('v4', 'certificates', 'Certificate Upload Failed', {
-      method: 'POST',
-      body,
-      headers: this.ctx.headers(),
-      listeners: {
-        onUploadProgress: (event) => {
-          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-        },
-      },
-      abortSignal,
-    }).pipe(
+    return this.ctx.headers().pipe(
+      concatMap((headers) =>
+        this.sendLegacyRequest('v4', 'certificates', 'Certificate Upload Failed', {
+          method: 'POST',
+          body,
+          headers,
+          listeners: {
+            onUploadProgress: (event) => {
+              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+            },
+          },
+          abortSignal,
+        }),
+      ),
       map((resp) => resp.ok),
       tap({
         next: () => (window.onbeforeunload = null),
@@ -1122,25 +1149,29 @@ export class ApiService {
       matchExpression,
       targets: targets.map((t) => this.transformTarget(t)),
     });
-    const headers = this.ctx.headers({
-      'Content-Type': 'application/json',
-    });
-    return this.sendRequest(
-      'v4',
-      'matchExpressions',
-      {
-        method: 'POST',
-        body,
-        headers,
-      },
-      undefined,
-      true,
-      true,
-    ).pipe(
-      first(),
-      concatMap((resp: Response) => resp.json()),
-      map((r) => r.targets),
-    );
+    return this.ctx
+      .headers({
+        'Content-Type': 'application/json',
+      })
+      .pipe(
+        concatMap((headers) =>
+          this.sendRequest(
+            'v4',
+            'matchExpressions',
+            {
+              method: 'POST',
+              body,
+              headers,
+            },
+            undefined,
+            true,
+            true,
+          ),
+        ),
+        first(),
+        concatMap((resp: Response) => resp.json()),
+        map((r) => r.targets),
+      );
   }
 
   isTargetMatched(matchExpression: string, target: Target): Observable<boolean> {
@@ -1457,14 +1488,22 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<Response> {
-    if (!config) {
-      config = {};
-    }
-    config.headers = this.ctx.headers(config.headers);
     const p = apiVersion === 'unversioned' ? path : `/api/${apiVersion}/${path}`;
     const req = () =>
-      this.ctx.url(`${p}${params ? '?' + params : ''}`).pipe(
-        concatMap((u) => fromFetch(u, config)),
+      combineLatest([
+        this.ctx.url(`${p}${params ? '?' + params : ''}`),
+        this.ctx.headers((config || {}).headers).pipe(
+          map((headers) => {
+            let cfg = config;
+            if (!cfg) {
+              cfg = {};
+            }
+            cfg.headers = headers;
+            return cfg;
+          }),
+        ),
+      ]).pipe(
+        concatMap((parts) => fromFetch(parts[0], parts[1])),
         map((resp) => {
           if (resp.ok) return resp;
           throw new HttpError(resp);
