@@ -16,7 +16,7 @@
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
-import { distinctUntilChanged, filter, first } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, map } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { NotificationMessage, ReadyState, CloseStatus, NotificationCategory } from './api.types';
 import { messageKeys } from './api.utils';
@@ -67,7 +67,23 @@ export class NotificationChannel {
         });
       });
 
-    combineLatest([this.login.getSessionState(), this.ctx.url('/api/notifications').pipe(first()), timer(0, 5000)])
+    combineLatest([
+      this.login.getSessionState(),
+      this.ctx.url('/api/notifications').pipe(
+        first(),
+        map((u) => {
+          try {
+            const wsUrl = new URL(u);
+            wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
+            return wsUrl.toString();
+          } catch (e) {
+            // wasn't a URL - assume it was a relative path alone, which is OK
+            return u;
+          }
+        }),
+      ),
+      timer(0, 5000),
+    ])
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
         next: (parts: string[]) => {
