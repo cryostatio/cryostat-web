@@ -49,7 +49,7 @@ const target = new TargetService();
 const settings = new SettingsService();
 const login = new LoginService(defaultContext.url, settings);
 const api = new ApiService(defaultContext, target, NotificationsInstance);
-const notificationChannel = new NotificationChannel(NotificationsInstance, login);
+const notificationChannel = new NotificationChannel(defaultContext, NotificationsInstance, login);
 const reports = new ReportService(NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 

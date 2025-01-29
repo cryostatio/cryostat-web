@@ -16,13 +16,14 @@
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { NotificationMessage, ReadyState, CloseStatus, NotificationCategory } from './api.types';
 import { messageKeys } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { SessionState } from './service.types';
+import {CryostatContext} from './Services';
 
 export class NotificationChannel {
   private ws: WebSocketSubject<NotificationMessage> | null = null;
@@ -30,6 +31,7 @@ export class NotificationChannel {
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
   constructor(
+    private readonly ctx: CryostatContext,
     private readonly notifications: NotificationService,
     private readonly login: LoginService,
   ) {
@@ -65,11 +67,13 @@ export class NotificationChannel {
         });
       });
 
-    combineLatest([this.login.getSessionState(), timer(0, 5000)])
+    combineLatest([this.login.getSessionState(), this.ctx.url('/api/notifications').pipe(first()), timer(0, 5000)])
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
         next: (parts: string[]) => {
           const sessionState = parseInt(parts[0]);
+          const url = parts[1];
+          console.log({ sessionState, url });
 
           if (sessionState !== SessionState.CREATING_USER_SESSION) {
             return;
@@ -79,11 +83,8 @@ export class NotificationChannel {
             this.ws.complete();
           }
 
-          const url = new URL(window.location.href);
-          url.protocol = url.protocol.replace('http', 'ws');
-          url.pathname = '/api/notifications';
           this.ws = webSocket({
-            url: url.toString(),
+            url,
             protocol: '',
             openObserver: {
               next: () => {
