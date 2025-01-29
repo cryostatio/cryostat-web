@@ -73,7 +73,6 @@ export class NotificationChannel {
         next: (parts: string[]) => {
           const sessionState = parseInt(parts[0]);
           const url = parts[1];
-          console.log({ sessionState, url });
 
           if (sessionState !== SessionState.CREATING_USER_SESSION) {
             return;
