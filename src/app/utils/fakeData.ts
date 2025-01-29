@@ -250,7 +250,7 @@ class FakeApiService extends ApiService {
     super(
       {
         url: (path) => of(`/${path}`),
-        headers: () => new Headers(),
+        headers: () => of(new Headers()),
       },
       target,
       notifications,
