@@ -16,13 +16,14 @@
 import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { concatMap, distinctUntilChanged, filter, first, map } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { NotificationMessage, ReadyState, CloseStatus, NotificationCategory } from './api.types';
 import { messageKeys } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { SessionState } from './service.types';
+import { CryostatContext } from './Services';
 
 export class NotificationChannel {
   private ws: WebSocketSubject<NotificationMessage> | null = null;
@@ -30,6 +31,7 @@ export class NotificationChannel {
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
   constructor(
+    private readonly ctx: CryostatContext,
     private readonly notifications: NotificationService,
     private readonly login: LoginService,
   ) {
@@ -65,11 +67,65 @@ export class NotificationChannel {
         });
       });
 
-    combineLatest([this.login.getSessionState(), timer(0, 5000)])
+    this.login.loggedOut().subscribe({
+      next: () => {
+        this.ws?.complete();
+      },
+      error: (err: Error) => this.logError('Notifications URL configuration', err),
+    });
+  }
+
+  connect(): void {
+    combineLatest([
+      this.login.getSessionState(),
+      this.ctx.url('/api/notifications').pipe(
+        first(),
+        map((u) => {
+          let wsUrl: URL;
+          try {
+            wsUrl = new URL(u);
+          } catch (e) {
+            // wasn't a URL - assume it was a relative path alone, which is OK
+            wsUrl = new URL(window.location.href);
+            wsUrl.pathname = u;
+          }
+          // set the proper protocol for WebSocket connection upgrade
+          wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
+          return wsUrl.toString();
+        }),
+        concatMap((url) => {
+          // set the instance namespace and name headers as query parameters instead.
+          // This is not used by normal Cryostat Web operation, where the instance is
+          // always the server that is hosting the web instance itself. In the console
+          // plugin case, the <namespace, name> instance selector is normally sent to
+          // the plugin backend by custom HTTP request headers so that the plugin backend
+          // can proxy to the correct Cryostat server instance. We cannot set custom
+          // request headers in the WebSocket connection request, so we set them as query
+          // parameters instead so that the plugin backend can fall back to finding those.
+          return this.ctx.headers().pipe(
+            map((headers) => {
+              const searchParams = new URLSearchParams();
+              if (headers.has('CRYOSTAT-SVC-NS')) {
+                searchParams.append('ns', headers.get('CRYOSTAT-SVC-NS')!);
+              }
+              if (headers.has('CRYOSTAT-SVC-NAME')) {
+                searchParams.append('name', headers.get('CRYOSTAT-SVC-NAME')!);
+              }
+              if (searchParams.size > 0) {
+                return `${url}?${searchParams}`;
+              }
+              return url;
+            }),
+          );
+        }),
+      ),
+      timer(0, 5000),
+    ])
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
         next: (parts: string[]) => {
           const sessionState = parseInt(parts[0]);
+          const url = parts[1];
 
           if (sessionState !== SessionState.CREATING_USER_SESSION) {
             return;
@@ -79,11 +135,8 @@ export class NotificationChannel {
             this.ws.complete();
           }
 
-          const url = new URL(window.location.href);
-          url.protocol = url.protocol.replace('http', 'ws');
-          url.pathname = '/api/notifications';
           this.ws = webSocket({
-            url: url.toString(),
+            url,
             protocol: '',
             openObserver: {
               next: () => {
@@ -141,13 +194,13 @@ export class NotificationChannel {
         },
         error: (err: Error) => this.logError('Notifications URL configuration', err),
       });
+  }
 
-    this.login.loggedOut().subscribe({
-      next: () => {
-        this.ws?.complete();
-      },
-      error: (err: Error) => this.logError('Notifications URL configuration', err),
-    });
+  disconnect(): void {
+    if (this.ws) {
+      this.ws.complete();
+    }
+    this.login.setSessionState(SessionState.CREATING_USER_SESSION);
   }
 
   isReady(): Observable<ReadyState> {

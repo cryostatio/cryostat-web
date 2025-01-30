@@ -22,7 +22,12 @@ import models from './models';
 import { Resource } from './typings';
 
 export const startMirage = ({ environment = 'development' } = {}) => {
-  const wsUrl = new URL(window.location.href);
+  let wsUrl: URL;
+  if (environment === 'development') {
+    wsUrl = new URL('http://localhost:8181');
+  } else {
+    wsUrl = new URL(window.location.href);
+  }
   wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
   wsUrl.pathname = '/api/notifications';
   const wsServer = new WSServer(wsUrl.toString());

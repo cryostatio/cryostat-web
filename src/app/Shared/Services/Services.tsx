@@ -36,20 +36,20 @@ export interface Services {
 
 export interface CryostatContext {
   url: (path?: string) => Observable<string>;
-  headers: (init?: HeadersInit) => Headers;
+  headers: (init?: HeadersInit) => Observable<Headers>;
 }
 
 const authority: string = process.env.CRYOSTAT_AUTHORITY || '.';
 export const defaultContext: CryostatContext = {
   url: (path?: string): Observable<string> => of(`${authority}/${path}`.replace(/([^:]\/)\/+/g, '$1')),
-  headers: (init?: HeadersInit) => new Headers(init),
+  headers: (init?: HeadersInit): Observable<Headers> => of(new Headers(init)),
 };
 
 const target = new TargetService();
 const settings = new SettingsService();
 const login = new LoginService(defaultContext.url, settings);
 const api = new ApiService(defaultContext, target, NotificationsInstance);
-const notificationChannel = new NotificationChannel(NotificationsInstance, login);
+const notificationChannel = new NotificationChannel(defaultContext, NotificationsInstance, login);
 const reports = new ReportService(NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 
