@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from 'react';
 import { Observable } from 'rxjs';
 import { ApiService } from './Api.service';
 import { LoginService } from './Login.service';
@@ -36,3 +37,5 @@ export interface CryostatContext {
   url: (path?: string) => Observable<string>;
   headers: (init?: HeadersInit) => Observable<Headers>;
 }
+
+export const ServiceContext: React.Context<Services> = React.createContext<Services>(undefined as never);

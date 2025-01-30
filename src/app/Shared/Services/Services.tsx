@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { ApiService } from './Api.service';
 import { LoginService } from './Login.service';
@@ -23,7 +22,7 @@ import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
-import { CryostatContext, Services } from './ServiceTypes';
+import { CryostatContext, ServiceContext, Services } from './ServiceTypes';
 
 const authority: string = process.env.CRYOSTAT_AUTHORITY || '.';
 export const defaultContext: CryostatContext = {
@@ -48,7 +47,5 @@ const defaultServices: Services = {
   settings,
   login,
 };
-
-const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
 
 export { ServiceContext, defaultServices };
