@@ -200,7 +200,7 @@ export class NotificationChannel {
     if (this.ws) {
       this.ws.complete();
     }
-    this.login.setSessionState(SessionState.NO_USER_SESSION);
+    this.login.setSessionState(SessionState.CREATING_USER_SESSION);
   }
 
   isReady(): Observable<ReadyState> {
