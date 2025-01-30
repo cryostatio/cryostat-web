@@ -196,6 +196,13 @@ export class NotificationChannel {
       });
   }
 
+  disconnect(): void {
+    if (this.ws) {
+      this.ws.complete();
+    }
+    this.login.setSessionState(SessionState.NO_USER_SESSION);
+  }
+
   isReady(): Observable<ReadyState> {
     return this._ready.asObservable();
   }
