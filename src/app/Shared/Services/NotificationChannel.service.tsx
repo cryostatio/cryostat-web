@@ -67,6 +67,15 @@ export class NotificationChannel {
         });
       });
 
+    this.login.loggedOut().subscribe({
+      next: () => {
+        this.ws?.complete();
+      },
+      error: (err: Error) => this.logError('Notifications URL configuration', err),
+    });
+  }
+
+  connect(): void {
     combineLatest([
       this.login.getSessionState(),
       this.ctx.url('/api/notifications').pipe(
@@ -185,13 +194,6 @@ export class NotificationChannel {
         },
         error: (err: Error) => this.logError('Notifications URL configuration', err),
       });
-
-    this.login.loggedOut().subscribe({
-      next: () => {
-        this.ws?.complete();
-      },
-      error: (err: Error) => this.logError('Notifications URL configuration', err),
-    });
   }
 
   isReady(): Observable<ReadyState> {
