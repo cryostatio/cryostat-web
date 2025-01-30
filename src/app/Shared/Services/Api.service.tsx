@@ -1564,6 +1564,7 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<XMLHttpResponse> {
+  console.log({ method, apiVersion, path, headers, params });
     const req = () =>
       from(
         new Promise<XMLHttpResponse>((resolve, reject) => {
