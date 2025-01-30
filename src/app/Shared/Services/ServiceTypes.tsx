@@ -23,7 +23,7 @@ import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
 
-export interface Services {
+interface Services {
   target: TargetService;
   targets: TargetsService;
   reports: ReportService;
@@ -33,9 +33,11 @@ export interface Services {
   login: LoginService;
 }
 
-export interface CryostatContext {
+interface CryostatContext {
   url: (path?: string) => Observable<string>;
   headers: (init?: HeadersInit) => Observable<Headers>;
 }
 
-export const ServiceContext: React.Context<Services> = React.createContext<Services>(undefined as never);
+const ServiceContext: React.Context<Services> = React.createContext<Services>(undefined as never);
+
+export { Services, CryostatContext, ServiceContext };

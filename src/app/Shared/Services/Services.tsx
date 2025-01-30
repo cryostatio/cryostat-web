@@ -19,13 +19,13 @@ import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { NotificationsInstance } from './Notifications.service';
 import { ReportService } from './Report.service';
+import { CryostatContext, ServiceContext, Services } from './ServiceTypes';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
-import { CryostatContext, ServiceContext, Services } from './ServiceTypes';
 
 const authority: string = process.env.CRYOSTAT_AUTHORITY || '.';
-export const defaultContext: CryostatContext = {
+const defaultContext: CryostatContext = {
   url: (path?: string): Observable<string> => of(`${authority}/${path}`.replace(/([^:]\/)\/+/g, '$1')),
   headers: (init?: HeadersInit): Observable<Headers> => of(new Headers(init)),
 };
@@ -48,4 +48,4 @@ const defaultServices: Services = {
   login,
 };
 
-export { ServiceContext, defaultServices };
+export { ServiceContext, defaultServices, defaultContext, Services, CryostatContext };
