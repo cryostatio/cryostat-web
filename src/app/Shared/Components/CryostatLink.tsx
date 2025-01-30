@@ -18,6 +18,6 @@ import { toPath } from '@app/utils/utils';
 import React from 'react';
 import { Link } from 'react-router-dom-v5-compat';
 
-export const CryostatLink: React.FC<{ to: string }> = ({ to, ...props }) => {
-  return <Link to={toPath(to)} {...props}></Link>;
+export const CryostatLink: React.FC<{ to: string; onClick? }> = ({ to, onClick, ...props }) => {
+  return <Link to={toPath(to)} onClick={onClick} {...props}></Link>;
 };

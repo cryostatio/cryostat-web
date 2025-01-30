@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import {
   Breadcrumb,
   BreadcrumbHeading,
@@ -24,6 +23,7 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { Link } from 'react-router-dom-v5-compat';
 import { BreadcrumbTrail } from './types';
 import { isItemFilled } from './utils';
 
@@ -40,7 +40,7 @@ export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({ pageTitle, bread
         <Breadcrumb>
           {(breadcrumbs || []).map(({ title, path }) => (
             <BreadcrumbItem key={path}>
-              <CryostatLink to={path}>{title}</CryostatLink>
+              <Link to={path}>{title}</Link>
             </BreadcrumbItem>
           ))}
           <BreadcrumbHeading>{pageTitle}</BreadcrumbHeading>
