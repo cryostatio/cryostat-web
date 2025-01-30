@@ -72,15 +72,20 @@ export class NotificationChannel {
       this.ctx.url('/api/notifications').pipe(
         first(),
         map((u) => {
+          let wsUrl: URL;
           try {
-            const wsUrl = new URL(u);
-            // set the proper protocol for WebSocket connection upgrade
-            wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
-            return wsUrl.toString();
+            wsUrl = new URL(u);
           } catch (e) {
             // wasn't a URL - assume it was a relative path alone, which is OK
-            return u;
+            wsUrl = new URL(window.location.href);
+            if (!wsUrl.pathname) {
+              wsUrl.pathname = '';
+            }
+            wsUrl.pathname += u;
           }
+          // set the proper protocol for WebSocket connection upgrade
+          wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
+          return wsUrl.toString();
         }),
         concatMap((url) => {
           // set the instance namespace and name headers as query parameters instead.
