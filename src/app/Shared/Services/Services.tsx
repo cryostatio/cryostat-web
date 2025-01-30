@@ -23,21 +23,7 @@ import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
-
-export interface Services {
-  target: TargetService;
-  targets: TargetsService;
-  reports: ReportService;
-  api: ApiService;
-  notificationChannel: NotificationChannel;
-  settings: SettingsService;
-  login: LoginService;
-}
-
-export interface CryostatContext {
-  url: (path?: string) => Observable<string>;
-  headers: (init?: HeadersInit) => Observable<Headers>;
-}
+import { CryostatContext, Services } from './ServiceTypes';
 
 const authority: string = process.env.CRYOSTAT_AUTHORITY || '.';
 export const defaultContext: CryostatContext = {
