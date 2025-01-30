@@ -18,7 +18,7 @@ import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { ScrollableMenuContent } from '@app/Shared/Components/ScrollableMenuContent';
 import { Target } from '@app/Shared/Services/api.types';
 import { isEqualTarget, getTargetRepresentation } from '@app/Shared/Services/api.utils';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { getAnnotation } from '@app/utils/utils';

@@ -16,7 +16,7 @@
 
 import { NodeType, Target } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { NodeAction } from '@app/Topology/Actions/types';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';

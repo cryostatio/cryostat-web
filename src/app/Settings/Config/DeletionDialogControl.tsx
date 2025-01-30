@@ -16,7 +16,7 @@
 
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { getFromWarningMap } from '@app/Modal/utils';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ExpandableSection,

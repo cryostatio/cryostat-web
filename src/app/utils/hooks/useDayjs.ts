@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import dayjs, { DatetimeFormat, defaultDatetimeFormat, getLocale } from '@i18n/datetime';
 import * as React from 'react';
 import { concatMap, from, of, Subscription } from 'rxjs';

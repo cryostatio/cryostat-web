@@ -16,7 +16,7 @@
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';

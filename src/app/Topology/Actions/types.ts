@@ -16,7 +16,7 @@
 
 import { NotificationService } from '@app/Shared/Services/Notifications.service';
 import type { FeatureLevel } from '@app/Shared/Services/service.types';
-import { Services } from '@app/Shared/Services/Services';
+import { Services } from '@app/Shared/Services/ServiceTypes';
 import { LabelProps, DropdownItemProps } from '@patternfly/react-core';
 import { ContextMenuItem as PFContextMenuItem } from '@patternfly/react-topology';
 import * as React from 'react';

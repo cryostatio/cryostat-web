@@ -24,7 +24,7 @@ import {
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,

@@ -16,7 +16,7 @@
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';

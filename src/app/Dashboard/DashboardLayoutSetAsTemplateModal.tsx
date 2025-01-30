@@ -16,7 +16,7 @@
 import { dashboardConfigCreateTemplateIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {

@@ -18,7 +18,7 @@ import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ThemeSetting, ThemeType } from '@app/Settings/types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import * as React from 'react';
 import { Subscription } from 'rxjs';
 

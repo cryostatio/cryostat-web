@@ -17,7 +17,7 @@ import '@app/app.css';
 import { IAppRoute, routes, flatten } from '@app/routes';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {

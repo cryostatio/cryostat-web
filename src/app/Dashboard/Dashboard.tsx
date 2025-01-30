@@ -23,7 +23,7 @@ import {
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { toPath } from '@app/utils/utils';

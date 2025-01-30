@@ -19,7 +19,7 @@ import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { NotificationsInstance } from './Notifications.service';
 import { ReportService } from './Report.service';
-import { CryostatContext, ServiceContext, Services } from './ServiceTypes';
+import { CryostatContext, Services } from './ServiceTypes';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
@@ -48,4 +48,4 @@ const defaultServices: Services = {
   login,
 };
 
-export { ServiceContext, defaultServices, defaultContext, Services, CryostatContext };
+export { defaultServices, defaultContext };

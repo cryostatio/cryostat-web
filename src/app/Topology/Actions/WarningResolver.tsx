@@ -16,7 +16,7 @@
 import { CreateCredentialModal } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
 import { TargetNode } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { Button, ButtonProps } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link, LinkProps, useNavigate } from 'react-router-dom-v5-compat';

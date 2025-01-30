@@ -20,7 +20,7 @@ import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, formatBytes, formatDuration, sortResources, portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';

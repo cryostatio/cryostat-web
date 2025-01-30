@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';

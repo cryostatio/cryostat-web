@@ -19,7 +19,7 @@ import { JmxAuthDescription } from '@app/Shared/Components/JmxAuthDescription';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { MatchedCredential, NotificationCategory } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources, portalRoot } from '@app/utils/utils';

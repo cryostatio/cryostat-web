@@ -20,7 +20,7 @@ import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplat
 import { Target, EventTemplate, automatedAnalysisRecordingName, NullableTarget } from '@app/Shared/Services/api.types';
 import { isHttpError } from '@app/Shared/Services/api.utils';
 import type { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { TargetSelect } from '@app/TargetView/TargetSelect';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, formatDuration } from '@app/utils/utils';

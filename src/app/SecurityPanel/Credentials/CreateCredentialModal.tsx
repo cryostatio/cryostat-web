@@ -20,7 +20,7 @@ import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpressio
 import { Target } from '@app/Shared/Services/api.types';
 import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, StreamOf } from '@app/utils/utils';

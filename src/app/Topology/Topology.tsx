@@ -23,7 +23,7 @@ import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { DEFAULT_EMPTY_UNIVERSE } from '@app/Shared/Services/api.utils';
 import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Bullseye, Card, CardBody } from '@patternfly/react-core';
 import * as React from 'react';

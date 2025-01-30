@@ -15,7 +15,7 @@
  */
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { TargetDiscoveryEvent, Target, NotificationCategory } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';

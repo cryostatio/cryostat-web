@@ -17,7 +17,7 @@
 import build from '@app/build.json';
 import { BuildInfo } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';

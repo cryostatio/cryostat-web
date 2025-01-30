@@ -25,7 +25,7 @@ import {
   Target,
   KeyValue,
 } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
 import {

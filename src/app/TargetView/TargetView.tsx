@@ -15,7 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { BreadcrumbTrail } from '@app/BreadcrumbPage/types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import * as React from 'react';

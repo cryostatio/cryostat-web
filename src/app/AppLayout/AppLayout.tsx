@@ -30,7 +30,7 @@ import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureF
 import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { saveToLocalStorage } from '@app/utils/LocalStorage';

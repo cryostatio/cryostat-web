@@ -15,6 +15,7 @@
  */
 
 import build from '@app/build.json';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -30,7 +31,6 @@ import {
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { ServiceContext } from '../Services/Services';
 
 export interface ErrorBoundaryProps {
   renderFallback: (error: Error) => React.ReactNode;

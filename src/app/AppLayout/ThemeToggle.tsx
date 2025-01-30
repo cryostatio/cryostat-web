@@ -15,7 +15,7 @@
  */
 
 import { ThemeSetting } from '@app/Settings/types';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Icon, ToggleGroup, ToggleGroupItem } from '@patternfly/react-core';

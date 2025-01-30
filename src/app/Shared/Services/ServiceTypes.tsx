@@ -38,6 +38,9 @@ interface CryostatContext {
   headers: (init?: HeadersInit) => Observable<Headers>;
 }
 
+// do not supply a default context value on purpose. We only intend to use the context with a Provider
+// within a render tree, but we do not want to instantiate default implementations until we know some
+// runtime information like the URL of the server we should communicate with.
 const ServiceContext: React.Context<Services> = React.createContext<Services>(undefined as never);
 
 export { Services, CryostatContext, ServiceContext };
