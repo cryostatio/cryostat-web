@@ -15,6 +15,7 @@
  */
 import '@app/app.css';
 import { IAppRoute, routes, flatten } from '@app/routes';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -32,7 +33,6 @@ import {
 } from '@patternfly/react-core';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
 import { NotFoundCard } from './NotFoundCard';
 
 export interface NotFoundProps {}
@@ -72,7 +72,7 @@ export const NotFound: React.FC<NotFoundProps> = (_) => {
         <EmptyStateBody>{t('NotFound.DESCRIPTION')}</EmptyStateBody>
         <EmptyStateFooter>
           <EmptyStateActions>
-            <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
+            <Button variant="primary" component={(props) => <CryostatLink {...props} to="/" />}>
               {t('NotFound.HOME_REDIRECT_BUTTON_CONTENT')}
             </Button>
           </EmptyStateActions>

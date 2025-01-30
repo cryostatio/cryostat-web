@@ -19,6 +19,7 @@ import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { NodeType, EnvironmentNode, TargetNode, keyValueToString } from '@app/Shared/Services/api.types';
 import { DEFAULT_EMPTY_UNIVERSE, isTargetNode } from '@app/Shared/Services/api.utils';
+import { toPath } from '@app/utils/utils';
 import {
   Button,
   Text,
@@ -80,7 +81,10 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                   </Popover>
                 </DescriptionListTermHelpText>{' '}
                 for JMX,{' '}
-                <WarningResolverAsLink key={`${node.target.alias}-resolver-as-link-to-security`} to="/security">
+                <WarningResolverAsLink
+                  key={`${node.target.alias}-resolver-as-link-to-security`}
+                  to={toPath('/security')}
+                >
                   check if the SSL/TLS certificate is loaded.
                 </WarningResolverAsLink>
                 .

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { toPath } from '@app/utils/utils';
 import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
 import { Observable, filter, first, map, mergeMap } from 'rxjs';
 import { CredentialAuthForm } from './CredentialAuthForm';
 
@@ -69,9 +70,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
         <Text>
           This Target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
           target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
-          <Link onClick={onDismiss} to="/security">
+          <CryostatLink onClick={onDismiss} to={toPath('/security')}>
             Security
-          </Link>{' '}
+          </CryostatLink>{' '}
           to add a credential matching multiple targets.
         </Text>
       }

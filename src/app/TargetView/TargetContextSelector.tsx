@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { ScrollableMenuContent } from '@app/Shared/Components/ScrollableMenuContent';
 import { Target } from '@app/Shared/Services/api.types';
@@ -40,7 +41,6 @@ import {
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
 
 export interface TargetContextSelectorProps {
   className?: string;
@@ -209,7 +209,10 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     () => (
       <ActionList>
         <ActionListItem>
-          <Button variant="secondary" component={(props) => <Link {...props} to={'/topology/create-custom-target'} />}>
+          <Button
+            variant="secondary"
+            component={(props) => <CryostatLink {...props} to={'/topology/create-custom-target'} />}
+          >
             {t('TargetContextSelector.CREATE_TARGET')}
           </Button>
         </ActionListItem>

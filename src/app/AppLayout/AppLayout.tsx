@@ -82,7 +82,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { Link, matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { map } from 'rxjs/operators';
 import { LogoutIcon } from './LogoutIcon';
 import { ThemeToggle } from './ThemeToggle';
@@ -338,7 +338,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const helpItems = React.useMemo(() => {
     return [
-      <DropdownItem key={'Quickstarts'} component={(props) => <Link {...props} to="/quickstarts" />}>
+      <DropdownItem key={'Quickstarts'} component={(props) => <CryostatLink {...props} to="/quickstarts" />}>
         {t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}
       </DropdownItem>,
       <DropdownItem key={'Documentation'} onClick={handleOpenDocumentation}>
@@ -423,7 +423,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.SETTINGS')}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
-                    component={(props) => <Link {...props} to="/settings" />}
+                    component={(props) => <CryostatLink {...props} to="/settings" />}
                   >
                     <Icon>
                       <CogIcon />
