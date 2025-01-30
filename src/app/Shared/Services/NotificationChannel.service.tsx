@@ -78,10 +78,7 @@ export class NotificationChannel {
           } catch (e) {
             // wasn't a URL - assume it was a relative path alone, which is OK
             wsUrl = new URL(window.location.href);
-            if (!wsUrl.pathname) {
-              wsUrl.pathname = '';
-            }
-            wsUrl.pathname += u;
+            wsUrl.pathname = u;
           }
           // set the proper protocol for WebSocket connection upgrade
           wsUrl.protocol = wsUrl.protocol.replace('http', 'ws');
