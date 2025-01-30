@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { locales, Timezone } from '@i18n/datetime';

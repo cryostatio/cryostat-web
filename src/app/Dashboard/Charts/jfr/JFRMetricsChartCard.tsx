@@ -22,7 +22,7 @@ import {
 } from '@app/Dashboard/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { toPath } from '@app/utils/utils';

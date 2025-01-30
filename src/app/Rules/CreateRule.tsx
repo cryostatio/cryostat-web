@@ -24,7 +24,7 @@ import { EventTemplate, Target, Rule } from '@app/Shared/Services/api.types';
 import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, toPath } from '@app/utils/utils';

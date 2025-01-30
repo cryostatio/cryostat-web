@@ -23,7 +23,7 @@ import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Component
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { EventTemplate, NotificationCategory, Target } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, sortResources, TableColumn, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';

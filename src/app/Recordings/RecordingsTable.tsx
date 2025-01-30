@@ -16,7 +16,7 @@
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { isAuthFail } from '@app/ErrorView/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   EmptyState,
   EmptyStateIcon,

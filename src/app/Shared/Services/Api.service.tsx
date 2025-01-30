@@ -78,7 +78,7 @@ import {
   GraphQLError,
 } from './api.utils';
 import { NotificationService } from './Notifications.service';
-import { CryostatContext } from './ServiceTypes';
+import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
 
 export class ApiService {

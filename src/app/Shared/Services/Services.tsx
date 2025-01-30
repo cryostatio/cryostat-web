@@ -13,19 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { ApiService } from './Api.service';
 import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { NotificationsInstance } from './Notifications.service';
 import { ReportService } from './Report.service';
-import { CryostatContext, Services } from './ServiceTypes';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
 
+export interface Services {
+  target: TargetService;
+  targets: TargetsService;
+  reports: ReportService;
+  api: ApiService;
+  notificationChannel: NotificationChannel;
+  settings: SettingsService;
+  login: LoginService;
+}
+
+export interface CryostatContext {
+  url: (path?: string) => Observable<string>;
+  headers: (init?: HeadersInit) => Observable<Headers>;
+}
+
 const authority: string = process.env.CRYOSTAT_AUTHORITY || '.';
-const defaultContext: CryostatContext = {
+export const defaultContext: CryostatContext = {
   url: (path?: string): Observable<string> => of(`${authority}/${path}`.replace(/([^:]\/)\/+/g, '$1')),
   headers: (init?: HeadersInit): Observable<Headers> => of(new Headers(init)),
 };
@@ -48,4 +63,6 @@ const defaultServices: Services = {
   login,
 };
 
-export { defaultServices, defaultContext };
+const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
+
+export { ServiceContext, defaultServices };

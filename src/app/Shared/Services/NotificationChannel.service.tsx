@@ -23,7 +23,7 @@ import { messageKeys } from './api.utils';
 import { LoginService } from './Login.service';
 import { NotificationService } from './Notifications.service';
 import { SessionState } from './service.types';
-import { CryostatContext } from './ServiceTypes';
+import { CryostatContext } from './Services';
 
 export class NotificationChannel {
   private ws: WebSocketSubject<NotificationMessage> | null = null;

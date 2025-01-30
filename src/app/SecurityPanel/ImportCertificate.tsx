@@ -15,7 +15,7 @@
  */
 
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {

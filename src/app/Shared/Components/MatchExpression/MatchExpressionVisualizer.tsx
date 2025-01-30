@@ -16,7 +16,7 @@
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, NodeType } from '@app/Shared/Services/api.types';
 import { MatchedTargetsServiceContext } from '@app/Shared/Services/service.utils';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import EntityDetails, { AlertOptions } from '@app/Topology/Entity/EntityDetails';
 import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
 import { SavedGraphPosition, SavedNodePosition } from '@app/Topology/GraphView/TopologyGraphView';

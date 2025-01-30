@@ -17,7 +17,7 @@ import build from '@app/build.json';
 import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { SessionState } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';

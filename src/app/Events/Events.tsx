@@ -16,7 +16,7 @@
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';

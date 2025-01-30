@@ -16,7 +16,7 @@
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { Target } from '@app/Shared/Services/api.types';
 import { getAllLeaves } from '@app/Shared/Services/api.utils';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { Divider, Stack, StackItem, TreeView, TreeViewDataItem } from '@patternfly/react-core';

@@ -48,7 +48,7 @@ import {
 import { isGraphQLAuthError, isGraphQLError, isGraphQLSSLError } from '@app/Shared/Services/api.utils';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/service.utils';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { calculateAnalysisTimer, portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';

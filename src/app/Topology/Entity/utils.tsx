@@ -25,7 +25,7 @@ import {
   EventTemplate,
   EventProbe,
 } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   DescriptionListDescription,

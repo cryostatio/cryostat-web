@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Target } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import * as React from 'react';
 import { BehaviorSubject, combineLatest, switchMap, catchError, of } from 'rxjs';
 import { useMatchExpressionSvc } from './useMatchExpressionSvc';

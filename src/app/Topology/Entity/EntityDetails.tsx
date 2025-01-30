@@ -17,7 +17,7 @@
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { EnvironmentNode, MBeanMetrics, MBeanMetricsResponse, TargetNode } from '@app/Shared/Services/api.types';
 import { isTargetNode } from '@app/Shared/Services/api.utils';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown } from '@app/Topology/Actions/NodeActions';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';

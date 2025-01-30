@@ -17,8 +17,7 @@ import { DeleteAutomatedRules, DeleteOrDisableWarningType, DisableAutomatedRules
 import { RulesTable } from '@app/Rules/Rules';
 import { Rule, NotificationMessage, NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
-import { defaultServices } from '@app/Shared/Services/Services';
-import { ServiceContext, Services } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act, act as doAct, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';

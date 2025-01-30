@@ -19,7 +19,7 @@ import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, TargetDiscoveryEvent, NotificationCategory, Metadata } from '@app/Shared/Services/api.types';
 import { isEqualTarget, indexOfTarget, includesTarget } from '@app/Shared/Services/api.utils';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, sortResources, TableColumn } from '@app/utils/utils';

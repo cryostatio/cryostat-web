@@ -16,8 +16,7 @@
 import { authFailMessage } from '@app/ErrorView/types';
 import { EventTypes } from '@app/Events/EventTypes';
 import { EventType, Target } from '@app/Shared/Services/api.types';
-import { defaultServices } from '@app/Shared/Services/Services';
-import { ServiceContext, Services } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { act, cleanup, screen } from '@testing-library/react';
 import { of, Subject } from 'rxjs';

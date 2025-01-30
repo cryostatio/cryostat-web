@@ -17,7 +17,7 @@ import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelField
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { KeyValue } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import {

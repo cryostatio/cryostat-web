@@ -16,7 +16,7 @@
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import QuickSearchIcon from '@app/Shared/Components/QuickSearchIcon';
 import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';

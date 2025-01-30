@@ -15,7 +15,7 @@
  */
 import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {

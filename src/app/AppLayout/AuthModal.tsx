@@ -15,7 +15,7 @@
  */
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { NullableTarget, Target } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { toPath } from '@app/utils/utils';
 import { Modal, ModalVariant, Text } from '@patternfly/react-core';

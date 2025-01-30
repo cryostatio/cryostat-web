@@ -15,7 +15,7 @@
  */
 
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Checkbox } from '@patternfly/react-core';
 import * as React from 'react';

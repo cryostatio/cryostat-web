@@ -43,7 +43,7 @@ import {
   CategorizedRuleEvaluations,
   AnalysisResult,
 } from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, hashCode, portalRoot, sortResources, TableColumn } from '@app/utils/utils';

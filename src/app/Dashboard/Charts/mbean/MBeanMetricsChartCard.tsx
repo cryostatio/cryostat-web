@@ -25,7 +25,7 @@ import { missingSSLMessage, authFailMessage, isAuthFail } from '@app/ErrorView/t
 import { ThemeType, ThemeSetting } from '@app/Settings/types';
 import { MBeanMetrics } from '@app/Shared/Services/api.types';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';

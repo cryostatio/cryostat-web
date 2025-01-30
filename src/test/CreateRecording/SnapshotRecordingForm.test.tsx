@@ -17,8 +17,7 @@
 import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
 import { authFailMessage } from '@app/ErrorView/types';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
-import { defaultServices } from '@app/Shared/Services/Services';
-import { ServiceContext, Services } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
 import { of, Subject } from 'rxjs';

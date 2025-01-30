@@ -16,7 +16,7 @@
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { RootState, dashboardConfigDeleteTemplateIntent } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { fakeChartContext, fakeServices } from '@app/utils/fakeData';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';

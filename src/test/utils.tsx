@@ -24,8 +24,7 @@ import {
   setupStore,
 } from '@app/Shared/Redux/ReduxStore';
 import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
-import { defaultServices } from '@app/Shared/Services/Services';
-import { ServiceContext } from '@app/Shared/Services/ServiceTypes';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { toPath } from '@app/utils/utils';
 import { PreloadedState } from '@reduxjs/toolkit';
 import { render as tlrRender } from '@testing-library/react';

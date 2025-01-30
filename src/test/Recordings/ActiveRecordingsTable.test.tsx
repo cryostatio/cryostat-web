@@ -30,8 +30,7 @@ import {
   Target,
   keyValueToString,
 } from '@app/Shared/Services/api.types';
-import { defaultServices } from '@app/Shared/Services/Services';
-import { ServiceContext, Services } from '@app/Shared/Services/ServiceTypes';
+import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
