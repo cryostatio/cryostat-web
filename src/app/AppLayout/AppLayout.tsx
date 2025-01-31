@@ -130,8 +130,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, [theme]);
 
   React.useEffect(() => {
+    serviceContext.login.checkAuth();
     serviceContext.api.testBaseServer();
     serviceContext.notificationChannel.connect();
+    serviceContext.targets.queryForTargets().subscribe();
   }, [serviceContext.api, serviceContext.notificationChannel]);
 
   React.useEffect(() => {

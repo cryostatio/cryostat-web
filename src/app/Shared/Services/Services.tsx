@@ -47,7 +47,7 @@ export const defaultContext: CryostatContext = {
 
 const target = new TargetService();
 const settings = new SettingsService();
-const login = new LoginService(defaultContext.url, settings);
+const login = new LoginService(defaultContext, settings);
 const api = new ApiService(defaultContext, target, NotificationsInstance);
 const notificationChannel = new NotificationChannel(defaultContext, NotificationsInstance, login);
 const reports = new ReportService(defaultContext, NotificationsInstance, notificationChannel);
