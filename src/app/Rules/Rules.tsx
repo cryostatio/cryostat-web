@@ -20,6 +20,7 @@ import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
+import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, formatBytes, formatDuration, sortResources, portalRoot } from '@app/utils/utils';
@@ -66,7 +67,6 @@ import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
-import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 
 export interface RulesTableProps {}
 
@@ -437,6 +437,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       handleWarningModalClose,
       cleanRuleEnabled,
       setCleanRuleEnabled,
+      capabilities.fileUploads,
     ],
   );
 

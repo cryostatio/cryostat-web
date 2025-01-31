@@ -16,6 +16,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { Target, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
+import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
@@ -35,7 +36,6 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { of } from 'rxjs';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
-import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 /*
   This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
   The connectUrl is the 'uploads' because for actions performed on uploaded archived recordings,
@@ -100,7 +100,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       }
     }
     return arr;
-  }, [capabilities, capabilities.fileUploads, archiveEnabled, uploadTargetAsObs]);
+  }, [capabilities.fileUploads, archiveEnabled, uploadTargetAsObs]);
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
