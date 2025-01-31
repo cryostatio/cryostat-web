@@ -857,11 +857,13 @@ export class ApiService {
   }
 
   downloadRecording(recording: Recording): void {
-    this.downloadFile(recording.downloadUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
-    this.downloadFile(
-      createBlobURL(JSON.stringify(recording.metadata), 'application/json'),
-      recording.name.replace(/\.jfr$/, '') + '.metadata.json',
-    );
+    this.ctx.url(recording.downloadUrl).subscribe((resourceUrl) => {
+      this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
+      this.downloadFile(
+        createBlobURL(JSON.stringify(recording.metadata), 'application/json'),
+        recording.name.replace(/\.jfr$/, '') + '.metadata.json',
+      );
+    });
   }
 
   downloadTemplate(template: EventTemplate): void {
@@ -875,6 +877,7 @@ export class ApiService {
             `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
           ),
         ),
+        concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
       )
       .subscribe((resourceUrl) => {
         this.downloadFile(resourceUrl, `${template.name}.jfc`);
@@ -882,12 +885,17 @@ export class ApiService {
   }
 
   downloadRule(name: string): void {
+    const filename = `${name}.json`;
     this.doGet<Rule>(`rules/${name}`)
-      .pipe(first())
-      .subscribe((rule) => {
-        const filename = `${rule.name}.json`;
-        const file = new File([JSON.stringify(rule)], filename);
-        const resourceUrl = URL.createObjectURL(file);
+      .pipe(
+        first(),
+        map((rule) => {
+          const file = new File([JSON.stringify(rule)], filename);
+          return URL.createObjectURL(file);
+        }),
+        concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
+      )
+      .subscribe((resourceUrl) => {
         this.downloadFile(resourceUrl, filename);
         setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
       });
