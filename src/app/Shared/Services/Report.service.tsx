@@ -72,7 +72,7 @@ export class ReportService {
                 if (resp.status == 202) {
                   let subj = new Subject<AnalysisResult[]>();
                   resp.text().then((jobId) => {
-                    this.jobIds.set(jobId, resp.headers.get('Location') || recording.reportUrl);
+                    this.jobIds.set(jobId, resp.headers.get('Location') || parts[0]);
                     this._jobCompletion
                       .asObservable()
                       .pipe(filter((id) => id === jobId))
@@ -80,12 +80,7 @@ export class ReportService {
                         const jobUrl = this.jobIds.get(id);
                         if (!jobUrl) throw new Error(`Unknown job ID: ${id}`);
                         this.jobIds.delete(id);
-                        fromFetch(jobUrl, {
-                          method: 'GET',
-                          mode: 'cors',
-                          credentials: 'include',
-                          headers,
-                        }).subscribe((resp) => {
+                        fromFetch(jobUrl, parts[1]).subscribe((resp) => {
                           if (resp.ok && resp.status === 200) {
                             resp
                               .text()
