@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
+import { ApiService } from '@app/Shared/Services/Api.service';
 import { LoginService } from '@app/Shared/Services/Login.service';
+import { NotificationService } from '@app/Shared/Services/Notifications.service';
 import { SessionState } from '@app/Shared/Services/service.types';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
+import { TargetService } from '@app/Shared/Services/Target.service';
 import { firstValueFrom, of, timeout } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-
-jest.mock('rxjs/fetch', () => {
-  return {
-    fromFetch: jest.fn((_url: unknown, _opts: unknown): unknown => of()),
-  };
-});
 
 jest.unmock('@app/Shared/Services/Login.service');
+jest.mock('@app/Shared/Services/Api.service');
 
 describe('Login.service', () => {
-  const mockFromFetch = fromFetch as jest.Mock;
   let svc: LoginService;
 
   describe('setLoggedOut', () => {
+    let apiSvc: ApiService;
     let settingsSvc: SettingsService;
     let saveLocation: Location;
 
@@ -58,6 +55,14 @@ describe('Login.service', () => {
     });
 
     beforeEach(() => {
+      apiSvc = new ApiService(
+        {
+          headers: () => of(new Headers()),
+          url: (p) => of(`./${p}`),
+        },
+        {} as TargetService,
+        {} as NotificationService,
+      );
       settingsSvc = new SettingsService();
       (settingsSvc.webSocketDebounceMs as jest.Mock).mockReturnValue(0);
     });
@@ -90,31 +95,56 @@ describe('Login.service', () => {
         },
       });
       const logoutResp = createResponse(200, true);
-      mockFromFetch
-        .mockReturnValueOnce(of(initAuthResp))
-        .mockReturnValueOnce(of(authResp))
-        .mockReturnValueOnce(of(logoutResp));
+      jest
+        .spyOn(apiSvc, 'sendRequest')
+        .mockReturnValue(
+          of({
+            ok: true,
+            json: new Promise((resolve) => resolve(initAuthResp)),
+          } as unknown as Response),
+        )
+        .mockReturnValue(
+          of({
+            ok: true,
+            json: new Promise((resolve) => resolve(authResp)),
+          } as unknown as Response),
+        )
+        .mockReturnValue(
+          of({
+            ok: true,
+            json: new Promise((resolve) => resolve(logoutResp)),
+          } as unknown as Response),
+        );
       window.location.href = 'https://example.com/';
       location.href = window.location.href;
-      svc = new LoginService((p) => of(`.${p}`), settingsSvc);
+      svc = new LoginService(apiSvc, settingsSvc);
     });
 
     it('should emit true', async () => {
+      const logoutResp = createResponse(200, true);
+      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
+        of({
+          ok: true,
+          json: new Promise((resolve) => resolve(logoutResp)),
+        } as unknown as Response),
+      );
       const result = await firstValueFrom(svc.setLoggedOut());
       expect(result).toBeTruthy();
     });
 
     it('should make expected API calls', async () => {
-      expect(mockFromFetch).toHaveBeenCalledTimes(1);
-      expect(mockFromFetch).toHaveBeenNthCalledWith(1, `./api/v4/auth`, {
+      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(0);
+      svc.checkAuth();
+      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(1);
+      expect(apiSvc.sendRequest).toHaveBeenNthCalledWith(1, 'v4', 'auth', {
         credentials: 'include',
         mode: 'cors',
         method: 'POST',
         body: null,
       });
       await firstValueFrom(svc.setLoggedOut());
-      expect(mockFromFetch).toHaveBeenCalledTimes(2);
-      expect(mockFromFetch).toHaveBeenNthCalledWith(2, `./api/v4/logout`, {
+      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(2);
+      expect(apiSvc.sendRequest).toHaveBeenNthCalledWith(2, 'v4', 'logout', {
         credentials: 'include',
         mode: 'cors',
         method: 'POST',
