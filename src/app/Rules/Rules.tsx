@@ -20,6 +20,7 @@ import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
+import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, formatBytes, formatDuration, sortResources, portalRoot } from '@app/utils/utils';
@@ -71,6 +72,7 @@ export interface RulesTableProps {}
 
 export const RulesTable: React.FC<RulesTableProps> = () => {
   const context = React.useContext(ServiceContext);
+  const capabilities = React.useContext(CapabilitiesContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const { t } = useCryostatTranslation();
@@ -396,11 +398,15 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
               {t('CREATE')}
             </Button>
           </ToolbarItem>
-          <ToolbarItem key="upload">
-            <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
-              <UploadIcon />
-            </Button>
-          </ToolbarItem>
+          {capabilities.fileUploads ? (
+            <ToolbarItem key="upload">
+              <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
+                <UploadIcon />
+              </Button>
+            </ToolbarItem>
+          ) : (
+            <></>
+          )}
           {ruleToWarn ? (
             <RuleDeleteWarningModal
               warningType={
@@ -431,6 +437,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       handleWarningModalClose,
       cleanRuleEnabled,
       setCleanRuleEnabled,
+      capabilities.fileUploads,
     ],
   );
 

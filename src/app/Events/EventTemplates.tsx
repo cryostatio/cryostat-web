@@ -23,6 +23,7 @@ import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Component
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { EventTemplate, NotificationCategory, Target } from '@app/Shared/Services/api.types';
+import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, sortResources, TableColumn, toPath } from '@app/utils/utils';
@@ -91,6 +92,7 @@ export interface EventTemplatesProps {}
 
 export const EventTemplates: React.FC<EventTemplatesProps> = () => {
   const context = React.useContext(ServiceContext);
+  const capabilities = React.useContext(CapabilitiesContext);
   const navigate = useNavigate();
   const { t } = useCryostatTranslation();
 
@@ -364,20 +366,26 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
                 />
               </ToolbarItem>
             </ToolbarGroup>
-            <ToolbarItem variant="separator" />
-            <ToolbarGroup variant="icon-button-group">
-              <ToolbarItem>
-                <Button
-                  key="upload"
-                  aria-label="Upload"
-                  variant="secondary"
-                  onClick={handleUploadModalOpen}
-                  isDisabled={errorMessage != ''}
-                >
-                  <UploadIcon />
-                </Button>
-              </ToolbarItem>
-            </ToolbarGroup>
+            {capabilities.fileUploads ? (
+              <>
+                <ToolbarItem variant="separator" />
+                <ToolbarGroup variant="icon-button-group">
+                  <ToolbarItem>
+                    <Button
+                      key="upload"
+                      aria-label="Upload"
+                      variant="secondary"
+                      onClick={handleUploadModalOpen}
+                      isDisabled={errorMessage != ''}
+                    >
+                      <UploadIcon />
+                    </Button>
+                  </ToolbarItem>
+                </ToolbarGroup>
+              </>
+            ) : (
+              <></>
+            )}
             <DeleteWarningModal
               warningType={DeleteOrDisableWarningType.DeleteEventTemplates}
               visible={warningModalOpen}
