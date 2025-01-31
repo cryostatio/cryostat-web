@@ -40,7 +40,7 @@ import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.se
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { ReportService } from '@app/Shared/Services/Report.service';
 import { ChartControllerConfig } from '@app/Shared/Services/service.types';
-import { defaultServices, Services } from '@app/Shared/Services/Services';
+import { CryostatContext, defaultContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { Observable, of } from 'rxjs';
@@ -220,8 +220,8 @@ class FakeTargetService extends TargetService {
 }
 
 class FakeReportService extends ReportService {
-  constructor(notifications: NotificationService, channel: NotificationChannel) {
-    super(notifications, channel);
+  constructor(ctx: CryostatContext, notifications: NotificationService, channel: NotificationChannel) {
+    super(ctx, notifications, channel);
   }
 
   reportJson(_recording: Recording, _connectUrl: string): Observable<AnalysisResult[]> {
@@ -394,7 +394,7 @@ class FakeApiService extends ApiService {
 
 const target = new FakeTargetService();
 const api = new FakeApiService(target, NotificationsInstance);
-const reports = new FakeReportService(NotificationsInstance, defaultServices.notificationChannel);
+const reports = new FakeReportService(defaultContext, NotificationsInstance, defaultServices.notificationChannel);
 const settings = new FakeSetting();
 
 export const fakeServices: Services = {
