@@ -857,28 +857,42 @@ export class ApiService {
   }
 
   downloadRecording(recording: Recording): void {
-    this.downloadFile(recording.downloadUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
-    this.downloadFile(
-      createBlobURL(JSON.stringify(recording.metadata), 'application/json'),
-      recording.name.replace(/\.jfr$/, '') + '.metadata.json',
-    );
+    this.ctx.url(recording.downloadUrl).subscribe((resourceUrl) => {
+      this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
+
+      const metadataUrl = createBlobURL(JSON.stringify(recording.metadata), 'application/json');
+      this.downloadFile(metadataUrl, recording.name.replace(/\.jfr$/, '') + '.metadata.json', false);
+      setTimeout(() => URL.revokeObjectURL(metadataUrl), 1000);
+    });
   }
 
   downloadTemplate(template: EventTemplate): void {
-    this.target
-      .target()
-      .pipe(
-        filter((t) => !!t),
-        first(),
-        concatMap((target) =>
-          this.ctx.url(
-            `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+    let url: Observable<string> | undefined;
+    switch (template.type) {
+      case 'TARGET':
+        url = this.target.target().pipe(
+          filter((t) => !!t),
+          first(),
+          map(
+            (target) =>
+              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
           ),
-        ),
-      )
-      .subscribe((resourceUrl) => {
-        this.downloadFile(resourceUrl, `${template.name}.jfc`);
-      });
+          concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
+        );
+        break;
+      default:
+        url = of(
+          `/api/v4/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+        ).pipe(concatMap((u) => this.ctx.url(u)));
+        break;
+    }
+    if (!url) {
+      console.error(`Could not determine download URL for ${template.type} event template '${template.name}'`);
+      return;
+    }
+    url.subscribe((resourceUrl) => {
+      this.downloadFile(resourceUrl, `${template.name}.jfc`);
+    });
   }
 
   downloadRule(name: string): void {
@@ -888,7 +902,7 @@ export class ApiService {
         const filename = `${rule.name}.json`;
         const file = new File([JSON.stringify(rule)], filename);
         const resourceUrl = URL.createObjectURL(file);
-        this.downloadFile(resourceUrl, filename);
+        this.downloadFile(resourceUrl, filename, false);
         setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
       });
   }
@@ -1437,7 +1451,7 @@ export class ApiService {
     const stringifiedSerializedLayout = this.stringifyLayoutTemplate(template);
     const filename = `cryostat-dashboard-${template.name}.json`;
     const resourceUrl = createBlobURL(stringifiedSerializedLayout, 'application/json');
-    this.downloadFile(resourceUrl, filename);
+    this.downloadFile(resourceUrl, filename, false);
   }
 
   private stringifyLayoutTemplate(template: LayoutTemplate): string {
@@ -1450,16 +1464,44 @@ export class ApiService {
     return JSON.stringify(download);
   }
 
-  private downloadFile(url: string, filename: string, download = true): void {
-    const anchor = document.createElement('a');
-    anchor.setAttribute('style', 'display: none; visibility: hidden;');
-    anchor.target = '_blank';
-    if (download) {
+  private downloadFile(url: string, filename: string, headers = true): void {
+    const qs = this.ctx.headers().pipe(
+      map((headers) => {
+        let ns: string | undefined;
+        let name: string | undefined;
+        if (headers.has('cryostat-svc-ns')) {
+          ns = headers.get('cryostat-svc-ns')!;
+        }
+        if (headers.has('cryostat-svc-name')) {
+          name = headers.get('cryostat-svc-name')!;
+        }
+        if (ns && name) {
+          const query = new URLSearchParams([
+            ['ns', ns],
+            ['name', name],
+          ]);
+          return query.toString();
+        }
+        return '';
+      }),
+    );
+
+    const o = headers ? qs : of('');
+    o.subscribe((q) => {
+      const anchor = document.createElement('a');
+      anchor.setAttribute('style', 'display: none; visibility: hidden;');
+      anchor.target = '_blank';
+      let href = url;
       anchor.download = filename;
-    }
-    anchor.href = url;
-    anchor.click();
-    anchor.remove();
+      if (q) {
+        // TODO more robust processing of the incoming url string. If it already contains
+        // query parameters then this concatenation will result in two ? separators.
+        href += `?${q}`;
+      }
+      anchor.href = href;
+      anchor.click();
+      anchor.remove();
+    });
   }
 
   private transformTarget(target: Target): TargetForTest {
