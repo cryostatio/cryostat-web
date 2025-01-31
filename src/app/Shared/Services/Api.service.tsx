@@ -1459,15 +1459,37 @@ export class ApiService {
   }
 
   private downloadFile(url: string, filename: string, download = true): void {
-    const anchor = document.createElement('a');
-    anchor.setAttribute('style', 'display: none; visibility: hidden;');
-    anchor.target = '_blank';
-    if (download) {
-      anchor.download = filename;
-    }
-    anchor.href = url;
-    anchor.click();
-    anchor.remove();
+    this.ctx.headers().subscribe((headers) => {
+      const anchor = document.createElement('a');
+      anchor.setAttribute('style', 'display: none; visibility: hidden;');
+      anchor.target = '_blank';
+      let href = url;
+      if (download) {
+        anchor.download = filename;
+      }
+
+      let ns: string | undefined;
+      let name: string | undefined;
+      if (headers.has('cryostat-svc-ns')) {
+        ns = headers.get('cryostat-svc-ns')!;
+      }
+      if (headers.has('cryostat-svc-name')) {
+        name = headers.get('cryostat-svc-name')!;
+      }
+      if (ns && name) {
+        const query = new URLSearchParams([
+          ['ns', ns],
+          ['name', name],
+        ]);
+        // TODO more robust processing of the incoming url string. If it already contains
+        // query parameters then this concatenation will result in two ? separators.
+        href += `?${query}`;
+      }
+
+      anchor.href = href;
+      anchor.click();
+      anchor.remove();
+    });
   }
 
   private transformTarget(target: Target): TargetForTest {
