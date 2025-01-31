@@ -1564,7 +1564,6 @@ export class ApiService {
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<XMLHttpResponse> {
-  console.log({ method, apiVersion, path, headers, params });
     const req = () =>
       from(
         new Promise<XMLHttpResponse>((resolve, reject) => {
@@ -1615,7 +1614,6 @@ export class ApiService {
 
               // Populate headers
               headers && Object.keys(headers).forEach((k) => {
-              console.log(`Setting request header: ${k}=${headers[k]}`);
 xhr.setRequestHeader(k, headers[k]);
               });
               xhr.withCredentials = true;
