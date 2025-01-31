@@ -35,6 +35,7 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { of } from 'rxjs';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
+import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 /*
   This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
   The connectUrl is the 'uploads' because for actions performed on uploaded archived recordings,
@@ -65,6 +66,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
+  const capabilities = React.useContext(CapabilitiesContext);
   const addSubscription = useSubscriptions();
 
   const activeTab = React.useMemo(() => {
@@ -72,6 +74,33 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   }, [search]);
 
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
+
+  const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
+
+  const tabs = React.useMemo(() => {
+    const arr: JSX.Element[] = [];
+    if (archiveEnabled) {
+      arr.push(
+        <Tab id="all-targets" eventKey={ArchiveTab.ALL_TARGETS} title={<TabTitleText>All Targets</TabTitleText>}>
+          <AllTargetsArchivedRecordingsTable />
+        </Tab>,
+      );
+      arr.push(
+        <Tab id="all-archives" eventKey={ArchiveTab.ALL_ARCHIVES} title={<TabTitleText>All Archives</TabTitleText>}>
+          <AllArchivedRecordingsTable />
+        </Tab>,
+      );
+
+      if (capabilities.fileUploads) {
+        arr.push(
+          <Tab id="uploads" eventKey={ArchiveTab.UPLOADS} title={<TabTitleText>Uploads</TabTitleText>}>
+            <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
+          </Tab>,
+        );
+      }
+    }
+    return arr;
+  }, [capabilities, capabilities.fileUploads, archiveEnabled, uploadTargetAsObs]);
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
@@ -83,20 +112,10 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
     [navigate, pathname, search],
   );
 
-  const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
-
   const cardBody = React.useMemo(() => {
-    return archiveEnabled ? (
+    return tabs.length > 0 ? (
       <Tabs id="archives" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
-        <Tab id="all-targets" eventKey={ArchiveTab.ALL_TARGETS} title={<TabTitleText>All Targets</TabTitleText>}>
-          <AllTargetsArchivedRecordingsTable />
-        </Tab>
-        <Tab id="all-archives" eventKey={ArchiveTab.ALL_ARCHIVES} title={<TabTitleText>All Archives</TabTitleText>}>
-          <AllArchivedRecordingsTable />
-        </Tab>
-        <Tab id="uploads" eventKey={ArchiveTab.UPLOADS} title={<TabTitleText>Uploads</TabTitleText>}>
-          <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
-        </Tab>
+        {tabs}
       </Tabs>
     ) : (
       <EmptyState>
@@ -107,7 +126,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
         />
       </EmptyState>
     );
-  }, [archiveEnabled, activeTab, uploadTargetAsObs, onTabSelect]);
+  }, [tabs, activeTab, onTabSelect]);
 
   return (
     <BreadcrumbPage {...props} pageTitle="Archives">

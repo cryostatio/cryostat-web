@@ -66,11 +66,13 @@ import { first } from 'rxjs/operators';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
+import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 
 export interface RulesTableProps {}
 
 export const RulesTable: React.FC<RulesTableProps> = () => {
   const context = React.useContext(ServiceContext);
+  const capabilities = React.useContext(CapabilitiesContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const { t } = useCryostatTranslation();
@@ -396,11 +398,15 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
               {t('CREATE')}
             </Button>
           </ToolbarItem>
-          <ToolbarItem key="upload">
-            <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
-              <UploadIcon />
-            </Button>
-          </ToolbarItem>
+          {capabilities.fileUploads ? (
+            <ToolbarItem key="upload">
+              <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
+                <UploadIcon />
+              </Button>
+            </ToolbarItem>
+          ) : (
+            <></>
+          )}
           {ruleToWarn ? (
             <RuleDeleteWarningModal
               warningType={
