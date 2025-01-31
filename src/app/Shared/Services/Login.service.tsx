@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, finalize, map, tap } from 'rxjs/operators';
+import { ApiService } from './Api.service';
 import { SessionState } from './service.types';
 import type { SettingsService } from './Settings.service';
 
@@ -25,21 +25,21 @@ export class LoginService {
   private readonly sessionState = new ReplaySubject<SessionState>(1);
 
   constructor(
-    private readonly authority: (path: string) => Observable<string>,
+    private readonly api: ApiService,
     private readonly settings: SettingsService,
   ) {
     this.sessionState.next(SessionState.CREATING_USER_SESSION);
+  }
 
-    authority('/api/v4/auth')
+  checkAuth(): void {
+    this.api
+      .sendRequest('v4', 'auth', {
+        credentials: 'include',
+        mode: 'cors',
+        method: 'POST',
+        body: null,
+      })
       .pipe(
-        concatMap((u) =>
-          fromFetch(u, {
-            credentials: 'include',
-            mode: 'cors',
-            method: 'POST',
-            body: null,
-          }),
-        ),
         concatMap((response) => {
           let gapAuth = response?.headers?.get('Gap-Auth');
           if (gapAuth) {
@@ -69,27 +69,26 @@ export class LoginService {
   }
 
   setLoggedOut(): Observable<boolean> {
-    return this.authority('/api/v4/logout').pipe(
-      concatMap((u) =>
-        fromFetch(u, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'POST',
-          body: null,
+    return this.api
+      .sendRequest('v4', 'logout', {
+        credentials: 'include',
+        mode: 'cors',
+        method: 'POST',
+        body: null,
+      })
+      .pipe(
+        concatMap((response) => {
+          return of(response).pipe(
+            map((response) => response.ok),
+            tap(() => this.resetSessionState()),
+          );
         }),
-      ),
-      concatMap((response) => {
-        return of(response).pipe(
-          map((response) => response.ok),
-          tap(() => this.resetSessionState()),
-        );
-      }),
-      catchError((e: Error): ObservableInput<boolean> => {
-        window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
-        return of(false);
-      }),
-      finalize(() => this.navigateToLoginPage()),
-    );
+        catchError((e: Error): ObservableInput<boolean> => {
+          window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
+          return of(false);
+        }),
+        finalize(() => this.navigateToLoginPage()),
+      );
   }
 
   setSessionState(state: SessionState): void {

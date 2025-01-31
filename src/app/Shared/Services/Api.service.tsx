@@ -1522,7 +1522,7 @@ export class ApiService {
     return out;
   }
 
-  private sendRequest(
+  sendRequest(
     apiVersion: ApiVersion,
     path: string,
     config?: RequestInit,
