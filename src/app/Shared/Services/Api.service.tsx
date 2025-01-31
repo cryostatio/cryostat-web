@@ -859,6 +859,7 @@ export class ApiService {
   downloadRecording(recording: Recording): void {
     this.ctx.url(recording.downloadUrl).subscribe((resourceUrl) => {
       this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
+
       const metadataUrl = createBlobURL(JSON.stringify(recording.metadata), 'application/json');
       this.downloadFile(metadataUrl, recording.name.replace(/\.jfr$/, '') + '.metadata.json', false);
       setTimeout(() => URL.revokeObjectURL(metadataUrl), 1000);
@@ -871,10 +872,9 @@ export class ApiService {
       .pipe(
         filter((t) => !!t),
         first(),
-        concatMap((target) =>
-          this.ctx.url(
+        map(
+          (target) =>
             `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
-          ),
         ),
         concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
       )
