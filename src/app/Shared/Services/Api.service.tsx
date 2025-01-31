@@ -885,17 +885,12 @@ export class ApiService {
   }
 
   downloadRule(name: string): void {
-    const filename = `${name}.json`;
     this.doGet<Rule>(`rules/${name}`)
-      .pipe(
-        first(),
-        map((rule) => {
-          const file = new File([JSON.stringify(rule)], filename);
-          return URL.createObjectURL(file);
-        }),
-        concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
-      )
-      .subscribe((resourceUrl) => {
+      .pipe(first())
+      .subscribe((rule) => {
+        const filename = `${rule.name}.json`;
+        const file = new File([JSON.stringify(rule)], filename);
+        const resourceUrl = URL.createObjectURL(file);
         this.downloadFile(resourceUrl, filename);
         setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
       });
