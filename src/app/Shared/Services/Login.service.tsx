@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, finalize, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { SessionState } from './service.types';
@@ -41,7 +40,6 @@ export class LoginService {
         body: null,
       })
       .pipe(
-        concatMap((parts) => fromFetch(parts[0], {})),
         concatMap((response) => {
           let gapAuth = response?.headers?.get('Gap-Auth');
           if (gapAuth) {
