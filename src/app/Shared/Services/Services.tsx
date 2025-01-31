@@ -50,7 +50,7 @@ const settings = new SettingsService();
 const login = new LoginService(defaultContext.url, settings);
 const api = new ApiService(defaultContext, target, NotificationsInstance);
 const notificationChannel = new NotificationChannel(defaultContext, NotificationsInstance, login);
-const reports = new ReportService(NotificationsInstance, notificationChannel);
+const reports = new ReportService(defaultContext, NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
 
 const defaultServices: Services = {

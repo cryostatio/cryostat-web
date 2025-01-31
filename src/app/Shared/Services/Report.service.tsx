@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 import { Base64 } from 'js-base64';
-import { Observable, Subject, from, throwError } from 'rxjs';
+import { Observable, Subject, combineLatest, from, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { concatMap, filter, first, tap } from 'rxjs/operators';
-import { Recording, CachedReportValue, GenerationError, AnalysisResult, NotificationCategory } from './api.types';
+import { concatMap, filter, first, map, tap } from 'rxjs/operators';
+import {
+  Recording,
+  CachedReportValue,
+  GenerationError,
+  AnalysisResult,
+  NotificationCategory,
+} from './api.types';
 import { isActiveRecording, isQuotaExceededError, isGenerationError } from './api.utils';
 import { NotificationChannel } from './NotificationChannel.service';
 import type { NotificationService } from './Notifications.service';
+import { CryostatContext } from './Services';
 
 export class ReportService {
   constructor(
+    private ctx: CryostatContext,
     private notifications: NotificationService,
     channel: NotificationChannel,
   ) {
@@ -43,106 +51,117 @@ export class ReportService {
     }
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    let url = new URL(recording.reportUrl, document.location.href);
-
-    return fromFetch(url.toString(), {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-      headers,
-    }).pipe(
-      concatMap((resp) => {
-        // 200 indicates that the backend has the report cached and it will return
-        // the json in the response.
-        if (resp.ok) {
-          // 202 indicates that the backend does not have the report cached and will return an
-          // async job ID in the response immediately, then emit a notification with the same
-          // job ID later to inform us that the report is now ready and can be retrieved by
-          // sending a follow-up GET to the Location header value
-          if (resp.status == 202) {
-            let subj = new Subject<AnalysisResult[]>();
-            resp.text().then((jobId) => {
-              this.jobIds.set(jobId, resp.headers.get('Location') || recording.reportUrl);
-              this._jobCompletion
-                .asObservable()
-                .pipe(filter((id) => id === jobId))
-                .subscribe((id) => {
-                  const jobUrl = this.jobIds.get(id);
-                  if (!jobUrl) throw new Error(`Unknown job ID: ${id}`);
-                  this.jobIds.delete(id);
-                  fromFetch(jobUrl, {
-                    method: 'GET',
-                    mode: 'cors',
-                    credentials: 'include',
-                    headers,
-                  }).subscribe((resp) => {
-                    if (resp.ok && resp.status === 200) {
-                      resp
-                        .text()
-                        .then(JSON.parse)
-                        .then((obj) => subj.next(Object.values(obj) as AnalysisResult[]));
-                    } else {
-                      const ge: GenerationError = {
-                        name: `Report Failure (${recording.name})`,
-                        message: resp.statusText,
-                        messageDetail: from(resp.text()),
-                        status: resp.status,
-                      };
-                      subj.error(ge);
-                    }
+    const req = () =>
+      combineLatest([
+        this.ctx.url(recording.reportUrl),
+        this.ctx.headers(headers).pipe(
+          map((headers) => {
+            let cfg: RequestInit = {};
+            cfg.method = 'GET';
+            cfg.mode = 'cors';
+            cfg.credentials = 'include';
+            cfg.headers = headers;
+            return cfg;
+          }),
+        ),
+      ]).pipe(
+        concatMap((parts) =>
+          fromFetch(parts[0], parts[1]).pipe(
+            concatMap((resp) => {
+              // 200 indicates that the backend has the report cached and it will return
+              // the json in the response.
+              if (resp.ok) {
+                // 202 indicates that the backend does not have the report cached and will return an
+                // async job ID in the response immediately, then emit a notification with the same
+                // job ID later to inform us that the report is now ready and can be retrieved by
+                // sending a follow-up GET to the Location header value
+                if (resp.status == 202) {
+                  let subj = new Subject<AnalysisResult[]>();
+                  resp.text().then((jobId) => {
+                    this.jobIds.set(jobId, resp.headers.get('Location') || recording.reportUrl);
+                    this._jobCompletion
+                      .asObservable()
+                      .pipe(filter((id) => id === jobId))
+                      .subscribe((id) => {
+                        const jobUrl = this.jobIds.get(id);
+                        if (!jobUrl) throw new Error(`Unknown job ID: ${id}`);
+                        this.jobIds.delete(id);
+                        fromFetch(jobUrl, {
+                          method: 'GET',
+                          mode: 'cors',
+                          credentials: 'include',
+                          headers,
+                        }).subscribe((resp) => {
+                          if (resp.ok && resp.status === 200) {
+                            resp
+                              .text()
+                              .then(JSON.parse)
+                              .then((obj) => subj.next(Object.values(obj) as AnalysisResult[]));
+                          } else {
+                            const ge: GenerationError = {
+                              name: `Report Failure (${recording.name})`,
+                              message: resp.statusText,
+                              messageDetail: from(resp.text()),
+                              status: resp.status,
+                            };
+                            subj.error(ge);
+                          }
+                        });
+                      });
                   });
-                });
-            });
-            return subj.asObservable();
-          }
-          return from(
-            resp
-              .text()
-              .then(JSON.parse)
-              .then((obj) => Object.values(obj) as AnalysisResult[]),
-          );
-        } else {
-          const ge: GenerationError = {
-            name: `Report Failure (${recording.name})`,
-            message: resp.statusText,
-            messageDetail: from(resp.text()),
-            status: resp.status,
-          };
-          throw ge;
-        }
-      }),
-      tap({
-        next: (report) => {
-          if (isActiveRecording(recording)) {
-            try {
-              sessionStorage.setItem(this.analysisKey(connectUrl), JSON.stringify(report));
-              sessionStorage.setItem(this.analysisKeyTimestamp(connectUrl), Date.now().toString());
-            } catch (err) {
-              if (isQuotaExceededError(err)) {
-                this.notifications.warning('Report Caching Failed', err.message);
-                this.delete(recording);
+                  return subj.asObservable();
+                }
+                return from(
+                  resp
+                    .text()
+                    .then(JSON.parse)
+                    .then((obj) => Object.values(obj) as AnalysisResult[]),
+                );
               } else {
-                // see https://mmazzarolo.com/blog/2022-06-25-local-storage-status/
-                this.notifications.warning('Report Caching Failed', 'localStorage is not available');
-                this.delete(recording);
+                const ge: GenerationError = {
+                  name: `Report Failure (${recording.name})`,
+                  message: resp.statusText,
+                  messageDetail: from(resp.text()),
+                  status: resp.status,
+                };
+                throw ge;
               }
-            }
-          }
-        },
-        error: (err) => {
-          if (isGenerationError(err) && err.status >= 500) {
-            err.messageDetail.pipe(first()).subscribe((detail) => {
-              this.notifications.warning(`Report generation failure: ${detail}`);
-              this.deleteCachedAnalysisReport(connectUrl);
-            });
-          } else if (isGenerationError(err) && err.status == 202) {
-            this.notifications.info('Report generation in progress', 'Report is being generated');
-          } else {
-            this.notifications.danger(err.name, err.message);
-          }
-        },
-      }),
-    );
+            }),
+            tap({
+              next: (report) => {
+                if (isActiveRecording(recording)) {
+                  try {
+                    sessionStorage.setItem(this.analysisKey(connectUrl), JSON.stringify(report));
+                    sessionStorage.setItem(this.analysisKeyTimestamp(connectUrl), Date.now().toString());
+                  } catch (err) {
+                    if (isQuotaExceededError(err)) {
+                      this.notifications.warning('Report Caching Failed', err.message);
+                      this.delete(recording);
+                    } else {
+                      // see https://mmazzarolo.com/blog/2022-06-25-local-storage-status/
+                      this.notifications.warning('Report Caching Failed', 'localStorage is not available');
+                      this.delete(recording);
+                    }
+                  }
+                }
+              },
+              error: (err) => {
+                if (isGenerationError(err) && err.status >= 500) {
+                  err.messageDetail.pipe(first()).subscribe((detail) => {
+                    this.notifications.warning(`Report generation failure: ${detail}`);
+                    this.deleteCachedAnalysisReport(connectUrl);
+                  });
+                } else if (isGenerationError(err) && err.status == 202) {
+                  this.notifications.info('Report generation in progress', 'Report is being generated');
+                } else {
+                  this.notifications.danger(err.name, err.message);
+                }
+              },
+            }),
+          ),
+        ),
+      );
+    return req();
   }
 
   getCachedAnalysisReport(connectUrl: string): CachedReportValue {
