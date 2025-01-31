@@ -867,20 +867,32 @@ export class ApiService {
   }
 
   downloadTemplate(template: EventTemplate): void {
-    this.target
-      .target()
-      .pipe(
-        filter((t) => !!t),
-        first(),
-        map(
-          (target) =>
-            `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
-        ),
-        concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
-      )
-      .subscribe((resourceUrl) => {
-        this.downloadFile(resourceUrl, `${template.name}.jfc`);
-      });
+    let url: Observable<string> | undefined;
+    switch (template.type) {
+      case 'TARGET':
+        url = this.target.target().pipe(
+          filter((t) => !!t),
+          first(),
+          map(
+            (target) =>
+              `/api/v4/targets/${target!.id}/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+          ),
+          concatMap((resourceUrl) => this.ctx.url(resourceUrl)),
+        );
+        break;
+      default:
+        url = of(
+          `/api/v4/event_templates/${encodeURIComponent(template.type)}/${encodeURIComponent(template.name)}`,
+        ).pipe(concatMap((u) => this.ctx.url(u)));
+        break;
+    }
+    if (!url) {
+      console.error(`Could not determine download URL for ${template.type} event template '${template.name}'`);
+      return;
+    }
+    url.subscribe((resourceUrl) => {
+      this.downloadFile(resourceUrl, `${template.name}.jfc`);
+    });
   }
 
   downloadRule(name: string): void {
