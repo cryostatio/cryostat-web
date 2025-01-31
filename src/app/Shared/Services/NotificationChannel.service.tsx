@@ -104,6 +104,10 @@ export class NotificationChannel {
           // parameters instead so that the plugin backend can fall back to finding those.
           return this.ctx.headers().pipe(
             map((headers) => {
+              const u = URL.parse(url);
+              if (!u) {
+                return url;
+              }
               const searchParams = new URLSearchParams();
               if (headers.has('CRYOSTAT-SVC-NS')) {
                 searchParams.append('ns', headers.get('CRYOSTAT-SVC-NS')!);
@@ -112,9 +116,14 @@ export class NotificationChannel {
                 searchParams.append('name', headers.get('CRYOSTAT-SVC-NAME')!);
               }
               if (searchParams.size > 0) {
-                return `${url}?${searchParams}`;
+                if (!u.search) {
+                  u.search = '?';
+                } else {
+                  u.search += '&';
+                }
+                u.search += searchParams.toString();
               }
-              return url;
+              return u.toString();
             }),
           );
         }),
