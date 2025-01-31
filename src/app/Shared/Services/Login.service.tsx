@@ -16,9 +16,9 @@
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, finalize, map, tap } from 'rxjs/operators';
+import { ApiService } from './Api.service';
 import { SessionState } from './service.types';
 import type { SettingsService } from './Settings.service';
-import { ApiService } from './Api.service';
 
 export class LoginService {
   private readonly logout = new ReplaySubject<void>(1);

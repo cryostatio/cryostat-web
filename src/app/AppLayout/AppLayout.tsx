@@ -134,7 +134,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     serviceContext.api.testBaseServer();
     serviceContext.notificationChannel.connect();
     serviceContext.targets.queryForTargets().subscribe();
-  }, [serviceContext.api, serviceContext.notificationChannel]);
+  }, [serviceContext.login, serviceContext.api, serviceContext.notificationChannel, serviceContext.targets]);
 
   React.useEffect(() => {
     addSubscription(
