@@ -859,10 +859,9 @@ export class ApiService {
   downloadRecording(recording: Recording): void {
     this.ctx.url(recording.downloadUrl).subscribe((resourceUrl) => {
       this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
-      this.downloadFile(
-        createBlobURL(JSON.stringify(recording.metadata), 'application/json'),
-        recording.name.replace(/\.jfr$/, '') + '.metadata.json',
-      );
+      const metadataUrl = createBlobURL(JSON.stringify(recording.metadata), 'application/json');
+      this.downloadFile(metadataUrl, recording.name.replace(/\.jfr$/, '') + '.metadata.json', false);
+      setTimeout(() => URL.revokeObjectURL(metadataUrl), 1000);
     });
   }
 
@@ -891,7 +890,7 @@ export class ApiService {
         const filename = `${rule.name}.json`;
         const file = new File([JSON.stringify(rule)], filename);
         const resourceUrl = URL.createObjectURL(file);
-        this.downloadFile(resourceUrl, filename);
+        this.downloadFile(resourceUrl, filename, false);
         setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
       });
   }
@@ -1440,7 +1439,7 @@ export class ApiService {
     const stringifiedSerializedLayout = this.stringifyLayoutTemplate(template);
     const filename = `cryostat-dashboard-${template.name}.json`;
     const resourceUrl = createBlobURL(stringifiedSerializedLayout, 'application/json');
-    this.downloadFile(resourceUrl, filename);
+    this.downloadFile(resourceUrl, filename, false);
   }
 
   private stringifyLayoutTemplate(template: LayoutTemplate): string {
@@ -1453,34 +1452,40 @@ export class ApiService {
     return JSON.stringify(download);
   }
 
-  private downloadFile(url: string, filename: string, download = true): void {
-    this.ctx.headers().subscribe((headers) => {
+  private downloadFile(url: string, filename: string, headers = true): void {
+    const qs = this.ctx.headers().pipe(
+      map((headers) => {
+        let ns: string | undefined;
+        let name: string | undefined;
+        if (headers.has('cryostat-svc-ns')) {
+          ns = headers.get('cryostat-svc-ns')!;
+        }
+        if (headers.has('cryostat-svc-name')) {
+          name = headers.get('cryostat-svc-name')!;
+        }
+        if (ns && name) {
+          const query = new URLSearchParams([
+            ['ns', ns],
+            ['name', name],
+          ]);
+          return query.toString();
+        }
+        return '';
+      }),
+    );
+
+    const o = headers ? qs : of('');
+    o.subscribe((q) => {
       const anchor = document.createElement('a');
       anchor.setAttribute('style', 'display: none; visibility: hidden;');
       anchor.target = '_blank';
       let href = url;
-      if (download) {
-        anchor.download = filename;
-      }
-
-      let ns: string | undefined;
-      let name: string | undefined;
-      if (headers.has('cryostat-svc-ns')) {
-        ns = headers.get('cryostat-svc-ns')!;
-      }
-      if (headers.has('cryostat-svc-name')) {
-        name = headers.get('cryostat-svc-name')!;
-      }
-      if (ns && name) {
-        const query = new URLSearchParams([
-          ['ns', ns],
-          ['name', name],
-        ]);
+      anchor.download = filename;
+      if (q) {
         // TODO more robust processing of the incoming url string. If it already contains
         // query parameters then this concatenation will result in two ? separators.
-        href += `?${query}`;
+        href += `?${q}`;
       }
-
       anchor.href = href;
       anchor.click();
       anchor.remove();
