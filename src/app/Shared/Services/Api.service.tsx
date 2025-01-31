@@ -1613,9 +1613,7 @@ export class ApiService {
               });
 
               // Populate headers
-              headers && Object.keys(headers).forEach((k) => {
-xhr.setRequestHeader(k, headers[k]);
-              });
+              headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
               xhr.withCredentials = true;
 
               // Send request
