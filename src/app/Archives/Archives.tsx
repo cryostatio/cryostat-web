@@ -81,19 +81,34 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
     const arr: JSX.Element[] = [];
     if (archiveEnabled) {
       arr.push(
-        <Tab id="all-targets" key={ArchiveTab.ALL_TARGETS} eventKey={ArchiveTab.ALL_TARGETS} title={<TabTitleText>All Targets</TabTitleText>}>
+        <Tab
+          id="all-targets"
+          key={ArchiveTab.ALL_TARGETS}
+          eventKey={ArchiveTab.ALL_TARGETS}
+          title={<TabTitleText>All Targets</TabTitleText>}
+        >
           <AllTargetsArchivedRecordingsTable />
         </Tab>,
       );
       arr.push(
-        <Tab id="all-archives" key={ArchiveTab.ALL_ARCHIVES} eventKey={ArchiveTab.ALL_ARCHIVES} title={<TabTitleText>All Archives</TabTitleText>}>
+        <Tab
+          id="all-archives"
+          key={ArchiveTab.ALL_ARCHIVES}
+          eventKey={ArchiveTab.ALL_ARCHIVES}
+          title={<TabTitleText>All Archives</TabTitleText>}
+        >
           <AllArchivedRecordingsTable />
         </Tab>,
       );
 
       if (capabilities.fileUploads) {
         arr.push(
-          <Tab id="uploads" key={ArchiveTab.UPLOADS} eventKey={ArchiveTab.UPLOADS} title={<TabTitleText>Uploads</TabTitleText>}>
+          <Tab
+            id="uploads"
+            key={ArchiveTab.UPLOADS}
+            eventKey={ArchiveTab.UPLOADS}
+            title={<TabTitleText>Uploads</TabTitleText>}
+          >
             <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
           </Tab>,
         );
