@@ -743,6 +743,13 @@ export class ApiService {
     return this.grafanaDashboardUrlSubject.asObservable().pipe(concatMap((url) => this.ctx.url(url)));
   }
 
+  openGrafanaDashboard(newTab = true): void {
+    this.grafanaDashboardUrl().subscribe((u) => {
+      const target = newTab ? '_blank' : '_self';
+      window.open(u, target);
+    });
+  }
+
   doGet<T>(
     path: string,
     apiVersion: ApiVersion = 'v4',

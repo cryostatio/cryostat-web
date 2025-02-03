@@ -17,9 +17,11 @@ import * as React from 'react';
 
 interface Capabilities {
   fileUploads: boolean;
+  openNewTab: boolean;
 }
 const defaultCapabilities: Capabilities = {
   fileUploads: true,
+  openNewTab: true,
 };
 
 const CapabilitiesContext: React.Context<Capabilities> = React.createContext(defaultCapabilities);

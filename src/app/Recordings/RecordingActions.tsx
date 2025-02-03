@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
+import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -42,6 +43,7 @@ export interface RecordingActionsProps {
 export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
+  const capabilities = React.useContext(CapabilitiesContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -68,11 +70,10 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
               .pipe(filter((n) => n.message.jobId === jobId)),
           ),
           tap(() => notifications.success('Upload Success', `Recording ${recording.name} uploaded`)),
-          concatMap(() => context.api.grafanaDashboardUrl()),
         )
-        .subscribe((url) => window.open(url, '_blank')),
+        .subscribe(() => context.api.openGrafanaDashboard(capabilities.openNewTab)),
     );
-  }, [addSubscription, notifications, context.api, context.notificationChannel, recording, uploadFn]);
+  }, [capabilities, addSubscription, notifications, context.api, context.notificationChannel, recording, uploadFn]);
 
   const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(recording);
