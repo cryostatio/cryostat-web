@@ -744,7 +744,7 @@ export class ApiService {
   }
 
   openGrafanaDashboard(newTab = true): void {
-    combineLatest([this.grafanaDashboardUrl(), this.headersAsQuery()]).subscribe(([url, query]) => {
+    combineLatest([this.grafanaDashboardUrl(), this.instanceSelectorHeadersAsQuery()]).subscribe(([url, query]) => {
       const target = newTab ? '_blank' : '_self';
       window.open(`${url}?${query}`, target);
     });
@@ -1461,7 +1461,7 @@ export class ApiService {
     return JSON.stringify(download);
   }
 
-  private headersAsQuery(): Observable<string> {
+  private instanceSelectorHeadersAsQuery(): Observable<string> {
     return this.ctx.headers().pipe(
       map((headers) => {
         let ns: string | undefined;
@@ -1485,7 +1485,7 @@ export class ApiService {
   }
 
   private downloadFile(url: string, filename: string, headers = true): void {
-    const o = headers ? this.headersAsQuery() : of('');
+    const o = headers ? this.instanceSelectorHeadersAsQuery() : of('');
     o.subscribe((q) => {
       const anchor = document.createElement('a');
       anchor.setAttribute('style', 'display: none; visibility: hidden;');
