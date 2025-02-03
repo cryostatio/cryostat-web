@@ -1534,13 +1534,18 @@ export class ApiService {
     const req = () =>
       combineLatest([
         this.ctx.url(`${p}${params ? '?' + params : ''}`),
-        this.ctx.headers((config || {}).headers).pipe(
+        this.ctx.headers(config?.headers).pipe(
           map((headers) => {
-            let cfg = config;
-            if (!cfg) {
-              cfg = {};
+            const cfg = config || {};
+            if (!cfg.headers) {
+              cfg.headers = new Headers();
             }
-            cfg.headers = headers;
+            const mergedHeaders = new Headers();
+            [headers, cfg.headers].forEach((source) => {
+              const h = new Headers(source);
+              h.forEach((v, k) => mergedHeaders.set(k, v));
+            });
+            cfg.headers = mergedHeaders;
             return cfg;
           }),
         ),
