@@ -740,7 +740,7 @@ export class ApiService {
   }
 
   grafanaDashboardUrl(): Observable<string> {
-    return this.grafanaDashboardUrlSubject.asObservable();
+    return this.grafanaDashboardUrlSubject.asObservable().pipe(concatMap((url) => this.ctx.url(url)));
   }
 
   doGet<T>(
