@@ -1541,10 +1541,7 @@ export class ApiService {
               cfg.headers = new Headers();
             }
             const mergedHeaders = new Headers();
-            [headers, cfg.headers].forEach((source) => {
-              const h = new Headers(source);
-              h.forEach((v, k) => mergedHeaders.set(k, v));
-            });
+            [headers, cfg.headers].forEach((source) => new Headers(source).forEach((v, k) => mergedHeaders.set(k, v)));
             cfg.headers = mergedHeaders;
             return cfg;
           }),
