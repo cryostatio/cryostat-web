@@ -100,18 +100,8 @@ export class ApiService {
   }
 
   private testHealth() {
-    const getDatasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
-      .url('/api/v4/grafana_datasource_url')
-      .pipe(
-        concatMap((u) => fromFetch(u)),
-        concatMap((resp) => from(resp.json())),
-      );
-    const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.ctx
-      .url('/api/v4/grafana_dashboard_url')
-      .pipe(
-        concatMap((u) => fromFetch(u)),
-        concatMap((resp) => from(resp.json())),
-      );
+    const datasourceURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_datasource_url', 'v4');
+    const dashboardURL: Observable<GrafanaDashboardUrlGetResponse> = this.doGet('/grafana_dashboard_url', 'v4');
     const health: Observable<HealthGetResponse> = this.doGet('/health', 'unversioned');
 
     health
@@ -127,7 +117,7 @@ export class ApiService {
           // if both configured and available then display nothing and just retrieve the URLs
           if (jsonResp.datasourceConfigured) {
             if (jsonResp.datasourceAvailable) {
-              toFetch.push(getDatasourceURL);
+              toFetch.push(datasourceURL);
             } else {
               unavailable.push('datasource URL');
             }
@@ -136,7 +126,7 @@ export class ApiService {
           }
           if (jsonResp.dashboardConfigured) {
             if (jsonResp.dashboardAvailable) {
-              toFetch.push(getDashboardURL);
+              toFetch.push(dashboardURL);
             } else {
               unavailable.push('dashboard URL');
             }
@@ -751,6 +741,18 @@ export class ApiService {
 
   grafanaDashboardUrl(): Observable<string> {
     return this.grafanaDashboardUrlSubject.asObservable();
+  }
+
+  openGrafanaDashboard(openGrafana: string | boolean): void {
+    let url: Observable<string>;
+    if (openGrafana === true) {
+      url = this.grafanaDashboardUrl();
+    } else if (typeof openGrafana === 'string' && openGrafana) {
+      url = of(openGrafana);
+    } else {
+      return;
+    }
+    url.subscribe((u) => window.open(u, '_blank'));
   }
 
   doGet<T>(
@@ -1464,8 +1466,8 @@ export class ApiService {
     return JSON.stringify(download);
   }
 
-  private downloadFile(url: string, filename: string, headers = true): void {
-    const qs = this.ctx.headers().pipe(
+  private instanceSelectorHeadersAsQuery(): Observable<string> {
+    return this.ctx.headers().pipe(
       map((headers) => {
         let ns: string | undefined;
         let name: string | undefined;
@@ -1485,8 +1487,10 @@ export class ApiService {
         return '';
       }),
     );
+  }
 
-    const o = headers ? qs : of('');
+  private downloadFile(url: string, filename: string, headers = true): void {
+    const o = headers ? this.instanceSelectorHeadersAsQuery() : of('');
     o.subscribe((q) => {
       const anchor = document.createElement('a');
       anchor.setAttribute('style', 'display: none; visibility: hidden;');
