@@ -740,15 +740,13 @@ export class ApiService {
   }
 
   grafanaDashboardUrl(): Observable<string> {
-    return this.grafanaDashboardUrlSubject.asObservable().pipe(concatMap((url) => this.ctx.url(url)));
+    return this.grafanaDashboardUrlSubject.asObservable();
   }
 
   openGrafanaDashboard(openGrafana: string | boolean): void {
     let url: Observable<string>;
     if (openGrafana === true) {
-      url = combineLatest([this.grafanaDashboardUrl(), this.instanceSelectorHeadersAsQuery()]).pipe(
-        map(([url, query]) => `${url}?${query}`),
-      );
+      url = this.grafanaDashboardUrl();
     } else if (typeof openGrafana === 'string' && openGrafana) {
       url = of(openGrafana);
     } else {
