@@ -17,6 +17,8 @@ import * as React from 'react';
 
 interface Capabilities {
   fileUploads: boolean;
+  // false to disable the feature, true to enable using the default mechanism of
+  // pulling the URL from the Cryostat server, truthy string to override the URL
   openGrafana: string | boolean;
 }
 const defaultCapabilities: Capabilities = {
