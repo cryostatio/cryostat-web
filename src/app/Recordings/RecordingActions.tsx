@@ -51,13 +51,18 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    addSubscription(
-      context.api
-        .grafanaDatasourceUrl()
-        .pipe(first())
-        .subscribe(() => setGrafanaEnabled(true)),
-    );
-  }, [context.api, setGrafanaEnabled, addSubscription]);
+    if (
+      capabilities.openGrafana === true ||
+      (typeof capabilities.openGrafana === 'string' && capabilities.openGrafana)
+    ) {
+      addSubscription(
+        context.api
+          .grafanaDatasourceUrl()
+          .pipe(first())
+          .subscribe(() => setGrafanaEnabled(true)),
+      );
+    }
+  }, [capabilities, context.api, setGrafanaEnabled, addSubscription]);
 
   const grafanaUpload = React.useCallback(() => {
     addSubscription(
@@ -71,7 +76,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
           ),
           tap(() => notifications.success('Upload Success', `Recording ${recording.name} uploaded`)),
         )
-        .subscribe(() => context.api.openGrafanaDashboard(capabilities.openNewTab)),
+        .subscribe(() => context.api.openGrafanaDashboard(capabilities.openGrafana)),
     );
   }, [capabilities, addSubscription, notifications, context.api, context.notificationChannel, recording, uploadFn]);
 

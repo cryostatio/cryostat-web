@@ -743,11 +743,18 @@ export class ApiService {
     return this.grafanaDashboardUrlSubject.asObservable().pipe(concatMap((url) => this.ctx.url(url)));
   }
 
-  openGrafanaDashboard(newTab = true): void {
-    combineLatest([this.grafanaDashboardUrl(), this.instanceSelectorHeadersAsQuery()]).subscribe(([url, query]) => {
-      const target = newTab ? '_blank' : '_self';
-      window.open(`${url}?${query}`, target);
-    });
+  openGrafanaDashboard(openGrafana: string | boolean): void {
+    let url: Observable<string>;
+    if (openGrafana === true) {
+      url = combineLatest([this.grafanaDashboardUrl(), this.instanceSelectorHeadersAsQuery()]).pipe(
+        map(([url, query]) => `${url}?${query}`),
+      );
+    } else if (typeof openGrafana === 'string' && openGrafana) {
+      url = of(openGrafana);
+    } else {
+      return;
+    }
+    url.subscribe((u) => window.open(u, '_blank'));
   }
 
   doGet<T>(
