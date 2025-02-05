@@ -189,7 +189,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
     }
 
     // Initialize the controller with model to create nodes
-    visualization.fromModel(model, false);
+    visualization.fromModel(model, true);
   }, [_transformData, visualization, discoveryTree]);
 
   // Note: Do not reorder. Must be called after registering model
