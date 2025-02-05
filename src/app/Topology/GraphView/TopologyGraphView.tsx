@@ -55,6 +55,15 @@ export const MAX_NODE_LIMIT = 100;
 export const DEFAULT_SIZEBAR_SIZE = 500;
 export const MIN_SIZEBAR_SIZE = 400;
 
+export const BASE_MODEL: Model = {
+  graph: {
+    id: TOPOLOGY_GRAPH_ID,
+    type: 'graph',
+    layout: 'Cola',
+    layers: [BOTTOM_LAYER, GROUPS_LAYER, DEFAULT_LAYER, TOP_LAYER],
+  },
+};
+
 export type SavedGraphPosition = {
   id?: string;
   type?: string;
@@ -146,6 +155,9 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
         }
       }, 200),
     );
+
+    _newVisualization.fromModel(BASE_MODEL);
+
     return _newVisualization;
   }, [setSelectedIds, setSelectedEntity]);
 
@@ -171,10 +183,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
       }),
       edges: _transformData.edges,
       graph: {
-        id: TOPOLOGY_GRAPH_ID,
-        type: 'graph',
-        layout: 'Cola',
-        layers: [BOTTOM_LAYER, GROUPS_LAYER, DEFAULT_LAYER, TOP_LAYER],
+        ...BASE_MODEL.graph!,
         data: { ...discoveryTree },
         x: graphData.x,
         y: graphData.y,
