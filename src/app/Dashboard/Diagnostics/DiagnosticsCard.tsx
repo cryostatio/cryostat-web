@@ -133,7 +133,7 @@ export const DiagnosticsCardSizes: DashboardCardSizes = {
 };
 
 export const DiagnosticsCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.BETA,
+  featureLevel: FeatureLevel.PRODUCTION,
   title: 'DiagnosticsCard.DIAGNOSTICS_CARD_TITLE',
   cardSizes: DiagnosticsCardSizes,
   description: 'DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION',
