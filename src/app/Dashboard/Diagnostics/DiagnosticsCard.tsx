@@ -143,10 +143,6 @@ export const DiagnosticsCardDescriptor: DashboardCardDescriptor = {
   icon: <WrenchIcon />,
   labels: [
     {
-      content: 'Beta',
-      color: 'cyan',
-    },
-    {
       content: 'Diagnostics',
       color: 'blue',
     },
