@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { EnvironmentNode, MBeanMetrics, MBeanMetricsResponse, TargetNode } from '@app/Shared/Services/api.types';
 import { isTargetNode } from '@app/Shared/Services/api.utils';
@@ -50,7 +51,6 @@ import { css } from '@patternfly/react-styles';
 import { ExpandableRowContent, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
 import { catchError, concatMap, map, of } from 'rxjs';
 import { EmptyText } from '../../Shared/Components/EmptyText';
 import { NodeAction } from '../Actions/types';
@@ -555,9 +555,9 @@ export const TargetResourceItem: React.FC<{
         />
         <Td key={`${resourceType}-resource-name`} dataLabel={'Resource'}>
           {
-            <Link {...getLinkPropsForTargetResource(resourceType)} onClick={switchTarget}>
+            <CryostatLink {...getLinkPropsForTargetResource(resourceType)} onClick={switchTarget}>
               {splitWordsOnUppercase(resourceType, true).join(' ')}
-            </Link>
+            </CryostatLink>
           }
         </Td>
         <Td key={`${resourceType}-resource-count`} dataLabel={'Total'} textCenter>
