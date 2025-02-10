@@ -14,10 +14,29 @@
  * limitations under the License.
  */
 
-import { toPath } from '@app/utils/utils';
+import { BASEPATH, toPath } from '@app/utils/utils';
 import React from 'react';
-import { Link } from 'react-router-dom-v5-compat';
+import { Link, LinkProps, Path, To } from 'react-router-dom-v5-compat';
 
-export const CryostatLink: React.FC<{ to: string; onClick? }> = ({ to, onClick, ...props }) => {
-  return <Link to={toPath(to)} onClick={onClick} {...props}></Link>;
+export interface CryostatLinkProps extends LinkProps {}
+
+/**
+ * Formats a To (string | Partial\<Path\>) by prepending a basepath if necessary
+ * @param {string | Partial<Path>} destination - the target destination
+ */
+const toDestination = (destination: To) => {
+  if (BASEPATH) {
+    if (typeof destination === 'string') {
+      return toPath(destination);
+    } else {
+      (destination as Partial<Path>).pathname = `/${BASEPATH}${(destination as Partial<Path>).pathname}`;
+      return destination as Partial<Path>;
+    }
+  } else {
+    return destination;
+  }
+};
+
+export const CryostatLink: React.FC<CryostatLinkProps> = ({ to, onClick, ...props }) => {
+  return <Link to={toDestination(to)} onClick={onClick} {...props}></Link>;
 };
