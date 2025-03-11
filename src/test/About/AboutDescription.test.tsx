@@ -67,6 +67,7 @@ describe('<AboutDescription />', () => {
     { str: '3.0.0-vendor123', version: '3.0.0', build: 'vendor123' },
     { str: 'v3.0.0-vendor123', version: 'v3.0.0', build: 'vendor123' },
     { str: 'v1.2.3-branch-vendor123', version: 'v1.2.3', build: 'branch-vendor123' },
+    { str: 'v1.2.3.branch-vendor123', version: 'v1.2.3', build: 'branch-vendor123' },
     { str: 'v1.2.3-branch-vendor.tag123_a', version: 'v1.2.3', build: 'branch-vendor.tag123_a' },
     { str: 'v1.2.3-abcd1234', version: 'v1.2.3', build: 'abcd1234' },
   ];
