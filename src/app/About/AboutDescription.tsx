@@ -23,7 +23,7 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
 
-export const VERSION_REGEX = /^(v?[0-9]+\.[0-9]+\.[0-9]+)(?:-(.+))?$/;
+export const VERSION_REGEX = /^(v?[0-9]+\.[0-9]+\.[0-9]+)(?:[-_\.](.+))?$/;
 
 export const AboutDescription: React.FC = () => {
   const serviceContext = React.useContext(ServiceContext);
