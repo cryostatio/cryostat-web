@@ -73,6 +73,7 @@ export const CustomRecordingForm: React.FC = () => {
     labels: [],
     continuous: false,
     archiveOnStop: true,
+    autoanalyze: true,
     restart: false,
     duration: 30,
     durationUnit: 1000,
@@ -209,6 +210,11 @@ export const CustomRecordingForm: React.FC = () => {
     [setFormData],
   );
 
+  const handleAutoAnalyzeChange = React.useCallback(
+    (_, autoanalyze: boolean) => setFormData((old) => ({ ...old, autoanalyze })),
+    [setFormData],
+  );
+
   const setAdvancedRecordingOptions = React.useCallback(
     (options: AdvancedRecordingOptions) => {
       // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
@@ -237,6 +243,7 @@ export const CustomRecordingForm: React.FC = () => {
       duration,
       durationUnit,
       archiveOnStop,
+      autoanalyze,
     } = formData;
 
     const notificationMessages: string[] = [];
@@ -261,7 +268,15 @@ export const CustomRecordingForm: React.FC = () => {
         maxAge: toDisk ? (continuous ? maxAge * maxAgeUnit : undefined) : undefined,
         maxSize: toDisk ? maxSize * maxSizeUnit : undefined,
       },
-      metadata: { labels: formData.labels },
+      metadata: {
+        labels: [
+          ...formData.labels,
+          {
+            key: 'autoanalyze',
+            value: `${autoanalyze}`,
+          },
+        ],
+      },
     };
     handleCreateRecording(recordingAttributes);
   }, [eventSpecifierString, formData, notifications, handleCreateRecording]);
@@ -444,6 +459,7 @@ export const CustomRecordingForm: React.FC = () => {
             <SplitItem>
               <Checkbox
                 label="Continuous"
+                description="Record with unlimited duration until manually stopped"
                 isChecked={formData.continuous}
                 isDisabled={loading}
                 onChange={handleContinuousChange}
@@ -455,12 +471,25 @@ export const CustomRecordingForm: React.FC = () => {
             <SplitItem>
               <Checkbox
                 label="Archive on Stop"
+                description="Copy data to Archives automatically when duration elapses"
                 isDisabled={formData.continuous || loading}
                 isChecked={formData.archiveOnStop && !formData.continuous}
                 onChange={handleArchiveOnStopChange}
                 aria-label="ArchiveOnStop checkbox"
                 id="recording-archive-on-stop"
                 name="recording-archive-on-stop"
+              />
+            </SplitItem>
+            <SplitItem>
+              <Checkbox
+                label="Autoanalyze"
+                description="Automatically analyze any archived copies of this recording"
+                isDisabled={loading}
+                isChecked={formData.autoanalyze}
+                onChange={handleAutoAnalyzeChange}
+                aria-label="Autoanalyze checkbox"
+                id="autoanalyze"
+                name="autoanalyze"
               />
             </SplitItem>
           </Split>

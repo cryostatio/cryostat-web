@@ -328,6 +328,7 @@ export interface Rule {
   preservedArchives: number;
   maxAgeSeconds: number;
   maxSizeBytes: number;
+  metadata: Metadata;
 }
 
 // ======================================

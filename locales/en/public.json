@@ -211,6 +211,7 @@
     },
     "DESCRIPTION_HELPER_TEXT": "Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions.",
     "ENABLE_SWITCH_HELPER_TEXT": "Rules take effect when created if enabled and will be matched against all discovered target applications immediately. When new target applications appear they are checked against all enabled rules. Disabled rules have no effect but are available to be enabled in the future.",
+    "AUTOANALYZE_SWITCH_HELPER_TEXT": "Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.",
     "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
     "FAILING_EVALUATION": "The expression matching failed.",
     "INITIAL_DELAY_HELPER_TEXT": "Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later.",

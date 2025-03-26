@@ -265,7 +265,7 @@ export class ApiService {
         concatMap((headers) =>
           this.sendRequest('v4', 'rules', {
             method: 'POST',
-            body: JSON.stringify(rule),
+            body: JSON.stringify({ ...rule, metadata: { labels: this.transformLabelsToObject(rule.metadata.labels) } }),
             headers,
           }),
         ),

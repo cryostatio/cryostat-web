@@ -26,6 +26,7 @@ interface _FormBaseData {
   labels: KeyValue[];
   continuous: boolean;
   archiveOnStop: boolean;
+  autoanalyze: boolean;
   restart: boolean;
   duration: number;
   durationUnit: number;
