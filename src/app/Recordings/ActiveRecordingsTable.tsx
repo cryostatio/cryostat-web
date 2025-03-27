@@ -295,7 +295,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         setRecordings((old) => {
           const updated = [...old];
           for (const r of updated) {
-            if (r.name === event.message.recording.name) {
+            if (r.id === event.message.recording.id) {
               r.state = RecordingState.STOPPED;
             }
           }
@@ -325,7 +325,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         }
         setRecordings((old) => {
           return old.map((o) => {
-            if (o.name == event.message.recording.name) {
+            if (o.id == event.message.recording.id) {
               const updatedRecording = { ...o, metadata: { labels: event.message.recording.metadata.labels } };
               return updatedRecording;
             }
@@ -584,7 +584,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           >
             {filteredRecordings.map((r) => (
               <ActiveRecordingRow
-                key={r.name}
+                key={r.id}
                 targetConnectUrl={targetConnectURL}
                 recording={r}
                 labelFilters={targetRecordingFilters.Label}
@@ -891,7 +891,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
   const expandedRowId = React.useMemo(
-    () => `active-table-row-${recording.name}-${recording.startTime}-exp`,
+    () => `active-table-row-${recording.id}-${recording.startTime}-exp`,
     [recording],
   );
 
