@@ -117,7 +117,14 @@ describe('<CustomRecordingForm />', () => {
         maxSize: 0,
         toDisk: true,
       },
-      metadata: { labels: [] },
+      metadata: {
+        labels: [
+          {
+            key: 'autoanalyze',
+            value: 'true',
+          },
+        ],
+      },
     } as RecordingAttributes);
     expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
