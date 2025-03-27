@@ -287,7 +287,17 @@ describe('<CreateRule />', () => {
     await user.click(createButton);
 
     expect(createSpy).toHaveBeenCalledTimes(1);
-    expect(createSpy).toHaveBeenCalledWith(mockRule);
+    expect(createSpy).toHaveBeenCalledWith({
+      ...mockRule,
+      metadata: {
+        labels: [
+          {
+            key: 'autoanalyze',
+            value: 'true',
+          },
+        ],
+      },
+    });
 
     expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
