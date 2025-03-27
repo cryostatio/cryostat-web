@@ -890,10 +890,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
   const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
 
-  const expandedRowId = React.useMemo(
-    () => `active-table-row-${recording.id}-${recording.startTime}-exp`,
-    [recording],
-  );
+  const expandedRowId = React.useMemo(() => `active-table-row-${recording.id}-${recording.startTime}-exp`, [recording]);
 
   const isExpanded = React.useMemo(() => {
     return expandedRows.includes(expandedRowId);
