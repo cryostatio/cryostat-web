@@ -145,7 +145,7 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
 export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   switch (resourceType) {
     case 'activeRecordings':
-      return [NotificationCategory.ActiveRecordingDeleted, NotificationCategory.SnapshotDeleted];
+      return [NotificationCategory.ActiveRecordingDeleted];
     case 'archivedRecordings':
       return [NotificationCategory.ArchivedRecordingDeleted];
     case 'eventTemplates':

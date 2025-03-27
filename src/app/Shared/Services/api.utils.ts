@@ -281,14 +281,6 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.SnapshotDeleted,
-    {
-      variant: AlertVariant.success,
-      title: 'Snapshot deleted',
-      body: (evt) => `${evt.message.recording.name} in target ${evt.message.target} was deleted`,
-    } as NotificationMessageMapper,
-  ],
-  [
     NotificationCategory.ArchivedRecordingCreated,
     {
       variant: AlertVariant.success,
