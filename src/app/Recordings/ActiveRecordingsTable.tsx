@@ -252,10 +252,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     addSubscription(
       combineLatest([
         context.target.target(),
-        merge(
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-          context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
-        ),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
       ]).subscribe(([currentTarget, event]) => {
         if (currentTarget?.jvmId != event.message.jvmId) {
           return;

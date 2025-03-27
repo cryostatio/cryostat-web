@@ -512,7 +512,6 @@ export enum NotificationCategory {
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
   ArchiveRecordingSuccess = 'ArchiveRecordingSuccess',
   ArchiveRecordingFail = 'ArchiveRecordingFailure',
-  SnapshotCreated = 'SnapshotCreated',
   SnapshotDeleted = 'SnapshotDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
   ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',

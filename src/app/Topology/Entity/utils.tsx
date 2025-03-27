@@ -123,7 +123,6 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
     case 'activeRecordings':
       return [
         NotificationCategory.ActiveRecordingCreated,
-        NotificationCategory.SnapshotCreated,
         NotificationCategory.ActiveRecordingStopped, // State Update
       ];
     case 'archivedRecordings':
