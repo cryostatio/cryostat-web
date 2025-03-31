@@ -46,6 +46,7 @@
   "LABEL": "Label",
   "MATCH_EXPRESSION": "Match Expression",
   "AUTOANALYZE": "Automatically Analyze",
+  "AUTOANALYZE_HELPER_TEXT": "Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.",
   "MAXIMUM_AGE": "Maximum Age",
   "MAXIMUM_AGE_HELPER_TEXT": "The maximum age of Recording data stored to disk.",
   "MAXIMUM_SIZE": "Maximum Size",

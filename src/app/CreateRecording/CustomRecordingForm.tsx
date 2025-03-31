@@ -60,20 +60,22 @@ import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 
 export const CustomRecordingForm: React.FC = () => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const location = useLocation();
 
+  const [autoanalyze, setAutoanalyze] = React.useState(true);
   const [formData, setFormData] = React.useState<CustomRecordingFormData>({
     name: '',
     labels: [],
     continuous: false,
     archiveOnStop: true,
-    autoanalyze: true,
     restart: false,
     duration: 30,
     durationUnit: 1000,
@@ -211,8 +213,8 @@ export const CustomRecordingForm: React.FC = () => {
   );
 
   const handleAutoAnalyzeChange = React.useCallback(
-    (_, autoanalyze: boolean) => setFormData((old) => ({ ...old, autoanalyze })),
-    [setFormData],
+    (_, autoanalyze: boolean) => setAutoanalyze(autoanalyze),
+    [setAutoanalyze],
   );
 
   const setAdvancedRecordingOptions = React.useCallback(
@@ -243,7 +245,6 @@ export const CustomRecordingForm: React.FC = () => {
       duration,
       durationUnit,
       archiveOnStop,
-      autoanalyze,
     } = formData;
 
     const notificationMessages: string[] = [];
@@ -269,13 +270,7 @@ export const CustomRecordingForm: React.FC = () => {
         maxSize: toDisk ? maxSize * maxSizeUnit : undefined,
       },
       metadata: {
-        labels: [
-          ...formData.labels,
-          {
-            key: 'autoanalyze',
-            value: `${autoanalyze}`,
-          },
-        ],
+        labels: [...formData.labels, { key: 'autoanalyze', value: `${autoanalyze}` }],
       },
     };
     handleCreateRecording(recordingAttributes);
@@ -323,7 +318,10 @@ export const CustomRecordingForm: React.FC = () => {
   }, [formData]);
 
   const hasReservedLabels = React.useMemo(
-    () => formData.labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
+    () =>
+      formData.labels.some(
+        (label) => label.key === 'template.name' || label.key === 'template.type' || label.key === 'autoanalyze',
+      ),
     [formData],
   );
 
@@ -480,18 +478,6 @@ export const CustomRecordingForm: React.FC = () => {
                 name="recording-archive-on-stop"
               />
             </SplitItem>
-            <SplitItem>
-              <Checkbox
-                label="Autoanalyze"
-                description="Automatically analyze any archived copies of this recording"
-                isDisabled={loading}
-                isChecked={formData.autoanalyze}
-                onChange={handleAutoAnalyzeChange}
-                aria-label="Autoanalyze checkbox"
-                id="autoanalyze"
-                name="autoanalyze"
-              />
-            </SplitItem>
           </Split>
           <DurationPicker
             enabled={!formData.continuous && !loading}
@@ -553,6 +539,16 @@ export const CustomRecordingForm: React.FC = () => {
               </Tooltip>
             }
           >
+            <Checkbox
+              label="Automatically analyze"
+              description={t('AUTOANALYZE_HELPER_TEXT')}
+              isDisabled={loading}
+              isChecked={autoanalyze}
+              onChange={handleAutoAnalyzeChange}
+              aria-label="Autoanalyze checkbox"
+              id="autoanalyze"
+              name="autoanalyze"
+            />
             <RecordingLabelFields
               labels={formData.labels}
               setLabels={handleLabelsChange}
@@ -566,8 +562,8 @@ export const CustomRecordingForm: React.FC = () => {
                   variant={hasReservedLabels ? 'warning' : undefined}
                   hasIcon={hasReservedLabels}
                 >
-                  Labels with key <Label isCompact>template.name</Label> and <Label isCompact>template.type</Label> are
-                  set by Cryostat and will be overwritten if specifed.
+                  Labels with key <Label isCompact>template.name</Label>, <Label isCompact>template.type</Label>, and{' '}
+                  <Label isCompact>autoanalyze</Label> are set by Cryostat and will be overwritten if specifed.
                 </HelperTextItem>
               </HelperText>
             </FormHelperText>

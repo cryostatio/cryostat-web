@@ -29,7 +29,6 @@ interface _FormBaseData {
   matchExpression: string;
   description: string;
   template?: EventTemplateIdentifier;
-  autoanalyze: boolean;
   maxAge: number;
   maxAgeUnit: number;
   maxSize: number;

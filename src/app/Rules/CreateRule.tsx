@@ -74,12 +74,12 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
+  const [autoanalyze, setAutoanalyze] = React.useState(true);
 
   const [formData, setFormData] = React.useState<RuleFormData>({
     name: '',
     nameValid: ValidatedOptions.default,
     enabled: true,
-    autoanalyze: true,
     description: '',
     matchExpression: '', // Use this for displaying Match Expression input
     matchExpressionValid: ValidatedOptions.default,
@@ -168,8 +168,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 
   const handleAutoAnalyzeChange = React.useCallback(
-    (_, autoanalyze: boolean) => setFormData((old) => ({ ...old, autoanalyze })),
-    [setFormData],
+    (_, autoanalyze: boolean) => setAutoanalyze(autoanalyze),
+    [setAutoanalyze],
   );
 
   const handleMaxAgeChange = React.useCallback(
@@ -227,7 +227,6 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
       nameValid,
       description,
       enabled,
-      autoanalyze,
       matchExpression,
       preservedArchives,
       archivalPeriod,
@@ -488,12 +487,12 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           id="rule-autoanalyze"
           isDisabled={loading}
           aria-label="Automatically analyze archived copies of this recording"
-          isChecked={formData.autoanalyze}
+          isChecked={autoanalyze}
           onChange={handleAutoAnalyzeChange}
         />
         <FormHelperText>
           <HelperText>
-            <HelperTextItem>{t('CreateRule.AUTOANALYZE_SWITCH_HELPER_TEXT')}</HelperTextItem>
+            <HelperTextItem>{t('AUTOANALYZE_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
