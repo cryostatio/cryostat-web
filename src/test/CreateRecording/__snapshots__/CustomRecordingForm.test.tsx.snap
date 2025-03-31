@@ -211,40 +211,6 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             </span>
           </div>
         </div>
-        <div
-          className="pf-v5-l-split__item"
-        >
-          <div
-            className="pf-v5-c-check"
-          >
-            <input
-              aria-invalid={false}
-              aria-label="Autoanalyze checkbox"
-              checked={true}
-              className="pf-v5-c-check__input"
-              data-ouia-component-id="OUIA-Generated-Checkbox-4"
-              data-ouia-component-type="PF5/Checkbox"
-              data-ouia-safe={true}
-              disabled={false}
-              id="autoanalyze"
-              name="autoanalyze"
-              onChange={[Function]}
-              required={false}
-              type="checkbox"
-            />
-            <label
-              className="pf-v5-c-check__label"
-              htmlFor="autoanalyze"
-            >
-              Autoanalyze
-            </label>
-            <span
-              className="pf-v5-c-check__description"
-            >
-              Automatically analyze any archived copies of this recording
-            </span>
-          </div>
-        </div>
       </div>
       <div
         className="pf-v5-l-split pf-m-gutter"
@@ -580,6 +546,36 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           className="pf-v5-c-form__group-control"
         >
           <div
+            className="pf-v5-c-check"
+          >
+            <input
+              aria-invalid={false}
+              aria-label="Autoanalyze checkbox"
+              checked={true}
+              className="pf-v5-c-check__input"
+              data-ouia-component-id="OUIA-Generated-Checkbox-4"
+              data-ouia-component-type="PF5/Checkbox"
+              data-ouia-safe={true}
+              disabled={false}
+              id="autoanalyze"
+              name="autoanalyze"
+              onChange={[Function]}
+              required={false}
+              type="checkbox"
+            />
+            <label
+              className="pf-v5-c-check__label"
+              htmlFor="autoanalyze"
+            >
+              Automatically analyze
+            </label>
+            <span
+              className="pf-v5-c-check__description"
+            >
+              Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.
+            </span>
+          </div>
+          <div
             className="pf-v5-c-label-group pf-m-category pf-m-editable"
           >
             <div
@@ -645,7 +641,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                       </span>
                     </span>
                   </span>
-                   and 
+                  , 
                   <span
                     className="pf-v5-c-label pf-m-compact"
                   >
@@ -656,6 +652,21 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                         className="pf-v5-c-label__text"
                       >
                         template.type
+                      </span>
+                    </span>
+                  </span>
+                  , and
+                   
+                  <span
+                    className="pf-v5-c-label pf-m-compact"
+                  >
+                    <span
+                      className="pf-v5-c-label__content"
+                    >
+                      <span
+                        className="pf-v5-c-label__text"
+                      >
+                        autoanalyze
                       </span>
                     </span>
                   </span>
