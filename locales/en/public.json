@@ -654,6 +654,11 @@
   },
   "Topology": {
     "GRAPH_VIEW": "Graph view",
-    "LIST_VIEW": "List view"
+    "LIST_VIEW": "List view",
+    "NodeDecorator": {
+      "Report": {
+        "TOOLTIP": "{{count}} rules evaluated. Maximum score {{score}}."
+      }
+    }
   }
 }

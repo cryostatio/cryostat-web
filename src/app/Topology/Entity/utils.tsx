@@ -113,6 +113,8 @@ export const getTargetOwnedResources = (
           );
         }),
       );
+    case 'report':
+      return apiService.getCurrentReportStatusForTarget(target).pipe(map((report) => [report]));
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -137,6 +139,8 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
       return [NotificationCategory.RuleCreated, NotificationCategory.RuleUpdated];
     case 'credentials':
       return [NotificationCategory.CredentialsStored, NotificationCategory.TargetCredentialsStored];
+    case 'report':
+      return [NotificationCategory.ReportSuccess];
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -158,6 +162,8 @@ export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType |
       return [NotificationCategory.RuleDeleted];
     case 'credentials':
       return [NotificationCategory.CredentialsDeleted, NotificationCategory.TargetCredentialsDeleted];
+    case 'report':
+      return [];
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -255,6 +261,9 @@ export const getLinkPropsForTargetResource = (
       return { to: { pathname: '/rules' } };
     case 'credentials':
       return { to: { pathname: '/security' } };
+    case 'report':
+      // FIXME point the user to somewhere/something that views the current analysis and helps set up to run new analyses
+      return { to: { pathname: '/recordings', search: '?tab=archived-recording' } };
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }

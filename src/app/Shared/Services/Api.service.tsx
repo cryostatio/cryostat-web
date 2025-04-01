@@ -66,6 +66,7 @@ import {
   isTargetMetadata,
   MBeanMetricsResponse,
   BuildInfo,
+  AggregateReport,
 } from './api.types';
 import {
   isHttpError,
@@ -814,6 +815,101 @@ export class ApiService {
     ).pipe(
       concatMap((resp) => resp.json()),
       first(),
+    );
+  }
+
+  getCurrentReportStatusForTarget(target: TargetStub | TargetStub[]): Observable<AggregateReport> {
+    let targetIds: number[];
+    if (Array.isArray(target)) {
+      targetIds = target.map((t) => t.id!);
+    } else {
+      targetIds = [target.id!];
+    }
+    return this.graphql<any>(
+      `
+        query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
+          targetNodes(filter: { targetIds: $targetIds }) {
+            target {
+              id
+              report {
+                aggregate {
+                  count
+                  max
+                }
+              }
+            }
+          }
+        }
+      `,
+      { targetIds },
+    ).pipe(
+      map((resp) => {
+        const empty = {
+          data: {},
+          aggregate: {
+            max: -1,
+            count: 0,
+          },
+        };
+
+        const nodes = resp.data?.targetNodes ?? [];
+        if (nodes.length === 0) {
+          return empty;
+        }
+        if (!nodes[0]?.target?.report?.aggregate?.count) {
+          return empty;
+        }
+        return nodes[0].target.report;
+      }),
+    );
+  }
+
+  getCurrentReportForTarget(target: TargetStub | TargetStub[]): Observable<AggregateReport> {
+    let targetIds: number[];
+    if (Array.isArray(target)) {
+      targetIds = target.map((t) => t.id!);
+    } else {
+      targetIds = [target.id!];
+    }
+    return this.graphql<any>(
+      `
+        query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
+          targetNodes(filter: { targetIds: $targetIds }) {
+            target {
+              id
+              report {
+                data {
+                  key
+                  value {
+                    name
+                    topic
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      { targetIds },
+    ).pipe(
+      map((resp) => {
+        const empty = {
+          data: {},
+          aggregate: {
+            max: -1,
+            count: 0,
+          },
+        };
+
+        const nodes = resp.data?.targetNodes ?? [];
+        if (nodes.length === 0) {
+          return empty;
+        }
+        if (!nodes[0]?.target?.report?.aggregate?.count) {
+          return empty;
+        }
+        return nodes[0].target.report;
+      }),
     );
   }
 

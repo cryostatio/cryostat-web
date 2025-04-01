@@ -267,6 +267,14 @@ export interface ActiveRecordingsFilterInput {
  */
 export const UPLOADS_SUBDIRECTORY = 'uploads';
 
+export interface AggregateReport {
+  aggregate?: {
+    count: number;
+    max: number;
+  };
+  data?: Map<string, String>;
+}
+
 export interface RecordingCountResponse {
   data: {
     targetNodes: {
