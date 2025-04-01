@@ -276,7 +276,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         }
       }),
     );
-  }, [setLoading, addSubscription, exitForm, context.api, notifications, formData, eventSpecifierString]);
+  }, [setLoading, addSubscription, exitForm, context.api, notifications, formData, autoanalyze, eventSpecifierString]);
 
   React.useEffect(() => {
     const matchedTargets = matchedTargetsRef.current;

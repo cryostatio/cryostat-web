@@ -16,6 +16,7 @@
 
 import { TargetNode, ActiveRecording, RecordingState, AggregateReport } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Tooltip } from '@patternfly/react-core';
 import { InProgressIcon, RunningIcon, TachometerAltIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -29,7 +30,6 @@ import {
 import * as React from 'react';
 import { useResources } from '../Entity/utils';
 import { getStatusTargetNode } from '../Shared/utils';
-import { useCryostatTranslation } from '@i18n/i18nextUtil';
 
 export const getNodeDecorators = (element: Node) => {
   return (
@@ -86,7 +86,7 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
       icon: <TachometerAltIcon className={css(base, style)} />,
       tooltip: t('Topology.NodeDecorator.Report.TOOLTIP', { count: report[0].aggregate.count, score }),
     };
-  }, [error, loading, report]);
+  }, [t, error, loading, report]);
 
   return iconConfig ? (
     <Tooltip content={iconConfig.tooltip} triggerRef={decoratorRef} appendTo={portalRoot}>

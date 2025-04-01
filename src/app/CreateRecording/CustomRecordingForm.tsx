@@ -30,6 +30,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -60,7 +61,6 @@ import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
-import { useCryostatTranslation } from '@i18n/i18nextUtil';
 
 export const CustomRecordingForm: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -274,7 +274,7 @@ export const CustomRecordingForm: React.FC = () => {
       },
     };
     handleCreateRecording(recordingAttributes);
-  }, [eventSpecifierString, formData, notifications, handleCreateRecording]);
+  }, [eventSpecifierString, formData, autoanalyze, notifications, handleCreateRecording]);
 
   const refreshFormOptions = React.useCallback(
     (target: Target) => {
