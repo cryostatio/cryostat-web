@@ -84,7 +84,10 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
     }
     return {
       icon: <TachometerAltIcon className={css(base, style)} />,
-      tooltip: t('Topology.NodeDecorator.Report.TOOLTIP', { count: report[0].aggregate.count, score }),
+      tooltip: t('Topology.NodeDecorator.Report.TOOLTIP', {
+        count: report[0].aggregate.count,
+        score: score.toFixed(2),
+      }),
     };
   }, [t, error, loading, report]);
 
