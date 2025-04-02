@@ -114,7 +114,7 @@ export const getTargetOwnedResources = (
         }),
       );
     case 'report':
-      return apiService.getCurrentReportStatusForTarget(target).pipe(map((report) => [report]));
+      return apiService.getCurrentReportForTarget(target, true).pipe(map((report) => [report]));
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }

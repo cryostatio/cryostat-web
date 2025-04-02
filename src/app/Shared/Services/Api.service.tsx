@@ -818,13 +818,22 @@ export class ApiService {
     );
   }
 
-  getCurrentReportStatusForTarget(target: TargetStub | TargetStub[]): Observable<AggregateReport> {
+  getCurrentReportForTarget(target: TargetStub | TargetStub[], aggregateOnly = false): Observable<AggregateReport> {
     let targetIds: number[];
     if (Array.isArray(target)) {
       targetIds = target.map((t) => t.id!);
     } else {
       targetIds = [target.id!];
     }
+    const dataQ = `
+                data {
+                  key
+                  value {
+                    name
+                    topic
+                  }
+                }
+    `;
     return this.graphql<any>(
       `
         query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
@@ -836,55 +845,7 @@ export class ApiService {
                   count
                   max
                 }
-              }
-            }
-          }
-        }
-      `,
-      { targetIds },
-    ).pipe(
-      map((resp) => {
-        const empty = {
-          data: {},
-          aggregate: {
-            max: -1,
-            count: 0,
-          },
-        };
-
-        const nodes = resp.data?.targetNodes ?? [];
-        if (nodes.length === 0) {
-          return empty;
-        }
-        if (!nodes[0]?.target?.report?.aggregate?.count) {
-          return empty;
-        }
-        return nodes[0].target.report;
-      }),
-    );
-  }
-
-  getCurrentReportForTarget(target: TargetStub | TargetStub[]): Observable<AggregateReport> {
-    let targetIds: number[];
-    if (Array.isArray(target)) {
-      targetIds = target.map((t) => t.id!);
-    } else {
-      targetIds = [target.id!];
-    }
-    return this.graphql<any>(
-      `
-        query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
-          targetNodes(filter: { targetIds: $targetIds }) {
-            target {
-              id
-              report {
-                data {
-                  key
-                  value {
-                    name
-                    topic
-                  }
-                }
+                ${aggregateOnly ? '' : dataQ}
               }
             }
           }
