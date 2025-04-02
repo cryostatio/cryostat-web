@@ -24,6 +24,7 @@ import {
   Recording,
   EventTemplate,
   EventProbe,
+  AggregateReport,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -50,7 +51,7 @@ import {
   Subject,
   switchMap,
 } from 'rxjs';
-import { ActiveRecDetail, Nothing } from './ResourceDetails';
+import { ActiveRecDetail, Nothing, ReportDetail } from './ResourceDetails';
 import { DescriptionConfig, TargetOwnedResourceType, TargetRelatedResourceType, ResourceTypes, PatchFn } from './types';
 
 export const keyValueEntryTransformer = (kv: { key: string; value: string }[]): string[] =>
@@ -238,6 +239,9 @@ export const getResourceListPatchFn = (
           }),
         );
       };
+    case 'report':
+      return (_arr: AggregateReport[], _eventData: NotificationMessage, _removed?: boolean) =>
+        apiService.getCurrentReportForTarget(target, true).pipe(map((report) => [report]));
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -275,6 +279,8 @@ export const getExpandedResourceDetails = (
   switch (resourceType) {
     case 'activeRecordings':
       return ActiveRecDetail;
+    case 'report':
+      return ReportDetail;
     default:
       return Nothing;
   }

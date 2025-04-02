@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EmptyText } from '@app/Shared/Components/EmptyText';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
+import { ActiveRecording, AggregateReport, RecordingState } from '@app/Shared/Services/api.types';
 import {
   DescriptionList,
   DescriptionListGroup,
@@ -71,6 +71,14 @@ export const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ re
         </DescriptionListDescription>
       </DescriptionListGroup>
     </DescriptionList>
+  );
+};
+
+export const ReportDetail: React.FC<{ resources: AggregateReport[] }> = ({ resources, ...props }) => {
+  return (
+    <Bullseye>
+      <EmptyText text={'TODO'} />
+    </Bullseye>
   );
 };
 
