@@ -222,10 +222,10 @@ export const CustomRecordingForm: React.FC = () => {
       // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
       setFormData((old) => ({
         ...old,
-        maxAge: options.maxAge || 0,
-        maxAgeUnit: 1,
-        maxSize: options.maxSize || 0,
-        maxSizeUnit: 1,
+        maxAge: old.maxAge || options.maxAge || 0,
+        maxAgeUnit: old.maxAgeUnit || 1,
+        maxSize: old.maxSize || options.maxSize || 0,
+        maxSizeUnit: old.maxSizeUnit || 1,
       }));
     },
     [setFormData],
@@ -388,7 +388,7 @@ export const CustomRecordingForm: React.FC = () => {
           : ValidatedOptions.error,
       template,
       restart: restart ?? false,
-      continuous: continuous || false,
+      continuous: continuous ?? false,
       labels: labels ?? [],
       labelsValid: ValidatedOptions.default, // RecordingLabelFields component handles validating
       duration: continuous ? 0 : (duration ?? 30),
