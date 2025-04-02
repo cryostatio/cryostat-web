@@ -272,7 +272,14 @@ export interface AggregateReport {
     count: number;
     max: number;
   };
-  data?: Map<string, String>;
+  data?: Map<
+    string,
+    {
+      name: string;
+      topic: string;
+      score: number;
+    }
+  >;
   lastUpdated?: number;
 }
 

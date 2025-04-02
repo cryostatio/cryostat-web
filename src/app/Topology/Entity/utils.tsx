@@ -51,7 +51,7 @@ import {
   Subject,
   switchMap,
 } from 'rxjs';
-import { ActiveRecDetail, Nothing, ReportDetail } from './ResourceDetails';
+import { ActiveRecDetail, Nothing } from './ResourceDetails';
 import { DescriptionConfig, TargetOwnedResourceType, TargetRelatedResourceType, ResourceTypes, PatchFn } from './types';
 
 export const keyValueEntryTransformer = (kv: { key: string; value: string }[]): string[] =>
@@ -73,6 +73,12 @@ export const mapSection = (d: DescriptionConfig) => (
 export const isOwnedResource = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   return resourceType !== 'automatedRules' && resourceType !== 'credentials';
 };
+
+export const REPORT_NA_SCORE = -1;
+export const REPORT_MIN_SCORE = 0;
+export const REPORT_WARNING_SCORE = 25;
+export const REPORT_DANGER_SCORE = 75;
+export const REPORT_MAX_SCORE = 100;
 
 export const getTargetOwnedResources = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
@@ -279,8 +285,6 @@ export const getExpandedResourceDetails = (
   switch (resourceType) {
     case 'activeRecordings':
       return ActiveRecDetail;
-    case 'report':
-      return ReportDetail;
     default:
       return Nothing;
   }

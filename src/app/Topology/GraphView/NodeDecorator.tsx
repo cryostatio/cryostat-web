@@ -29,7 +29,13 @@ import {
   TopologyQuadrant,
 } from '@patternfly/react-topology';
 import * as React from 'react';
-import { useResources } from '../Entity/utils';
+import {
+  REPORT_DANGER_SCORE,
+  REPORT_MAX_SCORE,
+  REPORT_MIN_SCORE,
+  REPORT_WARNING_SCORE,
+  useResources,
+} from '../Entity/utils';
 import { getStatusTargetNode } from '../Shared/utils';
 
 export const getNodeDecorators = (element: Node) => {
@@ -74,11 +80,11 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
     }
     const score = report[0].aggregate.max;
     let style: string;
-    if (0 <= score && score < 25) {
+    if (REPORT_MIN_SCORE <= score && score < REPORT_WARNING_SCORE) {
       style = 'success';
-    } else if (25 <= score && score < 75) {
+    } else if (REPORT_WARNING_SCORE <= score && score < REPORT_DANGER_SCORE) {
       style = 'warning';
-    } else if (75 <= score && score <= 100) {
+    } else if (REPORT_DANGER_SCORE <= score && score <= REPORT_MAX_SCORE) {
       style = 'danger';
     } else {
       console.warn(`Report score ${score} is outside expected [0, 100] range`);
