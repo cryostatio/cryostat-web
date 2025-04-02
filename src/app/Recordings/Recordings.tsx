@@ -22,6 +22,7 @@ import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
+import { concatMap } from 'rxjs';
 
 enum RecordingTab {
   ACTIVE_RECORDING = 'active-recording',
@@ -43,8 +44,13 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
-    addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
-  }, [context.api, addSubscription, setArchiveEnabled]);
+    addSubscription(
+      context.login
+        .getSessionState()
+        .pipe(concatMap(() => context.api.isArchiveEnabled()))
+        .subscribe(setArchiveEnabled),
+    );
+  }, [context.login, context.api, addSubscription, setArchiveEnabled]);
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
