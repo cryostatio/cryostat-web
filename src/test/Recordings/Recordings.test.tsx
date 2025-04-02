@@ -15,12 +15,12 @@
  */
 import { Recordings } from '@app/Recordings/Recordings';
 import { Target } from '@app/Shared/Services/api.types';
+import { SessionState } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
-import { SessionState } from '@app/Shared/Services/service.types';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {

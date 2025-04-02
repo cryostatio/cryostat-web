@@ -20,10 +20,10 @@ import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { concatMap } from 'rxjs';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 import { TargetAnalysis } from './AutomatedAnalysisResults';
-import { concatMap } from 'rxjs';
 
 enum RecordingTab {
   ACTIVE_RECORDING = 'active-recording',

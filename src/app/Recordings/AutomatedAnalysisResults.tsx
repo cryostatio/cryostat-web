@@ -61,6 +61,9 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
     [setLoading, context.api],
   );
 
+  // TODO check for active recordings, display empty state if none. listen for active recording notifications to update state.
+  // have a toolbar, with a button to create a source recording (reuse automated analysis dashboard card settings and function) and a button to refresh report by issuing `POST /api/v4.1/targets/{id}/reports` request
+
   React.useEffect(() => {
     addSubscription(
       target
@@ -87,7 +90,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
         )
         .subscribe((report) => setReport(report)),
     );
-  }, [target, context.notificationChannel, addSubscription]);
+  }, [target, context.notificationChannel, addSubscription, fetchReport]);
 
   const empty = React.useMemo(() => !report?.aggregate?.count, [report]);
 
