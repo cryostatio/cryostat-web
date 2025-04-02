@@ -831,6 +831,17 @@ export class ApiService {
                   value {
                     name
                     topic
+                    score
+                    evaluation {
+                      explanation
+                      solution
+                      summary
+                      suggestions {
+                        name
+                        setting
+                        value
+                      }
+                    }
                   }
                 }
     `;
