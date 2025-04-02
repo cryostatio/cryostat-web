@@ -841,6 +841,7 @@ export class ApiService {
             target {
               id
               report {
+                lastUpdated
                 aggregate {
                   count
                   max

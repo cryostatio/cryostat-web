@@ -657,7 +657,7 @@
     "LIST_VIEW": "List view",
     "NodeDecorator": {
       "Report": {
-        "TOOLTIP": "{{count}} rules evaluated. Maximum score {{score}}."
+        "TOOLTIP": "{{count}} rules evaluated, maximum score {{score}}. Last update: {{date}}"
       }
     }
   }

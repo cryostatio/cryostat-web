@@ -273,6 +273,7 @@ export interface AggregateReport {
     max: number;
   };
   data?: Map<string, String>;
+  lastUpdated?: number;
 }
 
 export interface RecordingCountResponse {

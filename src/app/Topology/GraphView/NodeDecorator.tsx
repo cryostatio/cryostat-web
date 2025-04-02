@@ -30,6 +30,7 @@ import {
 import * as React from 'react';
 import { useResources } from '../Entity/utils';
 import { getStatusTargetNode } from '../Shared/utils';
+import useDayjs from '@app/utils/hooks/useDayjs';
 
 export const getNodeDecorators = (element: Node) => {
   return (
@@ -51,6 +52,7 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
   const decoratorRef = React.useRef<SVGGElement>(null);
   const { x, y } = getDefaultShapeDecoratorCenter(quadrant, element);
   const { t } = useCryostatTranslation();
+  const [dayjs, dateTimeFormat] = useDayjs();
   const { resources: report, error, loading } = useResources<AggregateReport>(data, 'report');
 
   const iconConfig = React.useMemo(() => {
@@ -87,6 +89,11 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
       tooltip: t('Topology.NodeDecorator.Report.TOOLTIP', {
         count: report[0].aggregate.count,
         score: score.toFixed(2),
+        date: report[0].lastUpdated
+          ? dayjs(new Date(report[0].lastUpdated * 1000))
+              .tz(dateTimeFormat.timeZone.full)
+              .format('LLLL')
+          : 'N/A',
       }),
     };
   }, [t, error, loading, report]);
