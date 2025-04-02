@@ -15,6 +15,7 @@
  */
 
 import { TargetNode, ActiveRecording, RecordingState, AggregateReport } from '@app/Shared/Services/api.types';
+import useDayjs from '@app/utils/hooks/useDayjs';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Tooltip } from '@patternfly/react-core';
@@ -30,7 +31,6 @@ import {
 import * as React from 'react';
 import { useResources } from '../Entity/utils';
 import { getStatusTargetNode } from '../Shared/utils';
-import useDayjs from '@app/utils/hooks/useDayjs';
 
 export const getNodeDecorators = (element: Node) => {
   return (
@@ -96,7 +96,7 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
           : 'N/A',
       }),
     };
-  }, [t, error, loading, report]);
+  }, [t, dayjs, dateTimeFormat, error, loading, report]);
 
   return iconConfig ? (
     <Tooltip content={iconConfig.tooltip} triggerRef={decoratorRef} appendTo={portalRoot}>
