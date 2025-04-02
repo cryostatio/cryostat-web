@@ -20,6 +20,7 @@ import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
+import { SessionState } from '@app/Shared/Services/service.types';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
@@ -33,6 +34,14 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
     ArchivedRecordingsTable: jest.fn((_) => {
       return <div>Archived Recordings Table</div>;
+    }),
+  };
+});
+
+jest.mock('@app/Recordings/AutomatedAnalysisResults', () => {
+  return {
+    TargetAnalysis: jest.fn((_) => {
+      return <div>Target Analysis</div>;
     }),
   };
 });
@@ -70,6 +79,8 @@ jest
   .mockReturnValueOnce(of(false)) // handles the case where archiving is disabled
   .mockReturnValue(of(true)); // others
 
+jest.spyOn(defaultServices.login, 'getSessionState').mockReturnValue(of(SessionState.USER_SESSION));
+
 describe('<Recordings />', () => {
   afterEach(cleanup);
 
@@ -101,7 +112,8 @@ describe('<Recordings />', () => {
     });
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
-    expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
+    expect(screen.getByText('Active Recordings')).toBeInTheDocument();
+    expect(screen.getByText('Automated Analysis Report')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is disabled', async () => {
@@ -118,6 +130,7 @@ describe('<Recordings />', () => {
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
+    expect(screen.queryByText('Automated Analysis Report')).not.toBeInTheDocument();
   });
 
   // useNavigate() is mocked. Can't switch tab
