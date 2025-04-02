@@ -17,16 +17,19 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
-import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 import { concatMap } from 'rxjs';
+import { AutomatedAnalysisCard } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
+import { TargetAnalysis } from './AutomatedAnalysisResults';
 
 enum RecordingTab {
   ACTIVE_RECORDING = 'active-recording',
   ARCHIVED_RECORDING = 'archived-recording',
+  REPORT = 'report',
 }
 
 export interface RecordingsProps {}
@@ -60,17 +63,20 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
 
   const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
 
-  const cardBody = React.useMemo(() => {
-    return archiveEnabled ? (
-      <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
-        <Tab
-          id="active-recordings"
-          eventKey={RecordingTab.ACTIVE_RECORDING}
-          title={<TabTitleText>Active Recordings</TabTitleText>}
-          data-quickstart-id="active-recordings-tab"
-        >
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </Tab>
+  const tabs = React.useMemo(() => {
+    const t: JSX.Element[] = [];
+    t.push(
+      <Tab
+        id="active-recordings"
+        eventKey={RecordingTab.ACTIVE_RECORDING}
+        title={<TabTitleText>Active Recordings</TabTitleText>}
+        data-quickstart-id="active-recordings-tab"
+      >
+        <ActiveRecordingsTable archiveEnabled={true} />
+      </Tab>,
+    );
+    if (archiveEnabled) {
+      t.push(
         <Tab
           id="archived-recordings"
           eventKey={RecordingTab.ARCHIVED_RECORDING}
@@ -78,15 +84,29 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
           data-quickstart-id="archived-recordings-tab"
         >
           <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
-        </Tab>
-      </Tabs>
-    ) : (
-      <>
-        <CardTitle>Active Recordings</CardTitle>
-        <ActiveRecordingsTable archiveEnabled={false} />
-      </>
+        </Tab>,
+      );
+    }
+    t.push(
+      <Tab
+        id="report"
+        eventKey={RecordingTab.REPORT}
+        title={<TabTitleText>Automated Analysis Report</TabTitleText>}
+        data-quickstart-id="report-tab"
+      >
+        <TargetAnalysis target={targetAsObs} />
+      </Tab>,
     );
-  }, [archiveEnabled, activeTab, onTabSelect, targetAsObs]);
+    return t;
+  }, [archiveEnabled, targetAsObs]);
+
+  const cardBody = React.useMemo(() => {
+    return (
+      <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
+        {tabs}
+      </Tabs>
+    );
+  }, [tabs, activeTab, onTabSelect]);
 
   return (
     <TargetView {...props} pageTitle="Recordings">

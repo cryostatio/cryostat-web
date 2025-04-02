@@ -273,7 +273,7 @@ export const getLinkPropsForTargetResource = (
       return { to: { pathname: '/security' } };
     case 'report':
       // FIXME point the user to somewhere/something that views the current analysis and helps set up to run new analyses
-      return { to: { pathname: '/recordings', search: '?tab=archived-recording' } };
+      return { to: { pathname: '/recordings', search: '?tab=report' } };
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
