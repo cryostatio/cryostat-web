@@ -18,7 +18,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
 
-export type ApiVersion = 'unversioned' | 'v4' | 'beta';
+export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 
 // ======================================
 // Common Resources
