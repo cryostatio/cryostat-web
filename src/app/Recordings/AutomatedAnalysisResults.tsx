@@ -30,6 +30,7 @@ import {
   TemplateType,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   Bullseye,
@@ -223,17 +224,19 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
           <Spinner />
         </Bullseye>
       ) : (
-        <AutomatedAnalysisResults analyses={categorizedEvaluations} />
+        <AutomatedAnalysisResults timestamp={report?.lastUpdated} analyses={categorizedEvaluations} />
       )}
     </>
   );
 };
 
 export interface AutomatedAnalysisResultsProps {
+  timestamp?: number;
   analyses: CategorizedRuleEvaluations[];
 }
 
-export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({ analyses }) => {
+export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({ timestamp, analyses }) => {
+  const [dayjs, dateTimeFormat] = useDayjs();
   return (
     <>
       {!analyses.length ? (
@@ -245,24 +248,34 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
           />
         </EmptyState>
       ) : (
-        <Grid>
-          {analyses.map(([topic, evaluations]) => (
-            <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-              <LabelGroup
-                className="automated-analysis-topic-label-groups"
-                categoryName={topic}
-                isVertical
-                numLabels={2}
-                isCompact
-                key={topic}
-              >
-                {evaluations.map((evaluation) => (
-                  <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                ))}
-              </LabelGroup>
-            </GridItem>
-          ))}
-        </Grid>
+        <>
+          <Text>
+            Last update:
+            {timestamp
+              ? dayjs(new Date(timestamp * 1000))
+                  .tz(dateTimeFormat.timeZone.full)
+                  .format('LLLL')
+              : 'unknown'}
+          </Text>
+          <Grid>
+            {analyses.map(([topic, evaluations]) => (
+              <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+                <LabelGroup
+                  className="automated-analysis-topic-label-groups"
+                  categoryName={topic}
+                  isVertical
+                  numLabels={2}
+                  isCompact
+                  key={topic}
+                >
+                  {evaluations.map((evaluation) => (
+                    <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
+                  ))}
+                </LabelGroup>
+              </GridItem>
+            ))}
+          </Grid>
+        </>
       )}
     </>
   );
