@@ -59,7 +59,14 @@ exports[`<Rules /> renders correctly 1`] = `
                   data-ouia-safe={true}
                   data-pf-content={true}
                 >
-                  Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications, using a specific 
+                  Automated Rules are configurations that instruct Cryostat to create 
+                  <a
+                    href="/recordings"
+                    onClick={[Function]}
+                  >
+                    JDK Flight Recordings
+                  </a>
+                   on matching target JVM applications, using a specific 
                   <a
                     href="/events"
                     onClick={[Function]}
