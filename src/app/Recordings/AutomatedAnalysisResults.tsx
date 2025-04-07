@@ -129,7 +129,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
         // and the response body with the job ID is not particularly relevant
         .subscribe(),
     );
-  }, [target, addSubscription, context.api, fetchReport, setReport, setLoading]);
+  }, [target, addSubscription, context.api, setLoading]);
 
   React.useEffect(() => {
     addSubscription(
