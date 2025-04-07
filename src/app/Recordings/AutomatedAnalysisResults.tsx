@@ -61,6 +61,9 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   const [sourceCount, setSourceCount] = React.useState(0);
   const [report, setReport] = React.useState(undefined as AggregateReport | undefined);
 
+  const emptyReport = React.useMemo(() => !report?.aggregate?.count, [report]);
+  const hasSources = React.useMemo(() => sourceCount > 0, [sourceCount]);
+
   const fetchReport = React.useCallback(
     (target: Target) => {
       setLoading(true);
@@ -112,6 +115,9 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   }, [target, addSubscription, context.api, context.notificationChannel, setSourceCount]);
 
   const handleRefresh = React.useCallback(() => {
+    if (!hasSources) {
+      return;
+    }
     setLoading(true);
     addSubscription(
       target
@@ -127,13 +133,13 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
         // and the response body with the job ID is not particularly relevant
         .subscribe(),
     );
-  }, [target, addSubscription, context.api, setLoading]);
+  }, [target, hasSources, addSubscription, context.api, setLoading]);
 
   React.useEffect(() => {
-    if (immediate) {
+    if (immediate && hasSources) {
       handleRefresh();
     }
-  }, [immediate, handleRefresh]);
+  }, [immediate, hasSources, handleRefresh]);
 
   React.useEffect(() => {
     if (!refreshRequest) {
@@ -169,10 +175,6 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
         .subscribe((report) => setReport(report)),
     );
   }, [target, context.notificationChannel, addSubscription, fetchReport]);
-
-  const emptyReport = React.useMemo(() => !report?.aggregate?.count, [report]);
-
-  const hasSources = React.useMemo(() => sourceCount > 0, [sourceCount]);
 
   const categorizedEvaluations = React.useMemo(() => {
     if (loading || emptyReport) {
