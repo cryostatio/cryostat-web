@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 export function useSubscriptions(deps: any[] = []) {
   const subsRef = React.useRef([] as Subscription[]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => () => subsRef.current.forEach((s: Subscription): void => s.unsubscribe()), deps);
 
   const addSubscription = (sub: Subscription): void => {
