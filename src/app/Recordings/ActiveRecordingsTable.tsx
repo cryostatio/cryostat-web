@@ -538,7 +538,12 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       <DrawerPanelContent isResizable defaultSize="65%">
         <DrawerHead>
           <DrawerActions>
-            <Button variant="plain" onClick={handleReportRefresh} aria-label="Request analysis">
+            <Button
+              variant="plain"
+              onClick={handleReportRefresh}
+              aria-label="Request analysis"
+              isDisabled={!recordings.length}
+            >
               <ProcessAutomationIcon />
             </Button>
             <DrawerCloseButton
@@ -553,7 +558,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         </DrawerPanelBody>
       </DrawerPanelContent>
     ),
-    [setShowPanel, targetAsObs, reportRefresh, handleReportRefresh],
+    [setShowPanel, targetAsObs, recordings, reportRefresh, handleReportRefresh],
   );
 
   const columnConfig: ColumnConfig = React.useMemo(
@@ -775,12 +780,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       },
       {
         default: (
-          <Button
-            variant="secondary"
-            onClick={props.handleAnalyze}
-            isDisabled={!props.recordings.length}
-            data-quickstart-id="recordings-analyze-btn"
-          >
+          <Button variant="secondary" onClick={props.handleAnalyze} data-quickstart-id="recordings-analyze-btn">
             Analyze
           </Button>
         ),
@@ -805,7 +805,6 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     props.actionLoadings,
     props.archiveEnabled,
     props.checkedIndices,
-    props.recordings,
   ]);
 
   const deleteActiveWarningModal = React.useMemo(() => {
