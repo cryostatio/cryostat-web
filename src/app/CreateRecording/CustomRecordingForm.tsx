@@ -456,7 +456,7 @@ export const CustomRecordingForm: React.FC = () => {
           <Split hasGutter>
             <SplitItem>
               <Checkbox
-                label="Continuous"
+                label={t('CONTINUOUS')}
                 description="Record with unlimited duration until manually stopped"
                 isChecked={formData.continuous}
                 isDisabled={loading}
