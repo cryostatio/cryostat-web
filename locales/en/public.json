@@ -125,7 +125,9 @@
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a target template as a default template type configuration may not apply to all target JVMs if the JVMs do not support them."
   },
   "AutomatedAnalysisResults": {
-    "LAST_UPDATE": "Last update: {{ datetime }}"
+    "CREATE_RECORDING": "<0>Create a Recording</0> to enable analysis",
+    "LAST_UPDATE": "Last update: {{ datetime }}",
+    "REPORT_UNAVAILABLE": "Report Unavailable"
   },
   "AutomatedAnalysisScoreFilter": {
     "CURRENT_SCORE_TEXT": "Only showing analysis results with severity scores ≥ {{ val }}:",
@@ -478,7 +480,7 @@
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
   "Rules": {
-    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
+    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create <0>JDK Flight Recordings</0> on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
     "ARCHIVAL_PERIOD_TOOLTIP": "Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.",
     "EVENT_SPECIFIER_TOOLTIP": "The name and location of the Event Template applied by this rule.",
     "INITIAL_DELAY_TOOLTIP": "Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.",

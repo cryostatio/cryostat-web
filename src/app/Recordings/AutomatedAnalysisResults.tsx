@@ -45,9 +45,11 @@ import {
   Text,
   Stack,
   StackItem,
+  Button,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 import { Observable } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 
@@ -58,6 +60,7 @@ export interface TargetAnalysisProps {
 }
 
 export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshRequest, immediate }) => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions([target]);
   const [loading, setLoading] = React.useState(false);
@@ -193,25 +196,29 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
         </EmptyState>
       ) : !hasSources ? (
         <Text>
-          <CryostatLink
-            state={
-              {
-                name: 'analysis',
-                continuous: true,
-                restart: true,
-                template: { name: 'Continuous', type: 'TARGET' as TemplateType },
-                maxAge: 10,
-                maxAgeUnit: 60,
-                maxSize: 20,
-                maxSizeUnit: 1024 * 1024,
-                toDisk: true,
-              } as Partial<CustomRecordingFormData>
-            }
-            to="/recordings/create"
+          <Trans
+            t={t}
+            components={[
+              <CryostatLink
+                state={
+                  {
+                    name: 'analysis',
+                    continuous: true,
+                    restart: true,
+                    template: { name: 'Continuous', type: 'TARGET' as TemplateType },
+                    maxAge: 10,
+                    maxAgeUnit: 60,
+                    maxSize: 20,
+                    maxSizeUnit: 1024 * 1024,
+                    toDisk: true,
+                  } as Partial<CustomRecordingFormData>
+                }
+                to="/recordings/create"
+              />,
+            ]}
           >
-            Create a Recording
-          </CryostatLink>{' '}
-          to enable analysis
+            AutomatedAnalysisResults.CREATE_RECORDING
+          </Trans>
         </Text>
       ) : undefined}
       {loading ? (
@@ -219,7 +226,12 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
           <Spinner />
         </Bullseye>
       ) : (
-        <AutomatedAnalysisResults timestamp={report?.lastUpdated} analyses={categorizedEvaluations} />
+        <AutomatedAnalysisResults
+          timestamp={report?.lastUpdated}
+          analyses={categorizedEvaluations}
+          canRefresh={!!target && hasSources}
+          handleRefresh={handleRefresh}
+        />
       )}
     </>
   );
@@ -228,9 +240,16 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
 export interface AutomatedAnalysisResultsProps {
   timestamp?: number;
   analyses: CategorizedRuleEvaluations[];
+  canRefresh: boolean;
+  handleRefresh: () => void;
 }
 
-export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({ timestamp, analyses }) => {
+export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
+  timestamp,
+  analyses,
+  handleRefresh,
+  canRefresh,
+}) => {
   const { t } = useCryostatTranslation();
   const [dayjs, dateTimeFormat] = useDayjs();
   return (
@@ -238,10 +257,13 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
       {!analyses.length ? (
         <EmptyState>
           <EmptyStateHeader
-            titleText="Report Unavailable"
+            titleText={t('AutomatedAnalysisResults.REPORT_UNAVAILABLE')}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
+          <Button onClick={handleRefresh} isDisabled={!canRefresh}>
+            <ProcessAutomationIcon />
+          </Button>
         </EmptyState>
       ) : (
         <>
