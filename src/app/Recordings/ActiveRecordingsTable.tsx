@@ -954,9 +954,9 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           {recording.state}
         </Td>
         <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
-          <LabelGroup isVertical isCompact style={{ padding: '0.2em' }}>
+          <LabelGroup isVertical style={{ padding: '0.2em' }}>
             {recordingOptions(recording).map((options) => (
-              <Label color="purple" key={options.key} textMaxWidth={LABEL_TEXT_MAXWIDTH} isCompact>
+              <Label color="purple" key={options.key} textMaxWidth={LABEL_TEXT_MAXWIDTH}>
                 {keyValueToString(options)}
               </Label>
             ))}
