@@ -75,6 +75,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
     [setLoading, context.api],
   );
 
+  // FIXME there is a bug here where changing target selection does not discard previous targets' notification subscriptions, so the component refreshes and displays incorrect content from another target
   React.useEffect(() => {
     addSubscription(
       target
