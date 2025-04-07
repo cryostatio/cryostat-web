@@ -111,7 +111,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
           );
         }),
     );
-  }, [target, context.api, context.notificationChannel, setSourceCount]);
+  }, [target, addSubscription, context.api, context.notificationChannel, setSourceCount]);
 
   const handleRefresh = React.useCallback(() => {
     setLoading(true);
@@ -129,7 +129,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
         // and the response body with the job ID is not particularly relevant
         .subscribe(),
     );
-  }, [target, addSubscription, fetchReport, setReport, setLoading]);
+  }, [target, addSubscription, context.api, fetchReport, setReport, setLoading]);
 
   React.useEffect(() => {
     addSubscription(
