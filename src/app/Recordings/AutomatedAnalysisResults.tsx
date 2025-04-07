@@ -251,7 +251,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
       ) : (
         <>
           <Text>
-            Last update:
+            Last update:{' '}
             {timestamp
               ? dayjs(new Date(timestamp * 1000))
                   .tz(dateTimeFormat.timeZone.full)
