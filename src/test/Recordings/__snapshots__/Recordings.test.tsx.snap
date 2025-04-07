@@ -71,28 +71,6 @@ exports[`<Recordings /> renders correctly 1`] = `
               </span>
             </button>
           </li>
-          <li
-            className="pf-v5-c-tabs__item"
-            role="presentation"
-          >
-            <button
-              aria-selected={false}
-              className="pf-v5-c-tabs__link"
-              data-ouia-component-type="PF5/TabButton"
-              data-ouia-safe={true}
-              data-quickstart-id="report-tab"
-              id="pf-tab-report-report"
-              onClick={[Function]}
-              role="tab"
-              type="button"
-            >
-              <span
-                className="pf-v5-c-tabs__item-text"
-              >
-                Automated Analysis Report
-              </span>
-            </button>
-          </li>
         </ul>
       </div>
       <section

@@ -38,14 +38,6 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   };
 });
 
-jest.mock('@app/Recordings/AutomatedAnalysisResults', () => {
-  return {
-    TargetAnalysis: jest.fn((_) => {
-      return <div>Target Analysis</div>;
-    }),
-  };
-});
-
 jest.mock('@app/TargetView/TargetView', () => {
   return {
     TargetView: jest.fn((props) => {
@@ -113,7 +105,6 @@ describe('<Recordings />', () => {
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
-    expect(screen.getByText('Automated Analysis Report')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is disabled', async () => {
@@ -130,7 +121,6 @@ describe('<Recordings />', () => {
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
-    expect(screen.queryByText('Automated Analysis Report')).not.toBeInTheDocument();
   });
 
   // useNavigate() is mocked. Can't switch tab
