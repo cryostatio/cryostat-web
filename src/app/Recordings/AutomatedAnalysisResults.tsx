@@ -41,22 +41,20 @@ import {
   EmptyState,
   EmptyStateHeader,
   EmptyStateIcon,
-  Toolbar,
-  ToolbarContent,
-  Button,
-  ToolbarItem,
   Text,
 } from '@patternfly/react-core';
-import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
+import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Observable } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 
 export interface TargetAnalysisProps {
   target: Observable<NullableTarget>;
+  refreshRequest?: Observable<void>;
+  immediate?: boolean;
 }
 
-export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
+export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshRequest, immediate }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(false);
@@ -132,6 +130,19 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
   }, [target, addSubscription, context.api, setLoading]);
 
   React.useEffect(() => {
+    if (immediate) {
+      handleRefresh();
+    }
+  }, [immediate, handleRefresh]);
+
+  React.useEffect(() => {
+    if (!refreshRequest) {
+      return;
+    }
+    addSubscription(refreshRequest.subscribe(() => handleRefresh()));
+  }, [addSubscription, refreshRequest, handleRefresh]);
+
+  React.useEffect(() => {
     addSubscription(
       target
         .pipe(
@@ -184,18 +195,6 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target }) => {
 
   return (
     <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarItem>
-            <Button
-              isLoading={loading}
-              isDisabled={!hasSources}
-              icon={<ProcessAutomationIcon />}
-              onClick={handleRefresh}
-            />
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
       {!hasSources ? (
         <Text>
           <CryostatLink

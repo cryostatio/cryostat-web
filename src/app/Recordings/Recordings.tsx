@@ -23,18 +23,16 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap } from 'rxjs';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
-import { TargetAnalysis } from './AutomatedAnalysisResults';
 
 enum RecordingTab {
   ACTIVE_RECORDING = 'active-recording',
   ARCHIVED_RECORDING = 'archived-recording',
-  REPORT = 'report',
 }
 
 export interface RecordingsProps {}
 
 export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
-  const { search, pathname } = useLocation();
+  const { search, pathname, hash } = useLocation();
   const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -72,7 +70,7 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
             title={<TabTitleText>Active Recordings</TabTitleText>}
             data-quickstart-id="active-recordings-tab"
           >
-            <ActiveRecordingsTable archiveEnabled={true} />
+            <ActiveRecordingsTable archiveEnabled={true} initialPanelContent={hash.substring(1)} />
           </Tab>
           <Tab
             id="archived-recordings"
@@ -82,14 +80,6 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
           >
             <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
           </Tab>
-          <Tab
-            id="report"
-            eventKey={RecordingTab.REPORT}
-            title={<TabTitleText>Automated Analysis Report</TabTitleText>}
-            data-quickstart-id="report-tab"
-          >
-            <TargetAnalysis target={targetAsObs} />
-          </Tab>
         </Tabs>
       ) : (
         <>
@@ -97,7 +87,7 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
           <ActiveRecordingsTable archiveEnabled={false} />
         </>
       ),
-    [archiveEnabled, activeTab, onTabSelect, targetAsObs],
+    [hash, archiveEnabled, activeTab, onTabSelect, targetAsObs],
   );
 
   return (

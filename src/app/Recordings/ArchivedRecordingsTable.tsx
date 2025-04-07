@@ -139,7 +139,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
-  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
+  const [showLabelsPanel, setShowLabelsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ArchiveActions, boolean>>({ DELETE: false });
@@ -173,8 +173,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   );
 
   const handleEditLabels = React.useCallback(() => {
-    setShowDetailsPanel(true);
-  }, [setShowDetailsPanel]);
+    setShowLabelsPanel(true);
+  }, [setShowLabelsPanel]);
 
   const handleRecordings = React.useCallback(
     (recordings) => {
@@ -556,7 +556,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   const LabelsPanel = React.useMemo(
     () => (
       <RecordingLabelsPanel
-        setShowPanel={setShowDetailsPanel}
+        setShowPanel={setShowLabelsPanel}
         isTargetRecording={false}
         isUploadsTable={isUploadsTable}
         checkedIndices={checkedIndices}
@@ -564,7 +564,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         directoryRecordings={directoryRecordings}
       />
     ),
-    [checkedIndices, setShowDetailsPanel, isUploadsTable, propsDirectory, directoryRecordings],
+    [checkedIndices, setShowLabelsPanel, isUploadsTable, propsDirectory, directoryRecordings],
   );
 
   const totalArchiveSize = React.useMemo(
@@ -580,7 +580,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     [getSortParams],
   );
   return (
-    <Drawer isExpanded={showDetailsPanel} isInline id={'archived-recording-drawer'}>
+    <Drawer isExpanded={showLabelsPanel} isInline id={'archived-recording-drawer'}>
       <DrawerContent panelContent={LabelsPanel} className="recordings-table-drawer-content">
         <DrawerContentBody hasPadding>
           <RecordingsTable
