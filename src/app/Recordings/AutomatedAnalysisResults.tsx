@@ -268,6 +268,9 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
             </StackItem>
             <StackItem isFilled>
               <Grid>
+                {
+                  // TODO port over dashboard card name and score filter controls
+                }
                 {analyses.map(([topic, evaluations]) => (
                   <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
                     <LabelGroup
