@@ -43,6 +43,8 @@ import {
   EmptyStateHeader,
   EmptyStateIcon,
   Text,
+  Stack,
+  StackItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -252,33 +254,39 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
         </EmptyState>
       ) : (
         <>
-          <Text>
-            {t('AutomatedAnalysisResults.LAST_UPDATE', {
-              datetime: timestamp
-                ? dayjs(new Date(timestamp * 1000))
-                    .tz(dateTimeFormat.timeZone.full)
-                    .format('LLLL')
-                : 'unknown',
-            })}
-          </Text>
-          <Grid>
-            {analyses.map(([topic, evaluations]) => (
-              <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                <LabelGroup
-                  className="automated-analysis-topic-label-groups"
-                  categoryName={topic}
-                  isVertical
-                  numLabels={2}
-                  isCompact
-                  key={topic}
-                >
-                  {evaluations.map((evaluation) => (
-                    <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                  ))}
-                </LabelGroup>
-              </GridItem>
-            ))}
-          </Grid>
+          <Stack hasGutter>
+            <StackItem>
+              <Text>
+                {t('AutomatedAnalysisResults.LAST_UPDATE', {
+                  datetime: timestamp
+                    ? dayjs(new Date(timestamp * 1000))
+                        .tz(dateTimeFormat.timeZone.full)
+                        .format('LLLL')
+                    : 'unknown',
+                })}
+              </Text>
+            </StackItem>
+            <StackItem isFilled>
+              <Grid>
+                {analyses.map(([topic, evaluations]) => (
+                  <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+                    <LabelGroup
+                      className="automated-analysis-topic-label-groups"
+                      categoryName={topic}
+                      isVertical
+                      numLabels={2}
+                      isCompact
+                      key={topic}
+                    >
+                      {evaluations.map((evaluation) => (
+                        <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
+                      ))}
+                    </LabelGroup>
+                  </GridItem>
+                ))}
+              </Grid>
+            </StackItem>
+          </Stack>
         </>
       )}
     </>
