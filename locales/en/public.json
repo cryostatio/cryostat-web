@@ -124,6 +124,9 @@
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to automated analysis Recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a target template as a default template type configuration may not apply to all target JVMs if the JVMs do not support them."
   },
+  "AutomatedAnalysisResults": {
+    "LAST_UPDATE": "Last update: {{ datetime }}"
+  },
   "AutomatedAnalysisScoreFilter": {
     "CURRENT_SCORE_TEXT": "Only showing analysis results with severity scores ≥ {{ val }}:",
     "SLIDER": {

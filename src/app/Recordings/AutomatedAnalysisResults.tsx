@@ -32,6 +32,7 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Grid,
@@ -237,6 +238,7 @@ export interface AutomatedAnalysisResultsProps {
 }
 
 export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({ timestamp, analyses }) => {
+  const { t } = useCryostatTranslation();
   const [dayjs, dateTimeFormat] = useDayjs();
   return (
     <>
@@ -251,12 +253,13 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
       ) : (
         <>
           <Text>
-            Last update:{' '}
-            {timestamp
-              ? dayjs(new Date(timestamp * 1000))
-                  .tz(dateTimeFormat.timeZone.full)
-                  .format('LLLL')
-              : 'unknown'}
+            {t('AutomatedAnalysisResults.LAST_UPDATE', {
+              datetime: timestamp
+                ? dayjs(new Date(timestamp * 1000))
+                    .tz(dateTimeFormat.timeZone.full)
+                    .format('LLLL')
+                : 'unknown',
+            })}
           </Text>
           <Grid>
             {analyses.map(([topic, evaluations]) => (
