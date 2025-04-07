@@ -59,7 +59,7 @@ export interface TargetAnalysisProps {
 
 export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshRequest, immediate }) => {
   const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
+  const addSubscription = useSubscriptions([target]);
   const [loading, setLoading] = React.useState(false);
   const [sourceCount, setSourceCount] = React.useState(0);
   const [report, setReport] = React.useState(undefined as AggregateReport | undefined);

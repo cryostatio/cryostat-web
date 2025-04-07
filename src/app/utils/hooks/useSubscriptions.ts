@@ -16,10 +16,10 @@
 import * as React from 'react';
 import { Subscription } from 'rxjs';
 
-export function useSubscriptions() {
+export function useSubscriptions(deps: any[] = []) {
   const subsRef = React.useRef([] as Subscription[]);
 
-  React.useEffect(() => () => subsRef.current.forEach((s: Subscription): void => s.unsubscribe()), []);
+  React.useEffect(() => () => subsRef.current.forEach((s: Subscription): void => s.unsubscribe()), deps);
 
   const addSubscription = (sub: Subscription): void => {
     subsRef.current = subsRef.current.concat([sub]);
