@@ -52,7 +52,7 @@ import { Observable } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 
 export interface TargetAnalysisProps {
-  target: Observable<NullableTarget>;
+  target: NullableTarget;
   refreshRequest?: Observable<void>;
   immediate?: boolean;
 }
@@ -65,7 +65,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   const [report, setReport] = React.useState(undefined as AggregateReport | undefined);
 
   const emptyReport = React.useMemo(() => !report?.aggregate?.count, [report]);
-  const hasSources = React.useMemo(() => sourceCount > 0, [sourceCount]);
+  const hasSources = React.useMemo(() => !!target && sourceCount > 0, [target, sourceCount]);
 
   const fetchReport = React.useCallback(
     (target: Target) => {
@@ -75,13 +75,14 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
     [setLoading, context.api],
   );
 
-  // FIXME there is a bug here where changing target selection does not discard previous targets' notification subscriptions, so the component refreshes and displays incorrect content from another target
   React.useEffect(() => {
+    if (!target) {
+      return;
+    }
     addSubscription(
-      target
+      context.api
+        .getTargetActiveRecordings(target)
         .pipe(
-          filter((t) => !!t),
-          concatMap((t) => context.api.getTargetActiveRecordings(t)),
           map((a) => a.filter((r) => !r.name.toLowerCase().startsWith('snapshot'))),
           map((a) => a.length),
         )
@@ -89,28 +90,20 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
           setSourceCount(count);
 
           addSubscription(
-            target
+            context.notificationChannel
+              .messages(NotificationCategory.ActiveRecordingCreated)
               .pipe(
-                filter((t) => !!t),
-                concatMap((t) =>
-                  context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated).pipe(
-                    filter((msg) => msg.message.jvmId === t.jvmId),
-                    filter((msg) => !msg.message.recording.name.toLowerCase().startsWith('snapshot')),
-                  ),
-                ),
+                filter((msg) => msg.message.jvmId === target.jvmId),
+                filter((msg) => !msg.message.recording.name.toLowerCase().startsWith('snapshot')),
               )
               .subscribe(() => setSourceCount((prev) => prev + 1)),
           );
           addSubscription(
-            target
+            context.notificationChannel
+              .messages(NotificationCategory.ActiveRecordingDeleted)
               .pipe(
-                filter((t) => !!t),
-                concatMap((t) =>
-                  context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted).pipe(
-                    filter((msg) => msg.message.jvmId === t.jvmId),
-                    filter((msg) => !msg.message.recording.name.toLowerCase().startsWith('snapshot')),
-                  ),
-                ),
+                filter((msg) => msg.message.jvmId === target.jvmId),
+                filter((msg) => !msg.message.recording.name.toLowerCase().startsWith('snapshot')),
               )
               .subscribe(() => setSourceCount((prev) => prev - 1)),
           );
@@ -119,62 +112,51 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   }, [target, addSubscription, context.api, context.notificationChannel, setSourceCount]);
 
   const handleRefresh = React.useCallback(() => {
-    if (!hasSources) {
+    if (!target || !hasSources) {
       return;
     }
     setLoading(true);
+    // this will trigger a ReportSuccess notification which we are listening for,
+    // and the response body with the job ID is not particularly relevant
     addSubscription(
-      target
-        .pipe(
-          filter((t) => !!t),
-          concatMap((t) =>
-            context.api.sendRequest('v4.1', `/targets/${t.id}/reports`, {
-              method: 'POST',
-            }),
-          ),
-        )
-        // this will trigger a ReportSuccess notification which we are listening for,
-        // and the response body with the job ID is not particularly relevant
+      context.api
+        .sendRequest('v4.1', `/targets/${target.id}/reports`, {
+          method: 'POST',
+        })
         .subscribe(),
     );
   }, [target, hasSources, addSubscription, context.api, setLoading]);
 
   React.useEffect(() => {
-    if (immediate && hasSources) {
+    if (!!target && immediate && hasSources) {
       handleRefresh();
     }
-  }, [immediate, hasSources, handleRefresh]);
+  }, [target, immediate, hasSources, handleRefresh]);
 
   React.useEffect(() => {
-    if (!refreshRequest) {
+    if (!target || !refreshRequest) {
       return;
     }
     addSubscription(refreshRequest.subscribe(() => handleRefresh()));
-  }, [addSubscription, refreshRequest, handleRefresh]);
+  }, [target, addSubscription, refreshRequest, handleRefresh]);
 
   React.useEffect(() => {
-    addSubscription(
-      target
-        .pipe(
-          filter((t) => !!t),
-          concatMap((t) => fetchReport(t)),
-        )
-        .subscribe((report) => setReport(report)),
-    );
+    if (!target) {
+      return;
+    }
+    addSubscription(fetchReport(target).subscribe((report) => setReport(report)));
   }, [target, addSubscription, fetchReport, setReport]);
 
   React.useEffect(() => {
+    if (!target) {
+      return;
+    }
     addSubscription(
-      target
+      context.notificationChannel
+        .messages(NotificationCategory.ReportSuccess)
         .pipe(
-          filter((t) => !!t),
-          concatMap((t) =>
-            context.notificationChannel.messages(NotificationCategory.ReportSuccess).pipe(
-              filter((msg) => msg.message.jvmId === t.jvmId),
-              map(() => t),
-            ),
-          ),
-          concatMap((t) => fetchReport(t)),
+          filter((msg) => msg.message.jvmId === target.jvmId),
+          concatMap(() => fetchReport(target)),
         )
         .subscribe((report) => setReport(report)),
     );
@@ -201,7 +183,15 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
 
   return (
     <>
-      {!hasSources ? (
+      {!target ? (
+        <EmptyState>
+          <EmptyStateHeader
+            titleText="Report Unavailable"
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
+        </EmptyState>
+      ) : !hasSources ? (
         <Text>
           <CryostatLink
             state={

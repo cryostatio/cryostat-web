@@ -159,7 +159,6 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     STOP: false,
   });
   const [sortBy, getSortParams] = useSort();
-  const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
   const [reportRefresh] = React.useState(new Subject<void>());
   const handleReportRefresh = React.useCallback(() => reportRefresh.next(), [reportRefresh]);
 
@@ -554,11 +553,11 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <TargetAnalysis target={targetAsObs} refreshRequest={reportRefresh} />
+          <TargetAnalysis target={target} refreshRequest={reportRefresh} />
         </DrawerPanelBody>
       </DrawerPanelContent>
     ),
-    [setShowPanel, targetAsObs, recordings, reportRefresh, handleReportRefresh],
+    [setShowPanel, target, recordings, reportRefresh, handleReportRefresh],
   );
 
   const columnConfig: ColumnConfig = React.useMemo(
@@ -949,7 +948,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           </Timestamp>
         </Td>
         <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2].title}>
-          <span>{recording.duration === 0 ? t('Continuous') : formatDuration(recording.duration, 1)}</span>
+          <span>{recording.duration === 0 ? t('CONTINUOUS') : formatDuration(recording.duration, 1)}</span>
         </Td>
         <Td key={`active-table-row-${index}_5`} dataLabel={tableColumns[3].title}>
           {recording.state}
