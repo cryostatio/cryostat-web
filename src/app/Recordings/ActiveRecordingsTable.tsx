@@ -554,7 +554,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <TargetAnalysis target={targetAsObs} refreshRequest={reportRefresh} immediate={true} />
+          <TargetAnalysis target={targetAsObs} refreshRequest={reportRefresh} />
         </DrawerPanelBody>
       </DrawerPanelContent>
     ),
