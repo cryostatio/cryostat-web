@@ -231,7 +231,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
           <Spinner />
         </Bullseye>
       ) : (
-        <TargetAutomatedAnalysisResults
+        <AutomatedAnalysisResults
           target={target}
           hasSources={hasSources}
           timestamp={report?.lastUpdated}
@@ -242,14 +242,14 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   );
 };
 
-export interface TargetAutomatedAnalysisResultsProps {
+export interface AutomatedAnalysisResultsProps {
   target: Target;
   hasSources: boolean;
   timestamp?: number;
   analyses: CategorizedRuleEvaluations[];
 }
 
-export const TargetAutomatedAnalysisResults: React.FC<TargetAutomatedAnalysisResultsProps> = ({
+export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
   target,
   hasSources,
   timestamp,
