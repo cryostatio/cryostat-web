@@ -189,7 +189,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
       {!target ? (
         <EmptyState>
           <EmptyStateHeader
-            titleText="Report Unavailable"
+            titleText={t('AutomatedAnalysisResults.REPORT_UNAVAILABLE')}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
