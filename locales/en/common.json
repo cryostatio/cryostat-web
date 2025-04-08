@@ -1,15 +1,15 @@
 {
   "ADD": "Add",
+  "ANALYZE": "Analyze",
   "ARCHIVAL_PERIOD": "Archival Period",
+  "ARCHIVE": "Archive",
+  "ARCHIVING": "Archiving",
   "AriaLabels": {
     "MAXIMUM_AGE": "Maximum age value",
     "MAXIMUM_AGE_UNITS_INPUT": "Maximum age units input",
     "MAXIMUM_SIZE": "Maximum size value",
     "MAXIMUM_SIZE_UNITS_INPUT": "Maximum size units input"
   },
-  "ANALYZE": "Analyze",
-  "ARCHIVE": "Archive",
-  "ARCHIVING": "Archiving",
   "AUTOANALYZE": "Automatically Analyze",
   "AUTOANALYZE_HELPER_TEXT": "Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.",
   "AUTOMATED_RULES": "Automated Rules",
