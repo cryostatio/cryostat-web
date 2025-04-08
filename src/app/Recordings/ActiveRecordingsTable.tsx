@@ -533,30 +533,31 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const ReportPanel = React.useMemo(
-    () => (
-      <DrawerPanelContent isResizable defaultSize="65%">
-        <DrawerHead>
-          <DrawerActions>
-            <Button
-              variant="plain"
-              onClick={handleReportRefresh}
-              aria-label="Request analysis"
-              isDisabled={!recordings.length}
-            >
-              <ProcessAutomationIcon />
-            </Button>
-            <DrawerCloseButton
-              onClick={() => setShowPanel(false)}
-              data-testid="hide-recordings-analysis-panel"
-              aria-label="hide recordings analysis panel"
-            />
-          </DrawerActions>
-        </DrawerHead>
-        <DrawerPanelBody>
-          <TargetAnalysis target={target} refreshRequest={reportRefresh} />
-        </DrawerPanelBody>
-      </DrawerPanelContent>
-    ),
+    () =>
+      target ? (
+        <DrawerPanelContent isResizable defaultSize="65%">
+          <DrawerHead>
+            <DrawerActions>
+              <Button
+                variant="plain"
+                onClick={handleReportRefresh}
+                aria-label="Request analysis"
+                isDisabled={!recordings.length}
+              >
+                <ProcessAutomationIcon />
+              </Button>
+              <DrawerCloseButton
+                onClick={() => setShowPanel(false)}
+                data-testid="hide-recordings-analysis-panel"
+                aria-label="hide recordings analysis panel"
+              />
+            </DrawerActions>
+          </DrawerHead>
+          <DrawerPanelBody>
+            <TargetAnalysis target={target} refreshRequest={reportRefresh} />
+          </DrawerPanelBody>
+        </DrawerPanelContent>
+      ) : undefined,
     [setShowPanel, target, recordings, reportRefresh, handleReportRefresh],
   );
 

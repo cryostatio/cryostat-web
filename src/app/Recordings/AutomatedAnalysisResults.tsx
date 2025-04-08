@@ -15,17 +15,38 @@
  */
 
 import { CustomRecordingFormData } from '@app/CreateRecording/types';
+import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
+import {
+  AutomatedAnalysisFilters,
+  AutomatedAnalysisFiltersCategories,
+  AutomatedAnalysisGlobalFiltersCategories,
+  filterAutomatedAnalysis,
+} from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
 import {
   ClickableAutomatedAnalysisLabel,
   clickableAutomatedAnalysisKey,
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
+import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
+import {
+  emptyAutomatedAnalysisFilters,
+  TargetAutomatedAnalysisFilters,
+} from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import {
+  automatedAnalysisAddFilterIntent,
+  automatedAnalysisAddGlobalFilterIntent,
+  automatedAnalysisDeleteAllFiltersIntent,
+  automatedAnalysisDeleteCategoryFiltersIntent,
+  automatedAnalysisDeleteFilterIntent,
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
 import {
   AggregateReport,
   AnalysisResult,
   CategorizedRuleEvaluations,
   NotificationCategory,
-  NullableTarget,
   Target,
   TemplateType,
 } from '@app/Shared/Services/api.types';
@@ -46,15 +67,25 @@ import {
   Stack,
   StackItem,
   Button,
+  Toolbar,
+  ToolbarContent,
+  Checkbox,
+  ToolbarItem,
+  ToggleGroup,
+  ToggleGroupItem,
+  EmptyStateBody,
+  EmptyStateFooter,
+  EmptyStateActions,
 } from '@patternfly/react-core';
-import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
+import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Observable } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 
 export interface TargetAnalysisProps {
-  target: NullableTarget;
+  target: Target;
   refreshRequest?: Observable<void>;
   immediate?: boolean;
 }
@@ -166,7 +197,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   }, [target, context.notificationChannel, addSubscription, fetchReport]);
 
   const categorizedEvaluations = React.useMemo(() => {
-    if (loading || emptyReport) {
+    if (emptyReport) {
       return [];
     }
     const map = new Map<string, AnalysisResult[]>();
@@ -182,7 +213,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
         }
       });
     return (Array.from(map) as CategorizedRuleEvaluations[]).sort();
-  }, [loading, emptyReport, report]);
+  }, [emptyReport, report]);
 
   return (
     <>
@@ -194,64 +225,223 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
             headingLevel="h4"
           />
         </EmptyState>
-      ) : !hasSources ? (
-        <Text>
-          <Trans
-            t={t}
-            components={[
-              <CryostatLink
-                state={
-                  {
-                    name: 'analysis',
-                    continuous: true,
-                    restart: true,
-                    template: { name: 'Continuous', type: 'TARGET' as TemplateType },
-                    maxAge: 10,
-                    maxAgeUnit: 60,
-                    maxSize: 20,
-                    maxSizeUnit: 1024 * 1024,
-                    toDisk: true,
-                  } as Partial<CustomRecordingFormData>
-                }
-                to="/recordings/create"
-              />,
-            ]}
-          >
-            AutomatedAnalysisResults.CREATE_RECORDING
-          </Trans>
-        </Text>
       ) : undefined}
       {loading ? (
         <Bullseye>
           <Spinner />
         </Bullseye>
       ) : (
-        <AutomatedAnalysisResults
+        <TargetAutomatedAnalysisResults
+          target={target}
+          hasSources={hasSources}
           timestamp={report?.lastUpdated}
           analyses={categorizedEvaluations}
-          canRefresh={!!target && hasSources}
-          handleRefresh={handleRefresh}
         />
       )}
     </>
   );
 };
 
-export interface AutomatedAnalysisResultsProps {
+export interface TargetAutomatedAnalysisResultsProps {
+  target: Target;
+  hasSources: boolean;
   timestamp?: number;
   analyses: CategorizedRuleEvaluations[];
-  canRefresh: boolean;
-  handleRefresh: () => void;
 }
 
-export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
+export const TargetAutomatedAnalysisResults: React.FC<TargetAutomatedAnalysisResultsProps> = ({
+  target,
+  hasSources,
   timestamp,
   analyses,
-  handleRefresh,
-  canRefresh,
 }) => {
+  const dispatch = useDispatch<StateDispatch>();
   const { t } = useCryostatTranslation();
   const [dayjs, dateTimeFormat] = useDayjs();
+
+  const [showListView, setShowListView] = React.useState(false);
+  const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
+  const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
+    CategorizedRuleEvaluations[]
+  >([]);
+
+  const showUnavailableScores = React.useCallback(() => {
+    setShowNAScores(true);
+  }, [setShowNAScores]);
+
+  const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
+    const filters = state.automatedAnalysisFilters.targetFilters.filter(
+      (targetFilter: TargetAutomatedAnalysisFilters) => targetFilter.target === target.connectUrl,
+    );
+    return filters.length > 0 ? filters[0].filters : emptyAutomatedAnalysisFilters;
+  }) as AutomatedAnalysisFiltersCategories;
+
+  const targetAutomatedAnalysisGlobalFilters = useSelector((state: RootState) => {
+    return state.automatedAnalysisFilters.globalFilters.filters;
+  }) as AutomatedAnalysisGlobalFiltersCategories;
+
+  const updateFilters = React.useCallback(
+    (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
+      if (deleted) {
+        if (deleteOptions && deleteOptions.all) {
+          dispatch(automatedAnalysisDeleteCategoryFiltersIntent(target, filterKey));
+        } else {
+          dispatch(automatedAnalysisDeleteFilterIntent(target, filterKey, filterValue));
+        }
+      } else {
+        dispatch(automatedAnalysisAddFilterIntent(target, filterKey, filterValue));
+      }
+    },
+    [dispatch],
+  );
+
+  const handleClearFilters = React.useCallback(() => {
+    dispatch(automatedAnalysisDeleteAllFiltersIntent(target.connectUrl));
+  }, [dispatch, target]);
+
+  const handleResetScoreFilter = React.useCallback(() => {
+    dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 0));
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    setFilteredCategorizedEvaluation(
+      filterAutomatedAnalysis(
+        analyses,
+        targetAutomatedAnalysisFilters,
+        targetAutomatedAnalysisGlobalFilters,
+        showNAScores,
+      ),
+    );
+  }, [
+    analyses,
+    targetAutomatedAnalysisFilters,
+    targetAutomatedAnalysisGlobalFilters,
+    showNAScores,
+    setFilteredCategorizedEvaluation,
+  ]);
+
+  const toolbar = React.useMemo(() => {
+    return (
+      <Toolbar
+        id="automated-analysis-toolbar"
+        aria-label={t('AutomatedAnalysisCard.TOOLBAR.LABEL')}
+        clearAllFilters={handleClearFilters}
+        clearFiltersButtonText={t('CLEAR_FILTERS')}
+        isFullHeight
+      >
+        <ToolbarContent>
+          <AutomatedAnalysisFilters
+            target={target.connectUrl}
+            evaluations={analyses}
+            filters={targetAutomatedAnalysisFilters}
+            updateFilters={updateFilters}
+          />
+          <ToolbarItem>
+            <Checkbox
+              label={t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+              isChecked={showNAScores}
+              onChange={(_, checked: boolean) => setShowNAScores(checked)}
+              id="show-na-scores"
+              name="show-na-scores"
+              style={{ alignSelf: 'center' }}
+            />
+          </ToolbarItem>
+          <ToolbarItem variant="separator" />
+          <ToolbarItem>
+            <ToggleGroup>
+              <ToggleGroupItem
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.GRID_VIEW')}
+                text="Grid view"
+                buttonId="grid-view-btn"
+                isSelected={!showListView}
+                onClick={() => setShowListView(false)}
+              />
+              <ToggleGroupItem
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.LIST_VIEW')}
+                text="List view"
+                buttonId="list-view-btn"
+                isSelected={showListView}
+                onClick={() => setShowListView(true)}
+              />
+            </ToggleGroup>
+          </ToolbarItem>
+        </ToolbarContent>
+      </Toolbar>
+    );
+  }, [
+    t,
+    showNAScores,
+    showListView,
+    target,
+    analyses,
+    targetAutomatedAnalysisFilters,
+    setShowNAScores,
+    setShowListView,
+    handleClearFilters,
+    updateFilters,
+  ]);
+
+  const filteredCategorizedLabels = React.useMemo(() => {
+    const filtered = filteredCategorizedEvaluation.filter(([_, evaluations]) => evaluations.length > 0);
+    if (filtered.length === 0) {
+      return (
+        <EmptyState>
+          <EmptyStateHeader
+            titleText={<>{t(`AutomatedAnalysisCard.NO_RESULTS`)}</>}
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
+          <EmptyStateBody>{t('AutomatedAnalysisCard.NO_RESULTS_BODY')}</EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateActions>
+              <Button variant="link" onClick={handleClearFilters}>
+                {t('CLEAR_FILTERS')}
+              </Button>
+              <Button variant="link" onClick={showUnavailableScores}>
+                {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+              </Button>
+              <Button variant="link" onClick={handleResetScoreFilter}>
+                {t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
+              </Button>
+            </EmptyStateActions>
+          </EmptyStateFooter>
+        </EmptyState>
+      );
+    }
+    if (showListView) {
+      return <AutomatedAnalysisCardList evaluations={filtered} />;
+    }
+    return (
+      <Grid>
+        {filtered.map(([topic, evaluations]) => {
+          return (
+            <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
+              <LabelGroup
+                className="automated-analysis-topic-label-groups"
+                categoryName={topic}
+                isVertical
+                numLabels={3}
+                isCompact
+                key={topic}
+              >
+                {evaluations.map((evaluation) => {
+                  return <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />;
+                })}
+              </LabelGroup>
+            </GridItem>
+          );
+        })}
+      </Grid>
+    );
+  }, [
+    t,
+    handleClearFilters,
+    showUnavailableScores,
+    handleResetScoreFilter,
+    filteredCategorizedEvaluation,
+    showListView,
+  ]);
+
   return (
     <>
       {!analyses.length ? (
@@ -261,9 +451,33 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
-          <Button onClick={handleRefresh} isDisabled={!canRefresh}>
-            <ProcessAutomationIcon />
-          </Button>
+          {!hasSources ? (
+            <Text>
+              <Trans
+                t={t}
+                components={[
+                  <CryostatLink
+                    state={
+                      {
+                        name: 'analysis',
+                        continuous: true,
+                        restart: true,
+                        template: { name: 'Continuous', type: 'TARGET' as TemplateType },
+                        maxAge: 10,
+                        maxAgeUnit: 60,
+                        maxSize: 20,
+                        maxSizeUnit: 1024 * 1024,
+                        toDisk: true,
+                      } as Partial<CustomRecordingFormData>
+                    }
+                    to="/recordings/create"
+                  />,
+                ]}
+              >
+                AutomatedAnalysisResults.CREATE_RECORDING
+              </Trans>
+            </Text>
+          ) : undefined}
         </EmptyState>
       ) : (
         <>
@@ -279,29 +493,11 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
                 })}
               </Text>
             </StackItem>
-            <StackItem isFilled>
-              <Grid>
-                {
-                  // TODO port over dashboard card name and score filter controls
-                }
-                {analyses.map(([topic, evaluations]) => (
-                  <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                    <LabelGroup
-                      className="automated-analysis-topic-label-groups"
-                      categoryName={topic}
-                      isVertical
-                      numLabels={2}
-                      isCompact
-                      key={topic}
-                    >
-                      {evaluations.map((evaluation) => (
-                        <ClickableAutomatedAnalysisLabel result={evaluation} key={clickableAutomatedAnalysisKey} />
-                      ))}
-                    </LabelGroup>
-                  </GridItem>
-                ))}
-              </Grid>
+            <StackItem>{toolbar}</StackItem>
+            <StackItem>
+              <AutomatedAnalysisScoreFilter />
             </StackItem>
+            <StackItem isFilled>{filteredCategorizedLabels}</StackItem>
           </Stack>
         </>
       )}
