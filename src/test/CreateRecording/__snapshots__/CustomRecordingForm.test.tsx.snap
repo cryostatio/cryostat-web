@@ -655,8 +655,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                       </span>
                     </span>
                   </span>
-                  , and
-                   
+                  , and 
                   <span
                     className="pf-v5-c-label pf-m-compact"
                   >
@@ -764,7 +763,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               className="pf-v5-c-check__label"
               htmlFor="toDisk-checkbox"
             >
-              To disk
+              To Disk
             </label>
           </div>
           <div
