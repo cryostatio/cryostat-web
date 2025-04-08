@@ -675,7 +675,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         isLoading: props.actionLoadings['DELETE'],
       },
     }),
-    [props.actionLoadings],
+    [t, props.actionLoadings],
   );
 
   const buttons = React.useMemo(() => {
@@ -794,6 +794,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     ];
     return arr;
   }, [
+    t,
     handleDeleteButton,
     isStopDisabled,
     actionLoadingProps,

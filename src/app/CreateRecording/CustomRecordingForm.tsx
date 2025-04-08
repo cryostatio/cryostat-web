@@ -56,12 +56,12 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
-import { Trans } from 'react-i18next';
 
 export const CustomRecordingForm: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -275,7 +275,7 @@ export const CustomRecordingForm: React.FC = () => {
       },
     };
     handleCreateRecording(recordingAttributes);
-  }, [eventSpecifierString, formData, autoanalyze, notifications, handleCreateRecording]);
+  }, [t, eventSpecifierString, formData, autoanalyze, notifications, handleCreateRecording]);
 
   const refreshFormOptions = React.useCallback(
     (target: Target) => {
@@ -333,7 +333,7 @@ export const CustomRecordingForm: React.FC = () => {
         spinnerAriaLabel: 'create-active-recording',
         isLoading: loading,
       }) as LoadingProps,
-    [loading],
+    [t, loading],
   );
 
   const selectedSpecifier = React.useMemo(() => {
