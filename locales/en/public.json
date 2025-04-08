@@ -127,6 +127,7 @@
   "AutomatedAnalysisResults": {
     "CREATE_RECORDING": "<0>Create a Recording</0> to enable analysis",
     "LAST_UPDATE": "Last update: {{ datetime }}",
+    "REPORT_ERROR": "Failed to generate report",
     "REPORT_UNAVAILABLE": "Report Unavailable"
   },
   "AutomatedAnalysisScoreFilter": {
