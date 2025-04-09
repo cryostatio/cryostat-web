@@ -1,0 +1,451 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<TargetAnalysis /> renders correctly 1`] = `
+<div
+  className="pf-v5-l-stack pf-m-gutter"
+>
+  <div
+    className="pf-v5-l-stack__item"
+  >
+    <p
+      className=""
+      data-ouia-component-id="OUIA-Generated-Text-2"
+      data-ouia-component-type="PF5/Text"
+      data-ouia-safe={true}
+      data-pf-content={true}
+    >
+      Last update: Wednesday, April 9, 2025 3:40 PM
+    </p>
+  </div>
+  <div
+    className="pf-v5-l-stack__item"
+  >
+    <div
+      aria-label="Automated analysis toolbar"
+      className="pf-v5-c-toolbar pf-m-full-height"
+      data-ouia-component-id="OUIA-Generated-Toolbar-1"
+      data-ouia-component-type="PF5/Toolbar"
+      data-ouia-safe={true}
+      id="automated-analysis-toolbar"
+    >
+      <div
+        className="pf-v5-c-toolbar__content"
+      >
+        <div
+          className="pf-v5-c-toolbar__content-section"
+        >
+          <div>
+            AutomatedAnalysisFilters
+          </div>
+          <div
+            className="pf-v5-c-toolbar__item"
+          >
+            <div
+              className="pf-v5-c-check"
+            >
+              <input
+                aria-invalid={false}
+                checked={false}
+                className="pf-v5-c-check__input"
+                data-ouia-component-id="OUIA-Generated-Checkbox-1"
+                data-ouia-component-type="PF5/Checkbox"
+                data-ouia-safe={true}
+                disabled={false}
+                id="show-na-scores"
+                name="show-na-scores"
+                onChange={[Function]}
+                required={false}
+                style={
+                  Object {
+                    "alignSelf": "center",
+                  }
+                }
+                type="checkbox"
+              />
+              <label
+                className="pf-v5-c-check__label"
+                htmlFor="show-na-scores"
+              >
+                Show N/A scores
+              </label>
+            </div>
+          </div>
+          <hr
+            className="pf-v5-c-divider pf-m-vertical"
+          />
+          <div
+            className="pf-v5-c-toolbar__item"
+          >
+            <div
+              className="pf-v5-c-toggle-group"
+              role="group"
+            >
+              <div
+                className="pf-v5-c-toggle-group__item"
+                onClick={[Function]}
+              >
+                <button
+                  aria-label="grid-view"
+                  aria-pressed={true}
+                  className="pf-v5-c-toggle-group__button pf-m-selected"
+                  id="grid-view-btn"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <span
+                    className="pf-v5-c-toggle-group__text"
+                  >
+                    Grid view
+                  </span>
+                </button>
+              </div>
+              <div
+                className="pf-v5-c-toggle-group__item"
+                onClick={[Function]}
+              >
+                <button
+                  aria-label="list-view"
+                  aria-pressed={false}
+                  className="pf-v5-c-toggle-group__button"
+                  id="list-view-btn"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <span
+                    className="pf-v5-c-toggle-group__text"
+                  >
+                    List view
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="pf-v5-c-toolbar__content pf-m-hidden"
+        hidden={true}
+      >
+        <div
+          className="pf-v5-c-toolbar__group"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    className="pf-v5-l-stack__item"
+  >
+    <div
+      style={
+        Object {
+          "display": "contents",
+        }
+      }
+    >
+      <small
+        className=""
+        data-ouia-component-id="OUIA-Generated-Text-3"
+        data-ouia-component-type="PF5/Text"
+        data-ouia-safe={true}
+        data-pf-content={true}
+      >
+        Only showing analysis results with severity scores ≥ 0:
+      </small>
+    </div>
+    <div
+      className="pf-v5-c-slider automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok"
+      style={
+        Object {
+          "--pf-v5-c-slider--value": "0%",
+          "--pf-v5-c-slider__value--c-form-control--width-chars": 1,
+        }
+      }
+    >
+      <div
+        className="pf-v5-c-slider__actions"
+      >
+        <div
+          className="pf-v5-l-level pf-m-gutter"
+        >
+          <div>
+            <small
+              className=""
+              data-ouia-component-id="OUIA-Generated-Text-4"
+              data-ouia-component-type="PF5/Text"
+              data-ouia-safe={true}
+              data-pf-content={true}
+            >
+              Reset
+              :
+            </small>
+          </div>
+          <div>
+            <button
+              aria-disabled={false}
+              aria-label="Reset score to 0"
+              className="pf-v5-c-button pf-m-link pf-m-inline pf-m-small"
+              data-ouia-component-id="OUIA-Generated-Button-link-1"
+              data-ouia-component-type="PF5/Button"
+              data-ouia-safe={true}
+              disabled={false}
+              onClick={[Function]}
+              role={null}
+              type="button"
+            >
+              0
+            </button>
+          </div>
+          <div>
+            <button
+              aria-disabled={false}
+              aria-label="Reset score to 100"
+              className="pf-v5-c-button pf-m-link pf-m-inline pf-m-small"
+              data-ouia-component-id="OUIA-Generated-Button-link-2"
+              data-ouia-component-type="PF5/Button"
+              data-ouia-safe={true}
+              disabled={false}
+              onClick={[Function]}
+              role={null}
+              type="button"
+            >
+              100
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        className="pf-v5-c-slider__main"
+      >
+        <div
+          className="pf-v5-c-slider__rail"
+          onClick={[Function]}
+        >
+          <div
+            className="pf-v5-c-slider__rail-track"
+          />
+        </div>
+        <div
+          aria-hidden="true"
+          className="pf-v5-c-slider__steps"
+        >
+          <div
+            className="pf-v5-c-slider__step pf-m-active"
+            style={
+              Object {
+                "--pf-v5-c-slider__step--Left": "0%",
+              }
+            }
+          >
+            <div
+              className="pf-v5-c-slider__step-tick"
+            />
+            <div
+              className="pf-v5-c-slider__step-label"
+            >
+              0
+            </div>
+          </div>
+          <div
+            className="pf-v5-c-slider__step"
+            style={
+              Object {
+                "--pf-v5-c-slider__step--Left": "12.5%",
+              }
+            }
+          >
+            <div
+              className="pf-v5-c-slider__step-tick"
+            />
+            <div
+              className="pf-v5-c-slider__step-label"
+            >
+              OK
+            </div>
+          </div>
+          <div
+            className="pf-v5-c-slider__step"
+            style={
+              Object {
+                "--pf-v5-c-slider__step--Left": "25%",
+              }
+            }
+          >
+            <div
+              className="pf-v5-c-slider__step-tick"
+            />
+            <div
+              className="pf-v5-c-slider__step-label"
+            >
+              25
+            </div>
+          </div>
+          <div
+            className="pf-v5-c-slider__step"
+            style={
+              Object {
+                "--pf-v5-c-slider__step--Left": "50%",
+              }
+            }
+          >
+            <div
+              className="pf-v5-c-slider__step-tick"
+            />
+            <div
+              className="pf-v5-c-slider__step-label"
+            >
+              WARNING
+            </div>
+          </div>
+          <div
+            className="pf-v5-c-slider__step"
+            style={
+              Object {
+                "--pf-v5-c-slider__step--Left": "75%",
+              }
+            }
+          >
+            <div
+              className="pf-v5-c-slider__step-tick"
+            />
+            <div
+              className="pf-v5-c-slider__step-label"
+            >
+              75
+            </div>
+          </div>
+          <div
+            className="pf-v5-c-slider__step"
+            style={
+              Object {
+                "--pf-v5-c-slider__step--Left": "87.5%",
+              }
+            }
+          >
+            <div
+              className="pf-v5-c-slider__step-tick"
+            />
+            <div
+              className="pf-v5-c-slider__step-label"
+            >
+              CRITICAL
+            </div>
+          </div>
+          <div
+            className="pf-v5-c-slider__step"
+            style={
+              Object {
+                "--pf-v5-c-slider__step--Left": "100%",
+              }
+            }
+          >
+            <div
+              className="pf-v5-c-slider__step-tick"
+            />
+            <div
+              className="pf-v5-c-slider__step-label"
+            >
+              100
+            </div>
+          </div>
+        </div>
+        <div
+          aria-disabled={false}
+          aria-label="Value"
+          aria-valuemax={100}
+          aria-valuemin={0}
+          aria-valuenow={0}
+          aria-valuetext="0"
+          className="pf-v5-c-slider__thumb"
+          onClick={[Function]}
+          onKeyDown={[Function]}
+          onMouseDown={[Function]}
+          onTouchStart={[Function]}
+          role="slider"
+          tabIndex={0}
+        />
+      </div>
+      <div
+        className="pf-v5-c-slider__value"
+      >
+        <div
+          className="pf-v5-c-input-group"
+        >
+          <div
+            className="pf-v5-c-input-group__item pf-m-fill"
+          >
+            <span
+              className="pf-v5-c-form-control"
+            >
+              <input
+                aria-invalid={false}
+                aria-label="Slider value input"
+                data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+                data-ouia-component-type="PF5/TextInput"
+                data-ouia-safe={true}
+                disabled={false}
+                onBlur={[Function]}
+                onChange={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onKeyDown={[Function]}
+                required={false}
+                type="number"
+                value={0}
+              />
+            </span>
+          </div>
+          <div
+            className="pf-v5-c-input-group__item pf-m-box"
+          >
+            <span
+              className="pf-v5-c-input-group__text"
+            >
+              Score
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="pf-v5-l-stack__item pf-m-fill"
+  >
+    <div
+      className="pf-v5-l-grid"
+    >
+      <div
+        className="pf-v5-l-grid__item pf-m-3-col automated-analysis-grid-item"
+      >
+        <div
+          className="pf-v5-c-label-group automated-analysis-topic-label-groups pf-m-category pf-m-vertical"
+        >
+          <div
+            className="pf-v5-c-label-group__main"
+          >
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-label-group__label"
+              id="pf-random-id-0"
+            >
+              testsuite
+            </span>
+            <ul
+              aria-labelledby="pf-random-id-0"
+              className="pf-v5-c-label-group__list"
+              role="list"
+            >
+              <li
+                className="pf-v5-c-label-group__list-item"
+              >
+                <div>
+                  ClickableAutomatedAnalysisLabel
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
