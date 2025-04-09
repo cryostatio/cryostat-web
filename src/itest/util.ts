@@ -175,7 +175,7 @@ export class Dashboard {
     // Can't use click() directly because the button is wrapped by a Tooltip
     const actions = this.driver.actions();
     await actions.move({ origin: addCardButton }).click().perform();
-    const twoPartCards = [CardType.AUTOMATED_ANALYSIS, CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
+    const twoPartCards = [CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
 
     switch (cardType) {
       case CardType.AUTOMATED_ANALYSIS: {
