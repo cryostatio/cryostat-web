@@ -68,6 +68,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [hasSources, setHasSources] = React.useState(false);
+  const [hasReport, setHasReport] = React.useState(false);
 
   const [reportRefresh] = React.useState(new Subject<void>());
   const handleReportRefresh = React.useCallback(() => reportRefresh.next(), [reportRefresh]);
@@ -102,16 +103,13 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   React.useEffect(() => {
     if (!target) {
       setHasSources(false);
+      setHasReport(false);
       return;
     }
     addSubscription(
       context.api
         .getTargetActiveRecordings(target)
-        .pipe(
-          tap((v) => console.log({ v })),
-          map((a) => !!a.length),
-          tap((v) => console.log({ v })),
-        )
+        .pipe(map((a) => !!a.length))
         .subscribe((c) => setHasSources(c)),
     );
   }, [addSubscription, target, context.api, setHasSources]);
@@ -125,22 +123,24 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       context.api
         .doGet(`/targets/${target.id}/reports`, 'v4.1', undefined, true, true)
         .pipe(
+          tap(() => setHasReport(true)),
           catchError((err) => {
             if (isHttpError(err) && err.httpResponse.status !== 404) {
               setErrorMessage(err.httpResponse.statusText);
             } else if (!isHttpError(err)) {
               setErrorMessage(JSON.stringify(err));
             }
+            setHasReport(false);
             return of([]);
           }),
           tap(() => setIsLoading(false)),
         )
         .subscribe((ar: AggregateReport) => setResults(ar?.data?.map((k) => k.value) || [])),
     );
-  }, [addSubscription, target, setIsLoading, context.api]);
+  }, [addSubscription, target, setIsLoading, setHasReport, context.api]);
 
   const headerLabels = React.useMemo(() => {
-    if (isLoading || errorMessage) return undefined;
+    if (isLoading || errorMessage || !hasSources || !hasReport) return undefined;
     const filtered = results.filter((e) => e.score >= AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD);
     if (filtered.length === 0) return <AutomatedAnalysisHeaderLabel type="ok" />;
     const [warnings, errors] = _.partition(filtered, (e) => e.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD);
@@ -150,7 +150,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
         {warnings.length > 0 && <AutomatedAnalysisHeaderLabel type={'warning'} count={warnings.length} />}
       </LabelGroup>
     );
-  }, [isLoading, errorMessage, results]);
+  }, [isLoading, errorMessage, results, hasSources, hasReport]);
 
   const header = React.useMemo(() => {
     return (
