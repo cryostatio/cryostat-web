@@ -15,7 +15,7 @@
  */
 import { AutomatedAnalysisCard } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { AggregateReport } from '@app/Shared/Services/api.types';
+import { AggregateReport, RecordingState } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
@@ -71,6 +71,27 @@ const mockReport: AggregateReport = {
 };
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(
+  of([
+    {
+      id: 1,
+      remoteId: 1,
+      state: RecordingState.RUNNING,
+      duration: 0,
+      name: 'recording',
+      startTime: mockReport!.lastUpdated! - 5000,
+      continuous: true,
+      toDisk: true,
+      maxSize: 0,
+      maxAge: 0,
+      downloadUrl: '',
+      reportUrl: '',
+      metadata: {
+        labels: [],
+      },
+    },
+  ]),
+);
 
 describe('<AutomatedAnalysisCard />', () => {
   let preloadedState: RootState;

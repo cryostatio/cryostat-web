@@ -50,7 +50,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { catchError, of, Subject, tap } from 'rxjs';
+import { catchError, map, of, Subject, tap } from 'rxjs';
 import { DashboardCard } from '../DashboardCard';
 import { DashboardCardDescriptor, DashboardCardFC, DashboardCardSizes, DashboardCardTypeProps } from '../types';
 
@@ -67,6 +67,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const [isCardExpanded, setIsCardExpanded] = React.useState<boolean>(true);
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [hasSources, setHasSources] = React.useState(false);
 
   const [reportRefresh] = React.useState(new Subject<void>());
   const handleReportRefresh = React.useCallback(() => reportRefresh.next(), [reportRefresh]);
@@ -78,10 +79,15 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   const refreshButton = React.useMemo(
     () => (
       <Tooltip key={0} content={t('ANALYZE')}>
-        <Button onClick={handleReportRefresh} variant="plain" icon={<ProcessAutomationIcon />} disabled={isLoading} />
+        <Button
+          onClick={handleReportRefresh}
+          variant="plain"
+          icon={<ProcessAutomationIcon />}
+          isDisabled={isLoading || !hasSources}
+        />
       </Tooltip>
     ),
-    [t, handleReportRefresh, isLoading],
+    [t, handleReportRefresh, isLoading, hasSources],
   );
 
   const actions = React.useMemo(() => {
@@ -92,6 +98,23 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context.target]);
+
+  React.useEffect(() => {
+    if (!target) {
+      setHasSources(false);
+      return;
+    }
+    addSubscription(
+      context.api
+        .getTargetActiveRecordings(target)
+        .pipe(
+          tap((v) => console.log({ v })),
+          map((a) => !!a.length),
+          tap((v) => console.log({ v })),
+        )
+        .subscribe((c) => setHasSources(c)),
+    );
+  }, [addSubscription, target, context.api, setHasSources]);
 
   React.useEffect(() => {
     if (!target) {
