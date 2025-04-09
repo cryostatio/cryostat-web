@@ -148,7 +148,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
     expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TEXT'))).toBeInTheDocument(); // Error details
     expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
-    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', "false");
+    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('renders Active Recording analysis', async () => {
@@ -169,13 +169,14 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByText(testT('AutomatedAnalysisCard.WARNING_RESULTS_one', { count: 1 }))).toBeInTheDocument(); // Card header
     expect(screen.getByText('TargetAnalysis')).toBeInTheDocument(); // Card body
-    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', "false");
+    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', 'false');
   });
-
 
   it('renders with disabled refresh button if no source recordings available', async () => {
     jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
-    jest.spyOn(defaultServices.api, 'doGet').mockReturnValueOnce(throwError(() => new HttpError({statusText: 'Not Found', status: 404} as Response)));
+    jest
+      .spyOn(defaultServices.api, 'doGet')
+      .mockReturnValueOnce(throwError(() => new HttpError({ statusText: 'Not Found', status: 404 } as Response)));
 
     render({
       routerConfigs: {
@@ -191,6 +192,6 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByText('TargetAnalysis')).toBeInTheDocument(); // Card body
-    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', "true");
+    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', 'true');
   });
 });
