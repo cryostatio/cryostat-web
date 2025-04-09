@@ -81,6 +81,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
     () => (
       <Tooltip key={0} content={t('ANALYZE')}>
         <Button
+          aria-label="refresh"
           onClick={handleReportRefresh}
           variant="plain"
           icon={<ProcessAutomationIcon />}

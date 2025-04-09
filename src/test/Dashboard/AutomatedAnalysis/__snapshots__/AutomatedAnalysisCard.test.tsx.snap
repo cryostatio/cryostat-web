@@ -77,7 +77,7 @@ exports[`<AutomatedAnalysisCard /> renders correctly 1`] = `
             >
               <button
                 aria-disabled={false}
-                aria-label={null}
+                aria-label="refresh"
                 className="pf-v5-c-button pf-m-plain"
                 data-ouia-component-id="OUIA-Generated-Button-plain-2"
                 data-ouia-component-type="PF5/Button"
