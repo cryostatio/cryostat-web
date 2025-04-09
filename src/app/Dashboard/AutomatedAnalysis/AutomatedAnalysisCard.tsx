@@ -15,7 +15,7 @@
  */
 
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { TargetAnalysis } from '@app/Recordings/AutomatedAnalysisResults';
+import { TargetAnalysis } from '@app/Recordings/TargetAnalysis';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { automatedAnalysisAddGlobalFilterIntent } from '@app/Shared/Redux/ReduxStore';
 import {
@@ -105,6 +105,8 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           catchError((err) => {
             if (isHttpError(err) && err.httpResponse.status !== 404) {
               setErrorMessage(err.httpResponse.statusText);
+            } else if (!isHttpError(err)) {
+              setErrorMessage(JSON.stringify(err));
             }
             return of([]);
           }),
@@ -141,13 +143,15 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       >
         <Flex>
           <FlexItem>
-            <CardTitle component="h4">{t('AutomatedAnalysisCard.CARD_TITLE')}</CardTitle>
+            <CardTitle component="h4">
+              {errorMessage ? t('AutomatedAnalysisCard.ERROR_TITLE') : t('AutomatedAnalysisCard.CARD_TITLE')}
+            </CardTitle>
           </FlexItem>
           <FlexItem>{headerLabels}</FlexItem>
         </Flex>
       </CardHeader>
     );
-  }, [actions, t, onCardExpand, isCardExpanded, headerLabels]);
+  }, [actions, t, onCardExpand, isCardExpanded, headerLabels, errorMessage]);
 
   return (
     <DashboardCard
@@ -166,7 +170,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           {isLoading ? (
             <LoadingView />
           ) : !target ? undefined : errorMessage ? (
-            <ErrorView title={t('AutomatedAnalysisResults.REPORT_ERROR')} message={errorMessage} />
+            <ErrorView title={t('AutomatedAnalysisCard.ERROR_TEXT')} message={errorMessage} />
           ) : (
             <TargetAnalysis target={target} refreshRequest={reportRefresh} />
           )}

@@ -82,11 +82,11 @@ import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
-import { TargetAnalysis } from './AutomatedAnalysisResults';
 import { RecordingActions } from './RecordingActions';
 import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
+import { TargetAnalysis } from './TargetAnalysis';
 
 export enum PanelContent {
   LABELS,

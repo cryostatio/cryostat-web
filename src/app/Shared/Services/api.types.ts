@@ -413,12 +413,6 @@ export enum AutomatedAnalysisScore {
   RED_SCORE_THRESHOLD = 75,
 }
 
-export const FAILED_REPORT_MESSAGE =
-  'Failed to load the report from Recording because the requested entity is too large.';
-export const NO_RECORDINGS_MESSAGE = 'No Active or Archived Recordings available. Create a new Recording for analysis.';
-export const RECORDING_FAILURE_MESSAGE = 'Failed to start Recording for analysis.';
-export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this Recording is not supported on this JVM.';
-
 // ======================================
 // Discovery/Target resources
 // ======================================

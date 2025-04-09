@@ -220,7 +220,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
       {!target ? (
         <EmptyState>
           <EmptyStateHeader
-            titleText={t('AutomatedAnalysisResults.REPORT_UNAVAILABLE')}
+            titleText={t('TargetAnalysis.REPORT_UNAVAILABLE')}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
@@ -242,14 +242,14 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   );
 };
 
-export interface AutomatedAnalysisResultsProps {
+interface AutomatedAnalysisResultsProps {
   target: Target;
   hasSources: boolean;
   timestamp?: number;
   analyses: CategorizedRuleEvaluations[];
 }
 
-export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
+const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
   target,
   hasSources,
   timestamp,
@@ -447,7 +447,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
       {!analyses.length ? (
         <EmptyState>
           <EmptyStateHeader
-            titleText={t('AutomatedAnalysisResults.REPORT_UNAVAILABLE')}
+            titleText={t('TargetAnalysis.REPORT_UNAVAILABLE')}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
@@ -474,7 +474,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
                   />,
                 ]}
               >
-                AutomatedAnalysisResults.CREATE_RECORDING
+                TargetAnalysis.CREATE_RECORDING
               </Trans>
             </Text>
           ) : undefined}
@@ -484,7 +484,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
           <Stack hasGutter>
             <StackItem>
               <Text>
-                {t('AutomatedAnalysisResults.LAST_UPDATE', {
+                {t('TargetAnalysis.LAST_UPDATE', {
                   datetime: timestamp
                     ? dayjs(new Date(timestamp * 1000))
                         .tz(dateTimeFormat.timeZone.full)
