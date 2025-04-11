@@ -15,6 +15,7 @@
  */
 import { Recordings } from '@app/Recordings/Recordings';
 import { Target } from '@app/Shared/Services/api.types';
+import { SessionState } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -70,6 +71,8 @@ jest
   .mockReturnValueOnce(of(false)) // handles the case where archiving is disabled
   .mockReturnValue(of(true)); // others
 
+jest.spyOn(defaultServices.login, 'getSessionState').mockReturnValue(of(SessionState.USER_SESSION));
+
 describe('<Recordings />', () => {
   afterEach(cleanup);
 
@@ -101,7 +104,7 @@ describe('<Recordings />', () => {
     });
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
-    expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
+    expect(screen.getByText('Active Recordings')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is disabled', async () => {

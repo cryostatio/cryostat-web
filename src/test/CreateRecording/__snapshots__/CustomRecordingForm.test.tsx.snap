@@ -170,6 +170,11 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             >
               Continuous
             </label>
+            <span
+              className="pf-v5-c-check__description"
+            >
+              Record with unlimited duration until manually stopped
+            </span>
           </div>
         </div>
         <div
@@ -199,6 +204,11 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             >
               Archive on Stop
             </label>
+            <span
+              className="pf-v5-c-check__description"
+            >
+              Copy data to Archives automatically when duration elapses
+            </span>
           </div>
         </div>
       </div>
@@ -536,6 +546,36 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           className="pf-v5-c-form__group-control"
         >
           <div
+            className="pf-v5-c-check"
+          >
+            <input
+              aria-invalid={false}
+              aria-label="Autoanalyze checkbox"
+              checked={true}
+              className="pf-v5-c-check__input"
+              data-ouia-component-id="OUIA-Generated-Checkbox-4"
+              data-ouia-component-type="PF5/Checkbox"
+              data-ouia-safe={true}
+              disabled={false}
+              id="autoanalyze"
+              name="autoanalyze"
+              onChange={[Function]}
+              required={false}
+              type="checkbox"
+            />
+            <label
+              className="pf-v5-c-check__label"
+              htmlFor="autoanalyze"
+            >
+              Automatically analyze
+            </label>
+            <span
+              className="pf-v5-c-check__description"
+            >
+              Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.
+            </span>
+          </div>
+          <div
             className="pf-v5-c-label-group pf-m-category pf-m-editable"
           >
             <div
@@ -601,7 +641,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                       </span>
                     </span>
                   </span>
-                   and 
+                  , 
                   <span
                     className="pf-v5-c-label pf-m-compact"
                   >
@@ -612,6 +652,20 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                         className="pf-v5-c-label__text"
                       >
                         template.type
+                      </span>
+                    </span>
+                  </span>
+                  , and 
+                  <span
+                    className="pf-v5-c-label pf-m-compact"
+                  >
+                    <span
+                      className="pf-v5-c-label__content"
+                    >
+                      <span
+                        className="pf-v5-c-label__text"
+                      >
+                        autoanalyze
                       </span>
                     </span>
                   </span>
@@ -696,7 +750,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               aria-invalid={false}
               checked={true}
               className="pf-v5-c-check__input"
-              data-ouia-component-id="OUIA-Generated-Checkbox-4"
+              data-ouia-component-id="OUIA-Generated-Checkbox-5"
               data-ouia-component-type="PF5/Checkbox"
               data-ouia-safe={true}
               disabled={false}
@@ -709,7 +763,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               className="pf-v5-c-check__label"
               htmlFor="toDisk-checkbox"
             >
-              To disk
+              To Disk
             </label>
           </div>
           <div

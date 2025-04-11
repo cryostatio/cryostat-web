@@ -66,6 +66,7 @@ import {
   isTargetMetadata,
   MBeanMetricsResponse,
   BuildInfo,
+  AggregateReport,
 } from './api.types';
 import {
   isHttpError,
@@ -265,7 +266,7 @@ export class ApiService {
         concatMap((headers) =>
           this.sendRequest('v4', 'rules', {
             method: 'POST',
-            body: JSON.stringify(rule),
+            body: JSON.stringify({ ...rule, metadata: { labels: this.transformLabelsToObject(rule.metadata.labels) } }),
             headers,
           }),
         ),
@@ -814,6 +815,74 @@ export class ApiService {
     ).pipe(
       concatMap((resp) => resp.json()),
       first(),
+    );
+  }
+
+  getCurrentReportForTarget(target: TargetStub | TargetStub[], aggregateOnly = false): Observable<AggregateReport> {
+    let targetIds: number[];
+    if (Array.isArray(target)) {
+      targetIds = target.map((t) => t.id!);
+    } else {
+      targetIds = [target.id!];
+    }
+    const dataQ = `
+                data {
+                  key
+                  value {
+                    name
+                    topic
+                    score
+                    evaluation {
+                      explanation
+                      solution
+                      summary
+                      suggestions {
+                        name
+                        setting
+                        value
+                      }
+                    }
+                  }
+                }
+    `;
+    return this.graphql<any>(
+      `
+        query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
+          targetNodes(filter: { targetIds: $targetIds }) {
+            target {
+              id
+              report {
+                lastUpdated
+                aggregate {
+                  count
+                  max
+                }
+                ${aggregateOnly ? '' : dataQ}
+              }
+            }
+          }
+        }
+      `,
+      { targetIds },
+    ).pipe(
+      map((resp) => {
+        const empty = {
+          data: {},
+          aggregate: {
+            max: -1,
+            count: 0,
+          },
+        };
+
+        const nodes = resp.data?.targetNodes ?? [];
+        if (nodes.length === 0) {
+          return empty;
+        }
+        if (!nodes[0]?.target?.report?.aggregate?.count) {
+          return empty;
+        }
+        return nodes[0].target.report;
+      }),
     );
   }
 

@@ -54,12 +54,12 @@ const mockRecordingLabels = [
   },
 ];
 const mockRecording: ActiveRecording = {
+  id: 1,
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
   startTime: 1234567890,
-  id: 0,
   state: RecordingState.RUNNING,
   duration: 1000, // 1000ms
   continuous: false,
@@ -76,6 +76,7 @@ const mockLabelsNotification = {
   message: {
     target: mockConnectUrl,
     recording: {
+      id: 1,
       name: 'someRecording',
       metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
     },
@@ -124,12 +125,8 @@ jest
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockCreateNotification)) // adds a recording table after receiving a notification
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -137,19 +134,14 @@ jest
   .mockReturnValueOnce(of()) // updates the recording labels after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockLabelsNotification))
 
   .mockReturnValueOnce(of()) // stops a recording after receiving a notification
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockStopNotification))
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // removes a recording after receiving a notification
-  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of()) // removes a Recording after receiving a notification
   .mockReturnValueOnce(of(mockDeleteNotification))
   .mockReturnValue(of()); // all other tests
 

@@ -24,6 +24,7 @@ import {
   Recording,
   EventTemplate,
   EventProbe,
+  AggregateReport,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -73,6 +74,12 @@ export const isOwnedResource = (resourceType: TargetOwnedResourceType | TargetRe
   return resourceType !== 'automatedRules' && resourceType !== 'credentials';
 };
 
+export const REPORT_NA_SCORE = -1;
+export const REPORT_MIN_SCORE = 0;
+export const REPORT_WARNING_SCORE = 25;
+export const REPORT_DANGER_SCORE = 75;
+export const REPORT_MAX_SCORE = 100;
+
 export const getTargetOwnedResources = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
   { target }: TargetNode,
@@ -113,6 +120,8 @@ export const getTargetOwnedResources = (
           );
         }),
       );
+    case 'report':
+      return apiService.getCurrentReportForTarget(target, true).pipe(map((report) => [report]));
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -123,7 +132,6 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
     case 'activeRecordings':
       return [
         NotificationCategory.ActiveRecordingCreated,
-        NotificationCategory.SnapshotCreated,
         NotificationCategory.ActiveRecordingStopped, // State Update
       ];
     case 'archivedRecordings':
@@ -138,6 +146,8 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
       return [NotificationCategory.RuleCreated, NotificationCategory.RuleUpdated];
     case 'credentials':
       return [NotificationCategory.CredentialsStored, NotificationCategory.TargetCredentialsStored];
+    case 'report':
+      return [NotificationCategory.ReportSuccess];
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -146,7 +156,7 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
 export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   switch (resourceType) {
     case 'activeRecordings':
-      return [NotificationCategory.ActiveRecordingDeleted, NotificationCategory.SnapshotDeleted];
+      return [NotificationCategory.ActiveRecordingDeleted];
     case 'archivedRecordings':
       return [NotificationCategory.ArchivedRecordingDeleted];
     case 'eventTemplates':
@@ -159,6 +169,8 @@ export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType |
       return [NotificationCategory.RuleDeleted];
     case 'credentials':
       return [NotificationCategory.CredentialsDeleted, NotificationCategory.TargetCredentialsDeleted];
+    case 'report':
+      return [];
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -233,6 +245,9 @@ export const getResourceListPatchFn = (
           }),
         );
       };
+    case 'report':
+      return (_arr: AggregateReport[], _eventData: NotificationMessage, _removed?: boolean) =>
+        apiService.getCurrentReportForTarget(target, true).pipe(map((report) => [report]));
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -256,6 +271,8 @@ export const getLinkPropsForTargetResource = (
       return { to: { pathname: '/rules' } };
     case 'credentials':
       return { to: { pathname: '/security' } };
+    case 'report':
+      return { to: { pathname: '/recordings', search: '?tab=active-recording', hash: 'report' } };
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }

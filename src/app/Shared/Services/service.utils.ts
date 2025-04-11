@@ -53,6 +53,10 @@ export const automatedAnalysisConfigToRecordingAttributes = (
           key: 'origin',
           value: automatedAnalysisRecordingName,
         },
+        {
+          key: 'autoanalyze',
+          value: 'true',
+        },
       ],
     },
   };

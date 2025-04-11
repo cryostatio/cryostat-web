@@ -30,6 +30,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -55,6 +56,7 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -62,12 +64,14 @@ import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
 
 export const CustomRecordingForm: React.FC = () => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const location = useLocation();
 
+  const [autoanalyze, setAutoanalyze] = React.useState(true);
   const [formData, setFormData] = React.useState<CustomRecordingFormData>({
     name: '',
     labels: [],
@@ -209,15 +213,20 @@ export const CustomRecordingForm: React.FC = () => {
     [setFormData],
   );
 
+  const handleAutoAnalyzeChange = React.useCallback(
+    (_, autoanalyze: boolean) => setAutoanalyze(autoanalyze),
+    [setAutoanalyze],
+  );
+
   const setAdvancedRecordingOptions = React.useCallback(
     (options: AdvancedRecordingOptions) => {
       // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
       setFormData((old) => ({
         ...old,
-        maxAge: options.maxAge || 0,
-        maxAgeUnit: 1,
-        maxSize: options.maxSize || 0,
-        maxSizeUnit: 1,
+        maxAge: old.maxAge || options.maxAge || 0,
+        maxAgeUnit: old.maxAgeUnit || 1,
+        maxSize: old.maxSize || options.maxSize || 0,
+        maxSizeUnit: old.maxSizeUnit || 1,
       }));
     },
     [setFormData],
@@ -241,12 +250,12 @@ export const CustomRecordingForm: React.FC = () => {
 
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
-      notificationMessages.push(`Recording name ${name} is invalid`);
+      notificationMessages.push(t('CustomRecordingForm.RECORDING_NAME_INVALID', { name }));
     }
 
     if (notificationMessages.length > 0) {
       const message = notificationMessages.join('. ').trim() + '.';
-      notifications.warning('Invalid form data', message);
+      notifications.warning(t('CustomRecordingForm.FORM_DATA_INVALID'), message);
       return;
     }
 
@@ -261,10 +270,12 @@ export const CustomRecordingForm: React.FC = () => {
         maxAge: toDisk ? (continuous ? maxAge * maxAgeUnit : undefined) : undefined,
         maxSize: toDisk ? maxSize * maxSizeUnit : undefined,
       },
-      metadata: { labels: formData.labels },
+      metadata: {
+        labels: [...formData.labels, { key: 'autoanalyze', value: `${autoanalyze}` }],
+      },
     };
     handleCreateRecording(recordingAttributes);
-  }, [eventSpecifierString, formData, notifications, handleCreateRecording]);
+  }, [t, eventSpecifierString, formData, autoanalyze, notifications, handleCreateRecording]);
 
   const refreshFormOptions = React.useCallback(
     (target: Target) => {
@@ -308,18 +319,21 @@ export const CustomRecordingForm: React.FC = () => {
   }, [formData]);
 
   const hasReservedLabels = React.useMemo(
-    () => formData.labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
+    () =>
+      formData.labels.some(
+        (label) => label.key === 'template.name' || label.key === 'template.type' || label.key === 'autoanalyze',
+      ),
     [formData],
   );
 
   const createButtonLoadingProps = React.useMemo(
     () =>
       ({
-        spinnerAriaValueText: 'Creating',
+        spinnerAriaValueText: t('CustomRecordingForm.CREATING'),
         spinnerAriaLabel: 'create-active-recording',
         isLoading: loading,
       }) as LoadingProps,
-    [loading],
+    [t, loading],
   );
 
   const selectedSpecifier = React.useMemo(() => {
@@ -375,7 +389,7 @@ export const CustomRecordingForm: React.FC = () => {
           : ValidatedOptions.error,
       template,
       restart: restart ?? false,
-      continuous: continuous || false,
+      continuous: continuous ?? false,
       labels: labels ?? [],
       labelsValid: ValidatedOptions.default, // RecordingLabelFields component handles validating
       duration: continuous ? 0 : (duration ?? 30),
@@ -392,7 +406,7 @@ export const CustomRecordingForm: React.FC = () => {
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error displaying Recording creation form'}
+        title={t('CustomRecordingForm.FORM_ERROR')}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -403,12 +417,9 @@ export const CustomRecordingForm: React.FC = () => {
     <>
       <Form isHorizontal>
         <TextContent>
-          <Text component={TextVariants.p}>
-            JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event
-            types are built in to the JVM itself, while others are user defined.
-          </Text>
+          <Text component={TextVariants.p}>{t('CustomRecordingForm.DESCRIPTION')}</Text>
         </TextContent>
-        <FormGroup label="Name" isRequired fieldId="recording-name">
+        <FormGroup label={t('CustomRecordingForm.NAME')} isRequired fieldId="recording-name">
           <TextInput
             value={formData.name}
             isRequired
@@ -421,7 +432,7 @@ export const CustomRecordingForm: React.FC = () => {
             data-quickstart-id="crf-name"
           />
           <Checkbox
-            label="Restart if Recording already exists"
+            label={t('CustomRecordingForm.RESTART_IF_EXISTS')}
             isChecked={formData.restart}
             isDisabled={loading}
             onChange={handleRestartExistingChange}
@@ -433,17 +444,23 @@ export const CustomRecordingForm: React.FC = () => {
             <HelperText>
               <HelperTextItem variant={formData.nameValid}>
                 {formData.nameValid === ValidatedOptions.error
-                  ? 'A Recording name can contain only letters, numbers, and underscores.'
-                  : 'Enter a Recording name. This will be unique within the target JVM.'}
+                  ? t('CustomRecordingForm.RECORDING_NAME_HINT')
+                  : t('CustomRecordingForm.RECORDING_NAME_DESCRIPTION')}
               </HelperTextItem>
             </HelperText>
           </FormHelperText>
         </FormGroup>
-        <FormGroup label="Duration" isRequired fieldId="recording-duration" data-quickstart-id="crf-duration">
+        <FormGroup
+          label={t('CustomRecordingForm.DURATION')}
+          isRequired
+          fieldId="recording-duration"
+          data-quickstart-id="crf-duration"
+        >
           <Split hasGutter>
             <SplitItem>
               <Checkbox
-                label="Continuous"
+                label={t('CONTINUOUS')}
+                description={t('CustomRecordingForm.CONTINUOUS_DESCRIPTION')}
                 isChecked={formData.continuous}
                 isDisabled={loading}
                 onChange={handleContinuousChange}
@@ -454,7 +471,8 @@ export const CustomRecordingForm: React.FC = () => {
             </SplitItem>
             <SplitItem>
               <Checkbox
-                label="Archive on Stop"
+                label={t('CustomRecordingForm.ARCHIVE_ON_STOP')}
+                description={t('CustomRecordingForm.ARCHIVE_ON_STOP_DESCRIPTION')}
                 isDisabled={formData.continuous || loading}
                 isChecked={formData.archiveOnStop && !formData.continuous}
                 onChange={handleArchiveOnStopChange}
@@ -475,17 +493,17 @@ export const CustomRecordingForm: React.FC = () => {
             <HelperText>
               <HelperTextItem variant={formData.durationValid}>
                 {formData.durationValid === ValidatedOptions.error
-                  ? 'The Recording duration must be a positive integer.'
+                  ? t('CustomRecordingForm.DURATION_INVALID')
                   : formData.continuous
-                    ? 'A continuous recording will never be automatically stopped.'
+                    ? t('CustomRecordingForm.DURATION_CONTINUOUS')
                     : formData.archiveOnStop
-                      ? 'Time before the Recording is automatically stopped and copied to archive.'
-                      : 'Time before the Recording is automatically stopped.'}
+                      ? t('CustomRecordingForm.DURATION_DESCRIPTION_ARCHIVE_ON_STOP')
+                      : t('CustomRecordingForm.DURATION_DESCRIPTION')}
               </HelperTextItem>
             </HelperText>
           </FormHelperText>
         </FormGroup>
-        <FormGroup label="Template" isRequired fieldId="recording-template">
+        <FormGroup label={t('CustomRecordingForm.TEMPLATE')} isRequired fieldId="recording-template">
           <SelectTemplateSelectorForm
             selected={selectedSpecifier}
             templates={templates}
@@ -497,33 +515,40 @@ export const CustomRecordingForm: React.FC = () => {
             <HelperText>
               <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
                 {formData.template?.name
-                  ? 'The Event Template to be applied in this Recording'
-                  : 'A Template must be selected.'}
+                  ? t('CustomRecordingForm.TEMPLATE_DESCRIPTION')
+                  : t('CustomRecordingForm.TEMPLATE_INVALID')}
               </HelperTextItem>
             </HelperText>
           </FormHelperText>
         </FormGroup>
         <ExpandableSection
-          toggleTextExpanded="Hide metadata options"
-          toggleTextCollapsed="Show metadata options"
+          toggleTextExpanded={t('CustomRecordingForm.METADATA_HIDE')}
+          toggleTextCollapsed={t('CustomRecordingForm.METADATA_SHOW')}
           data-quickstart-id="crf-metadata-opt"
           toggleId="metadata-option-toggle"
           contentId="metadata-options"
         >
           <FormGroup
-            label="Labels"
+            label={t('CustomRecordingForm.LABELS')}
             fieldId="labels"
             labelIcon={
-              <Tooltip
-                content={<Text>Unique key-value pairs containing information about the Recording.</Text>}
-                appendTo={portalRoot}
-              >
+              <Tooltip content={<Text>{t('CustomRecordingForm.LABELS_TOOLTIP')}</Text>} appendTo={portalRoot}>
                 <Icon>
                   <HelpIcon />
                 </Icon>
               </Tooltip>
             }
           >
+            <Checkbox
+              label={t('CustomRecordingForm.AUTOMATICALLY_ANALYZE')}
+              description={t('AUTOANALYZE_HELPER_TEXT')}
+              isDisabled={loading}
+              isChecked={autoanalyze}
+              onChange={handleAutoAnalyzeChange}
+              aria-label="Autoanalyze checkbox"
+              id="autoanalyze"
+              name="autoanalyze"
+            />
             <RecordingLabelFields
               labels={formData.labels}
               setLabels={handleLabelsChange}
@@ -537,24 +562,25 @@ export const CustomRecordingForm: React.FC = () => {
                   variant={hasReservedLabels ? 'warning' : undefined}
                   hasIcon={hasReservedLabels}
                 >
-                  Labels with key <Label isCompact>template.name</Label> and <Label isCompact>template.type</Label> are
-                  set by Cryostat and will be overwritten if specifed.
+                  <Trans t={t} components={[<Label isCompact />]}>
+                    CustomRecordingForm.LABELS_DESCRIPTION
+                  </Trans>
                 </HelperTextItem>
               </HelperText>
             </FormHelperText>
           </FormGroup>
         </ExpandableSection>
         <ExpandableSection
-          toggleTextExpanded="Hide advanced options"
-          toggleTextCollapsed="Show advanced options"
+          toggleTextExpanded={t('CustomRecordingForm.ADVANCED_OPTIONS_HIDE')}
+          toggleTextCollapsed={t('CustomRecordingForm.ADVANCED_OPTIONS_SHOW')}
           data-quickstart-id="crf-advanced-opt"
           toggleId="advanced-option-toggle"
           contentId="advanced-options"
         >
-          <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
-          <FormGroup fieldId="To Disk">
+          <Text component={TextVariants.small}>{t('CustomRecordingForm.UNBOUNDED')}</Text>
+          <FormGroup fieldId={t('CustomRecordingForm.TO_DISK')}>
             <Checkbox
-              label="To disk"
+              label={t('CustomRecordingForm.TO_DISK')}
               id="toDisk-checkbox"
               isChecked={formData.toDisk}
               onChange={handleToDiskChange}
@@ -562,14 +588,11 @@ export const CustomRecordingForm: React.FC = () => {
             />
             <FormHelperText>
               <HelperText>
-                <HelperTextItem>
-                  Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the
-                  most recent Recording information
-                </HelperTextItem>
+                <HelperTextItem>{t('CustomRecordingForm.TO_DISK_DESCRIPTION')}</HelperTextItem>
               </HelperText>
             </FormHelperText>
           </FormGroup>
-          <FormGroup label="Maximum size" fieldId="maxSize">
+          <FormGroup label={t('CustomRecordingForm.MAXIMUM_SIZE')} fieldId="maxSize">
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput
@@ -598,11 +621,11 @@ export const CustomRecordingForm: React.FC = () => {
             </Split>
             <FormHelperText>
               <HelperText>
-                <HelperTextItem>The maximum size of Recording data saved to disk</HelperTextItem>
+                <HelperTextItem>{t('CustomRecordingForm.MAXIMUM_SIZE_DESCRIPTION')}</HelperTextItem>
               </HelperText>
             </FormHelperText>
           </FormGroup>
-          <FormGroup label="Maximum age" fieldId="maxAge">
+          <FormGroup label={t('CustomRecordingForm.MAXIMUM_AGE')} fieldId="maxAge">
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput
@@ -632,7 +655,7 @@ export const CustomRecordingForm: React.FC = () => {
             </Split>
             <FormHelperText>
               <HelperText>
-                <HelperTextItem>The maximum age of Recording data stored to disk</HelperTextItem>
+                <HelperTextItem>{t('CustomRecordingForm.MAXIMUM_AGE_DESCRIPTION')}</HelperTextItem>
               </HelperText>
             </FormHelperText>
           </FormGroup>
@@ -645,10 +668,10 @@ export const CustomRecordingForm: React.FC = () => {
             {...createButtonLoadingProps}
             data-quickstart-id="crf-create-btn"
           >
-            {loading ? 'Creating' : 'Create'}
+            {loading ? t('CREATING') : t('CREATE')}
           </Button>
           <Button variant="secondary" onClick={exitForm} isDisabled={loading}>
-            Cancel
+            {t('CANCEL')}
           </Button>
         </ActionGroup>
       </Form>

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  ClickableAutomatedAnalysisLabel,
-  clickableAutomatedAnalysisKey,
-} from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
 import { authFailMessage } from '@app/ErrorView/types';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingProps } from '@app/Shared/Components/types';
@@ -34,10 +30,9 @@ import {
 } from '@app/Shared/Redux/ReduxStore';
 import {
   ActiveRecording,
-  AnalysisResult,
-  CategorizedRuleEvaluations,
   KeyValue,
   NotificationCategory,
+  NullableTarget,
   RecordingState,
   Target,
   keyValueToString,
@@ -49,14 +44,11 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
-  Bullseye,
   Button,
   Checkbox,
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Grid,
-  GridItem,
   Label,
   LabelGroup,
   Dropdown,
@@ -69,27 +61,24 @@ import {
   OverflowMenuDropdownItem,
   OverflowMenuGroup,
   OverflowMenuItem,
-  Spinner,
   Timestamp,
   TimestampTooltipVariant,
-  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Divider,
-  Panel,
-  PanelHeader,
-  PanelMain,
-  PanelMainBody,
-  Tooltip,
+  DrawerPanelContent,
+  DrawerHead,
+  DrawerActions,
+  DrawerCloseButton,
+  DrawerPanelBody,
 } from '@patternfly/react-core';
-import { EllipsisVIcon, RedoIcon } from '@patternfly/react-icons';
-import { ExpandableRowContent, SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
+import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
+import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom-v5-compat';
-import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
+import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
@@ -97,9 +86,11 @@ import { RecordingActions } from './RecordingActions';
 import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { ColumnConfig, RecordingsTable } from './RecordingsTable';
+import { TargetAnalysis } from './TargetAnalysis';
 
 export enum PanelContent {
   LABELS,
+  REPORT,
 }
 
 const tableColumns: TableColumn[] = [
@@ -141,6 +132,7 @@ const tableColumns: TableColumn[] = [
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
+  initialPanelContent?: string;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
@@ -150,14 +142,15 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
-  const [targetConnectURL, setTargetConnectURL] = React.useState('');
+  const [target, setTarget] = React.useState(undefined as NullableTarget);
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
-  const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
+  const [showPanel, setShowPanel] = React.useState(!!props.initialPanelContent);
+  const [panelContent, setPanelContent] = React.useState(
+    props.initialPanelContent === 'report' ? PanelContent.REPORT : PanelContent.LABELS,
+  );
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ActiveActions, boolean>>({
@@ -166,10 +159,12 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     STOP: false,
   });
   const [sortBy, getSortParams] = useSort();
+  const [reportRefresh] = React.useState(new Subject<void>());
+  const handleReportRefresh = React.useCallback(() => reportRefresh.next(), [reportRefresh]);
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
-      (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL,
+      (targetFilter: TargetRecordingFilters) => targetFilter.target === target?.connectUrl,
     );
     return filters.length > 0 ? filters[0].active.filters : emptyActiveRecordingFilters;
   }) as RecordingFiltersCategories;
@@ -199,9 +194,14 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   }, [navigate]);
 
   const handleEditLabels = React.useCallback(() => {
-    setShowDetailsPanel(true);
     setPanelContent(PanelContent.LABELS);
-  }, [setShowDetailsPanel, setPanelContent]);
+    setShowPanel(true);
+  }, [setShowPanel, setPanelContent]);
+
+  const handleShowReport = React.useCallback(() => {
+    setPanelContent(PanelContent.REPORT);
+    setShowPanel(true);
+  }, [setShowPanel, setPanelContent]);
 
   const handleRecordings = React.useCallback(
     (recordings: React.SetStateAction<ActiveRecording[]>) => {
@@ -241,21 +241,18 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe((target) => {
-        setTargetConnectURL(target?.connectUrl || '');
+        setTarget(target);
         dispatch(recordingAddTargetIntent(target?.connectUrl || ''));
         refreshRecordingList();
       }),
     );
-  }, [addSubscription, context, context.target, refreshRecordingList, setTargetConnectURL, dispatch]);
+  }, [addSubscription, context, context.target, refreshRecordingList, setTarget, dispatch]);
 
   React.useEffect(() => {
     addSubscription(
       combineLatest([
         context.target.target(),
-        merge(
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-          context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
-        ),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
       ]).subscribe(([currentTarget, event]) => {
         if (currentTarget?.jvmId != event.message.jvmId) {
           return;
@@ -269,10 +266,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     addSubscription(
       combineLatest([
         context.target.target(),
-        merge(
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
-        ),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
       ]).subscribe(([currentTarget, event]) => {
         if (currentTarget?.jvmId != event.message.jvmId) {
           return;
@@ -295,7 +289,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         setRecordings((old) => {
           const updated = [...old];
           for (const r of updated) {
-            if (r.name === event.message.recording.name) {
+            if (r.id === event.message.recording.id) {
               r.state = RecordingState.STOPPED;
             }
           }
@@ -325,7 +319,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         }
         setRecordings((old) => {
           return old.map((o) => {
-            if (o.name == event.message.recording.name) {
+            if (o.id == event.message.recording.id) {
               const updatedRecording = { ...o, metadata: { labels: event.message.recording.metadata.labels } };
               return updatedRecording;
             }
@@ -471,8 +465,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   ]);
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(recordingDeleteAllFiltersIntent(targetConnectURL, false));
-  }, [dispatch, targetConnectURL]);
+    dispatch(recordingDeleteAllFiltersIntent(target!.connectUrl, false));
+  }, [dispatch, target]);
 
   const updateFilters = React.useCallback(
     (
@@ -492,22 +486,10 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
     [dispatch],
   );
 
-  const toggleExpanded = React.useCallback(
-    (id: string) => {
-      setExpandedRows((expandedRows) => {
-        const idx = expandedRows.indexOf(id);
-        return idx >= 0
-          ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)]
-          : [...expandedRows, id];
-      });
-    },
-    [setExpandedRows],
-  );
-
   const RecordingsToolbar = React.useMemo(
     () => (
       <ActiveRecordingsToolbar
-        target={targetConnectURL}
+        target={target?.connectUrl || ''}
         checkedIndices={checkedIndices}
         targetRecordingFilters={targetRecordingFilters}
         recordings={recordings}
@@ -520,12 +502,13 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
         handleEditLabels={handleEditLabels}
         handleStopRecordings={handleStopRecordings}
         handleDeleteRecordings={handleDeleteRecordings}
+        handleAnalyze={handleShowReport}
         actionLoadings={actionLoadings}
         toolbarBreakReference={props.toolbarBreakReference}
       />
     ),
     [
-      targetConnectURL,
+      target,
       checkedIndices,
       targetRecordingFilters,
       recordings,
@@ -538,20 +521,44 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
       handleEditLabels,
       handleStopRecordings,
       handleDeleteRecordings,
+      handleShowReport,
       actionLoadings,
       props.toolbarBreakReference,
     ],
   );
 
   const LabelsPanel = React.useMemo(
-    () => (
-      <RecordingLabelsPanel
-        setShowPanel={setShowDetailsPanel}
-        isTargetRecording={true}
-        checkedIndices={checkedIndices}
-      />
-    ),
-    [checkedIndices, setShowDetailsPanel],
+    () => <RecordingLabelsPanel setShowPanel={setShowPanel} isTargetRecording={true} checkedIndices={checkedIndices} />,
+    [checkedIndices, setShowPanel],
+  );
+
+  const ReportPanel = React.useMemo(
+    () =>
+      target ? (
+        <DrawerPanelContent isResizable defaultSize="65%">
+          <DrawerHead>
+            <DrawerActions>
+              <Button
+                variant="plain"
+                onClick={handleReportRefresh}
+                aria-label="Request analysis"
+                isDisabled={!recordings.length}
+              >
+                <ProcessAutomationIcon />
+              </Button>
+              <DrawerCloseButton
+                onClick={() => setShowPanel(false)}
+                data-testid="hide-recordings-analysis-panel"
+                aria-label="hide recordings analysis panel"
+              />
+            </DrawerActions>
+          </DrawerHead>
+          <DrawerPanelBody>
+            <TargetAnalysis target={target} refreshRequest={reportRefresh} />
+          </DrawerPanelBody>
+        </DrawerPanelContent>
+      ) : undefined,
+    [setShowPanel, target, recordings, reportRefresh, handleReportRefresh],
   );
 
   const columnConfig: ColumnConfig = React.useMemo(
@@ -563,9 +570,9 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   return (
-    <Drawer isExpanded={showDetailsPanel} isInline id={'active-recording-drawer'}>
+    <Drawer isExpanded={showPanel} isInline id={'active-recording-drawer'}>
       <DrawerContent
-        panelContent={{ [PanelContent.LABELS]: LabelsPanel }[panelContent]}
+        panelContent={{ [PanelContent.LABELS]: LabelsPanel, [PanelContent.REPORT]: ReportPanel }[panelContent]}
         className="recordings-table-drawer-content"
       >
         <DrawerContentBody hasPadding>
@@ -584,15 +591,12 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           >
             {filteredRecordings.map((r) => (
               <ActiveRecordingRow
-                key={r.name}
-                targetConnectUrl={targetConnectURL}
+                key={r.id}
                 recording={r}
                 labelFilters={targetRecordingFilters.Label}
                 index={r.id}
-                currentSelectedTargetURL={targetConnectURL}
-                expandedRows={expandedRows}
+                currentSelectedTargetURL={target?.connectUrl || ''}
                 checkedIndices={checkedIndices}
-                toggleExpanded={toggleExpanded}
                 handleRowCheck={handleRowCheck}
                 updateFilters={updateFilters}
               />
@@ -620,11 +624,13 @@ export interface ActiveRecordingsToolbarProps {
   handleEditLabels: () => void;
   handleStopRecordings: () => void;
   handleDeleteRecordings: () => void;
+  handleAnalyze: () => void;
   actionLoadings: Record<ActiveActions, boolean>;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
@@ -655,22 +661,22 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
   const actionLoadingProps = React.useMemo<Record<ActiveActions, LoadingProps>>(
     () => ({
       ARCHIVE: {
-        spinnerAriaValueText: 'Archiving',
+        spinnerAriaValueText: t('ARCHIVING'),
         spinnerAriaLabel: 'archive-active-recording',
         isLoading: props.actionLoadings['ARCHIVE'],
       },
       STOP: {
-        spinnerAriaValueText: 'Stopping',
+        spinnerAriaValueText: t('STOPPING'),
         spinnerAriaLabel: 'stop-active-recording',
         isLoading: props.actionLoadings['STOP'],
       },
       DELETE: {
-        spinnerAriaValueText: 'Deleting',
+        spinnerAriaValueText: t('DELETING'),
         spinnerAriaLabel: 'deleting-active-recording',
         isLoading: props.actionLoadings['DELETE'],
       },
     }),
-    [props.actionLoadings],
+    [t, props.actionLoadings],
   );
 
   const buttons = React.useMemo(() => {
@@ -678,12 +684,12 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
       {
         default: (
           <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
-            Create
+            {t('CREATE')}
           </Button>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Create'} isShared onClick={props.handleCreateRecording}>
-            Create
+            {t('CREATE')}
           </OverflowMenuDropdownItem>
         ),
         key: 'Create',
@@ -699,12 +705,12 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             data-quickstart-id="recordings-archive-btn"
             {...actionLoadingProps['ARCHIVE']}
           >
-            {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
+            {props.actionLoadings['ARCHIVE'] ? t('ARCHIVING') : t('ARCHIVE')}
           </Button>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Archive'} isShared onClick={props.handleArchiveRecordings}>
-            {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
+            {props.actionLoadings['ARCHIVE'] ? t('ARCHIVING') : t('ARCHIVE')}
           </OverflowMenuDropdownItem>
         ),
         key: 'Archive',
@@ -720,12 +726,12 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             isDisabled={!props.checkedIndices.length}
             data-quickstart-id="recordings-labels-btn"
           >
-            Edit Labels
+            {t('EDIT_LABELS')}
           </Button>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Edit Labels'} isShared onClick={props.handleEditLabels}>
-            Edit Labels
+            {t('EDIT_LABELS')}
           </OverflowMenuDropdownItem>
         ),
         key: 'Edit Labels',
@@ -739,7 +745,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             data-quickstart-id="recordings-stop-btn"
             {...actionLoadingProps['STOP']}
           >
-            {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
+            {props.actionLoadings['STOP'] ? t('STOPPING') : t('STOP')}
           </Button>
         ),
         collapsed: (
@@ -749,7 +755,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
             onClick={props.handleStopRecordings}
             isDisabled={isStopDisabled}
           >
-            {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
+            {props.actionLoadings['STOP'] ? t('STOPPING') : t('STOP')}
           </OverflowMenuDropdownItem>
         ),
         key: 'Stop',
@@ -773,9 +779,23 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
         ),
         key: 'Delete',
       },
+      {
+        default: (
+          <Button variant="secondary" onClick={props.handleAnalyze} data-quickstart-id="recordings-analyze-btn">
+            {t('ANALYZE')}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Analyze'} isShared onClick={props.handleAnalyze}>
+            {t('ANALYZE')}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Analyze',
+      },
     ];
     return arr;
   }, [
+    t,
     handleDeleteButton,
     isStopDisabled,
     actionLoadingProps,
@@ -783,6 +803,7 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
     props.handleArchiveRecordings,
     props.handleEditLabels,
     props.handleStopRecordings,
+    props.handleAnalyze,
     props.actionLoadings,
     props.archiveEnabled,
     props.checkedIndices,
@@ -860,46 +881,27 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
 };
 
 export interface ActiveRecordingRowProps {
-  targetConnectUrl: string;
   recording: ActiveRecording;
   index: number;
   currentSelectedTargetURL: string;
-  expandedRows: string[];
   checkedIndices: number[];
   labelFilters: string[];
-  toggleExpanded: (rowId: string) => void;
   handleRowCheck: (checked: boolean, rowIdx: number) => void;
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
 
 export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
-  targetConnectUrl,
   recording,
   index,
   currentSelectedTargetURL,
-  expandedRows,
   checkedIndices,
   labelFilters,
-  toggleExpanded,
   handleRowCheck,
   updateFilters,
 }) => {
   const { t } = useCryostatTranslation();
   const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
-  const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
-  const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
-
-  const expandedRowId = React.useMemo(
-    () => `active-table-row-${recording.name}-${recording.startTime}-exp`,
-    [recording],
-  );
-
-  const isExpanded = React.useMemo(() => {
-    return expandedRows.includes(expandedRowId);
-  }, [expandedRowId, expandedRows]);
-
-  const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
 
   const handleCheck = React.useCallback(
     (_, checked: boolean) => {
@@ -907,35 +909,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     },
     [index, handleRowCheck],
   );
-
-  const handleLoadAnalysis = React.useCallback(() => {
-    setLoadingAnalysis(true);
-    context.reports
-      .reportJson(recording, targetConnectUrl)
-      .pipe(first())
-      .subscribe((report) => {
-        const map = new Map<string, AnalysisResult[]>();
-        report.forEach((evaluation) => {
-          const topicValue = map.get(evaluation.topic);
-          if (topicValue === undefined) {
-            map.set(evaluation.topic, [evaluation]);
-          } else {
-            topicValue.push(evaluation);
-            topicValue.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
-          }
-        });
-        const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
-        setAnalyses(sorted);
-        setLoadingAnalysis(false);
-      });
-  }, [setLoadingAnalysis, context.reports, recording, targetConnectUrl, setAnalyses]);
-
-  React.useEffect(() => {
-    if (!isExpanded) {
-      return;
-    }
-    handleLoadAnalysis();
-  }, [isExpanded, handleLoadAnalysis]);
 
   const recordingOptions = (recording: ActiveRecording): KeyValue[] => {
     const options: KeyValue[] = [];
@@ -949,16 +922,8 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     return options;
   };
 
-  const parentRow = React.useMemo(() => {
-    const RecordingDuration = (props: { duration: number }) => {
-      const str = React.useMemo(
-        () => (props.duration === 0 ? 'Continuous' : formatDuration(recording.duration, 1)),
-        [props.duration],
-      );
-      return <span>{str}</span>;
-    };
-
-    return (
+  return (
+    <Tbody key={index}>
       <Tr key={`${index}_parent`}>
         <Td key={`active-table-row-${index}_0`}>
           <Checkbox
@@ -972,12 +937,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <Td
           key={`active-table-row-${index}_1`}
           id={`active-ex-toggle-${index}`}
-          aria-controls={`active-ex-expand-${index}`}
-          expand={{
-            rowIndex: index,
-            isExpanded: isExpanded,
-            onToggle: handleToggle,
-          }}
           data-quickstart-id="recording-chevron"
         />
         <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
@@ -992,7 +951,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           </Timestamp>
         </Td>
         <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2].title}>
-          <RecordingDuration duration={recording.duration} />
+          <span>{recording.duration === 0 ? t('CONTINUOUS') : formatDuration(recording.duration, 1)}</span>
         </Td>
         <Td key={`active-table-row-${index}_5`} dataLabel={tableColumns[3].title}>
           {recording.state}
@@ -1022,91 +981,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           uploadFn={() => context.api.uploadActiveRecordingToGrafana(recording.remoteId)}
         />
       </Tr>
-    );
-  }, [
-    index,
-    dayjs,
-    datetimeContext.timeZone.full,
-    checkedIndices,
-    isExpanded,
-    recording,
-    labelFilters,
-    currentSelectedTargetURL,
-    context.api,
-    handleCheck,
-    handleToggle,
-    updateFilters,
-  ]);
-
-  const childRow = React.useMemo(() => {
-    return (
-      <Tr key={`${index}_child`} isExpanded={isExpanded}>
-        <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
-          <ExpandableRowContent>
-            <Panel>
-              <PanelHeader>
-                <Title headingLevel={'h5'}>
-                  Automated analysis
-                  <Button
-                    variant="plain"
-                    size="sm"
-                    isDisabled={loadingAnalysis}
-                    onClick={handleLoadAnalysis}
-                    icon={
-                      <Tooltip content={t('REFRESH')}>
-                        <RedoIcon />
-                      </Tooltip>
-                    }
-                  />
-                </Title>
-              </PanelHeader>
-              <Divider />
-              <PanelMain>
-                <PanelMainBody>
-                  <Grid>
-                    {loadingAnalysis ? (
-                      <Bullseye>
-                        <Spinner />
-                      </Bullseye>
-                    ) : (
-                      analyses.map(([topic, evaluations]) => {
-                        return (
-                          <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                            <LabelGroup
-                              className="automated-analysis-topic-label-groups"
-                              categoryName={topic}
-                              isVertical
-                              numLabels={2}
-                              isCompact
-                              key={topic}
-                            >
-                              {evaluations.map((evaluation) => {
-                                return (
-                                  <ClickableAutomatedAnalysisLabel
-                                    result={evaluation}
-                                    key={clickableAutomatedAnalysisKey}
-                                  />
-                                );
-                              })}
-                            </LabelGroup>
-                          </GridItem>
-                        );
-                      })
-                    )}
-                  </Grid>
-                </PanelMainBody>
-              </PanelMain>
-            </Panel>
-          </ExpandableRowContent>
-        </Td>
-      </Tr>
-    );
-  }, [index, isExpanded, handleLoadAnalysis, loadingAnalysis, analyses, t]);
-
-  return (
-    <Tbody key={index} isExpanded={isExpanded}>
-      {parentRow}
-      {childRow}
     </Tbody>
   );
 };

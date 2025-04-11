@@ -20,7 +20,7 @@ import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/Matc
 import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { EventTemplate, Target, Rule } from '@app/Shared/Services/api.types';
+import { EventTemplate, Target, Rule, Metadata } from '@app/Shared/Services/api.types';
 import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
@@ -74,6 +74,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
+  const [autoanalyze, setAutoanalyze] = React.useState(true);
 
   const [formData, setFormData] = React.useState<RuleFormData>({
     name: '',
@@ -166,6 +167,11 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     [setFormData],
   );
 
+  const handleAutoAnalyzeChange = React.useCallback(
+    (_, autoanalyze: boolean) => setAutoanalyze(autoanalyze),
+    [setAutoanalyze],
+  );
+
   const handleMaxAgeChange = React.useCallback(
     (_, maxAge: string) => setFormData((old) => ({ ...old, maxAge: Number(maxAge) })),
     [setFormData],
@@ -240,6 +246,14 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
       notifications.warning('Invalid form data', message);
       return;
     }
+    const metadata: Metadata = {
+      labels: [
+        {
+          key: 'autoanalyze',
+          value: `${autoanalyze}`,
+        },
+      ],
+    };
     const rule: Rule = {
       name,
       description,
@@ -251,6 +265,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
       preservedArchives,
       maxAgeSeconds: maxAge * maxAgeUnit,
       maxSizeBytes: maxSize * maxSizeUnit,
+      metadata,
     };
     setLoading(true);
     addSubscription(
@@ -261,7 +276,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
         }
       }),
     );
-  }, [setLoading, addSubscription, exitForm, context.api, notifications, formData, eventSpecifierString]);
+  }, [setLoading, addSubscription, exitForm, context.api, notifications, formData, autoanalyze, eventSpecifierString]);
 
   React.useEffect(() => {
     const matchedTargets = matchedTargetsRef.current;
@@ -464,6 +479,20 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
             <HelperTextItem variant={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}>
               {!formData.template?.name ? t('CreateRule.TEMPLATE_HINT') : t('CreateRule.TEMPLATE_HELPER_TEXT')}
             </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      </FormGroup>
+      <FormGroup label={t('AUTOANALYZE')} fieldId="rule-autoanalyze">
+        <Switch
+          id="rule-autoanalyze"
+          isDisabled={loading}
+          aria-label="Automatically analyze archived copies of this recording"
+          isChecked={autoanalyze}
+          onChange={handleAutoAnalyzeChange}
+        />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('AUTOANALYZE_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>

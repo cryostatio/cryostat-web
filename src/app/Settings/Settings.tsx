@@ -39,7 +39,6 @@ import {
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { AutomatedAnalysis } from './Config/AutomatedAnalysis';
 import { AutoRefresh } from './Config/AutoRefresh';
 import { ChartCards } from './Config/ChartCards';
 import { DatetimeControl } from './Config/DatetimeControl';
@@ -61,7 +60,6 @@ export const Settings: React.FC<SettingsProps> = (_) => {
     () =>
       [
         NotificationControl,
-        AutomatedAnalysis,
         ChartCards,
         DeletionDialogControl,
         WebSocketDebounce,

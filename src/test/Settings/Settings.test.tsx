@@ -33,16 +33,6 @@ jest.mock('@app/Settings/Config/NotificationControl', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/Config/AutomatedAnalysis', () => ({
-  AutomatedAnalysis: {
-    titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
-    descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
-    category: 'SETTINGS.CATEGORIES.DASHBOARD',
-    content: () => <Text>Automated analysis config component</Text>,
-    authenticated: true,
-  } as UserSetting,
-}));
-
 jest.mock('@app/Settings/Config/ChartCards', () => ({
   ChartCards: {
     titleKey: 'SETTINGS.CHARTS_CONFIG.TITLE',
@@ -169,9 +159,6 @@ describe('<Settings/>', () => {
     await user.click(dashboardTab);
 
     expect(dashboardTab.getAttribute('aria-selected')).toBe('true');
-
-    const dashboardSettings = screen.queryByText('Automated analysis config component');
-    expect(dashboardSettings).not.toBeInTheDocument();
   });
 
   // Currently, no tab is lower than PRODUCTION
@@ -230,9 +217,5 @@ describe('<Settings/>', () => {
     await user.click(dashboardTab);
 
     expect(dashboardTab.getAttribute('aria-selected')).toBe('true');
-
-    const dashboardSettings = screen.getByText('Automated analysis config component');
-    expect(dashboardSettings).toBeInTheDocument();
-    expect(dashboardSettings).toBeVisible();
   });
 });

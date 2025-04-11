@@ -20,6 +20,7 @@ import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { concatMap } from 'rxjs';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 
@@ -31,7 +32,7 @@ enum RecordingTab {
 export interface RecordingsProps {}
 
 export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
-  const { search, pathname } = useLocation();
+  const { search, pathname, hash } = useLocation();
   const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -43,8 +44,13 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
-    addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
-  }, [context.api, addSubscription, setArchiveEnabled]);
+    addSubscription(
+      context.login
+        .getSessionState()
+        .pipe(concatMap(() => context.api.isArchiveEnabled()))
+        .subscribe((v) => setArchiveEnabled(v)),
+    );
+  }, [context.login, context.api, addSubscription, setArchiveEnabled]);
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
@@ -54,40 +60,41 @@ export const Recordings: React.FC<RecordingsProps> = ({ ...props }) => {
 
   const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
 
-  const cardBody = React.useMemo(() => {
-    return archiveEnabled ? (
-      <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
-        <Tab
-          id="active-recordings"
-          eventKey={RecordingTab.ACTIVE_RECORDING}
-          title={<TabTitleText>Active Recordings</TabTitleText>}
-          data-quickstart-id="active-recordings-tab"
-        >
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </Tab>
-        <Tab
-          id="archived-recordings"
-          eventKey={RecordingTab.ARCHIVED_RECORDING}
-          title={<TabTitleText>Archived Recordings</TabTitleText>}
-          data-quickstart-id="archived-recordings-tab"
-        >
-          <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
-        </Tab>
-      </Tabs>
-    ) : (
-      <>
-        <CardTitle>Active Recordings</CardTitle>
-        <ActiveRecordingsTable archiveEnabled={false} />
-      </>
-    );
-  }, [archiveEnabled, activeTab, onTabSelect, targetAsObs]);
+  const cardBody = React.useMemo(
+    () =>
+      archiveEnabled ? (
+        <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
+          <Tab
+            id="active-recordings"
+            eventKey={RecordingTab.ACTIVE_RECORDING}
+            title={<TabTitleText>Active Recordings</TabTitleText>}
+            data-quickstart-id="active-recordings-tab"
+          >
+            <ActiveRecordingsTable archiveEnabled={true} initialPanelContent={hash.substring(1)} />
+          </Tab>
+          <Tab
+            id="archived-recordings"
+            eventKey={RecordingTab.ARCHIVED_RECORDING}
+            title={<TabTitleText>Archived Recordings</TabTitleText>}
+            data-quickstart-id="archived-recordings-tab"
+          >
+            <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
+          </Tab>
+        </Tabs>
+      ) : (
+        <>
+          <CardTitle>Active Recordings</CardTitle>
+          <ActiveRecordingsTable archiveEnabled={false} />
+        </>
+      ),
+    [hash, archiveEnabled, activeTab, onTabSelect, targetAsObs],
+  );
 
   return (
     <TargetView {...props} pageTitle="Recordings">
       <Card isFullHeight>
         <CardBody isFilled>{cardBody}</CardBody>
       </Card>
-      <></>
     </TargetView>
   );
 };

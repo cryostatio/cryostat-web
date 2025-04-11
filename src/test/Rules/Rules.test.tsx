@@ -34,6 +34,7 @@ const mockRule: Rule = {
   preservedArchives: 0,
   maxAgeSeconds: 0,
   maxSizeBytes: 0,
+  metadata: { labels: [] },
 };
 const mockRuleListResponse: Rule[] = [mockRule];
 const mockRuleListEmptyResponse: Rule[] = [];

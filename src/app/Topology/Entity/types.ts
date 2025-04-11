@@ -22,6 +22,7 @@ import type {
   Recording,
   Rule,
   MatchedCredential,
+  AggregateReport,
 } from '@app/Shared/Services/api.types';
 import { Observable } from 'rxjs';
 
@@ -38,7 +39,14 @@ export type PatchFn = (
   removed?: boolean,
 ) => Observable<ResourceTypes[]>;
 
-export type ResourceTypes = Recording | EventTemplate | EventType | EventProbe | Rule | MatchedCredential;
+export type ResourceTypes =
+  | Recording
+  | EventTemplate
+  | EventType
+  | EventProbe
+  | Rule
+  | MatchedCredential
+  | AggregateReport;
 
 // Note: Values will be word split to used as display names
 export const TargetOwnedResourceTypeAsArray = [
@@ -47,6 +55,7 @@ export const TargetOwnedResourceTypeAsArray = [
   'eventTemplates',
   'eventTypes',
   'agentProbes',
+  'report',
 ] as const;
 
 export type Annotations = {

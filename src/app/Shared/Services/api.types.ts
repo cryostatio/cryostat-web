@@ -18,7 +18,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { Observable } from 'rxjs';
 
-export type ApiVersion = 'unversioned' | 'v4' | 'beta';
+export type ApiVersion = 'unversioned' | 'v4' | 'v4.1' | 'beta';
 
 // ======================================
 // Common Resources
@@ -267,6 +267,18 @@ export interface ActiveRecordingsFilterInput {
  */
 export const UPLOADS_SUBDIRECTORY = 'uploads';
 
+export interface AggregateReport {
+  aggregate?: {
+    count: number;
+    max: number;
+  };
+  data?: {
+    key: string;
+    value: AnalysisResult;
+  }[];
+  lastUpdated?: number;
+}
+
 export interface RecordingCountResponse {
   data: {
     targetNodes: {
@@ -328,6 +340,7 @@ export interface Rule {
   preservedArchives: number;
   maxAgeSeconds: number;
   maxSizeBytes: number;
+  metadata: Metadata;
 }
 
 // ======================================
@@ -399,12 +412,6 @@ export enum AutomatedAnalysisScore {
   ORANGE_SCORE_THRESHOLD = 25,
   RED_SCORE_THRESHOLD = 75,
 }
-
-export const FAILED_REPORT_MESSAGE =
-  'Failed to load the report from Recording because the requested entity is too large.';
-export const NO_RECORDINGS_MESSAGE = 'No Active or Archived Recordings available. Create a new Recording for analysis.';
-export const RECORDING_FAILURE_MESSAGE = 'Failed to start Recording for analysis.';
-export const TEMPLATE_UNSUPPORTED_MESSAGE = 'The template type used in this Recording is not supported on this JVM.';
 
 // ======================================
 // Discovery/Target resources
@@ -511,8 +518,6 @@ export enum NotificationCategory {
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
   ArchiveRecordingSuccess = 'ArchiveRecordingSuccess',
   ArchiveRecordingFail = 'ArchiveRecordingFailure',
-  SnapshotCreated = 'SnapshotCreated',
-  SnapshotDeleted = 'SnapshotDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
   ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',
   TemplateUploaded = 'TemplateUploaded',

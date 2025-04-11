@@ -655,16 +655,20 @@ body,
   overflow: auto;
 }
 
-svg.topology__node-decorator-icon.warning {
-  fill: var(--pf-v5-global--warning-color--100);
+svg.topology__node-decorator-icon.progress {
+  fill: var(--pf-v5-global--info-color--100);
 }
 
 svg.topology__node-decorator-icon.success {
   fill: var(--pf-v5-global--success-color--100);
 }
 
-svg.topology__node-decorator-icon.progress {
-  fill: var(--pf-v5-global--info-color--100);
+svg.topology__node-decorator-icon.warning {
+  fill: var(--pf-v5-global--warning-color--100);
+}
+
+svg.topology__node-decorator-icon.danger {
+  fill: var(--pf-v5-global--danger-color--100);
 }
 
 #card-catalog-wizard .pf-v5-c-wizard__main-body {

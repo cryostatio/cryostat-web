@@ -155,7 +155,10 @@ export const nodeActions: NodeAction[] = [
             filter: { id: group.id },
             recordingName: QUICK_RECORDING_NAME,
             metadata: {
-              labels: [{ key: QUICK_RECORDING_LABEL_KEY, value: group.name.replace(/[\s+-]/g, '_') }],
+              labels: [
+                { key: QUICK_RECORDING_LABEL_KEY, value: group.name.replace(/[\s+-]/g, '_') },
+                { key: 'autoanalyze', value: 'true' },
+              ],
             },
           },
           false,

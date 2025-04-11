@@ -240,6 +240,43 @@
     "TEST_ALL_TOOLTIP": "Test credentials against all matching targets.",
     "TEST_FAILED": "Test failed"
   },
+  "CustomRecordingForm": {
+    "ADVANCED_OPTIONS_HIDE": "Hide advanced options",
+    "ADVANCED_OPTIONS_SHOW": "Show advanced options",
+    "ARCHIVE_ON_STOP": "Archive on Stop",
+    "ARCHIVE_ON_STOP_DESCRIPTION": "Copy data to Archives automatically when duration elapses",
+    "AUTOMATICALLY_ANALYZE": "Automatically analyze",
+    "CONTINUOUS_DESCRIPTION": "Record with unlimited duration until manually stopped",
+    "CREATING": "Creating",
+    "DESCRIPTION": "JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event types are built in to the JVM itself, while others are user defined.",
+    "DURATION": "Duration",
+    "DURATION_CONTINUOUS": "A continuous recording will never be automatically stopped.",
+    "DURATION_DESCRIPTION": "Time before the Recording is automatically stopped.",
+    "DURATION_DESCRIPTION_ARCHIVE_ON_STOP": "Time before the Recording is automatically stopped and copied to archive.",
+    "DURATION_INVALID": "The Recording duration must be a positive integer.",
+    "FORM_DATA_INVALID": "Invalid form data",
+    "FORM_ERROR": "Error displaying Recording creation form",
+    "LABELS": "Labels",
+    "LABELS_DESCRIPTION": "Labels with key <0>template.name</0>, <0>template.type</0>, and <0>autoanalyze</0> are set by Cryostat and will be overwritten if specifed.",
+    "LABELS_TOOLTIP": "Unique key-value pairs containing information about the Recording.",
+    "MAXIMUM_AGE": "Maximum age",
+    "MAXIMUM_AGE_DESCRIPTION": "The maximum age of Recording data stored to disk",
+    "MAXIMUM_SIZE": "Maximum size",
+    "MAXIMUM_SIZE_DESCRIPTION": "The maximum size of Recording data saved to disk",
+    "METADATA_HIDE": "Hide metadata options",
+    "METADATA_SHOW": "Show metadata options",
+    "NAME": "Name",
+    "RECORDING_NAME_DESCRIPTION": "Enter a Recording name. This will be unique within the target JVM.",
+    "RECORDING_NAME_HINT": "A Recording name can contain only letters, numbers, and underscores.",
+    "RECORDING_NAME_INVALID": "Recording name {{name}} is invalid",
+    "RESTART_IF_EXISTS": "Restart if Recording already exists",
+    "TEMPLATE": "Template",
+    "TEMPLATE_DESCRIPTION": "The Event Template to be applied in this Recording",
+    "TEMPLATE_INVALID": "A Template must be selected.",
+    "TO_DISK": "To Disk",
+    "TO_DISK_DESCRIPTION": "Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information",
+    "UNBOUNDED": "A value of 0 for maximum size or age means unbounded."
+  },
   "Dashboard": {
     "ADD_CARD_HELPER_TEXT": "Choose a card type to add to your Dashboard. Some cards require additional configuration.",
     "CARD_CATALOG_DESCRIPTION": "Cards added to this Dashboard Layout present information at a glance about the selected target. The layout is preserved locally for all targets viewed only on this client.",
@@ -475,7 +512,7 @@
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
   "Rules": {
-    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
+    "ABOUT_BODY": "Automated Rules are configurations that instruct Cryostat to create <0>JDK Flight Recordings</0> on matching target JVM applications, using a specific <1>Event Template</1>. If your Target JVM connections require JMX Credentials, you can configure these in <2>Security</2>. Automated Rules can be configured to periodically copy the contents of the Active Recording to <3>Archives</3> to ensure you always have up-to-date information about your JVMs.",
     "ARCHIVAL_PERIOD_TOOLTIP": "Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant Recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - Recordings will be started and remain only in Target JVM memory.",
     "EVENT_SPECIFIER_TOOLTIP": "The name and location of the Event Template applied by this rule.",
     "INITIAL_DELAY_TOOLTIP": "Initial delay in seconds. Cryostat will wait this amount of time before first copying Recording data into its archives. Values less than 0 default to equal to the Archival period. You can set a non-zero Initial delay with a zero Archival period, which will start a Recording and copy it into archives exactly once after a set delay.",
@@ -604,6 +641,12 @@
     "NO_MATCH": "No Match",
     "SEARCH_PLACEHOLDER": "Find by Match Expression..."
   },
+  "TargetAnalysis": {
+    "CREATE_RECORDING": "<0>Create a Recording</0> to enable analysis",
+    "LAST_UPDATE": "Last update: {{ datetime }}",
+    "REPORT_ERROR": "Failed to generate report",
+    "REPORT_UNAVAILABLE": "Report Unavailable"
+  },
   "TargetContextSelector": {
     "CLEAR_SELECTION": "Clear selection",
     "CREATE_TARGET": "Create Target",
@@ -654,6 +697,11 @@
   },
   "Topology": {
     "GRAPH_VIEW": "Graph view",
-    "LIST_VIEW": "List view"
+    "LIST_VIEW": "List view",
+    "NodeDecorator": {
+      "Report": {
+        "TOOLTIP": "{{count}} rules evaluated, maximum score {{score}}. Last update: {{date}}"
+      }
+    }
   }
 }

@@ -61,6 +61,7 @@ const mockRule: Rule = {
   preservedArchives: 0,
   maxAgeSeconds: 0,
   maxSizeBytes: 0,
+  metadata: { labels: [] },
 };
 
 const mockNavigate = jest.fn();
@@ -286,7 +287,17 @@ describe('<CreateRule />', () => {
     await user.click(createButton);
 
     expect(createSpy).toHaveBeenCalledTimes(1);
-    expect(createSpy).toHaveBeenCalledWith(mockRule);
+    expect(createSpy).toHaveBeenCalledWith({
+      ...mockRule,
+      metadata: {
+        labels: [
+          {
+            key: 'autoanalyze',
+            value: 'true',
+          },
+        ],
+      },
+    });
 
     expect(mockNavigate).toHaveBeenCalledWith('..', { relative: 'path' });
   });
