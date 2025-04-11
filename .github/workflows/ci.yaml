@@ -43,7 +43,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - uses: bahmutov/npm-install@v1
-    - run: yarn eslint:check
+    - run: yarn eslint:check --max-warnings 0
   type-check:
     runs-on: ubuntu-latest
     strategy:
