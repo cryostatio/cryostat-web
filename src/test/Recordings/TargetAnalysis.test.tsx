@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
-import { authFailMessage } from '@app/ErrorView/types';
-import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/types';
-import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
-import {
-  emptyActiveRecordingFilters,
-  emptyArchivedRecordingFilters,
-  TargetRecordingFilters,
-} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  ActiveRecording,
-  RecordingState,
-  NotificationMessage,
-  Target,
-  keyValueToString,
-  AggregateReport,
-} from '@app/Shared/Services/api.types';
-import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
-import { TargetService } from '@app/Shared/Services/Target.service';
-import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
-import { act, cleanup, screen, within } from '@testing-library/react';
-import { NEVER, of, Subject } from 'rxjs';
-import { basePreloadedState, DEFAULT_DIMENSIONS, render, renderSnapshot, resize, testT } from '../utils';
+
 import { TargetAnalysis } from '@app/Recordings/TargetAnalysis';
+import { ActiveRecording, RecordingState, AggregateReport } from '@app/Shared/Services/api.types';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { defaultDatetimeFormat } from '@i18n/datetime';
+import { cleanup, screen } from '@testing-library/react';
+import { NEVER, of } from 'rxjs';
+import { render, renderSnapshot, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
