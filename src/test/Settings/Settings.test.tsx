@@ -108,6 +108,16 @@ jest.mock('@app/Settings/Config/Theme', () => ({
   } as UserSetting,
 }));
 
+
+jest.mock('@app/Settings/Config/Topology', () => ({
+  Topology: {
+    titleKey: 'SETTINGS.TOPOLOGY.TITLE',
+    descConstruct: 'SETTINGS.TOPOLOGY.DESCRIPTION',
+    category: 'SETTINGS.CATEGORIES.TOPOLOGY',
+    content: () => <Text>Topology Component</Text>,
+  } as UserSetting,
+}));
+
 const mockNavigate = jest.fn();
 
 jest.mock('react-router-dom-v5-compat', () => ({

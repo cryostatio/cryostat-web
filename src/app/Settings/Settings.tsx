@@ -47,6 +47,7 @@ import { FeatureLevels } from './Config/FeatureLevels';
 import { Language } from './Config/Language';
 import { NotificationControl } from './Config/NotificationControl';
 import { Theme } from './Config/Theme';
+import { Topology } from './Config/Topology';
 import { WebSocketDebounce } from './Config/WebSocketDebounce';
 import { SettingGroup, SettingTab, _TransformedUserSetting } from './types';
 import { paramAsTab, tabAsParam, getGroupFeatureLevel } from './utils';
@@ -68,6 +69,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         Language,
         DatetimeControl,
         Theme,
+        Topology,
       ].map(
         (c) =>
           ({
