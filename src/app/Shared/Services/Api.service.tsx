@@ -824,7 +824,11 @@ export class ApiService {
     );
   }
 
-  getCurrentReportForTarget(target: TargetStub | TargetStub[], aggregateOnly = false): Observable<AggregateReport> {
+  getCurrentReportForTarget(
+    target: TargetStub | TargetStub[],
+    aggregateOnly = false,
+    reportFilter = {},
+  ): Observable<AggregateReport> {
     let targetIds: number[];
     if (Array.isArray(target)) {
       targetIds = target.map((t) => t.id!);
@@ -853,11 +857,11 @@ export class ApiService {
     `;
     return this.graphql<any>(
       `
-        query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
+        query AggregateReportForTarget($targetIds: [ BigInteger! ], $reportFilter: ReportFilterInput) {
           targetNodes(filter: { targetIds: $targetIds }) {
             target {
               id
-              report {
+              report(filter: $reportFilter) {
                 lastUpdated
                 aggregate {
                   count
@@ -869,7 +873,7 @@ export class ApiService {
           }
         }
       `,
-      { targetIds },
+      { targetIds, reportFilter },
     ).pipe(
       map((resp) => {
         const empty = {
