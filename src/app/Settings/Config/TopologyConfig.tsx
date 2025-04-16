@@ -128,7 +128,7 @@ const Component = () => {
       });
     });
     extraneousIds.forEach((id) => onDelete(id));
-  }, [allRules, onDelete]);
+  }, [allRules, notIds, onDelete]);
 
   const onFilter = (option: DualListSelectorTreeItemData, input: string): boolean => {
     // filter text matches any topic node's own id or text, or any topic node's childrens' id or text
