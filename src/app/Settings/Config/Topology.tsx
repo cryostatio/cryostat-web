@@ -20,25 +20,62 @@ import {
 } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Button, HelperText, HelperTextItem, Label, LabelGroup, Stack, StackItem } from '@patternfly/react-core';
+import {
+  Bullseye,
+  Button,
+  DualListSelector,
+  HelperText,
+  HelperTextItem,
+  Label,
+  LabelGroup,
+  Spinner,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingTab, UserSetting } from '../types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { tap } from 'rxjs';
+
+interface ReportRule {
+  id: string;
+  name: string;
+  topic: string;
+}
 
 const Component = () => {
-  const { notIds } = useSelector((state: RootState) => state.topologyConfigs.reportFilter);
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const dispatch = useDispatch();
   const { t } = useCryostatTranslation();
+  const [loading, setLoading] = React.useState(false);
+  const [allRules, setAllRules] = React.useState([] as ReportRule[]);
+  const { notIds } = useSelector((state: RootState) => state.topologyConfigs.reportFilter);
 
-  const onAdd = React.useCallback(() => {
-    dispatch(topologySetIgnoreReportResultIntent(t('SETTINGS.TOPOLOGY.NEW_ITEM_PLACEHOLDER'), true));
-  }, [dispatch, t]);
+  React.useEffect(() => {
+    setLoading(true);
+    addSubscription(
+      context.api
+        .doGet<ReportRule[]>('/reports_rules', 'v4.1')
+        .pipe(tap(() => setLoading(false)))
+        .subscribe((v) => setAllRules(v)),
+    );
+  }, [context.api, setAllRules]);
 
-  const onEdit = React.useCallback(
-    (id: string, newText: string) => {
-      dispatch(topologySetIgnoreReportResultIntent(id, false));
-      dispatch(topologySetIgnoreReportResultIntent(newText, true));
+  const availableRules = React.useMemo(() => allRules.filter((r) => !notIds.includes(r.id)), [allRules, notIds]);
+
+  const selectedRules = React.useMemo(() => allRules.filter((r) => notIds.includes(r.id)), [allRules, notIds]);
+
+  const availableOptions = React.useMemo(() => availableRules.map((r) => r.id), [availableRules]);
+
+  const selectedOptions = React.useMemo(() => selectedRules.map((r) => r.id), [selectedRules]);
+
+  const onAdd = React.useCallback(
+    (id: string) => {
+      dispatch(topologySetIgnoreReportResultIntent(id, true));
     },
     [dispatch],
   );
@@ -48,6 +85,14 @@ const Component = () => {
       dispatch(topologySetIgnoreReportResultIntent(id, false));
     },
     [dispatch],
+  );
+
+  const onListChange = React.useCallback(
+    (_evt, newAvailableOptions: string[], newChosenOptions: string[]) => {
+      newAvailableOptions.forEach((v) => onDelete(v));
+      newChosenOptions.forEach((v) => onAdd(v));
+    },
+    [onAdd, onDelete],
   );
 
   const onReset = React.useCallback(() => {
@@ -61,26 +106,19 @@ const Component = () => {
           <HelperTextItem>{t('SETTINGS.TOPOLOGY.HELPER_TEXT')}</HelperTextItem>
         </HelperText>
       </StackItem>
-      <LabelGroup
-        isEditable
-        addLabelControl={
-          <Label key="add-action" color="blue" variant="outline" isOverflowLabel onClick={onAdd} icon={<PlusIcon />} />
-        }
-      >
-        {notIds.map((id) => (
-          <Label
-            key={id}
-            id={id}
-            color="blue"
-            onClose={() => onDelete(id)}
-            isEditable
-            onEditComplete={(_evt, newText) => onEdit(id, newText)}
-          >
-            {id}
-          </Label>
-        ))}
-      </LabelGroup>
-      <StackItem></StackItem>
+      <StackItem>
+        {loading ? (
+          <Bullseye>
+            <Spinner />
+          </Bullseye>
+        ) : (
+          <DualListSelector
+            availableOptions={availableOptions}
+            chosenOptions={selectedOptions}
+            onListChange={onListChange}
+          />
+        )}
+      </StackItem>
       <StackItem>
         <Button onClick={onReset}>{t('SETTINGS.TOPOLOGY.RESET_DEFAULT')}</Button>
       </StackItem>

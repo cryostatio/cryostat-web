@@ -655,7 +655,6 @@
     "TOPOLOGY": {
       "DESCRIPTION": "Control the behaviour of the Topology view and the data presented",
       "HELPER_TEXT": "The following automated analysis report rule IDs will be ignored by the Topology view when determining the health status score of a target node and the number of rules that were evaluated to arrive at that score. Analysis results of active Targets or of archived Recordings will obey server analysis settings and ignore these selections.",
-      "NEW_ITEM_PLACEHOLDER": "placeholder",
       "TITLE": "Topology view configuration",
       "RESET_DEFAULT": "Restore Defaults"
     },
