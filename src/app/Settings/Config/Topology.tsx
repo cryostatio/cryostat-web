@@ -26,13 +26,10 @@ import {
   DualListSelector,
   HelperText,
   HelperTextItem,
-  Label,
-  LabelGroup,
   Spinner,
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { PlusIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingTab, UserSetting } from '../types';
