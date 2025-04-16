@@ -108,8 +108,8 @@ jest.mock('@app/Settings/Config/Theme', () => ({
   } as UserSetting,
 }));
 
-jest.mock('@app/Settings/Config/Topology', () => ({
-  Topology: {
+jest.mock('@app/Settings/Config/TopologyConfig', () => ({
+  TopologyConfig: {
     titleKey: 'SETTINGS.TOPOLOGY.TITLE',
     descConstruct: 'SETTINGS.TOPOLOGY.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.TOPOLOGY',

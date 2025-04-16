@@ -174,7 +174,7 @@ const Component = () => {
   );
 };
 
-export const Topology: UserSetting = {
+export const TopologyConfig: UserSetting = {
   titleKey: 'SETTINGS.TOPOLOGY.TITLE',
   descConstruct: 'SETTINGS.TOPOLOGY.DESCRIPTION',
   content: Component,
