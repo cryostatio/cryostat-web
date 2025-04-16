@@ -114,7 +114,24 @@ const Component = () => {
     [dispatch],
   );
 
+  React.useEffect(() => {
+    // remove Redux state for any rules which were previously ignored by this client,
+    // and which are no longer reported by the server
+    if (!allRules?.length) {
+      return;
+    }
+    let extraneousIds = [...notIds];
+    allRules.forEach((n) => {
+      extraneousIds = extraneousIds.filter((i) => i === n.id);
+      n?.children?.forEach((c) => {
+        extraneousIds = extraneousIds.filter((i) => i === c.id);
+      });
+    });
+    extraneousIds.forEach((id) => onDelete(id));
+  }, [allRules, onDelete]);
+
   const onFilter = (option: DualListSelectorTreeItemData, input: string): boolean => {
+    // filter text matches any topic node's own id or text, or any topic node's childrens' id or text
     const attrs = [option.id, option.text];
     const isParent = (option?.children?.length ?? 0) > 0;
     const childAttrs = [...(option?.children?.map((c) => c.id) || []), ...(option?.children?.map((c) => c.text) || [])];
@@ -127,12 +144,10 @@ const Component = () => {
   const onListChange = React.useCallback(
     (_evt, newAvailableOptions: DualListSelectorTreeItemData[], newChosenOptions: DualListSelectorTreeItemData[]) => {
       newAvailableOptions.forEach((n) => {
-        onDelete(n.id);
-        n?.children?.forEach((v) => onDelete(v.id));
+        !!n?.children ? n.children.forEach((v) => onDelete(v.id)) : onDelete(n.id);
       });
       newChosenOptions.forEach((n) => {
-        onAdd(n.id);
-        n?.children?.forEach((v) => onAdd(v.id));
+        !!n?.children ? n.children.forEach((v) => onAdd(v.id)) : onAdd(n.id);
       });
     },
     [onAdd, onDelete],
