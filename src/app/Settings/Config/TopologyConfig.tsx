@@ -70,21 +70,24 @@ const Component = () => {
         map.set(r.topic, []);
       }
       map.get(r.topic)!.push(r);
+      map.get(r.topic)!.sort((a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : a.id.localeCompare(b.id)));
     });
 
-    return Array.from(map).map((entry) => ({
-      id: entry[0],
-      text: entry[0],
-      isChecked: false,
-      defaultExpanded: true,
-      hasBadge: true,
-      children: entry[1].map((r) => ({
-        id: r.id,
-        text: r.name,
+    return Array.from(map)
+      .map((entry) => ({
+        id: entry[0],
+        text: entry[0],
         isChecked: false,
-        parentId: entry[0],
-      })),
-    }));
+        defaultExpanded: true,
+        hasBadge: true,
+        children: entry[1].map((r) => ({
+          id: r.id ?? r.name,
+          text: r.name ?? r.id,
+          isChecked: false,
+          parentId: entry[0],
+        })),
+      }))
+      .sort((a, b) => a.id.localeCompare(b.id));
   };
 
   const filterTree = (
