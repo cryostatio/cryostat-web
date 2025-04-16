@@ -116,160 +116,6 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
               aria-expanded="true"
               aria-selected={false}
               className="pf-v5-c-dual-list-selector__list-item pf-m-expandable pf-m-expanded"
-              id="vm_operations"
-              role="treeitem"
-            >
-              <div
-                className="pf-v5-c-dual-list-selector__list-item-row pf-m-check"
-              >
-                <div
-                  className="pf-v5-c-dual-list-selector__item"
-                  onClick={[Function]}
-                  tabIndex={-1}
-                >
-                  <span
-                    className="pf-v5-c-dual-list-selector__item-main"
-                  >
-                    <div
-                      className="pf-v5-c-dual-list-selector__item-toggle"
-                      onClick={[Function]}
-                      onKeyDown={[Function]}
-                      tabIndex={-1}
-                    >
-                      <span
-                        className="pf-v5-c-dual-list-selector__item-toggle-icon"
-                      >
-                        <svg
-                          aria-hidden={true}
-                          aria-labelledby={null}
-                          className="pf-v5-svg"
-                          fill="currentColor"
-                          height="1em"
-                          role="img"
-                          viewBox="0 0 256 512"
-                          width="1em"
-                        >
-                          <path
-                            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-                          />
-                        </svg>
-                      </span>
-                    </div>
-                    <span
-                      className="pf-v5-c-dual-list-selector__item-check"
-                    >
-                      <input
-                        checked={false}
-                        onChange={[Function]}
-                        onClick={[Function]}
-                        onKeyDown={[Function]}
-                        tabIndex={-1}
-                        type="checkbox"
-                      />
-                    </span>
-                    <span
-                      className="pf-v5-c-dual-list-selector__item-text"
-                    >
-                      vm_operations
-                    </span>
-                    <span
-                      className="pf-v5-c-dual-list-selector__item-count"
-                    >
-                      <span
-                        className="pf-v5-c-badge pf-m-unread"
-                      >
-                        2
-                      </span>
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <ul
-                className="pf-v5-c-dual-list-selector__list"
-                role="group"
-              >
-                <li
-                  aria-selected={false}
-                  className="pf-v5-c-dual-list-selector__list-item"
-                  id="VMOperations"
-                  role="treeitem"
-                >
-                  <div
-                    className="pf-v5-c-dual-list-selector__list-item-row pf-m-check"
-                  >
-                    <div
-                      className="pf-v5-c-dual-list-selector__item"
-                      onClick={[Function]}
-                      tabIndex={-1}
-                    >
-                      <span
-                        className="pf-v5-c-dual-list-selector__item-main"
-                      >
-                        <span
-                          className="pf-v5-c-dual-list-selector__item-check"
-                        >
-                          <input
-                            checked={false}
-                            onChange={[Function]}
-                            onClick={[Function]}
-                            onKeyDown={[Function]}
-                            tabIndex={-1}
-                            type="checkbox"
-                          />
-                        </span>
-                        <span
-                          className="pf-v5-c-dual-list-selector__item-text"
-                        >
-                          VMOperation Peak Duration
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </li>
-                <li
-                  aria-selected={false}
-                  className="pf-v5-c-dual-list-selector__list-item"
-                  id="biasedLockingRevocationPause"
-                  role="treeitem"
-                >
-                  <div
-                    className="pf-v5-c-dual-list-selector__list-item-row pf-m-check"
-                  >
-                    <div
-                      className="pf-v5-c-dual-list-selector__item"
-                      onClick={[Function]}
-                      tabIndex={-1}
-                    >
-                      <span
-                        className="pf-v5-c-dual-list-selector__item-main"
-                      >
-                        <span
-                          className="pf-v5-c-dual-list-selector__item-check"
-                        >
-                          <input
-                            checked={false}
-                            onChange={[Function]}
-                            onClick={[Function]}
-                            onKeyDown={[Function]}
-                            tabIndex={-1}
-                            type="checkbox"
-                          />
-                        </span>
-                        <span
-                          className="pf-v5-c-dual-list-selector__item-text"
-                        >
-                          Biased Locking Revocation Pauses
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </li>
-            <li
-              aria-expanded="true"
-              aria-selected={false}
-              className="pf-v5-c-dual-list-selector__list-item pf-m-expandable pf-m-expanded"
               id="biased_locking"
               role="treeitem"
             >
@@ -375,6 +221,160 @@ exports[`<TopologyConfig /> renders correctly 1`] = `
                           className="pf-v5-c-dual-list-selector__item-text"
                         >
                           Biased Locking Revocation
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li
+              aria-expanded="true"
+              aria-selected={false}
+              className="pf-v5-c-dual-list-selector__list-item pf-m-expandable pf-m-expanded"
+              id="vm_operations"
+              role="treeitem"
+            >
+              <div
+                className="pf-v5-c-dual-list-selector__list-item-row pf-m-check"
+              >
+                <div
+                  className="pf-v5-c-dual-list-selector__item"
+                  onClick={[Function]}
+                  tabIndex={-1}
+                >
+                  <span
+                    className="pf-v5-c-dual-list-selector__item-main"
+                  >
+                    <div
+                      className="pf-v5-c-dual-list-selector__item-toggle"
+                      onClick={[Function]}
+                      onKeyDown={[Function]}
+                      tabIndex={-1}
+                    >
+                      <span
+                        className="pf-v5-c-dual-list-selector__item-toggle-icon"
+                      >
+                        <svg
+                          aria-hidden={true}
+                          aria-labelledby={null}
+                          className="pf-v5-svg"
+                          fill="currentColor"
+                          height="1em"
+                          role="img"
+                          viewBox="0 0 256 512"
+                          width="1em"
+                        >
+                          <path
+                            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+                    <span
+                      className="pf-v5-c-dual-list-selector__item-check"
+                    >
+                      <input
+                        checked={false}
+                        onChange={[Function]}
+                        onClick={[Function]}
+                        onKeyDown={[Function]}
+                        tabIndex={-1}
+                        type="checkbox"
+                      />
+                    </span>
+                    <span
+                      className="pf-v5-c-dual-list-selector__item-text"
+                    >
+                      vm_operations
+                    </span>
+                    <span
+                      className="pf-v5-c-dual-list-selector__item-count"
+                    >
+                      <span
+                        className="pf-v5-c-badge pf-m-unread"
+                      >
+                        2
+                      </span>
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <ul
+                className="pf-v5-c-dual-list-selector__list"
+                role="group"
+              >
+                <li
+                  aria-selected={false}
+                  className="pf-v5-c-dual-list-selector__list-item"
+                  id="biasedLockingRevocationPause"
+                  role="treeitem"
+                >
+                  <div
+                    className="pf-v5-c-dual-list-selector__list-item-row pf-m-check"
+                  >
+                    <div
+                      className="pf-v5-c-dual-list-selector__item"
+                      onClick={[Function]}
+                      tabIndex={-1}
+                    >
+                      <span
+                        className="pf-v5-c-dual-list-selector__item-main"
+                      >
+                        <span
+                          className="pf-v5-c-dual-list-selector__item-check"
+                        >
+                          <input
+                            checked={false}
+                            onChange={[Function]}
+                            onClick={[Function]}
+                            onKeyDown={[Function]}
+                            tabIndex={-1}
+                            type="checkbox"
+                          />
+                        </span>
+                        <span
+                          className="pf-v5-c-dual-list-selector__item-text"
+                        >
+                          Biased Locking Revocation Pauses
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </li>
+                <li
+                  aria-selected={false}
+                  className="pf-v5-c-dual-list-selector__list-item"
+                  id="VMOperations"
+                  role="treeitem"
+                >
+                  <div
+                    className="pf-v5-c-dual-list-selector__list-item-row pf-m-check"
+                  >
+                    <div
+                      className="pf-v5-c-dual-list-selector__item"
+                      onClick={[Function]}
+                      tabIndex={-1}
+                    >
+                      <span
+                        className="pf-v5-c-dual-list-selector__item-main"
+                      >
+                        <span
+                          className="pf-v5-c-dual-list-selector__item-check"
+                        >
+                          <input
+                            checked={false}
+                            onChange={[Function]}
+                            onClick={[Function]}
+                            onKeyDown={[Function]}
+                            tabIndex={-1}
+                            type="checkbox"
+                          />
+                        </span>
+                        <span
+                          className="pf-v5-c-dual-list-selector__item-text"
+                        >
+                          VMOperation Peak Duration
                         </span>
                       </span>
                     </div>
