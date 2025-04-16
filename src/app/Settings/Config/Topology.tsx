@@ -65,25 +65,20 @@ const Component = () => {
     );
   }, [context.api, setAllRules]);
 
-  const availableRules = React.useMemo(() => allRules.filter((r) => !notIds.includes(r.id)), [allRules, notIds]);
-
-  const selectedRules = React.useMemo(() => allRules.filter((r) => notIds.includes(r.id)), [allRules, notIds]);
-
-  const availableOptions = React.useMemo(() => availableRules.map((r) => r.id), [availableRules]);
-
-  const selectedOptions = React.useMemo(() => selectedRules.map((r) => r.id), [selectedRules]);
-
-  const onAdd = React.useCallback(
-    (id: string) => {
-      dispatch(topologySetIgnoreReportResultIntent(id, true));
-    },
-    [dispatch],
+  const availableRules = React.useMemo(
+    () => allRules.filter((r) => !notIds.includes(r.id)).map((r) => r.id),
+    [allRules, notIds],
   );
 
+  const selectedRules = React.useMemo(
+    () => allRules.filter((r) => notIds.includes(r.id)).map((r) => r.id),
+    [allRules, notIds],
+  );
+
+  const onAdd = React.useCallback((id: string) => dispatch(topologySetIgnoreReportResultIntent(id, true)), [dispatch]);
+
   const onDelete = React.useCallback(
-    (id: string) => {
-      dispatch(topologySetIgnoreReportResultIntent(id, false));
-    },
+    (id: string) => dispatch(topologySetIgnoreReportResultIntent(id, false)),
     [dispatch],
   );
 
@@ -113,8 +108,8 @@ const Component = () => {
           </Bullseye>
         ) : (
           <DualListSelector
-            availableOptions={availableOptions}
-            chosenOptions={selectedOptions}
+            availableOptions={availableRules}
+            chosenOptions={selectedRules}
             onListChange={onListChange}
           />
         )}
