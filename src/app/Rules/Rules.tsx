@@ -263,6 +263,19 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     [addSubscription, context.api],
   );
 
+  const handleEditButton = React.useCallback(
+    (rule: Rule) => {
+      navigate('create', {
+        relative: 'path',
+        state: {
+          ...rule,
+          edit: true,
+        },
+      });
+    },
+    [navigate],
+  );
+
   const handleDeleteButton = React.useCallback(
     (rule: Rule) => {
       if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteAutomatedRules)) {
@@ -296,6 +309,10 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     (rule: Rule): IAction[] => {
       return [
         {
+          title: t('EDIT'),
+          onClick: () => handleEditButton(rule),
+        },
+        {
           title: t('DOWNLOAD'),
           onClick: () => context.api.downloadRule(rule.name),
         },
@@ -309,7 +326,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         },
       ];
     },
-    [context.api, handleDeleteButton, t],
+    [context.api, handleEditButton, handleDeleteButton, t],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
