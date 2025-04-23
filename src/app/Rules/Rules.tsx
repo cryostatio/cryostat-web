@@ -276,7 +276,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     [navigate],
   );
 
-  const handleDuplicateButton = React.useCallback(
+  const handleCopyButton = React.useCallback(
     (rule: Rule) => {
       navigate('create', {
         relative: 'path',
@@ -327,7 +327,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         },
         {
           title: t('COPY'),
-          onClick: () => handleDuplicateButton(rule),
+          onClick: () => handleCopyButton(rule),
         },
         {
           title: t('DOWNLOAD'),
@@ -343,7 +343,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         },
       ];
     },
-    [context.api, handleEditButton, handleDeleteButton, t],
+    [context.api, handleEditButton, handleDeleteButton, handleCopyButton, t],
   );
 
   const handleUploadModalClose = React.useCallback(() => {
