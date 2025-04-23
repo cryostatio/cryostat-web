@@ -276,6 +276,19 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     [navigate],
   );
 
+  const handleDuplicateButton = React.useCallback(
+    (rule: Rule) => {
+      navigate('create', {
+        relative: 'path',
+        state: {
+          ...rule,
+          name: `${rule.name}_copy`,
+        },
+      });
+    },
+    [navigate],
+  );
+
   const handleDeleteButton = React.useCallback(
     (rule: Rule) => {
       if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteAutomatedRules)) {
@@ -311,6 +324,10 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         {
           title: t('EDIT'),
           onClick: () => handleEditButton(rule),
+        },
+        {
+          title: t('COPY'),
+          onClick: () => handleDuplicateButton(rule),
         },
         {
           title: t('DOWNLOAD'),
