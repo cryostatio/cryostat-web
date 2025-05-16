@@ -508,6 +508,13 @@
     },
     "FILTER_BY_STATE": "Filter by state"
   },
+  "Routes": {
+    "NavGroups": {
+      "CONSOLE": "Console",
+      "FLIGHT_RECORDER": "Flight Recorder",
+      "OVERVIEW": "Overview"
+    }
+  },
   "RuleDeleteWarningModal": {
     "CLEAN_DESCRIPTION": "Clean will stop any Active Recordings that {{ruleName}} created."
   },
