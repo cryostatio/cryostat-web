@@ -555,11 +555,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         onSelect={mobileOnSelect}
         aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.GLOBAL_NAVIGATION')}
       >
-        {navGroups.map((title) => {
+        {navGroups.map((titleKey) => {
           return (
-            <NavGroup title={title} key={title}>
+            <NavGroup title={t(titleKey)} key={titleKey}>
               {routes
-                .filter((route) => route.navGroup === title)
+                .filter((route) => route.navGroup === titleKey)
                 .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
                 .map((route, idx) => {
                   return (
