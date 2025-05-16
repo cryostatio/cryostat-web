@@ -43,6 +43,10 @@ const FLIGHT_RECORDER = 'Routes.NavGroups.FLIGHT_RECORDER';
 const CONSOLE = 'Routes.NavGroups.CONSOLE';
 const navGroups = [OVERVIEW, FLIGHT_RECORDER, CONSOLE];
 
+const ANALYZE = 'Routes.ANALYZE';
+const CAPTURE = 'Routes.CAPTURE';
+// const navSubgroups = [ANALYZE, CAPTURE];
+
 export interface IAppRoute {
   label?: string;
   component: React.ComponentType;
@@ -50,6 +54,7 @@ export interface IAppRoute {
   title: string;
   description?: string; // non-empty description is used to filter routes for the NotFound page
   navGroup?: string;
+  navSubgroup?: string;
   featureLevel?: FeatureLevel;
   children?: IAppRoute[];
 }
@@ -88,22 +93,6 @@ const overviewRoutes: IAppRoute[] = [
 
 const flightRecorderRoutes: IAppRoute[] = [
   {
-    component: RulesTable,
-    label: 'Automated Rules',
-    path: toPath('/rules'),
-    title: 'Automated Rules',
-    description:
-      'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
-    navGroup: FLIGHT_RECORDER,
-    children: [
-      {
-        component: CreateRule,
-        path: toPath('/rules/create'),
-        title: 'Create Automated Rule',
-      },
-    ],
-  },
-  {
     component: Recordings,
     label: 'Recordings',
     path: toPath('/recordings'),
@@ -119,6 +108,23 @@ const flightRecorderRoutes: IAppRoute[] = [
     ],
   },
   {
+    component: RulesTable,
+    label: 'Automated Rules',
+    path: toPath('/rules'),
+    title: 'Automated Rules',
+    description:
+      'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
+    children: [
+      {
+        component: CreateRule,
+        path: toPath('/rules/create'),
+        title: 'Create Automated Rule',
+      },
+    ],
+  },
+  {
     component: Archives,
     label: 'Archives',
     path: toPath('/archives'),
@@ -126,6 +132,7 @@ const flightRecorderRoutes: IAppRoute[] = [
     description:
       'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
     navGroup: FLIGHT_RECORDER,
+    navSubgroup: ANALYZE,
   },
   {
     component: Events,
@@ -134,6 +141,7 @@ const flightRecorderRoutes: IAppRoute[] = [
     title: 'Events',
     description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
     navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
   },
 ];
 
