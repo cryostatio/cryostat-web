@@ -1452,6 +1452,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/react-styles@npm:^6.2.2":
+  version: 6.2.2
+  resolution: "@patternfly/react-styles@npm:6.2.2"
+  checksum: 77a8ebcf550fba86ef6e3b73fc60e2eba1210d9fa0fd53a415311bf82615fdc5052d2bf79a57c24a2868ccc543a3155b03cb369fb5703452e1d2f4b96f57f4d1
+  languageName: node
+  linkType: hard
+
 "@patternfly/react-table@npm:^5.4.8":
   version: 5.4.8
   resolution: "@patternfly/react-table@npm:5.4.8"
@@ -4333,7 +4340,7 @@ __metadata:
     "@patternfly/react-charts": ^7.4.5
     "@patternfly/react-core": ^5.4.2
     "@patternfly/react-icons": ^5.4.0
-    "@patternfly/react-styles": ^5.4.1
+    "@patternfly/react-styles": ^6.2.2
     "@patternfly/react-table": ^5.4.8
     "@patternfly/react-topology": ^5.4.0
     "@reduxjs/toolkit": ^1.9.3
