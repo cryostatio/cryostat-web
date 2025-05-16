@@ -509,6 +509,8 @@
     "FILTER_BY_STATE": "Filter by state"
   },
   "Routes": {
+    "ANALYZE": "Analyze",
+    "CAPTURE": "Capture",
     "NavGroups": {
       "CONSOLE": "Console",
       "FLIGHT_RECORDER": "Flight Recorder",
