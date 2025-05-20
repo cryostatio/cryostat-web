@@ -16,6 +16,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { BreadcrumbTrail } from '@app/BreadcrumbPage/types';
 import { EventTemplateIdentifier } from '@app/CreateRecording/types';
+import { templateFromEventSpecifier } from '@app/CreateRecording/utils';
 import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
 import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
@@ -58,7 +59,7 @@ import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { RuleFormData } from './types';
@@ -70,11 +71,13 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useCryostatTranslation();
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
   const [autoanalyze, setAutoanalyze] = React.useState(true);
+  const [isExistingEdit, setExistingEdit] = React.useState(false);
 
   const [formData, setFormData] = React.useState<RuleFormData>({
     name: '',
@@ -99,6 +102,10 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
   const matchedTargetsRef = React.useRef(new Subject<Target[]>());
+
+  React.useEffect(() => {
+    setExistingEdit(location?.state?.edit ?? false);
+  }, [location, setExistingEdit]);
 
   const eventSpecifierString = React.useMemo(() => {
     let str = '';
@@ -156,6 +163,50 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     },
     [setFormData, matchExprService],
   );
+
+  React.useEffect(() => {
+    const prefilled: Partial<RuleFormData> = location.state || {};
+    const eventSpecifier = location?.state?.eventSpecifier;
+    const maxAgeSeconds = location?.state?.maxAgeSeconds;
+    const maxSizeBytes = location?.state?.maxSizeBytes;
+    const archivalPeriodSeconds = location?.state?.archivalPeriodSeconds;
+    let {
+      name,
+      enabled,
+      description,
+      matchExpression,
+      maxAge,
+      maxAgeUnit,
+      maxSize,
+      maxSizeUnit,
+      archivalPeriod,
+      archivalPeriodUnit,
+      initialDelay,
+      initialDelayUnit,
+      preservedArchives,
+    } = prefilled;
+    setFormData((old) => ({
+      ...old,
+      enabled: enabled ?? true,
+      name: name ?? '',
+      description: description ?? '',
+      matchExpression: matchExpression ?? '',
+      template: templateFromEventSpecifier(eventSpecifier),
+      maxAge: maxAgeSeconds ?? maxAge ?? 0,
+      maxAgeUnit: maxAgeSeconds ? 1 : (maxAgeUnit ?? 1),
+      maxSize: maxSizeBytes ?? maxSize ?? 0,
+      maxSizeUnit: maxSizeBytes ? 1 : (maxSizeUnit ?? 1),
+      archivalPeriod: archivalPeriodSeconds ?? archivalPeriod ?? 0,
+      archivalPeriodUnit: archivalPeriodSeconds ? 1 : (archivalPeriodUnit ?? 1),
+      initialDelay: initialDelay ?? 0,
+      initialDelayUnit: initialDelayUnit ?? 1,
+      preservedArchives: preservedArchives ?? 0,
+    }));
+    handleNameChange(null, name ?? '');
+    if (matchExpression) {
+      handleMatchExpressionChange(null, matchExpression);
+    }
+  }, [location, setFormData, handleNameChange, handleMatchExpressionChange]);
 
   const handleTemplateChange = React.useCallback(
     (template: EventTemplateIdentifier) => setFormData((old) => ({ ...old, template })),
@@ -269,14 +320,24 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     };
     setLoading(true);
     addSubscription(
-      context.api.createRule(rule).subscribe((success) => {
+      (isExistingEdit ? context.api.updateRule(rule, true) : context.api.createRule(rule)).subscribe((success) => {
         setLoading(false);
         if (success) {
           exitForm();
         }
       }),
     );
-  }, [setLoading, addSubscription, exitForm, context.api, notifications, formData, autoanalyze, eventSpecifierString]);
+  }, [
+    setLoading,
+    addSubscription,
+    exitForm,
+    context.api,
+    notifications,
+    formData,
+    autoanalyze,
+    eventSpecifierString,
+    isExistingEdit,
+  ]);
 
   React.useEffect(() => {
     const matchedTargets = matchedTargetsRef.current;
@@ -360,7 +421,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
       <FormGroup label={t('NAME')} isRequired fieldId="rule-name" data-quickstart-id="rule-name">
         <TextInput
           value={formData.name}
-          isDisabled={loading}
+          isDisabled={isExistingEdit || loading}
           isRequired
           type="text"
           id="rule-name"
@@ -667,7 +728,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
           data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}
         >
-          {t(loading ? 'CREATING' : 'CREATE')}
+          {t(isExistingEdit ? (loading ? 'UPDATING' : 'UPDATE') : loading ? 'CREATING' : 'CREATE')}
         </Button>
         <Button variant="secondary" onClick={exitForm} isAriaDisabled={loading}>
           {t('CANCEL')}

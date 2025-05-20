@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
@@ -190,7 +190,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate('create', { relative: 'path' });
+    navigate(toPath('/recordings/create'), { relative: 'path' });
   }, [navigate]);
 
   const handleEditLabels = React.useCallback(() => {
