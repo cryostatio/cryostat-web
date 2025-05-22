@@ -38,9 +38,14 @@ import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
 
 let routeFocusTimer: number;
-const OVERVIEW = 'Overview';
-const CONSOLE = 'Console';
-const navGroups = [OVERVIEW, CONSOLE];
+const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
+const FLIGHT_RECORDER = 'Routes.NavGroups.FLIGHT_RECORDER';
+const CONSOLE = 'Routes.NavGroups.CONSOLE';
+const navGroups = [OVERVIEW, FLIGHT_RECORDER, CONSOLE];
+
+const ANALYZE = 'Routes.ANALYZE';
+const CAPTURE = 'Routes.CAPTURE';
+// const navSubgroups = [ANALYZE, CAPTURE];
 
 export interface IAppRoute {
   label?: string;
@@ -49,19 +54,12 @@ export interface IAppRoute {
   title: string;
   description?: string; // non-empty description is used to filter routes for the NotFound page
   navGroup?: string;
+  navSubgroup?: string;
   featureLevel?: FeatureLevel;
   children?: IAppRoute[];
 }
 
-const routes: IAppRoute[] = [
-  {
-    component: About,
-    label: 'About',
-    path: toPath('/about'),
-    title: 'About',
-    description: 'Get information, help, or support for Cryostat.',
-    navGroup: OVERVIEW,
-  },
+const overviewRoutes: IAppRoute[] = [
   {
     component: Dashboard,
     label: 'Dashboard',
@@ -78,13 +76,6 @@ const routes: IAppRoute[] = [
     ],
   },
   {
-    component: QuickStarts,
-    label: 'Quick starts',
-    path: toPath('/quickstarts'),
-    title: 'Quick starts',
-    description: 'Get started with Cryostat.',
-  },
-  {
     component: Topology,
     label: 'Topology',
     path: toPath('/topology'),
@@ -98,6 +89,24 @@ const routes: IAppRoute[] = [
       },
     ],
   },
+];
+
+const flightRecorderRoutes: IAppRoute[] = [
+  {
+    component: Recordings,
+    label: 'Recordings',
+    path: toPath('/recordings'),
+    title: 'Recordings',
+    description: 'Create, view and archive JFR Recordings on single target JVMs.',
+    navGroup: FLIGHT_RECORDER,
+    children: [
+      {
+        component: CreateRecording,
+        path: toPath('/recordings/create'),
+        title: 'Create Recording',
+      },
+    ],
+  },
   {
     component: RulesTable,
     label: 'Automated Rules',
@@ -105,27 +114,13 @@ const routes: IAppRoute[] = [
     title: 'Automated Rules',
     description:
       'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
-    navGroup: CONSOLE,
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
     children: [
       {
         component: CreateRule,
         path: toPath('/rules/create'),
         title: 'Create Automated Rule',
-      },
-    ],
-  },
-  {
-    component: Recordings,
-    label: 'Recordings',
-    path: toPath('/recordings'),
-    title: 'Recordings',
-    description: 'Create, view and archive JFR Recordings on single target JVMs.',
-    navGroup: CONSOLE,
-    children: [
-      {
-        component: CreateRecording,
-        path: toPath('/recordings/create'),
-        title: 'Create Recording',
       },
     ],
   },
@@ -136,7 +131,8 @@ const routes: IAppRoute[] = [
     title: 'Archives',
     description:
       'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
-    navGroup: CONSOLE,
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: ANALYZE,
   },
   {
     component: Events,
@@ -144,8 +140,12 @@ const routes: IAppRoute[] = [
     path: toPath('/events'),
     title: 'Events',
     description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
-    navGroup: CONSOLE,
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
   },
+];
+
+const consoleRoutes: IAppRoute[] = [
   {
     component: SecurityPanel,
     label: 'Security',
@@ -155,12 +155,32 @@ const routes: IAppRoute[] = [
     navGroup: CONSOLE,
   },
   {
+    component: About,
+    label: 'About',
+    path: toPath('/about'),
+    title: 'About',
+    description: 'Get information, help, or support for Cryostat.',
+    navGroup: CONSOLE,
+  },
+];
+
+const nonNavRoutes: IAppRoute[] = [
+  {
     component: Settings,
     path: toPath('/settings'),
     title: 'Settings',
     description: 'View or modify Cryostat web-client application settings.',
   },
+  {
+    component: QuickStarts,
+    label: 'Quick starts',
+    path: toPath('/quickstarts'),
+    title: 'Quick starts',
+    description: 'Get started with Cryostat.',
+  },
 ];
+
+const routes: IAppRoute[] = [...overviewRoutes, ...flightRecorderRoutes, ...consoleRoutes, ...nonNavRoutes];
 
 const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   const ret: IAppRoute[] = [];
