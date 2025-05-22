@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Language } from '@app/Settings/Config/Language';
 import { Settings } from '@app/Settings/Settings';
 import { UserSetting } from '@app/Settings/types';
 import { FeatureLevel, SessionState } from '@app/Shared/Services/service.types';
@@ -176,6 +177,24 @@ describe('<Settings/>', () => {
 
     const hiddenTab = screen.queryByText(testT('SETTINGS.CATEGORIES.GENERAL'));
     expect(hiddenTab).not.toBeInTheDocument();
+  });
+
+  it('should not display DEVELOPMENT settings when PRODUCTION is selected', async () => {
+    // https://github.com/cryostatio/cryostat-web/issues/1640
+    // Change the feature level of the Language setting to DEVELOPMENT, and ensure the component doesn't display in PRODUCTION
+    Language.featureLevel = FeatureLevel.DEVELOPMENT;
+    jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/settings',
+            element: <Settings />,
+          },
+        ],
+      },
+    });
+    expect(() => screen.getByText('Language Component')).toThrow();
   });
 
   it('should select General tab as default', async () => {

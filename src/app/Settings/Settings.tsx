@@ -84,7 +84,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
             category: c.category,
             disabled: c.disabled,
             orderInGroup: c.orderInGroup || -1,
-            featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
+            featureLevel: c.featureLevel ?? FeatureLevel.PRODUCTION,
           }) as _TransformedUserSetting,
       ),
     [t],
