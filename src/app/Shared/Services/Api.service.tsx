@@ -695,9 +695,10 @@ export class ApiService {
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     const body = new window.FormData();
     body.append('probeTemplate', file);
+    body.append('name', file.name);
     return this.ctx.headers().pipe(
       concatMap((headers) =>
-        this.sendLegacyRequest('v4', `probes/${file.name}`, 'Custom Probe Template Upload Failed', {
+        this.sendLegacyRequest('v4', 'probes', 'Custom Probe Template Upload Failed', {
           method: 'POST',
           body: body,
           headers,
