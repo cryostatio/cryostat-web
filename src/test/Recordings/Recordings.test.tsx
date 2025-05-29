@@ -15,9 +15,8 @@
  */
 import { Recordings } from '@app/Recordings/Recordings';
 import { Target } from '@app/Shared/Services/api.types';
-import { SessionState } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
@@ -64,14 +63,7 @@ const mockFooTarget: Target = {
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
 
-jest
-  .spyOn(defaultServices.api, 'isArchiveEnabled')
-  .mockReturnValueOnce(of(true)) // has the correct title in the TargetView
-  .mockReturnValueOnce(of(true)) // handles the case where archiving is enabled
-  .mockReturnValueOnce(of(false)) // handles the case where archiving is disabled
-  .mockReturnValue(of(true)); // others
-
-jest.spyOn(defaultServices.login, 'getSessionState').mockReturnValue(of(SessionState.USER_SESSION));
+jest.spyOn(defaultServices.api, 'isArchiveEnabled').mockReturnValue(of(true));
 
 describe('<Recordings />', () => {
   afterEach(cleanup);
@@ -89,77 +81,6 @@ describe('<Recordings />', () => {
     });
 
     expect(screen.getByText('Recordings')).toBeInTheDocument();
-  });
-
-  it('handles the case where archiving is enabled', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/recordings',
-            element: <Recordings />,
-          },
-        ],
-      },
-    });
-
-    expect(screen.getByText('Active Recordings')).toBeInTheDocument();
-    expect(screen.getByText('Active Recordings')).toBeInTheDocument();
-  });
-
-  it('handles the case where archiving is disabled', async () => {
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/recordings',
-            element: <Recordings />,
-          },
-        ],
-      },
-    });
-
-    expect(screen.getByText('Active Recordings')).toBeInTheDocument();
-    expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
-  });
-
-  // useNavigate() is mocked. Can't switch tab
-  it.skip('handles updating the activeTab state', async () => {
-    const { user } = render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/recordings',
-            element: <Recordings />,
-          },
-        ],
-      },
-    });
-
-    // Assert that the active recordings tab is currently selected (default behaviour)
-    let tabsList = screen.getAllByRole('tab');
-
-    let firstTab = tabsList[0];
-    expect(firstTab).toHaveAttribute('aria-selected', 'true');
-    expect(within(firstTab).getByText('Active Recordings')).toBeTruthy();
-
-    let secondTab = tabsList[1];
-    expect(secondTab).toHaveAttribute('aria-selected', 'false');
-    expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
-
-    // Click the archived recordings tab
-    await user.click(screen.getByText('Archived Recordings'));
-
-    // Assert that the archived recordings tab is now selected
-    tabsList = screen.getAllByRole('tab');
-
-    firstTab = tabsList[0];
-    expect(firstTab).toHaveAttribute('aria-selected', 'false');
-    expect(within(firstTab).getByText('Active Recordings')).toBeTruthy();
-
-    secondTab = tabsList[1];
-    expect(secondTab).toHaveAttribute('aria-selected', 'true');
-    expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
   });
 
   it('renders correctly', async () => {

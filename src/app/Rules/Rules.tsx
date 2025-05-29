@@ -497,7 +497,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   return (
     <>
       <BreadcrumbPage pageTitle="Automated Rules">
-        <Card isFullHeight>
+        <Card isCompact>
           <CardTitle>
             {t('AUTOMATED_RULES')}
             <TextContent>
