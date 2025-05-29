@@ -22,6 +22,7 @@ import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
 import Events from './Events/Events';
+import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
@@ -140,6 +141,15 @@ const flightRecorderRoutes: IAppRoute[] = [
     path: toPath('/events'),
     title: 'Events',
     description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
+  },
+  {
+    component: JMCAgent,
+    label: 'Instrumentation',
+    path: toPath('/instrumentation'),
+    title: 'Instrumentation',
+    description: 'Instrument Targets to dynamically insert JFR event emission.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: CAPTURE,
   },

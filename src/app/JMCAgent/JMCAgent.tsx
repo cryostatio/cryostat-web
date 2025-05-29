@@ -17,30 +17,31 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
-import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
+import { Card, CardBody, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { EventTemplates } from './EventTemplates';
-import { EventTypes } from './EventTypes';
+import { concatMap, filter } from 'rxjs';
+import { AgentLiveProbes } from './AgentLiveProbes';
+import { AgentProbeTemplates } from './AgentProbeTemplates';
 
-export const Events: React.FC = () => {
+export const JMCAgent: React.FC = () => {
   return (
-    <TargetView pageTitle="Events">
+    <TargetView pageTitle="Instrumentation">
       <Card>
         <CardBody>
-          <EventTabs />
+          <AgentTabs />
         </CardBody>
       </Card>
     </TargetView>
   );
 };
 
-enum EventTab {
-  EVENT_TEMPLATE = 'event-template',
-  EVENT_TYPE = 'event-type',
+enum AgentTab {
+  AGENT_TEMPLATE = 'agent-template',
+  AGENT_PROBE = 'agent-probe',
 }
 
-const EventTabs: React.FC = () => {
+const AgentTabs: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -54,24 +55,48 @@ const EventTabs: React.FC = () => {
   }, [addSubscription, context, context.target]);
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, 'eventTab', Object.values(EventTab), EventTab.EVENT_TEMPLATE);
+    return getActiveTab(search, 'agentTab', Object.values(AgentTab), AgentTab.AGENT_TEMPLATE);
   }, [search]);
+
+  const [agentDetected, setAgentDetected] = React.useState(false);
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent, key: string | number) =>
-      switchTab(navigate, pathname, search, { tabKey: 'eventTab', tabValue: `${key}` }),
+      switchTab(navigate, pathname, search, { tabKey: 'agentTab', tabValue: `${key}` }),
     [navigate, pathname, search],
   );
 
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          concatMap((_) => context.api.isProbeEnabled()),
+        )
+        .subscribe(setAgentDetected),
+    );
+  }, [addSubscription, context.target, context.api, setAgentDetected]);
+
   return (
     <Tabs activeKey={activeTab} onSelect={onTabSelect}>
-      <Tab eventKey={EventTab.EVENT_TEMPLATE} title="Event Templates">
-        <EventTemplates />
+      <Tab eventKey={AgentTab.AGENT_TEMPLATE} title="Probe Templates">
+        <AgentProbeTemplates agentDetected={agentDetected} />
       </Tab>
-      <Tab isAriaDisabled={!targetSelected} eventKey={EventTab.EVENT_TYPE} title="Event types">
-        <EventTypes />
+      <Tab
+        eventKey={AgentTab.AGENT_PROBE}
+        title="Live Configuration"
+        isAriaDisabled={!targetSelected || !agentDetected}
+        tooltip={
+          agentDetected ? undefined : (
+            <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
+          )
+        }
+      >
+        <AgentLiveProbes />
       </Tab>
     </Tabs>
   );
 };
-export default Events;
+
+export default JMCAgent;
