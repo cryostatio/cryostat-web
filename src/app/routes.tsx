@@ -100,6 +100,7 @@ const flightRecorderRoutes: IAppRoute[] = [
     title: 'Recordings',
     description: 'Create, view and archive JFR Recordings on single target JVMs.',
     navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
     children: [
       {
         component: CreateRecording,
