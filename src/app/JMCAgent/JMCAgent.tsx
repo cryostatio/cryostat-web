@@ -27,7 +27,7 @@ import { AgentProbeTemplates } from './AgentProbeTemplates';
 export const JMCAgent: React.FC = () => {
   return (
     <TargetView pageTitle="Instrumentation">
-      <Card>
+      <Card isCompact>
         <CardBody>
           <AgentTabs />
         </CardBody>

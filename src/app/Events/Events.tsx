@@ -26,7 +26,7 @@ import { EventTypes } from './EventTypes';
 export const Events: React.FC = () => {
   return (
     <TargetView pageTitle="Events">
-      <Card>
+      <Card isCompact>
         <CardBody>
           <EventTabs />
         </CardBody>

@@ -20,10 +20,18 @@ import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
+jest.mock('@app/TargetView/TargetContextSelector', () => {
+  return {
+    TargetContextSelector: jest.fn(() => {
+      return <div>Target Context Selector</div>;
+    }),
+  };
+});
+
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    ArchivedRecordingsTable: jest.fn(() => {
-      return <div>Uploads Table</div>;
+    ArchivedRecordingsTable: jest.fn((props) => {
+      return props.isUploadsTable ? <div>Uploads Table</div> : <div>Target Archives Table</div>;
     }),
   };
 });
@@ -46,13 +54,19 @@ jest.mock('@app/Archives/AllTargetsArchivedRecordingsTable', () => {
 
 jest
   .spyOn(defaultServices.api, 'isArchiveEnabled')
-  .mockReturnValueOnce(of(true))
-  .mockReturnValueOnce(of(true))
   .mockReturnValueOnce(of(false)) // Test archives disabled case
   .mockReturnValue(of(true));
 
 describe('<Archives />', () => {
   afterEach(cleanup);
+
+  it('handles the case where archiving is disabled', async () => {
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
+
+    expect(screen.queryByText('All Targets')).not.toBeInTheDocument();
+    expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
+    expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
+  });
 
   it('has the correct page title', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
@@ -67,14 +81,6 @@ describe('<Archives />', () => {
     expect(screen.getByText('Uploads')).toBeInTheDocument();
   });
 
-  it('handles the case where archiving is disabled', async () => {
-    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
-
-    expect(screen.queryByText('All Targets')).not.toBeInTheDocument();
-    expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
-    expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
-  });
-
   it.skip('handles changing tabs', async () => {
     const { user } = render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
@@ -83,15 +89,19 @@ describe('<Archives />', () => {
 
     let firstTab = tabsList[0];
     expect(firstTab).toHaveAttribute('aria-selected', 'true');
-    expect(within(firstTab).getByText('All Targets')).toBeTruthy();
+    expect(within(firstTab).getByText('Target')).toBeTruthy();
 
     let secondTab = tabsList[1];
     expect(secondTab).toHaveAttribute('aria-selected', 'false');
-    expect(within(secondTab).getByText('All Archives')).toBeTruthy();
+    expect(within(secondTab).getByText('All Targets')).toBeTruthy();
 
     let thirdTab = tabsList[2];
     expect(thirdTab).toHaveAttribute('aria-selected', 'false');
-    expect(within(thirdTab).getByText('Uploads')).toBeTruthy();
+    expect(within(thirdTab).getByText('All Archives')).toBeTruthy();
+
+    let fourthTab = tabsList[3];
+    expect(fourthTab).toHaveAttribute('aria-selected', 'false');
+    expect(within(fourthTab).getByText('Uploads')).toBeTruthy();
 
     // Click the Uploads tab
     await user.click(screen.getByText('Uploads'));
@@ -101,15 +111,19 @@ describe('<Archives />', () => {
 
     firstTab = tabsList[0];
     expect(firstTab).toHaveAttribute('aria-selected', 'false');
-    expect(within(firstTab).getByText('All Targets')).toBeTruthy();
+    expect(within(firstTab).getByText('Target')).toBeTruthy();
 
     secondTab = tabsList[1];
     expect(secondTab).toHaveAttribute('aria-selected', 'false');
-    expect(within(secondTab).getByText('All Archives')).toBeTruthy();
+    expect(within(secondTab).getByText('All Targets')).toBeTruthy();
 
     thirdTab = tabsList[2];
-    expect(thirdTab).toHaveAttribute('aria-selected', 'true');
-    expect(within(thirdTab).getByText('Uploads')).toBeTruthy();
+    expect(thirdTab).toHaveAttribute('aria-selected', 'false');
+    expect(within(thirdTab).getByText('All Archives')).toBeTruthy();
+
+    fourthTab = tabsList[3];
+    expect(fourthTab).toHaveAttribute('aria-selected', 'true');
+    expect(within(fourthTab).getByText('Uploads')).toBeTruthy();
   });
 
   it('renders correctly', async () => {
