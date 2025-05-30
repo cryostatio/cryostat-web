@@ -36,6 +36,7 @@ import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
+import Diagnostics from './Diagnostics/Diagnostics';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -128,6 +129,14 @@ const routes: IAppRoute[] = [
         title: 'Create Recording',
       },
     ],
+  },
+  {
+    component: Diagnostics,
+    label: 'Diagnostics',
+    path: toPath('/diagnostics'),
+    title: 'Diagnostics',
+    description: 'Create and view thread dumps on single target JVMs.',
+    navGroup: CONSOLE,
   },
   {
     component: Archives,
