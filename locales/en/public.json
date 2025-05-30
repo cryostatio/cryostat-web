@@ -370,8 +370,11 @@
     "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
     "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
+    "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Start Thread Dump",
+    "DIAGNOSTICS_THREAD_REDIERECT_BUTTON": "Go to Thread Dumps Table",
     "KINDS": {
-      "GC": "Garbage Collection"
+      "GC": "Garbage Collection",
+      "THREAD_DUMP": "Thread Dump"
     }
   },
   "DurationFilter": {
