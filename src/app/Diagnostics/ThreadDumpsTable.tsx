@@ -135,12 +135,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
   const handleDelete = React.useCallback(
     (threadDump: ThreadDump) => {
       addSubscription(
-        context.api.deleteThreadDump(threadDump.id).subscribe(() => {
-          /** Do nothing. Notifications hook will handle */
+        context.api.deleteThreadDump(threadDump.uuid).subscribe(() => {
+          refreshThreadDumps();
         }),
       );
     },
-    [addSubscription, context.api],
+    [addSubscription, refreshThreadDumps, context.api],
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
@@ -199,7 +199,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
       filtered = threadDumps;
     } else {
       const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-      filtered = threadDumps.filter((t: ThreadDump) => reg.test(t.id));
+      filtered = threadDumps.filter((t: ThreadDump) => reg.test(t.uuid));
     }
 
     setFilteredThreadDumps(
@@ -250,7 +250,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
         return (
           <Tr key={`thread-dump-${index}`}>
             <Td key={`thread-dump-id-${index}`} dataLabel={tableColumns[0].title}>
-              {t.id}
+              {t.uuid}
             </Td>
             <Td key={`thread-dump-content-${index}`} dataLabel={tableColumns[1].title}>
               {t.content}

@@ -234,7 +234,7 @@ export interface Recording {
 export interface ThreadDump {
   content: string;
   downloadUrl: string;
-  id: string;
+  uuid: string;
   jvmId?: string;
 }
 
