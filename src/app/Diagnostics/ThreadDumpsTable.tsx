@@ -40,6 +40,7 @@ import {
   MenuToggle,
   SearchInput,
   Divider,
+  Tooltip,
 } from '@patternfly/react-core';
 import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -61,8 +62,8 @@ import { first } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
   {
-    title: 'Name',
-    keyPaths: ['name'],
+    title: 'ID',
+    keyPaths: ['id'],
     sortable: true,
   },
   {
@@ -225,6 +226,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
     [context.settings, setWarningModalOpen, setThreadDumpToDelete, handleDelete],
   );
 
+  const handleDownloadThreadDump = React.useCallback((threadDump) => {
+    context.api.downloadThreadDump(threadDump);
+  },[context.api],
+  );
+
+
   const handleInsertAction = React.useCallback(
     (template: ProbeTemplate) => {
       addSubscription(
@@ -252,6 +259,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
               <ThreadDumpAction
                 threadDump={t}
                 onDelete={handleDeleteAction}
+                onDownload={handleDownloadThreadDump}
               />
             </Td>
           </Tr>
@@ -293,7 +301,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
                 <ToolbarItem variant="separator" />
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
-                    <Button key="dump-threads" variant="secondary" aria-label="dump-threads" onClick={handleThreadDump}>
+                    <Button 
+                      key="dump-threads" 
+                      variant="secondary" 
+                      aria-label="dump-threads" 
+                      onClick={handleThreadDump}>
+                      <Tooltip content="Start Thread Dump" />
                       <UploadIcon />
                     </Button>
                   </ToolbarItem>
@@ -337,12 +350,14 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
 
 export interface ThreadDumpActionProps {
   threadDump: ThreadDump;
-  onDelete: (template: ThreadDump) => void;
+  onDelete: (threadDump: ThreadDump) => void;
+  onDownload: (threadDump: ThreadDump) => void;
 }
 
-export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDelete }) => {
+export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDelete, onDownload }) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
+  const context = React.useContext(ServiceContext);
 
   const actionItems = React.useMemo(() => {
     return [
@@ -350,10 +365,15 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
         isSeparator: true,
       },
       {
-        key: 'delete-template',
+        key: 'delete-threaddump',
         title: 'Delete',
         isDanger: true,
         onClick: () => onDelete(threadDump),
+      },
+      {
+        title: 'Download Thread Dump',
+        key: 'download-threaddump',
+        onClick: () => onDownload(threadDump),
       },
     ];
   }, [onDelete, threadDump]);

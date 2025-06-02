@@ -371,10 +371,16 @@
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
     "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
     "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Start Thread Dump",
-    "DIAGNOSTICS_THREAD_REDIERECT_BUTTON": "Go to Thread Dumps Table",
+    "DIAGONSTICS_THREAD_REDIRECT_BUTTON": "Go to Thread Dumps Table",
     "KINDS": {
       "GC": "Garbage Collection",
       "THREAD_DUMP": "Thread Dump"
+    }
+  },
+  "ThreadDumps": {
+    "SEARCH_PLACEHOLDER": "Search Thread Dumps",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "event-template-search-input"
     }
   },
   "DurationFilter": {
