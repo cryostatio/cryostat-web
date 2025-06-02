@@ -20,6 +20,7 @@ import {
   DashboardCardSizes,
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -41,7 +42,6 @@ import {
 import { WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { DashboardCard } from '../DashboardCard';
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -75,10 +75,10 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     addSubscription(
       serviceContext.api.runThreadDump(true).subscribe({
         error: (err) => handleError(t('DiagnosticsCard.KINDS.THREADS'), err),
-        complete: () => { 
-          setRunning(false)
-          setThreadDumpReady(true)
-        }
+        complete: () => {
+          setRunning(false);
+          setThreadDumpReady(true);
+        },
       }),
     );
   }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
@@ -122,20 +122,21 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                 >
                   {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
                 </Button>
-                {threadDumpReady? (
+                {threadDumpReady ? (
                   <Button variant="primary" component={(props) => <CryostatLink {...props} to="/diagnostics" />}>
                     {t('DiagnosticsCard.DIAGONSTICS_THREAD_REDIRECT_BUTTON')}
-                  </Button>) :
-                    <Button 
-                      variant="primary"
-                      onClick={handleThreadDump}
-                      spinnerAriaValueText="Invoke Thread Dump"
-                      spinnerAriaLabel="invoke-thread-dump"
-                      isLoading={running}
-                    >
-                  {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
                   </Button>
-                }
+                ) : (
+                  <Button
+                    variant="primary"
+                    onClick={handleThreadDump}
+                    spinnerAriaValueText="Invoke Thread Dump"
+                    spinnerAriaLabel="invoke-thread-dump"
+                    isLoading={running}
+                  >
+                    {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                  </Button>
+                )}
               </EmptyStateFooter>
             </EmptyState>
           </Bullseye>

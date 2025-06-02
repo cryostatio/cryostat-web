@@ -380,7 +380,8 @@
   "ThreadDumps": {
     "SEARCH_PLACEHOLDER": "Search Thread Dumps",
     "ARIA_LABELS": {
-      "SEARCH_INPUT": "event-template-search-input"
+      "ROW_ACTION": "thread-dump-action-menu",
+      "SEARCH_INPUT": "thread-dump-search-input"
     }
   },
   "DurationFilter": {

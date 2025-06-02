@@ -17,7 +17,7 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { NotificationCategory, ProbeTemplate, ThreadDump } from '@app/Shared/Services/api.types';
+import { NotificationCategory, ThreadDump } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
@@ -73,11 +73,9 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-export interface ThreadDumpsProps {
-  
-}
+export interface ThreadDumpsProps {}
 
-export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
+export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
@@ -85,7 +83,6 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
   const [filteredThreadDumps, setFilteredThreadDumps] = React.useState<ThreadDump[]>([]);
   const [filterText, setFilterText] = React.useState('');
-  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -159,22 +156,20 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
     const tasks: Observable<string>[] = [];
     tasks.push(context.api.runThreadDump(true).pipe(first()));
     addSubscription(
-          forkJoin(tasks).subscribe({
-            next: (jobIds) => {
-              addSubscription(
-                context.notificationChannel
-                  .messages(NotificationCategory.ThreadDumpSuccess)
-                  .subscribe((notification) => {
-                    if (jobIds.includes(notification.message.jobId)) {
-                      refreshThreadDumps();
-                    }
-                  }),
-              );
-            },
-            error: () => refreshThreadDumps(),
-          }),
-        );
-  }, [addSubscription, context.api, handleError, t]);
+      forkJoin(tasks).subscribe({
+        next: (jobIds) => {
+          addSubscription(
+            context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((notification) => {
+              if (jobIds.includes(notification.message.jobId)) {
+                refreshThreadDumps();
+              }
+            }),
+          );
+        },
+        error: () => refreshThreadDumps(),
+      }),
+    );
+  }, [addSubscription, context.api, context.notificationChannel, refreshThreadDumps]);
 
   const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
 
@@ -216,7 +211,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
 
   const handleDeleteAction = React.useCallback(
     (threadDump: ThreadDump) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteEventTemplates)) {
+      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteThreadDump)) {
         setThreadDumpToDelete(threadDump);
         setWarningModalOpen(true);
       } else {
@@ -226,23 +221,23 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
     [context.settings, setWarningModalOpen, setThreadDumpToDelete, handleDelete],
   );
 
-  const handleDownloadThreadDump = React.useCallback((threadDump) => {
-    context.api.downloadThreadDump(threadDump);
-  },[context.api],
-  );
-
-
-  const handleInsertAction = React.useCallback(
-    (template: ProbeTemplate) => {
-      addSubscription(
-        context.api
-          .insertProbes(template.name)
-          .pipe(first())
-          .subscribe(() => undefined),
-      );
+  const handleDownloadThreadDump = React.useCallback(
+    (threadDump) => {
+      context.api.downloadThreadDump(threadDump);
     },
-    [addSubscription, context.api],
+    [context.api],
   );
+
+  const deleteThreadDumpModal = React.useMemo(() => {
+    return (
+      <DeleteWarningModal
+        warningType={DeleteOrDisableWarningType.DeleteThreadDump}
+        visible={warningModalOpen}
+        onAccept={handleWarningModalAccept}
+        onClose={handleWarningModalClose}
+      />
+    );
+  }, [warningModalOpen, handleWarningModalAccept, handleWarningModalClose]);
 
   const threadDumpRows = React.useMemo(
     () =>
@@ -256,25 +251,16 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
               {t.content}
             </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-              <ThreadDumpAction
-                threadDump={t}
-                onDelete={handleDeleteAction}
-                onDownload={handleDownloadThreadDump}
-              />
+              <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
             </Td>
           </Tr>
         );
       }),
-    [filteredThreadDumps, handleInsertAction, handleDeleteAction],
+    [filteredThreadDumps, handleDeleteAction, handleDownloadThreadDump],
   );
 
   if (errorMessage != '') {
-    return (
-      <ErrorView
-        title={'Error retrieving thread dumps'}
-        message={`${errorMessage}`}
-      />
-    );
+    return <ErrorView title={'Error retrieving thread dumps'} message={`${errorMessage}`} />;
   } else if (isLoading) {
     return <LoadingView />;
   } else {
@@ -301,22 +287,13 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ }) => {
                 <ToolbarItem variant="separator" />
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
-                    <Button 
-                      key="dump-threads" 
-                      variant="secondary" 
-                      aria-label="dump-threads" 
-                      onClick={handleThreadDump}>
+                    <Button key="dump-threads" variant="secondary" aria-label="dump-threads" onClick={handleThreadDump}>
                       <Tooltip content="Start Thread Dump" />
                       <UploadIcon />
                     </Button>
                   </ToolbarItem>
                 </ToolbarGroup>
-                <DeleteWarningModal
-                  warningType={DeleteOrDisableWarningType.DeleteThreadDump}
-                  visible={warningModalOpen}
-                  onAccept={handleWarningModalAccept}
-                  onClose={handleWarningModalClose}
-                />
+                {deleteThreadDumpModal}
               </ToolbarContent>
             </Toolbar>
             {threadDumpRows.length ? (
@@ -357,7 +334,6 @@ export interface ThreadDumpActionProps {
 export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDelete, onDownload }) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
-  const context = React.useContext(ServiceContext);
 
   const actionItems = React.useMemo(() => {
     return [
@@ -376,7 +352,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
         onClick: () => onDownload(threadDump),
       },
     ];
-  }, [onDelete, threadDump]);
+  }, [onDelete, onDownload, threadDump]);
 
   const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
 
@@ -406,7 +382,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
     <Dropdown
       toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
         <MenuToggle
-          aria-label={t('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')}
+          aria-label={t('ThreadDump.ARIA_LABELS.ROW_ACTION')}
           variant="plain"
           ref={toggleRef}
           onClick={(event) => handleToggle(event, !isOpen)}

@@ -680,11 +680,11 @@ export class ApiService {
           first(),
         ),
       ),
-        first(),
+      first(),
     );
   }
 
-  deleteThreadDump(threaddumpname : string, suppressNotifications = false): Observable<boolean> {
+  deleteThreadDump(threaddumpname: string, suppressNotifications = false): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
@@ -700,7 +700,7 @@ export class ApiService {
           first(),
         ),
       ),
-        first(),
+      first(),
     );
   }
 
@@ -1002,7 +1002,7 @@ export class ApiService {
 
   downloadThreadDump(threadDump: ThreadDump): void {
     this.ctx.url(threadDump.downloadUrl).subscribe((resourceUrl) => {
-      this.downloadFile(resourceUrl, threadDump.uuid); 
+      this.downloadFile(resourceUrl, threadDump.uuid);
     });
   }
 

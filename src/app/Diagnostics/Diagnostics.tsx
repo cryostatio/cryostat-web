@@ -13,61 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
-import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
 enum DiagnosticsTab {
-    THREAD_DUMPS = 'thread-dumps'
+  THREAD_DUMPS = 'thread-dumps',
 }
 
-export interface DiagnosticsProps{}
+export interface DiagnosticsProps {}
 
-export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props}) => {
-    const { search, pathname, hash } = useLocation();
-    const navigate = useNavigate();
-    const context = React.useContext(ServiceContext);
-    const addSubscription = useSubscriptions();
-  
-    const activeTab = React.useMemo(() => {
-      return getActiveTab(search, 'tab', Object.values(DiagnosticsTab), DiagnosticsTab.THREAD_DUMPS);
-    }, [search]);
+export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
+  const { search, pathname} = useLocation();
+  const navigate = useNavigate();
 
-    const onTabSelect = React.useCallback(
-        (_: React.MouseEvent, key: string | number) =>
-          switchTab(navigate, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
-        [navigate, pathname, search],
-      );
+  const activeTab = React.useMemo(() => {
+    return getActiveTab(search, 'tab', Object.values(DiagnosticsTab), DiagnosticsTab.THREAD_DUMPS);
+  }, [search]);
 
-    const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
+  const onTabSelect = React.useCallback(
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(navigate, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [navigate, pathname, search],
+  );
 
-      const cardBody = React.useMemo(
-        () =>
-            <Tabs id="threadDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
-              <Tab
-                id="threadDumps"
-                eventKey={DiagnosticsTab.THREAD_DUMPS}
-                title={<TabTitleText>Thread Dumps</TabTitleText>}
-                data-quickstart-id="thread-dumps-tab"
-              >
-                <ThreadDumpsTable />
-              </Tab>
-            </Tabs>,
-        [hash, activeTab, onTabSelect, targetAsObs],
-      );
+  const cardBody = React.useMemo(
+    () => (
+      <Tabs id="threadDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
+        <Tab
+          id="threadDumps"
+          eventKey={DiagnosticsTab.THREAD_DUMPS}
+          title={<TabTitleText>Thread Dumps</TabTitleText>}
+          data-quickstart-id="thread-dumps-tab"
+        >
+          <ThreadDumpsTable />
+        </Tab>
+      </Tabs>
+    ),
+    [activeTab, onTabSelect],
+  );
 
-    return (
-        <TargetView {...props} pageTitle="Diagnostics">
-          <Card isFullHeight>
-            <CardBody isFilled>{cardBody}</CardBody>
-          </Card>
-        </TargetView>
-      );
-}
+  return (
+    <TargetView {...props} pageTitle="Diagnostics">
+      <Card isFullHeight>
+        <CardBody isFilled>{cardBody}</CardBody>
+      </Card>
+    </TargetView>
+  );
+};
 
 export default Diagnostics;

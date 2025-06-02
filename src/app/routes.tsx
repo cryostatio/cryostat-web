@@ -21,6 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import Diagnostics from './Diagnostics/Diagnostics';
 import Events from './Events/Events';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
@@ -36,7 +37,6 @@ import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import Diagnostics from './Diagnostics/Diagnostics';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
