@@ -27,7 +27,7 @@ enum DiagnosticsTab {
 export interface DiagnosticsProps {}
 
 export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
-  const { search, pathname} = useLocation();
+  const { search, pathname } = useLocation();
   const navigate = useNavigate();
 
   const activeTab = React.useMemo(() => {
