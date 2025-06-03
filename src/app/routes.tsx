@@ -21,6 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import Diagnostics from './Diagnostics/Diagnostics';
 import Events from './Events/Events';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
@@ -128,6 +129,14 @@ const routes: IAppRoute[] = [
         title: 'Create Recording',
       },
     ],
+  },
+  {
+    component: Diagnostics,
+    label: 'Diagnostics',
+    path: toPath('/diagnostics'),
+    title: 'Diagnostics',
+    description: 'Create and view thread dumps on single target JVMs.',
+    navGroup: CONSOLE,
   },
   {
     component: Archives,
