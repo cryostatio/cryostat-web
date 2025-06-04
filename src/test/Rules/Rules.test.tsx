@@ -72,6 +72,10 @@ jest
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
+  .mockReturnValueOnce(of()) // open view to edit rules
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
   .mockReturnValueOnce(of()) // opens upload modal
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -125,6 +129,26 @@ describe('<Rules />', () => {
     });
 
     await user.click(screen.getByRole('button', { name: /Create/ }));
+    expect(router.state.location.pathname).toEqual('/rules/create');
+  });
+
+  it('opens create rule view when Edit is clicked', async () => {
+    const { user, router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/rules',
+            element: <RulesTable />,
+          },
+        ],
+      },
+    });
+
+    await act(async () => {
+      await user.click(screen.getByLabelText('Kebab toggle'));
+      await user.click(await screen.findByText('Edit'));
+    });
+
     expect(router.state.location.pathname).toEqual('/rules/create');
   });
 
@@ -382,7 +406,11 @@ describe('<Rules />', () => {
       await user.click(submitButton);
 
       expect(uploadSpy).toHaveBeenCalled();
-      expect(uploadSpy).toHaveBeenCalledWith(mockRule, expect.any(Function), expect.any(Subject));
+      expect(uploadSpy).toHaveBeenCalledWith(
+        { ...mockRule, id: undefined, enabled: false },
+        expect.any(Function),
+        expect.any(Subject),
+      );
 
       expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
       expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
