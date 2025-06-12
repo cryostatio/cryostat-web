@@ -85,7 +85,11 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
           parseRule(fileUpload.file, t).pipe(
             first(),
             concatMap((rule) =>
-              context.api.uploadRule(rule, getProgressUpdateCallback(fileUpload.file.name), fileUpload.abortSignal),
+              context.api.uploadRule(
+                { ...rule, id: undefined, enabled: false },
+                getProgressUpdateCallback(fileUpload.file.name),
+                fileUpload.abortSignal,
+              ),
             ),
             tap({
               next: (_) => {

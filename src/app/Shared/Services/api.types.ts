@@ -330,6 +330,7 @@ export interface EventProbe {
 // Rule resources
 // ======================================
 export interface Rule {
+  id?: number;
   name: string;
   description: string;
   matchExpression: string;
