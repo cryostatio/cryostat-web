@@ -110,6 +110,15 @@ const flightRecorderRoutes: IAppRoute[] = [
     ],
   },
   {
+    component: Events,
+    label: 'Events',
+    path: toPath('/events'),
+    title: 'Events',
+    description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
+  },
+  {
     component: RulesTable,
     label: 'Automated Rules',
     path: toPath('/rules'),
@@ -127,6 +136,15 @@ const flightRecorderRoutes: IAppRoute[] = [
     ],
   },
   {
+    component: JMCAgent,
+    label: 'Instrumentation',
+    path: toPath('/instrumentation'),
+    title: 'Instrumentation',
+    description: 'Instrument Targets to dynamically insert JFR event emission.',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
+  },
+  {
     component: Archives,
     label: 'Archives',
     path: toPath('/archives'),
@@ -135,24 +153,6 @@ const flightRecorderRoutes: IAppRoute[] = [
       'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: ANALYZE,
-  },
-  {
-    component: Events,
-    label: 'Events',
-    path: toPath('/events'),
-    title: 'Events',
-    description: 'View available JFR Event Templates and types for target JVMs, as well as upload custom templates.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
-  },
-  {
-    component: JMCAgent,
-    label: 'Instrumentation',
-    path: toPath('/instrumentation'),
-    title: 'Instrumentation',
-    description: 'Instrument Targets to dynamically insert JFR event emission.',
-    navGroup: FLIGHT_RECORDER,
-    navSubgroup: CAPTURE,
   },
 ];
 
