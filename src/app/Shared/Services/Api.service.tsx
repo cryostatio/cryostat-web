@@ -277,6 +277,12 @@ export class ApiService {
   }
 
   updateRule(rule: Rule, clean = true): Observable<boolean> {
+    const payload = {
+      ...rule,
+      metadata: {
+        labels: this.transformLabelsToObject(rule?.metadata?.labels ?? []),
+      },
+    };
     return this.ctx
       .headers({
         'Content-Type': 'application/json',
@@ -288,7 +294,7 @@ export class ApiService {
             `rules/${rule.name}`,
             {
               method: 'PATCH',
-              body: JSON.stringify(rule),
+              body: JSON.stringify(payload),
               headers,
             },
             new URLSearchParams({ clean: String(clean) }),
