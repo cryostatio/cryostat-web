@@ -288,7 +288,12 @@ export class ApiService {
             `rules/${rule.name}`,
             {
               method: 'PATCH',
-              body: JSON.stringify(rule),
+              body: JSON.stringify({
+                ...rule,
+                metadata: {
+                  labels: this.transformLabelsToObject(rule?.metadata?.labels ?? []),
+                },
+              }),
               headers,
             },
             new URLSearchParams({ clean: String(clean) }),
