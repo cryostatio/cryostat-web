@@ -33,10 +33,10 @@ exports[`<Rules /> renders correctly 1`] = `
       className="pf-v5-l-stack pf-m-gutter"
     >
       <div
-        className="pf-v5-l-stack__item pf-m-fill"
+        className="pf-v5-l-stack__item"
       >
         <div
-          className="pf-v5-c-card pf-m-full-height"
+          className="pf-v5-c-card pf-m-compact"
           data-ouia-component-id="OUIA-Generated-Card-1"
           data-ouia-component-type="PF5/Card"
           data-ouia-safe={true}
