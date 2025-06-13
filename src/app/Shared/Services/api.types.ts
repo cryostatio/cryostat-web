@@ -231,6 +231,13 @@ export interface Recording {
   metadata: Metadata;
 }
 
+export interface ThreadDump {
+  content: string;
+  downloadUrl: string;
+  uuid: string;
+  jvmId?: string;
+}
+
 export interface ArchivedRecording extends Recording {
   jvmId?: string;
   archivedTime: number;
@@ -537,6 +544,8 @@ export enum NotificationCategory {
   LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
+  ThreadDumpSuccess = 'ThreadDumpSuccess',
+  ThreadDumpFailure = 'ThreadFumpFailure',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',
