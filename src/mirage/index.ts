@@ -359,6 +359,34 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return recording;
       });
+      this.post('api/v4.1/targets/:targetId/reports', (schema, request) => {
+        const target = schema.findBy(Resource.TARGET, { id: request.params.targetId });
+        if (!target) {
+          return new Response(404);
+        }
+        const jobId = 'abcd-1234';
+        setTimeout(() => {
+          websocket.send(
+            JSON.stringify({
+              meta: {
+                category: 'ReportSuccess',
+                type: { type: 'application', subType: 'json' },
+              },
+              message: {
+                jobId,
+                jvmId: target.jvmId,
+              },
+            }),
+          );
+        }, 500);
+        return new Response(
+          201,
+          {
+            Location: `api/v4/targets/${request.params.targetId}/reports`,
+          },
+          jobId,
+        );
+      });
       this.get('api/v4/targets/:targetId/reports/:remoteId', () => {
         return new Response(
           200,
