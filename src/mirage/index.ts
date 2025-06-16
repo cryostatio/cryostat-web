@@ -561,11 +561,18 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         const query = body.query.trim();
         const variables = body.variables;
         const begin = query.substring(0, query.indexOf('{'));
+        const targets: any[] = [];
         let target: any;
         if (variables.connectUrl) {
           target = schema.findBy(Resource.TARGET, { connectUrl: variables.connectUrl });
         } else if (variables.jvmId) {
           target = schema.findBy(Resource.TARGET, { jvmId: variables.jvmId });
+        } else if (variables.targetIds) {
+          for (let i = 0; i < variables.targetIds.length; i++) {
+            const id = variables.targetIds[i];
+            targets.push(schema.findBy(Resource.TARGET, { id }));
+          }
+          target = targets[0];
         }
         let name = 'unknown';
         for (const n of begin.split(' ')) {
@@ -634,6 +641,24 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   target: {
                     activeRecordings: {
                       data: schema.all(Resource.RECORDING).models,
+                    },
+                  },
+                },
+              ],
+            };
+            break;
+          case 'AggregateReportForTarget':
+            data = {
+              targetNodes: [
+                {
+                  target: {
+                    id: target.id,
+                    report: {
+                      lastUpdated: +Date.now(),
+                      aggregate: {
+                        count: 0,
+                        max: 0,
+                      },
                     },
                   },
                 },
