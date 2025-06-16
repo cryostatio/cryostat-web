@@ -159,6 +159,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return target
           ? [
               {
+                connectUrl: target.connectUrl,
                 jvmId: target.attrs.jvmId,
                 recordings: archives,
               },
@@ -601,7 +602,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.post('api/v4/graphql', (schema, request) => {
         const body = JSON.parse(request.requestBody);
         const query = body.query.trim();
-        const variables = body.variables;
+        const variables = body?.variables ?? {};
         const begin = query.substring(0, query.indexOf('{'));
         const targets: any[] = [];
         let target: any;
@@ -616,7 +617,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           }
           target = targets[0];
         }
-        let name = 'unknown';
+        let name = '';
         for (const n of begin.split(' ')) {
           if (n == '{') {
             break;
@@ -624,10 +625,14 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           if (!n || n == 'query') {
             continue;
           }
-          name = n.substring(0, n.indexOf('('));
+          if (n.includes('(')) {
+            name = n.substring(0, n.indexOf('('));
+          } else {
+            name = n.trim();
+          }
           break;
         }
-        if (name === 'unknown' || !name) {
+        if (!name) {
           return new Response(
             400,
             {},
@@ -637,6 +642,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         let data = {};
         switch (name) {
           case 'ArchivedRecordingsForTarget':
+          case 'AllTargetsArchives':
           case 'UploadedRecordings':
             data = {
               targetNodes: [
@@ -855,6 +861,12 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               ],
             };
             break;
+          default:
+            return new Response(
+              400,
+              {},
+              `${JSON.stringify(request.url)} (query: '${name}') currently unsupported in demo`,
+            );
         }
         return { data };
       });
