@@ -544,6 +544,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
                 onClick={handleReportRefresh}
                 aria-label="Request analysis"
                 isDisabled={!recordings.length}
+                data-quickstart-id="recordings-analyze-request"
               >
                 <ProcessAutomationIcon />
               </Button>
@@ -935,11 +936,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             data-quickstart-id="active-recordings-checkbox"
           />
         </Td>
-        <Td
-          key={`active-table-row-${index}_1`}
-          id={`active-ex-toggle-${index}`}
-          data-quickstart-id="recording-chevron"
-        />
+        <Td key={`active-table-row-${index}_1`} id={`active-ex-toggle-${index}`} />
         <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
           {recording.name}
         </Td>
