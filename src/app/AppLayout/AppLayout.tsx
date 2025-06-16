@@ -68,6 +68,8 @@ import {
   DropdownList,
   DropdownItem,
   Dropdown,
+  NavList,
+  NavExpandable,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
@@ -546,8 +548,62 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [location],
   );
 
-  const Navigation = React.useMemo(
-    () => (
+  const Navigation = React.useMemo(() => {
+    const navSubgroups = (routes: IAppRoute[], groupKey?: string): Map<string | undefined, IAppRoute[]> => {
+      const map = new Map<string | undefined, IAppRoute[]>();
+      const group: IAppRoute[] = routes.filter((r) => r.label).filter((r) => r.navGroup === groupKey);
+      group.forEach((r) => {
+        if (!map.has(r.navSubgroup)) {
+          map.set(r.navSubgroup, []);
+        }
+        map.get(r.navSubgroup)!.push(r);
+      });
+      return map;
+    };
+
+    const groups: Map<string, JSX.Element[]> = new Map();
+    navGroups.forEach((group) => {
+      if (!groups.has(group)) {
+        groups.set(group, []);
+      }
+      const nestedGroup = navSubgroups(routes, group);
+      const renderable = (route: IAppRoute, idx: number) => (
+        <NavItem
+          key={`${group}-${route.navSubgroup}-${route.label}-${idx}`}
+          id={`${route.label}-${idx}`}
+          isActive={isActiveRoute(route)}
+        >
+          <NavLink
+            end
+            to={route.path}
+            className={(active) => (active ? 'pf-m-current' : undefined)}
+            data-quickstart-id={`nav-${cleanDataId(route.label!)}-tab`}
+            data-tour-id={`${cleanDataId(route.label!)}`}
+          >
+            {route.label}
+            {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
+          </NavLink>
+        </NavItem>
+      );
+      nestedGroup.forEach((rs, k) => {
+        let items: JSX.Element[];
+        const renderables = rs
+          .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
+          .map((route, idx) => renderable(route, idx));
+        if (!k) {
+          items = renderables;
+        } else {
+          const anyActive = rs.some((r) => isActiveRoute(r));
+          items = [
+            <NavExpandable title={t(k)} groupId={k} isActive={anyActive} isExpanded>
+              {renderables}
+            </NavExpandable>,
+          ];
+        }
+        groups.get(group)!.push(...items);
+      });
+    });
+    return (
       <Nav
         id="nav-primary-simple"
         theme="dark"
@@ -555,41 +611,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         onSelect={mobileOnSelect}
         aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.GLOBAL_NAVIGATION')}
       >
-        {navGroups.map((title) => {
-          return (
-            <NavGroup title={title} key={title}>
-              {routes
-                .filter((route) => route.navGroup === title)
-                .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
-                .map((route, idx) => {
-                  return (
-                    route.label && (
-                      <NavItem
-                        key={`${route.label}-${idx}`}
-                        id={`${route.label}-${idx}`}
-                        isActive={isActiveRoute(route)}
-                      >
-                        <NavLink
-                          end
-                          to={route.path}
-                          className={(active) => (active ? 'pf-m-current' : undefined)}
-                          data-quickstart-id={`nav-${cleanDataId(route.label)}-tab`}
-                          data-tour-id={`${cleanDataId(route.label)}`}
-                        >
-                          {route.label}
-                          {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
-                        </NavLink>
-                      </NavItem>
-                    )
-                  );
-                })}
+        <NavList>
+          {Array.from(groups.entries()).map(([groupTitle, items]) => (
+            <NavGroup title={t(groupTitle)} key={groupTitle}>
+              {items}
             </NavGroup>
-          );
-        })}
+          ))}
+        </NavList>
       </Nav>
-    ),
-    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel, t],
-  );
+    );
+  }, [mobileOnSelect, isActiveRoute, levelBadge, activeLevel, t]);
 
   const Sidebar = React.useMemo(
     () => (

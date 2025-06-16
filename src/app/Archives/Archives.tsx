@@ -18,6 +18,7 @@ import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable
 import { Target, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import {
@@ -29,6 +30,8 @@ import {
   Tabs,
   TabTitleText,
   EmptyStateHeader,
+  Stack,
+  StackItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -55,6 +58,7 @@ export const uploadAsTarget: Target = {
 };
 
 enum ArchiveTab {
+  PER_TARGET = 'target',
   ALL_ARCHIVES = 'all-archives',
   ALL_TARGETS = 'all-targets',
   UPLOADS = 'uploads',
@@ -70,16 +74,34 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   const addSubscription = useSubscriptions();
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, 'tab', Object.values(ArchiveTab), ArchiveTab.ALL_TARGETS);
+    return getActiveTab(search, 'tab', Object.values(ArchiveTab), ArchiveTab.PER_TARGET);
   }, [search]);
 
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
+  const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
 
   const tabs = React.useMemo(() => {
     const arr: JSX.Element[] = [];
     if (archiveEnabled) {
+      arr.push(
+        <Tab
+          id="per-target"
+          key={ArchiveTab.PER_TARGET}
+          eventKey={ArchiveTab.PER_TARGET}
+          title={<TabTitleText>Target</TabTitleText>}
+        >
+          <Stack hasGutter>
+            <StackItem>
+              <TargetContextSelector />
+            </StackItem>
+            <StackItem>
+              <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
+            </StackItem>
+          </Stack>
+        </Tab>,
+      );
       arr.push(
         <Tab
           id="all-targets"
@@ -115,7 +137,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       }
     }
     return arr;
-  }, [capabilities.fileUploads, archiveEnabled, uploadTargetAsObs]);
+  }, [capabilities.fileUploads, archiveEnabled, uploadTargetAsObs, targetAsObs]);
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
@@ -145,8 +167,8 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
 
   return (
     <BreadcrumbPage {...props} pageTitle="Archives">
-      <Card isFullHeight>
-        <CardBody isFilled>{cardBody}</CardBody>
+      <Card isCompact>
+        <CardBody>{cardBody}</CardBody>
       </Card>
       <></>
     </BreadcrumbPage>
