@@ -190,33 +190,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
             )
         : context.target.target().pipe(
             filter((target) => !!target),
-            concatMap((target: Target) =>
-              context.api.graphql<any>(
-                `query ArchivedRecordingsForTarget($id: BigInteger!) {
-                targetNodes(filter: { targetIds: [$id] }) {
-                  target {
-                    archivedRecordings {
-                      data {
-                        name
-                        downloadUrl
-                        reportUrl
-                        metadata {
-                          labels {
-                            key
-                            value
-                          }
-                        }
-                        size
-                        archivedTime
-                      }
-                    }
-                  }
-                }
-              }`,
-                { id: target.id! },
-              ),
-            ),
-            map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
+            concatMap((target: Target) => context.api.getTargetArchivedRecordings(target)),
             first(),
           );
     }
