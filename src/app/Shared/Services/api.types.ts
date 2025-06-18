@@ -232,10 +232,10 @@ export interface Recording {
 }
 
 export interface ThreadDump {
-  content: string;
   downloadUrl: string;
   uuid: string;
   jvmId?: string;
+  lastModified?: number;
 }
 
 export interface ArchivedRecording extends Recording {

@@ -19,6 +19,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { NotificationCategory, ThreadDump } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -41,6 +42,8 @@ import {
   SearchInput,
   Divider,
   Tooltip,
+  Timestamp,
+  TimestampTooltipVariant,
 } from '@patternfly/react-core';
 import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -67,8 +70,8 @@ const tableColumns: TableColumn[] = [
     sortable: true,
   },
   {
-    title: 'Contents',
-    keyPaths: ['contents'],
+    title: 'Last Modified',
+    keyPaths: ['lastModified'],
     sortable: true,
   },
 ];
@@ -88,6 +91,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [threadDumpToDelete, setThreadDumpToDelete] = React.useState<ThreadDump | undefined>(undefined);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [dayjs, datetimeContext] = useDayjs();
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -247,8 +251,13 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
             <Td key={`thread-dump-id-${index}`} dataLabel={tableColumns[0].title}>
               {t.uuid}
             </Td>
-            <Td key={`thread-dump-content-${index}`} dataLabel={tableColumns[1].title}>
-              {t.content}
+            <Td key={`thread-dump-lastModified-${index}`} dataLabel={tableColumns[1].title}>
+              <Timestamp
+                className="thread-dump-table__timestamp"
+                tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(t.lastModified).toISOString() }}
+              >
+                {dayjs(t.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
+              </Timestamp>
             </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
               <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
