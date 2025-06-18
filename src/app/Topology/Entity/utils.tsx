@@ -266,7 +266,7 @@ export const getLinkPropsForTargetResource = (
     case 'eventTypes':
       return { to: { pathname: '/events', search: '?eventTab=event-type' } };
     case 'agentProbes':
-      return { to: { pathname: '/events', search: '?agentTab=agent-probe' } };
+      return { to: { pathname: '/instrumentation' } };
     case 'automatedRules':
       return { to: { pathname: '/rules' } };
     case 'credentials':
