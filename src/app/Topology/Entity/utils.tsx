@@ -258,7 +258,7 @@ export const getLinkPropsForTargetResource = (
 ): LinkProps => {
   switch (resourceType) {
     case 'activeRecordings':
-      return { to: { pathname: '/recordings', search: '?tab=active-recording' } };
+      return { to: { pathname: '/recordings' } };
     case 'archivedRecordings':
       return { to: { pathname: '/recordings', search: '?tab=archived-recording' } };
     case 'eventTemplates':
