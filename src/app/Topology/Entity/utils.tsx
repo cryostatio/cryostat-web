@@ -272,7 +272,7 @@ export const getLinkPropsForTargetResource = (
     case 'credentials':
       return { to: { pathname: '/security' } };
     case 'report':
-      return { to: { pathname: '/recordings', search: '?tab=active-recording', hash: 'report' } };
+      return { to: { pathname: '/recordings', hash: 'report' } };
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
