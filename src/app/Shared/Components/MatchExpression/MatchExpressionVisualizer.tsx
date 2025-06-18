@@ -71,14 +71,19 @@ import { componentFactory, createTargetNode, layoutFactory, transformData } from
 
 export interface MatchExpressionVisualizerProps {
   alertOptions?: AlertOptions;
+  defaultGraphView?: boolean;
 }
 
-export const MatchExpressionVisualizer: React.FC<MatchExpressionVisualizerProps> = ({ alertOptions, ...props }) => {
-  const [isGraph, setIsGraph] = React.useState(true);
+export const MatchExpressionVisualizer: React.FC<MatchExpressionVisualizerProps> = ({
+  alertOptions,
+  defaultGraphView,
+  ...props
+}) => {
+  const [isGraph, setIsGraph] = React.useState(defaultGraphView ?? true);
   return (
     <Stack {...props} hasGutter>
       <StackItem>
-        <LayoutRadioGroup onChange={setIsGraph} />
+        <LayoutRadioGroup defaultValue={defaultGraphView} onChange={setIsGraph} />
       </StackItem>
       <StackItem isFilled style={{ overflow: 'auto' }}>
         {isGraph ? <GraphView alertOptions={alertOptions} /> : <ListView alertOptions={alertOptions} />}
@@ -88,11 +93,12 @@ export const MatchExpressionVisualizer: React.FC<MatchExpressionVisualizerProps>
 };
 
 interface LayoutRadioGroupProps {
+  defaultValue?: boolean;
   onChange: (isGraph: boolean) => void;
 }
 
-const LayoutRadioGroup: React.FC<LayoutRadioGroupProps> = ({ onChange, ...props }) => {
-  const [isGraph, setIsGraph] = React.useState(true);
+const LayoutRadioGroup: React.FC<LayoutRadioGroupProps> = ({ defaultValue, onChange, ...props }) => {
+  const [isGraph, setIsGraph] = React.useState(defaultValue ?? true);
   const configs = React.useMemo(
     () => [
       {
@@ -287,8 +293,8 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
         sideBar={sidebar}
         sideBarOpen={selectedIds.length > 0}
         sideBarResizable={true}
-        minSideBarSize={`200px`}
-        defaultSideBarSize={`425px`}
+        minSideBarSize={'200px'}
+        defaultSideBarSize={'425px'}
       >
         <VisualizationProvider controller={visualization}>
           <VisualizationSurface state={{ selectedIds }} />
