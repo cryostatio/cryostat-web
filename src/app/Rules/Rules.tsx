@@ -363,22 +363,20 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       },
       {
         key: 'preservedArchives',
-        fmt: v => v,
+        fmt: (v) => v,
       },
-    ].forEach(
-      (e) => {
-        if (rule[e.key]) {
-          options.push({
-            key: e.key,
-            value: e.fmt(rule[e.key]),
-          });
-        }
-      },
-    );
+    ].forEach((e) => {
+      if (rule[e.key]) {
+        options.push({
+          key: t(`Rules.Options.${e.key}`),
+          value: e.fmt(rule[e.key]),
+        });
+      }
+    });
     (rule.metadata?.labels ?? []).forEach((label) => {
       if (label.key === AUTOANALYZE_KEY) {
         options.push({
-          key: AUTOANALYZE_KEY,
+          key: t('AUTOANALYZE'),
           value: label.value,
         });
       }
