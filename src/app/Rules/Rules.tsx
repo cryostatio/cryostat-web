@@ -73,10 +73,10 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
+import { AUTOANALYZE_KEY } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
-import { AUTOANALYZE_KEY } from './CreateRule';
 
 export interface RulesTableProps {}
 
@@ -342,47 +342,50 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     setIsUploadModalOpen(false);
   }, [setIsUploadModalOpen]);
 
-  const ruleOptions = (rule: Rule): KeyValue[] => {
-    const options: KeyValue[] = [];
-    [
-      {
-        key: 'archivalPeriodSeconds',
-        fmt: formatDuration,
-      },
-      {
-        key: 'initialDelaySeconds',
-        fmt: formatDuration,
-      },
-      {
-        key: 'maxAgeSeconds',
-        fmt: formatDuration,
-      },
-      {
-        key: 'maxSizeBytes',
-        fmt: formatBytes,
-      },
-      {
-        key: 'preservedArchives',
-        fmt: (v) => v,
-      },
-    ].forEach((e) => {
-      if (rule[e.key]) {
-        options.push({
-          key: t(`Rules.Options.${e.key}`),
-          value: e.fmt(rule[e.key]),
-        });
-      }
-    });
-    (rule.metadata?.labels ?? []).forEach((label) => {
-      if (label.key === AUTOANALYZE_KEY) {
-        options.push({
-          key: t('AUTOANALYZE'),
-          value: label.value,
-        });
-      }
-    });
-    return options;
-  };
+  const ruleOptions = React.useCallback(
+    (rule: Rule): KeyValue[] => {
+      const options: KeyValue[] = [];
+      [
+        {
+          key: 'archivalPeriodSeconds',
+          fmt: formatDuration,
+        },
+        {
+          key: 'initialDelaySeconds',
+          fmt: formatDuration,
+        },
+        {
+          key: 'maxAgeSeconds',
+          fmt: formatDuration,
+        },
+        {
+          key: 'maxSizeBytes',
+          fmt: formatBytes,
+        },
+        {
+          key: 'preservedArchives',
+          fmt: (v) => v,
+        },
+      ].forEach((e) => {
+        if (rule[e.key]) {
+          options.push({
+            key: t(`Rules.Options.${e.key}`),
+            value: e.fmt(rule[e.key]),
+          });
+        }
+      });
+      (rule.metadata?.labels ?? []).forEach((label) => {
+        if (label.key === AUTOANALYZE_KEY) {
+          options.push({
+            key: t('AUTOANALYZE'),
+            value: label.value,
+          });
+        }
+      });
+      return options;
+    },
+    [t],
+  );
 
   const ruleRows = React.useMemo(() => {
     const sorted = sortResources(
@@ -444,7 +447,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           </Td>
         </Tr>
       ));
-  }, [rules, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
+  }, [rules, ruleOptions, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
 
   const toolbar = React.useMemo(
     () => (
