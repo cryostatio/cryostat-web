@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
@@ -28,7 +29,6 @@ import {
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { MatchExpressionVisualizer } from './MatchExpressionVisualizer';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 
 export interface MatchExpressionDisplayProps {
   matchExpression: string;
@@ -47,7 +47,7 @@ export const MatchExpressionDisplay: React.FC<MatchExpressionDisplayProps> = ({ 
     );
     matchExprSvc.setSearchExpression(matchExpression);
     setShowModal(true);
-  }, [matchExpression, matchExprSvc]);
+  }, [addSubscription, matchExpression, matchExprSvc]);
 
   const handleClose = React.useCallback(() => {
     setLoading(false);
