@@ -260,7 +260,7 @@ export const getLinkPropsForTargetResource = (
     case 'activeRecordings':
       return { to: { pathname: '/recordings' } };
     case 'archivedRecordings':
-      return { to: { pathname: '/recordings', search: '?tab=archived-recording' } };
+      return { to: { pathname: '/archives', search: '?tab=target' } };
     case 'eventTemplates':
       return { to: { pathname: '/events', search: '?eventTab=event-template' } };
     case 'eventTypes':
