@@ -77,7 +77,7 @@ import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
 import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -139,6 +139,7 @@ export interface ActiveRecordingsTableProps {
 export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
@@ -147,9 +148,9 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [showPanel, setShowPanel] = React.useState(!!props.initialPanelContent);
+  const [showPanel, setShowPanel] = React.useState(!!(props.initialPanelContent ?? location.hash));
   const [panelContent, setPanelContent] = React.useState(
-    props.initialPanelContent === 'report' ? PanelContent.REPORT : PanelContent.LABELS,
+    props.initialPanelContent === 'report' || location.hash === '#report' ? PanelContent.REPORT : PanelContent.LABELS,
   );
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
