@@ -25,16 +25,34 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Card, CardBody, Split, SplitItem } from '@patternfly/react-core';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
+import {
+  Bullseye,
+  Button,
+  Card,
+  CardBody,
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateBody,
+  EmptyStateFooter,
+  EmptyStateHeader,
+  EmptyStateIcon,
+  Split,
+  SplitItem,
+} from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom-v5-compat';
 
 export const Reports: React.FC = () => {
+  const { t } = useCryostatTranslation();
+  const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState([] as { target: Target; hasSources: boolean; report: AggregateReport }[]);
 
   const doUpdate = React.useCallback(() => {
-    addSubscription(context.api.getCurrentReportsForAllTargets(0).subscribe((a) => setState(a)));
+    addSubscription(context.api.getCurrentReportsForAllTargets(-1).subscribe((a) => setState(a)));
   }, [addSubscription, context.api, setState]);
 
   React.useEffect(() => {
@@ -47,6 +65,14 @@ export const Reports: React.FC = () => {
     // too bad in this naive implementation.
     addSubscription(context.notificationChannel.messages('ReportSuccess').subscribe(() => doUpdate()));
   }, [addSubscription, context.notificationChannel, doUpdate]);
+
+  const handleNavigate = React.useCallback(
+    (target: Target) => {
+      context.target.setTarget(target);
+      navigate('/recordings#report');
+    },
+    [context.target, navigate],
+  );
 
   // TODO refactor, this is copied from JvmDetailsCard.tsx
   const wrappedTarget = React.useCallback((target: Target) => {
@@ -90,13 +116,33 @@ export const Reports: React.FC = () => {
               <SplitItem style={{ width: '35%' }}>
                 <EntityDetails entity={wrappedTarget(s.target)} />
               </SplitItem>
-              <SplitItem>
-                <AutomatedAnalysisResults
-                  target={s.target}
-                  hasSources={s.hasSources}
-                  timestamp={s.report.lastUpdated}
-                  analyses={categorizedEvaluations(s.report)}
-                />
+              <SplitItem isFilled>
+                {s.report?.aggregate?.count ? (
+                  <AutomatedAnalysisResults
+                    target={s.target}
+                    hasSources={s.hasSources}
+                    timestamp={s.report.lastUpdated}
+                    analyses={categorizedEvaluations(s.report)}
+                  />
+                ) : (
+                  <Bullseye style={{ minHeight: '30ch' }}>
+                    <EmptyState>
+                      <EmptyStateHeader
+                        titleText={t('Reports.NoResults.TITLE')}
+                        icon={<EmptyStateIcon icon={SearchIcon} />}
+                        headingLevel="h4"
+                      />
+                      <EmptyStateBody>{t('Reports.NoResults.DESCRIPTION')}</EmptyStateBody>
+                      <EmptyStateFooter>
+                        <EmptyStateActions>
+                          <Button variant="primary" onClick={() => handleNavigate(s.target)}>
+                            {t('Reports.NoResults.ACTION_BUTTON_CONTENT')}
+                          </Button>
+                        </EmptyStateActions>
+                      </EmptyStateFooter>
+                    </EmptyState>
+                  </Bullseye>
+                )}
               </SplitItem>
             </Split>
           </CardBody>
