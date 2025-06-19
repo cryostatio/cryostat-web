@@ -508,6 +508,13 @@
     },
     "FILTER_BY_STATE": "Filter by state"
   },
+  "Reports": {
+    "NoResults": {
+      "ACTION_BUTTON_CONTENT": "Go to Target Analysis",
+      "DESCRIPTION": "No Automated Analysis Report data is currently available for this target.",
+      "TITLE": "No Report Available"
+    }
+  },
   "Routes": {
     "ANALYZE": "Analyze",
     "CAPTURE": "Capture",
