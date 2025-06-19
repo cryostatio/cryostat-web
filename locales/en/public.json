@@ -513,6 +513,12 @@
       "ACTION_BUTTON_CONTENT": "Go to Target Analysis",
       "DESCRIPTION": "No Automated Analysis Report data is currently available for this target.",
       "TITLE": "No Report Available"
+    },
+    "Score": {
+      "AVAILABLE_ONLY": "All Available",
+      "CRITICAL_ONLY": "Critical Only",
+      "SHOW_ALL": "Show All",
+      "WARNING_ONLY": "Warning Only"
     }
   },
   "Routes": {
