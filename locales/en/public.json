@@ -509,6 +509,7 @@
     "FILTER_BY_STATE": "Filter by state"
   },
   "Reports": {
+    "DESCRIPTION": "Automated Analysis Reports which have been previously generated and are present in Cryostat's cache will appear here. Reports can be generated <0>manually on-demand</0> or <1>automatically on a recurring basis</1>.",
     "NoResults": {
       "ACTION_BUTTON_CONTENT": "Go to Target Analysis",
       "DESCRIPTION": "No Automated Analysis Report data is currently available for this target.",
