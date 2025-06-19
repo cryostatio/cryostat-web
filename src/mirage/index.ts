@@ -531,7 +531,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.post('api/v4/graphql', (schema, request) => {
         const body = JSON.parse(request.requestBody);
         const query = body.query.trim();
-        const variables = body.variables;
+        const variables = body?.variables ?? {};
         const begin = query.substring(0, query.indexOf('{'));
         let target: any;
         if (variables.connectUrl) {
@@ -539,7 +539,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         } else if (variables.jvmId) {
           target = schema.findBy(Resource.TARGET, { jvmId: variables.jvmId });
         }
-        let name = 'unknown';
+        let name = '';
         for (const n of begin.split(' ')) {
           if (n == '{') {
             break;
@@ -547,10 +547,14 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           if (!n || n == 'query') {
             continue;
           }
-          name = n.substring(0, n.indexOf('('));
+          if (n.includes('(')) {
+            name = n.substring(0, n.indexOf('('));
+          } else {
+            name = n.trim();
+          }
           break;
         }
-        if (name === 'unknown' || !name) {
+        if (!name) {
           return new Response(
             400,
             {},
@@ -760,6 +764,82 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               ],
             };
             break;
+          case 'AggregateReportsForAllTargets': {
+            data = {
+              targetNodes: [
+                {
+                  target: {
+                    id: 1,
+                    agent: true,
+                    alias: 'Fake Target',
+                    connectUrl: 'http://fake-target.local:1234',
+                    jvmId: '1234',
+                    labels: [],
+                    annotations: {
+                      platform: [
+                        {
+                          key: 'io.cryostat.demo',
+                          value: 'this-is-not-real',
+                        },
+                      ],
+                      cryostat: [
+                        {
+                          key: 'hello',
+                          value: 'world',
+                        },
+                        {
+                          key: 'REALM',
+                          value: 'Some Realm',
+                        },
+                      ],
+                    },
+                    activeRecordings: {
+                      aggregate: {
+                        count: 1,
+                      },
+                    },
+                    report: {
+                      lastUpdated: +Date.now() / 1000,
+                      aggregate: {
+                        count: 2,
+                        max: 50,
+                      },
+                      data: [
+                        {
+                          key: 'rule a',
+                          value: {
+                            name: 'rule a',
+                            topic: 'topic 1',
+                            score: 50,
+                            evaluation: {
+                              summary: '',
+                              explanation: '',
+                              solution: '',
+                              suggestions: [],
+                            },
+                          },
+                        },
+                        {
+                          key: 'rule b',
+                          value: {
+                            name: 'rule b',
+                            topic: 'topic 2',
+                            score: 2,
+                            evaluation: {
+                              summary: '',
+                              explanation: '',
+                              solution: '',
+                              suggestions: [],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            };
+          }
         }
         return { data };
       });
