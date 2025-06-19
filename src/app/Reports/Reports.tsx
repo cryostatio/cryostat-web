@@ -15,6 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { AutomatedAnalysisResults } from '@app/Recordings/TargetAnalysis';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import {
   AggregateReport,
   AnalysisResult,
@@ -31,6 +32,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardTitle,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
@@ -40,11 +42,16 @@ import {
   Spinner,
   Split,
   SplitItem,
+  Stack,
+  StackItem,
+  Text,
+  TextContent,
   ToggleGroup,
   ToggleGroupItem,
 } from '@patternfly/react-core';
 import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { tap } from 'rxjs';
 
@@ -124,38 +131,52 @@ export const Reports: React.FC = () => {
     <BreadcrumbPage pageTitle="Reports">
       <Card isCompact>
         <CardBody>
-          <Split hasGutter>
-            <SplitItem>
-              <Button isDisabled={minScore < 0} onClick={handleScore(-1)}>
-                {t('Reports.Score.SHOW_ALL')}
-              </Button>
-            </SplitItem>
-            <SplitItem>
-              <ToggleGroup>
-                <ToggleGroupItem
-                  text={t('Reports.Score.AVAILABLE_ONLY')}
-                  isSelected={minScore === 0}
-                  onChange={handleScore(0)}
-                />
-                <ToggleGroupItem
-                  text={t('Reports.Score.WARNING_ONLY')}
-                  isSelected={minScore === 25}
-                  onChange={handleScore(25)}
-                />
-                <ToggleGroupItem
-                  text={t('Reports.Score.CRITICAL_ONLY')}
-                  isSelected={minScore === 50}
-                  onChange={handleScore(50)}
-                />
-              </ToggleGroup>
-            </SplitItem>
-            <SplitItem isFilled />
-            <SplitItem>
-              <Button variant="plain" onClick={doUpdate}>
-                <ProcessAutomationIcon />
-              </Button>
-            </SplitItem>
-          </Split>
+          <Stack hasGutter>
+            <StackItem>
+              <Split hasGutter>
+                <SplitItem>
+                  <Button isDisabled={minScore < 0} onClick={handleScore(-1)}>
+                    {t('Reports.Score.SHOW_ALL')}
+                  </Button>
+                </SplitItem>
+                <SplitItem>
+                  <ToggleGroup>
+                    <ToggleGroupItem
+                      text={t('Reports.Score.AVAILABLE_ONLY')}
+                      isSelected={minScore === 0}
+                      onChange={handleScore(0)}
+                    />
+                    <ToggleGroupItem
+                      text={t('Reports.Score.WARNING_ONLY')}
+                      isSelected={minScore === 25}
+                      onChange={handleScore(25)}
+                    />
+                    <ToggleGroupItem
+                      text={t('Reports.Score.CRITICAL_ONLY')}
+                      isSelected={minScore === 50}
+                      onChange={handleScore(50)}
+                    />
+                  </ToggleGroup>
+                </SplitItem>
+                <SplitItem isFilled />
+                <SplitItem>
+                  <Button variant="plain" onClick={doUpdate}>
+                    <ProcessAutomationIcon />
+                  </Button>
+                </SplitItem>
+              </Split>
+            </StackItem>
+            <StackItem>
+              <TextContent>
+                <Trans
+                  t={t}
+                  components={[<CryostatLink to={'/recordings#report'} />, <CryostatLink to={'/rules/create'} />]}
+                >
+                  Reports.DESCRIPTION
+                </Trans>
+              </TextContent>
+            </StackItem>
+          </Stack>
         </CardBody>
       </Card>
       {loading ? (
