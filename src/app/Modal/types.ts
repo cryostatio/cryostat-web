@@ -96,7 +96,7 @@ export const DeleteActiveProbes: DeleteOrDisableWarning = {
 export const DeleteThreadDump: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteThreadDump,
   title: 'Permanently delete your archived thread dump?',
-  label: 'Delete thread dump',
+  label: 'Delete Thread Dump',
   description: `If you click Delete, your thread dump will be lost.`,
   ariaLabel: 'Thread Dump delete warning',
 };
@@ -149,6 +149,7 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteEventTemplates,
   DeleteProbeTemplates,
   DeleteActiveProbes,
+  DeleteThreadDump,
   DeleteCredentials,
   DeleteCustomTargets,
   DeleteDashboardLayout,
