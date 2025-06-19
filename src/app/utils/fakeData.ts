@@ -35,6 +35,8 @@ import {
   CachedReportValue,
   AnalysisResult,
   SimpleResponse,
+  TargetStub,
+  AggregateReport,
 } from '@app/Shared/Services/api.types';
 import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { NotificationService, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
@@ -357,27 +359,43 @@ class FakeApiService extends ApiService {
   }
 
   // Automated analysis card
-  // This fakes the fetch for automated analysis recording to return available.
-  // Then subsequent graphql call for archived recording is ignored
-  graphql<T>(
-    _query: string,
-    _variables?: unknown,
-    _suppressNotifications?: boolean | undefined,
-    _skipStatusCheck?: boolean | undefined,
-  ): Observable<T> {
+  getCurrentReportForTarget(_target: Target | TargetStub[], _aggregateOnly?: boolean): Observable<AggregateReport> {
     return of({
-      data: {
-        targetNodes: [
-          {
-            target: {
-              activeRecordings: {
-                data: [fakeAARecording],
-              },
+      aggregate: {
+        count: 2,
+        max: 50,
+      },
+      data: [
+        {
+          key: 'rule a',
+          value: {
+            name: 'rule a',
+            topic: 'topic 1',
+            score: 50,
+            evaluation: {
+              summary: '',
+              explanation: '',
+              solution: '',
+              suggestions: [],
             },
           },
-        ],
-      },
-    } as T);
+        },
+        {
+          key: 'rule b',
+          value: {
+            name: 'rule b',
+            topic: 'topic 2',
+            score: 2,
+            evaluation: {
+              summary: '',
+              explanation: '',
+              solution: '',
+              suggestions: [],
+            },
+          },
+        },
+      ],
+    });
   }
 
   createRecording(_recordingAttributes: RecordingAttributes): Observable<SimpleResponse | undefined> {

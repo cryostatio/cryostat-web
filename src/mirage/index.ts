@@ -359,6 +359,48 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return recording;
       });
+      this.get('api/v4.1/targets/:targetId/reports', (schema, request) => {
+        const target = schema.findBy(Resource.TARGET, { id: request.params.targetId });
+        if (!target) {
+          return new Response(404);
+        }
+        return {
+          aggregate: {
+            count: 2,
+            max: 50,
+          },
+          data: [
+            {
+              key: 'rule a',
+              value: {
+                name: 'rule a',
+                topic: 'topic 1',
+                score: 50,
+                evaluation: {
+                  summary: '',
+                  explanation: '',
+                  solution: '',
+                  suggestions: [],
+                },
+              },
+            },
+            {
+              key: 'rule b',
+              value: {
+                name: 'rule b',
+                topic: 'topic 2',
+                score: 2,
+                evaluation: {
+                  summary: '',
+                  explanation: '',
+                  solution: '',
+                  suggestions: [],
+                },
+              },
+            },
+          ],
+        };
+      });
       this.post('api/v4.1/targets/:targetId/reports', (schema, request) => {
         const target = schema.findBy(Resource.TARGET, { id: request.params.targetId });
         if (!target) {
