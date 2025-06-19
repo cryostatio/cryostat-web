@@ -17,6 +17,7 @@
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
+import _ from 'lodash';
 import {
   BehaviorSubject,
   combineLatest,
@@ -81,7 +82,6 @@ import {
 import { NotificationService } from './Notifications.service';
 import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
-import _ from 'lodash';
 
 export class ApiService {
   private readonly archiveEnabled = new BehaviorSubject<boolean>(true);

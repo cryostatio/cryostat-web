@@ -26,6 +26,7 @@ import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
+import Reports from './Reports/Reports';
 import CreateRule from './Rules/CreateRule';
 import RulesTable from './Rules/Rules';
 import SecurityPanel from './SecurityPanel/SecurityPanel';
@@ -37,7 +38,6 @@ import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import Reports from './Reports/Reports';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
