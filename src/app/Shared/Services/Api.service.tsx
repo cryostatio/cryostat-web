@@ -81,6 +81,7 @@ import {
 import { NotificationService } from './Notifications.service';
 import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
+import _ from 'lodash';
 
 export class ApiService {
   private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
@@ -821,6 +822,90 @@ export class ApiService {
     ).pipe(
       concatMap((resp) => resp.json()),
       first(),
+    );
+  }
+
+  getCurrentReportsForAllTargets(
+    minScore = -1,
+    // TODO refactor and define a named type for this return type
+  ): Observable<{ target: Target; hasSources: boolean; report: AggregateReport }[]> {
+    return this.graphql<any>(
+      `
+        query AggregateReportsForAllTargets {
+          targetNodes {
+            target {
+              id
+              jvmId
+              agent
+              connectUrl
+              alias
+              labels {
+                key
+                value
+              }
+              annotations {
+                cryostat {
+                  key
+                  value
+                }
+                platform {
+                  key
+                  value
+                }
+              }
+              activeRecordings {
+                aggregate {
+                  count
+                }
+              }
+              report {
+                lastUpdated
+                aggregate {
+                  count
+                  max
+                }
+                data {
+                  key
+                  value {
+                    name
+                    topic
+                    score
+                    evaluation {
+                      explanation
+                      solution
+                      summary
+                      suggestions {
+                        name
+                        setting
+                        value
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+    ).pipe(
+      map((resp) =>
+        (resp.data?.targetNodes ?? [])
+          .filter((n) => n.target.report.aggregate.max >= minScore)
+          .map((n) => ({
+            target: {
+              id: n.target.id,
+              jvmId: n.target.jvmId,
+              agent: n.target.agent,
+              connectUrl: n.target.connectUrl,
+              alias: n.target.alias,
+              labels: n.target.labels,
+              annotations: n.target.annotations,
+            },
+            hasSources: n.target.activeRecordings.aggregate.count > 0,
+            report: n.target.report,
+          })),
+      ),
+      map((a) => _.uniqWith(a, (a, b) => a.target.jvmId === b.target.jvmId)),
     );
   }
 
