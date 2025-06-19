@@ -891,6 +891,7 @@ export class ApiService {
       map((resp) =>
         (resp.data?.targetNodes ?? [])
           .filter((n) => n.target.report.aggregate.max >= minScore)
+          .sort((a, b) => b.target.report.aggregate.max - a.target.report.aggregate.max)
           .map((n) => ({
             target: {
               id: n.target.id,
