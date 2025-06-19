@@ -183,7 +183,7 @@ export const Reports: React.FC = () => {
         <Bullseye>
           <Spinner />
         </Bullseye>
-      ) : (
+      ) : state.length ? (
         state.map((s) => (
           <Card key={s.target.id} isCompact>
             <CardBody>
@@ -229,6 +229,21 @@ export const Reports: React.FC = () => {
             </CardBody>
           </Card>
         ))
+      ) : (
+        <Card>
+          <CardBody>
+            <Bullseye>
+              <EmptyState>
+                <EmptyStateHeader
+                  titleText={t('Reports.NoReports.TITLE')}
+                  icon={<EmptyStateIcon icon={SearchIcon} />}
+                  headingLevel="h4"
+                />
+                <EmptyStateBody>{t('Reports.NoReports.DESCRIPTION')}</EmptyStateBody>
+              </EmptyState>
+            </Bullseye>
+          </CardBody>
+        </Card>
       )}
     </BreadcrumbPage>
   );
