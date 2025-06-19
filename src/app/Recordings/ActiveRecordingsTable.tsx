@@ -148,7 +148,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [showPanel, setShowPanel] = React.useState(!!props.initialPanelContent || location.hash);
+  const [showPanel, setShowPanel] = React.useState(!!(props.initialPanelContent ?? location.hash));
   const [panelContent, setPanelContent] = React.useState(
     props.initialPanelContent === 'report' || location.hash === '#report' ? PanelContent.REPORT : PanelContent.LABELS,
   );
