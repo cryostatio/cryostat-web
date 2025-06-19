@@ -50,10 +50,11 @@ export const Reports: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState([] as { target: Target; hasSources: boolean; report: AggregateReport }[]);
+  const [minScore, setMinScore] = React.useState(-1);
 
   const doUpdate = React.useCallback(() => {
-    addSubscription(context.api.getCurrentReportsForAllTargets(-1).subscribe((a) => setState(a)));
-  }, [addSubscription, context.api, setState]);
+    addSubscription(context.api.getCurrentReportsForAllTargets(minScore).subscribe((a) => setState(a)));
+  }, [addSubscription, context.api, minScore, setState]);
 
   React.useEffect(() => {
     doUpdate();
@@ -118,6 +119,12 @@ export const Reports: React.FC = () => {
               </SplitItem>
               <SplitItem isFilled>
                 {s.report?.aggregate?.count ? (
+                  // FIXME the automated analysis report card uses global redux intents for filter states,
+                  // since it was originally designed to be unique on the Dashboard view. We now need a way
+                  // to preserve that behaviour for the Dashboard and Target Analysis components so that
+                  // preferences transfer between targets, as well as a way to set individual filters so that
+                  // the multiple AutomatedAnalysisResults components that can appear within this view can have
+                  // independent filter settings.
                   <AutomatedAnalysisResults
                     target={s.target}
                     hasSources={s.hasSources}
