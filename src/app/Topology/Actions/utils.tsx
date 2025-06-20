@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AUTOANALYZE_LABEL_KEY } from '@app/CreateRecording/CustomRecordingForm';
 import {
   ActiveRecording,
   EnvironmentNode,
@@ -157,7 +158,7 @@ export const nodeActions: NodeAction[] = [
             metadata: {
               labels: [
                 { key: QUICK_RECORDING_LABEL_KEY, value: group.name.replace(/[\s+-]/g, '_') },
-                { key: 'autoanalyze', value: 'true' },
+                { key: AUTOANALYZE_LABEL_KEY, value: 'true' },
               ],
             },
           },

@@ -63,6 +63,8 @@ import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
 
+export const AUTOANALYZE_LABEL_KEY = 'autoanalyze';
+
 export const CustomRecordingForm: React.FC = () => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
@@ -271,7 +273,7 @@ export const CustomRecordingForm: React.FC = () => {
         maxSize: toDisk ? maxSize * maxSizeUnit : undefined,
       },
       metadata: {
-        labels: [...formData.labels, { key: 'autoanalyze', value: `${autoanalyze}` }],
+        labels: [...formData.labels, { key: AUTOANALYZE_LABEL_KEY, value: `${autoanalyze}` }],
       },
     };
     handleCreateRecording(recordingAttributes);

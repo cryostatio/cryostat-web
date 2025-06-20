@@ -15,6 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { BreadcrumbTrail } from '@app/BreadcrumbPage/types';
+import { AUTOANALYZE_LABEL_KEY } from '@app/CreateRecording/CustomRecordingForm';
 import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { templateFromEventSpecifier } from '@app/CreateRecording/utils';
 import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
@@ -300,7 +301,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     const metadata: Metadata = {
       labels: [
         {
-          key: 'autoanalyze',
+          key: AUTOANALYZE_LABEL_KEY,
           value: `${autoanalyze}`,
         },
       ],
