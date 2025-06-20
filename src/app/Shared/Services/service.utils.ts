@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AUTOANALYZE_LABEL_KEY } from '@app/CreateRecording/CustomRecordingForm';
 import * as React from 'react';
 import { BehaviorSubject } from 'rxjs';
 import { automatedAnalysisRecordingName, RecordingAttributes, Target } from './api.types';
@@ -54,7 +55,7 @@ export const automatedAnalysisConfigToRecordingAttributes = (
           value: automatedAnalysisRecordingName,
         },
         {
-          key: 'autoanalyze',
+          key: AUTOANALYZE_LABEL_KEY,
           value: 'true',
         },
       ],

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AUTOANALYZE_LABEL_KEY } from '@app/CreateRecording/CustomRecordingForm';
 import { CustomRecordingFormData } from '@app/CreateRecording/types';
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
 import {
