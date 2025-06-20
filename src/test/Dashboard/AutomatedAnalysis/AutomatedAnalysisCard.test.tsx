@@ -117,7 +117,7 @@ describe('<AutomatedAnalysisCard />', () => {
   });
 
   it('renders correctly', async () => {
-    jest.spyOn(defaultServices.api, 'doGet').mockReturnValueOnce(of(mockReport));
+    jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValueOnce(of(mockReport));
     const tree = await renderSnapshot({
       routerConfigs: {
         routes: [
@@ -132,7 +132,7 @@ describe('<AutomatedAnalysisCard />', () => {
   });
 
   it('renders report generation error view correctly', async () => {
-    jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(throwError(() => 'test error'));
+    jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValue(throwError(() => 'test error'));
     render({
       routerConfigs: {
         routes: [
@@ -152,7 +152,7 @@ describe('<AutomatedAnalysisCard />', () => {
   });
 
   it('renders Active Recording analysis', async () => {
-    jest.spyOn(defaultServices.api, 'doGet').mockReturnValueOnce(of(mockReport));
+    jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValueOnce(of(mockReport));
 
     render({
       routerConfigs: {
@@ -175,7 +175,7 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders with disabled refresh button if no source recordings available', async () => {
     jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([]));
     jest
-      .spyOn(defaultServices.api, 'doGet')
+      .spyOn(defaultServices.api, 'getCurrentReportForTarget')
       .mockReturnValueOnce(throwError(() => new HttpError({ statusText: 'Not Found', status: 404 } as Response)));
 
     render({

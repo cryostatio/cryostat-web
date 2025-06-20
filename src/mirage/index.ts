@@ -359,6 +359,76 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return recording;
       });
+      this.get('api/v4.1/targets/:targetId/reports', (schema, request) => {
+        const target = schema.findBy(Resource.TARGET, { id: request.params.targetId });
+        if (!target) {
+          return new Response(404);
+        }
+        return {
+          aggregate: {
+            count: 2,
+            max: 50,
+          },
+          data: [
+            {
+              key: 'rule a',
+              value: {
+                name: 'rule a',
+                topic: 'topic 1',
+                score: 50,
+                evaluation: {
+                  summary: '',
+                  explanation: '',
+                  solution: '',
+                  suggestions: [],
+                },
+              },
+            },
+            {
+              key: 'rule b',
+              value: {
+                name: 'rule b',
+                topic: 'topic 2',
+                score: 2,
+                evaluation: {
+                  summary: '',
+                  explanation: '',
+                  solution: '',
+                  suggestions: [],
+                },
+              },
+            },
+          ],
+        };
+      });
+      this.post('api/v4.1/targets/:targetId/reports', (schema, request) => {
+        const target = schema.findBy(Resource.TARGET, { id: request.params.targetId });
+        if (!target) {
+          return new Response(404);
+        }
+        const jobId = 'abcd-1234';
+        setTimeout(() => {
+          websocket.send(
+            JSON.stringify({
+              meta: {
+                category: 'ReportSuccess',
+                type: { type: 'application', subType: 'json' },
+              },
+              message: {
+                jobId,
+                jvmId: target.jvmId,
+              },
+            }),
+          );
+        }, 500);
+        return new Response(
+          201,
+          {
+            Location: `api/v4/targets/${request.params.targetId}/reports`,
+          },
+          jobId,
+        );
+      });
       this.get('api/v4/targets/:targetId/reports/:remoteId', () => {
         return new Response(
           200,
@@ -533,11 +603,18 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         const query = body.query.trim();
         const variables = body.variables;
         const begin = query.substring(0, query.indexOf('{'));
+        const targets: any[] = [];
         let target: any;
         if (variables.connectUrl) {
           target = schema.findBy(Resource.TARGET, { connectUrl: variables.connectUrl });
         } else if (variables.jvmId) {
           target = schema.findBy(Resource.TARGET, { jvmId: variables.jvmId });
+        } else if (variables.targetIds) {
+          for (let i = 0; i < variables.targetIds.length; i++) {
+            const id = variables.targetIds[i];
+            targets.push(schema.findBy(Resource.TARGET, { id }));
+          }
+          target = targets[0];
         }
         let name = 'unknown';
         for (const n of begin.split(' ')) {
@@ -606,6 +683,24 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   target: {
                     activeRecordings: {
                       data: schema.all(Resource.RECORDING).models,
+                    },
+                  },
+                },
+              ],
+            };
+            break;
+          case 'AggregateReportForTarget':
+            data = {
+              targetNodes: [
+                {
+                  target: {
+                    id: target.id,
+                    report: {
+                      lastUpdated: +Date.now(),
+                      aggregate: {
+                        count: 0,
+                        max: 0,
+                      },
                     },
                   },
                 },

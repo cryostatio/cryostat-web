@@ -122,7 +122,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
     setIsLoading(true);
     addSubscription(
       context.api
-        .doGet(`/targets/${target.id}/reports`, 'v4.1', undefined, true, true)
+        .getCurrentReportForTarget(target)
         .pipe(
           tap(() => setHasReport(true)),
           catchError((err) => {
@@ -136,7 +136,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
           }),
           tap(() => setIsLoading(false)),
         )
-        .subscribe((ar: AggregateReport) => setResults(ar?.data?.map((k) => k.value) || [])),
+        .subscribe((ar: AggregateReport) => setResults(ar?.aggregate?.count ? ar.data!.map((k) => k.value) : [])),
     );
   }, [addSubscription, target, setIsLoading, setHasReport, context.api]);
 
