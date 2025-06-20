@@ -1492,6 +1492,30 @@ export class ApiService {
     return this.doGet(`targets/${target.id}/recordings`, 'v4', undefined, suppressNotifications, skipStatusCheck);
   }
 
+  getUploadedRecordings(): Observable<ArchivedRecording[]> {
+    return this.graphql<any>(
+      `query UploadedRecordings($filter: ArchivedRecordingsFilterInput) {
+        archivedRecordings(filter: $filter) {
+          data {
+            name
+            downloadUrl
+            reportUrl
+            metadata {
+              labels {
+                key
+                value
+              }
+            }
+            size
+          }
+        }
+      }`,
+      { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
+      true,
+      true,
+    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
+  }
+
   getEventTemplates(suppressNotifications = false, skipStatusCheck = false): Observable<EventTemplate[]> {
     return this.doGet<EventTemplate[]>('event_templates', 'v4', undefined, suppressNotifications, skipStatusCheck);
   }
