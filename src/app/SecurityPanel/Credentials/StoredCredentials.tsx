@@ -49,24 +49,13 @@ import {
   Bullseye,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
-import {
-  ExpandableRowContent,
-  InnerScrollContainer,
-  OuterScrollContainer,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@patternfly/react-table';
+import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { concatMap, forkJoin, map } from 'rxjs';
 import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
-import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 export const includesCredential = (credentials: MatchedCredential[], credential: MatchedCredential): boolean => {
   return credentials.some((cred) => cred.id === credential.id);
@@ -80,12 +69,10 @@ const enum Actions {
   HANDLE_HEADER_CHECK,
   HANDLE_NO_MATCH_ROW_CHECK,
   HANDLE_ATLEAST_ONE_MATCH_ROW_CHECK,
-  HANDLE_TOGGLE_EXPANDED,
 }
 
 interface State {
   credentials: MatchedCredential[];
-  expandedCredentials: MatchedCredential[];
   checkedCredentials: MatchedCredential[];
   isHeaderChecked: boolean;
 }
@@ -97,14 +84,10 @@ const reducer = (state: State, action) => {
       const updatedCheckedCredentials = state.checkedCredentials.filter((cred) =>
         includesCredential(credentials, cred),
       );
-      const updatedExpandedCredentials = state.expandedCredentials.filter((cred) =>
-        includesCredential(credentials, cred),
-      );
 
       return {
         ...state,
         credentials: credentials,
-        expandedCredentials: updatedExpandedCredentials,
         checkedCredentials: updatedCheckedCredentials,
         isHeaderChecked:
           updatedCheckedCredentials.length > 0 && updatedCheckedCredentials.length === credentials.length,
@@ -124,7 +107,6 @@ const reducer = (state: State, action) => {
       return {
         ...state,
         credentials: state.credentials.filter((o) => o.id !== deletedCredential.id),
-        expandedCredentials: state.expandedCredentials.filter((o) => o.id !== deletedCredential.id),
         checkedCredentials: updatedCheckedCredentials,
         isHeaderChecked: updatedCheckedCredentials.length > 0 && state.isHeaderChecked,
       };
@@ -164,18 +146,6 @@ const reducer = (state: State, action) => {
         isHeaderChecked: checkedCredentials.length === state.credentials.length,
       };
     }
-    case Actions.HANDLE_TOGGLE_EXPANDED: {
-      const credential: MatchedCredential = action.payload.credential;
-      const matched = state.expandedCredentials.some((o) => o.id === credential.id);
-      const updated = state.expandedCredentials.filter((o) => o.id !== credential.id);
-      if (!matched) {
-        updated.push(credential);
-      }
-      return {
-        ...state,
-        expandedCredentials: updated,
-      };
-    }
     default: {
       return state;
     }
@@ -203,7 +173,6 @@ export const StoredCredentials = () => {
   const addSubscription = useSubscriptions();
   const [state, dispatch] = React.useReducer(reducer, {
     credentials: [] as MatchedCredential[],
-    expandedCredentials: [] as MatchedCredential[],
     checkedCredentials: [] as MatchedCredential[],
     isHeaderChecked: false,
   } as State);
@@ -386,12 +355,7 @@ export const StoredCredentials = () => {
 
   const matchExpressionRows = React.useMemo(() => {
     return sortResources(sortBy, filteredCredentials, tableColumns).map((credential, idx) => {
-      const isExpanded = includesCredential(state.expandedCredentials, credential);
       const isChecked = includesCredential(state.checkedCredentials, credential);
-
-      const handleToggleExpanded = () => {
-        dispatch({ type: Actions.HANDLE_TOGGLE_EXPANDED, payload: { credential: credential } });
-      };
 
       const handleRowCheck = (checked: boolean) => {
         dispatch({ type: Actions.HANDLE_ROW_CHECK, payload: { checked: checked, credential: credential } });
@@ -399,17 +363,7 @@ export const StoredCredentials = () => {
 
       return (
         <Tr key={`${idx}_parent`}>
-          <Td
-            key={`credentials-table-row-${idx}_0`}
-            id={`credentials-ex-toggle-${idx}`}
-            aria-controls={`credentials-ex-expand-${idx}`}
-            expand={{
-              rowIndex: idx,
-              isExpanded: isExpanded,
-              onToggle: handleToggleExpanded,
-            }}
-          />
-          <Td key={`credentials-table-row-${idx}_1`}>
+          <Td key={`credentials-table-row-${idx}_0`}>
             <Checkbox
               name={`credentials-table-row-${idx}-check`}
               onChange={(_event, checked: boolean) => handleRowCheck(checked)}
@@ -418,54 +372,25 @@ export const StoredCredentials = () => {
               aria-label={t('StoredCredentials.ARIA_LABELS.ROW_CHECKBOX', { index: idx })}
             />
           </Td>
-          <Td key={`credentials-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
+          <Td key={`credentials-table-row-${idx}_1`} dataLabel={tableColumns[0].title}>
             <MatchExpressionDisplay matchExpression={credential.matchExpression} />
           </Td>
-          <Td key={`credentials-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Button variant="plain" onClick={() => handleToggleExpanded()}>
-              <Icon iconSize="md">
-                <ContainerNodeIcon />
-              </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential?.targets?.length ?? 0}</span>
-            </Button>
+          <Td key={`credentials-table-row-${idx}_2`} dataLabel={tableColumns[1].title}>
+            <Icon iconSize="md">
+              <ContainerNodeIcon />
+            </Icon>
+            <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential?.targets?.length ?? 0}</span>
           </Td>
         </Tr>
       );
     });
-  }, [filteredCredentials, state.expandedCredentials, state.checkedCredentials, sortBy, t]);
-
-  const targetRows = React.useMemo(() => {
-    return filteredCredentials.map((credential, idx) => {
-      const isExpanded: boolean = includesCredential(state.expandedCredentials, credential);
-
-      return (
-        <Tr key={`${idx}_child`} isExpanded={isExpanded}>
-          <Td key={`credentials-ex-expand-${idx}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 2}>
-            {isExpanded ? (
-              <ExpandableRowContent>
-                <MatchedTargetsTable id={credential.id} matchExpression={credential.matchExpression} />
-              </ExpandableRowContent>
-            ) : null}
-          </Td>
-        </Tr>
-      );
-    });
-  }, [filteredCredentials, state.expandedCredentials]);
-
-  const rowPairs = React.useMemo(() => {
-    const rowPairs: JSX.Element[] = [];
-    for (let i = 0; i < matchExpressionRows.length; i++) {
-      rowPairs.push(matchExpressionRows[i]);
-      rowPairs.push(targetRows[i]);
-    }
-    return rowPairs;
-  }, [matchExpressionRows, targetRows]);
+  }, [filteredCredentials, state.checkedCredentials, sortBy, t]);
 
   const handleNoMatchSelect = React.useCallback(() => {
     dispatch({ type: Actions.HANDLE_NO_MATCH_ROW_CHECK, payload: { noMatch: true } });
   }, [dispatch]);
 
-  const handleAtLeatOneSelect = React.useCallback(() => {
+  const handleAtLeastOneSelect = React.useCallback(() => {
     dispatch({ type: Actions.HANDLE_ATLEAST_ONE_MATCH_ROW_CHECK, payload: { noMatch: false } });
   }, []);
 
@@ -496,12 +421,11 @@ export const StoredCredentials = () => {
         <Table aria-label={t('StoredCredentials.ARIA_LABELS.TABLE')} isStickyHeader>
           <Thead>
             <Tr>
-              <Th key="table-header-expand" />
               <Th key="table-header-check-all" width={10}>
                 <CheckBoxActions
                   isSelectAll={matchExpressionRows.length > 0 && state.isHeaderChecked}
                   onSelectAll={handleHeaderCheck}
-                  onAtLeastOneMatchSelect={handleAtLeatOneSelect}
+                  onAtLeastOneMatchSelect={handleAtLeastOneSelect}
                   onNoMatchSelect={handleNoMatchSelect}
                 />
               </Th>
@@ -512,7 +436,7 @@ export const StoredCredentials = () => {
               ))}
             </Tr>
           </Thead>
-          <Tbody>{rowPairs}</Tbody>
+          <Tbody>{matchExpressionRows}</Tbody>
         </Table>
       </>
     );

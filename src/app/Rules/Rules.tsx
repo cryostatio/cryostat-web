@@ -19,11 +19,18 @@ import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
-import { Rule, NotificationCategory } from '@app/Shared/Services/api.types';
+import { Rule, NotificationCategory, keyValueToString, KeyValue } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, formatBytes, formatDuration, sortResources, portalRoot } from '@app/utils/utils';
+import {
+  TableColumn,
+  formatBytes,
+  formatDuration,
+  sortResources,
+  portalRoot,
+  LABEL_TEXT_MAXWIDTH,
+} from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
@@ -42,6 +49,8 @@ import {
   TextVariants,
   SearchInput,
   Bullseye,
+  LabelGroup,
+  Label,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -64,6 +73,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
+import { AUTOANALYZE_KEY } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
@@ -91,6 +101,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       {
         title: t('ENABLED'),
         keyPaths: ['enabled'],
+        sortable: true,
       },
       {
         title: t('NAME'),
@@ -110,32 +121,13 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       {
         title: t('EVENT_SPECIFIER'),
         keyPaths: ['eventSpecifier'],
+        sortable: true,
         tooltip: t('Rules.EVENT_SPECIFIER_TOOLTIP'),
       },
       {
-        title: t('MAXIMUM_AGE'),
-        keyPaths: ['maxAgeSeconds'],
-        tooltip: t('Rules.MAX_AGE_TOOLTIP'),
-      },
-      {
-        title: t('MAXIMUM_SIZE'),
-        keyPaths: ['maxSizeBytes'],
-        tooltip: t('Rules.MAX_SIZE_TOOLTIP'),
-      },
-      {
-        title: t('ARCHIVAL_PERIOD'),
-        keyPaths: ['archivalPeriodSeconds'],
-        tooltip: t('Rules.ARCHIVAL_PERIOD_TOOLTIP'),
-      },
-      {
-        title: t('INITIAL_DELAY'),
-        keyPaths: ['initialDelaySeconds'],
-        tooltip: t('Rules.INITIAL_DELAY_TOOLTIP'),
-      },
-      {
-        title: t('PRESERVED_ARCHIVES'),
-        keyPaths: ['preservedArchives'],
-        tooltip: t('Rules.PRESERVED_ARCHIVES_TOOLTIP'),
+        title: t('OPTIONS'),
+        keyPaths: ['options'],
+        sortable: false,
       },
     ],
     [t],
@@ -350,6 +342,51 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     setIsUploadModalOpen(false);
   }, [setIsUploadModalOpen]);
 
+  const ruleOptions = React.useCallback(
+    (rule: Rule): KeyValue[] => {
+      const options: KeyValue[] = [];
+      [
+        {
+          key: 'archivalPeriodSeconds',
+          fmt: formatDuration,
+        },
+        {
+          key: 'initialDelaySeconds',
+          fmt: formatDuration,
+        },
+        {
+          key: 'maxAgeSeconds',
+          fmt: formatDuration,
+        },
+        {
+          key: 'maxSizeBytes',
+          fmt: formatBytes,
+        },
+        {
+          key: 'preservedArchives',
+          fmt: (v) => v,
+        },
+      ].forEach((e) => {
+        if (rule[e.key]) {
+          options.push({
+            key: t(`Rules.Options.${e.key}`),
+            value: e.fmt(rule[e.key]),
+          });
+        }
+      });
+      (rule.metadata?.labels ?? []).forEach((label) => {
+        if (label.key === AUTOANALYZE_KEY) {
+          options.push({
+            key: t('AUTOANALYZE'),
+            value: label.value,
+          });
+        }
+      });
+      return options;
+    },
+    [t],
+  );
+
   const ruleRows = React.useMemo(() => {
     const sorted = sortResources(
       {
@@ -383,23 +420,21 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           <Td key={`automatic-rule-matchExpression-${index}`} width={25} dataLabel={tableColumns[3].title}>
             <MatchExpressionDisplay matchExpression={r.matchExpression} />
           </Td>
-          <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
+          <Td key={`automatic-rule-event-specifier-${index}`} dataLabel={tableColumns[4].title}>
             {r.eventSpecifier}
           </Td>
-          <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[5].title}>
-            {formatDuration(r.maxAgeSeconds)}
-          </Td>
-          <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[6].title}>
-            {formatBytes(r.maxSizeBytes)}
-          </Td>
-          <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[7].title}>
-            {formatDuration(r.archivalPeriodSeconds)}
-          </Td>
-          <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[8].title}>
-            {formatDuration(r.initialDelaySeconds)}
-          </Td>
-          <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[9].title}>
-            {r.preservedArchives}
+          <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[5].title}>
+            <LabelGroup isVertical style={{ padding: '0.2em' }}>
+              {ruleOptions(r).length ? (
+                ruleOptions(r).map((options) => (
+                  <Label color="purple" key={options.key} textMaxWidth={LABEL_TEXT_MAXWIDTH}>
+                    {keyValueToString(options)}
+                  </Label>
+                ))
+              ) : (
+                <EmptyText text="No options" />
+              )}
+            </LabelGroup>
           </Td>
           <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
             <ActionsColumn
@@ -412,7 +447,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           </Td>
         </Tr>
       ));
-  }, [rules, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
+  }, [rules, ruleOptions, sortBy, handleToggle, actionResolver, t, tableColumns, searchTerm]);
 
   const toolbar = React.useMemo(
     () => (
