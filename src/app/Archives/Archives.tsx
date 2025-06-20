@@ -88,6 +88,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       arr.push(
         <Tab
           id="per-target"
+          data-quickstart-id="nav-archives-per-target"
           key={ArchiveTab.PER_TARGET}
           eventKey={ArchiveTab.PER_TARGET}
           title={<TabTitleText>Target</TabTitleText>}
@@ -105,6 +106,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       arr.push(
         <Tab
           id="all-targets"
+          data-quickstart-id="nav-archives-all-targets"
           key={ArchiveTab.ALL_TARGETS}
           eventKey={ArchiveTab.ALL_TARGETS}
           title={<TabTitleText>All Targets</TabTitleText>}
@@ -115,6 +117,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       arr.push(
         <Tab
           id="all-archives"
+          data-quickstart-id="nav-archives-all-archives"
           key={ArchiveTab.ALL_ARCHIVES}
           eventKey={ArchiveTab.ALL_ARCHIVES}
           title={<TabTitleText>All Archives</TabTitleText>}
@@ -127,6 +130,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
         arr.push(
           <Tab
             id="uploads"
+            data-quickstart-id="nav-archives-all-uploads"
             key={ArchiveTab.UPLOADS}
             eventKey={ArchiveTab.UPLOADS}
             title={<TabTitleText>Uploads</TabTitleText>}
