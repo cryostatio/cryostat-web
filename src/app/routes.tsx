@@ -26,6 +26,7 @@ import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
+import Reports from './Reports/Reports';
 import CreateRule from './Rules/CreateRule';
 import RulesTable from './Rules/Rules';
 import SecurityPanel from './SecurityPanel/SecurityPanel';
@@ -151,6 +152,15 @@ const flightRecorderRoutes: IAppRoute[] = [
     title: 'Archives',
     description:
       'View Archived Recordings across all target JVMs, as well as upload Recordings directly to the archive.',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: ANALYZE,
+  },
+  {
+    component: Reports,
+    label: 'Automated Reports',
+    path: toPath('/reports'),
+    title: 'Automated Reports',
+    description: 'View Automated Analysis Reports across all target JVMs.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: ANALYZE,
   },
