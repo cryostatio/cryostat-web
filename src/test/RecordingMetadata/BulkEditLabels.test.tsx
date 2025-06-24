@@ -104,22 +104,10 @@ const mockArchivedLabelsNotification = {
   },
 } as NotificationMessage;
 
-const mockArchivedRecordingsResponse = {
-  data: {
-    targetNodes: [
-      {
-        target: {
-          archivedRecordings: {
-            data: [mockArchivedRecording] as ArchivedRecording[],
-          },
-        },
-      },
-    ],
-  },
-};
+const mockArchivedRecordings = [mockArchivedRecording];
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
+jest.spyOn(defaultServices.api, 'getTargetArchivedRecordings').mockReturnValue(of(mockArchivedRecordings));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of(mockActiveRecordingResponse));
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
