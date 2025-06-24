@@ -67,6 +67,8 @@ import { CEL_SPEC_HREF, isRuleNameValid } from './utils';
 
 export interface CreateRuleFormProps {}
 
+export const AUTOANALYZE_KEY = 'autoanalyze';
+
 export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
@@ -300,7 +302,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     const metadata: Metadata = {
       labels: [
         {
-          key: 'autoanalyze',
+          key: AUTOANALYZE_KEY,
           value: `${autoanalyze}`,
         },
       ],
