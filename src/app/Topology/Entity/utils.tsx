@@ -258,21 +258,21 @@ export const getLinkPropsForTargetResource = (
 ): LinkProps => {
   switch (resourceType) {
     case 'activeRecordings':
-      return { to: { pathname: '/recordings', search: '?tab=active-recording' } };
+      return { to: { pathname: '/recordings' } };
     case 'archivedRecordings':
-      return { to: { pathname: '/recordings', search: '?tab=archived-recording' } };
+      return { to: { pathname: '/archives', search: '?tab=target' } };
     case 'eventTemplates':
       return { to: { pathname: '/events', search: '?eventTab=event-template' } };
     case 'eventTypes':
       return { to: { pathname: '/events', search: '?eventTab=event-type' } };
     case 'agentProbes':
-      return { to: { pathname: '/events', search: '?agentTab=agent-probe' } };
+      return { to: { pathname: '/instrumentation' } };
     case 'automatedRules':
       return { to: { pathname: '/rules' } };
     case 'credentials':
       return { to: { pathname: '/security' } };
     case 'report':
-      return { to: { pathname: '/recordings', search: '?tab=active-recording', hash: 'report' } };
+      return { to: { pathname: '/recordings', hash: 'report' } };
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }

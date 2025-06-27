@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn } from '@app/utils/utils';
+import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH, sortResources, TableColumn, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
@@ -77,7 +77,7 @@ import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
 import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -139,6 +139,7 @@ export interface ActiveRecordingsTableProps {
 export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
@@ -147,9 +148,9 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [showPanel, setShowPanel] = React.useState(!!props.initialPanelContent);
+  const [showPanel, setShowPanel] = React.useState(!!(props.initialPanelContent ?? location.hash));
   const [panelContent, setPanelContent] = React.useState(
-    props.initialPanelContent === 'report' ? PanelContent.REPORT : PanelContent.LABELS,
+    props.initialPanelContent === 'report' || location.hash === '#report' ? PanelContent.REPORT : PanelContent.LABELS,
   );
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -190,7 +191,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate('create', { relative: 'path' });
+    navigate(toPath('/recordings/create'), { relative: 'path' });
   }, [navigate]);
 
   const handleEditLabels = React.useCallback(() => {
@@ -543,6 +544,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
                 onClick={handleReportRefresh}
                 aria-label="Request analysis"
                 isDisabled={!recordings.length}
+                data-quickstart-id="recordings-analyze-request"
               >
                 <ProcessAutomationIcon />
               </Button>
@@ -934,11 +936,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             data-quickstart-id="active-recordings-checkbox"
           />
         </Td>
-        <Td
-          key={`active-table-row-${index}_1`}
-          id={`active-ex-toggle-${index}`}
-          data-quickstart-id="recording-chevron"
-        />
+        <Td key={`active-table-row-${index}_1`} id={`active-ex-toggle-${index}`} />
         <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
           {recording.name}
         </Td>

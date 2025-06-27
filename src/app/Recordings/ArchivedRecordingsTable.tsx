@@ -37,7 +37,6 @@ import {
   ArchivedRecording,
   Target,
   RecordingDirectory,
-  UPLOADS_SUBDIRECTORY,
   NotificationCategory,
   NullableTarget,
   CategorizedRuleEvaluations,
@@ -84,7 +83,7 @@ import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@pa
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
@@ -194,58 +193,11 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   );
 
   const queryTargetRecordings = React.useCallback(
-    (targetId: number) => {
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-      return context.api.graphql<any>(
-        `
-      query ArchivedRecordingsForTarget($id: BigInteger!) {
-        targetNodes(filter: { targetIds: [$id] }) {
-          target {
-            archivedRecordings {
-              data {
-                name
-                downloadUrl
-                reportUrl
-                metadata {
-                  labels {
-                    key
-                    value
-                  }
-                }
-                size
-              }
-            }
-          }
-        }
-      }`,
-        { id: targetId },
-      );
-    },
+    (target: Target) => context.api.getTargetArchivedRecordings(target),
     [context.api],
   );
 
-  const queryUploadedRecordings = React.useCallback(() => {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    return context.api.graphql<any>(
-      `query UploadedRecordings($filter: ArchivedRecordingsFilterInput) {
-        archivedRecordings(filter: $filter) {
-          data {
-            name
-            downloadUrl
-            reportUrl
-            metadata {
-              labels {
-                key
-                value
-              }
-            }
-            size
-          }
-        }
-      }`,
-      { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
-    );
-  }, [context.api]);
+  const queryUploadedRecordings = React.useCallback(() => context.api.getUploadedRecordings(), [context.api]);
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
@@ -253,12 +205,10 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       handleRecordings(directoryRecordings);
     } else if (isUploadsTable) {
       addSubscription(
-        queryUploadedRecordings()
-          .pipe(map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []))
-          .subscribe({
-            next: handleRecordings,
-            error: handleError,
-          }),
+        queryUploadedRecordings().subscribe({
+          next: handleRecordings,
+          error: handleError,
+        }),
       );
     } else {
       addSubscription(
@@ -266,8 +216,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
           .pipe(
             filter((target) => !!target),
             first(),
-            concatMap((target: Target) => queryTargetRecordings(target.id!)),
-            map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
+            concatMap((target: Target) => queryTargetRecordings(target)),
           )
           .subscribe({
             next: handleRecordings,

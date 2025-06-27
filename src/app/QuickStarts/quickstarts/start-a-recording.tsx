@@ -76,13 +76,9 @@ Select a Target JVM from the list of available targets that [APP] has discovered
       {
         title: 'Start a Recording',
         description: `
-There are two tabs within the Recordings page:
+*Active* recordings are **Recordings** that only exist only within the Target JVM. *Archived* recordings are Recordings that have been saved from the Target JVM and copied to [APP]'s storage volume.
 
-[Active Recordings]{{highlight active-recordings-tab}} and [Archived Recordings]{{highlight archived-recordings-tab}}.
-
-**Active Recordings** are Recordings that only exist only within the Target JVM. **Archived Recordings** are Recordings that have been saved from the Target JVM and copied to [APP]'s storage volume.
-
-To start an active Recording:
+To start an *Active* **Recording**:
 
 1. Click [Create]{{highlight recordings-create-btn}} to open the **Custom Flight Recording Form**.
 [If you have a smaller viewport, the \`Create\` button may not be immediately visible. In this case, you can click on the kebab button (three vertical dots) to reveal additional options, including \`Create\`."]{{admonition note}}
@@ -91,7 +87,7 @@ To start an active Recording:
 4. Select an [Event Template]{{highlight template-selector}} to use for the Recording.
 5. Click [Create]{{highlight crf-create-btn}}.
 
-After the creation of a Recording, the Recording will be displayed in the **Active Recordings** tab. You should be able to see the Recording's name, start time, duration, state, and any attached Labels.
+After the creation of a Recording, the Recording will be displayed in the **Recordings** table. You should be able to see the Recording's name, start time, duration, state, and any attached Labels.
 
 [You may also attach metadata Labels to the Recordings under the [Metadata]{{highlight crf-metadata-opt}} options or configure your custom Recording further under the [Advanced]{{highlight crf-advanced-opt}} options.]{{admonition tip}}`,
         review: {
@@ -125,16 +121,15 @@ Downloading a Recording will save the Recording to your local machine as a JFR f
         },
       },
       {
-        title: 'View an analysis report',
+        title: 'View an automated analysis report from active data',
         description: `
-[APP] is able to generate an **Automated analysis report** using a JFR Recording. The **Java Mission Control** rules engine analyzes your Recording, looks for common problems, and assigns a severity score from 0 (no problem) to 100 (potentially severe problem) to each problem.
-1. Click the [row chevron]{{highlight recording-chevron}} next to the Recording that you want to view an analysis report for.
-2. If no tile groups appear then no problems were detected in your Recording. If any tiles do appear you can click on each one to view its severity score and see any suggestions to fix the problem.
+[APP] is able to generate an **Automated analysis report** using active JFR Recordings available on target JVMs as sources. The **JDK Mission Control** rules engine analyzes your Recording, looks for common problems, and assigns a severity score from 0 (no problem) to 100 (potentially severe problem) to each problem.
+1. Click the [Analyze toolbar button]{{highlight recordings-analyze-btn}}.
+2. An **Automated Analysis** slide-out panel will appear containing the analysis results. If there are no **Active Recording** sources available on the target, click the [Create a Recording]{{highlight recordings-analyze-create-recording}} text label, complete and submit the form, then try again. If there are **Active Recording** sources available and no current report data, or you would like to generate new report data from the latest **Recording** data, click the [report generation button]{{highlight recordings-analyze-request}}.
+3. The **Automated analysis report** results should appear.
 `,
         review: {
           instructions: '#### Verify that you can see an analysis report of the Recording.',
-          failedTaskHelp:
-            'The chevron `>` should be at the beginning of the Recording row in the **Active Recordings** or **Archived Recordings** tables. Clicking the chevron should expand the table row and reveal the analysis report tiles',
         },
       },
       {
@@ -143,13 +138,26 @@ Downloading a Recording will save the Recording to your local machine as a JFR f
 Archiving a Recording will save the Recording to [APP]'s archival storage, and will persist even after either the Target JVM, or [APP], has stopped. These Recordings will appear in the Target JVM's **Archived Recordings** tab, as well as in the [Archives]{{highlight nav-archives-tab}} view on the [APP] console navigation bar.
 
 1. Click [Archive]{{highlight recordings-archive-btn}} to archive the Recording.
-2. To view the Archived Recording in [APP]'s storage, go to the [Archived Recordings]{{highlight archived-recordings-tab}} tab.
+2. To view the Archived Recording in [APP]'s storage, go to the **Flight Recorder** [Archives]{{highlight nav-archives-tab}} view, then click the [Target]{{highlight nav-archives-per-target}} tab.
 
-[You can download Archived Recordings and view an analysis report of the Archived Recording from the [Archived Recordings]{{highlight archived-recordings-tab}} tab, similar to active recordings.]{{admonition tip}}`,
+[You can download and visualize Archived Recordings in a similar manner to active recordings.]{{admonition tip}}`,
         review: {
           instructions: '#### Verify that the Recording has been archived in the **Archived Recordings** tab.',
           failedTaskHelp:
             'The Recording name should have been saved in the format `<jvm-alias>_<recording-name>_<timestamp>.jfr`. If you still cannot find the Recording, please try the above steps again.',
+        },
+      },
+      {
+        title: 'View an automated analysis report from archived data',
+        description: `
+[APP] is also able to generate an **Automated analysis report** using specific archived JFR Recordings as a source. The **JDK Mission Control** rules engine analyzes the *Archived* **Recording** the same way that it did previously for your *Active* **Recording**.
+1. Click the [chevron]{{highlight recording-chevron}} on the table row representing the **Recording** data file you are interested in.
+2. If no tile groups appear then no problems were detected in your Recording. If any tiles do appear you can click on each one to view its severity score and see any suggestions to fix the problem.
+`,
+        review: {
+          instructions: '#### Verify that you can see an analysis report of the Recording.',
+          failedTaskHelp:
+            'The chevron `>` should be at the beginning of the Recording row in the **Archived Recordings** tables. Clicking the chevron should expand the table row and reveal the analysis report tiles',
         },
       },
     ],

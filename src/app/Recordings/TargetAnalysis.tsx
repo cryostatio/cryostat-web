@@ -457,6 +457,7 @@ const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
                 t={t}
                 components={[
                   <CryostatLink
+                    data-quickstart-id="recordings-analyze-create-recording"
                     state={
                       {
                         name: 'analysis',

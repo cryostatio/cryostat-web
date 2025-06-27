@@ -289,7 +289,12 @@ export class ApiService {
             `rules/${rule.name}`,
             {
               method: 'PATCH',
-              body: JSON.stringify(rule),
+              body: JSON.stringify({
+                ...rule,
+                metadata: {
+                  labels: this.transformLabelsToObject(rule?.metadata?.labels ?? []),
+                },
+              }),
               headers,
             },
             new URLSearchParams({ clean: String(clean) }),
@@ -1553,6 +1558,30 @@ export class ApiService {
     skipStatusCheck = false,
   ): Observable<ActiveRecording[]> {
     return this.doGet(`targets/${target.id}/recordings`, 'v4', undefined, suppressNotifications, skipStatusCheck);
+  }
+
+  getUploadedRecordings(): Observable<ArchivedRecording[]> {
+    return this.graphql<any>(
+      `query UploadedRecordings($filter: ArchivedRecordingsFilterInput) {
+        archivedRecordings(filter: $filter) {
+          data {
+            name
+            downloadUrl
+            reportUrl
+            metadata {
+              labels {
+                key
+                value
+              }
+            }
+            size
+          }
+        }
+      }`,
+      { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
+      true,
+      true,
+    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
   getEventTemplates(suppressNotifications = false, skipStatusCheck = false): Observable<EventTemplate[]> {

@@ -94,20 +94,6 @@ const mockRecording: ArchivedRecording = {
   archivedTime: 2048,
 };
 
-const mockArchivedRecordingsResponse = {
-  data: {
-    targetNodes: [
-      {
-        target: {
-          archivedRecordings: {
-            data: [mockRecording],
-          },
-        },
-      },
-    ],
-  },
-};
-
 const mockAllArchivedRecordingsResponse = {
   data: {
     archivedRecordings: {
@@ -160,12 +146,13 @@ jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(tr
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
+jest.spyOn(defaultServices.api, 'getTargetArchivedRecordings').mockReturnValue(of([mockRecording]));
+jest.spyOn(defaultServices.api, 'getUploadedRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'graphql').mockImplementation((query: string) => {
-  if (query.includes('ArchivedRecordingsForTarget')) {
-    return of(mockArchivedRecordingsResponse);
-  } else {
+  if (query.includes('AllTargetsArchives')) {
     return of(mockAllArchivedRecordingsResponse);
   }
+  throw new Error(`unknown query: ${query}`);
 });
 jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of());
 
@@ -905,7 +892,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('should show error view if failing to retrieve Recordings', async () => {
-    jest.spyOn(defaultServices.api, 'graphql').mockImplementationOnce((_query) => {
+    jest.spyOn(defaultServices.api, 'getTargetArchivedRecordings').mockImplementationOnce((_query) => {
       throw new Error('Something wrong');
     });
 
