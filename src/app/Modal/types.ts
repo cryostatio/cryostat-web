@@ -20,6 +20,7 @@ export enum DeleteOrDisableWarningType {
   DisableAutomatedRules = 'DisableAutomatedRules',
   DeleteEventTemplates = 'DeleteEventTemplates',
   DeleteProbeTemplates = 'DeleteProbeTemplates',
+  DeleteThreadDump = 'DeleteThreadDump',
   DeleteActiveProbes = 'DeleteActiveProbes',
   DeleteCredentials = 'DeleteCredentials',
   DeleteCustomTargets = 'DeleteCustomTargets',
@@ -92,6 +93,14 @@ export const DeleteActiveProbes: DeleteOrDisableWarning = {
   ariaLabel: 'Active probes remove warning',
 };
 
+export const DeleteThreadDump: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteThreadDump,
+  title: 'Permanently delete your archived thread dump?',
+  label: 'Delete Thread Dump',
+  description: `If you click Delete, your thread dump will be lost.`,
+  ariaLabel: 'Thread Dump delete warning',
+};
+
 export const DeleteCredentials: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteCredentials,
   title: 'Permanently delete your Credentials?',
@@ -140,6 +149,7 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteEventTemplates,
   DeleteProbeTemplates,
   DeleteActiveProbes,
+  DeleteThreadDump,
   DeleteCredentials,
   DeleteCustomTargets,
   DeleteDashboardLayout,

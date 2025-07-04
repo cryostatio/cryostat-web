@@ -20,6 +20,7 @@ import {
   DashboardCardSizes,
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -50,6 +51,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const [running, setRunning] = React.useState(false);
+  const [threadDumpReady, setThreadDumpReady] = React.useState(false);
 
   const handleError = React.useCallback(
     (kind, error) => {
@@ -64,6 +66,19 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
       serviceContext.api.runGC(true).subscribe({
         error: (err) => handleError(t('DiagnosticsCard.KINDS.GC'), err),
         complete: () => setRunning(false),
+      }),
+    );
+  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
+
+  const handleThreadDump = React.useCallback(() => {
+    setRunning(true);
+    addSubscription(
+      serviceContext.api.runThreadDump(true).subscribe({
+        error: (err) => handleError(t('DiagnosticsCard.KINDS.THREADS'), err),
+        complete: () => {
+          setRunning(false);
+          setThreadDumpReady(true);
+        },
       }),
     );
   }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
@@ -106,6 +121,22 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   isLoading={running}
                 >
                   {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleThreadDump}
+                  spinnerAriaValueText="Invoke Thread Dump"
+                  spinnerAriaLabel="invoke-thread-dump"
+                  isLoading={running}
+                >
+                  {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                </Button>
+                <Button
+                  variant="primary"
+                  isDisabled={!threadDumpReady}
+                  component={(props) => <CryostatLink {...props} to="/diagnostics" />}
+                >
+                  {t('DiagnosticsCard.DIAGONSTICS_THREAD_REDIRECT_BUTTON')}
                 </Button>
               </EmptyStateFooter>
             </EmptyState>

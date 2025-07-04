@@ -370,8 +370,18 @@
     "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
     "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
+    "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Start Thread Dump",
+    "DIAGONSTICS_THREAD_REDIRECT_BUTTON": "Go to Thread Dumps Table",
     "KINDS": {
-      "GC": "Garbage Collection"
+      "GC": "Garbage Collection",
+      "THREAD_DUMP": "Thread Dump"
+    }
+  },
+  "ThreadDumps": {
+    "SEARCH_PLACEHOLDER": "Search Thread Dumps",
+    "ARIA_LABELS": {
+      "ROW_ACTION": "thread-dump-action-menu",
+      "SEARCH_INPUT": "thread-dump-search-input"
     }
   },
   "DurationFilter": {
@@ -514,7 +524,8 @@
     "NavGroups": {
       "CONSOLE": "Console",
       "FLIGHT_RECORDER": "Flight Recorder",
-      "OVERVIEW": "Overview"
+      "OVERVIEW": "Overview",
+      "DIAGNOSTICS": "Diagnostics"
     }
   },
   "RuleDeleteWarningModal": {
