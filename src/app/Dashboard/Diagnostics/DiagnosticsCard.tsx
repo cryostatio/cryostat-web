@@ -122,12 +122,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                 >
                   {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
                 </Button>
-                {threadDumpReady ? (
-                  <Button variant="primary" component={(props) => <CryostatLink {...props} to="/diagnostics" />}>
-                    {t('DiagnosticsCard.DIAGONSTICS_THREAD_REDIRECT_BUTTON')}
-                  </Button>
-                ) : (
-                  <Button
+                <Button
                     variant="primary"
                     onClick={handleThreadDump}
                     spinnerAriaValueText="Invoke Thread Dump"
@@ -135,8 +130,10 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                     isLoading={running}
                   >
                     {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
-                  </Button>
-                )}
+                </Button>
+                <Button variant="primary" isDisabled={!threadDumpReady} component={(props) => <CryostatLink {...props} to="/diagnostics" />}>
+                    {t('DiagnosticsCard.DIAGONSTICS_THREAD_REDIRECT_BUTTON')}
+                </Button>
               </EmptyStateFooter>
             </EmptyState>
           </Bullseye>
