@@ -260,7 +260,10 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
               </Timestamp>
             </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-              <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
+              <ThreadDumpAction
+                threadDump={t}
+                onDelete={handleDeleteAction}
+                onDownload={handleDownloadThreadDump} />
             </Td>
           </Tr>
         );
@@ -296,7 +299,13 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
                 <ToolbarItem variant="separator" />
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
-                    <Button key="dump-threads" variant="secondary" aria-label="dump-threads" onClick={handleThreadDump}>
+                    <Button
+                      key="dump-threads"
+                      name="Dump Threads"
+                      variant="secondary"
+                      aria-label="dump-threads"
+                      onClick={handleThreadDump}
+                    >
                       <Tooltip content="Start Thread Dump" />
                       <UploadIcon />
                     </Button>
@@ -391,7 +400,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
     <Dropdown
       toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
         <MenuToggle
-          aria-label={t('ThreadDump.ARIA_LABELS.ROW_ACTION')}
+          aria-label={t('ThreadDumps.ARIA_LABELS.ROW_ACTION')}
           variant="plain"
           ref={toggleRef}
           onClick={(event) => handleToggle(event, !isOpen)}
