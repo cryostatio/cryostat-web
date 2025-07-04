@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+
+import { ThreadDumpsTable } from '@app/Diagnostics/ThreadDumpsTable';
+import { DeleteThreadDump } from '@app/Modal/types';
 import {
   MessageMeta,
   MessageType,
@@ -23,12 +26,10 @@ import {
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
+import { defaultDatetimeFormat } from '@i18n/datetime';
 import { cleanup, screen, within, act } from '@testing-library/react';
 import { of } from 'rxjs';
-import { defaultDatetimeFormat } from '@i18n/datetime';
 import { render, testT } from '../utils';
-import { ThreadDumpsTable } from '@app/Diagnostics/ThreadDumpsTable';
-import { DeleteThreadDump } from '@app/Modal/types';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 

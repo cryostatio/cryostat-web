@@ -260,15 +260,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
               </Timestamp>
             </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-              <ThreadDumpAction
-                threadDump={t}
-                onDelete={handleDeleteAction}
-                onDownload={handleDownloadThreadDump} />
+              <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
             </Td>
           </Tr>
         );
       }),
-    [filteredThreadDumps, handleDeleteAction, handleDownloadThreadDump],
+    [datetimeContext.timeZone.full, dayjs, filteredThreadDumps, handleDeleteAction, handleDownloadThreadDump],
   );
 
   if (errorMessage != '') {
