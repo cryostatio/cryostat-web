@@ -51,7 +51,7 @@ import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
-import { map, tap } from 'rxjs';
+import { first, map, tap } from 'rxjs';
 
 export const Reports: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -59,25 +59,36 @@ export const Reports: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
   const [state, setState] = React.useState([] as { target: Target; hasSources: boolean; report: AggregateReport }[]);
   const [minScore, setMinScore] = React.useState(0);
 
-  const doUpdate = React.useCallback(() => {
-    setLoading(true);
-    addSubscription(
-      context.api
-        .getCurrentReportsForAllTargets(minScore)
-        .pipe(
-          tap(() => setLoading(false)),
-          map((reports) => reports.sort((a, b) => a.target.id! - b.target.id!)),
-        )
-        .subscribe((a) => setState(a)),
-    );
-  }, [addSubscription, context.api, minScore, setLoading, setState]);
+  const doUpdate = React.useCallback(
+    (onComplete?: () => void) => {
+      setRefreshing(true);
+      addSubscription(
+        context.api
+          .getCurrentReportsForAllTargets(minScore)
+          .pipe(
+            first(),
+            tap(() => {
+              setRefreshing(false);
+              if (onComplete) {
+                onComplete();
+              }
+            }),
+            map((reports) => reports.sort((a, b) => a.target.id! - b.target.id!)),
+          )
+          .subscribe((a) => setState(a)),
+      );
+    },
+    [addSubscription, context.api, minScore, setRefreshing, setState],
+  );
 
   React.useEffect(() => {
-    doUpdate();
-  }, [doUpdate]);
+    setLoading(true);
+    doUpdate(() => setLoading(false));
+  }, [doUpdate, setLoading]);
 
   const handleNavigate = React.useCallback(
     (target: Target) => {
@@ -161,7 +172,7 @@ export const Reports: React.FC = () => {
                 </SplitItem>
                 <SplitItem isFilled />
                 <SplitItem>
-                  <Button variant="plain" onClick={doUpdate}>
+                  <Button variant="plain" onClick={() => doUpdate()}>
                     <ProcessAutomationIcon />
                   </Button>
                 </SplitItem>
@@ -186,14 +197,18 @@ export const Reports: React.FC = () => {
         </Bullseye>
       ) : state.length ? (
         state.map((s) => (
-          <Card key={s.target.id} isCompact>
+          <Card key={s.target.id} isCompact isDisabled={refreshing}>
             <CardBody>
               <Split hasGutter>
-                <SplitItem style={{ width: '35%' }}>
+                <SplitItem style={{ width: '35%', minHeight: '40em' }}>
                   <EntityDetails entity={wrappedTarget(s.target)} />
                 </SplitItem>
                 <SplitItem isFilled>
-                  {s.report?.aggregate?.count ? (
+                  {refreshing ? (
+                    <Bullseye>
+                      <Spinner />
+                    </Bullseye>
+                  ) : s.report?.aggregate?.count ? (
                     // FIXME the automated analysis report card uses global redux intents for filter states,
                     // since it was originally designed to be unique on the Dashboard view. We now need a way
                     // to preserve that behaviour for the Dashboard and Target Analysis components so that
