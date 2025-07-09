@@ -21,6 +21,7 @@ import {
   AnalysisResult,
   CategorizedRuleEvaluations,
   NodeType,
+  NotificationCategory,
   Target,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -63,16 +64,17 @@ export const Reports: React.FC = () => {
   const [state, setState] = React.useState([] as { target: Target; hasSources: boolean; report: AggregateReport }[]);
   const [minScore, setMinScore] = React.useState(0);
 
-  const doUpdate = React.useCallback(
-    (onComplete?: () => void) => {
-      setRefreshing(true);
+  const doUpdateAll = React.useCallback(
+    (pre?: () => void, onComplete?: () => void) => {
+      if (pre) {
+        pre();
+      }
       addSubscription(
         context.api
           .getCurrentReportsForAllTargets(minScore)
           .pipe(
             first(),
             tap(() => {
-              setRefreshing(false);
               if (onComplete) {
                 onComplete();
               }
@@ -85,10 +87,19 @@ export const Reports: React.FC = () => {
     [addSubscription, context.api, minScore, setRefreshing, setState],
   );
 
+  const doRefresh = React.useCallback(() => {
+    doUpdateAll(
+      () => setRefreshing(true),
+      () => setRefreshing(false),
+    );
+  }, [doUpdateAll, setRefreshing]);
+
   React.useEffect(() => {
-    setLoading(true);
-    doUpdate(() => setLoading(false));
-  }, [doUpdate, setLoading]);
+    doUpdateAll(
+      () => setLoading(true),
+      () => setLoading(false),
+    );
+  }, [doUpdateAll, setLoading]);
 
   const handleNavigate = React.useCallback(
     (target: Target) => {
@@ -172,7 +183,7 @@ export const Reports: React.FC = () => {
                 </SplitItem>
                 <SplitItem isFilled />
                 <SplitItem>
-                  <Button variant="plain" onClick={() => doUpdate()}>
+                  <Button variant="plain" onClick={() => doRefresh()}>
                     <ProcessAutomationIcon />
                   </Button>
                 </SplitItem>
