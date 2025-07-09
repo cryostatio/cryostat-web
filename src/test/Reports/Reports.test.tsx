@@ -147,6 +147,8 @@ describe('<Reports />', () => {
   });
 
   it('updates existing report when receiving a notification', async () => {
+    jest.spyOn(defaultServices.api, 'getCurrentReportsForAllTargets').mockReturnValue(of([currentReport]));
+
     const subj = new Subject<NotificationMessage>();
     const mockNotifications = {
       messages: (category: string) => (category === NotificationCategory.ReportSuccess ? subj.asObservable() : of()),
