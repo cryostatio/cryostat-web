@@ -128,6 +128,24 @@ describe('<Reports />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
+  it('renders empty state', async () => {
+    jest.spyOn(defaultServices.api, 'getCurrentReportsForAllTargets').mockReturnValue(of([]));
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/reports',
+            element: <Reports />,
+          },
+        ],
+      },
+    });
+
+    expect(screen.queryByText(mockFooTarget.alias)).not.toBeInTheDocument();
+    expect(screen.queryByText('No Reports Available')).toBeInTheDocument();
+  });
+
   it('updates existing report when receiving a notification', async () => {
     const subj = new Subject<NotificationMessage>();
     const mockNotifications = {
