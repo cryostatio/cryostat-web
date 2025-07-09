@@ -300,7 +300,7 @@ export const Reports: React.FC = () => {
         >
           <Stack hasGutter>
             {state.map((s) => (
-              <StackItem>
+              <StackItem key={s.target.jvmId}>
                 <Card key={s.target.id} isCompact isDisabled={refreshing}>
                   <CardBody>
                     <Split hasGutter>
