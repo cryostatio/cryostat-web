@@ -39,6 +39,7 @@ import {
   EmptyStateFooter,
   EmptyStateHeader,
   EmptyStateIcon,
+  Pagination,
   Spinner,
   Split,
   SplitItem,
@@ -65,6 +66,8 @@ export const Reports: React.FC = () => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [state, setState] = React.useState([] as ReportEntry[]);
   const [minScore, setMinScore] = React.useState(0);
+  const [page, setPage] = React.useState(1);
+  const [perPage, setPerPage] = React.useState(4);
 
   const doUpdateAll = React.useCallback(
     (pre?: () => void, onComplete?: () => void) => {
@@ -133,6 +136,21 @@ export const Reports: React.FC = () => {
     [addSubscription, context.targets, context.api, setState],
   );
 
+  const onSetPage = React.useCallback(
+    (_evt, newPage) => {
+      setPage(newPage);
+    },
+    [setPage],
+  );
+
+  const onSetPerPage = React.useCallback(
+    (_evt, newPerPage, newPage) => {
+      setPage(newPage);
+      setPerPage(newPerPage);
+    },
+    [setPage, setPerPage],
+  );
+
   React.useEffect(() => {
     doUpdateAll(
       () => setLoading(true),
@@ -141,7 +159,7 @@ export const Reports: React.FC = () => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.ReportSuccess)
-        .subscribe((m) => doUpdate(m.message.jvmId))
+        .subscribe((m) => doUpdate(m.message.jvmId)),
     );
   }, [context.notificationChannel, addSubscription, doUpdate, doUpdateAll, setLoading]);
 
@@ -246,76 +264,110 @@ export const Reports: React.FC = () => {
           </Stack>
         </CardBody>
       </Card>
-      {loading ? (
-        <Bullseye>
-          <Spinner />
-        </Bullseye>
-      ) : state.length ? (
-        state.map((s) => (
-          <Card key={s.target.id} isCompact isDisabled={refreshing}>
+      <Pagination
+        perPage={perPage}
+        itemCount={state.length}
+        page={page}
+        onSetPage={onSetPage}
+        onPerPageSelect={onSetPerPage}
+        perPageOptions={[
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '8',
+            value: 8,
+          },
+          {
+            title: '16',
+            value: 16,
+          },
+        ]}
+      >
+        {loading ? (
+          <Bullseye>
+            <Spinner />
+          </Bullseye>
+        ) : state.length ? (
+          <Stack hasGutter>
+            {state.map((s) => (
+              <StackItem>
+                <Card key={s.target.id} isCompact isDisabled={refreshing}>
+                  <CardBody>
+                    <Split hasGutter>
+                      <SplitItem style={{ width: '35%', minHeight: '40em' }}>
+                        <EntityDetails entity={wrappedTarget(s.target)} />
+                      </SplitItem>
+                      <SplitItem isFilled>
+                        {refreshing || s.loading ? (
+                          <Bullseye>
+                            <Spinner />
+                          </Bullseye>
+                        ) : s.report?.aggregate?.count ? (
+                          // FIXME the automated analysis report card uses global redux intents for filter states,
+                          // since it was originally designed to be unique on the Dashboard view. We now need a way
+                          // to preserve that behaviour for the Dashboard and Target Analysis components so that
+                          // preferences transfer between targets, as well as a way to set individual filters so that
+                          // the multiple AutomatedAnalysisResults components that can appear within this view can have
+                          // independent filter settings.
+                          <AutomatedAnalysisResults
+                            target={s.target}
+                            hasSources={s.hasSources}
+                            timestamp={s.report.lastUpdated}
+                            analyses={categorizedEvaluations(s.report)}
+                          />
+                        ) : (
+                          <Bullseye style={{ minHeight: '30ch' }}>
+                            <EmptyState>
+                              <EmptyStateHeader
+                                titleText={t('Reports.NoResults.TITLE')}
+                                icon={<EmptyStateIcon icon={SearchIcon} />}
+                                headingLevel="h4"
+                              />
+                              <EmptyStateBody>{t('Reports.NoResults.DESCRIPTION')}</EmptyStateBody>
+                              <EmptyStateFooter>
+                                <EmptyStateActions>
+                                  <Button variant="primary" onClick={handleNavigate(s.target)}>
+                                    {t('Reports.NoResults.ACTION_BUTTON_CONTENT')}
+                                  </Button>
+                                </EmptyStateActions>
+                              </EmptyStateFooter>
+                            </EmptyState>
+                          </Bullseye>
+                        )}
+                      </SplitItem>
+                    </Split>
+                  </CardBody>
+                </Card>
+              </StackItem>
+            ))}
+          </Stack>
+        ) : (
+          <Card>
             <CardBody>
-              <Split hasGutter>
-                <SplitItem style={{ width: '35%', minHeight: '40em' }}>
-                  <EntityDetails entity={wrappedTarget(s.target)} />
-                </SplitItem>
-                <SplitItem isFilled>
-                  {refreshing || s.loading ? (
-                    <Bullseye>
-                      <Spinner />
-                    </Bullseye>
-                  ) : s.report?.aggregate?.count ? (
-                    // FIXME the automated analysis report card uses global redux intents for filter states,
-                    // since it was originally designed to be unique on the Dashboard view. We now need a way
-                    // to preserve that behaviour for the Dashboard and Target Analysis components so that
-                    // preferences transfer between targets, as well as a way to set individual filters so that
-                    // the multiple AutomatedAnalysisResults components that can appear within this view can have
-                    // independent filter settings.
-                    <AutomatedAnalysisResults
-                      target={s.target}
-                      hasSources={s.hasSources}
-                      timestamp={s.report.lastUpdated}
-                      analyses={categorizedEvaluations(s.report)}
-                    />
-                  ) : (
-                    <Bullseye style={{ minHeight: '30ch' }}>
-                      <EmptyState>
-                        <EmptyStateHeader
-                          titleText={t('Reports.NoResults.TITLE')}
-                          icon={<EmptyStateIcon icon={SearchIcon} />}
-                          headingLevel="h4"
-                        />
-                        <EmptyStateBody>{t('Reports.NoResults.DESCRIPTION')}</EmptyStateBody>
-                        <EmptyStateFooter>
-                          <EmptyStateActions>
-                            <Button variant="primary" onClick={handleNavigate(s.target)}>
-                              {t('Reports.NoResults.ACTION_BUTTON_CONTENT')}
-                            </Button>
-                          </EmptyStateActions>
-                        </EmptyStateFooter>
-                      </EmptyState>
-                    </Bullseye>
-                  )}
-                </SplitItem>
-              </Split>
+              <Bullseye>
+                <EmptyState>
+                  <EmptyStateHeader
+                    titleText={t('Reports.NoReports.TITLE')}
+                    icon={<EmptyStateIcon icon={SearchIcon} />}
+                    headingLevel="h4"
+                  />
+                  <EmptyStateBody>{t('Reports.NoReports.DESCRIPTION')}</EmptyStateBody>
+                </EmptyState>
+              </Bullseye>
             </CardBody>
           </Card>
-        ))
-      ) : (
-        <Card>
-          <CardBody>
-            <Bullseye>
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText={t('Reports.NoReports.TITLE')}
-                  icon={<EmptyStateIcon icon={SearchIcon} />}
-                  headingLevel="h4"
-                />
-                <EmptyStateBody>{t('Reports.NoReports.DESCRIPTION')}</EmptyStateBody>
-              </EmptyState>
-            </Bullseye>
-          </CardBody>
-        </Card>
-      )}
+        )}
+      </Pagination>
     </BreadcrumbPage>
   );
 };
