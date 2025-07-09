@@ -141,7 +141,7 @@ export const Reports: React.FC = () => {
     addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.ReportSuccess)
-        .subscribe((m) => doUpdate(m.message.jvmId)),
+        .subscribe((m) => doUpdate(m.message.jvmId))
     );
   }, [context.notificationChannel, addSubscription, doUpdate, doUpdateAll, setLoading]);
 
