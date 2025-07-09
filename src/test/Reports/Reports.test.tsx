@@ -15,12 +15,12 @@
  */
 import { Reports } from '@app/Reports/Reports';
 import { AggregateReport, NotificationCategory, NotificationMessage, Target } from '@app/Shared/Services/api.types';
+import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
-import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 
 const mockFooTarget: Target = {
   id: 1,
