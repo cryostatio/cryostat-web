@@ -86,7 +86,7 @@ export const Reports: React.FC = () => {
           .subscribe((a) => setState(a)),
       );
     },
-    [addSubscription, context.api, minScore, setRefreshing, setState],
+    [addSubscription, context.api, minScore, setState],
   );
 
   const doRefresh = React.useCallback(() => {
@@ -119,7 +119,7 @@ export const Reports: React.FC = () => {
           }),
       );
     },
-    [addSubscription, context.target, context.api, setState],
+    [addSubscription, context.targets, context.api, setState],
   );
 
   React.useEffect(() => {
@@ -132,7 +132,7 @@ export const Reports: React.FC = () => {
         .messages(NotificationCategory.ReportSuccess)
         .subscribe((m) => doUpdate(m.message.jvmId)),
     );
-  }, [context.notificationChannel, addSubscription, doUpdateAll, setLoading]);
+  }, [context.notificationChannel, addSubscription, doUpdate, doUpdateAll, setLoading]);
 
   const handleNavigate = React.useCallback(
     (target: Target) => {
