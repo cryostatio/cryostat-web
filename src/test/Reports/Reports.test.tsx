@@ -15,10 +15,9 @@
  */
 import { Reports } from '@app/Reports/Reports';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { renderSnapshot } from '../utils';
 import { Target } from '@app/Shared/Services/api.types';
 
 const mockFooTarget: Target = {
