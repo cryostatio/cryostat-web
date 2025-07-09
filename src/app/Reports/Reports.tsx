@@ -264,40 +264,40 @@ export const Reports: React.FC = () => {
           </Stack>
         </CardBody>
       </Card>
-      <Pagination
-        perPage={perPage}
-        itemCount={state.length}
-        page={page}
-        onSetPage={onSetPage}
-        onPerPageSelect={onSetPerPage}
-        perPageOptions={[
-          {
-            title: '1',
-            value: 1,
-          },
-          {
-            title: '2',
-            value: 2,
-          },
-          {
-            title: '4',
-            value: 4,
-          },
-          {
-            title: '8',
-            value: 8,
-          },
-          {
-            title: '16',
-            value: 16,
-          },
-        ]}
-      >
-        {loading ? (
-          <Bullseye>
-            <Spinner />
-          </Bullseye>
-        ) : state.length ? (
+      {loading ? (
+        <Bullseye>
+          <Spinner />
+        </Bullseye>
+      ) : state.length ? (
+        <Pagination
+          perPage={perPage}
+          itemCount={state.length}
+          page={page}
+          onSetPage={onSetPage}
+          onPerPageSelect={onSetPerPage}
+          perPageOptions={[
+            {
+              title: '1',
+              value: 1,
+            },
+            {
+              title: '2',
+              value: 2,
+            },
+            {
+              title: '4',
+              value: 4,
+            },
+            {
+              title: '8',
+              value: 8,
+            },
+            {
+              title: '16',
+              value: 16,
+            },
+          ]}
+        >
           <Stack hasGutter>
             {state.map((s) => (
               <StackItem>
@@ -351,23 +351,23 @@ export const Reports: React.FC = () => {
               </StackItem>
             ))}
           </Stack>
-        ) : (
-          <Card>
-            <CardBody>
-              <Bullseye>
-                <EmptyState>
-                  <EmptyStateHeader
-                    titleText={t('Reports.NoReports.TITLE')}
-                    icon={<EmptyStateIcon icon={SearchIcon} />}
-                    headingLevel="h4"
-                  />
-                  <EmptyStateBody>{t('Reports.NoReports.DESCRIPTION')}</EmptyStateBody>
-                </EmptyState>
-              </Bullseye>
-            </CardBody>
-          </Card>
-        )}
-      </Pagination>
+        </Pagination>
+      ) : (
+        <Card>
+          <CardBody>
+            <Bullseye>
+              <EmptyState>
+                <EmptyStateHeader
+                  titleText={t('Reports.NoReports.TITLE')}
+                  icon={<EmptyStateIcon icon={SearchIcon} />}
+                  headingLevel="h4"
+                />
+                <EmptyStateBody>{t('Reports.NoReports.DESCRIPTION')}</EmptyStateBody>
+              </EmptyState>
+            </Bullseye>
+          </CardBody>
+        </Card>
+      )}
     </BreadcrumbPage>
   );
 };
