@@ -25,7 +25,7 @@ import {
   Target,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import EntityDetails from '@app/Topology/Entity/EntityDetails';
+import { EntityDetails } from '@app/Topology/Entity/EntityDetails';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
