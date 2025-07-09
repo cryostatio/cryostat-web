@@ -51,7 +51,7 @@ import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
-import { tap } from 'rxjs';
+import { map, tap } from 'rxjs';
 
 export const Reports: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -67,7 +67,10 @@ export const Reports: React.FC = () => {
     addSubscription(
       context.api
         .getCurrentReportsForAllTargets(minScore)
-        .pipe(tap(() => setLoading(false)))
+        .pipe(
+          tap(() => setLoading(false)),
+          map((reports) => reports.sort((a, b) => a.target.id! - b.target.id!)),
+        )
         .subscribe((a) => setState(a)),
     );
   }, [addSubscription, context.api, minScore, setLoading, setState]);
