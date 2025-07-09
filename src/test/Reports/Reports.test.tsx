@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { Reports } from '@app/Reports/Reports';
+import { Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { renderSnapshot } from '../utils';
-import { Target } from '@app/Shared/Services/api.types';
 
 const mockFooTarget: Target = {
   id: 1,

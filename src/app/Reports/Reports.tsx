@@ -180,8 +180,7 @@ export const Reports: React.FC = () => {
     [setMinScore],
   );
 
-  // TODO refactor, this is copied from JvmDetailsCard.tsx
-  const wrappedTarget = React.useCallback((target: Target) => {
+  const wrappedTarget = (target: Target) => {
     if (!target) {
       return undefined;
     }
@@ -193,10 +192,9 @@ export const Reports: React.FC = () => {
         labels: target.labels,
       }),
     };
-  }, []);
+  };
 
-  // TODO refactor, this is copied from TargetAnalysis.tsx
-  const categorizedEvaluations = React.useCallback((report: AggregateReport) => {
+  const categorizedEvaluations = (report: AggregateReport) => {
     const map = new Map<string, AnalysisResult[]>();
     report!
       .data!.map((e) => e.value)
@@ -210,7 +208,7 @@ export const Reports: React.FC = () => {
         }
       });
     return (Array.from(map) as CategorizedRuleEvaluations[]).sort();
-  }, []);
+  };
 
   return (
     <BreadcrumbPage pageTitle="Reports">
