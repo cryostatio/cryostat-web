@@ -52,7 +52,9 @@ import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
-import { first, map, tap } from 'rxjs';
+import { concatMap, filter, first, map, tap } from 'rxjs';
+
+type ReportEntry = { target: Target; hasSources: boolean; report: AggregateReport };
 
 export const Reports: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -61,7 +63,7 @@ export const Reports: React.FC = () => {
   const addSubscription = useSubscriptions();
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [state, setState] = React.useState([] as { target: Target; hasSources: boolean; report: AggregateReport }[]);
+  const [state, setState] = React.useState([] as ReportEntry[]);
   const [minScore, setMinScore] = React.useState(0);
 
   const doUpdateAll = React.useCallback(
@@ -94,12 +96,43 @@ export const Reports: React.FC = () => {
     );
   }, [doUpdateAll, setRefreshing]);
 
+  const doUpdate = React.useCallback(
+    (jvmId: string) => {
+      addSubscription(
+        context.targets
+          .targets()
+          .pipe(
+            map((a) => a.find((t) => t.jvmId === jvmId)),
+            filter((v) => !!v),
+            concatMap((t) => context.api.getCurrentReportForTarget(t)),
+          )
+          .subscribe((report) => {
+            setState((prev) => {
+              const copy: ReportEntry[] = [...prev];
+              for (let e of copy) {
+                if (e.target.jvmId === jvmId) {
+                  e.report = report;
+                }
+              }
+              return copy.sort((a, b) => a.target.id! - b.target.id!);
+            });
+          }),
+      );
+    },
+    [addSubscription, context.target, context.api, setState],
+  );
+
   React.useEffect(() => {
     doUpdateAll(
       () => setLoading(true),
       () => setLoading(false),
     );
-  }, [doUpdateAll, setLoading]);
+    addSubscription(
+      context.notificationChannel
+        .messages(NotificationCategory.ReportSuccess)
+        .subscribe((m) => doUpdate(m.message.jvmId)),
+    );
+  }, [context.notificationChannel, addSubscription, doUpdateAll, setLoading]);
 
   const handleNavigate = React.useCallback(
     (target: Target) => {
