@@ -139,16 +139,11 @@ export const Reports: React.FC = () => {
       () => setLoading(false),
     );
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ReportSuccess).subscribe((m) => {
-        const jvmId = m.message.jvmId;
-        if (state.some((t) => t.target.jvmId === jvmId)) {
-          doUpdate(m.message.jvmId);
-        } else {
-          doUpdateAll();
-        }
-      }),
+      context.notificationChannel
+        .messages(NotificationCategory.ReportSuccess)
+        .subscribe((m) => doUpdate(m.message.jvmId)),
     );
-  }, [context.notificationChannel, addSubscription, doUpdate, doUpdateAll, setLoading, state]);
+  }, [context.notificationChannel, addSubscription, doUpdate, doUpdateAll, setLoading]);
 
   const handleNavigate = React.useCallback(
     (target: Target) => {
