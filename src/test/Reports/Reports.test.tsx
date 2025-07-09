@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 import { Reports } from '@app/Reports/Reports';
-import { Target } from '@app/Shared/Services/api.types';
-import { defaultServices } from '@app/Shared/Services/Services';
+import { AggregateReport, NotificationCategory, NotificationMessage, Target } from '@app/Shared/Services/api.types';
+import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { of } from 'rxjs';
-import { renderSnapshot } from '../utils';
+import { act as doAct, cleanup, screen } from '@testing-library/react';
+import { of, Subject } from 'rxjs';
+import { render, renderSnapshot } from '../utils';
+import { NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 
 const mockFooTarget: Target = {
   id: 1,
@@ -37,55 +39,81 @@ jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockFooTarget
 
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
 
-jest.spyOn(defaultServices.api, 'getCurrentReportsForAllTargets').mockReturnValue(
-  of([
-    {
-      target: mockFooTarget,
-      hasSources: true,
-      report: {
-        lastUpdated: 1752088003576,
-        aggregate: {
-          count: 1,
-          max: 75,
-        },
-        data: [
-          {
-            key: 'a',
-            value: {
-              name: 'a',
-              topic: 'topic1',
-              score: 75,
-              evaluation: {
-                summary: 'a summary',
-                explanation: 'a explanation',
-                solution: 'a solution',
-                suggestions: [],
-              },
-            },
-          },
-        ],
-      },
+const mockUpdateNotification: NotificationMessage = {
+  meta: {
+    type: {
+      type: 'application',
+      subtype: 'json',
     },
-  ]),
-);
+    category: 'ReportSuccess',
+  },
+  message: {
+    jvmId: mockFooTarget.jvmId,
+  },
+};
+
+const currentReport = {
+  target: mockFooTarget,
+  hasSources: true,
+  report: {
+    lastUpdated: 1752088003576,
+    aggregate: {
+      count: 1,
+      max: 75,
+    },
+    data: [
+      {
+        key: 'a',
+        value: {
+          name: 'a',
+          topic: 'topic1',
+          score: 75,
+          evaluation: {
+            summary: 'a summary',
+            explanation: 'a explanation',
+            solution: 'a solution',
+            suggestions: [],
+          },
+        },
+      },
+    ],
+  },
+};
+
+jest.spyOn(defaultServices.api, 'getCurrentReportsForAllTargets').mockReturnValue(of([currentReport]));
 
 jest.mock('@app/Recordings/TargetAnalysis', () => {
   return {
-    AutomatedAnalysisResults: jest.fn((_) => {
-      return <div>Automated Analysis Results</div>;
+    AutomatedAnalysisResults: jest.fn(({ timestamp, analyses }) => {
+      return (
+        <div>
+          <p>Automated Analysis Results</p>
+          <div>{timestamp}</div>
+          {analyses.map((a) => (
+            <div>{JSON.stringify(a[1][0])}</div>
+          ))}
+        </div>
+      );
     }),
   };
 });
 
 jest.mock('@app/Topology/Entity/EntityDetails', () => {
   return {
-    EntityDetails: jest.fn((_) => {
-      return <div>Entity Details</div>;
+    EntityDetails: jest.fn(({ entity }) => {
+      return (
+        <div>
+          <p>Entity Details</p>
+          <div>{entity.getData().name}</div>
+        </div>
+      );
     }),
   };
 });
 
 describe('<Reports />', () => {
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     const tree = await renderSnapshot({
       routerConfigs: {
@@ -98,5 +126,44 @@ describe('<Reports />', () => {
       },
     });
     expect(tree?.toJSON()).toMatchSnapshot();
+  });
+
+  it('updates existing report when receiving a notification', async () => {
+    const subj = new Subject<NotificationMessage>();
+    const mockNotifications = {
+      messages: (category: string) => (category === NotificationCategory.ReportSuccess ? subj.asObservable() : of()),
+    } as NotificationChannel;
+    const services: Services = {
+      ...defaultServices,
+      notificationChannel: mockNotifications,
+    };
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/reports',
+            element: <Reports />,
+          },
+        ],
+      },
+      providers: [{ kind: ServiceContext.Provider, instance: services }],
+    });
+
+    expect(await screen.findByText(mockFooTarget.alias)).toBeInTheDocument();
+    expect(await screen.findByText(`${currentReport.report.lastUpdated}`)).toBeInTheDocument();
+    expect(await screen.findByText(JSON.stringify(currentReport.report.data[0].value))).toBeInTheDocument();
+
+    const lastUpdated = currentReport.report.lastUpdated + 1;
+    const updatedReport: AggregateReport = {
+      ...currentReport.report,
+      lastUpdated,
+    };
+    jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValue(of(updatedReport));
+
+    doAct(() => subj.next(mockUpdateNotification));
+
+    expect(await screen.findByText(mockFooTarget.alias)).toBeInTheDocument();
+    expect(await screen.findByText(`${lastUpdated}`)).toBeInTheDocument();
+    expect(screen.queryByText(`${currentReport.report.lastUpdated}`)).not.toBeInTheDocument();
   });
 });

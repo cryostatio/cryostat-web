@@ -469,14 +469,27 @@ exports[`<Reports /> renders correctly 1`] = `
                       }
                     >
                       <div>
-                        Entity Details
+                        <p>
+                          Entity Details
+                        </p>
+                        <div>
+                          fooTarget
+                        </div>
                       </div>
                     </div>
                     <div
                       className="pf-v5-l-split__item pf-m-fill"
                     >
                       <div>
-                        Automated Analysis Results
+                        <p>
+                          Automated Analysis Results
+                        </p>
+                        <div>
+                          1752088003576
+                        </div>
+                        <div>
+                          {"name":"a","topic":"topic1","score":75,"evaluation":{"summary":"a summary","explanation":"a explanation","solution":"a solution","suggestions":[]}}
+                        </div>
                       </div>
                     </div>
                   </div>
