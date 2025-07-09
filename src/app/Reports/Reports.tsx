@@ -54,7 +54,7 @@ import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, filter, first, map, tap } from 'rxjs';
 
-type ReportEntry = { target: Target; hasSources: boolean; report: AggregateReport };
+type ReportEntry = { loading: boolean; target: Target; hasSources: boolean; report: AggregateReport };
 
 export const Reports: React.FC = () => {
   const { t } = useCryostatTranslation();
@@ -82,6 +82,7 @@ export const Reports: React.FC = () => {
               }
             }),
             map((reports) => reports.sort((a, b) => a.target.id! - b.target.id!)),
+            map((reports) => reports.map((r) => ({ ...r, loading: false }))),
           )
           .subscribe((a) => setState(a)),
       );
@@ -104,6 +105,15 @@ export const Reports: React.FC = () => {
           .pipe(
             map((a) => a.find((t) => t.jvmId === jvmId)),
             filter((v) => !!v),
+            tap((t) =>
+              setState((prev) => {
+                const copy: ReportEntry[] = [...prev];
+                for (let e of copy) {
+                  e.loading = e.target.id === t.id;
+                }
+                return copy;
+              }),
+            ),
             concatMap((t) => context.api.getCurrentReportForTarget(t)),
           )
           .subscribe((report) => {
@@ -113,8 +123,9 @@ export const Reports: React.FC = () => {
                 if (e.target.jvmId === jvmId) {
                   e.report = report;
                 }
+                e.loading = false;
               }
-              return copy.sort((a, b) => a.target.id! - b.target.id!);
+              return copy;
             });
           }),
       );
@@ -248,7 +259,7 @@ export const Reports: React.FC = () => {
                   <EntityDetails entity={wrappedTarget(s.target)} />
                 </SplitItem>
                 <SplitItem isFilled>
-                  {refreshing ? (
+                  {refreshing || s.loading ? (
                     <Bullseye>
                       <Spinner />
                     </Bullseye>
