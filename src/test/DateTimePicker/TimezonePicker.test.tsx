@@ -16,7 +16,7 @@
 import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { defaultServices } from '@app/Shared/Services/Services';
 import dayjs, { defaultDatetimeFormat, supportedTimezones, Timezone } from '@i18n/datetime';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { render, testT } from '../utils';
 
@@ -112,7 +112,7 @@ describe('<TimezonePicker/>', () => {
       await user.click(within(ul).getByText(toSelectText));
     });
 
-    expect(ul).not.toBeVisible();
+    await waitFor(() => expect(ul).not.toBeVisible());
     expect(onTimezoneChange).toHaveBeenCalledTimes(1);
     expect(onTimezoneChange).toHaveBeenCalledWith(toSelect);
   });
