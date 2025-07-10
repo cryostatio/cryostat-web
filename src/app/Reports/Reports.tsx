@@ -241,8 +241,8 @@ export const Reports: React.FC = () => {
                     />
                     <ToggleGroupItem
                       text={t('Reports.Score.CRITICAL_ONLY')}
-                      isSelected={minScore === 50}
-                      onChange={handleScore(50)}
+                      isSelected={minScore === 75}
+                      onChange={handleScore(75)}
                     />
                   </ToggleGroup>
                 </SplitItem>
