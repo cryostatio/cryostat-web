@@ -803,7 +803,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             );
             break;
           }
-          case 'MBeanMXMetricsForTarget':
+          case 'MBeanMXMetricsForTarget': {
             data = {
               targetNodes: [
                 {
@@ -861,6 +861,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               ],
             };
             break;
+          }
           case 'AggregateReportsForAllTargets': {
             data = {
               targetNodes: [
@@ -936,13 +937,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                 },
               ],
             };
+            break;
           }
-          default:
-            return new Response(
-              400,
-              {},
-              `${JSON.stringify(request.url)} (query: '${name}') currently unsupported in demo`,
-            );
+          default: {
+            const msg = `${JSON.stringify(request.url)} (query: '${name}') currently unsupported in demo`;
+            console.error(msg);
+            return new Response(400, {}, msg);
+          }
         }
         return { data };
       });
