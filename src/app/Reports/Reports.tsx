@@ -48,6 +48,11 @@ import {
   TextContent,
   ToggleGroup,
   ToggleGroupItem,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+  Tooltip,
 } from '@patternfly/react-core';
 import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -221,38 +226,84 @@ export const Reports: React.FC = () => {
         <CardBody>
           <Stack hasGutter>
             <StackItem>
-              <Split hasGutter>
-                <SplitItem>
-                  <Button isDisabled={minScore < 0} onClick={handleScore(-1)}>
-                    {t('Reports.Score.SHOW_ALL')}
-                  </Button>
-                </SplitItem>
-                <SplitItem>
-                  <ToggleGroup>
-                    <ToggleGroupItem
-                      text={t('Reports.Score.AVAILABLE_ONLY')}
-                      isSelected={minScore === 0}
-                      onChange={handleScore(0)}
+              <Toolbar>
+                <ToolbarContent>
+                  <ToolbarGroup>
+                    <ToolbarItem>
+                      <Tooltip content={t('Reports.Tooltips.ALL_TARGETS')}>
+                        <Button isDisabled={minScore < 0} onClick={handleScore(-1)}>
+                          {t('Reports.Score.ALL_TARGETS')}
+                        </Button>
+                      </Tooltip>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                      <ToggleGroup>
+                        <Tooltip content={t('Reports.Tooltips.AVAILABLE_ONLY')}>
+                          <ToggleGroupItem
+                            text={t('Reports.Score.AVAILABLE_ONLY')}
+                            isSelected={minScore === 0}
+                            onChange={handleScore(0)}
+                          />
+                        </Tooltip>
+                        <Tooltip content={t('Reports.Tooltips.WARNING_ONLY')}>
+                          <ToggleGroupItem
+                            text={t('Reports.Score.WARNING_ONLY')}
+                            isSelected={minScore === 25}
+                            onChange={handleScore(25)}
+                          />
+                        </Tooltip>
+                        <Tooltip content={t('Reports.Tooltips.CRITICAL_ONLY')}>
+                          <ToggleGroupItem
+                            text={t('Reports.Score.CRITICAL_ONLY')}
+                            isSelected={minScore === 75}
+                            onChange={handleScore(75)}
+                          />
+                        </Tooltip>
+                      </ToggleGroup>
+                    </ToolbarItem>
+                  </ToolbarGroup>
+                  <ToolbarItem variant="separator" />
+                  <ToolbarItem>
+                    <Tooltip content={t('Reports.Tooltips.REFRESH')}>
+                      <Button variant="plain" onClick={() => doRefresh()}>
+                        <ProcessAutomationIcon />
+                      </Button>
+                    </Tooltip>
+                  </ToolbarItem>
+                  <ToolbarItem variant="separator" />
+                  <ToolbarItem align={{ default: 'alignRight' }}>
+                    <Pagination
+                      perPage={perPage}
+                      itemCount={state.length}
+                      page={page}
+                      onSetPage={onSetPage}
+                      onPerPageSelect={onSetPerPage}
+                      perPageOptions={[
+                        {
+                          title: '1',
+                          value: 1,
+                        },
+                        {
+                          title: '2',
+                          value: 2,
+                        },
+                        {
+                          title: '4',
+                          value: 4,
+                        },
+                        {
+                          title: '8',
+                          value: 8,
+                        },
+                        {
+                          title: '16',
+                          value: 16,
+                        },
+                      ]}
                     />
-                    <ToggleGroupItem
-                      text={t('Reports.Score.WARNING_ONLY')}
-                      isSelected={minScore === 25}
-                      onChange={handleScore(25)}
-                    />
-                    <ToggleGroupItem
-                      text={t('Reports.Score.CRITICAL_ONLY')}
-                      isSelected={minScore === 75}
-                      onChange={handleScore(75)}
-                    />
-                  </ToggleGroup>
-                </SplitItem>
-                <SplitItem isFilled />
-                <SplitItem>
-                  <Button variant="plain" onClick={() => doRefresh()}>
-                    <ProcessAutomationIcon />
-                  </Button>
-                </SplitItem>
-              </Split>
+                  </ToolbarItem>
+                </ToolbarContent>
+              </Toolbar>
             </StackItem>
             <StackItem>
               <TextContent>
@@ -273,37 +324,7 @@ export const Reports: React.FC = () => {
         </Bullseye>
       ) : state.length ? (
         <Stack hasGutter>
-          <StackItem>
-            <Pagination
-              perPage={perPage}
-              itemCount={state.length}
-              page={page}
-              onSetPage={onSetPage}
-              onPerPageSelect={onSetPerPage}
-              perPageOptions={[
-                {
-                  title: '1',
-                  value: 1,
-                },
-                {
-                  title: '2',
-                  value: 2,
-                },
-                {
-                  title: '4',
-                  value: 4,
-                },
-                {
-                  title: '8',
-                  value: 8,
-                },
-                {
-                  title: '16',
-                  value: 16,
-                },
-              ]}
-            />
-          </StackItem>
+          <StackItem></StackItem>
           {pagedState.map((s) => (
             <StackItem key={s.target.jvmId}>
               <Card key={s.target.id} isCompact isDisabled={refreshing}>

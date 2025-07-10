@@ -520,10 +520,17 @@
       "TITLE": "No Report Available"
     },
     "Score": {
-      "AVAILABLE_ONLY": "All Available",
+      "ALL_TARGETS": "All Targets",
+      "AVAILABLE_ONLY": "With Report",
       "CRITICAL_ONLY": "Critical Only",
-      "SHOW_ALL": "Show All",
       "WARNING_ONLY": "Warning Only"
+    },
+    "Tooltips": {
+      "ALL_TARGETS": "Show all Targets, including those with no available generated reports.",
+      "AVAILABLE_ONLY": "Only display Targets with available generated reports.",
+      "CRITICAL_ONLY": "Only display Targets with at least one Critical report result.",
+      "REFRESH": "Refresh Target list.",
+      "WARNING_ONLY": "Only display Targets with at least one Warning or Critical report result."
     }
   },
   "Routes": {
