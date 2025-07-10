@@ -69,6 +69,11 @@ export const Reports: React.FC = () => {
   const [page, setPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(4);
 
+  const pagedState = React.useMemo(() => {
+    const offset = (page - 1) * perPage;
+    return state.slice(offset, offset + perPage);
+  }, [page, perPage, state]);
+
   const doUpdateAll = React.useCallback(
     (pre?: () => void, onComplete?: () => void) => {
       if (pre) {
@@ -267,89 +272,90 @@ export const Reports: React.FC = () => {
           <Spinner />
         </Bullseye>
       ) : state.length ? (
-        <Pagination
-          perPage={perPage}
-          itemCount={state.length}
-          page={page}
-          onSetPage={onSetPage}
-          onPerPageSelect={onSetPerPage}
-          perPageOptions={[
-            {
-              title: '1',
-              value: 1,
-            },
-            {
-              title: '2',
-              value: 2,
-            },
-            {
-              title: '4',
-              value: 4,
-            },
-            {
-              title: '8',
-              value: 8,
-            },
-            {
-              title: '16',
-              value: 16,
-            },
-          ]}
-        >
-          <Stack hasGutter>
-            {state.map((s) => (
-              <StackItem key={s.target.jvmId}>
-                <Card key={s.target.id} isCompact isDisabled={refreshing}>
-                  <CardBody>
-                    <Split hasGutter>
-                      <SplitItem style={{ width: '35%', minHeight: '40em' }}>
-                        <EntityDetails entity={wrappedTarget(s.target)} />
-                      </SplitItem>
-                      <SplitItem isFilled>
-                        {refreshing || s.loading ? (
-                          <Bullseye>
-                            <Spinner />
-                          </Bullseye>
-                        ) : s.report?.aggregate?.count ? (
-                          // FIXME the automated analysis report card uses global redux intents for filter states,
-                          // since it was originally designed to be unique on the Dashboard view. We now need a way
-                          // to preserve that behaviour for the Dashboard and Target Analysis components so that
-                          // preferences transfer between targets, as well as a way to set individual filters so that
-                          // the multiple AutomatedAnalysisResults components that can appear within this view can have
-                          // independent filter settings.
-                          <AutomatedAnalysisResults
-                            target={s.target}
-                            hasSources={s.hasSources}
-                            timestamp={s.report.lastUpdated}
-                            analyses={categorizedEvaluations(s.report)}
-                          />
-                        ) : (
-                          <Bullseye style={{ minHeight: '30ch' }}>
-                            <EmptyState>
-                              <EmptyStateHeader
-                                titleText={t('Reports.NoResults.TITLE')}
-                                icon={<EmptyStateIcon icon={SearchIcon} />}
-                                headingLevel="h4"
-                              />
-                              <EmptyStateBody>{t('Reports.NoResults.DESCRIPTION')}</EmptyStateBody>
-                              <EmptyStateFooter>
-                                <EmptyStateActions>
-                                  <Button variant="primary" onClick={handleNavigate(s.target)}>
-                                    {t('Reports.NoResults.ACTION_BUTTON_CONTENT')}
-                                  </Button>
-                                </EmptyStateActions>
-                              </EmptyStateFooter>
-                            </EmptyState>
-                          </Bullseye>
-                        )}
-                      </SplitItem>
-                    </Split>
-                  </CardBody>
-                </Card>
-              </StackItem>
-            ))}
-          </Stack>
-        </Pagination>
+        <Stack hasGutter>
+          <StackItem>
+            <Pagination
+              perPage={perPage}
+              itemCount={state.length}
+              page={page}
+              onSetPage={onSetPage}
+              onPerPageSelect={onSetPerPage}
+              perPageOptions={[
+                {
+                  title: '1',
+                  value: 1,
+                },
+                {
+                  title: '2',
+                  value: 2,
+                },
+                {
+                  title: '4',
+                  value: 4,
+                },
+                {
+                  title: '8',
+                  value: 8,
+                },
+                {
+                  title: '16',
+                  value: 16,
+                },
+              ]}
+            />
+          </StackItem>
+          {pagedState.map((s) => (
+            <StackItem key={s.target.jvmId}>
+              <Card key={s.target.id} isCompact isDisabled={refreshing}>
+                <CardBody>
+                  <Split hasGutter>
+                    <SplitItem style={{ width: '35%', minHeight: '40em' }}>
+                      <EntityDetails entity={wrappedTarget(s.target)} />
+                    </SplitItem>
+                    <SplitItem isFilled>
+                      {refreshing || s.loading ? (
+                        <Bullseye>
+                          <Spinner />
+                        </Bullseye>
+                      ) : s.report?.aggregate?.count ? (
+                        // FIXME the automated analysis report card uses global redux intents for filter states,
+                        // since it was originally designed to be unique on the Dashboard view. We now need a way
+                        // to preserve that behaviour for the Dashboard and Target Analysis components so that
+                        // preferences transfer between targets, as well as a way to set individual filters so that
+                        // the multiple AutomatedAnalysisResults components that can appear within this view can have
+                        // independent filter settings.
+                        <AutomatedAnalysisResults
+                          target={s.target}
+                          hasSources={s.hasSources}
+                          timestamp={s.report.lastUpdated}
+                          analyses={categorizedEvaluations(s.report)}
+                        />
+                      ) : (
+                        <Bullseye style={{ minHeight: '30ch' }}>
+                          <EmptyState>
+                            <EmptyStateHeader
+                              titleText={t('Reports.NoResults.TITLE')}
+                              icon={<EmptyStateIcon icon={SearchIcon} />}
+                              headingLevel="h4"
+                            />
+                            <EmptyStateBody>{t('Reports.NoResults.DESCRIPTION')}</EmptyStateBody>
+                            <EmptyStateFooter>
+                              <EmptyStateActions>
+                                <Button variant="primary" onClick={handleNavigate(s.target)}>
+                                  {t('Reports.NoResults.ACTION_BUTTON_CONTENT')}
+                                </Button>
+                              </EmptyStateActions>
+                            </EmptyStateFooter>
+                          </EmptyState>
+                        </Bullseye>
+                      )}
+                    </SplitItem>
+                  </Split>
+                </CardBody>
+              </Card>
+            </StackItem>
+          ))}
+        </Stack>
       ) : (
         <Card>
           <CardBody>
