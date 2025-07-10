@@ -365,10 +365,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         if (!target) {
           return new Response(404);
         }
+        const randomScore = Math.floor(Math.random() * 100);
         return {
           aggregate: {
             count: 2,
-            max: 50,
+            max: randomScore,
           },
           data: [
             {
@@ -376,7 +377,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               value: {
                 name: 'rule a',
                 topic: 'topic 1',
-                score: 50,
+                score: randomScore,
                 evaluation: {
                   summary: '',
                   explanation: '',
@@ -863,6 +864,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             break;
           }
           case 'AggregateReportsForAllTargets': {
+            const randomScore = Math.floor(Math.random() * 100);
             data = {
               targetNodes: [
                 {
@@ -900,7 +902,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                       lastUpdated: +Date.now() / 1000,
                       aggregate: {
                         count: 2,
-                        max: 50,
+                        max: randomScore,
                       },
                       data: [
                         {
@@ -908,7 +910,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                           value: {
                             name: 'rule a',
                             topic: 'topic 1',
-                            score: 50,
+                            score: randomScore,
                             evaluation: {
                               summary: '',
                               explanation: '',
