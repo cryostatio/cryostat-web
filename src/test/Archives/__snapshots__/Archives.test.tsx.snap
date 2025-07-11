@@ -37,7 +37,7 @@ exports[`<Archives /> renders correctly 1`] = `
       >
         <div
           className="pf-v5-c-card pf-m-compact"
-          data-ouia-component-id="OUIA-Generated-Card-6"
+          data-ouia-component-id="OUIA-Generated-Card-5"
           data-ouia-component-type="PF5/Card"
           data-ouia-safe={true}
           id=""
@@ -77,29 +77,7 @@ exports[`<Archives /> renders correctly 1`] = `
                     <span
                       className="pf-v5-c-tabs__item-text"
                     >
-                      Target
-                    </span>
-                  </button>
-                </li>
-                <li
-                  className="pf-v5-c-tabs__item"
-                  role="presentation"
-                >
-                  <button
-                    aria-selected={false}
-                    className="pf-v5-c-tabs__link"
-                    data-ouia-component-type="PF5/TabButton"
-                    data-ouia-safe={true}
-                    data-quickstart-id="nav-archives-all-targets"
-                    id="pf-tab-all-targets-all-targets"
-                    onClick={[Function]}
-                    role="tab"
-                    type="button"
-                  >
-                    <span
-                      className="pf-v5-c-tabs__item-text"
-                    >
-                      All Targets
+                      Targets
                     </span>
                   </button>
                 </li>
