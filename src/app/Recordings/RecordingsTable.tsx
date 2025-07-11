@@ -52,6 +52,8 @@ export interface RecordingsTableProps {
   errorMessage: string;
   onHeaderCheck: (event, checked: boolean) => void;
   clearFilters?: (filterType) => void;
+  outerContainerStyles?: string;
+  innerContainerStyles?: string;
   children: React.ReactNode;
 }
 
@@ -69,6 +71,8 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
   onHeaderCheck,
   clearFilters,
   children,
+  outerContainerStyles,
+  innerContainerStyles,
   ...props
 }) => {
   const context = React.useContext(ServiceContext);
@@ -156,9 +160,9 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
 
   return (
     <>
-      <OuterScrollContainer className="recording-table-outer-container">
+      <OuterScrollContainer className={outerContainerStyles}>
         {isError ? null : toolbar}
-        <InnerScrollContainer className="recording-table--inner-container">{view}</InnerScrollContainer>
+        <InnerScrollContainer className={innerContainerStyles}>{view}</InnerScrollContainer>
         {tableFooter}
       </OuterScrollContainer>
     </>

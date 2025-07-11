@@ -15,7 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { Target, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
+import { NullableTarget, Target, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
@@ -72,6 +72,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   const context = React.useContext(ServiceContext);
   const capabilities = React.useContext(CapabilitiesContext);
   const addSubscription = useSubscriptions();
+  const [target, setTarget] = React.useState(undefined as NullableTarget);
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'tab', Object.values(ArchiveTab), ArchiveTab.PER_TARGET);
@@ -80,7 +81,11 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
-  const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
+  const targetAsObs = React.useMemo(() => of(target), [target]);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTarget(t)));
+  }, [addSubscription, context.target, setTarget]);
 
   const tabs = React.useMemo(() => {
     const arr: JSX.Element[] = [];
@@ -91,27 +96,20 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
           data-quickstart-id="nav-archives-per-target"
           key={ArchiveTab.PER_TARGET}
           eventKey={ArchiveTab.PER_TARGET}
-          title={<TabTitleText>Target</TabTitleText>}
+          title={<TabTitleText>Targets</TabTitleText>}
         >
           <Stack hasGutter>
             <StackItem>
               <TargetContextSelector />
             </StackItem>
             <StackItem>
-              <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
+              {target ? (
+                <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
+              ) : (
+                <AllTargetsArchivedRecordingsTable />
+              )}
             </StackItem>
           </Stack>
-        </Tab>,
-      );
-      arr.push(
-        <Tab
-          id="all-targets"
-          data-quickstart-id="nav-archives-all-targets"
-          key={ArchiveTab.ALL_TARGETS}
-          eventKey={ArchiveTab.ALL_TARGETS}
-          title={<TabTitleText>All Targets</TabTitleText>}
-        >
-          <AllTargetsArchivedRecordingsTable />
         </Tab>,
       );
       arr.push(
@@ -141,7 +139,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       }
     }
     return arr;
-  }, [capabilities.fileUploads, archiveEnabled, uploadTargetAsObs, targetAsObs]);
+  }, [capabilities.fileUploads, archiveEnabled, uploadTargetAsObs, target, targetAsObs]);
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
