@@ -83,7 +83,7 @@ import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@pa
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
