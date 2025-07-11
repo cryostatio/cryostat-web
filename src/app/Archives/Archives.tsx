@@ -39,7 +39,6 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { of } from 'rxjs';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 /*
   This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
   The connectUrl is the 'uploads' because for actions performed on uploaded archived recordings,
