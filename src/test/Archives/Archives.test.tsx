@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { Archives } from '@app/Archives/Archives';
+import { Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
-import { Target } from '@app/Shared/Services/api.types';
 
 jest.mock('@app/TargetView/TargetContextSelector', () => {
   return {
