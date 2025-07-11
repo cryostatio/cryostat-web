@@ -68,6 +68,7 @@ import {
   MBeanMetricsResponse,
   BuildInfo,
   AggregateReport,
+  ThreadDump,
 } from './api.types';
 import {
   isHttpError,
@@ -669,6 +670,67 @@ export class ApiService {
     );
   }
 
+  runThreadDump(suppressNotifications = false): Observable<string> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/threaddump?format=threadPrint`,
+          {
+            method: 'POST',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.text()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  deleteThreadDump(threaddumpname: string, suppressNotifications = false): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/threaddump/${threaddumpname}`,
+          {
+            method: 'DELETE',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          map((resp) => resp.ok),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  getThreadDumps(suppressNotifications = false): Observable<ThreadDump[]> {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target!.id}/threaddump`,
+          {
+            method: 'GET',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.json()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
   insertProbes(templateName: string): Observable<boolean> {
     return this.target.target().pipe(
       filter((t) => !!t),
@@ -1026,6 +1088,12 @@ export class ApiService {
       const metadataUrl = createBlobURL(JSON.stringify(recording.metadata), 'application/json');
       this.downloadFile(metadataUrl, recording.name.replace(/\.jfr$/, '') + '.metadata.json', false);
       setTimeout(() => URL.revokeObjectURL(metadataUrl), 1000);
+    });
+  }
+
+  downloadThreadDump(threadDump: ThreadDump): void {
+    this.ctx.url(threadDump.downloadUrl).subscribe((resourceUrl) => {
+      this.downloadFile(resourceUrl, threadDump.uuid);
     });
   }
 
