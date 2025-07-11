@@ -80,15 +80,15 @@ describe('<Archives />', () => {
   it('handles the case where archiving is disabled', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
-    expect(screen.queryByText('All Targets')).not.toBeInTheDocument();
+    expect(screen.queryByText('Targets')).not.toBeInTheDocument();
     expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
     expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
   });
 
-  it('handles no target selection', async () => {
+  it('handles no target selection as All Targets table', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
-    expect(screen.getByText('To view this content, select a JVM target.')).toBeInTheDocument();
+    expect(screen.getByText('All Targets Table')).toBeInTheDocument();
   });
 
   it('has the correct page title', async () => {
@@ -100,7 +100,7 @@ describe('<Archives />', () => {
   it('handles the case where archiving is enabled', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
-    expect(screen.getByText('All Targets')).toBeInTheDocument();
+    expect(screen.getByText('Targets')).toBeInTheDocument();
     expect(screen.getByText('Uploads')).toBeInTheDocument();
   });
 
