@@ -81,6 +81,8 @@ describe('<Archives />', () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
     expect(screen.queryByText('Targets')).not.toBeInTheDocument();
+    expect(screen.queryByText('Target Archives Table')).not.toBeInTheDocument();
+    expect(screen.queryByText('Uploads Table')).not.toBeInTheDocument();
     expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
     expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
   });
