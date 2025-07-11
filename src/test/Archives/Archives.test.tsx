@@ -68,7 +68,8 @@ const mockTarget: Target = {
     platform: [],
   },
 };
-jest.spyOn(defaultServices.target, 'target')
+jest
+  .spyOn(defaultServices.target, 'target')
   .mockReturnValueOnce(of(mockTarget)) // Test archives disabled case
   .mockReturnValueOnce(of(undefined)) // Test no target selection case
   .mockReturnValue(of(mockTarget));
