@@ -508,6 +508,31 @@
     },
     "FILTER_BY_STATE": "Filter by state"
   },
+  "Reports": {
+    "DESCRIPTION": "Automated Analysis Reports which have been previously generated and are present in Cryostat's cache will appear here. Reports can be generated <0>manually on-demand</0> or <1>automatically on a recurring basis</1>.",
+    "NoReports": {
+      "DESCRIPTION": "No Automated Analysis Reports data is available.",
+      "TITLE": "No Reports Available"
+    },
+    "NoResults": {
+      "ACTION_BUTTON_CONTENT": "Go to Target Analysis",
+      "DESCRIPTION": "No Automated Analysis Report data is currently available for this target.",
+      "TITLE": "No Report Available"
+    },
+    "Score": {
+      "ALL_TARGETS": "All Targets",
+      "AVAILABLE_ONLY": "With Report",
+      "CRITICAL_ONLY": "Critical Only",
+      "WARNING_ONLY": "Warning Only"
+    },
+    "Tooltips": {
+      "ALL_TARGETS": "Show all Targets, including those with no available generated reports.",
+      "AVAILABLE_ONLY": "Only display Targets with available generated reports.",
+      "CRITICAL_ONLY": "Only display Targets with at least one Critical report result.",
+      "REFRESH": "Refresh Target list.",
+      "WARNING_ONLY": "Only display Targets with at least one Warning or Critical report result."
+    }
+  },
   "Routes": {
     "ANALYZE": "Analyze",
     "CAPTURE": "Capture",

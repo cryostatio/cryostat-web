@@ -365,10 +365,11 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         if (!target) {
           return new Response(404);
         }
+        const randomScore = Math.floor(Math.random() * 100);
         return {
           aggregate: {
             count: 2,
-            max: 50,
+            max: randomScore,
           },
           data: [
             {
@@ -376,7 +377,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               value: {
                 name: 'rule a',
                 topic: 'topic 1',
-                score: 50,
+                score: randomScore,
                 evaluation: {
                   summary: '',
                   explanation: '',
@@ -803,7 +804,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             );
             break;
           }
-          case 'MBeanMXMetricsForTarget':
+          case 'MBeanMXMetricsForTarget': {
             data = {
               targetNodes: [
                 {
@@ -861,12 +862,90 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               ],
             };
             break;
-          default:
-            return new Response(
-              400,
-              {},
-              `${JSON.stringify(request.url)} (query: '${name}') currently unsupported in demo`,
-            );
+          }
+          case 'AggregateReportsForAllTargets': {
+            const randomScore = Math.floor(Math.random() * 100);
+            data = {
+              targetNodes: [
+                {
+                  target: {
+                    id: 1,
+                    agent: true,
+                    alias: 'Fake Target',
+                    connectUrl: 'http://fake-target.local:1234',
+                    jvmId: '1234',
+                    labels: [],
+                    annotations: {
+                      platform: [
+                        {
+                          key: 'io.cryostat.demo',
+                          value: 'this-is-not-real',
+                        },
+                      ],
+                      cryostat: [
+                        {
+                          key: 'hello',
+                          value: 'world',
+                        },
+                        {
+                          key: 'REALM',
+                          value: 'Some Realm',
+                        },
+                      ],
+                    },
+                    activeRecordings: {
+                      aggregate: {
+                        count: 1,
+                      },
+                    },
+                    report: {
+                      lastUpdated: +Date.now() / 1000,
+                      aggregate: {
+                        count: 2,
+                        max: randomScore,
+                      },
+                      data: [
+                        {
+                          key: 'rule a',
+                          value: {
+                            name: 'rule a',
+                            topic: 'topic 1',
+                            score: randomScore,
+                            evaluation: {
+                              summary: '',
+                              explanation: '',
+                              solution: '',
+                              suggestions: [],
+                            },
+                          },
+                        },
+                        {
+                          key: 'rule b',
+                          value: {
+                            name: 'rule b',
+                            topic: 'topic 2',
+                            score: 2,
+                            evaluation: {
+                              summary: '',
+                              explanation: '',
+                              solution: '',
+                              suggestions: [],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            };
+            break;
+          }
+          default: {
+            const msg = `${JSON.stringify(request.url)} (query: '${name}') currently unsupported in demo`;
+            console.error(msg);
+            return new Response(400, {}, msg);
+          }
         }
         return { data };
       });
