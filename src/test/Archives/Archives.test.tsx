@@ -19,6 +19,7 @@ import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
+import { Target } from '@app/Shared/Services/api.types';
 
 jest.mock('@app/TargetView/TargetContextSelector', () => {
   return {
@@ -57,6 +58,21 @@ jest
   .mockReturnValueOnce(of(false)) // Test archives disabled case
   .mockReturnValue(of(true));
 
+const mockTarget: Target = {
+  agent: false,
+  connectUrl: 'http://localhost',
+  alias: 'fakeTarget',
+  labels: [],
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
+};
+jest.spyOn(defaultServices.target, 'target')
+  .mockReturnValueOnce(of(mockTarget)) // Test archives disabled case
+  .mockReturnValueOnce(of(undefined)) // Test no target selection case
+  .mockReturnValue(of(mockTarget));
+
 describe('<Archives />', () => {
   afterEach(cleanup);
 
@@ -66,6 +82,12 @@ describe('<Archives />', () => {
     expect(screen.queryByText('All Targets')).not.toBeInTheDocument();
     expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
     expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
+  });
+
+  it('handles no target selection', async () => {
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
+
+    expect(screen.getByText('To view this content, select a JVM target.')).toBeInTheDocument();
   });
 
   it('has the correct page title', async () => {
