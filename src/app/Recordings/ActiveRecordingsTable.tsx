@@ -590,6 +590,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
             isLoading={isLoading}
             isNestedTable={false}
             errorMessage={errorMessage}
+            outerContainerStyles="recording-table-outer-container"
+            innerContainerStyles="recording-table-inner-container"
           >
             {filteredRecordings.map((r) => (
               <ActiveRecordingRow

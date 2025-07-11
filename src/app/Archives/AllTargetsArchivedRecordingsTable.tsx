@@ -568,7 +568,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
-      <InnerScrollContainer className="archive-table-inner-container">{view}</InnerScrollContainer>
+      <InnerScrollContainer className="">{view}</InnerScrollContainer>
     </OuterScrollContainer>
   );
 };
