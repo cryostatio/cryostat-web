@@ -97,7 +97,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
           data-quickstart-id="nav-archives-per-target"
           key={ArchiveTab.PER_TARGET}
           eventKey={ArchiveTab.PER_TARGET}
-          title={<TabTitleText>Target</TabTitleText>}
+          title={<TabTitleText>Targets</TabTitleText>}
         >
           <Stack hasGutter>
             <StackItem>
@@ -107,21 +107,10 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
               {target ? (
                 <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
               ) : (
-                <NoTargetSelected />
+                <AllTargetsArchivedRecordingsTable />
               )}
             </StackItem>
           </Stack>
-        </Tab>,
-      );
-      arr.push(
-        <Tab
-          id="all-targets"
-          data-quickstart-id="nav-archives-all-targets"
-          key={ArchiveTab.ALL_TARGETS}
-          eventKey={ArchiveTab.ALL_TARGETS}
-          title={<TabTitleText>All Targets</TabTitleText>}
-        >
-          <AllTargetsArchivedRecordingsTable />
         </Tab>,
       );
       arr.push(
