@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { DisconnectedIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 
 export const NoTargetSelected: React.FC = () => {
+  const { t } = useCryostatTranslation();
+
   return (
     <>
       <Card>
         <CardTitle>
-          <DisconnectedIcon />
-          &nbsp; No target selected
+          <Trans t={t} components={[<DisconnectedIcon />]}>
+            NoTargetSelected.TITLE
+          </Trans>
         </CardTitle>
         <CardBody>
-          <Text component={TextVariants.p}>To view this content, select a JVM target.</Text>
+          <Text component={TextVariants.p}>{t('NoTargetSelected.BODY')}</Text>
         </CardBody>
       </Card>
     </>
