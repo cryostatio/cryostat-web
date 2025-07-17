@@ -1599,7 +1599,7 @@ export class ApiService {
       { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
       true,
       true,
-    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
+    ).pipe(map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
   getEventTemplates(suppressNotifications = false, skipStatusCheck = false): Observable<EventTemplate[]> {
