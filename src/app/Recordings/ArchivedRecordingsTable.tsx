@@ -82,8 +82,8 @@ import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
+import { concatMap, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingFiltersCategories, filterRecordings, RecordingFilters } from './RecordingFilters';
@@ -214,9 +214,15 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       addSubscription(
         propsTarget
           .pipe(
-            filter((target) => !!target),
             first(),
-            concatMap((target: Target) => queryTargetRecordings(target)),
+            concatMap((target: Target | undefined) => {
+              if (target) {
+                return queryTargetRecordings(target);
+              } else {
+                setIsLoading(false);
+                return of([]);
+              }
+            }),
           )
           .subscribe({
             next: handleRecordings,

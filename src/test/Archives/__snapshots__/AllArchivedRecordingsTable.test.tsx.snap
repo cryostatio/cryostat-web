@@ -82,7 +82,7 @@ exports[`<AllArchivedRecordingsTable /> renders correctly 1`] = `
     </div>
   </div>
   <div
-    className="archive-table-inner-container pf-v5-c-scroll-inner-wrapper"
+    className="pf-v5-c-scroll-inner-wrapper"
   >
     <div
       className="pf-v5-l-bullseye"
