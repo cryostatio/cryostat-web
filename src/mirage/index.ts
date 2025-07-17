@@ -644,7 +644,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         switch (name) {
           case 'ArchivedRecordingsForTarget':
           case 'AllTargetsArchives':
-          case 'UploadedRecordings':
             data = {
               targetNodes: [
                 {
@@ -655,6 +654,13 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                   },
                 },
               ],
+            };
+            break;
+          case 'UploadedRecordings':
+            data = {
+              archivedRecordings: {
+                data: [],
+              },
             };
             break;
           case 'ActiveRecordingsForTarget':
