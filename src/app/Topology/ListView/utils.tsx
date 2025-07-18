@@ -91,10 +91,7 @@ const _transformDataGroupedByTopLevel = (
               <Badge>{base.children.length}</Badge>
             </FlexItem>
             <FlexItem>
-              <ActionDropdown
-                className="entity-overview__action-menu"
-                actions={actionFactory({ getData: () => realm }, 'dropdownItem')}
-              />
+              <ActionDropdown actions={actionFactory({ getData: () => realm }, 'dropdownItem')} />
             </FlexItem>
           </Flex>
         ),
@@ -175,10 +172,7 @@ const _buildFullData = (
             <Badge>{children.length}</Badge>
           </FlexItem>
           <FlexItem>
-            <ActionDropdown
-              className="entity-overview__action-menu"
-              actions={actionFactory({ getData: () => node }, 'dropdownItem')}
-            />
+            <ActionDropdown actions={actionFactory({ getData: () => node }, 'dropdownItem')} />
           </FlexItem>
         </Flex>
       ),
