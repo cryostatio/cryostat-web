@@ -125,6 +125,6 @@ jobs:
         message: |-
           Test image available:
           ```
-          CRYOSTAT_IMAGE=${{ steps.push-to-ghcr.outputs.registry-path }} bash smoketest.bash # then open http://localhost:8080
+          CRYOSTAT_IMAGE=${{ steps.push-to-ghcr.outputs.registry-path }} bash smoketest.bash # in Cryostat repo, then open https://localhost:8443
           ```
 
