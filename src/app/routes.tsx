@@ -44,7 +44,7 @@ const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
 const FLIGHT_RECORDER = 'Routes.NavGroups.FLIGHT_RECORDER';
 const CONSOLE = 'Routes.NavGroups.CONSOLE';
 const DIAGNOSTICS = 'Routes.NavGroups.DIAGNOSTICS';
-const navGroups = [OVERVIEW, FLIGHT_RECORDER, CONSOLE, DIAGNOSTICS];
+const navGroups = [OVERVIEW, FLIGHT_RECORDER, DIAGNOSTICS, CONSOLE];
 
 const ANALYZE = 'Routes.ANALYZE';
 const CAPTURE = 'Routes.CAPTURE';

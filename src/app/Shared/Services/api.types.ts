@@ -192,6 +192,16 @@ export interface MBeanMetricsResponse {
   };
 }
 
+export interface ThreadDumpsResponse {
+  data: {
+    targetNodes: {
+      target: {
+        threadDumps: ThreadDump[];
+      };
+    }[];
+  };
+}
+
 // ======================================
 // Recording resources
 // ======================================

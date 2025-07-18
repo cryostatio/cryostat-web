@@ -18,6 +18,7 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { NotificationCategory, ThreadDump } from '@app/Shared/Services/api.types';
+import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -82,6 +83,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
+  const notificationsContext = React.useContext(NotificationsContext);
 
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
   const [filteredThreadDumps, setFilteredThreadDumps] = React.useState<ThreadDump[]>([]);
@@ -115,6 +117,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     },
     [setThreadDumps, setIsLoading, setErrorMessage],
   );
+
   const handleError = React.useCallback(
     (error) => {
       setIsLoading(false);
@@ -137,7 +140,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     (threadDump: ThreadDump) => {
       addSubscription(
         context.api.deleteThreadDump(threadDump.uuid).subscribe(() => {
-          refreshThreadDumps();
+            setThreadDumps((old) => old.filter((t) => t.uuid !== threadDump.uuid))
         }),
       );
     },
@@ -148,7 +151,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     if (threadDumpToDelete) {
       handleDelete(threadDumpToDelete);
     } else {
-      console.error('No thread dump to delete');
+      notificationsContext.warning("Thread Dump Deletion Failure", "No thread dump to delete");
     }
   }, [handleDelete, threadDumpToDelete]);
 
@@ -157,14 +160,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   }, [setWarningModalOpen]);
 
   const handleThreadDump = React.useCallback(() => {
-    const tasks: Observable<string>[] = [];
-    tasks.push(context.api.runThreadDump(true).pipe(first()));
     addSubscription(
-      forkJoin(tasks).subscribe({
-        next: (jobIds) => {
+      context.api.runThreadDump(true).pipe(first()).subscribe({
+        next: (jobId) => {
           addSubscription(
             context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((notification) => {
-              if (jobIds.includes(notification.message.jobId)) {
+              if (jobId == notification.message.jobId) {
                 refreshThreadDumps();
               }
             }),
@@ -180,6 +181,15 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   React.useEffect(() => {
     refreshThreadDumps();
   }, [refreshThreadDumps]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(() => {
+        setFilterText('');
+        refreshThreadDumps();
+      }),
+    );
+  }, [context.target, addSubscription, refreshThreadDumps]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -353,9 +363,6 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
   const actionItems = React.useMemo(() => {
     return [
       {
-        isSeparator: true,
-      },
-      {
         key: 'delete-threaddump',
         title: 'Delete',
         isDanger: true,
@@ -373,10 +380,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
 
   const dropdownItems = React.useMemo(
     () =>
-      actionItems.map((action, idx) =>
-        action.isSeparator ? (
-          <Divider key={`separator-${idx}`} />
-        ) : (
+      actionItems.map((action, idx) =>(
           <DropdownItem
             aria-label={action.key}
             key={action.key}

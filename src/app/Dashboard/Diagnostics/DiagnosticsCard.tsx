@@ -38,10 +38,14 @@ import {
   EmptyStateVariant,
   EmptyStateHeader,
   EmptyStateFooter,
+  ActionList,
+  Tooltip,
 } from '@patternfly/react-core';
-import { WrenchIcon } from '@patternfly/react-icons';
+import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { DashboardCard } from '../DashboardCard';
+import { NotificationCategory, Target } from '@app/Shared/Services/api.types';
+import { concatMap, filter, first } from 'rxjs/operators';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -59,6 +63,29 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     },
     [notifications, t],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.target()
+      .pipe(
+        filter((target) => !!target),
+        first(),
+        concatMap(() => serviceContext.api.getThreadDumps()),
+      )
+      .subscribe({
+        next: (dumps) => dumps.length > 0 ? setThreadDumpReady(true) : setThreadDumpReady(false),
+        error: () => setThreadDumpReady(false),
+      })
+    );
+  })
+
+  React.useEffect(() => {
+      addSubscription(
+        serviceContext.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
+          setThreadDumpReady(true)
+        }),
+      );
+    }, [addSubscription, serviceContext.notificationChannel, setThreadDumpReady]);
 
   const handleGC = React.useCallback(() => {
     setRunning(true);
@@ -113,31 +140,36 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
               />
               <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
               <EmptyStateFooter>
-                <Button
-                  variant="primary"
-                  onClick={handleGC}
-                  spinnerAriaValueText="Invoke GC"
-                  spinnerAriaLabel="invoke-gc"
-                  isLoading={running}
-                >
-                  {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleThreadDump}
-                  spinnerAriaValueText="Invoke Thread Dump"
-                  spinnerAriaLabel="invoke-thread-dump"
-                  isLoading={running}
-                >
-                  {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
-                </Button>
-                <Button
-                  variant="primary"
-                  isDisabled={!threadDumpReady}
-                  component={(props) => <CryostatLink {...props} to="/diagnostics" />}
-                >
-                  {t('DiagnosticsCard.DIAGONSTICS_THREAD_REDIRECT_BUTTON')}
-                </Button>
+                <ActionList>
+                  <Button
+                    variant="primary"
+                    onClick={handleGC}
+                    spinnerAriaValueText="Invoke GC"
+                    spinnerAriaLabel="invoke-gc"
+                    isLoading={running}
+                  >
+                    {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
+                  </Button>
+                </ActionList>
+                <ActionList>
+                  <Button
+                    variant="primary"
+                    onClick={handleThreadDump}
+                    spinnerAriaValueText="Invoke Thread Dump"
+                    spinnerAriaLabel="invoke-thread-dump"
+                    isLoading={running}
+                  >
+                    {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                  </Button>
+                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                    <Button
+                      variant="primary"
+                      isAriaDisabled={!threadDumpReady}
+                      component={(props) => <CryostatLink {...props} to="/diagnostics" />}
+                      icon={<ListIcon />}
+                    />
+                  </Tooltip>
+                </ActionList>
               </EmptyStateFooter>
             </EmptyState>
           </Bullseye>

@@ -1007,7 +1007,14 @@ export class ApiService {
 
   downloadThreadDump(threadDump: ThreadDump): void {
     this.ctx.url(threadDump.downloadUrl).subscribe((resourceUrl) => {
-      this.downloadFile(resourceUrl, threadDump.uuid);
+      let filename = this.target.target().pipe(
+        filter(t => !!t) ,
+        map((t) => `${t?.alias}_${threadDump.uuid}.thread_dump`),
+        first()
+      )
+      filename.subscribe((name) => {
+        this.downloadFile(resourceUrl, name);
+      });
     });
   }
 
