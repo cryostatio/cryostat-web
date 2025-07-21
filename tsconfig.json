@@ -9,7 +9,6 @@
     "sourceMap": true,
     "jsx": "react-jsx",
     "moduleResolution": "node",
-    "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,

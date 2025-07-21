@@ -46,11 +46,15 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    "^.+\\.(ts|tsx)$" :[ "ts-jest", { } ],
+    "^.+\\.(ts|tsx)$": "ts-jest"
   },
 
   // A set of global variables that need to be available in all test environments
-  globals: { },
+  globals: {
+    'ts-jest': {
+        isolatedModules: true
+    }
+  },
 
   // An array of regexp pattern strings that are matched against all source file paths before transformation.
   // If the file path matches any of the patterns, it will not be transformed.
