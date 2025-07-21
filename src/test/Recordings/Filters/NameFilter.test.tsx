@@ -290,8 +290,8 @@ describe('<NameFilter />', () => {
       await user.click(screen.getByText('someRecording'));
     });
 
-    expect(submitNameInput).toBeCalledTimes(1);
-    expect(submitNameInput).toBeCalledWith('someRecording');
+    expect(submitNameInput).toHaveBeenCalledTimes(1);
+    expect(submitNameInput).toHaveBeenCalledWith('someRecording');
     expect(emptyFilteredNames).toStrictEqual(['someRecording']);
   });
 });

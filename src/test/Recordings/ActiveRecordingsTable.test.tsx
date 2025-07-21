@@ -379,7 +379,7 @@ describe('<ActiveRecordingsTable />', () => {
     const archiveRequestSpy = jest.spyOn(defaultServices.api, 'archiveRecording');
 
     expect(archiveRequestSpy).toHaveBeenCalledTimes(1);
-    expect(archiveRequestSpy).toBeCalledWith(mockRecording.remoteId);
+    expect(archiveRequestSpy).toHaveBeenCalledWith(mockRecording.remoteId);
   });
 
   it('stops the selected Recording when Stop is clicked', async () => {
@@ -403,7 +403,7 @@ describe('<ActiveRecordingsTable />', () => {
     const stopRequestSpy = jest.spyOn(defaultServices.api, 'stopRecording');
 
     expect(stopRequestSpy).toHaveBeenCalledTimes(1);
-    expect(stopRequestSpy).toBeCalledWith(mockRecording.remoteId);
+    expect(stopRequestSpy).toHaveBeenCalledWith(mockRecording.remoteId);
   });
 
   it('opens the labels drawer when Edit Labels is clicked', async () => {
@@ -456,10 +456,10 @@ describe('<ActiveRecordingsTable />', () => {
       await user.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
     });
 
-    expect(deleteRequestSpy).toBeCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith(mockRecording.remoteId);
-    expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteActiveRecordings, false);
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRecording.remoteId);
+    expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
+    expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteActiveRecordings, false);
   });
 
   it('deletes the Recording when Delete is clicked w/o popup warning', async () => {
@@ -484,7 +484,7 @@ describe('<ActiveRecordingsTable />', () => {
 
     expect(screen.queryByLabelText(DeleteActiveRecordings.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith(mockRecording.remoteId);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRecording.remoteId);
   });
 
   it('downloads a Recording when Download Recording is clicked', async () => {
@@ -508,7 +508,7 @@ describe('<ActiveRecordingsTable />', () => {
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
     expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(downloadRequestSpy).toBeCalledWith(mockRecording);
+    expect(downloadRequestSpy).toHaveBeenCalledWith(mockRecording);
   });
 
   it('uploads a Recording to Grafana when View in Grafana is clicked', async () => {
@@ -532,7 +532,7 @@ describe('<ActiveRecordingsTable />', () => {
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana');
 
     expect(grafanaUploadSpy).toHaveBeenCalledTimes(1);
-    expect(grafanaUploadSpy).toBeCalledWith(mockRecording.remoteId);
+    expect(grafanaUploadSpy).toHaveBeenCalledWith(mockRecording.remoteId);
   });
 
   it('should show error view if failing to retrieve Recordings', async () => {

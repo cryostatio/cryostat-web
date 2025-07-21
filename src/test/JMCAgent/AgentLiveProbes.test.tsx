@@ -174,7 +174,7 @@ describe('<AgentLiveProbes />', () => {
 
     await user.click(removeButton);
 
-    expect(deleteRequestSpy).toBeCalledTimes(1);
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should show warning modal and remove all probes when confirmed', async () => {
@@ -203,7 +203,7 @@ describe('<AgentLiveProbes />', () => {
       await user.click(confirmButton);
     });
 
-    expect(deleteRequestSpy).toBeCalledTimes(1);
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should shown empty state when table is empty', async () => {

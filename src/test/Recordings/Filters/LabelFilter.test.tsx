@@ -331,8 +331,8 @@ describe('<LabelFilter />', () => {
 
     // LabelFilter's parent rebuilds to close menu by default.
 
-    expect(submitLabelInput).toBeCalledTimes(1);
-    expect(submitLabelInput).toBeCalledWith('someLabel=someValue');
+    expect(submitLabelInput).toHaveBeenCalledTimes(1);
+    expect(submitLabelInput).toHaveBeenCalledWith('someLabel=someValue');
     expect(emptyFilteredLabels).toStrictEqual(['someLabel=someValue']);
   });
 });
