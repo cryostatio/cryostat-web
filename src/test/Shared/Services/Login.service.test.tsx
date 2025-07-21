@@ -97,7 +97,7 @@ describe('Login.service', () => {
             json: new Promise((resolve) => resolve(logoutResp)),
           } as unknown as Response),
         );
-      history.push('/somepath')
+      history.push('/somepath');
       svc = new LoginService(history, apiSvc, settingsSvc);
     });
 
