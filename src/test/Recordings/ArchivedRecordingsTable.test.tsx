@@ -422,9 +422,9 @@ describe('<ArchivedRecordingsTable />', () => {
     await user.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
-    expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteArchivedRecordings, false);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget.connectUrl, 'someRecording');
+    expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
+    expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteArchivedRecordings, false);
   });
 
   it('should delete the Recording when Delete is clicked w/o popup warning', async () => {
@@ -456,7 +456,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(screen.queryByLabelText(DeleteArchivedRecordings.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget.connectUrl, 'someRecording');
   });
 
   it('should download a Recording when Download Recording is clicked', async () => {
@@ -480,7 +480,7 @@ describe('<ArchivedRecordingsTable />', () => {
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
     expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(downloadRequestSpy).toBeCalledWith(mockRecording);
+    expect(downloadRequestSpy).toHaveBeenCalledWith(mockRecording);
   });
 
   it('should upload a Recording to Grafana when View in Grafana is clicked', async () => {

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<DashboardLayoutToolbar /> renders correctly 1`] = `
 <div
@@ -11,7 +11,7 @@ exports[`<DashboardLayoutToolbar /> renders correctly 1`] = `
   <div
     className="pf-v5-c-toolbar__content"
     style={
-      Object {
+      {
         "paddingLeft": "24px",
       }
     }

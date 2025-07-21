@@ -207,9 +207,9 @@ describe('<Rules />', () => {
     });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
-    expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteAutomatedRules, false);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.name, true);
+    expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
+    expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteAutomatedRules, false);
   });
 
   it('deletes a rule when Delete is clicked w/o popup warning', async () => {
@@ -234,7 +234,7 @@ describe('<Rules />', () => {
     });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockRule.name, true);
   });
 
   it('remove a rule when receiving a notification', async () => {
@@ -308,7 +308,7 @@ describe('<Rules />', () => {
     });
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
-    expect(downloadSpy).toBeCalledWith(mockRule.name);
+    expect(downloadSpy).toHaveBeenCalledWith(mockRule.name);
   });
 
   it('updates a rule when the switch is clicked', async () => {
@@ -325,7 +325,7 @@ describe('<Rules />', () => {
 
     await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
     expect(updateSpy).toHaveBeenCalledTimes(1);
-    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: !mockRule.enabled }, expect.any(Boolean));
+    expect(updateSpy).toHaveBeenCalledWith({ ...mockRule, enabled: !mockRule.enabled }, expect.any(Boolean));
   });
 
   it('shows a popup when toggle disables rule and then disable the Rule after clicking confirmation Disable', async () => {
@@ -351,7 +351,7 @@ describe('<Rules />', () => {
     });
 
     expect(updateSpy).toHaveBeenCalledTimes(1);
-    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: false }, true);
+    expect(updateSpy).toHaveBeenCalledWith({ ...mockRule, enabled: false }, true);
   });
 
   it('upload a rule file when Submit is clicked', async () => {

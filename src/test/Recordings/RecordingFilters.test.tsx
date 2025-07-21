@@ -16,7 +16,7 @@
 
 // Mock system time for DatetimePicker
 const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
-jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
+jest.useFakeTimers().setSystemTime(mockCurrentDate);
 
 import { getCategoryDisplay, RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';

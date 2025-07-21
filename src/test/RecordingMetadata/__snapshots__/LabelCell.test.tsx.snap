@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<LabelCell /> renders correctly 1`] = `
 <div
@@ -28,7 +28,7 @@ exports[`<LabelCell /> renders correctly 1`] = `
             <span
               className="pf-v5-c-label__text"
               style={
-                Object {
+                {
                   "--pf-v5-c-label__text--MaxWidth": "20ch",
                 }
               }
@@ -53,7 +53,7 @@ exports[`<LabelCell /> renders correctly 1`] = `
             <span
               className="pf-v5-c-label__text"
               style={
-                Object {
+                {
                   "--pf-v5-c-label__text--MaxWidth": "20ch",
                 }
               }

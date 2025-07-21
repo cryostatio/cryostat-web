@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<About /> renders correctly 1`] = `
 <div>
@@ -20,7 +20,7 @@ exports[`<About /> renders correctly 1`] = `
           alt="Cryostat"
           className="pf-v5-c-brand cryostat-logo"
           src="test-file-stub"
-          style={Object {}}
+          style={{}}
         />
       </div>
     </div>
