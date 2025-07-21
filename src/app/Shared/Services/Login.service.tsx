@@ -18,6 +18,7 @@ import { catchError, concatMap, debounceTime, distinctUntilChanged, finalize, ma
 import { ApiService } from './Api.service';
 import { SessionState } from './service.types';
 import type { SettingsService } from './Settings.service';
+import type { History } from 'history';
 
 export class LoginService {
   private readonly logout = new ReplaySubject<void>(1);
@@ -25,6 +26,7 @@ export class LoginService {
   private readonly sessionState = new ReplaySubject<SessionState>(1);
 
   constructor(
+    private readonly history: History,
     private readonly api: ApiService,
     private readonly settings: SettingsService,
   ) {
@@ -101,6 +103,6 @@ export class LoginService {
   }
 
   private navigateToLoginPage(): void {
-    window.location.href = '/';
+    this.history.replace('/');
   }
 }

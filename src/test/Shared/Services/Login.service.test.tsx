@@ -21,9 +21,11 @@ import { SessionState } from '@app/Shared/Services/service.types';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { firstValueFrom, of, timeout } from 'rxjs';
+import { createMemoryHistory, MemoryHistory } from 'history';
 
 jest.unmock('@app/Shared/Services/Login.service');
 jest.mock('@app/Shared/Services/Api.service');
+jest.spyOn(history, 'replaceState');
 
 describe('Login.service', () => {
   let svc: LoginService;
@@ -31,30 +33,10 @@ describe('Login.service', () => {
   describe('setLoggedOut', () => {
     let apiSvc: ApiService;
     let settingsSvc: SettingsService;
-    let saveLocation: Location;
-
-    beforeAll(() => {
-      // Redirection is unimplemented in JSDOM, and cannot by spied on
-      saveLocation = window.location;
-      const locationMock = {
-        ...saveLocation,
-        replace: jest.fn(),
-      } as Location;
-      Object.defineProperty(window, 'location', {
-        value: locationMock,
-        writable: true,
-      });
-    });
-
-    afterAll(() => {
-      // Restore the original location
-      Object.defineProperty(window, 'location', {
-        value: saveLocation,
-        writable: false,
-      });
-    });
+    let history: MemoryHistory;
 
     beforeEach(() => {
+      history = createMemoryHistory();
       apiSvc = new ApiService(
         {
           headers: () => of(new Headers()),
@@ -115,9 +97,8 @@ describe('Login.service', () => {
             json: new Promise((resolve) => resolve(logoutResp)),
           } as unknown as Response),
         );
-      window.location.href = 'https://example.com/';
-      location.href = window.location.href;
-      svc = new LoginService(apiSvc, settingsSvc);
+      history.push('/somepath')
+      svc = new LoginService(history, apiSvc, settingsSvc);
     });
 
     it('should emit true', async () => {
@@ -166,8 +147,9 @@ describe('Login.service', () => {
     });
 
     it('should redirect to login page', async () => {
+      expect(history.location.pathname).toEqual('/somepath');
       await firstValueFrom(svc.setLoggedOut());
-      expect(window.location.href).toEqual('/');
+      expect(history.location.pathname).toEqual('/');
     });
   });
 });
