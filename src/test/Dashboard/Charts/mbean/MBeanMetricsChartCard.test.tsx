@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
+jest.useFakeTimers().setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
 jest.mock('@app/Dashboard/Charts/mbean/MBeanMetricsChartController');
 
 import { ChartContext } from '@app/Dashboard/Charts/context';

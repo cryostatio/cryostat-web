@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
+jest.useFakeTimers().setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
 
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { ThemeSetting } from '@app/Settings/types';
