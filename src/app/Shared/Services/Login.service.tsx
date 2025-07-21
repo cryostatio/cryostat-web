@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { setLocationHref } from '@app/utils/utils';
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, finalize, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { SessionState } from './service.types';
 import type { SettingsService } from './Settings.service';
-import { setLocationHref } from '@app/utils/utils';
 
 export class LoginService {
   private readonly logout = new ReplaySubject<void>(1);
