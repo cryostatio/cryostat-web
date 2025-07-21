@@ -23,6 +23,7 @@ import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
 import { TargetsService } from './Targets.service';
+import { createBrowserHistory } from 'history';
 
 export interface Services {
   target: TargetService;
@@ -48,7 +49,7 @@ export const defaultContext: CryostatContext = {
 const target = new TargetService();
 const settings = new SettingsService();
 const api = new ApiService(defaultContext, target, NotificationsInstance);
-const login = new LoginService(history, api, settings);
+const login = new LoginService(createBrowserHistory(), api, settings);
 const notificationChannel = new NotificationChannel(defaultContext, NotificationsInstance, login);
 const reports = new ReportService(defaultContext, NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
