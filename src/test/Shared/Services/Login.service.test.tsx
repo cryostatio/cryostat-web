@@ -20,12 +20,41 @@ import { NotificationService } from '@app/Shared/Services/Notifications.service'
 import { SessionState } from '@app/Shared/Services/service.types';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { TargetService } from '@app/Shared/Services/Target.service';
+import { cleanup } from '@testing-library/react';
 import { firstValueFrom, of, timeout } from 'rxjs';
-import { createMemoryHistory, MemoryHistory } from 'history';
 
 jest.unmock('@app/Shared/Services/Login.service');
 jest.mock('@app/Shared/Services/Api.service');
-jest.spyOn(history, 'replaceState');
+
+let fakeLocationHref = jest.fn();
+jest.mock('@app/utils/utils', () => ({
+  ...jest.requireActual('@app/utils/utils'),
+  setLocationHref: (p: string) => {
+    return fakeLocationHref(p);
+  },
+}));
+
+const initAuthResp = createResponse(401, false, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
+  meta: {
+    type: 'text/plain',
+    status: 'Unauthorized',
+  },
+  data: {
+    reason: 'HTTP Authorization Failure',
+  },
+});
+const authResp = createResponse(200, true, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
+  meta: {
+    type: 'application/json',
+    status: 'OK',
+  },
+  data: {
+    result: {
+      username: 'user',
+    },
+  },
+});
+const logoutResp = createResponse(200, true);
 
 describe('Login.service', () => {
   let svc: LoginService;
@@ -33,10 +62,9 @@ describe('Login.service', () => {
   describe('setLoggedOut', () => {
     let apiSvc: ApiService;
     let settingsSvc: SettingsService;
-    let history: MemoryHistory;
 
     beforeEach(() => {
-      history = createMemoryHistory();
+      jest.mocked(fakeLocationHref).mockClear();
       apiSvc = new ApiService(
         {
           headers: () => of(new Headers()),
@@ -53,52 +81,11 @@ describe('Login.service', () => {
       sessionStorage.clear();
       jest.resetAllMocks();
       jest.restoreAllMocks();
+      cleanup();
     });
 
     beforeEach(async () => {
-      const initAuthResp = createResponse(401, false, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
-        meta: {
-          type: 'text/plain',
-          status: 'Unauthorized',
-        },
-        data: {
-          reason: 'HTTP Authorization Failure',
-        },
-      });
-      const authResp = createResponse(200, true, new Headers({ 'X-WWW-Authenticate': 'Basic' }), {
-        meta: {
-          type: 'application/json',
-          status: 'OK',
-        },
-        data: {
-          result: {
-            username: 'user',
-          },
-        },
-      });
-      const logoutResp = createResponse(200, true);
-      jest
-        .spyOn(apiSvc, 'sendRequest')
-        .mockReturnValue(
-          of({
-            ok: true,
-            json: new Promise((resolve) => resolve(initAuthResp)),
-          } as unknown as Response),
-        )
-        .mockReturnValue(
-          of({
-            ok: true,
-            json: new Promise((resolve) => resolve(authResp)),
-          } as unknown as Response),
-        )
-        .mockReturnValue(
-          of({
-            ok: true,
-            json: new Promise((resolve) => resolve(logoutResp)),
-          } as unknown as Response),
-        );
-      history.push('/somepath');
-      svc = new LoginService(history, apiSvc, settingsSvc);
+      svc = new LoginService(apiSvc, settingsSvc);
     });
 
     it('should emit true', async () => {
@@ -114,6 +101,13 @@ describe('Login.service', () => {
     });
 
     it('should make expected API calls', async () => {
+      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
+        of({
+          ok: true,
+          json: new Promise((resolve) => resolve(initAuthResp)),
+        } as unknown as Response),
+      );
+
       expect(apiSvc.sendRequest).toHaveBeenCalledTimes(0);
       svc.checkAuth();
       expect(apiSvc.sendRequest).toHaveBeenCalledTimes(1);
@@ -134,11 +128,25 @@ describe('Login.service', () => {
     });
 
     it('should emit logged-out', async () => {
+      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
+        of({
+          ok: true,
+          json: new Promise((resolve) => resolve(authResp)),
+        } as unknown as Response),
+      );
+
       await firstValueFrom(svc.setLoggedOut());
       await firstValueFrom(svc.loggedOut().pipe(timeout({ first: 1000 })));
     });
 
     it('should reset session state', async () => {
+      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
+        of({
+          ok: true,
+          json: new Promise((resolve) => resolve(logoutResp)),
+        } as unknown as Response),
+      );
+
       const beforeState = await firstValueFrom(svc.getSessionState());
       expect(beforeState).toEqual(SessionState.CREATING_USER_SESSION);
       await firstValueFrom(svc.setLoggedOut());
@@ -147,9 +155,15 @@ describe('Login.service', () => {
     });
 
     it('should redirect to login page', async () => {
-      expect(history.location.pathname).toEqual('/somepath');
+      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
+        of({
+          ok: true,
+          json: new Promise((resolve) => resolve(logoutResp)),
+        } as unknown as Response),
+      );
+
       await firstValueFrom(svc.setLoggedOut());
-      expect(history.location.pathname).toEqual('/');
+      expect(fakeLocationHref).toHaveBeenCalledWith('/');
     });
   });
 });
