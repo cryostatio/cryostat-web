@@ -1,10 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<AgentLiveProbes /> renders correctly 1`] = `
 <div
   className="pf-v5-l-stack pf-m-gutter"
   style={
-    Object {
+    {
       "marginTop": "1em",
     }
   }
@@ -61,7 +61,7 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
                 className="pf-v5-c-text-input-group"
                 id="activeProbeFilter"
                 style={
-                  Object {
+                  {
                     "minWidth": "36ch",
                   }
                 }

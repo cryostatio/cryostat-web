@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<TargetAnalysis /> renders correctly 1`] = `
 <div
@@ -56,7 +56,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
                 onChange={[Function]}
                 required={false}
                 style={
-                  Object {
+                  {
                     "alignSelf": "center",
                   }
                 }
@@ -137,7 +137,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
   >
     <div
       style={
-        Object {
+        {
           "display": "contents",
         }
       }
@@ -155,7 +155,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
     <div
       className="pf-v5-c-slider automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok"
       style={
-        Object {
+        {
           "--pf-v5-c-slider--value": "0%",
           "--pf-v5-c-slider__value--c-form-control--width-chars": 1,
         }
@@ -231,7 +231,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
           <div
             className="pf-v5-c-slider__step pf-m-active"
             style={
-              Object {
+              {
                 "--pf-v5-c-slider__step--Left": "0%",
               }
             }
@@ -248,7 +248,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
           <div
             className="pf-v5-c-slider__step"
             style={
-              Object {
+              {
                 "--pf-v5-c-slider__step--Left": "12.5%",
               }
             }
@@ -265,7 +265,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
           <div
             className="pf-v5-c-slider__step"
             style={
-              Object {
+              {
                 "--pf-v5-c-slider__step--Left": "25%",
               }
             }
@@ -282,7 +282,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
           <div
             className="pf-v5-c-slider__step"
             style={
-              Object {
+              {
                 "--pf-v5-c-slider__step--Left": "50%",
               }
             }
@@ -299,7 +299,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
           <div
             className="pf-v5-c-slider__step"
             style={
-              Object {
+              {
                 "--pf-v5-c-slider__step--Left": "75%",
               }
             }
@@ -316,7 +316,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
           <div
             className="pf-v5-c-slider__step"
             style={
-              Object {
+              {
                 "--pf-v5-c-slider__step--Left": "87.5%",
               }
             }
@@ -333,7 +333,7 @@ exports[`<TargetAnalysis /> renders correctly 1`] = `
           <div
             className="pf-v5-c-slider__step"
             style={
-              Object {
+              {
                 "--pf-v5-c-slider__step--Left": "100%",
               }
             }

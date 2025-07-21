@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<Dashboard /> renders correctly 1`] = `
-Array [
+[
   <div>
     Target Context Selector
   </div>,
@@ -49,7 +49,7 @@ Array [
             <div
               className="pf-v5-l-grid__item pf-m-4-col"
               style={
-                Object {
+                {
                   "--pf-v5-l-grid--item--Order": "0",
                 }
               }
@@ -58,7 +58,7 @@ Array [
                 className="draggable-ref-wrapper"
                 onDragStart={[Function]}
                 onTransitionEnd={[Function]}
-                style={Object {}}
+                style={{}}
               >
                 <div
                   className="dashboard-card-resizable-wrapper"
@@ -85,7 +85,7 @@ Array [
                         >
                           <div
                             style={
-                              Object {
+                              {
                                 "display": "contents",
                               }
                             }
@@ -167,7 +167,7 @@ Array [
                       <div
                         className="disabled-pointer"
                         style={
-                          Object {
+                          {
                             "height": "300px",
                           }
                         }
@@ -175,7 +175,7 @@ Array [
                         <div
                           className="pf-v5-c-chart"
                           style={
-                            Object {
+                            {
                               "height": "100%",
                               "pointerEvents": "none",
                               "position": "relative",
@@ -193,7 +193,7 @@ Array [
                             onTouchMove={[Function]}
                             role="img"
                             style={
-                              Object {
+                              {
                                 "height": "100%",
                                 "pointerEvents": "all",
                                 "width": "100%",
@@ -209,7 +209,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
                                     "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
@@ -230,7 +230,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -256,9 +256,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -281,7 +281,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
                                     "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
@@ -307,9 +307,9 @@ Array [
                                   dx={0}
                                   dy={0}
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-global--label--Fill, #151515)",
-                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
+                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, "RedHatText", helvetica, arial, sans-serif)",
                                       "fontSize": 14,
                                       "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                                       "stroke": "transparent",
@@ -329,7 +329,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -347,7 +347,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -373,9 +373,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -397,7 +397,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -415,7 +415,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -441,9 +441,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -465,7 +465,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -483,7 +483,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -509,9 +509,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -533,7 +533,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -551,7 +551,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -577,9 +577,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -599,7 +599,7 @@ Array [
                               <g
                                 clipPath="url(#victory-clip-5)"
                                 style={
-                                  Object {
+                                  {
                                     "height": "100%",
                                     "userSelect": "none",
                                     "width": "100%",
@@ -624,7 +624,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "none",
                                       "opacity": 1,
                                       "pointerEvents": "stroke",
@@ -642,7 +642,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "none",
                                   }
                                 }
@@ -655,7 +655,7 @@ Array [
                           </svg>
                           <div
                             style={
-                              Object {
+                              {
                                 "height": "100%",
                                 "left": 0,
                                 "position": "absolute",
@@ -668,7 +668,7 @@ Array [
                             <svg
                               height={300}
                               style={
-                                Object {
+                                {
                                   "height": "100%",
                                   "overflow": "visible",
                                   "width": "100%",
@@ -692,7 +692,7 @@ Array [
             <div
               className="pf-v5-l-grid__item pf-m-4-col"
               style={
-                Object {
+                {
                   "--pf-v5-l-grid--item--Order": "1",
                 }
               }
@@ -701,7 +701,7 @@ Array [
                 className="draggable-ref-wrapper"
                 onDragStart={[Function]}
                 onTransitionEnd={[Function]}
-                style={Object {}}
+                style={{}}
               >
                 <div
                   className="dashboard-card-resizable-wrapper"
@@ -728,7 +728,7 @@ Array [
                         >
                           <div
                             style={
-                              Object {
+                              {
                                 "display": "contents",
                               }
                             }
@@ -810,7 +810,7 @@ Array [
                       <div
                         className="disabled-pointer"
                         style={
-                          Object {
+                          {
                             "height": "300px",
                           }
                         }
@@ -818,7 +818,7 @@ Array [
                         <div
                           className="pf-v5-c-chart"
                           style={
-                            Object {
+                            {
                               "height": "100%",
                               "pointerEvents": "none",
                               "position": "relative",
@@ -836,7 +836,7 @@ Array [
                             onTouchMove={[Function]}
                             role="img"
                             style={
-                              Object {
+                              {
                                 "height": "100%",
                                 "pointerEvents": "all",
                                 "width": "100%",
@@ -852,7 +852,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
                                     "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
@@ -873,7 +873,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -899,9 +899,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -924,7 +924,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
                                     "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
@@ -950,9 +950,9 @@ Array [
                                   dx={0}
                                   dy={0}
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-global--label--Fill, #151515)",
-                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
+                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, "RedHatText", helvetica, arial, sans-serif)",
                                       "fontSize": 14,
                                       "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                                       "stroke": "transparent",
@@ -972,7 +972,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -990,7 +990,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1016,9 +1016,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1040,7 +1040,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1058,7 +1058,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1084,9 +1084,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1108,7 +1108,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1126,7 +1126,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1152,9 +1152,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1176,7 +1176,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1194,7 +1194,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1220,9 +1220,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1244,7 +1244,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1262,7 +1262,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1288,9 +1288,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1313,7 +1313,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "none",
                                   }
                                 }
@@ -1326,7 +1326,7 @@ Array [
                           </svg>
                           <div
                             style={
-                              Object {
+                              {
                                 "height": "100%",
                                 "left": 0,
                                 "position": "absolute",
@@ -1339,7 +1339,7 @@ Array [
                             <svg
                               height={300}
                               style={
-                                Object {
+                                {
                                   "height": "100%",
                                   "overflow": "visible",
                                   "width": "100%",
@@ -1363,7 +1363,7 @@ Array [
             <div
               className="pf-v5-l-grid__item pf-m-4-col"
               style={
-                Object {
+                {
                   "--pf-v5-l-grid--item--Order": "2",
                 }
               }
@@ -1372,7 +1372,7 @@ Array [
                 className="draggable-ref-wrapper"
                 onDragStart={[Function]}
                 onTransitionEnd={[Function]}
-                style={Object {}}
+                style={{}}
               >
                 <div
                   className="dashboard-card-resizable-wrapper"
@@ -1399,7 +1399,7 @@ Array [
                         >
                           <div
                             style={
-                              Object {
+                              {
                                 "display": "contents",
                               }
                             }
@@ -1481,7 +1481,7 @@ Array [
                       <div
                         className="disabled-pointer"
                         style={
-                          Object {
+                          {
                             "height": "300px",
                           }
                         }
@@ -1489,7 +1489,7 @@ Array [
                         <div
                           className="pf-v5-c-chart"
                           style={
-                            Object {
+                            {
                               "height": "100%",
                               "pointerEvents": "none",
                               "position": "relative",
@@ -1507,7 +1507,7 @@ Array [
                             onTouchMove={[Function]}
                             role="img"
                             style={
-                              Object {
+                              {
                                 "height": "100%",
                                 "pointerEvents": "all",
                                 "width": "100%",
@@ -1523,7 +1523,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
                                     "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
@@ -1544,7 +1544,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1570,9 +1570,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1595,7 +1595,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "var(--pf-v5-chart-axis--axis--Fill, transparent)",
                                     "stroke": "var(--pf-v5-chart-axis--axis--stroke--Color, #d2d2d2)",
                                     "strokeLinecap": "round",
@@ -1621,9 +1621,9 @@ Array [
                                   dx={0}
                                   dy={0}
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-global--label--Fill, #151515)",
-                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, \\"RedHatText\\", helvetica, arial, sans-serif)",
+                                      "fontFamily": "var(--pf-v5-chart-global--FontFamily, "RedHatText", helvetica, arial, sans-serif)",
                                       "fontSize": 14,
                                       "letterSpacing": "var(--pf-v5-chart-global--letter-spacing, normal)",
                                       "stroke": "transparent",
@@ -1643,7 +1643,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1661,7 +1661,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1687,9 +1687,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1711,7 +1711,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1729,7 +1729,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1755,9 +1755,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1779,7 +1779,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1797,7 +1797,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1823,9 +1823,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1847,7 +1847,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1865,7 +1865,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1891,9 +1891,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1915,7 +1915,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--grid--Fill, none)",
                                       "pointerEvents": "painted",
                                       "stroke": "var(--pf-v5-chart-axis--grid--stroke--Color, #d2d2d2)",
@@ -1933,7 +1933,7 @@ Array [
                                   role="presentation"
                                   shapeRendering="auto"
                                   style={
-                                    Object {
+                                    {
                                       "fill": "var(--pf-v5-chart-axis--tick--Fill, transparent)",
                                       "size": 5,
                                       "stroke": "var(--pf-v5-chart-axis--tick--stroke--Color, #d2d2d2)",
@@ -1959,9 +1959,9 @@ Array [
                                     dx={0}
                                     dy={0}
                                     style={
-                                      Object {
+                                      {
                                         "fill": "var(--pf-v5-chart-axis--tick-label--Fill, #4f5255)",
-                                        "fontFamily": "\\"RedHatText\\",helvetica,arial,sans-serif",
+                                        "fontFamily": ""RedHatText",helvetica,arial,sans-serif",
                                         "fontSize": 14,
                                         "letterSpacing": "normal",
                                         "padding": 10,
@@ -1984,7 +1984,7 @@ Array [
                                 role="presentation"
                                 shapeRendering="auto"
                                 style={
-                                  Object {
+                                  {
                                     "fill": "none",
                                   }
                                 }
@@ -1997,7 +1997,7 @@ Array [
                           </svg>
                           <div
                             style={
-                              Object {
+                              {
                                 "height": "100%",
                                 "left": 0,
                                 "position": "absolute",
@@ -2010,7 +2010,7 @@ Array [
                             <svg
                               height={300}
                               style={
-                                Object {
+                                {
                                   "height": "100%",
                                   "overflow": "visible",
                                   "width": "100%",

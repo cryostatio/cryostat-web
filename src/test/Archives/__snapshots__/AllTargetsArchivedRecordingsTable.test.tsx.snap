@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
 <div
@@ -26,7 +26,7 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
             <div
               className="pf-v5-c-text-input-group"
               style={
-                Object {
+                {
                   "minWidth": "30ch",
                 }
               }
@@ -342,7 +342,7 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
               </span>
               <span
                 style={
-                  Object {
+                  {
                     "marginLeft": "var(--pf-v5-global--spacer--sm)",
                   }
                 }
@@ -474,7 +474,7 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
               </span>
               <span
                 style={
-                  Object {
+                  {
                     "marginLeft": "var(--pf-v5-global--spacer--sm)",
                   }
                 }

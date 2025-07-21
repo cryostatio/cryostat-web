@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<ClickableLabel /> renders correctly 1`] = `
 <span
@@ -13,7 +13,7 @@ exports[`<ClickableLabel /> renders correctly 1`] = `
     <span
       className="pf-v5-c-label__text"
       style={
-        Object {
+        {
           "--pf-v5-c-label__text--MaxWidth": "20ch",
         }
       }

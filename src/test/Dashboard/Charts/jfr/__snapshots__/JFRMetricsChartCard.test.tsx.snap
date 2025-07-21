@@ -1,11 +1,11 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<JFRMetricsChartCard /> renders correctly 1`] = `
 <div
   className="draggable-ref-wrapper"
   onDragStart={[Function]}
   onTransitionEnd={[Function]}
-  style={Object {}}
+  style={{}}
 >
   <div
     className="dashboard-card-resizable-wrapper"
@@ -17,7 +17,7 @@ exports[`<JFRMetricsChartCard /> renders correctly 1`] = `
       data-ouia-safe={true}
       id="CPU Load-chart-card"
       style={
-        Object {
+        {
           "height": "380px",
         }
       }
@@ -133,7 +133,7 @@ exports[`<JFRMetricsChartCard /> renders empty state correctly 1`] = `
   className="draggable-ref-wrapper"
   onDragStart={[Function]}
   onTransitionEnd={[Function]}
-  style={Object {}}
+  style={{}}
 >
   <div
     className="dashboard-card-resizable-wrapper"
@@ -144,7 +144,7 @@ exports[`<JFRMetricsChartCard /> renders empty state correctly 1`] = `
       data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="CPU Load-chart-card"
-      style={Object {}}
+      style={{}}
       title="CPU Load"
     >
       <div
@@ -274,7 +274,7 @@ exports[`<JFRMetricsChartCard /> renders loading state correctly 1`] = `
   className="draggable-ref-wrapper"
   onDragStart={[Function]}
   onTransitionEnd={[Function]}
-  style={Object {}}
+  style={{}}
 >
   <div
     className="dashboard-card-resizable-wrapper"
@@ -285,7 +285,7 @@ exports[`<JFRMetricsChartCard /> renders loading state correctly 1`] = `
       data-ouia-component-type="PF5/Card"
       data-ouia-safe={true}
       id="CPU Load-chart-card"
-      style={Object {}}
+      style={{}}
       title="CPU Load"
     >
       <div

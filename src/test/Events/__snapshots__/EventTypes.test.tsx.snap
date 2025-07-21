@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<EventTypes /> renders correctly 1`] = `
-Array [
+[
   <div
     className="pf-v5-c-toolbar"
     data-ouia-component-id="OUIA-Generated-Toolbar-3"
@@ -22,7 +22,7 @@ Array [
             className="pf-v5-c-text-input-group"
             id="eventFilter"
             style={
-              Object {
+              {
                 "minWidth": "38ch",
               }
             }
