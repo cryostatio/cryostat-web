@@ -49,7 +49,7 @@ import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
 import _ from 'lodash';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import QuickSearchIcon from '../../Shared/Components/QuickSearchIcon';
 import quickSearches, { QuickSearchId, quickSearchIds } from './quicksearches/all-quick-searches';
 import { QuickSearchItem } from './types';

@@ -38,7 +38,7 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AutoRefresh } from './Config/AutoRefresh';
 import { ChartCards } from './Config/ChartCards';
 import { DatetimeControl } from './Config/DatetimeControl';
