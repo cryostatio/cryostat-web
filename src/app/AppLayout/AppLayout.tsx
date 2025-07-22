@@ -88,7 +88,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { LogoutIcon } from './LogoutIcon';
 import { ThemeToggle } from './ThemeToggle';
