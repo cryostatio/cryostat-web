@@ -56,7 +56,7 @@ import {
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { EMPTY, concatMap, finalize, first, map, of } from 'rxjs';
 import { AggregateDataCard } from './AggregateDataCard.tsx';
 import { ThreadDumpSelector } from './ThreadDumpSelector';
