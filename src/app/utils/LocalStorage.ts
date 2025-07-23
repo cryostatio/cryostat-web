@@ -40,6 +40,7 @@ export enum LocalStorageKey {
   MATCH_EXPRES_VIS_GRAPH_POSITIONS,
   MATCH_EXPRES_VIS_NODE_POSITIONS,
   THEME,
+  PALETTE,
 }
 
 export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;

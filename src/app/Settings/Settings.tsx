@@ -48,6 +48,7 @@ import { Language } from './Config/Language';
 import { NotificationControl } from './Config/NotificationControl';
 import { Theme } from './Config/Theme';
 import { TopologyConfig } from './Config/TopologyConfig';
+import { Accessibility } from './Config/Accessibility';
 import { WebSocketDebounce } from './Config/WebSocketDebounce';
 import { SettingGroup, SettingTab, _TransformedUserSetting } from './types';
 import { paramAsTab, tabAsParam, getGroupFeatureLevel } from './utils';
@@ -70,6 +71,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         DatetimeControl,
         Theme,
         TopologyConfig,
+        Accessibility,
       ].map(
         (c) =>
           ({
@@ -114,7 +116,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
 
   const settingGroups = React.useMemo(() => {
     return Object.values(SettingTab).map((cat) => {
-      const panels = settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup);
+      const panels = settings.filter((s) => s.category === cat).sort((a, b) => a.orderInGroup - b.orderInGroup);
       return {
         groupLabel: t(cat),
         groupKey: cat,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { LabelProps } from '@patternfly/react-core';
 
 export interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   title: string;
@@ -56,6 +57,66 @@ export enum ThemeSetting {
 }
 
 export type ThemeType = Exclude<ThemeSetting, ThemeSetting.AUTO>;
+
+export enum Palette {
+  DEFAULT = 'DEFAULT',
+  HIGH_CONTRAST = 'HIGH_CONTRAST',
+  MONOCHROME_BLUE = 'MONOCHROME_BLUE',
+  MONOCHROME_RED = 'MONOCHROME_RED',
+}
+
+export interface ColourPalette {
+  primary(): LabelProps['color'];
+  secondary(): LabelProps['color'];
+  tertiary(): LabelProps['color'];
+  accent(): LabelProps['color'];
+  neutral(): LabelProps['color'];
+}
+
+export const DefaultColourPalette: ColourPalette = {
+  primary: () => 'green',
+  secondary: () => 'orange',
+  tertiary: () => 'red',
+  accent: () => 'blue',
+  neutral: () => 'grey',
+};
+
+export const MonochromeBlueColourPalette: ColourPalette = {
+  primary: () => 'cyan',
+  secondary: () => 'blue',
+  tertiary: () => 'purple',
+  accent: () => 'gold',
+  neutral: () => 'grey',
+};
+
+export const MonochromeRedColourPalette: ColourPalette = {
+  primary: () => 'gold',
+  secondary: () => 'orange',
+  tertiary: () => 'red',
+  accent: () => 'cyan',
+  neutral: () => 'grey',
+};
+
+export const HighContrastColourPalette: ColourPalette = {
+  primary: () => 'green',
+  secondary: () => 'purple',
+  tertiary: () => 'gold',
+  accent: () => 'cyan',
+  neutral: () => 'grey',
+};
+
+export function getPaletteColours(palette: Palette): ColourPalette {
+  switch (palette) {
+    case Palette.MONOCHROME_BLUE:
+      return MonochromeBlueColourPalette;
+    case Palette.MONOCHROME_RED:
+      return MonochromeRedColourPalette;
+    case Palette.HIGH_CONTRAST:
+      return HighContrastColourPalette;
+    default:
+      return DefaultColourPalette;
+  }
+}
 
 export interface SettingGroup {
   groupLabel: SettingTab;
