@@ -597,7 +597,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         } else {
           const anyActive = rs.some((r) => isActiveRoute(r));
           items = [
-            <NavExpandable title={t(k)} groupId={k} isActive={anyActive} isExpanded>
+            <NavExpandable key={k} title={t(k)} groupId={k} isActive={anyActive} isExpanded>
               {renderables}
             </NavExpandable>,
           ];
