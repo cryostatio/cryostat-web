@@ -20,6 +20,7 @@ import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
+import { Palette } from '@app/Settings/types';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
@@ -258,6 +259,9 @@ jest
   .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockRecordingNotification));
+
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 describe('<AllTargetsArchivedRecordingsTable />', () => {
   afterEach(cleanup);

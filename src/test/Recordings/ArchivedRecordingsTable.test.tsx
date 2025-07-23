@@ -36,6 +36,7 @@ import * as tlr from '@testing-library/react';
 import { screen, within, cleanup, act } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
+import { Palette } from '@app/Settings/types';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
@@ -161,6 +162,9 @@ jest
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
+
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
