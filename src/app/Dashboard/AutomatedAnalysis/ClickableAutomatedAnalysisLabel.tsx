@@ -23,6 +23,10 @@ import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import * as React from 'react';
 import { transformAADescription } from './utils';
+import { DefaultColourPalette, getPaletteColours } from '@app/Settings/types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { map } from 'rxjs';
 
 export interface ClickableAutomatedAnalysisLabelProps {
   result: AnalysisResult;
@@ -32,9 +36,12 @@ export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label
 
 export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ result }) => {
   const { t } = useCryostatTranslation();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const [isDescriptionVisible, setIsDescriptionVisible] = React.useState(false);
+  const [colourPalette, setColourPalette] = React.useState(DefaultColourPalette);
 
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
@@ -47,17 +54,24 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
     danger: popoverStyles.modifiers.danger,
   };
 
+  React.useEffect(() => {
+    addSubscription(
+      context.settings
+        .palette()
+        .pipe(map((p) => getPaletteColours(p)))
+        .subscribe((c) => setColourPalette(c)),
+    );
+  }, [context.settings, setColourPalette]);
+
   const colorScheme = React.useMemo((): LabelProps['color'] => {
-    // TODO: use label color schemes based on settings for accessibility
-    // context.settings.etc.
     return result.score == AutomatedAnalysisScore.NA_SCORE
-      ? 'grey'
+      ? colourPalette.neutral()
       : result.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
-        ? 'green'
+        ? colourPalette.primary()
         : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
-          ? 'orange'
-          : 'red';
-  }, [result.score]);
+          ? colourPalette.secondary()
+          : colourPalette.tertiary();
+  }, [colourPalette, result.score]);
 
   const alertPopoverVariant = React.useMemo(() => {
     return result.score == AutomatedAnalysisScore.NA_SCORE
