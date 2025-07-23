@@ -499,7 +499,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
               <Table variant="compact" borders={false}>
                 <Thead>
                   <Tr>
-                    <Th />
+                    <Th screenReaderText="column space" />
                     {columns.map((col, idx) => (
                       <Th key={col} textCenter={idx > 0}>
                         {col}
