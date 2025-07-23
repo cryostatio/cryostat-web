@@ -74,12 +74,10 @@ export const isGraphQLError = (resp: any): resp is GraphQLError => {
   return Array.isArray(resp?.errors) && resp.errors.length > 0;
 };
 
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 export const isGraphQLAuthError = (resp: GraphQLError): boolean => {
   return isGraphQLError(resp) && resp.errors.some((v) => v.message.includes('Client Error (427)'));
 };
 
-/* eslint @typescript-eslint/no-explicit-any: 0 */
 export const isGraphQLSSLError = (resp: GraphQLError): boolean => {
   return isGraphQLError(resp) && resp.errors.some((v) => v.message.includes('Bad Gateway'));
 };
