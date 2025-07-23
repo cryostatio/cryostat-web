@@ -15,6 +15,7 @@
  */
 import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { Palette } from '@app/Settings/types';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -36,7 +37,6 @@ import * as tlr from '@testing-library/react';
 import { screen, within, cleanup, act } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
-import { Palette } from '@app/Settings/types';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';

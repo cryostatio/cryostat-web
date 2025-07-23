@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
+import { Palette } from '@app/Settings/types';
 import { Target, NotificationMessage } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
 import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
-import { Palette } from '@app/Settings/types';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
