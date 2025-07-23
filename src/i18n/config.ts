@@ -19,7 +19,6 @@ import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import { i18nNamespaces, i18nResources } from './i18nextUtil';
 
-// eslint-disable-next-line import/no-named-as-default-member
 i18next
   .use(I18nextBrowserLanguageDetector)
   .use(initReactI18next)

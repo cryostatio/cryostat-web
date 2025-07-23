@@ -33,7 +33,6 @@ export const i18nNamespaces = ['public', 'common'];
 
 export const i18nLanguages = Object.keys(i18nResources);
 
-// eslint-disable-next-line import/no-named-as-default-member
 i18next.use(initReactI18next).init({
   resources: i18nResources,
   lng: 'en',

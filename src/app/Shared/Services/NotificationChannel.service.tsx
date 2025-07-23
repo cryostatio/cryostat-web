@@ -84,7 +84,7 @@ export class NotificationChannel {
           let wsUrl: URL;
           try {
             wsUrl = new URL(u);
-          } catch (e) {
+          } catch (_) {
             // wasn't a URL - assume it was a relative path alone, which is OK
             wsUrl = new URL(window.location.href);
             wsUrl.pathname = u;

@@ -785,7 +785,7 @@ describe('<ArchivedRecordingsTable />', () => {
       await user.upload(labelUploadInput, mockMetadataFile);
 
       expect(labelUploadInput.files).not.toBe(null);
-      /* eslint-disable  @typescript-eslint/no-non-null-assertion */
+
       expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
 
       const submitButton = within(modal).getByText('Submit');
@@ -878,7 +878,7 @@ describe('<ArchivedRecordingsTable />', () => {
       });
 
       expect(labelUploadInput.files).not.toBe(null);
-      /* eslint-disable  @typescript-eslint/no-non-null-assertion */
+
       expect(labelUploadInput.files![0]).toStrictEqual(invalidMetadataFile);
 
       const warningTitle = screen.getByText('Invalid Selection');

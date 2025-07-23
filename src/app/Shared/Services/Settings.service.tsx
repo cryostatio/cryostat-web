@@ -175,7 +175,6 @@ export class SettingsService {
   }
 
   notificationsEnabled(): Map<NotificationCategory, boolean> {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const value = getFromLocalStorage<any>('NOTIFICATIONS_ENABLED', undefined);
     if (typeof value === 'object') {
       const res = new Map<NotificationCategory, boolean>();
