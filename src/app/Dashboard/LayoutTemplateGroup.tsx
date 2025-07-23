@@ -45,6 +45,7 @@ import {
 } from './types';
 
 import { getCardDescriptorByName, iconify, LayoutTemplateContext } from './utils';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 export interface LayoutTemplateGroupProps {
   title: LayoutTemplateFilter;
   templates: LayoutTemplate[];
@@ -65,8 +66,15 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
   ...props
 }) => {
   const { t } = useCryostatTranslation();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const dispatch = useDispatch();
   const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, context.settings, setUseCompactLabels]);
 
   const handleTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
@@ -123,7 +131,11 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
               badges={[
                 level !== FeatureLevel.PRODUCTION && (
                   <CatalogTileBadge>
-                    <Label key={template.name} isCompact color={level === FeatureLevel.BETA ? 'green' : 'red'}>
+                    <Label
+                      key={template.name}
+                      isCompact={useCompactLabels}
+                      color={level === FeatureLevel.BETA ? 'green' : 'red'}
+                    >
                       {t(FeatureLevel[level])}
                     </Label>
                   </CatalogTileBadge>
