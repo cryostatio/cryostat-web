@@ -341,12 +341,12 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       <Table aria-label="all-archives-table" isStickyHeader>
         <Thead>
           <Tr>
-            <Th key="table-header-expand" />
+            <Th key="table-header-expand" screenReaderText="column space" />
             {tableColumns.map(({ title, width }, index) => (
               <Th
                 key={`table-header-${title}`}
-                sort={getSortParams(index)}
                 width={width as React.ComponentProps<typeof Th>['width']}
+                sort={getSortParams(index)}
               >
                 {title}
               </Th>

@@ -524,7 +524,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
       <Table aria-label="all-targets-table" isStickyHeader>
         <Thead>
           <Tr>
-            <Th key="table-header-expand" />
+            <Th key="table-header-expand" screenReaderText="column space" />
             {tableColumns.map(({ title, width }, idx) => (
               <Th
                 key={`table-header-${title}`}

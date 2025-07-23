@@ -138,18 +138,19 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
             <Tr>
               <Th
                 key="table-header-check-all"
+                screenReaderText="select-all header"
                 select={{
                   onSelect: onHeaderCheck,
                   isSelected: isHeaderChecked,
                 }}
               />
-              <Th key="table-header-expand" />
+              <Th key="table-header-expand" screenReaderText="column space" />
               {tableColumns.columns.map(({ title, sortable }, index) => (
                 <Th key={`table-header-${title}`} sort={sortable ? tableColumns.onSort(index) : undefined}>
                   {title}
                 </Th>
               ))}
-              <Th key="table-header-actions" />
+              <Th key="table-header-actions" screenReaderText="actions header" />
             </Tr>
           </Thead>
           {children}
