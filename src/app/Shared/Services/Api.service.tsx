@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
