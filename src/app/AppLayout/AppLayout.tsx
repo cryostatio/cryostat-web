@@ -122,6 +122,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [theme] = useTheme();
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   React.useEffect(() => {
     if (theme === ThemeSetting.DARK) {
@@ -145,6 +146,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       }),
     );
   }, [serviceContext.target, setShowAuthModal, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(serviceContext.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, serviceContext.settings, setUseCompactLabels]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
@@ -371,7 +376,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     (level: FeatureLevel) => {
       return (
         <Label
-          isCompact
+          isCompact={useCompactLabels}
           style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
           color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
         >
@@ -379,7 +384,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </Label>
       );
     },
-    [t],
+    [t, useCompactLabels],
   );
 
   const headerToolbar = React.useMemo(
