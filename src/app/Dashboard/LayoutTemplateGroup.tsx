@@ -16,6 +16,7 @@
 import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
@@ -45,7 +46,6 @@ import {
 } from './types';
 
 import { getCardDescriptorByName, iconify, LayoutTemplateContext } from './utils';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 export interface LayoutTemplateGroupProps {
   title: LayoutTemplateFilter;
   templates: LayoutTemplate[];

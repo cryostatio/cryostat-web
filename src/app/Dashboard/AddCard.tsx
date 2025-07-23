@@ -360,7 +360,7 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
         </CatalogTile>
       );
     });
-  }, [t, availableCards, selection, onSelect]);
+  }, [t, useCompactLabels, availableCards, selection, onSelect]);
 
   React.useEffect(() => {
     setToViewCard(availableCards.find((card) => t(card.title) === selection));

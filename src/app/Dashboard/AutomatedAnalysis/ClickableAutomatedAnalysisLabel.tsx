@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { DefaultColourPalette, getPaletteColours } from '@app/Settings/types';
 import { AutomatedAnalysisScore, AnalysisResult } from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
@@ -22,11 +25,8 @@ import { CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangle
 import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import * as React from 'react';
-import { transformAADescription } from './utils';
-import { DefaultColourPalette, getPaletteColours } from '@app/Settings/types';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { map } from 'rxjs';
+import { transformAADescription } from './utils';
 
 export interface ClickableAutomatedAnalysisLabelProps {
   result: AnalysisResult;
