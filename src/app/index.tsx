@@ -27,7 +27,7 @@ import { NotificationsContext, NotificationsInstance } from '@app/Shared/Service
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom-v5-compat';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { JoyrideProvider } from './Joyride/JoyrideProvider';
 import { CapabilitiesContext, defaultCapabilities } from './Shared/Services/Capabilities';
 

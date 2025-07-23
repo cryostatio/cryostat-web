@@ -16,7 +16,7 @@
 
 import { BASEPATH, toPath } from '@app/utils/utils';
 import React from 'react';
-import { Link, LinkProps, Path, To } from 'react-router-dom-v5-compat';
+import { Link, LinkProps, Path, To } from 'react-router-dom';
 
 export interface CryostatLinkProps extends LinkProps {}
 

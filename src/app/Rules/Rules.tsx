@@ -71,7 +71,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { AUTOANALYZE_KEY } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';

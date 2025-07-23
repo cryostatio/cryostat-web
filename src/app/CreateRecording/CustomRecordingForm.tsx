@@ -57,7 +57,7 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';

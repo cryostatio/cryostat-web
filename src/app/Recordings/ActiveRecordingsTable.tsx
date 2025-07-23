@@ -77,7 +77,7 @@ import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
 import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
