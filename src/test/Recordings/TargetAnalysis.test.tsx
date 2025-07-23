@@ -16,6 +16,7 @@
 import '@testing-library/jest-dom';
 
 import { TargetAnalysis } from '@app/Recordings/TargetAnalysis';
+import { Palette } from '@app/Settings/types';
 import { ActiveRecording, RecordingState, AggregateReport } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
@@ -125,6 +126,8 @@ jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters', () => {
 });
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValue(of(mockReport));
