@@ -590,17 +590,19 @@
   "SETTINGS": {
     "ACCESSIBILITY": {
       "ARIA_LABELS": {
+        "LARGE_UI": "Use larger UI elements",
         "PALETTE_SELECT": "Select an accessible colour palette."
       },
-      "TITLE": "Accessibility",
       "DESCRIPTION": "Configure look and feel settings for accessibility.",
+      "LARGE_UI_DESCRIPTION": "Use larger UI elements",
       "PALETTES": {
         "DEFAULT": "Default",
         "HIGH_CONTRAST": "High Contrast",
         "MONOCHROME_BLUE": "Monochrome (blues)",
         "MONOCHROME_RED": "Monochrome (reds)"
       },
-      "PALETTE_SELECT_DESCRIPTION": "Select an accessible colour palette."
+      "PALETTE_SELECT_DESCRIPTION": "Select an accessible colour palette.",
+      "TITLE": "Accessibility"
     },
     "AUTO_REFRESH": {
       "CHECKBOX_LABEL": "Enabled",

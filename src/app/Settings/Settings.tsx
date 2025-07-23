@@ -52,11 +52,20 @@ import { Accessibility } from './Config/Accessibility';
 import { WebSocketDebounce } from './Config/WebSocketDebounce';
 import { SettingGroup, SettingTab, _TransformedUserSetting } from './types';
 import { paramAsTab, tabAsParam, getGroupFeatureLevel } from './utils';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
   const { t } = useCryostatTranslation();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [useCompactElements, setUseCompactElements] = React.useState(true);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactElements(!v)));
+  }, [context.settings, addSubscription, setUseCompactElements]);
 
   const settings = React.useMemo(
     () =>
@@ -164,7 +173,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                               {s.title}
                               {s.featureLevel !== FeatureLevel.PRODUCTION && (
                                 <Label
-                                  isCompact
+                                  isCompact={useCompactElements}
                                   style={{
                                     marginLeft: '1ch',
                                     textTransform: 'capitalize',
