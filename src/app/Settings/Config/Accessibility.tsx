@@ -21,6 +21,8 @@ import {
   FormGroup,
   HelperText,
   HelperTextItem,
+  Label,
+  LabelGroup,
   MenuToggle,
   MenuToggleElement,
   Select,
@@ -31,7 +33,7 @@ import {
   Switch,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { Palette, SettingTab, UserSetting } from '../types';
+import { getPaletteColours, Palette, SettingTab, UserSetting } from '../types';
 
 const Component = () => {
   const { t } = useCryostatTranslation();
@@ -92,30 +94,56 @@ const Component = () => {
           <HelperText>
             <HelperTextItem>{t('SETTINGS.ACCESSIBILITY.PALETTE_SELECT_DESCRIPTION')}</HelperTextItem>
           </HelperText>
-          <Select
-            aria-label={t('SETTINGS.ACCESSIBILITY.ARIA_LABELS.PALETTE_SELECT')}
-            isOpen={paletteOpen}
-            onSelect={handlePaletteSelect}
-            selected={palette}
-            popperProps={{
-              enableFlip: true,
-              appendTo: portalRoot,
-            }}
-            toggle={paletteToggle}
-            onOpenChange={setPaletteOpen}
-            onOpenChangeKeys={['Escape']}
-          >
-            <SelectList>
-              {Object.values(Palette).map((palette) => (
-                <SelectOption key={palette} value={palette}>
-                  {getPaletteDisplay(palette)}
-                </SelectOption>
-              ))}
-            </SelectList>
-          </Select>
+          <Stack hasGutter>
+            <StackItem>
+              <Select
+                aria-label={t('SETTINGS.ACCESSIBILITY.ARIA_LABELS.PALETTE_SELECT')}
+                isOpen={paletteOpen}
+                onSelect={handlePaletteSelect}
+                selected={palette}
+                popperProps={{
+                  enableFlip: true,
+                  appendTo: portalRoot,
+                }}
+                toggle={paletteToggle}
+                onOpenChange={setPaletteOpen}
+                onOpenChangeKeys={['Escape']}
+              >
+                <SelectList>
+                  {Object.values(Palette).map((palette) => (
+                    <SelectOption key={palette} value={palette}>
+                      {getPaletteDisplay(palette)}
+                    </SelectOption>
+                  ))}
+                </SelectList>
+              </Select>
+            </StackItem>
+            <StackItem>
+              <HelperText>
+                <HelperTextItem>{t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW_DESCRIPTION')}</HelperTextItem>
+              </HelperText>
+              <LabelGroup numLabels={6}>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).primary()}>
+                  {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.PRIMARY')}
+                </Label>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).secondary()}>
+                  {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.SECONDARY')}
+                </Label>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).tertiary()}>
+                  {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.TERTIARY')}
+                </Label>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).accent()}>
+                  {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.ACCENT')}
+                </Label>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).neutral()}>
+                  {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.NEUTRAL')}
+                </Label>
+              </LabelGroup>
+            </StackItem>
+          </Stack>
         </FormGroup>
       </StackItem>
-      <StackItem>
+      <StackItem key="large-ui-elements">
         <FormGroup>
           <HelperText>
             <HelperTextItem>{t('SETTINGS.ACCESSIBILITY.LARGE_UI_DESCRIPTION')}</HelperTextItem>

@@ -595,6 +595,14 @@
       },
       "DESCRIPTION": "Configure look and feel settings for accessibility.",
       "LARGE_UI_DESCRIPTION": "Use larger UI elements",
+      "PALETTE_PREVIEW_DESCRIPTION": "Palette colour selection preview",
+      "PALETTE_PREVIEW": {
+        "PRIMARY": "primary",
+        "SECONDARY": "secondary",
+        "TERTIARY": "tertiary",
+        "ACCENT": "accent",
+        "NEUTRAL": "neutral"
+      },
       "PALETTES": {
         "DEFAULT": "Default",
         "HIGH_CONTRAST": "High Contrast",
