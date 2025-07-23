@@ -607,7 +607,7 @@
         "DEFAULT": "Default",
         "HIGH_CONTRAST": "High Contrast",
         "MONOCHROME_BLUE": "Monochrome (blues)",
-        "MONOCHROME_RED": "Monochrome (reds)"
+        "MONOCHROME_ORANGE": "Monochrome (oranges)"
       },
       "PALETTE_SELECT_DESCRIPTION": "Select an accessible colour palette.",
       "TITLE": "Accessibility"

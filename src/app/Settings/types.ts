@@ -62,7 +62,7 @@ export enum Palette {
   DEFAULT = 'DEFAULT',
   HIGH_CONTRAST = 'HIGH_CONTRAST',
   MONOCHROME_BLUE = 'MONOCHROME_BLUE',
-  MONOCHROME_RED = 'MONOCHROME_RED',
+  MONOCHROME_ORANGE = 'MONOCHROME_ORANGE',
 }
 
 export interface ColourPalette {
@@ -89,7 +89,7 @@ export const MonochromeBlueColourPalette: ColourPalette = {
   neutral: () => 'grey',
 };
 
-export const MonochromeRedColourPalette: ColourPalette = {
+export const MonochromeOrangeColourPalette: ColourPalette = {
   primary: () => 'gold',
   secondary: () => 'orange',
   tertiary: () => 'red',
@@ -109,8 +109,8 @@ export function getPaletteColours(palette: Palette): ColourPalette {
   switch (palette) {
     case Palette.MONOCHROME_BLUE:
       return MonochromeBlueColourPalette;
-    case Palette.MONOCHROME_RED:
-      return MonochromeRedColourPalette;
+    case Palette.MONOCHROME_ORANGE:
+      return MonochromeOrangeColourPalette;
     case Palette.HIGH_CONTRAST:
       return HighContrastColourPalette;
     default:
