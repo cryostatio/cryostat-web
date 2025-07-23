@@ -313,8 +313,15 @@ export interface CardGalleryProps {
 
 export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect }) => {
   const { t } = useCryostatTranslation();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const activeLevel = useFeatureLevel();
   const [toViewCard, setToViewCard] = React.useState<DashboardCardDescriptor>();
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, context.settings, setUseCompactLabels]);
 
   const availableCards = React.useMemo(() => getDashboardCards(activeLevel), [activeLevel]);
 
@@ -340,7 +347,7 @@ export const CardGallery: React.FC<CardGalleryProps> = ({ selection, onSelect })
               <CatalogTileBadge>
                 <LabelGroup>
                   {labels.map(({ content, icon, color }) => (
-                    <Label key={content} color={color} icon={icon} isCompact>
+                    <Label key={content} color={color} icon={icon} isCompact={useCompactLabels}>
                       {content}
                     </Label>
                   ))}
