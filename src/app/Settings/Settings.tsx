@@ -17,6 +17,8 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -39,6 +41,7 @@ import {
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { Accessibility } from './Config/Accessibility';
 import { AutoRefresh } from './Config/AutoRefresh';
 import { ChartCards } from './Config/ChartCards';
 import { DatetimeControl } from './Config/DatetimeControl';
@@ -48,12 +51,9 @@ import { Language } from './Config/Language';
 import { NotificationControl } from './Config/NotificationControl';
 import { Theme } from './Config/Theme';
 import { TopologyConfig } from './Config/TopologyConfig';
-import { Accessibility } from './Config/Accessibility';
 import { WebSocketDebounce } from './Config/WebSocketDebounce';
 import { SettingGroup, SettingTab, _TransformedUserSetting } from './types';
 import { paramAsTab, tabAsParam, getGroupFeatureLevel } from './utils';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface SettingsProps {}
 

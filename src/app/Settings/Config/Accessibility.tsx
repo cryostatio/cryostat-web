@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -31,7 +32,6 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { Palette, SettingTab, UserSetting } from '../types';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 
 const Component = () => {
   const { t } = useCryostatTranslation();
@@ -60,7 +60,7 @@ const Component = () => {
     (_: any, largeUi: boolean) => {
       context.settings.setLargeUi(largeUi);
     },
-    [context.settings, setLargeUi],
+    [context.settings],
   );
 
   const getPaletteDisplay = React.useCallback(

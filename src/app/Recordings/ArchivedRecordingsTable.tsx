@@ -957,7 +957,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         </Td>
       </Tr>
     );
-  }, [index, isExpanded, analyses, loadingAnalysis]);
+  }, [index, isExpanded, analyses, loadingAnalysis, useCompactLabels]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>

@@ -447,6 +447,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
     handleResetScoreFilter,
     filteredCategorizedEvaluation,
     showListView,
+    useCompactLabels,
   ]);
 
   return (
