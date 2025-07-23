@@ -4707,9 +4707,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"concurrently@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "concurrently@npm:9.0.1"
+"concurrently@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "concurrently@npm:9.2.0"
   dependencies:
     chalk: ^4.1.2
     lodash: ^4.17.21
@@ -4721,7 +4721,7 @@ __metadata:
   bin:
     conc: dist/bin/concurrently.js
     concurrently: dist/bin/concurrently.js
-  checksum: c29b9cb1d88e36259df3ba926f327e4a6816634e446f1cd59139e7e63656a4ba454023a4622f8d32b4420289936fd1b1911ab3143f1735a2976833f76ce92cff
+  checksum: a138458968c791e0c5719771d3181c5add8b865beebf19fae43365ab4d49ac79de634de29ef150697e3aaf1145f27dcf634910bdc2bcb779c5dd92621607b854
   languageName: node
   linkType: hard
 
@@ -4851,7 +4851,7 @@ __metadata:
     "@types/selenium-webdriver": ^4.1.27
     "@typescript-eslint/eslint-plugin": ^8.38.0
     "@typescript-eslint/parser": ^8.38.0
-    concurrently: ^9.0.1
+    concurrently: ^9.2.0
     css-loader: ^7.1.2
     css-minimizer-webpack-plugin: ^7.0.0
     dayjs: ^1.11.13
