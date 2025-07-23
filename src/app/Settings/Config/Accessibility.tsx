@@ -123,19 +123,19 @@ const Component = () => {
                 <HelperTextItem>{t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW_DESCRIPTION')}</HelperTextItem>
               </HelperText>
               <LabelGroup numLabels={6}>
-                <Label isCompact={!largeUi} color={getPaletteColours(palette).primary()}>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).primary()[0]}>
                   {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.PRIMARY')}
                 </Label>
-                <Label isCompact={!largeUi} color={getPaletteColours(palette).secondary()}>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).secondary()[0]}>
                   {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.SECONDARY')}
                 </Label>
-                <Label isCompact={!largeUi} color={getPaletteColours(palette).tertiary()}>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).tertiary()[0]}>
                   {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.TERTIARY')}
                 </Label>
-                <Label isCompact={!largeUi} color={getPaletteColours(palette).accent()}>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).accent()[0]}>
                   {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.ACCENT')}
                 </Label>
-                <Label isCompact={!largeUi} color={getPaletteColours(palette).neutral()}>
+                <Label isCompact={!largeUi} color={getPaletteColours(palette).neutral()[0]}>
                   {t('SETTINGS.ACCESSIBILITY.PALETTE_PREVIEW.NEUTRAL')}
                 </Label>
               </LabelGroup>

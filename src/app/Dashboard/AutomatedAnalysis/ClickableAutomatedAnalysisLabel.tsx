@@ -67,12 +67,12 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
 
   const colorScheme = React.useMemo((): LabelProps['color'] => {
     return result.score == AutomatedAnalysisScore.NA_SCORE
-      ? colourPalette.neutral()
+      ? colourPalette.neutral()[0]
       : result.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
-        ? colourPalette.primary()
+        ? colourPalette.primary()[0]
         : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
-          ? colourPalette.secondary()
-          : colourPalette.tertiary();
+          ? colourPalette.secondary()[0]
+          : colourPalette.tertiary()[0];
   }, [colourPalette, result.score]);
 
   const alertPopoverVariant = React.useMemo(() => {

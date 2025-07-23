@@ -66,43 +66,43 @@ export enum Palette {
 }
 
 export interface ColourPalette {
-  primary(): LabelProps['color'];
-  secondary(): LabelProps['color'];
-  tertiary(): LabelProps['color'];
-  accent(): LabelProps['color'];
-  neutral(): LabelProps['color'];
+  primary(): [LabelProps['color'], string];
+  secondary(): [LabelProps['color'], string];
+  tertiary(): [LabelProps['color'], string];
+  accent(): [LabelProps['color'], string];
+  neutral(): [LabelProps['color'], string];
 }
 
 export const DefaultColourPalette: ColourPalette = {
-  primary: () => 'green',
-  secondary: () => 'orange',
-  tertiary: () => 'red',
-  accent: () => 'blue',
-  neutral: () => 'grey',
+  primary: () => ['green', 'var(--pf-v5-global--success-color--100)'],
+  secondary: () => ['orange', 'var(--pf-v5-global--warning-color--100)'],
+  tertiary: () => ['red', 'var(--pf-v5-global--danger-color--100)'],
+  accent: () => ['blue', 'var(--pf-v5-global--primary-color--100)'],
+  neutral: () => ['grey', 'var(--pf-v5-global---color--200)'],
 };
 
 export const MonochromeBlueColourPalette: ColourPalette = {
-  primary: () => 'cyan',
-  secondary: () => 'blue',
-  tertiary: () => 'purple',
-  accent: () => 'gold',
-  neutral: () => 'grey',
+  primary: () => ['cyan', 'var(--pf-v5-global--palette--blue-200)'],
+  secondary: () => ['blue', 'var(--pf-v5-global--palette--blue-300)'],
+  tertiary: () => ['purple', 'var(--pf-v5-global--palette--blue-500)'],
+  accent: () => ['gold', 'var(--pf-v5-global--palette--orange-200)'],
+  neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
 };
 
 export const MonochromeOrangeColourPalette: ColourPalette = {
-  primary: () => 'gold',
-  secondary: () => 'orange',
-  tertiary: () => 'red',
-  accent: () => 'cyan',
-  neutral: () => 'grey',
+  primary: () => ['gold', 'var(--pf-v5-global--palette--gold-200)'],
+  secondary: () => ['orange', 'var(--pf-v5-global--palette--orange-300)'],
+  tertiary: () => ['red', 'var(--pf-v5-global--palette--red-100)'],
+  accent: () => ['cyan', 'var(--pf-v5-global--palette--blue-200)'],
+  neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
 };
 
 export const HighContrastColourPalette: ColourPalette = {
-  primary: () => 'green',
-  secondary: () => 'purple',
-  tertiary: () => 'gold',
-  accent: () => 'cyan',
-  neutral: () => 'grey',
+  primary: () => ['green', 'var(--pf-v5-global--palette--green-300)'],
+  secondary: () => ['purple', 'var(--pf-v5-global--palette--purple-300)'],
+  tertiary: () => ['gold', 'var(--pf-v5-global--palette--gold-300)'],
+  accent: () => ['cyan', 'var(--pf-v5-global--palette--cyan-400)'],
+  neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
 };
 
 export function getPaletteColours(palette: Palette): ColourPalette {
