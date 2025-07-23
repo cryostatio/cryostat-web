@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useTheme } from '@app/utils/hooks/useTheme';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -28,25 +27,40 @@ import {
   SelectOption,
   Stack,
   StackItem,
+  Switch,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { Palette, SettingTab, ThemeSetting, UserSetting } from '../types';
+import { Palette, SettingTab, UserSetting } from '../types';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 
 const Component = () => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
-  const [open, setOpen] = React.useState(false);
+  const addSubscription = useSubscriptions();
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
   const [palette, setPalette] = React.useState(Palette.DEFAULT);
+  const [largeUi, setLargeUi] = React.useState(false);
 
-  const handleToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
+  React.useEffect(() => {
+    addSubscription(context.settings.palette().subscribe(setPalette));
+    addSubscription(context.settings.largeUi().subscribe(setLargeUi));
+  }, [addSubscription, context.settings, setPalette, setLargeUi]);
+
+  const handlePaletteToggle = React.useCallback(() => setPaletteOpen((v) => !v), [setPaletteOpen]);
 
   const handlePaletteSelect = React.useCallback(
     (_, setting: Palette) => {
-      setPalette(setting);
       context.settings.setPalette(setting);
-      setOpen(false);
+      setPaletteOpen(false);
     },
-    [context.settings, setOpen],
+    [context.settings, setPaletteOpen],
+  );
+
+  const handleSetLargeUi = React.useCallback(
+    (_: any, largeUi: boolean) => {
+      context.settings.setLargeUi(largeUi);
+    },
+    [context.settings, setLargeUi],
   );
 
   const getPaletteDisplay = React.useCallback(
@@ -56,19 +70,19 @@ const Component = () => {
     [t],
   );
 
-  const toggle = React.useCallback(
+  const paletteToggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
         aria-label={t('SETTINGS.THEME.ARIA_LABELS.MENU_TOGGLE')}
         ref={toggleRef}
-        onClick={handleToggle}
-        isExpanded={open}
+        onClick={handlePaletteToggle}
+        isExpanded={paletteOpen}
         isFullWidth
       >
         {getPaletteDisplay(palette)}
       </MenuToggle>
     ),
-    [t, handleToggle, getPaletteDisplay, palette, open],
+    [t, handlePaletteToggle, getPaletteDisplay, palette, paletteOpen],
   );
 
   return (
@@ -80,15 +94,15 @@ const Component = () => {
           </HelperText>
           <Select
             aria-label={t('SETTINGS.ACCESSIBILITY.ARIA_LABELS.PALETTE_SELECT')}
-            isOpen={open}
+            isOpen={paletteOpen}
             onSelect={handlePaletteSelect}
             selected={palette}
             popperProps={{
               enableFlip: true,
               appendTo: portalRoot,
             }}
-            toggle={toggle}
-            onOpenChange={setOpen}
+            toggle={paletteToggle}
+            onOpenChange={setPaletteOpen}
             onOpenChangeKeys={['Escape']}
           >
             <SelectList>
@@ -100,6 +114,18 @@ const Component = () => {
             </SelectList>
           </Select>
         </FormGroup>
+      </StackItem>
+      <StackItem>
+        <FormGroup>
+          <HelperText>
+            <HelperTextItem>{t('SETTINGS.ACCESSIBILITY.LARGE_UI_DESCRIPTION')}</HelperTextItem>
+          </HelperText>
+        </FormGroup>
+        <Switch
+          aria-label={t('SETTINGS.ACCESSIBILITY.ARIA_LABELS.LARGE_UI')}
+          isChecked={largeUi}
+          onChange={handleSetLargeUi}
+        />
       </StackItem>
     </Stack>
   );

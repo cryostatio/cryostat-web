@@ -42,6 +42,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const [isDescriptionVisible, setIsDescriptionVisible] = React.useState(false);
   const [colourPalette, setColourPalette] = React.useState(DefaultColourPalette);
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
@@ -61,7 +62,8 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
         .pipe(map((p) => getPaletteColours(p)))
         .subscribe((c) => setColourPalette(c)),
     );
-  }, [context.settings, setColourPalette]);
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, context.settings, setColourPalette, setUseCompactLabels]);
 
   const colorScheme = React.useMemo((): LabelProps['color'] => {
     return result.score == AutomatedAnalysisScore.NA_SCORE
@@ -128,7 +130,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
         key={`${clickableAutomatedAnalysisKey}-${result.name}`}
-        isCompact
+        isCompact={useCompactLabels}
       >
         <span className={`${clickableAutomatedAnalysisKey}-name`}>{`${result.name}`}</span>
         {
