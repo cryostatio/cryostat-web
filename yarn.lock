@@ -4913,7 +4913,7 @@ __metadata:
     i18next: ^23.16.4
     i18next-browser-languagedetector: ^8.2.0
     i18next-parser: ^9.3.0
-    imagemin: ^9.0.0
+    imagemin: ^9.0.1
     jest: ^30.0.5
     jest-environment-jsdom: ^30.0.4
     js-base64: 3.7.7
@@ -8613,20 +8613,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"imagemin@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "imagemin@npm:9.0.0"
+"image-dimensions@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "image-dimensions@npm:2.3.0"
+  bin:
+    image-dimensions: cli.js
+  checksum: a4e94c8b820809188e891fe81f5fe6eb45c9c08931fce70af76c22eb78780d65f83e024ef624b3c818cebf25b6b98bcb602df3355cfd061cf7e3b6f8ffc8768b
+  languageName: node
+  linkType: hard
+
+"imagemin@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "imagemin@npm:9.0.1"
   dependencies:
     change-file-extension: ^0.1.1
     environment: ^1.0.0
     file-type: ^19.0.0
     globby: ^14.0.1
+    image-dimensions: ^2.3.0
     junk: ^4.0.1
     ow: ^2.0.0
     p-pipe: ^4.0.0
     slash: ^5.1.0
     uint8array-extras: ^1.1.0
-  checksum: 132063732f78ebdd6ac4f996f933896a6813e7b4c532d720b56fc5ef5900894a17a11e472e53b46c8c0be1aa3f656066fd407079c08d5adde43b0340d830705a
+  checksum: 0d264c522398a0850ec27583d34c72af9ce9f484b3fb87055c9c7c71e73a0bf69a666e9d545eb4336282e62c48f879722d9aac5620a2d78b09f53125af7d01f3
   languageName: node
   linkType: hard
 
