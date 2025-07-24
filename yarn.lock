@@ -4946,7 +4946,7 @@ __metadata:
     terser-webpack-plugin: ^5.3.14
     ts-jest: ^29.4.0
     ts-loader: ^9.5.2
-    tsconfig-paths-webpack-plugin: ^4.1.0
+    tsconfig-paths-webpack-plugin: ^4.2.0
     tslib: ^2.8.1
     typescript: ^5.6.3
     url-loader: ^4.1.1
@@ -14869,14 +14869,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths-webpack-plugin@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "tsconfig-paths-webpack-plugin@npm:4.1.0"
+"tsconfig-paths-webpack-plugin@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "tsconfig-paths-webpack-plugin@npm:4.2.0"
   dependencies:
     chalk: ^4.1.0
     enhanced-resolve: ^5.7.0
+    tapable: ^2.2.1
     tsconfig-paths: ^4.1.2
-  checksum: f6e9a8a407e1a405b0f2531184296d9f033cb4fe5837282b757ab4a2f4cd82a3117e62c4b86d56c7d47749c7f1345aa438ec6417dbf64a0ec74a292fe9eae44d
+  checksum: b35e4da5fb4ee438267125f369220102a061824c1dd568cd84e9db2368b72581ec7b88db1a5fda180bba65ff7b7597b18561a24f1db9c9a85fdc803bea122aa6
   languageName: node
   linkType: hard
 
