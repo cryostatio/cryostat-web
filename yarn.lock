@@ -4883,7 +4883,7 @@ __metadata:
     eslint-webpack-plugin: ^5.0.2
     file-loader: ^6.2.0
     html-webpack-plugin: ^5.6.3
-    humanize-duration: ^3.32.1
+    humanize-duration: ^3.33.0
     i18next: ^23.16.4
     i18next-browser-languagedetector: ^8.2.0
     i18next-parser: ^9.3.0
@@ -8448,10 +8448,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"humanize-duration@npm:^3.32.1":
-  version: 3.32.1
-  resolution: "humanize-duration@npm:3.32.1"
-  checksum: 17f6f2ec09a931eb0bf7de1fc8ac01f90174f366f60390289bd0797c6e4545255bd5d770dd18909c9b21685d76cc190b3a8ec880d2ecc088a1ad032e0d2f57cb
+"humanize-duration@npm:^3.33.0":
+  version: 3.33.0
+  resolution: "humanize-duration@npm:3.33.0"
+  checksum: 577c514da9517255ec710c5b4465ae165c5fd44868de5cbdf162c611eb01be21944fd42d37a301082d946f9d55d698d2ebd521a680bf01b9425e181787a35692
   languageName: node
   linkType: hard
 
