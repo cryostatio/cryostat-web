@@ -58,7 +58,7 @@
     "eslint-webpack-plugin": "^5.0.2",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.6.3",
-    "imagemin": "^9.0.0",
+    "imagemin": "^9.0.1",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
     "license-check-and-add": "^4.0.5",
