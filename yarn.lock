@@ -4937,7 +4937,7 @@ __metadata:
     react-test-renderer: ^17.0.2
     regenerator-runtime: ^0.14.1
     rimraf: ^6.0.1
-    rxjs: ^7.8.1
+    rxjs: ^7.8.2
     selenium-webdriver: ^4.34.0
     semver: ^7.7.2
     showdown: ^2.1.0
