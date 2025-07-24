@@ -391,6 +391,22 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.ThreadDumpSuccess,
+    {
+      variant: AlertVariant.success,
+      title: 'Thread Dump Succeeded',
+      body: (evt) => `Thread Dump created for target: ${evt.message.targetId}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ThreadDumpFailure,
+    {
+      variant: AlertVariant.danger,
+      title: 'Thread Dump Failed',
+      body: (evt) => `Failed to create Thread Dump for target: ${evt.message.targetId}`,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.CredentialsStored,
     {
       variant: AlertVariant.success,
