@@ -257,13 +257,20 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
 }) => {
   const dispatch = useDispatch<StateDispatch>();
   const { t } = useCryostatTranslation();
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
   const [dayjs, dateTimeFormat] = useDayjs();
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   const [showListView, setShowListView] = React.useState(false);
   const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
   const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
     CategorizedRuleEvaluations[]
   >([]);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, context.settings, setUseCompactLabels]);
 
   const showUnavailableScores = React.useCallback(() => {
     setShowNAScores(true);
@@ -421,7 +428,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
                 categoryName={topic}
                 isVertical
                 numLabels={3}
-                isCompact
+                isCompact={useCompactLabels}
                 key={topic}
               >
                 {evaluations.map((evaluation) => {
@@ -440,6 +447,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
     handleResetScoreFilter,
     filteredCategorizedEvaluation,
     showListView,
+    useCompactLabels,
   ]);
 
   return (
