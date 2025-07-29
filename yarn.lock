@@ -1581,19 +1581,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/quickstarts@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "@patternfly/quickstarts@npm:5.4.0"
+"@patternfly/quickstarts@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@patternfly/quickstarts@npm:6.3.0"
   dependencies:
-    "@patternfly/react-catalog-view-extension": ^5.0.0
-    dompurify: ^2.4.9
+    dompurify: ^3.2.4
     history: ^5.0.0
   peerDependencies:
-    "@patternfly/react-core": ">=5.0.0"
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-    showdown: ">=2.1.0"
-  checksum: fd8ee2eee08d6adc14000fc208814b2961eb21eca4f3064fe9e5394ea7794354079dcb8b5bf09a08333bc77ad42e3d5a142e085c3704929af0869feb65598584
+    "@patternfly/react-core": ^6.0.0
+    marked: ^15.0.6
+    react: ^17 || ^18 || ^19
+    react-dom: ^17 || ^18 || ^19
+  checksum: 68dbcab742aa6dc3168801a1367df459f51975a07e379cc867605947a76a078e3e4e016e95cc31532936624c6957bb41f169d4d4dd1f56c4925d449d243fae57
   languageName: node
   linkType: hard
 
@@ -2846,6 +2845,13 @@ __metadata:
   version: 4.0.5
   resolution: "@types/tough-cookie@npm:4.0.5"
   checksum: f19409d0190b179331586365912920d192733112a195e870c7f18d20ac8adb7ad0b0ff69dad430dba8bc2be09593453a719cfea92dc3bda19748fd158fe1498d
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@types/trusted-types@npm:2.0.7"
+  checksum: 8e4202766a65877efcf5d5a41b7dd458480b36195e580a3b1085ad21e948bc417d55d6f8af1fd2a7ad008015d4117d5fdfe432731157da3c68678487174e4ba3
   languageName: node
   linkType: hard
 
@@ -4839,7 +4845,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cryostat-web@workspace:."
   dependencies:
-    "@patternfly/quickstarts": ^5.4.0
+    "@patternfly/quickstarts": ^6.3.0
     "@patternfly/react-catalog-view-extension": ^5.0.0
     "@patternfly/react-charts": ^7.4.5
     "@patternfly/react-core": ^5.4.2
@@ -5953,10 +5959,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^2.4.9":
-  version: 2.5.6
-  resolution: "dompurify@npm:2.5.6"
-  checksum: 1d329fe79928aa86c61539b758bdbc53df58dd90bdc5b74032a2a3a22a436e84178d8f6ad8b022c8f6fac46b26d6e7e553c0cd131a37ed5105bbed6bf87be226
+"dompurify@npm:^3.2.4":
+  version: 3.2.6
+  resolution: "dompurify@npm:3.2.6"
+  dependencies:
+    "@types/trusted-types": ^2.0.7
+  dependenciesMeta:
+    "@types/trusted-types":
+      optional: true
+  checksum: 4d002997dbae13f6bdf0e6be014384129c83b1ee8cd3fca9d96f95b9142d1e96256924466a2fc25e7ffb6ede54290e5c4a7d1bd10f9b14cfa07928dd799c3b42
   languageName: node
   linkType: hard
 
