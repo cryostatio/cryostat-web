@@ -182,10 +182,6 @@ Below CSS rules only apply to Topology components
   margin: 0em 0em 1em 1em;
 }
 
-.entity-overview__action-menu {
-  background-color: var(--pf-v5-global--palette--white);
-}
-
 .topology-listview__realm-title {
   font-size: 1.2em;
   color: var(--pf-v5-global--palette--blue-500);
@@ -211,7 +207,7 @@ Below CSS rules only apply to Topology components
   color: var(--pf-v5-global--palette--black-600);
 }
 
-:where(.pf-v5-theme-dark) .topology__shortcut-command  {
+:where(.pf-v5-theme-dark) .topology__shortcut-command {
   color: var(--pf-v5-global--palette--white);
 }
 
