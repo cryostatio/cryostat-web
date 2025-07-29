@@ -1660,7 +1660,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^5.4.2, @patternfly/react-core@npm:^5.4.8":
+"@patternfly/react-core@npm:^5.4.2":
   version: 5.4.8
   resolution: "@patternfly/react-core@npm:5.4.8"
   dependencies:
@@ -1674,6 +1674,23 @@ __metadata:
     react: ^17 || ^18
     react-dom: ^17 || ^18
   checksum: 5a22903a7ef0a129a13b58133a1a09f78c78b8cd26a0ed8c20519fce167d5ba2c4d48e998003a4536d770698bd36e1ecb2bcf171a38646f80447a587266afd48
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-core@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@patternfly/react-core@npm:6.3.0"
+  dependencies:
+    "@patternfly/react-icons": ^6.3.0
+    "@patternfly/react-styles": ^6.3.0
+    "@patternfly/react-tokens": ^6.3.0
+    focus-trap: 7.6.4
+    react-dropzone: ^14.3.5
+    tslib: ^2.8.1
+  peerDependencies:
+    react: ^17 || ^18 || ^19
+    react-dom: ^17 || ^18 || ^19
+  checksum: 2b6b1922df8d6dc478c3c0d20999bef7b6140c960d4c7cf1e7c1ce495316e94991a5901f2ee9aefc2f7d6d77a550dc72679fce255e98d6063de3e225f2265c91
   languageName: node
   linkType: hard
 
@@ -1707,6 +1724,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/react-icons@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@patternfly/react-icons@npm:6.3.0"
+  peerDependencies:
+    react: ^17 || ^18 || ^19
+    react-dom: ^17 || ^18 || ^19
+  checksum: 47fde57f5c41fe888c22c497fe80097e1825a7eb15cb006218d9c36231eaa806f2e55cede79b4e2fe211ccf87932f3e5bc04ace2e9a011465b316780dd03099b
+  languageName: node
+  linkType: hard
+
 "@patternfly/react-styles@npm:^5.0.0, @patternfly/react-styles@npm:^5.1.1":
   version: 5.1.1
   resolution: "@patternfly/react-styles@npm:5.1.1"
@@ -1721,20 +1748,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-table@npm:^5.4.8":
-  version: 5.4.8
-  resolution: "@patternfly/react-table@npm:5.4.8"
+"@patternfly/react-styles@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@patternfly/react-styles@npm:6.3.0"
+  checksum: 857b8f3c250346f91b031ed5949aec0322e431fc6097eca0ea1a2ad293f1438deac047753ea7adfb510ef2859db9036fe108df76f5d08abfb77837450adaf5bb
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-table@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@patternfly/react-table@npm:6.3.0"
   dependencies:
-    "@patternfly/react-core": ^5.4.8
-    "@patternfly/react-icons": ^5.4.2
-    "@patternfly/react-styles": ^5.4.1
-    "@patternfly/react-tokens": ^5.4.1
+    "@patternfly/react-core": ^6.3.0
+    "@patternfly/react-icons": ^6.3.0
+    "@patternfly/react-styles": ^6.3.0
+    "@patternfly/react-tokens": ^6.3.0
     lodash: ^4.17.21
-    tslib: ^2.7.0
+    tslib: ^2.8.1
   peerDependencies:
-    react: ^17 || ^18
-    react-dom: ^17 || ^18
-  checksum: 12c279b68367db9b3db44e01631b1d15c8dced087df1555e8327d82243236c35450e696074856381f9e3f984587a08106c48a6f2e7646abaacb1d751c2c5ab1d
+    react: ^17 || ^18 || ^19
+    react-dom: ^17 || ^18 || ^19
+  checksum: be837575fa17808a5588661f4a5f279e3cd0def82ad7a335d24dceb25cba38de73301412329545cfc75b101fd537888f610cb7b5d68c7de52fd388a9fe6dffe0
   languageName: node
   linkType: hard
 
@@ -1749,6 +1783,13 @@ __metadata:
   version: 5.4.1
   resolution: "@patternfly/react-tokens@npm:5.4.1"
   checksum: d6f51cbd31db797ed42b148f58ecb28bcc93bdcdf39d0f20b8db5ac40ac2998002ddfad764af38c2f00bc366ac57b1c12fdd42a55e7a30fe3b01e26739e770cf
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-tokens@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@patternfly/react-tokens@npm:6.3.0"
+  checksum: d52842faa9d10bd85181210be52d6014098b0a89c6cc23643573c026d3847fa6f77b328a4ffeff50b21195bfaba8b9a4ac0b8cf3267e99ea3372d84dcae038c7
   languageName: node
   linkType: hard
 
@@ -3868,6 +3909,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"attr-accept@npm:^2.2.4":
+  version: 2.2.5
+  resolution: "attr-accept@npm:2.2.5"
+  checksum: e6a23183c112f5d313ebfc7e63e454de0600caffe9ab88f86e9df420d2399a48e27e6c46ee8de2fc6f34fee3541ecdb557f2b86e6d8bd7d24fd3a66cc75e6349
+  languageName: node
+  linkType: hard
+
 "available-typed-arrays@npm:^1.0.5":
   version: 1.0.5
   resolution: "available-typed-arrays@npm:1.0.5"
@@ -4845,7 +4893,7 @@ __metadata:
     "@patternfly/react-core": ^5.4.2
     "@patternfly/react-icons": ^5.4.0
     "@patternfly/react-styles": ^5.4.1
-    "@patternfly/react-table": ^5.4.8
+    "@patternfly/react-table": ^6.3.0
     "@patternfly/react-topology": ^5.4.0
     "@reduxjs/toolkit": ^1.9.3
     "@testing-library/dom": ^10.4.1
@@ -7259,6 +7307,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-selector@npm:^2.1.0":
+  version: 2.1.2
+  resolution: "file-selector@npm:2.1.2"
+  dependencies:
+    tslib: ^2.7.0
+  checksum: 0e7c5233ca7d33a05eb99236e8cfc843ea304335589d954393aeb7c5b7595f30be23c79173d28180e728b6eb441cd1dd355d6ad7fbb03b8e4f37d20e3d5c3184
+  languageName: node
+  linkType: hard
+
 "file-type@npm:^19.0.0":
   version: 19.5.0
   resolution: "file-type@npm:19.5.0"
@@ -7374,6 +7431,15 @@ __metadata:
   dependencies:
     tabbable: ^6.2.0
   checksum: 4cb89de0bf60b687787cdeedc4a44c37f2eba57a76f522915cf0550170acd937836fc8d00d31161a3bb58df14d871ead481f1f14d2600dcdd618ac027a220246
+  languageName: node
+  linkType: hard
+
+"focus-trap@npm:7.6.4":
+  version: 7.6.4
+  resolution: "focus-trap@npm:7.6.4"
+  dependencies:
+    tabbable: ^6.2.0
+  checksum: 8a71f21ff165fac9f9e79d117233392903a36f30ee03ce0970c8739ea66f7f9bb6c0f2b8da648221daa915fdb90ffb808565e8c31086909fbc02f6de8e08a0df
   languageName: node
   linkType: hard
 
@@ -12495,6 +12561,19 @@ __metadata:
   peerDependencies:
     react: ">= 16.8 || 18.0.0"
   checksum: 174b744d5ca898cf3d84ec1aeb6cef5211c446697e45dc8ece8287a03d291f8d07253206d5a1247ef156fd385d65e7de666d4d5c2986020b8543b8f2434e8b40
+  languageName: node
+  linkType: hard
+
+"react-dropzone@npm:^14.3.5":
+  version: 14.3.8
+  resolution: "react-dropzone@npm:14.3.8"
+  dependencies:
+    attr-accept: ^2.2.4
+    file-selector: ^2.1.0
+    prop-types: ^15.8.1
+  peerDependencies:
+    react: ">= 16.8 || 18.0.0"
+  checksum: c80ef459fe478f79aa48878f41404f43718602b2ade8416ff824914259cdd6ce1eb9ae8f02fa9769215c49ce98b8ab2c89cf6b0a00c0a7937aa3888471d67d98
   languageName: node
   linkType: hard
 
