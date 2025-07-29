@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Archives } from '@app/Archives/Archives';
+import { Target } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -57,15 +58,39 @@ jest
   .mockReturnValueOnce(of(false)) // Test archives disabled case
   .mockReturnValue(of(true));
 
+const mockTarget: Target = {
+  agent: false,
+  connectUrl: 'http://localhost',
+  alias: 'fakeTarget',
+  labels: [],
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
+};
+jest
+  .spyOn(defaultServices.target, 'target')
+  .mockReturnValueOnce(of(mockTarget)) // Test archives disabled case
+  .mockReturnValueOnce(of(undefined)) // Test no target selection case
+  .mockReturnValue(of(mockTarget));
+
 describe('<Archives />', () => {
   afterEach(cleanup);
 
   it('handles the case where archiving is disabled', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
-    expect(screen.queryByText('All Targets')).not.toBeInTheDocument();
+    expect(screen.queryByText('Targets')).not.toBeInTheDocument();
+    expect(screen.queryByText('Target Archives Table')).not.toBeInTheDocument();
+    expect(screen.queryByText('Uploads Table')).not.toBeInTheDocument();
     expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
     expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
+  });
+
+  it('handles no target selection as All Targets table', async () => {
+    render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
+
+    expect(screen.getByText('All Targets Table')).toBeInTheDocument();
   });
 
   it('has the correct page title', async () => {
@@ -77,7 +102,7 @@ describe('<Archives />', () => {
   it('handles the case where archiving is enabled', async () => {
     render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
 
-    expect(screen.getByText('All Targets')).toBeInTheDocument();
+    expect(screen.getByText('Targets')).toBeInTheDocument();
     expect(screen.getByText('Uploads')).toBeInTheDocument();
   });
 

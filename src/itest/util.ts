@@ -244,7 +244,7 @@ export class Recordings {
   }
 
   async getRecordings(): Promise<WebElement[]> {
-    const tableXPath = "//div[@class='recording-table--inner-container pf-v5-c-scroll-inner-wrapper']";
+    const tableXPath = "//div[@class='recording-table-inner-container pf-v5-c-scroll-inner-wrapper']";
     return this.driver.findElements(By.xpath(`${tableXPath}//tbody`));
   }
 

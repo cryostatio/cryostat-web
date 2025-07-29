@@ -461,6 +461,10 @@
       "LISTBOX": "Select AM or PM"
     }
   },
+  "NoTargetSelected": {
+    "TITLE": "<0/> No target selected",
+    "BODY": "To view this content, select a JVM target."
+  },
   "NotFound": {
     "DESCRIPTION": "The page you're trying to find was either removed, moved or maybe the URL isn't quite right. Try returning home or visit one of the following pages below.",
     "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
