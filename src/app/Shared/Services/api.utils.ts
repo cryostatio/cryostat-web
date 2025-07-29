@@ -391,6 +391,22 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.HeapDumpSuccess,
+    {
+      variant: AlertVariant.success,
+      title: 'Thread Dump Succeeded',
+      body: (evt) => `Heap Dump created for target: ${evt.message.targetId}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.HeapDumpFailure,
+    {
+      variant: AlertVariant.danger,
+      title: 'Thread Dump Failed',
+      body: (evt) => `Failed to create Heap Dump for target: ${evt.message.targetId}`,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.CredentialsStored,
     {
       variant: AlertVariant.success,

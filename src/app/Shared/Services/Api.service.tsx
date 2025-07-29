@@ -68,6 +68,7 @@ import {
   MBeanMetricsResponse,
   BuildInfo,
   AggregateReport,
+  HeapDump,
 } from './api.types';
 import {
   isHttpError,
@@ -669,6 +670,67 @@ export class ApiService {
     );
   }
 
+  runHeapDump(suppressNotifications = false): Observable<string> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/heapdump?`,
+          {
+            method: 'POST',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.text()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  deleteHeapDump(heapdumpname: string, suppressNotifications = false): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/heapdump/${heapdumpname}`,
+          {
+            method: 'DELETE',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          map((resp) => resp.ok),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  getHeapDumps(suppressNotifications = false): Observable<HeapDump[]> {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target!.id}/heapdump`,
+          {
+            method: 'GET',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.json()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
   insertProbes(templateName: string): Observable<boolean> {
     return this.target.target().pipe(
       filter((t) => !!t),
@@ -1026,6 +1088,19 @@ export class ApiService {
       const metadataUrl = createBlobURL(JSON.stringify(recording.metadata), 'application/json');
       this.downloadFile(metadataUrl, recording.name.replace(/\.jfr$/, '') + '.metadata.json', false);
       setTimeout(() => URL.revokeObjectURL(metadataUrl), 1000);
+    });
+  }
+
+  downloadHeapDump(heapDump: HeapDump): void {
+    this.ctx.url(heapDump.downloadUrl).subscribe((resourceUrl) => {
+      let filename = this.target.target().pipe(
+        filter(t => !!t) ,
+        map((t) => `${t?.alias}_${heapDump.uuid}.heap_dump`),
+        first()
+      )
+      filename.subscribe((name) => {
+        this.downloadFile(resourceUrl, name);
+      });
     });
   }
 
