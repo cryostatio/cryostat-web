@@ -781,11 +781,17 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
+  const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [loadingAnalysis, setLoadingAnalysis] = React.useState(false);
   const [analyses, setAnalyses] = React.useState<CategorizedRuleEvaluations[]>([]);
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   const expandedRowId = React.useMemo(() => `archived-table-row-${index}-exp`, [index]);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, context.settings, setUseCompactLabels]);
 
   const handleToggle = React.useCallback(() => {
     toggleExpanded(expandedRowId);
@@ -921,7 +927,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
                               categoryName={topic}
                               isVertical
                               numLabels={2}
-                              isCompact
+                              isCompact={useCompactLabels}
                               key={topic}
                             >
                               {evaluations.map((evaluation) => {
@@ -945,7 +951,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         </Td>
       </Tr>
     );
-  }, [index, isExpanded, analyses, loadingAnalysis]);
+  }, [index, isExpanded, analyses, loadingAnalysis, useCompactLabels]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>
