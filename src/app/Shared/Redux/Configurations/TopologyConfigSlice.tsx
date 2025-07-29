@@ -24,6 +24,8 @@ const _version = '1';
 export enum TopologyConfigAction {
   VIEW_MODE_SET = 'topology-config/set-view-mode',
   DISPLAY_OPTION_SET = 'topology-config/set-dislay-options',
+  REPORT_RESULTS_IGNORE_SET = 'topology-config/set-ignored-report-results',
+  REPORT_RESULTS_IGNORE_RESET = 'topology-config/reset-ignored-report-results',
 }
 
 export const enumValues = new Set(Object.values(TopologyConfigAction));
@@ -43,6 +45,10 @@ export interface DisplayOptions {
   };
 }
 
+export interface ReportFilter {
+  notIds: string[];
+}
+
 export type OptionCategory = 'show' | 'groupings';
 
 export interface TopologySetViewModeActionPayload {
@@ -54,6 +60,13 @@ export interface TopologySetDisplayOptionsActionPayload {
   key: string;
   value: boolean;
 }
+
+export interface TopologySetIgnoreReportResultPayload {
+  id: string;
+  ignore: boolean;
+}
+
+export interface TopologyResetReportResultPayload {}
 
 export const topologyConfigSetViewModeIntent = createAction(
   TopologyConfigAction.VIEW_MODE_SET,
@@ -75,9 +88,24 @@ export const topologyDisplayOptionsSetIntent = createAction(
   }),
 );
 
+export const topologySetIgnoreReportResultIntent = createAction(
+  TopologyConfigAction.REPORT_RESULTS_IGNORE_SET,
+  (id: string, ignore: boolean) => ({
+    payload: {
+      id,
+      ignore,
+    } as TopologySetIgnoreReportResultPayload,
+  }),
+);
+
+export const topologyResetReportResultIntent = createAction(TopologyConfigAction.REPORT_RESULTS_IGNORE_RESET, () => ({
+  payload: {} as TopologyResetReportResultPayload,
+}));
+
 export interface TopologyConfig {
   viewMode: ViewMode;
   displayOptions: DisplayOptions;
+  reportFilter: ReportFilter;
 }
 
 export const defaultTopologyConfig: TopologyConfig = {
@@ -93,6 +121,9 @@ export const defaultTopologyConfig: TopologyConfig = {
       realmOnly: false,
       collapseSingles: false,
     },
+  },
+  reportFilter: {
+    notIds: ['PID1Rule', 'PasswordsInArguments', 'PasswordsInEnvironment', 'PasswordsInSystemProperties'],
   },
 };
 
@@ -131,6 +162,17 @@ export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = cr
           state.displayOptions.groupings.collapseSingles = true;
         }
       }
+    });
+    builder.addCase(topologySetIgnoreReportResultIntent, (state, { payload }) => {
+      const { id, ignore } = payload;
+      if (ignore) {
+        state.reportFilter.notIds.push(id);
+      } else {
+        state.reportFilter.notIds = state.reportFilter.notIds.filter((i) => i !== id);
+      }
+    });
+    builder.addCase(topologyResetReportResultIntent, (state) => {
+      state.reportFilter = defaultTopologyConfig.reportFilter;
     });
   },
 );
