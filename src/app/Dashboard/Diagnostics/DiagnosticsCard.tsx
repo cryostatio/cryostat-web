@@ -20,6 +20,7 @@ import {
   DashboardCardSizes,
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
+import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -37,10 +38,14 @@ import {
   EmptyStateVariant,
   EmptyStateHeader,
   EmptyStateFooter,
+  ActionList,
+  Tooltip,
 } from '@patternfly/react-core';
-import { WrenchIcon } from '@patternfly/react-icons';
+import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { DashboardCard } from '../DashboardCard';
+import { NotificationCategory, Target } from '@app/Shared/Services/api.types';
+import { concatMap, filter, first } from 'rxjs/operators';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -50,6 +55,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const [running, setRunning] = React.useState(false);
+  const [heapDumpReady, setHeapDumpReady] = React.useState(false);
 
   const handleError = React.useCallback(
     (kind, error) => {
@@ -58,12 +64,48 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     [notifications, t],
   );
 
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.target()
+      .pipe(
+        filter((target) => !!target),
+        first(),
+        concatMap(() => serviceContext.api.getThreadDumps()),
+      )
+      .subscribe({
+        next: (dumps) => dumps.length > 0 ? setHeapDumpReady(true) : setHeapDumpReady(false),
+        error: () => setHeapDumpReady(false),
+      })
+    );
+  })
+
+  React.useEffect(() => {
+      addSubscription(
+        serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpSuccess).subscribe(() => {
+          setHeapDumpReady(true)
+        }),
+      );
+    }, [addSubscription, serviceContext.notificationChannel, setHeapDumpReady]);
+
   const handleGC = React.useCallback(() => {
     setRunning(true);
     addSubscription(
       serviceContext.api.runGC(true).subscribe({
         error: (err) => handleError(t('DiagnosticsCard.KINDS.GC'), err),
         complete: () => setRunning(false),
+      }),
+    );
+  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
+
+  const handleThreadDump = React.useCallback(() => {
+    setRunning(true);
+    addSubscription(
+      serviceContext.api.runThreadDump(true).subscribe({
+        error: (err) => handleError(t('DiagnosticsCard.KINDS.THREADS'), err),
+        complete: () => {
+          setRunning(false);
+          setHeapDumpReady(true);
+        },
       }),
     );
   }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
@@ -98,15 +140,36 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
               />
               <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
               <EmptyStateFooter>
-                <Button
-                  variant="primary"
-                  onClick={handleGC}
-                  spinnerAriaValueText="Invoke GC"
-                  spinnerAriaLabel="invoke-gc"
-                  isLoading={running}
-                >
-                  {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
-                </Button>
+                <ActionList>
+                  <Button
+                    variant="primary"
+                    onClick={handleGC}
+                    spinnerAriaValueText="Invoke GC"
+                    spinnerAriaLabel="invoke-gc"
+                    isLoading={running}
+                  >
+                    {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
+                  </Button>
+                </ActionList>
+                <ActionList>
+                  <Button
+                    variant="primary"
+                    onClick={handleThreadDump}
+                    spinnerAriaValueText="Invoke Thread Dump"
+                    spinnerAriaLabel="invoke-thread-dump"
+                    isLoading={running}
+                  >
+                    {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                  </Button>
+                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_TABLE_TOOLTIP')}>
+                    <Button
+                      variant="primary"
+                      isAriaDisabled={!heapDumpReady}
+                      component={(props) => <CryostatLink {...props} to="/diagnostics" />}
+                      icon={<ListIcon />}
+                    />
+                  </Tooltip>
+                </ActionList>
               </EmptyStateFooter>
             </EmptyState>
           </Bullseye>

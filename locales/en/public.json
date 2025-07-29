@@ -369,9 +369,19 @@
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
     "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
-    "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
+    "DIAGNOSTICS_GC_BUTTON": "Invoke Garbage Collection",
+    "DIAGNOSTICS_HEAP_DUMP_BUTTON": "Invoke Heap Dump",
+    "DIAGONSTICS_HEAP_REDIRECT_BUTTON": "View collected Heap Dumps",
     "KINDS": {
-      "GC": "Garbage Collection"
+      "GC": "Garbage Collection",
+      "HEAP_DUMP": "Heap Dump"
+    }
+  },
+    "HeapDumps": {
+    "SEARCH_PLACEHOLDER": "Search Heap Dumps",
+    "ARIA_LABELS": {
+      "ROW_ACTION": "heap-dump-action-menu",
+      "SEARCH_INPUT": "heap-dump-search-input"
     }
   },
   "DurationFilter": {

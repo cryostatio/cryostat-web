@@ -249,6 +249,13 @@ export interface ActiveRecording extends Recording {
   remoteId: number;
 }
 
+export interface HeapDump {
+  downloadUrl: string;
+  uuid: string;
+  jvmId?: string;
+  lastModified?: number;
+}
+
 export interface ActiveRecordingsFilterInput {
   name?: string;
   state?: string;
@@ -537,6 +544,8 @@ export enum NotificationCategory {
   LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
+  HeapDumpSuccess = 'HeapDumpSuccess',
+  HeapDumpFailure = 'HeapDumpFailure',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',
