@@ -170,6 +170,18 @@ const diagnosticsRoutes: IAppRoute[] = [
   },
 ];
 
+const diagnosticsRoutes: IAppRoute[] = [
+  {
+    component: Diagnostics,
+    label: 'Thread Dumps',
+    path: toPath('/diagnostics'),
+    title: 'Thread Dumps',
+    description: 'Create and view thread dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: CAPTURE,
+  },
+];
+
 const consoleRoutes: IAppRoute[] = [
   {
     component: SecurityPanel,

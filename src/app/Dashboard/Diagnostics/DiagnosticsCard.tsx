@@ -21,6 +21,7 @@ import {
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
+import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -43,9 +44,8 @@ import {
 } from '@patternfly/react-core';
 import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { DashboardCard } from '../DashboardCard';
-import { NotificationCategory, Target } from '@app/Shared/Services/api.types';
 import { concatMap, filter, first } from 'rxjs/operators';
+import { DashboardCard } from '../DashboardCard';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -66,26 +66,27 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
 
   React.useEffect(() => {
     addSubscription(
-      serviceContext.target.target()
-      .pipe(
-        filter((target) => !!target),
-        first(),
-        concatMap(() => serviceContext.api.getThreadDumps()),
-      )
-      .subscribe({
-        next: (dumps) => dumps.length > 0 ? setThreadDumpReady(true) : setThreadDumpReady(false),
-        error: () => setThreadDumpReady(false),
-      })
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.getThreadDumps()),
+        )
+        .subscribe({
+          next: (dumps) => (dumps.length > 0 ? setThreadDumpReady(true) : setThreadDumpReady(false)),
+          error: () => setThreadDumpReady(false),
+        }),
     );
-  })
+  });
 
   React.useEffect(() => {
-      addSubscription(
-        serviceContext.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
-          setThreadDumpReady(true)
-        }),
-      );
-    }, [addSubscription, serviceContext.notificationChannel, setThreadDumpReady]);
+    addSubscription(
+      serviceContext.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
+        setThreadDumpReady(true);
+      }),
+    );
+  }, [addSubscription, serviceContext.notificationChannel, setThreadDumpReady]);
 
   const handleGC = React.useCallback(() => {
     setRunning(true);

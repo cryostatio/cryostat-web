@@ -41,7 +41,6 @@ import {
   MenuToggleElement,
   MenuToggle,
   SearchInput,
-  Divider,
   Tooltip,
   Timestamp,
   TimestampTooltipVariant,
@@ -61,7 +60,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { forkJoin, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
@@ -140,20 +138,20 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     (threadDump: ThreadDump) => {
       addSubscription(
         context.api.deleteThreadDump(threadDump.uuid).subscribe(() => {
-            setThreadDumps((old) => old.filter((t) => t.uuid !== threadDump.uuid))
+          setThreadDumps((old) => old.filter((t) => t.uuid !== threadDump.uuid));
         }),
       );
     },
-    [addSubscription, refreshThreadDumps, context.api],
+    [addSubscription, context.api],
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
     if (threadDumpToDelete) {
       handleDelete(threadDumpToDelete);
     } else {
-      notificationsContext.warning("Thread Dump Deletion Failure", "No thread dump to delete");
+      notificationsContext.warning('Thread Dump Deletion Failure', 'No thread dump to delete');
     }
-  }, [handleDelete, threadDumpToDelete]);
+  }, [handleDelete, notificationsContext, threadDumpToDelete]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -161,26 +159,33 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
 
   const handleThreadDump = React.useCallback(() => {
     addSubscription(
-      context.api.runThreadDump(true).pipe(first()).subscribe({
-        next: (jobId) => {
-          addSubscription(
-            context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((notification) => {
-              if (jobId == notification.message.jobId) {
-                refreshThreadDumps();
-              }
-            }),
-          );
-        },
-        error: () => refreshThreadDumps(),
-      }),
+      context.api
+        .runThreadDump(true)
+        .pipe(first())
+        .subscribe({
+          next: (jobId) => {
+            addSubscription(
+              context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((notification) => {
+                if (jobId == notification.message.jobId) {
+                  refreshThreadDumps();
+                }
+              }),
+            );
+          },
+          error: () => refreshThreadDumps(),
+        }),
     );
   }, [addSubscription, context.api, context.notificationChannel, refreshThreadDumps]);
 
   const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
 
   React.useEffect(() => {
-    refreshThreadDumps();
-  }, [refreshThreadDumps]);
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
+        refreshThreadDumps();
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, refreshThreadDumps]);
 
   React.useEffect(() => {
     addSubscription(
@@ -380,20 +385,19 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
 
   const dropdownItems = React.useMemo(
     () =>
-      actionItems.map((action, idx) =>(
-          <DropdownItem
-            aria-label={action.key}
-            key={action.key}
-            onClick={() => {
-              setIsOpen(false);
-              action.onClick && action.onClick();
-            }}
-            isDanger={action.isDanger}
-          >
-            {action.title}
-          </DropdownItem>
-        ),
-      ),
+      actionItems.map((action) => (
+        <DropdownItem
+          aria-label={action.key}
+          key={action.key}
+          onClick={() => {
+            setIsOpen(false);
+            action.onClick && action.onClick();
+          }}
+          isDanger={action.isDanger}
+        >
+          {action.title}
+        </DropdownItem>
+      )),
     [actionItems, setIsOpen],
   );
 

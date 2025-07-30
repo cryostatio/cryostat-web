@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import { ThreadDumpsTable } from '@app/Diagnostics/ThreadDumpsTable';
 import { DeleteThreadDump } from '@app/Modal/types';
 import {
@@ -39,6 +38,16 @@ const mockThreadDump: ThreadDump = {
   jvmId: 'someJvmId',
 };
 
+const mockConnectUrl = 'service:jmx:rmi://someUrl';
+const mockTarget = {
+  agent: false,
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: 'foo',
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
+
 const mockThreadDumpNotification = {
   meta: {
     category: NotificationCategory.ThreadDumpSuccess,
@@ -53,6 +62,8 @@ jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValu
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 jest.spyOn(defaultServices.api, 'getThreadDumps').mockReturnValue(of([mockThreadDump]));
+
+jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
