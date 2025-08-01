@@ -149,9 +149,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     if (threadDumpToDelete) {
       handleDelete(threadDumpToDelete);
     } else {
-      notificationsContext.warning('Thread Dump Deletion Failure', 'No thread dump to delete');
+      notificationsContext.warning(
+        t('ThreadDumps.DELETION_FAILURE_CATEGORY'),
+        t('ThreadDumps.DELETION_FAILURE_MESSAGE'),
+      );
     }
-  }, [handleDelete, notificationsContext, threadDumpToDelete]);
+  }, [handleDelete, notificationsContext, t, threadDumpToDelete]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -357,8 +360,8 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
 
 export interface ThreadDumpActionProps {
   threadDump: ThreadDump;
-  onDelete: (threadDump: ThreadDump) => void;
   onDownload: (threadDump: ThreadDump) => void;
+  onDelete: (threadDump: ThreadDump) => void;
 }
 
 export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDelete, onDownload }) => {
@@ -368,15 +371,18 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
   const actionItems = React.useMemo(() => {
     return [
       {
+        title: 'Download Thread Dump',
+        key: 'download-threaddump',
+        onClick: () => onDownload(threadDump),
+      },
+      {
+        isSeparator: true,
+      },
+      {
         key: 'delete-threaddump',
         title: 'Delete',
         isDanger: true,
         onClick: () => onDelete(threadDump),
-      },
-      {
-        title: 'Download Thread Dump',
-        key: 'download-threaddump',
-        onClick: () => onDownload(threadDump),
       },
     ];
   }, [onDelete, onDownload, threadDump]);

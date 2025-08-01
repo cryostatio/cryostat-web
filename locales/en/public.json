@@ -364,6 +364,9 @@
     },
     "DATETIME": "Date and Time"
   },
+  "Diagnostics": {
+    "THREAD_DUMPS_TAB_TITLE": "Thread Dumps"
+  },
   "DiagnosticsCard": {
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
@@ -379,6 +382,8 @@
   },
   "ThreadDumps": {
     "SEARCH_PLACEHOLDER": "Search Thread Dumps",
+    "DELETION_FAILURE_CATEGORY": "Thread Dump Deletion Failure",
+    "DELETION_FAILURE_MESSAGE": "No Thread Dump to delete.",
     "ARIA_LABELS": {
       "ROW_ACTION": "thread-dump-action-menu",
       "SEARCH_INPUT": "thread-dump-search-input"

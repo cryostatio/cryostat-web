@@ -16,6 +16,7 @@
 import { TargetView } from '@app/TargetView/TargetView';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
@@ -46,7 +47,7 @@ export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
         <Tab
           id="threadDumps"
           eventKey={DiagnosticsTab.THREAD_DUMPS}
-          title={<TabTitleText>Thread Dumps</TabTitleText>}
+          title={<TabTitleText>{t('Diagnostics.THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
           data-quickstart-id="thread-dumps-tab"
         >
           <ThreadDumpsTable />
