@@ -141,7 +141,7 @@ describe('<ThreadDumpsTable />', () => {
     });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someUuid');
+    expect(deleteRequestSpy).toHaveBeenCalledWith('someUuid');
   });
 
   it('should shown empty state when table is empty', async () => {
