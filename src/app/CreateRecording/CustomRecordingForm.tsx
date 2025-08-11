@@ -263,7 +263,7 @@ export const CustomRecordingForm: React.FC = () => {
       name: name,
       events: eventSpecifierString,
       duration: continuous ? undefined : duration * (durationUnit / 1000),
-      archiveOnStop: archiveOnStop && !continuous,
+      archiveOnStop: archiveOnStop,
       replace: restart ? 'ALWAYS' : 'NEVER',
       advancedOptions: {
         toDisk: toDisk,
@@ -473,8 +473,8 @@ export const CustomRecordingForm: React.FC = () => {
               <Checkbox
                 label={t('CustomRecordingForm.ARCHIVE_ON_STOP')}
                 description={t('CustomRecordingForm.ARCHIVE_ON_STOP_DESCRIPTION')}
-                isDisabled={formData.continuous || loading}
-                isChecked={formData.archiveOnStop && !formData.continuous}
+                isDisabled={loading}
+                isChecked={formData.archiveOnStop}
                 onChange={handleArchiveOnStopChange}
                 aria-label="ArchiveOnStop checkbox"
                 id="recording-archive-on-stop"
