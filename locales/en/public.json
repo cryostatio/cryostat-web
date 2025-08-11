@@ -244,7 +244,7 @@
     "ADVANCED_OPTIONS_HIDE": "Hide advanced options",
     "ADVANCED_OPTIONS_SHOW": "Show advanced options",
     "ARCHIVE_ON_STOP": "Archive on Stop",
-    "ARCHIVE_ON_STOP_DESCRIPTION": "Copy data to Archives automatically when duration elapses",
+    "ARCHIVE_ON_STOP_DESCRIPTION": "Copy data to Archives automatically when duration elapses or recording is manually stopped",
     "AUTOMATICALLY_ANALYZE": "Automatically analyze",
     "CONTINUOUS_DESCRIPTION": "Record with unlimited duration until manually stopped",
     "CREATING": "Creating",
