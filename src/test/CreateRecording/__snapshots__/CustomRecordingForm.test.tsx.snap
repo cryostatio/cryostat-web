@@ -207,7 +207,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             <span
               className="pf-v5-c-check__description"
             >
-              Copy data to Archives automatically when duration elapses
+              Copy data to Archives automatically when duration elapses or recording is manually stopped
             </span>
           </div>
         </div>
