@@ -4873,7 +4873,7 @@ __metadata:
     imagemin: ^9.0.1
     jest: ^30.0.5
     jest-environment-jsdom: ^30.0.5
-    js-base64: 3.7.7
+    js-base64: 3.7.8
     license-check-and-add: ^4.0.5
     lodash: ^4.17.21
     mini-css-extract-plugin: ^2.9.3
@@ -10089,10 +10089,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-base64@npm:3.7.7":
-  version: 3.7.7
-  resolution: "js-base64@npm:3.7.7"
-  checksum: d1b02971db9dc0fd35baecfaf6ba499731fb44fe3373e7e1d6681fbd3ba665f29e8d9d17910254ef8104e2cb8b44117fe4202d3dc54c7cafe9ba300fe5433358
+"js-base64@npm:3.7.8":
+  version: 3.7.8
+  resolution: "js-base64@npm:3.7.8"
+  checksum: 891746b0f23aea7dd466c5ef2d349b093944a25eca6093c09b2cbb99bc47a94237c63b91623bbc203306b7c72aab5112e90378544bceef3fd0eb9ab86d7af496
   languageName: node
   linkType: hard
 
