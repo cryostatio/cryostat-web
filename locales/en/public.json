@@ -364,14 +364,29 @@
     },
     "DATETIME": "Date and Time"
   },
+  "Diagnostics": {
+    "THREAD_DUMPS_TAB_TITLE": "Thread Dumps"
+  },
   "DiagnosticsCard": {
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
     "DIAGNOSTICS_CARD_DESCRIPTION_FULL": "Perform diagonstic operations from a list of supported operations on the target.",
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
-    "DIAGNOSTICS_GC_BUTTON": "Start Garbage Collection",
+    "DIAGNOSTICS_GC_BUTTON": "Invoke Garbage Collection",
+    "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Invoke Thread Dump",
+    "DIAGONSTICS_THREAD_REDIRECT_BUTTON": "View collected Thread Dumps",
     "KINDS": {
-      "GC": "Garbage Collection"
+      "GC": "Garbage Collection",
+      "THREAD_DUMP": "Thread Dump"
+    }
+  },
+  "ThreadDumps": {
+    "SEARCH_PLACEHOLDER": "Search Thread Dumps",
+    "DELETION_FAILURE_CATEGORY": "Thread Dump Deletion Failure",
+    "DELETION_FAILURE_MESSAGE": "No Thread Dump to delete.",
+    "ARIA_LABELS": {
+      "ROW_ACTION": "thread-dump-action-menu",
+      "SEARCH_INPUT": "thread-dump-search-input"
     }
   },
   "DurationFilter": {
@@ -543,7 +558,8 @@
     "NavGroups": {
       "CONSOLE": "Console",
       "FLIGHT_RECORDER": "Flight Recorder",
-      "OVERVIEW": "Overview"
+      "OVERVIEW": "Overview",
+      "DIAGNOSTICS": "Diagnostics"
     }
   },
   "RuleDeleteWarningModal": {
