@@ -20,6 +20,7 @@ export enum DeleteOrDisableWarningType {
   DisableAutomatedRules = 'DisableAutomatedRules',
   DeleteEventTemplates = 'DeleteEventTemplates',
   DeleteProbeTemplates = 'DeleteProbeTemplates',
+  DeleteHeapDump = 'DeleteHeapDump',
   DeleteActiveProbes = 'DeleteActiveProbes',
   DeleteCredentials = 'DeleteCredentials',
   DeleteCustomTargets = 'DeleteCustomTargets',
@@ -92,6 +93,14 @@ export const DeleteActiveProbes: DeleteOrDisableWarning = {
   ariaLabel: 'Active probes remove warning',
 };
 
+export const DeleteHeapDump: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteHeapDump,
+  title: 'Permanently delete your archived heap dump?',
+  label: 'Delete Heap Dump',
+  description: `If you click Delete, your heap dump will be lost.`,
+  ariaLabel: 'Heap Dump delete warning',
+};
+
 export const DeleteCredentials: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteCredentials,
   title: 'Permanently delete your Credentials?',
@@ -141,6 +150,7 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteProbeTemplates,
   DeleteActiveProbes,
   DeleteCredentials,
+  DeleteHeapDump,
   DeleteCustomTargets,
   DeleteDashboardLayout,
   DeleteLayoutTemplate,
