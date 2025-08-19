@@ -38,9 +38,13 @@ import {
   MenuSearchInput,
   ActionList,
   ActionListItem,
+  SplitItem,
+  Split,
 } from '@patternfly/react-core';
+import { InfoCircleIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
+import { TargetDetailsModal } from './TargetDetailsModal';
 
 export interface TargetContextSelectorProps {
   className?: string;
@@ -57,6 +61,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [isTargetOpen, setIsTargetOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
+  const [showDetailsModal, setShowDetailsModal] = React.useState(false);
 
   const onToggleClick = React.useCallback(() => {
     setIsTargetOpen((v) => !v);
@@ -121,6 +126,14 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     );
     return () => window.clearInterval(id);
   }, [context.settings, refreshTargetList]);
+
+  const handleTargetInfoClick = React.useCallback(() => {
+    setShowDetailsModal(true);
+  }, [setShowDetailsModal]);
+
+  const handleDismissDetailsModal = React.useCallback(() => {
+    setShowDetailsModal(false);
+  }, [setShowDetailsModal]);
 
   const selectOptions = React.useMemo(() => {
     const matchExp = new RegExp(_.escapeRegExp(searchTerm), 'i');
@@ -232,51 +245,59 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
         {isLoading ? (
           <LinearDotSpinner className="target-context-selector__linear-dot-spinner" />
         ) : (
-          <Dropdown
-            className={className}
-            placeholder={t('TargetContextSelector.TOGGLE_PLACEHOLDER')}
-            isOpen={isTargetOpen}
-            onOpenChange={setIsTargetOpen}
-            onOpenChangeKeys={['Escape']}
-            onSelect={onSelect}
-            onActionClick={onFavoriteClick}
-            toggle={(toggleRef) => (
-              <MenuToggle
-                aria-label={t('TargetContextSelector.TOGGLE_LABEL')}
-                ref={toggleRef}
-                onClick={onToggleClick}
-                isExpanded={isTargetOpen}
-                variant="plainText"
-                icon={selectionPrefix}
+          <Split>
+            <SplitItem>
+              <Dropdown
+                className={className}
+                placeholder={t('TargetContextSelector.TOGGLE_PLACEHOLDER')}
+                isOpen={isTargetOpen}
+                onOpenChange={setIsTargetOpen}
+                onOpenChangeKeys={['Escape']}
+                onSelect={onSelect}
+                onActionClick={onFavoriteClick}
+                toggle={(toggleRef) => (
+                  <MenuToggle
+                    aria-label={t('TargetContextSelector.TOGGLE_LABEL')}
+                    ref={toggleRef}
+                    onClick={onToggleClick}
+                    isExpanded={isTargetOpen}
+                    variant="plainText"
+                    icon={selectionPrefix}
+                  >
+                    {!selectedTarget
+                      ? t('TargetContextSelector.TOGGLE_PLACEHOLDER')
+                      : getTargetRepresentation(selectedTarget)}
+                  </MenuToggle>
+                )}
+                popperProps={{
+                  enableFlip: true,
+                  appendTo: portalRoot,
+                }}
               >
-                {!selectedTarget
-                  ? t('TargetContextSelector.TOGGLE_PLACEHOLDER')
-                  : getTargetRepresentation(selectedTarget)}
-              </MenuToggle>
-            )}
-            popperProps={{
-              enableFlip: true,
-              appendTo: portalRoot,
-            }}
-          >
-            <ScrollableMenuContent maxHeight="50vh">
-              <MenuSearch>
-                <MenuSearchInput>
-                  <SearchInput
-                    placeholder={t('TargetContextSelector.SEARCH_PLACEHOLDER')}
-                    value={searchTerm}
-                    onChange={(_, v) => setSearchTerm(v)}
-                  />
-                </MenuSearchInput>
-              </MenuSearch>
-              <Divider />
-              <DropdownList>{selectOptions}</DropdownList>
-            </ScrollableMenuContent>
-            <MenuFooter>{selectFooter}</MenuFooter>
-          </Dropdown>
+                <ScrollableMenuContent maxHeight="50vh">
+                  <MenuSearch>
+                    <MenuSearchInput>
+                      <SearchInput
+                        placeholder={t('TargetContextSelector.SEARCH_PLACEHOLDER')}
+                        value={searchTerm}
+                        onChange={(_, v) => setSearchTerm(v)}
+                      />
+                    </MenuSearchInput>
+                  </MenuSearch>
+                  <Divider />
+                  <DropdownList>{selectOptions}</DropdownList>
+                </ScrollableMenuContent>
+                <MenuFooter>{selectFooter}</MenuFooter>
+              </Dropdown>
+            </SplitItem>
+            <SplitItem>
+              <Button variant="plain" icon={<InfoCircleIcon />} onClick={handleTargetInfoClick} />
+            </SplitItem>
+          </Split>
         )}
       </div>
       <Divider />
+      <TargetDetailsModal target={selectedTarget} visible={showDetailsModal} onDismiss={handleDismissDetailsModal} />
     </>
   );
 };
