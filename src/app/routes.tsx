@@ -21,6 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import Diagnostics from './Diagnostics/Diagnostics';
 import Events from './Events/Events';
 import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
@@ -43,7 +44,8 @@ let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
 const FLIGHT_RECORDER = 'Routes.NavGroups.FLIGHT_RECORDER';
 const CONSOLE = 'Routes.NavGroups.CONSOLE';
-const navGroups = [OVERVIEW, FLIGHT_RECORDER, CONSOLE];
+const DIAGNOSTICS = 'Routes.NavGroups.DIAGNOSTICS';
+const navGroups = [OVERVIEW, FLIGHT_RECORDER, DIAGNOSTICS, CONSOLE];
 
 const ANALYZE = 'Routes.ANALYZE';
 const CAPTURE = 'Routes.CAPTURE';
@@ -166,6 +168,18 @@ const flightRecorderRoutes: IAppRoute[] = [
   },
 ];
 
+const diagnosticsRoutes: IAppRoute[] = [
+  {
+    component: Diagnostics,
+    label: 'Thread Dumps',
+    path: toPath('/diagnostics'),
+    title: 'Thread Dumps',
+    description: 'Create and view thread dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+  },
+];
+
 const consoleRoutes: IAppRoute[] = [
   {
     component: SecurityPanel,
@@ -201,7 +215,13 @@ const nonNavRoutes: IAppRoute[] = [
   },
 ];
 
-const routes: IAppRoute[] = [...overviewRoutes, ...flightRecorderRoutes, ...consoleRoutes, ...nonNavRoutes];
+const routes: IAppRoute[] = [
+  ...overviewRoutes,
+  ...flightRecorderRoutes,
+  ...consoleRoutes,
+  ...diagnosticsRoutes,
+  ...nonNavRoutes,
+];
 
 const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   const ret: IAppRoute[] = [];
