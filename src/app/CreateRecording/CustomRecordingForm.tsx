@@ -75,15 +75,15 @@ export const CustomRecordingForm: React.FC = () => {
   const [formData, setFormData] = React.useState<CustomRecordingFormData>({
     name: '',
     labels: [],
-    continuous: false,
+    continuous: true,
     archiveOnStop: true,
     restart: false,
-    duration: 30,
-    durationUnit: 1000,
+    duration: 5,
+    durationUnit: 60 * 1000,
     maxAge: 0,
     maxAgeUnit: 1,
-    maxSize: 0,
-    maxSizeUnit: 1,
+    maxSize: 50,
+    maxSizeUnit: 1024 * 1024,
     toDisk: true,
     nameValid: ValidatedOptions.default,
     labelsValid: ValidatedOptions.default,
@@ -263,7 +263,7 @@ export const CustomRecordingForm: React.FC = () => {
       name: name,
       events: eventSpecifierString,
       duration: continuous ? undefined : duration * (durationUnit / 1000),
-      archiveOnStop: archiveOnStop && !continuous,
+      archiveOnStop: archiveOnStop,
       replace: restart ? 'ALWAYS' : 'NEVER',
       advancedOptions: {
         toDisk: toDisk,
@@ -389,17 +389,17 @@ export const CustomRecordingForm: React.FC = () => {
           : ValidatedOptions.error,
       template,
       restart: restart ?? false,
-      continuous: continuous ?? false,
+      continuous: continuous ?? true,
       labels: labels ?? [],
       labelsValid: ValidatedOptions.default, // RecordingLabelFields component handles validating
-      duration: continuous ? 0 : (duration ?? 30),
-      durationUnit: durationUnit ?? 1000,
+      duration: continuous ? 0 : (duration ?? 5),
+      durationUnit: durationUnit ?? 60 * 1000,
       durationValid:
-        skipDurationCheck || continuous || (duration ?? 30) > 0 ? ValidatedOptions.success : ValidatedOptions.error,
+        skipDurationCheck || continuous || (duration ?? 5) > 0 ? ValidatedOptions.success : ValidatedOptions.error,
       maxAge: maxAge ?? 0,
       maxAgeUnit: maxAgeUnit ?? 1,
-      maxSize: maxSize ?? 0,
-      maxSizeUnit: maxSizeUnit ?? 1,
+      maxSize: maxSize ?? 50,
+      maxSizeUnit: maxSizeUnit ?? 1024 * 1024,
     }));
   }, [location, setFormData]);
 
@@ -473,8 +473,8 @@ export const CustomRecordingForm: React.FC = () => {
               <Checkbox
                 label={t('CustomRecordingForm.ARCHIVE_ON_STOP')}
                 description={t('CustomRecordingForm.ARCHIVE_ON_STOP_DESCRIPTION')}
-                isDisabled={formData.continuous || loading}
-                isChecked={formData.archiveOnStop && !formData.continuous}
+                isDisabled={loading}
+                isChecked={formData.archiveOnStop}
                 onChange={handleArchiveOnStopChange}
                 aria-label="ArchiveOnStop checkbox"
                 id="recording-archive-on-stop"
