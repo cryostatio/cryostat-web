@@ -354,3 +354,7 @@ Below CSS rules only apply to Topology components
 .topology__treeview-container .pf-v5-c-tree-view__node-content {
   width: 100%;
 }
+
+.target-details-modal {
+  min-height: 36em;
+}
