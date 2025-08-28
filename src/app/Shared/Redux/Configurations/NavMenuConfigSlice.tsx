@@ -40,7 +40,12 @@ export const navMenuSetExpandedIntent = createAction(
   }),
 );
 
-const INITIAL_STATE: NavMenuConfig = getPersistedState('NAV_MENU_CFG', _version, { _version, states: {} });
+export const defaultNavMenuConfigs = {
+  _version,
+  states: {},
+};
+
+const INITIAL_STATE: NavMenuConfig = getPersistedState('NAV_MENU_CFG', _version, defaultNavMenuConfigs);
 
 export const navMenuConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder.addCase(navMenuSetExpandedIntent, (state, { payload }) => {
