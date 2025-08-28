@@ -78,7 +78,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
           error: () => setThreadDumpReady(false),
         }),
     );
-  });
+  }, [addSubscription, serviceContext.api, serviceContext.target, setThreadDumpReady]);
 
   React.useEffect(() => {
     addSubscription(
