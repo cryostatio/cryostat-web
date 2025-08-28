@@ -1763,9 +1763,7 @@ export class ApiService {
       let href = url;
       anchor.download = filename;
       if (q) {
-        // TODO more robust processing of the incoming url string. If it already contains
-        // query parameters then this concatenation will result in two ? separators.
-        href += `?${q}`;
+        href.includes('?') ? (href += `&${q}`) : (href += `?${q}`);
       }
       anchor.href = href;
       anchor.click();
