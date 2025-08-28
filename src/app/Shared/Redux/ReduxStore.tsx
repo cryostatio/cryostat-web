@@ -16,7 +16,7 @@
 
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
-import navMenuConfigReducer from './Configurations/NavMenuConfigSlice';
+import navMenuConfigReducer, * as navMenuConfigSlice from './Configurations/NavMenuConfigSlice';
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
@@ -24,6 +24,8 @@ import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyF
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
 
 // Export actions
+export const { navMenuSetExpandedIntent, defaultNavMenuConfigs } = navMenuConfigSlice;
+
 export const {
   dashboardConfigAddCardIntent,
   dashboardConfigDeleteCardIntent,
