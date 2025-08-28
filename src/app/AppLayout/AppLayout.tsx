@@ -554,9 +554,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   );
 
   const handleNavExpand = React.useCallback(
-    (key: string, expanded: boolean) => {
-      dispatch(navMenuSetExpandedIntent(key, expanded));
-    },
+    (key: string) => (_: React.MouseEvent<HTMLButtonElement, MouseEvent>, expanded: boolean) =>
+      dispatch(navMenuSetExpandedIntent(key, expanded)),
     [dispatch],
   );
 
@@ -612,7 +611,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               groupId={k}
               isActive={anyActive}
               isExpanded={navExpandedStates[k] ?? true}
-              onExpand={(_, expanded) => handleNavExpand(k, expanded)}
+              onExpand={handleNavExpand(k)}
             >
               {renderables}
             </NavExpandable>,
