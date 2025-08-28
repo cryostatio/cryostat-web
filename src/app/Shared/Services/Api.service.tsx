@@ -1013,6 +1013,7 @@ export class ApiService {
         first(),
       );
       filename.subscribe((name) => {
+        resourceUrl += `?filename=${name}`
         this.downloadFile(resourceUrl, name);
       });
     });
