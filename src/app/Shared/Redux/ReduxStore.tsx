@@ -16,6 +16,7 @@
 
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
+import navMenuConfigReducer from './Configurations/NavMenuConfigSlice';
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
@@ -77,6 +78,7 @@ export const {
 } = topologyFilterSlice;
 
 export const rootReducer = combineReducers({
+  navMenuConfigs: navMenuConfigReducer,
   dashboardConfigs: dashboardConfigReducer,
   recordingFilters: recordingFilterReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,

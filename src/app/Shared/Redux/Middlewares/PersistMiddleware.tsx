@@ -16,6 +16,7 @@
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Middleware } from '@reduxjs/toolkit';
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlice';
+import { enumValues as NavMenuConfigActions } from '../Configurations/NavMenuConfigSlice';
 import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlice';
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
@@ -33,6 +34,8 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', rootState.automatedAnalysisFilters);
     } else if (RecordingFilterActions.has(action.type)) {
       saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
+    } else if (NavMenuConfigActions.has(action.type)) {
+      saveToLocalStorage('NAV_MENU_CFG', rootState.navMenuConfigs);
     } else if (DashboardConfigActions.has(action.type)) {
       saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
     } else if (TopologyConfigActions.has(action.type)) {
