@@ -476,6 +476,10 @@
       "LISTBOX": "Select AM or PM"
     }
   },
+  "NoTargetSelected": {
+    "TITLE": "<0/> No target selected",
+    "BODY": "To view this content, select a JVM target."
+  },
   "NotFound": {
     "DESCRIPTION": "The page you're trying to find was either removed, moved or maybe the URL isn't quite right. Try returning home or visit one of the following pages below.",
     "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
@@ -522,6 +526,31 @@
       "SELECT": "select-by-state"
     },
     "FILTER_BY_STATE": "Filter by state"
+  },
+  "Reports": {
+    "DESCRIPTION": "Automated Analysis Reports which have been previously generated and are present in Cryostat's cache will appear here. Reports can be generated <0>manually on-demand</0> or <1>automatically on a recurring basis</1>.",
+    "NoReports": {
+      "DESCRIPTION": "No Automated Analysis Reports data is available.",
+      "TITLE": "No Reports Available"
+    },
+    "NoResults": {
+      "ACTION_BUTTON_CONTENT": "Go to Target Analysis",
+      "DESCRIPTION": "No Automated Analysis Report data is currently available for this target.",
+      "TITLE": "No Report Available"
+    },
+    "Score": {
+      "ALL_TARGETS": "All Targets",
+      "AVAILABLE_ONLY": "With Report",
+      "CRITICAL_ONLY": "Critical Only",
+      "WARNING_ONLY": "Warning Only"
+    },
+    "Tooltips": {
+      "ALL_TARGETS": "Show all Targets, including those with no available generated reports.",
+      "AVAILABLE_ONLY": "Only display Targets with available generated reports.",
+      "CRITICAL_ONLY": "Only display Targets with at least one Critical report result.",
+      "REFRESH": "Refresh Target list.",
+      "WARNING_ONLY": "Only display Targets with at least one Warning or Critical report result."
+    }
   },
   "Routes": {
     "ANALYZE": "Analyze",
@@ -572,7 +601,8 @@
       "CONNECTIVITY": "Connectivity",
       "DASHBOARD": "Dashboard",
       "GENERAL": "General",
-      "NOTIFICATION_MESSAGE": "Notifications & messages"
+      "NOTIFICATION_MESSAGE": "Notifications & messages",
+      "TOPOLOGY": "Topology"
     },
     "CHARTS_CONFIG": {
       "DESCRIPTION": "",
@@ -641,6 +671,14 @@
       "DESCRIPTION": "Set the current theme for web console.",
       "LIGHT": "Light",
       "TITLE": "Theme"
+    },
+    "TOPOLOGY": {
+      "ANALYZED_OPTIONS_TITLE": "Analyzed rules",
+      "CHOSEN_OPTIONS_TITLE": "Ignored rules",
+      "DESCRIPTION": "Control the behaviour of the Topology view and the data presented.",
+      "HELPER_TEXT": "The selected automated analysis report rule IDs will be ignored by the Topology view when determining the health status score of a target node and the number of rules that were evaluated to arrive at that score. Analysis results of active Targets or of archived Recordings will obey server analysis settings and ignore these selections.",
+      "TITLE": "Topology view configuration",
+      "RESET_DEFAULT": "Restore Defaults"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
       "DESCRIPTION": "Set the retry interval (in milliseconds) used when establishing WebSocket connections. Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages. Decrease this time if the web-interface takes a long time to populate on startup.",

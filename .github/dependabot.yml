@@ -8,4 +8,4 @@ updates:
       - "dependencies"
       - "chore"
       - "safe-to-test"
-    open-pull-requests-limit: 20
+    open-pull-requests-limit: 30

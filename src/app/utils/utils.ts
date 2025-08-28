@@ -246,6 +246,10 @@ export interface TabConfig {
   tabValue: string;
 }
 
+export const setLocationHref = (path: string) => {
+  window.location.href = path;
+};
+
 export const switchTab = (
   navigate: NavigateFunction,
   pathname: string,

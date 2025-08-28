@@ -212,7 +212,7 @@ describe('<AgentProbeTemplates />', () => {
     });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
+    expect(deleteRequestSpy).toHaveBeenCalledWith('someProbeTemplate');
   });
 
   it('should show warning modal and delete a Probe Template when confirmed', async () => {
@@ -246,7 +246,7 @@ describe('<AgentProbeTemplates />', () => {
     });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
+    expect(deleteRequestSpy).toHaveBeenCalledWith('someProbeTemplate');
   });
 
   it('should insert probes if agent is enabled', async () => {

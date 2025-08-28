@@ -199,7 +199,7 @@ describe('<EventTemplates />', () => {
     });
 
     expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(downloadRequestSpy).toBeCalledWith(mockCustomEventTemplate);
+    expect(downloadRequestSpy).toHaveBeenCalledWith(mockCustomEventTemplate);
   });
 
   it('shows a popup when Delete is clicked and then deletes the template after clicking confirmation Delete', async () => {
@@ -233,9 +233,9 @@ describe('<EventTemplates />', () => {
     });
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');
-    expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteEventTemplates, false);
+    expect(deleteRequestSpy).toHaveBeenCalledWith('someEventTemplate');
+    expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
+    expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteEventTemplates, false);
   });
 
   it('deletes the template when Delete is clicked w/o popup warning', async () => {

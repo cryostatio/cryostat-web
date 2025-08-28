@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable  @typescript-eslint/no-non-null-assertion */
+
 import { DateTimeRange } from '@app/Recordings/Filters/DatetimeFilter';
 import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
 import dayjs from '@i18n/datetime';

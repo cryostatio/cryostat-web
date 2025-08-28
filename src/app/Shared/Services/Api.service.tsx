@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
+import _ from 'lodash';
 import {
   BehaviorSubject,
   combineLatest,
@@ -886,7 +887,96 @@ export class ApiService {
     );
   }
 
-  getCurrentReportForTarget(target: TargetStub | TargetStub[], aggregateOnly = false): Observable<AggregateReport> {
+  getCurrentReportsForAllTargets(
+    minScore = -1,
+    // TODO refactor and define a named type for this return type
+  ): Observable<{ target: Target; hasSources: boolean; report: AggregateReport }[]> {
+    return this.graphql<any>(
+      `
+        query AggregateReportsForAllTargets {
+          targetNodes {
+            target {
+              id
+              jvmId
+              agent
+              connectUrl
+              alias
+              labels {
+                key
+                value
+              }
+              annotations {
+                cryostat {
+                  key
+                  value
+                }
+                platform {
+                  key
+                  value
+                }
+              }
+              activeRecordings {
+                aggregate {
+                  count
+                }
+              }
+              report {
+                lastUpdated
+                aggregate {
+                  count
+                  max
+                }
+                data {
+                  key
+                  value {
+                    name
+                    topic
+                    score
+                    evaluation {
+                      explanation
+                      solution
+                      summary
+                      suggestions {
+                        name
+                        setting
+                        value
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+    ).pipe(
+      map((resp) =>
+        (resp.data?.targetNodes ?? [])
+          .filter((n) => n.target.report.aggregate.max >= minScore)
+          .sort((a, b) => b.target.report.aggregate.max - a.target.report.aggregate.max)
+          .map((n) => ({
+            target: {
+              id: n.target.id,
+              jvmId: n.target.jvmId,
+              agent: n.target.agent,
+              connectUrl: n.target.connectUrl,
+              alias: n.target.alias,
+              labels: n.target.labels,
+              annotations: n.target.annotations,
+            },
+            hasSources: n.target.activeRecordings.aggregate.count > 0,
+            report: n.target.report,
+          })),
+      ),
+      map((a) => _.uniqWith(a, (a, b) => a.target.jvmId === b.target.jvmId)),
+    );
+  }
+
+  getCurrentReportForTarget(
+    target: TargetStub | TargetStub[],
+    aggregateOnly = false,
+    reportFilter = {},
+  ): Observable<AggregateReport> {
     let targetIds: number[];
     if (Array.isArray(target)) {
       targetIds = target.map((t) => t.id!);
@@ -915,11 +1005,11 @@ export class ApiService {
     `;
     return this.graphql<any>(
       `
-        query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
+        query AggregateReportForTarget($targetIds: [ BigInteger! ], $reportFilter: ReportFilterInput) {
           targetNodes(filter: { targetIds: $targetIds }) {
             target {
               id
-              report {
+              report(filter: $reportFilter) {
                 lastUpdated
                 aggregate {
                   count
@@ -931,7 +1021,7 @@ export class ApiService {
           }
         }
       `,
-      { targetIds },
+      { targetIds, reportFilter },
     ).pipe(
       map((resp) => {
         const empty = {
@@ -1589,7 +1679,7 @@ export class ApiService {
       { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } },
       true,
       true,
-    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
+    ).pipe(map((v) => (v?.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
   getEventTemplates(suppressNotifications = false, skipStatusCheck = false): Observable<EventTemplate[]> {

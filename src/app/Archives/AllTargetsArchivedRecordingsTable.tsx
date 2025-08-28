@@ -140,7 +140,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   );
 
   const handleArchivesForTargets = React.useCallback(
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     (targetNodes: any[]) => {
       setIsLoading(false);
       setErrorMessage('');
@@ -182,7 +181,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     setIsLoading(true);
     addSubscription(
       context.api
-        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
         .graphql<any>(
           `query AllTargetsArchives {
             targetNodes {
@@ -237,7 +236,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     );
   }, [addSubscription, context.api, setIsLoading, handleArchivesForTargets, handleError]);
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const getCountForNewTarget = React.useCallback(
     (target: Target) => {
       addSubscription(
@@ -288,7 +286,6 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
     [addSubscription, context.api],
   );
 
-  /* eslint-enable @typescript-eslint/no-explicit-any */
   const handleLostTarget = React.useCallback(
     (target: Target) => {
       setArchivesForTargets((old) => old.filter(({ target: t }) => !isEqualTarget(t, target)));
@@ -571,7 +568,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
           </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
-      <InnerScrollContainer className="archive-table-inner-container">{view}</InnerScrollContainer>
+      <InnerScrollContainer className="">{view}</InnerScrollContainer>
     </OuterScrollContainer>
   );
 };

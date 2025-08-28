@@ -376,7 +376,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
 
   const resizeObserver = React.useRef((): void => undefined);
   const [cardWidth, setCardWidth] = React.useState(1); // Use non-zero as 0 means Infinity (invalid)
-  /* eslint-disable @typescript-eslint/no-explicit-any */
+
   const containerRef: React.Ref<any> = React.createRef();
 
   React.useEffect(() => {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { ApiService } from '@app/Shared/Services/Api.service';
 import {
   TargetNode,
@@ -36,6 +37,7 @@ import {
   Popover,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { useSelector } from 'react-redux';
 import { LinkProps } from 'react-router-dom-v5-compat';
 import {
   catchError,
@@ -84,6 +86,7 @@ export const getTargetOwnedResources = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
   { target }: TargetNode,
   apiService: ApiService,
+  reportFilter: {},
 ): Observable<ResourceTypes[]> => {
   switch (resourceType) {
     case 'activeRecordings':
@@ -121,7 +124,7 @@ export const getTargetOwnedResources = (
         }),
       );
     case 'report':
-      return apiService.getCurrentReportForTarget(target, true).pipe(map((report) => [report]));
+      return apiService.getCurrentReportForTarget(target, true, reportFilter).pipe(map((report) => [report]));
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -180,6 +183,7 @@ export const getResourceListPatchFn = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
   { target }: TargetNode,
   apiService: ApiService,
+  reportFilter: {},
 ): PatchFn => {
   switch (resourceType) {
     case 'activeRecordings':
@@ -247,7 +251,7 @@ export const getResourceListPatchFn = (
       };
     case 'report':
       return (_arr: AggregateReport[], _eventData: NotificationMessage, _removed?: boolean) =>
-        apiService.getCurrentReportForTarget(target, true).pipe(map((report) => [report]));
+        apiService.getCurrentReportForTarget(target, true, reportFilter).pipe(map((report) => [report]));
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
   }
@@ -298,6 +302,7 @@ export const useResources = <R = ResourceTypes,>(
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
 ): { resources: R[]; error?: Error; loading?: boolean } => {
   const { api, notificationChannel, settings } = React.useContext(ServiceContext);
+  const reportFilter = useSelector((state: RootState) => state.topologyConfigs.reportFilter);
   const addSubscription = useSubscriptions();
 
   const [resources, setResources] = React.useState<ResourceTypes[]>([]);
@@ -312,7 +317,7 @@ export const useResources = <R = ResourceTypes,>(
       targetSubject
         .pipe(
           switchMap((tn) => {
-            const resourceObs = getTargetOwnedResources(resourceType, tn, api).pipe(
+            const resourceObs = getTargetOwnedResources(resourceType, tn, api, reportFilter).pipe(
               map((rs: ResourceTypes[]) => ({
                 resources: rs,
                 error: undefined,
@@ -339,7 +344,7 @@ export const useResources = <R = ResourceTypes,>(
           setResources(resources);
         }),
     );
-  }, [addSubscription, setLoading, setError, setResources, api, settings, targetSubject, resourceType]);
+  }, [addSubscription, setLoading, setError, setResources, api, reportFilter, settings, targetSubject, resourceType]);
 
   React.useEffect(() => {
     const patchEventConfig = [
@@ -369,7 +374,12 @@ export const useResources = <R = ResourceTypes,>(
                 // Avoid accessing state directly, which
                 // causes the effect to run every time
                 addSubscription(
-                  getResourceListPatchFn(resourceType, targetNode, api)(old, event, deleted).subscribe({
+                  getResourceListPatchFn(
+                    resourceType,
+                    targetNode,
+                    api,
+                    reportFilter,
+                  )(old, event, deleted).subscribe({
                     next: (rs) => {
                       setLoading(false);
                       setError(undefined);
@@ -387,7 +397,17 @@ export const useResources = <R = ResourceTypes,>(
           }),
       );
     });
-  }, [addSubscription, setLoading, api, targetSubject, resourceType, notificationChannel, setResources, setError]);
+  }, [
+    addSubscription,
+    setLoading,
+    api,
+    reportFilter,
+    targetSubject,
+    resourceType,
+    notificationChannel,
+    setResources,
+    setError,
+  ]);
 
   // Need to call after registering listeners
   // Do not reorder

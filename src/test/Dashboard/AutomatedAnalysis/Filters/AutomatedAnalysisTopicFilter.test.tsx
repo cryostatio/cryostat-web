@@ -354,8 +354,8 @@ describe('<AutomatedAnalysisTopicFilter />', () => {
       await user.click(screen.getByText(mockRuleEvaluation1.topic));
     });
 
-    expect(submitNameInput).toBeCalledTimes(1);
-    expect(submitNameInput).toBeCalledWith(mockRuleEvaluation1.topic);
+    expect(submitNameInput).toHaveBeenCalledTimes(1);
+    expect(submitNameInput).toHaveBeenCalledWith(mockRuleEvaluation1.topic);
     expect(emptyFilteredTopics).toStrictEqual([mockRuleEvaluation1.topic]);
   });
 });

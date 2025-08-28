@@ -77,7 +77,7 @@ module.exports = [{
       "unused-imports/no-unused-imports": "warn",
       "no-unused-vars": [
         "warn",
-        { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
+        { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }
       ]
    }
   }];

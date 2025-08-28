@@ -152,7 +152,6 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     [recordings, getIdxFromRecording, checkedIndices],
   );
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const refreshRecordingList = React.useCallback(() => {
     let observable: Observable<Recording[]>;
     if (directoryRecordings) {
@@ -205,7 +204,6 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     context.api,
     setRecordings,
   ]);
-  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   const saveButtonLoadingProps = React.useMemo(
     () =>

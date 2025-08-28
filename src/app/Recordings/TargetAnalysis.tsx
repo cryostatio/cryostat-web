@@ -249,7 +249,7 @@ interface AutomatedAnalysisResultsProps {
   analyses: CategorizedRuleEvaluations[];
 }
 
-const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
+export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> = ({
   target,
   hasSources,
   timestamp,

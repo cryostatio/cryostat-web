@@ -498,7 +498,7 @@ export interface TargetNode extends _AbstractNode {
 export interface NotificationMessage {
   meta: MessageMeta;
   // Should a message be any type? Try T?
-  message: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  message: any;
 }
 
 export interface MessageMeta {

@@ -355,8 +355,8 @@ describe('<AutomatedAnalysisNameFilter />', () => {
       await user.click(screen.getByText(mockRuleEvaluation1.name));
     });
 
-    expect(submitNameInput).toBeCalledTimes(1);
-    expect(submitNameInput).toBeCalledWith(mockRuleEvaluation1.name);
+    expect(submitNameInput).toHaveBeenCalledTimes(1);
+    expect(submitNameInput).toHaveBeenCalledWith(mockRuleEvaluation1.name);
     expect(emptyFilteredNames).toStrictEqual([mockRuleEvaluation1.name]);
   });
 });

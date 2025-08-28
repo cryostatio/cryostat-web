@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<DurationFilter /> renders correctly 1`] = `
 <div
@@ -42,7 +42,7 @@ exports[`<DurationFilter /> renders correctly 1`] = `
               onFocus={[Function]}
               required={false}
               style={
-                Object {
+                {
                   "maxWidth": "10ch",
                 }
               }
@@ -121,7 +121,7 @@ exports[`<DurationFilter /> renders correctly 1`] = `
               onFocus={[Function]}
               required={false}
               style={
-                Object {
+                {
                   "maxWidth": "10ch",
                 }
               }
