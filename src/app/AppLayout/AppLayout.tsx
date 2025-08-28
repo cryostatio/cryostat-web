@@ -110,7 +110,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const [isNavOpen, setIsNavOpen] = [joyNavOpen, setJoyNavOpen];
   const dispatch = useDispatch();
-  const navExpandedStates = useSelector((state: RootState) => state.navMenuConfigs);
+  const navExpandedStates = useSelector((state: RootState) => state.navMenuConfigs.states);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
@@ -619,7 +619,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               title={t(k)}
               groupId={k}
               isActive={anyActive}
-              isExpanded={navExpandedStates.states[k] ?? true}
+              isExpanded={navExpandedStates[k] ?? true}
               onExpand={(_, expanded) => handleNavExpand(k, expanded)}
             >
               {renderables}
