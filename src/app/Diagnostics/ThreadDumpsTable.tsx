@@ -332,7 +332,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
   const actionItems = React.useMemo(() => {
     return [
       {
-        title: 'Download Thread Dump',
+        title: 'Download',
         key: 'download-threaddump',
         onClick: () => onDownload(threadDump),
       },
