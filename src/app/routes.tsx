@@ -172,9 +172,9 @@ const flightRecorderRoutes: IAppRoute[] = [
 const diagnosticsRoutes: IAppRoute[] = [
   {
     component: CaptureDiagnostics,
-    label: 'Diagnotics',
+    label: 'Capture',
     path: toPath('/diagnostics'),
-    title: 'Diagnostics',
+    title: 'Capture',
     description: 'Perform garbage collection and create thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     featureLevel: FeatureLevel.BETA,
