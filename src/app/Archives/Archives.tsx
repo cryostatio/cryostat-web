@@ -172,7 +172,6 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
       <Card isCompact>
         <CardBody>{cardBody}</CardBody>
       </Card>
-      <></>
     </BreadcrumbPage>
   );
 };
