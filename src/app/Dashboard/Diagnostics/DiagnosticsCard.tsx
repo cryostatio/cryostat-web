@@ -174,7 +174,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           <Button
                             variant="primary"
                             isAriaDisabled={!threadDumpReady}
-                            component={(props) => <CryostatLink {...props} to="/diagnostics" />}
+                            component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
                             icon={<ListIcon />}
                           />
                         </Tooltip>
