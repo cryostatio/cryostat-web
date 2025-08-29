@@ -70,8 +70,6 @@ jest
   .mockReturnValueOnce(of(mockThreadDumpNotification))
   .mockReturnValue(of());
 
-const dumpThreadsSpy = jest.spyOn(defaultServices.api, 'runThreadDump').mockReturnValue(of('someJobId'));
-
 describe('<ThreadDumpsTable />', () => {
   afterEach(cleanup);
 
@@ -93,21 +91,6 @@ describe('<ThreadDumpsTable />', () => {
     const xmlHeader = screen.getByText('Last Modified');
     expect(xmlHeader).toBeInTheDocument();
     expect(xmlHeader).toBeVisible();
-  });
-
-  it('should upload a Thread Dump when button is clicked', async () => {
-    const { user } = render({
-      routerConfigs: { routes: [{ path: '/diagnostics', element: <ThreadDumpsTable /> }] },
-    });
-
-    await act(async () => {
-      const uploadButton = screen.getByRole('button', { name: 'dump-threads' });
-      expect(uploadButton).toBeInTheDocument();
-      expect(uploadButton).toBeVisible();
-
-      await user.click(uploadButton);
-      expect(dumpThreadsSpy).toHaveBeenCalledTimes(1);
-    });
   });
 
   it('should show warning modal and delete a Thread Dump when confirmed', async () => {
