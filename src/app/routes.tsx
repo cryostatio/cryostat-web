@@ -177,7 +177,6 @@ const diagnosticsRoutes: IAppRoute[] = [
     title: 'Diagnostics',
     description: 'Perform garbage collection and create thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
-    navSubgroup: CAPTURE,
     featureLevel: FeatureLevel.BETA,
   },
   {
