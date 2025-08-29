@@ -30,8 +30,6 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Stack,
-  StackItem,
   EmptyState,
   EmptyStateIcon,
   EmptyStateHeader,
@@ -53,7 +51,6 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
-import { AboutAgentCard } from './AboutAgentCard';
 
 export type LiveProbeActions = 'REMOVE';
 
@@ -319,72 +316,65 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
   } else {
     return (
       <>
-        <Stack hasGutter style={{ marginTop: '1em' }}>
-          <StackItem>
-            <AboutAgentCard />
-          </StackItem>
-          <StackItem>
-            <Toolbar id="active-probes-toolbar">
-              <ToolbarContent>
-                <ToolbarGroup variant="filter-group">
-                  <ToolbarItem>
-                    <SearchInput
-                      style={{ minWidth: '36ch' }}
-                      name="activeProbeFilter"
-                      id="activeProbeFilter"
-                      type="search"
-                      placeholder={t('AgentLiveProbes.SEARCH_PLACEHOLDER')}
-                      aria-label={t('AgentLiveProves.ARIA_LABELS.SEARCH_INPUT')}
-                      onChange={handleFilterTextChange}
-                    />
-                  </ToolbarItem>
-                </ToolbarGroup>
-                <ToolbarItem variant="separator" />
-                <ToolbarGroup variant="icon-button-group">
-                  <ToolbarItem>
-                    <Button
-                      key="delete"
-                      variant="danger"
-                      onClick={handleDeleteButton}
-                      isDisabled={!filteredProbes.length || actionLoadings['REMOVE']}
-                      {...actionLoadingProps['REMOVE']}
-                    >
-                      {actionLoadings['REMOVE'] ? 'Removing' : 'Remove'} all probes
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarGroup>
-              </ToolbarContent>
-              <DeleteWarningModal
-                warningType={DeleteOrDisableWarningType.DeleteActiveProbes}
-                visible={warningModalOpen}
-                onAccept={handleWarningModalAccept}
-                onClose={handleWarningModalClose}
-              />
-            </Toolbar>
-            {probeRows.length ? (
-              <Table aria-label="Active probe table" variant={TableVariant.compact}>
-                <Thead>
-                  <Tr>
-                    {tableColumns.map(({ title, sortable }, index) => (
-                      <Th key={`active-probe-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                        {title}
-                      </Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody>{probeRows}</Tbody>
-              </Table>
-            ) : (
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText="No active probes"
-                  icon={<EmptyStateIcon icon={SearchIcon} />}
-                  headingLevel="h4"
+        <Toolbar id="active-probes-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  style={{ minWidth: '36ch' }}
+                  name="activeProbeFilter"
+                  id="activeProbeFilter"
+                  type="search"
+                  placeholder={t('AgentLiveProbes.SEARCH_PLACEHOLDER')}
+                  aria-label={t('AgentLiveProves.ARIA_LABELS.SEARCH_INPUT')}
+                  onChange={handleFilterTextChange}
                 />
-              </EmptyState>
-            )}
-          </StackItem>
-        </Stack>
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarItem variant="separator" />
+            <ToolbarGroup variant="icon-button-group">
+              <ToolbarItem>
+                <Button
+                  key="delete"
+                  variant="danger"
+                  onClick={handleDeleteButton}
+                  isDisabled={!filteredProbes.length || actionLoadings['REMOVE']}
+                  {...actionLoadingProps['REMOVE']}
+                >
+                  {actionLoadings['REMOVE'] ? 'Removing' : 'Remove'} all probes
+                </Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+          <DeleteWarningModal
+            warningType={DeleteOrDisableWarningType.DeleteActiveProbes}
+            visible={warningModalOpen}
+            onAccept={handleWarningModalAccept}
+            onClose={handleWarningModalClose}
+          />
+        </Toolbar>
+        {probeRows.length ? (
+          <Table aria-label="Active probe table" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                {tableColumns.map(({ title, sortable }, index) => (
+                  <Th key={`active-probe-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                    {title}
+                  </Th>
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>{probeRows}</Tbody>
+          </Table>
+        ) : (
+          <EmptyState>
+            <EmptyStateHeader
+              titleText="No active probes"
+              icon={<EmptyStateIcon icon={SearchIcon} />}
+              headingLevel="h4"
+            />
+          </EmptyState>
+        )}
       </>
     );
   }
