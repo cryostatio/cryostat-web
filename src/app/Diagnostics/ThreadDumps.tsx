@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { NullableTarget } from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
-import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { NullableTarget } from '@app/Shared/Services/api.types';
-import { of } from 'rxjs';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 
 export interface ThreadDumpsProps {}
 
