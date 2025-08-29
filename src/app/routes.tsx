@@ -22,6 +22,7 @@ import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
+import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
 import Events from './Events/Events';
 import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
@@ -170,11 +171,21 @@ const flightRecorderRoutes: IAppRoute[] = [
 
 const diagnosticsRoutes: IAppRoute[] = [
   {
+    component: CaptureDiagnostics,
+    label: 'Diagnotics',
+    path: toPath('/diagnostics'),
+    title: 'Diagnostics',
+    description: 'Perform garbage collection and create thread dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: CAPTURE,
+    featureLevel: FeatureLevel.BETA,
+  },
+  {
     component: AnalyzeThreadDumps,
     label: 'Thread Dumps',
-    path: toPath('/diagnostics'),
+    path: toPath('/thread-dumps'),
     title: 'Thread Dumps',
-    description: 'Create and view thread dumps on single target JVMs.',
+    description: 'View thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
     featureLevel: FeatureLevel.BETA,
