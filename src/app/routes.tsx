@@ -177,6 +177,7 @@ const diagnosticsRoutes: IAppRoute[] = [
     description: 'Create and view thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
+    featureLevel: FeatureLevel.BETA,
   },
 ];
 
