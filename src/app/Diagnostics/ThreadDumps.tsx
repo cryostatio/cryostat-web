@@ -14,19 +14,53 @@
  * limitations under the License.
  */
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody } from '@patternfly/react-core';
+import { getActiveTab, switchTab } from '@app/utils/utils';
+import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { t } from 'i18next';
 import * as React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
 export interface ThreadDumpsProps {}
 
+enum ThreadDumpsTab {
+  THREAD_DUMPS = 'target-thread-dumps',
+}
+
 export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
+  const { search, pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const activeTab = React.useMemo(() => {
+    return getActiveTab(search, 'tab', Object.values(ThreadDumpsTab), ThreadDumpsTab.THREAD_DUMPS);
+  }, [search]);
+
+  const onTabSelect = React.useCallback(
+    (_: React.MouseEvent, key: string | number) =>
+      switchTab(navigate, pathname, search, { tabKey: 'tab', tabValue: `${key}` }),
+    [navigate, pathname, search],
+  );
+
+  const cardBody = React.useMemo(
+    () => (
+      <Tabs id="threadDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
+        <Tab
+          id="threadDumps"
+          eventKey={ThreadDumpsTab.THREAD_DUMPS}
+          title={<TabTitleText>{t('Diagnostics.TARGET_THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
+          data-quickstart-id="thread-dumps-tab"
+        >
+          <ThreadDumpsTable />
+        </Tab>
+      </Tabs>
+    ),
+    [activeTab, onTabSelect],
+  );
+
   return (
     <TargetView {...props} pageTitle="Thread Dumps">
       <Card isFullHeight>
-        <CardBody isFilled>
-          <ThreadDumpsTable />
-        </CardBody>
+        <CardBody isFilled>{cardBody}</CardBody>
       </Card>
     </TargetView>
   );
