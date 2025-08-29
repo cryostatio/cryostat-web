@@ -22,7 +22,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   EmptyState,
@@ -34,14 +34,18 @@ import {
   ToolbarGroup,
   ToolbarItem,
   EmptyStateHeader,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggleElement,
+  MenuToggle,
   SearchInput,
   Timestamp,
   TimestampTooltipVariant,
+  Divider,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
-  ActionsColumn,
-  IAction,
   ISortBy,
   SortByDirection,
   Table,
@@ -235,26 +239,6 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     );
   }, [warningModalOpen, handleWarningModalAccept, handleWarningModalClose]);
 
-  const actionResolver = React.useCallback(
-    (threadDump: ThreadDump): IAction[] => {
-      return [
-        {
-          title: t('DOWNLOAD'),
-          onClick: () => handleDownloadThreadDump(threadDump),
-        },
-        {
-          isSeparator: true,
-        },
-        {
-          title: t('DELETE'),
-          onClick: () => handleDeleteAction(threadDump),
-          isDanger: true,
-        },
-      ];
-    },
-    [handleDownloadThreadDump, handleDeleteAction, t],
-  );
-
   const threadDumpRows = React.useMemo(
     () =>
       filteredThreadDumps.map((t: ThreadDump, index) => {
@@ -272,18 +256,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
               </Timestamp>
             </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-              <ActionsColumn
-                items={actionResolver(t)}
-                popperProps={{
-                  appendTo: portalRoot,
-                  position: 'right',
-                }}
-              />
+              <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
             </Td>
           </Tr>
         );
       }),
-    [actionResolver, datetimeContext.timeZone.full, dayjs, filteredThreadDumps],
+    [datetimeContext.timeZone.full, dayjs, filteredThreadDumps, handleDeleteAction, handleDownloadThreadDump],
   );
 
   if (errorMessage != '') {
@@ -339,4 +317,82 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
       </Stack>
     );
   }
+};
+
+export interface ThreadDumpActionProps {
+  threadDump: ThreadDump;
+  onDownload: (threadDump: ThreadDump) => void;
+  onDelete: (threadDump: ThreadDump) => void;
+}
+
+export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDelete, onDownload }) => {
+  const { t } = useCryostatTranslation();
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const actionItems = React.useMemo(() => {
+    return [
+      {
+        title: 'Download Thread Dump',
+        key: 'download-threaddump',
+        onClick: () => onDownload(threadDump),
+      },
+      {
+        isSeparator: true,
+      },
+      {
+        key: 'delete-threaddump',
+        title: 'Delete',
+        isDanger: true,
+        onClick: () => onDelete(threadDump),
+      },
+    ];
+  }, [onDelete, onDownload, threadDump]);
+
+  const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
+
+  const dropdownItems = React.useMemo(
+    () =>
+      actionItems.map((action, idx) =>
+        action.isSeparator ? (
+          <Divider key={`separator-${idx}`} />
+        ) : (
+          <DropdownItem
+            aria-label={action.key}
+            key={action.key}
+            onClick={() => {
+              setIsOpen(false);
+              action.onClick && action.onClick();
+            }}
+            isDanger={action.isDanger}
+          >
+            {action.title}
+          </DropdownItem>
+        ),
+      ),
+    [actionItems, setIsOpen],
+  );
+
+  return (
+    <Dropdown
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          aria-label={t('ThreadDumps.ARIA_LABELS.ROW_ACTION')}
+          variant="plain"
+          ref={toggleRef}
+          onClick={(event) => handleToggle(event, !isOpen)}
+        >
+          <EllipsisVIcon />
+        </MenuToggle>
+      )}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
+      isOpen={isOpen}
+      popperProps={{
+        position: 'right',
+        enableFlip: true,
+      }}
+    >
+      <DropdownList>{dropdownItems}</DropdownList>
+    </Dropdown>
+  );
 };
