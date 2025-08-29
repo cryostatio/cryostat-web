@@ -26,13 +26,13 @@ import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
-export interface ThreadDumpsProps {}
+export interface AnalyzeThreadDumpsProps {}
 
-enum ThreadDumpsTab {
+enum AnalyzeThreadDumpsTab {
   THREAD_DUMPS = 'target-thread-dumps',
 }
 
-export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
+export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props }) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
@@ -45,7 +45,7 @@ export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
   }, [addSubscription, context.target, setTarget]);
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, 'tab', Object.values(ThreadDumpsTab), ThreadDumpsTab.THREAD_DUMPS);
+    return getActiveTab(search, 'tab', Object.values(AnalyzeThreadDumpsTab), AnalyzeThreadDumpsTab.THREAD_DUMPS);
   }, [search]);
 
   const onTabSelect = React.useCallback(
@@ -59,7 +59,7 @@ export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
       <Tabs id="threadDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
         <Tab
           id="threadDumps"
-          eventKey={ThreadDumpsTab.THREAD_DUMPS}
+          eventKey={AnalyzeThreadDumpsTab.THREAD_DUMPS}
           title={<TabTitleText>{t('Diagnostics.TARGET_THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
           data-quickstart-id="thread-dumps-tab"
         >
@@ -91,4 +91,4 @@ export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
   );
 };
 
-export default ThreadDumps;
+export default AnalyzeThreadDumps;
