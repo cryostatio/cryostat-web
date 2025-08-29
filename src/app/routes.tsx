@@ -21,7 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
-import AnalyzeThreadDumps from './Diagnostics/ThreadDumps';
+import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import Events from './Events/Events';
 import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
