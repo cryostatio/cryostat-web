@@ -25,7 +25,6 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
-  Button,
   EmptyState,
   EmptyStateIcon,
   Stack,
@@ -36,11 +35,10 @@ import {
   ToolbarItem,
   EmptyStateHeader,
   SearchInput,
-  Tooltip,
   Timestamp,
   TimestampTooltipVariant,
 } from '@patternfly/react-core';
-import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
+import { SearchIcon } from '@patternfly/react-icons';
 import {
   ActionsColumn,
   IAction,
@@ -57,7 +55,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { first } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
   {
@@ -156,26 +153,6 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
-
-  const handleThreadDump = React.useCallback(() => {
-    addSubscription(
-      context.api
-        .runThreadDump(true)
-        .pipe(first())
-        .subscribe({
-          next: (jobId) => {
-            addSubscription(
-              context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((notification) => {
-                if (jobId == notification.message.jobId) {
-                  refreshThreadDumps();
-                }
-              }),
-            );
-          },
-          error: () => refreshThreadDumps(),
-        }),
-    );
-  }, [addSubscription, context.api, context.notificationChannel, refreshThreadDumps]);
 
   const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
 
@@ -331,21 +308,6 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
                     onChange={handleFilterTextChange}
                     value={filterText}
                   />
-                </ToolbarItem>
-              </ToolbarGroup>
-              <ToolbarItem variant="separator" />
-              <ToolbarGroup variant="icon-button-group">
-                <ToolbarItem>
-                  <Button
-                    key="dump-threads"
-                    name="Dump Threads"
-                    variant="secondary"
-                    aria-label="dump-threads"
-                    onClick={handleThreadDump}
-                  >
-                    <Tooltip content="Start Thread Dump" />
-                    <UploadIcon />
-                  </Button>
                 </ToolbarItem>
               </ToolbarGroup>
               {deleteThreadDumpModal}
