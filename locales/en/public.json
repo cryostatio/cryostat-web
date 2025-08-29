@@ -374,6 +374,7 @@
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
     "DIAGNOSTICS_GC_BUTTON": "Invoke Garbage Collection",
     "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Invoke Thread Dump",
+    "DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP": "View captured Thread Dumps",
     "DIAGONSTICS_THREAD_REDIRECT_BUTTON": "View collected Thread Dumps",
     "KINDS": {
       "GC": "Garbage Collection",
