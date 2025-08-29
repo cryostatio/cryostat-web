@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TargetView } from '@app/TargetView/TargetView';
 import { getActiveTab, switchTab } from '@app/utils/utils';
-import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { Card, CardBody, Stack, StackItem, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { NullableTarget } from '@app/Shared/Services/api.types';
+import { of } from 'rxjs';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 
 export interface ThreadDumpsProps {}
 
@@ -30,6 +36,14 @@ enum ThreadDumpsTab {
 export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
+  const [target, setTarget] = React.useState(undefined as NullableTarget);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTarget(t)));
+  }, [addSubscription, context.target, setTarget]);
 
   const activeTab = React.useMemo(() => {
     return getActiveTab(search, 'tab', Object.values(ThreadDumpsTab), ThreadDumpsTab.THREAD_DUMPS);
@@ -50,19 +64,31 @@ export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
           title={<TabTitleText>{t('Diagnostics.TARGET_THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
           data-quickstart-id="thread-dumps-tab"
         >
-          <ThreadDumpsTable />
+          <Stack hasGutter>
+            <StackItem>
+              <TargetContextSelector />
+            </StackItem>
+            <StackItem>
+              {target ? (
+                <ThreadDumpsTable />
+              ) : (
+                // FIXME this should be an "AllTargetsThreadDumpsTable" like the AllTargetsArchivedRecordingsTable
+                <NoTargetSelected />
+              )}
+            </StackItem>
+          </Stack>
         </Tab>
       </Tabs>
     ),
-    [activeTab, onTabSelect],
+    [activeTab, onTabSelect, target],
   );
 
   return (
-    <TargetView {...props} pageTitle="Thread Dumps">
+    <BreadcrumbPage {...props} pageTitle="Thread Dumps">
       <Card isFullHeight>
         <CardBody isFilled>{cardBody}</CardBody>
       </Card>
-    </TargetView>
+    </BreadcrumbPage>
   );
 };
 
