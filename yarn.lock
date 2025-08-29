@@ -4862,7 +4862,7 @@ __metadata:
     concurrently: ^9.2.1
     css-loader: ^7.1.2
     css-minimizer-webpack-plugin: ^7.0.2
-    dayjs: ^1.11.14
+    dayjs: ^1.11.15
     eslint: ^9.34.0
     eslint-plugin-import: ^2.32.0
     eslint-plugin-react: ^7.37.5
@@ -5589,10 +5589,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:^1.11.14":
-  version: 1.11.14
-  resolution: "dayjs@npm:1.11.14"
-  checksum: 4924b8ca37b1c48b7042c18f7eaea5fd91b2951de7513bbcbf400e2c4d27bf6944d829498f661c39fc44956b97601e9b6ee5358ba2ec0e2725faeda29acbf9f7
+"dayjs@npm:^1.11.15":
+  version: 1.11.15
+  resolution: "dayjs@npm:1.11.15"
+  checksum: e7d9a0eac598b6a9c835d2f4ce11ffeeb3904a836c7eda611331ae6cdfe8bc69cc177dc7efa72bb2fec83e02a632480ed1cb1c3db39afea0d93557f2ab4fe2c0
   languageName: node
   linkType: hard
 
