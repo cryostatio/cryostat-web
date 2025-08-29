@@ -46,6 +46,7 @@ import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DashboardCard } from '../DashboardCard';
+import {FeatureFlag} from '@app/Shared/Components/FeatureFlag';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -152,25 +153,27 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                     {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
                   </Button>
                 </ActionList>
-                <ActionList>
-                  <Button
-                    variant="primary"
-                    onClick={handleThreadDump}
-                    spinnerAriaValueText="Invoke Thread Dump"
-                    spinnerAriaLabel="invoke-thread-dump"
-                    isLoading={running}
-                  >
-                    {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
-                  </Button>
-                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                <FeatureFlag level={FeatureLevel.BETA}>
+                  <ActionList>
                     <Button
                       variant="primary"
-                      isAriaDisabled={!threadDumpReady}
-                      component={(props) => <CryostatLink {...props} to="/diagnostics" />}
-                      icon={<ListIcon />}
-                    />
-                  </Tooltip>
-                </ActionList>
+                      onClick={handleThreadDump}
+                      spinnerAriaValueText="Invoke Thread Dump"
+                      spinnerAriaLabel="invoke-thread-dump"
+                      isLoading={running}
+                    >
+                      {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                    </Button>
+                    <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                      <Button
+                        variant="primary"
+                        isAriaDisabled={!threadDumpReady}
+                        component={(props) => <CryostatLink {...props} to="/diagnostics" />}
+                        icon={<ListIcon />}
+                      />
+                    </Tooltip>
+                  </ActionList>
+                </FeatureFlag>
               </EmptyStateFooter>
             </EmptyState>
           </Bullseye>
