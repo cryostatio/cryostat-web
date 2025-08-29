@@ -18,9 +18,9 @@ import { Card, CardBody } from '@patternfly/react-core';
 import * as React from 'react';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
-export interface DiagnosticsProps {}
+export interface ThreadDumpsProps {}
 
-export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
+export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
   return (
     <TargetView {...props} pageTitle="Thread Dumps">
       <Card isFullHeight>
@@ -32,4 +32,4 @@ export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
   );
 };
 
-export default Diagnostics;
+export default ThreadDumps;
