@@ -21,6 +21,7 @@ import {
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
+import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -45,7 +46,6 @@ import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DashboardCard } from '../DashboardCard';
-import { NotificationCategory, Target } from '@app/Shared/Services/api.types';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -98,12 +98,12 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   }, [addSubscription, serviceContext.api, serviceContext.target, setHeapDumpReady]);
 
   React.useEffect(() => {
-      addSubscription(
-        serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpSuccess).subscribe(() => {
-          setHeapDumpReady(true)
-        }),
-      );
-    }, [addSubscription, serviceContext.notificationChannel, setHeapDumpReady]);
+    addSubscription(
+      serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpSuccess).subscribe(() => {
+        setHeapDumpReady(true);
+      }),
+    );
+  }, [addSubscription, serviceContext.notificationChannel, setHeapDumpReady]);
 
   React.useEffect(() => {
     addSubscription(
@@ -140,7 +140,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     setRunning(true);
     addSubscription(
       serviceContext.api.runHeapDump(true).subscribe({
-        error: (err) => handleError(t('DiagnosticsCard.KINDS.HEAP'), err),
+        error: (err) => handleError(t('DiagnosticsCard.KINDS.HEAP_DUMP'), err),
         complete: () => {
           setRunning(false);
           setHeapDumpReady(true);
@@ -200,11 +200,11 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   >
                     {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
                   </Button>
-                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_REDIERCT_BUTTON')}>
                     <Button
                       variant="primary"
                       isAriaDisabled={!threadDumpReady}
-                      component={(props) => <CryostatLink {...props} to="/diagnostics" />}
+                      component={(props) => <CryostatLink {...props} to="/threaddumps" />}
                       icon={<ListIcon />}
                     />
                   </Tooltip>
@@ -219,11 +219,11 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   >
                     {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
                   </Button>
-                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_TABLE_TOOLTIP')}>
+                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
                     <Button
                       variant="primary"
                       isAriaDisabled={!heapDumpReady}
-                      component={(props) => <CryostatLink {...props} to="/diagnostics" />}
+                      component={(props) => <CryostatLink {...props} to="/heapdumps" />}
                       icon={<ListIcon />}
                     />
                   </Tooltip>

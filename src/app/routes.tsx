@@ -21,6 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import HeapDumps from './Diagnostics/HeapDumps';
 import ThreadDumps from './Diagnostics/ThreadDumps';
 import Events from './Events/Events';
 import JMCAgent from './JMCAgent/JMCAgent';
@@ -39,7 +40,6 @@ import Topology from './Topology/Topology';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import HeapDumps from './Diagnostics/HeapDumps';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
@@ -173,7 +173,7 @@ const diagnosticsRoutes: IAppRoute[] = [
   {
     component: HeapDumps,
     label: 'Heap Dumps',
-    path: toPath('/diagnostics'),
+    path: toPath('/heapdumps'),
     title: 'Heap Dumps',
     description: 'Create and view heap dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
@@ -182,7 +182,7 @@ const diagnosticsRoutes: IAppRoute[] = [
   {
     component: ThreadDumps,
     label: 'Thread Dumps',
-    path: toPath('/diagnostics'),
+    path: toPath('/threaddumps'),
     title: 'Thread Dumps',
     description: 'Create and view thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,

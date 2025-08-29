@@ -149,10 +149,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
     if (heapDumpToDelete) {
       handleDelete(heapDumpToDelete);
     } else {
-      notificationsContext.warning(
-        t('HeapDumps.DELETION_FAILURE_CATEGORY'),
-        t('HeapDumps.DELETION_FAILURE_MESSAGE'),
-      );
+      notificationsContext.warning(t('HeapDumps.DELETION_FAILURE_CATEGORY'), t('HeapDumps.DELETION_FAILURE_MESSAGE'));
     }
   }, [handleDelete, notificationsContext, t, heapDumpToDelete]);
 

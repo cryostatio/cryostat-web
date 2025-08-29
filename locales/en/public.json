@@ -365,7 +365,8 @@
     "DATETIME": "Date and Time"
   },
   "Diagnostics": {
-    "THREAD_DUMPS_TAB_TITLE": "Thread Dumps"
+    "THREAD_DUMPS_TAB_TITLE": "Thread Dumps",
+    "HEAP_DUMPS_TAB_TITLE": "Heap Dumps"
   },
   "DiagnosticsCard": {
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
@@ -379,7 +380,8 @@
     "DIAGONSTICS_THREAD_REDIRECT_BUTTON": "View collected Thread Dumps",
     "KINDS": {
       "GC": "Garbage Collection",
-      "HEAP_DUMP": "Heap Dump"
+      "HEAP_DUMP": "Heap Dump",
+      "THREADS": "Thread Dump"
     }
   },
   "HeapDumps": {
@@ -389,6 +391,7 @@
     "ARIA_LABELS": {
       "ROW_ACTION": "heap-dump-action-menu",
       "SEARCH_INPUT": "heap-dump-search-input"
+    }
   },
   "ThreadDumps": {
     "SEARCH_PLACEHOLDER": "Search Thread Dumps",
