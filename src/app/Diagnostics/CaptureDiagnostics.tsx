@@ -13,46 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  DashboardCardTypeProps,
-  DashboardCardFC,
-  DashboardCardSizes,
-  DashboardCardDescriptor,
-} from '@app/Dashboard/types';
+import { MBeanMetricsChartCard } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
-import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+  ActionList,
   Bullseye,
   Button,
+  Card,
   CardBody,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  EmptyStateHeader,
-  EmptyStateFooter,
-  ActionList,
-  Tooltip,
+  Grid,
+  GridItem,
   Stack,
   StackItem,
+  Tooltip,
 } from '@patternfly/react-core';
-import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
+import { ListIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { concatMap, filter, first } from 'rxjs/operators';
-import { DashboardCard } from '../DashboardCard';
+import { concatMap, filter, first } from 'rxjs';
 
-export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
+export interface CaptureDiagnosticsProps {}
 
-export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) => {
+export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props }) => {
   const { t } = useCryostatTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
@@ -62,6 +49,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
 
   const handleError = React.useCallback(
     (kind, error) => {
+      // TODO this message key should not be specific to the Card view
       notifications.danger(t('DiagnosticsCard.DIAGNOSTICS_ACTION_FAILURE', { kind }), error?.message || error);
     },
     [notifications, t],
@@ -114,36 +102,13 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     );
   }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
 
-  const header = React.useMemo(() => {
-    return (
-      <CardHeader actions={{ actions: <>{...props.actions || []}</>, hasNoOffset: false, className: undefined }}>
-        <CardTitle>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</CardTitle>
-      </CardHeader>
-    );
-  }, [props.actions, t]);
-
   return (
-    <>
-      <DashboardCard
-        id={'diagnostics-card'}
-        dashboardId={props.dashboardId}
-        cardSizes={DiagnosticsCardSizes}
-        isCompact
-        cardHeader={header}
-        isDraggable={props.isDraggable}
-        isResizable={props.isResizable}
-        isFullHeight={props.isFullHeight}
-      >
-        <CardBody>
-          <Bullseye>
-            <EmptyState variant={EmptyStateVariant.lg}>
-              <EmptyStateHeader
-                titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
-                icon={<EmptyStateIcon icon={WrenchIcon} />}
-                headingLevel="h2"
-              />
-              <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
-              <EmptyStateFooter>
+    <TargetView {...props} pageTitle="Diagnostics">
+      <Grid hasGutter>
+        <GridItem span={3}>
+          <Card isCompact>
+            <CardBody>
+              <Bullseye>
                 <Stack hasGutter>
                   <StackItem>
                     <ActionList>
@@ -159,67 +124,46 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                     </ActionList>
                   </StackItem>
                   <StackItem>
-                    <FeatureFlag level={FeatureLevel.BETA}>
-                      <ActionList>
+                    <ActionList>
+                      <Button
+                        variant="primary"
+                        onClick={handleThreadDump}
+                        spinnerAriaValueText="Invoke Thread Dump"
+                        spinnerAriaLabel="invoke-thread-dump"
+                        isLoading={running}
+                      >
+                        {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                      </Button>
+                      <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
                         <Button
                           variant="primary"
-                          onClick={handleThreadDump}
-                          spinnerAriaValueText="Invoke Thread Dump"
-                          spinnerAriaLabel="invoke-thread-dump"
-                          isLoading={running}
-                        >
-                          {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
-                        </Button>
-                        <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
-                          <Button
-                            variant="primary"
-                            isAriaDisabled={!threadDumpReady}
-                            component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
-                            icon={<ListIcon />}
-                          />
-                        </Tooltip>
-                      </ActionList>
-                    </FeatureFlag>
+                          isAriaDisabled={!threadDumpReady}
+                          component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
+                          icon={<ListIcon />}
+                        />
+                      </Tooltip>
+                    </ActionList>
                   </StackItem>
                 </Stack>
-              </EmptyStateFooter>
-            </EmptyState>
-          </Bullseye>
-        </CardBody>
-      </DashboardCard>
-    </>
+              </Bullseye>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem span={9}>
+          <MBeanMetricsChartCard
+            span={9}
+            chartKind="Heap Memory Usage"
+            themeColor="blue"
+            duration={300}
+            period={10}
+            dashboardId={0}
+            isDraggable={false}
+            isResizable={false}
+          />
+        </GridItem>
+      </Grid>
+    </TargetView>
   );
 };
 
-DiagnosticsCard.cardComponentName = 'DiagnosticsCard';
-
-export const DiagnosticsCardSizes: DashboardCardSizes = {
-  span: {
-    minimum: 3,
-    default: 4,
-    maximum: 12,
-  },
-  height: {
-    // TODO: implement height resizing
-    minimum: Number.NaN,
-    default: Number.NaN,
-    maximum: Number.NaN,
-  },
-};
-
-export const DiagnosticsCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.PRODUCTION,
-  title: 'DiagnosticsCard.DIAGNOSTICS_CARD_TITLE',
-  cardSizes: DiagnosticsCardSizes,
-  description: 'DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION',
-  descriptionFull: 'DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION_FULL',
-  component: DiagnosticsCard,
-  propControls: [],
-  icon: <WrenchIcon />,
-  labels: [
-    {
-      content: 'Diagnostics',
-      color: 'blue',
-    },
-  ],
-};
+export default CaptureDiagnostics;

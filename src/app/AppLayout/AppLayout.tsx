@@ -592,6 +592,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           .map((route, idx) => renderable(route, idx));
         if (!k) {
           items = renderables;
+        } else if (!renderables.length) {
+          items = [];
         } else {
           const anyActive = rs.some((r) => isActiveRoute(r));
           items = [
@@ -612,11 +614,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.GLOBAL_NAVIGATION')}
       >
         <NavList>
-          {Array.from(groups.entries()).map(([groupTitle, items]) => (
-            <NavGroup title={t(groupTitle)} key={groupTitle}>
-              {items}
-            </NavGroup>
-          ))}
+          {Array.from(groups.entries())
+            .filter(([_, items]) => items.length)
+            .map(([groupTitle, items]) => (
+              <NavGroup title={t(groupTitle)} key={groupTitle}>
+                {items}
+              </NavGroup>
+            ))}
         </NavList>
       </Nav>
     );
