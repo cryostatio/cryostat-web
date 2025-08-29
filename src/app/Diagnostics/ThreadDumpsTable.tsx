@@ -22,7 +22,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   EmptyState,
@@ -44,7 +44,7 @@ import {
   TimestampTooltipVariant,
   Divider,
 } from '@patternfly/react-core';
-import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
+import { SearchIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
   SortByDirection,
@@ -69,6 +69,11 @@ const tableColumns: TableColumn[] = [
   {
     title: 'Last Modified',
     keyPaths: ['lastModified'],
+    sortable: true,
+  },
+  {
+    title: 'Size',
+    keyPaths: ['size'],
     sortable: true,
   },
 ];
@@ -254,6 +259,9 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
               >
                 {dayjs(t.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
               </Timestamp>
+            </Td>
+            <Td key={`thread-dump-size-${index}`} dataLabel={tableColumns[2].title}>
+              {formatBytes(t.size ?? 0)}
             </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
               <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
