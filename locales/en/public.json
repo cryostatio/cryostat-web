@@ -364,9 +364,6 @@
     },
     "DATETIME": "Date and Time"
   },
-  "Diagnostics": {
-    "THREAD_DUMPS_TAB_TITLE": "Thread Dumps"
-  },
   "DiagnosticsCard": {
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
