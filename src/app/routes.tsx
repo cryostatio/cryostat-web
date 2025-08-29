@@ -21,7 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
-import Diagnostics from './Diagnostics/Diagnostics';
+import ThreadDumps from './Diagnostics/ThreadDumps';
 import Events from './Events/Events';
 import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
@@ -170,7 +170,7 @@ const flightRecorderRoutes: IAppRoute[] = [
 
 const diagnosticsRoutes: IAppRoute[] = [
   {
-    component: Diagnostics,
+    component: ThreadDumps,
     label: 'Thread Dumps',
     path: toPath('/diagnostics'),
     title: 'Thread Dumps',
