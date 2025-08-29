@@ -69,6 +69,7 @@ import {
   BuildInfo,
   AggregateReport,
   HeapDump,
+  ThreadDump,
 } from './api.types';
 import {
   isHttpError,
@@ -670,12 +671,12 @@ export class ApiService {
     );
   }
 
-  runHeapDump(suppressNotifications = false): Observable<string> {
+  runThreadDump(suppressNotifications = false): Observable<string> {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
           'beta',
-          `diagnostics/targets/${target?.id}/heapdump?`,
+          `diagnostics/targets/${target?.id}/threaddump?format=threadPrint`,
           {
             method: 'POST',
           },
@@ -683,6 +684,46 @@ export class ApiService {
           suppressNotifications,
         ).pipe(
           concatMap((resp) => resp.text()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  runHeapDump(suppressNotifications = false): Observable<string> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/heapdump`,
+          {
+            method: 'POST',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.text()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  deleteThreadDump(threaddumpname: string, suppressNotifications = false): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/threaddump/${threaddumpname}`,
+          {
+            method: 'DELETE',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          map((resp) => resp.ok),
           first(),
         ),
       ),
@@ -703,6 +744,27 @@ export class ApiService {
           suppressNotifications,
         ).pipe(
           map((resp) => resp.ok),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  getThreadDumps(suppressNotifications = false): Observable<ThreadDump[]> {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target!.id}/threaddump`,
+          {
+            method: 'GET',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.json()),
           first(),
         ),
       ),
@@ -972,7 +1034,11 @@ export class ApiService {
     );
   }
 
-  getCurrentReportForTarget(target: TargetStub | TargetStub[], aggregateOnly = false): Observable<AggregateReport> {
+  getCurrentReportForTarget(
+    target: TargetStub | TargetStub[],
+    aggregateOnly = false,
+    reportFilter = {},
+  ): Observable<AggregateReport> {
     let targetIds: number[];
     if (Array.isArray(target)) {
       targetIds = target.map((t) => t.id!);
@@ -1001,11 +1067,11 @@ export class ApiService {
     `;
     return this.graphql<any>(
       `
-        query AggregateReportForTarget($targetIds: [ BigInteger! ]) {
+        query AggregateReportForTarget($targetIds: [ BigInteger! ], $reportFilter: ReportFilterInput) {
           targetNodes(filter: { targetIds: $targetIds }) {
             target {
               id
-              report {
+              report(filter: $reportFilter) {
                 lastUpdated
                 aggregate {
                   count
@@ -1017,7 +1083,7 @@ export class ApiService {
           }
         }
       `,
-      { targetIds },
+      { targetIds, reportFilter },
     ).pipe(
       map((resp) => {
         const empty = {
@@ -1091,14 +1157,29 @@ export class ApiService {
     });
   }
 
+  downloadThreadDump(threadDump: ThreadDump): void {
+    this.ctx.url(threadDump.downloadUrl).subscribe((resourceUrl) => {
+      let filename = this.target.target().pipe(
+        filter((t) => !!t),
+        map((t) => `${t?.alias}_${threadDump.uuid}.thread_dump`),
+        first(),
+      );
+      filename.subscribe((name) => {
+        resourceUrl += `?filename=${name}`;
+        this.downloadFile(resourceUrl, name);
+      });
+    });
+  }
+
   downloadHeapDump(heapDump: HeapDump): void {
     this.ctx.url(heapDump.downloadUrl).subscribe((resourceUrl) => {
       let filename = this.target.target().pipe(
-        filter(t => !!t) ,
-        map((t) => `${t?.alias}_${heapDump.uuid}.heap_dump`),
-        first()
-      )
+        filter((t) => !!t),
+        map((t) => `${t?.alias}_${heapDump.uuid}.hprof`),
+        first(),
+      );
       filename.subscribe((name) => {
+        resourceUrl += `?filename=${name}`;
         this.downloadFile(resourceUrl, name);
       });
     });
@@ -1758,9 +1839,7 @@ export class ApiService {
       let href = url;
       anchor.download = filename;
       if (q) {
-        // TODO more robust processing of the incoming url string. If it already contains
-        // query parameters then this concatenation will result in two ? separators.
-        href += `?${q}`;
+        href.includes('?') ? (href += `&${q}`) : (href += `?${q}`);
       }
       anchor.href = href;
       anchor.click();

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<NotificationControl/> renders correctly 1`] = `
 <div
@@ -1258,6 +1258,84 @@ exports[`<NotificationControl/> renders correctly 1`] = `
             data-ouia-component-id="OUIA-Generated-Switch-28"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
+            htmlFor="ThreadDumpSuccess"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ThreadDumpSuccess-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="ThreadDumpSuccess"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="ThreadDumpSuccess-on"
+            >
+              Thread Dump Succeeded
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="ThreadDumpSuccess-off"
+            >
+              Thread Dump Succeeded
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-29"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="ThreadDumpFailure"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ThreadDumpFailure-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="ThreadDumpFailure"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="ThreadDumpFailure-on"
+            >
+              Thread Dump Failed
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="ThreadDumpFailure-off"
+            >
+              Thread Dump Failed
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-30"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
             htmlFor="CredentialsStored"
           >
             <input
@@ -1294,7 +1372,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-29"
+            data-ouia-component-id="OUIA-Generated-Switch-31"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsDeleted"
@@ -1333,7 +1411,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-30"
+            data-ouia-component-id="OUIA-Generated-Switch-32"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportSuccess"
@@ -1372,7 +1450,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-31"
+            data-ouia-component-id="OUIA-Generated-Switch-33"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportFailure"

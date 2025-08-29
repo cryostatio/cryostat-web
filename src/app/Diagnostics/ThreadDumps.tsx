@@ -16,22 +16,23 @@
 import { TargetView } from '@app/TargetView/TargetView';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { ThreadDumpsTable } from './HeapDumpsTable';
+import { ThreadDumpsTable } from './ThreadDumpsTable';
 
-enum DiagnosticsTab {
-  HEAP_DUMPS = 'heap-dumps',
+enum ThreadDumpsTab {
+  THREAD_DUMPS = 'thread-dumps',
 }
 
-export interface DiagnosticsProps {}
+export interface ThreadDumpsProps {}
 
-export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
+export const ThreadDumps: React.FC<ThreadDumpsProps> = ({ ...props }) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, 'tab', Object.values(DiagnosticsTab), DiagnosticsTab.HEAP_DUMPS);
+    return getActiveTab(search, 'tab', Object.values(ThreadDumpsTab), ThreadDumpsTab.THREAD_DUMPS);
   }, [search]);
 
   const onTabSelect = React.useCallback(
@@ -42,14 +43,14 @@ export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
 
   const cardBody = React.useMemo(
     () => (
-      <Tabs id="heapDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
+      <Tabs id="threadDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
         <Tab
-          id="heapDumps"
-          eventKey={DiagnosticsTab.HEAP_DUMPS}
-          title={<TabTitleText>Thread Dumps</TabTitleText>}
-          data-quickstart-id="heap-dumps-tab"
+          id="threadDumps"
+          eventKey={ThreadDumpsTab.THREAD_DUMPS}
+          title={<TabTitleText>{t('Diagnostics.THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
+          data-quickstart-id="thread-dumps-tab"
         >
-          <HeapDumpsTable />
+          <ThreadDumpsTable />
         </Tab>
       </Tabs>
     ),
@@ -65,4 +66,4 @@ export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
   );
 };
 
-export default Diagnostics;
+export default ThreadDumps;

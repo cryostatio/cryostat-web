@@ -192,6 +192,16 @@ export interface MBeanMetricsResponse {
   };
 }
 
+export interface ThreadDumpsResponse {
+  data: {
+    targetNodes: {
+      target: {
+        threadDumps: ThreadDump[];
+      };
+    }[];
+  };
+}
+
 // ======================================
 // Recording resources
 // ======================================
@@ -229,6 +239,13 @@ export interface Recording {
   downloadUrl: string;
   reportUrl: string;
   metadata: Metadata;
+}
+
+export interface ThreadDump {
+  downloadUrl: string;
+  uuid: string;
+  jvmId?: string;
+  lastModified?: number;
 }
 
 export interface ArchivedRecording extends Recording {
@@ -546,6 +563,8 @@ export enum NotificationCategory {
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
   HeapDumpSuccess = 'HeapDumpSuccess',
   HeapDumpFailure = 'HeapDumpFailure',
+  ThreadDumpSuccess = 'ThreadDumpSuccess',
+  ThreadDumpFailure = 'ThreadDumpFailure',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',

@@ -364,6 +364,9 @@
     },
     "DATETIME": "Date and Time"
   },
+  "Diagnostics": {
+    "THREAD_DUMPS_TAB_TITLE": "Thread Dumps"
+  },
   "DiagnosticsCard": {
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",
     "DIAGNOSTICS_CARD_DESCRIPTION": "Perform diagnostic operations on the target.",
@@ -372,16 +375,28 @@
     "DIAGNOSTICS_GC_BUTTON": "Invoke Garbage Collection",
     "DIAGNOSTICS_HEAP_DUMP_BUTTON": "Invoke Heap Dump",
     "DIAGONSTICS_HEAP_REDIRECT_BUTTON": "View collected Heap Dumps",
+    "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Invoke Thread Dump",
+    "DIAGONSTICS_THREAD_REDIRECT_BUTTON": "View collected Thread Dumps",
     "KINDS": {
       "GC": "Garbage Collection",
       "HEAP_DUMP": "Heap Dump"
     }
   },
-    "HeapDumps": {
+  "HeapDumps": {
     "SEARCH_PLACEHOLDER": "Search Heap Dumps",
+    "DELETION_FAILURE_CATEGORY": "Heap Dump Deletion Failure",
+    "DELETION_FAILURE_MESSAGE": "No Heap Dump to delete.",
     "ARIA_LABELS": {
       "ROW_ACTION": "heap-dump-action-menu",
       "SEARCH_INPUT": "heap-dump-search-input"
+  },
+  "ThreadDumps": {
+    "SEARCH_PLACEHOLDER": "Search Thread Dumps",
+    "DELETION_FAILURE_CATEGORY": "Thread Dump Deletion Failure",
+    "DELETION_FAILURE_MESSAGE": "No Thread Dump to delete.",
+    "ARIA_LABELS": {
+      "ROW_ACTION": "thread-dump-action-menu",
+      "SEARCH_INPUT": "thread-dump-search-input"
     }
   },
   "DurationFilter": {
@@ -471,6 +486,10 @@
       "LISTBOX": "Select AM or PM"
     }
   },
+  "NoTargetSelected": {
+    "TITLE": "<0/> No target selected",
+    "BODY": "To view this content, select a JVM target."
+  },
   "NotFound": {
     "DESCRIPTION": "The page you're trying to find was either removed, moved or maybe the URL isn't quite right. Try returning home or visit one of the following pages below.",
     "HOME_REDIRECT_BUTTON_CONTENT": "Return to home page",
@@ -549,7 +568,8 @@
     "NavGroups": {
       "CONSOLE": "Console",
       "FLIGHT_RECORDER": "Flight Recorder",
-      "OVERVIEW": "Overview"
+      "OVERVIEW": "Overview",
+      "DIAGNOSTICS": "Diagnostics"
     }
   },
   "RuleDeleteWarningModal": {
@@ -591,7 +611,8 @@
       "CONNECTIVITY": "Connectivity",
       "DASHBOARD": "Dashboard",
       "GENERAL": "General",
-      "NOTIFICATION_MESSAGE": "Notifications & messages"
+      "NOTIFICATION_MESSAGE": "Notifications & messages",
+      "TOPOLOGY": "Topology"
     },
     "CHARTS_CONFIG": {
       "DESCRIPTION": "",
@@ -660,6 +681,14 @@
       "DESCRIPTION": "Set the current theme for web console.",
       "LIGHT": "Light",
       "TITLE": "Theme"
+    },
+    "TOPOLOGY": {
+      "ANALYZED_OPTIONS_TITLE": "Analyzed rules",
+      "CHOSEN_OPTIONS_TITLE": "Ignored rules",
+      "DESCRIPTION": "Control the behaviour of the Topology view and the data presented.",
+      "HELPER_TEXT": "The selected automated analysis report rule IDs will be ignored by the Topology view when determining the health status score of a target node and the number of rules that were evaluated to arrive at that score. Analysis results of active Targets or of archived Recordings will obey server analysis settings and ignore these selections.",
+      "TITLE": "Topology view configuration",
+      "RESET_DEFAULT": "Restore Defaults"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {
       "DESCRIPTION": "Set the retry interval (in milliseconds) used when establishing WebSocket connections. Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages. Decrease this time if the web-interface takes a long time to populate on startup.",

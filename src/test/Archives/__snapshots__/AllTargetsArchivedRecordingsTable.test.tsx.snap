@@ -111,7 +111,7 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
     </div>
   </div>
   <div
-    className="archive-table-inner-container pf-v5-c-scroll-inner-wrapper"
+    className="pf-v5-c-scroll-inner-wrapper"
   >
     <table
       aria-label="all-targets-table"
