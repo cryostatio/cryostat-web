@@ -237,10 +237,8 @@ export class ApiService {
       if (!e || !e[0] || !e[1]) {
         return;
       }
-      console.log({ k: e[0], v: e[1] });
       body.append(e[0], e[1]);
     });
-    console.log({ form: body });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     return this.ctx
       .headers()
