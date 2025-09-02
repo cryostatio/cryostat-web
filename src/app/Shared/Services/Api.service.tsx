@@ -233,36 +233,34 @@ export class ApiService {
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
     const body = new window.FormData();
-    Object.entries(rule).forEach(e => {
+    Object.entries(rule).forEach((e) => {
       if (!e || !e[0] || !e[1]) {
         return;
       }
       body.append(e[0], e[1]);
     });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-    return this.ctx
-      .headers()
-      .pipe(
-        concatMap((headers) =>
-          this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
-            body,
-            method: 'POST',
-            headers,
-            listeners: {
-              onUploadProgress: (event) => {
-                onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-              },
+    return this.ctx.headers().pipe(
+      concatMap((headers) =>
+        this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
+          body,
+          method: 'POST',
+          headers,
+          listeners: {
+            onUploadProgress: (event) => {
+              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
             },
-            abortSignal,
-          }),
-        ),
-        map((resp) => resp.ok),
-        tap({
-          next: () => (window.onbeforeunload = null),
-          error: () => (window.onbeforeunload = null),
+          },
+          abortSignal,
         }),
-        first(),
-      );
+      ),
+      map((resp) => resp.ok),
+      tap({
+        next: () => (window.onbeforeunload = null),
+        error: () => (window.onbeforeunload = null),
+      }),
+      first(),
+    );
   }
 
   createRule(rule: Rule): Observable<boolean> {
