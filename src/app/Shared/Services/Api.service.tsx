@@ -232,16 +232,23 @@ export class ApiService {
     onUploadProgress?: (progress: string | number) => void,
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
+    const body = new window.FormData();
+    Object.entries(rule).forEach(e => {
+      if (!e || !e[0] || !e[1]) {
+        return;
+      }
+      console.log({ k: e[0], v: e[1] });
+      body.append(e[0], e[1]);
+    });
+    console.log({ form: body });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     return this.ctx
-      .headers({
-        'Content-Type': 'application/json',
-      })
+      .headers()
       .pipe(
         concatMap((headers) =>
           this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
+            body,
             method: 'POST',
-            body: JSON.stringify(rule),
             headers,
             listeners: {
               onUploadProgress: (event) => {
