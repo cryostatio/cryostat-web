@@ -21,7 +21,8 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
-import Diagnostics from './Diagnostics/Diagnostics';
+import HeapDumps from './Diagnostics/HeapDumps';
+import ThreadDumps from './Diagnostics/ThreadDumps';
 import Events from './Events/Events';
 import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';
@@ -170,9 +171,18 @@ const flightRecorderRoutes: IAppRoute[] = [
 
 const diagnosticsRoutes: IAppRoute[] = [
   {
-    component: Diagnostics,
+    component: HeapDumps,
+    label: 'Heap Dumps',
+    path: toPath('/heapdumps'),
+    title: 'Heap Dumps',
+    description: 'Create and view heap dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+  },
+  {
+    component: ThreadDumps,
     label: 'Thread Dumps',
-    path: toPath('/diagnostics'),
+    path: toPath('/threaddumps'),
     title: 'Thread Dumps',
     description: 'Create and view thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,

@@ -19,20 +19,20 @@ import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core'
 import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { ThreadDumpsTable } from './ThreadDumpsTable';
+import { HeapDumpsTable } from './HeapDumpsTable';
 
-enum DiagnosticsTab {
-  THREAD_DUMPS = 'thread-dumps',
+enum HeapDumpsTab {
+  HEAP_DUMPS = 'heap-dumps',
 }
 
-export interface DiagnosticsProps {}
+export interface HeapDumpsProps {}
 
-export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
+export const HeapDumps: React.FC<HeapDumpsProps> = ({ ...props }) => {
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, 'tab', Object.values(DiagnosticsTab), DiagnosticsTab.THREAD_DUMPS);
+    return getActiveTab(search, 'tab', Object.values(HeapDumpsTab), HeapDumpsTab.HEAP_DUMPS);
   }, [search]);
 
   const onTabSelect = React.useCallback(
@@ -43,14 +43,14 @@ export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
 
   const cardBody = React.useMemo(
     () => (
-      <Tabs id="threadDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
+      <Tabs id="heapDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
         <Tab
-          id="threadDumps"
-          eventKey={DiagnosticsTab.THREAD_DUMPS}
-          title={<TabTitleText>{t('Diagnostics.THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
-          data-quickstart-id="thread-dumps-tab"
+          id="heapDumps"
+          eventKey={HeapDumpsTab.HEAP_DUMPS}
+          title={<TabTitleText>{t('Diagnostics.HEAP_DUMPS_TAB_TITLE')}</TabTitleText>}
+          data-quickstart-id="heap-dumps-tab"
         >
-          <ThreadDumpsTable />
+          <HeapDumpsTable />
         </Tab>
       </Tabs>
     ),
@@ -66,4 +66,4 @@ export const Diagnostics: React.FC<DiagnosticsProps> = ({ ...props }) => {
   );
 };
 
-export default Diagnostics;
+export default HeapDumps;
