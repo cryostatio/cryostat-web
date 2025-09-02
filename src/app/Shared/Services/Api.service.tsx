@@ -1782,8 +1782,8 @@ export class ApiService {
       out.labels[l.key] = l.value;
     }
     for (const s of ['cryostat', 'platform']) {
-      for (const e of out.annotations[s]) {
-        target.annotations[s][e.key] = e.value;
+      for (const [key, value] of Object.entries(out.annotations[s])) {
+        target.annotations[s][key] = value;
       }
     }
     return out;

@@ -23,8 +23,8 @@ import {
   EmptyState,
   EmptyStateBody,
   EmptyStateVariant,
-  List,
-  ListItem,
+  Label,
+  LabelGroup,
   Panel,
   PanelMain,
   PanelMainBody,
@@ -38,10 +38,10 @@ import {
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { SecurityCard } from './types';
 
-export const CertificateImport: React.FC = () => {
+const TrustedCertificates: React.FC = () => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -53,7 +53,10 @@ export const CertificateImport: React.FC = () => {
     addSubscription(
       context.api
         .doGet('tls/certs')
-        .pipe(tap((_) => setLoading(false)))
+        .pipe(
+          tap((_) => setLoading(false)),
+          map((a: string[]) => a.sort()),
+        )
         .subscribe(setCerts),
     );
   }, [setLoading, addSubscription, context.api, setCerts]);
@@ -65,13 +68,13 @@ export const CertificateImport: React.FC = () => {
           {loading ? (
             <Spinner />
           ) : certs.length ? (
-            <List isPlain>
+            <LabelGroup>
               {certs.map((cert) => (
-                <ListItem key={cert} icon={<FileIcon />}>
+                <Label key={cert} icon={<FileIcon />}>
                   {cert}
-                </ListItem>
+                </Label>
               ))}
-            </List>
+            </LabelGroup>
           ) : (
             <EmptyState variant={EmptyStateVariant.xs}>
               <Title headingLevel="h4" size="md">
@@ -107,5 +110,5 @@ export const ListCertificates: SecurityCard = {
       <Text component={TextVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Text>
     </TextContent>
   ),
-  content: CertificateImport,
+  content: TrustedCertificates,
 };
