@@ -159,9 +159,6 @@ exports[`<Archives /> renders correctly 1`] = `
           </div>
         </div>
       </div>
-      <div
-        className="pf-v5-l-stack__item"
-      />
     </div>
   </section>
 </div>
