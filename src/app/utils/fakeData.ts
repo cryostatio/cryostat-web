@@ -119,6 +119,7 @@ export const fakeAARecording: ActiveRecording = {
   toDisk: false,
   maxSize: 1048576,
   maxAge: 0,
+  archiveOnStop: true,
   remoteId: 567567,
 };
 

@@ -41,6 +41,7 @@ const mockRecording: ActiveRecording = {
   toDisk: false,
   maxSize: 55,
   maxAge: 66,
+  archiveOnStop: true,
   remoteId: 77,
   name: 'snapshot-10',
   downloadUrl: 'http://localhost:8080/api/v4/targets/1/recordings/77',
