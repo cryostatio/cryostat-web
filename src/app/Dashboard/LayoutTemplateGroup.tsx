@@ -16,6 +16,7 @@
 import { dashboardConfigTemplateHistoryClearIntent } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { CatalogTile, CatalogTileBadge } from '@patternfly/react-catalog-view-extension';
 import {
@@ -65,8 +66,15 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
   ...props
 }) => {
   const { t } = useCryostatTranslation();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const dispatch = useDispatch();
   const { selectedTemplate, setSelectedTemplate } = React.useContext(LayoutTemplateContext);
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, context.settings, setUseCompactLabels]);
 
   const handleTemplateSelect = React.useCallback(
     (template: LayoutTemplate) => {
@@ -123,7 +131,11 @@ export const LayoutTemplateGroup: React.FC<LayoutTemplateGroupProps> = ({
               badges={[
                 level !== FeatureLevel.PRODUCTION && (
                   <CatalogTileBadge>
-                    <Label key={template.name} isCompact color={level === FeatureLevel.BETA ? 'green' : 'red'}>
+                    <Label
+                      key={template.name}
+                      isCompact={useCompactLabels}
+                      color={level === FeatureLevel.BETA ? 'green' : 'red'}
+                    >
                       {t(FeatureLevel[level])}
                     </Label>
                   </CatalogTileBadge>

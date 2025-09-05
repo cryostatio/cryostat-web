@@ -15,8 +15,11 @@
  */
 import { ClickableLabel } from '@app/RecordingMetadata/ClickableLabel';
 import '@testing-library/jest-dom';
+import { Palette } from '@app/Settings/types';
 import { KeyValue } from '@app/Shared/Services/api.types';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
+import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
 const mockLabel: KeyValue = {
@@ -28,6 +31,9 @@ const mockLabelAsString = 'someLabel=someValue';
 const onLabelClick = jest.fn((_label: KeyValue) => {
   /**Do nothing. Used for checking renders */
 });
+
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 describe('<ClickableLabel />', () => {
   afterEach(cleanup);

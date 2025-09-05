@@ -377,7 +377,21 @@ export const startMirage = ({ environment = 'development' } = {}) => {
               value: {
                 name: 'rule a',
                 topic: 'topic 1',
-                score: randomScore,
+                score: 50,
+                evaluation: {
+                  summary: '',
+                  explanation: '',
+                  solution: '',
+                  suggestions: [],
+                },
+              },
+            },
+            {
+              key: 'rule c',
+              value: {
+                name: 'rule c',
+                topic: 'topic 1',
+                score: 80,
                 evaluation: {
                   summary: '',
                   explanation: '',
@@ -916,7 +930,21 @@ export const startMirage = ({ environment = 'development' } = {}) => {
                           value: {
                             name: 'rule a',
                             topic: 'topic 1',
-                            score: randomScore,
+                            score: 50,
+                            evaluation: {
+                              summary: '',
+                              explanation: '',
+                              solution: '',
+                              suggestions: [],
+                            },
+                          },
+                        },
+                        {
+                          key: 'rule c',
+                          value: {
+                            name: 'rule c',
+                            topic: 'topic 1',
+                            score: 80,
                             evaluation: {
                               summary: '',
                               explanation: '',
