@@ -84,6 +84,7 @@ jest.spyOn(defaultServices.api, 'getTargetActiveRecordings').mockReturnValue(
       toDisk: true,
       maxSize: 0,
       maxAge: 0,
+      archiveOnStop: true,
       downloadUrl: '',
       reportUrl: '',
       metadata: {
