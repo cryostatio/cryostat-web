@@ -557,6 +557,7 @@ export enum NotificationCategory {
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
   ThreadDumpSuccess = 'ThreadDumpSuccess',
   ThreadDumpFailure = 'ThreadDumpFailure',
+  ThreadDumpDeleted = 'ThreadDumpDeleted',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',
