@@ -140,8 +140,8 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   const handleDelete = React.useCallback(
     (threadDump: ThreadDump) => {
       addSubscription(
-        context.api.deleteThreadDump(threadDump.uuid).subscribe(() => {
-          setThreadDumps((old) => old.filter((t) => t.uuid !== threadDump.uuid));
+        context.api.deleteThreadDump(threadDump.threadDumpId).subscribe(() => {
+          setThreadDumps((old) => old.filter((t) => t.threadDumpId !== threadDump.threadDumpId));
         }),
       );
     },
@@ -199,7 +199,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
       filtered = threadDumps;
     } else {
       const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-      filtered = threadDumps.filter((t: ThreadDump) => reg.test(t.uuid));
+      filtered = threadDumps.filter((t: ThreadDump) => reg.test(t.threadDumpId));
     }
 
     setFilteredThreadDumps(
@@ -250,7 +250,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
         return (
           <Tr key={`thread-dump-${index}`}>
             <Td key={`thread-dump-id-${index}`} dataLabel={tableColumns[0].title}>
-              {t.uuid}
+              {t.threadDumpId}
             </Td>
             <Td key={`thread-dump-lastModified-${index}`} dataLabel={tableColumns[1].title}>
               <Timestamp

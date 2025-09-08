@@ -34,7 +34,7 @@ const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
 const mockThreadDump: ThreadDump = {
   downloadUrl: 'someDownloadUrl',
-  uuid: 'someUuid',
+  threadDumpId: 'someUuid',
   jvmId: 'someJvmId',
 };
 
