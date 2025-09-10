@@ -304,7 +304,7 @@ describe('<EventTemplates />', () => {
     expect(retryButton).toBeVisible();
   });
 
-  // FIXME disabled due to:
+  // FIXME disabled since https://github.com/cryostatio/cryostat-web/pull/1806 due to:
   // TypeError: _d.contains is not a function
   //   at handleMenuKeys (node_modules/@patternfly/react-core/dist/js/components/Dropdown/Dropdown.js:31:82)
   //   at callTheUserObjectsOperation (node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
