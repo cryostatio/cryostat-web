@@ -54,7 +54,8 @@ import {
   ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
-import { ProcessAutomationIcon, SearchIcon } from '@patternfly/react-icons';
+import { ProcessAutomationIcon, SearchIcon, SortAmountDownAltIcon, SortAmountDownIcon } from '@patternfly/react-icons';
+import { ISortBy } from '@patternfly/react-table';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
@@ -71,13 +72,30 @@ export const Reports: React.FC = () => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [state, setState] = React.useState([] as ReportEntry[]);
   const [minScore, setMinScore] = React.useState(0);
+  const [sortBy, setSortBy] = React.useState({ index: 0, direction: 'desc', defaultDirection: 'desc' } as ISortBy);
   const [page, setPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(4);
 
+  const sortedState = React.useMemo(() => {
+    const comparator =
+      sortBy.index === 0
+        ? (a: ReportEntry, b: ReportEntry) => (b?.report?.lastUpdated ?? 0) - (a?.report?.lastUpdated ?? 0)
+        : (a: ReportEntry, b: ReportEntry) => (b?.report?.aggregate?.max ?? 0) - (a?.report?.aggregate?.max ?? 0);
+    const sorted = [...state].sort(comparator);
+    if (sortBy.direction === 'asc') {
+      sorted.reverse();
+    }
+    return sorted;
+  }, [state, sortBy]);
+
+  const sortDirectionIcon = React.useMemo(() => {
+    return sortBy.direction === 'desc' ? <SortAmountDownIcon /> : <SortAmountDownAltIcon />;
+  }, [sortBy]);
+
   const pagedState = React.useMemo(() => {
     const offset = (page - 1) * perPage;
-    return state.slice(offset, offset + perPage);
-  }, [page, perPage, state]);
+    return sortedState.slice(offset, offset + perPage);
+  }, [page, perPage, sortedState]);
 
   const doUpdateAll = React.useCallback(
     (pre?: () => void, onComplete?: () => void) => {
@@ -144,6 +162,26 @@ export const Reports: React.FC = () => {
       );
     },
     [addSubscription, context.targets, context.api, setState],
+  );
+
+  const onSetSort = React.useCallback(
+    (idx: number) => {
+      return () =>
+        setSortBy((prev) => {
+          let sort = { ...prev };
+          if (idx === prev.index) {
+            if (sort.direction === 'desc') {
+              sort.direction = 'asc';
+            } else {
+              sort.direction = 'desc';
+            }
+          } else {
+            sort.index = idx;
+          }
+          return sort;
+        });
+    },
+    [setSortBy],
   );
 
   const onSetPage = React.useCallback(
@@ -257,6 +295,35 @@ export const Reports: React.FC = () => {
                             text={t('Reports.Score.CRITICAL_ONLY')}
                             isSelected={minScore === 75}
                             onChange={handleScore(75)}
+                          />
+                        </Tooltip>
+                      </ToggleGroup>
+                    </ToolbarItem>
+                  </ToolbarGroup>
+                  <ToolbarItem variant="separator" />
+                  <ToolbarGroup>
+                    <ToolbarItem>
+                      <ToggleGroup>
+                        <Tooltip content={t('Reports.Tooltips.LAST_UPDATE')}>
+                          <ToggleGroupItem
+                            text={
+                              <Trans t={t} components={[sortDirectionIcon]}>
+                                Reports.Sort.LAST_UPDATE
+                              </Trans>
+                            }
+                            isSelected={sortBy.index === 0}
+                            onChange={onSetSort(0)}
+                          />
+                        </Tooltip>
+                        <Tooltip content={t('Reports.Tooltips.REPORT_SCORE')}>
+                          <ToggleGroupItem
+                            text={
+                              <Trans t={t} components={[sortDirectionIcon]}>
+                                Reports.Sort.REPORT_SCORE
+                              </Trans>
+                            }
+                            isSelected={sortBy.index === 1}
+                            onChange={onSetSort(1)}
                           />
                         </Tooltip>
                       </ToggleGroup>
