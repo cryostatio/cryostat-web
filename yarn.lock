@@ -1789,9 +1789,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-topology@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "@patternfly/react-topology@npm:5.4.0"
+"@patternfly/react-topology@npm:5.4.1":
+  version: 5.4.1
+  resolution: "@patternfly/react-topology@npm:5.4.1"
   dependencies:
     "@dagrejs/dagre": 1.1.2
     "@patternfly/react-core": ^5.1.1
@@ -1811,7 +1811,7 @@ __metadata:
   peerDependencies:
     react: ^17 || ^18
     react-dom: ^17 || ^18
-  checksum: 3b5a4469ba7cf02499d57bc7a82e419895aeba38ce2b35579faf414e763e90ff7a0c599fc6b9b09c9ceb7313f61f2c61aad1a5c20d74fc2cf5b6ae1b299d739a
+  checksum: 697ac877cf4d8f6146148a0ac0d6f370b03a194c03b81ddcbdff69cbbae5a4653ab96b45541eef0e4041afc47bb44957344791721d83d0ea6896db094efcd62f
   languageName: node
   linkType: hard
 
@@ -4858,7 +4858,7 @@ __metadata:
     "@patternfly/react-icons": ^5.4.0
     "@patternfly/react-styles": ^5.4.1
     "@patternfly/react-table": ^5.4.8
-    "@patternfly/react-topology": ^5.4.0
+    "@patternfly/react-topology": 5.4.1
     "@reduxjs/toolkit": ^1.9.3
     "@testing-library/dom": ^10.4.1
     "@testing-library/jest-dom": ^6.8.0
