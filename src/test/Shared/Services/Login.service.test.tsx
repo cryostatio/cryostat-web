@@ -88,18 +88,6 @@ describe('Login.service', () => {
       svc = new LoginService(apiSvc, settingsSvc);
     });
 
-    it('should emit true', async () => {
-      const logoutResp = createResponse(200, true);
-      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
-        of({
-          ok: true,
-          json: new Promise((resolve) => resolve(logoutResp)),
-        } as unknown as Response),
-      );
-      const result = await firstValueFrom(svc.setLoggedOut());
-      expect(result).toBeTruthy();
-    });
-
     it('should make expected API calls', async () => {
       jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
         of({
@@ -117,14 +105,8 @@ describe('Login.service', () => {
         method: 'POST',
         body: null,
       });
-      await firstValueFrom(svc.setLoggedOut());
-      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(2);
-      expect(apiSvc.sendRequest).toHaveBeenNthCalledWith(2, 'v4', 'logout', {
-        credentials: 'include',
-        mode: 'cors',
-        method: 'POST',
-        body: null,
-      });
+      svc.setLoggedOut();
+      expect(apiSvc.sendRequest).toHaveBeenCalledTimes(1);
     });
 
     it('should emit logged-out', async () => {
@@ -135,7 +117,7 @@ describe('Login.service', () => {
         } as unknown as Response),
       );
 
-      await firstValueFrom(svc.setLoggedOut());
+      svc.setLoggedOut();
       await firstValueFrom(svc.loggedOut().pipe(timeout({ first: 1000 })));
     });
 
@@ -149,7 +131,7 @@ describe('Login.service', () => {
 
       const beforeState = await firstValueFrom(svc.getSessionState());
       expect(beforeState).toEqual(SessionState.CREATING_USER_SESSION);
-      await firstValueFrom(svc.setLoggedOut());
+      svc.setLoggedOut();
       const afterState = await firstValueFrom(svc.getSessionState());
       expect(afterState).toEqual(SessionState.NO_USER_SESSION);
     });
@@ -162,8 +144,8 @@ describe('Login.service', () => {
         } as unknown as Response),
       );
 
-      await firstValueFrom(svc.setLoggedOut());
-      expect(fakeLocationHref).toHaveBeenCalledWith('/');
+      svc.setLoggedOut();
+      expect(fakeLocationHref).toHaveBeenCalledWith('/oauth2/sign_out');
     });
   });
 });
