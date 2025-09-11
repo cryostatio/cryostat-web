@@ -365,8 +365,8 @@
     "DATETIME": "Date and Time"
   },
   "Diagnostics": {
-    "THREAD_DUMPS_TAB_TITLE": "Targets",
-    "HEAP_DUMPS_TAB_TITLE": "Heap Dumps"
+    "TARGET_THREAD_DUMPS_TAB_TITLE": "Targets",
+    "TARGET_HEAP_DUMPS_TAB_TITLE": "Targets"
   },
   "DiagnosticsCard": {
     "DIAGNOSTICS_ACTION_FAILURE": "Diagnostics Failure: {{kind}}",

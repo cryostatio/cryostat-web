@@ -23,7 +23,7 @@ import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
-import HeapDumps from './Diagnostics/HeapDumps';
+import HeapDumps from './Diagnostics/AnalyzeHeapDumps';
 import Events from './Events/Events';
 import JMCAgent from './JMCAgent/JMCAgent';
 import NotFound from './NotFound/NotFound';

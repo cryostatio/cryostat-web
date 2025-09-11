@@ -562,8 +562,10 @@ export enum NotificationCategory {
   LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
+  HeapDumpSuccess = 'HeapDumpSuccess',
   HeapDumpUploaded = 'HeapDumpUploaded',
   HeapDumpFailure = 'HeapDumpFailure',
+  HeapDumpDeleted = 'HeapDumpDeleted',
   ThreadDumpSuccess = 'ThreadDumpSuccess',
   ThreadDumpFailure = 'ThreadDumpFailure',
   ThreadDumpDeleted = 'ThreadDumpDeleted',

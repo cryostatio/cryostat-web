@@ -44,6 +44,7 @@ import {
   Tooltip,
   Timestamp,
   TimestampTooltipVariant,
+  Divider,
 } from '@patternfly/react-core';
 import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -138,12 +139,20 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
     (heapDump: HeapDump) => {
       addSubscription(
         context.api.deleteHeapDump(heapDump.uuid).subscribe(() => {
-          setHeapDumps((old) => old.filter((t) => t.uuid !== heapDump.uuid));
+          // Do nothing, leave it to the notification handler.
         }),
       );
     },
     [addSubscription, context.api],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.HeapDumpDeleted).subscribe((msg) => {
+        setHeapDumps((old) => old.filter((t) => t.uuid !== msg.message.heapDumpId));
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, refreshHeapDumps]);
 
   const handleWarningModalAccept = React.useCallback(() => {
     if (heapDumpToDelete) {
@@ -157,31 +166,11 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const handleHeapDump = React.useCallback(() => {
-    addSubscription(
-      context.api
-        .runHeapDump(true)
-        .pipe(first())
-        .subscribe({
-          next: (jobId) => {
-            addSubscription(
-              context.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe((notification) => {
-                if (jobId == notification.message.jobId) {
-                  refreshHeapDumps();
-                }
-              }),
-            );
-          },
-          error: () => refreshHeapDumps(),
-        }),
-    );
-  }, [addSubscription, context.api, context.notificationChannel, refreshHeapDumps]);
-
   const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
+      context.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe(() => {
         refreshHeapDumps();
       }),
     );
@@ -289,68 +278,51 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
     return <LoadingView />;
   } else {
     return (
-      <>
-        <Stack hasGutter style={{ marginTop: '1em' }}>
-          <StackItem>
-            <Toolbar id="thead-dumps-toolbar">
-              <ToolbarContent>
-                <ToolbarGroup variant="filter-group">
-                  <ToolbarItem>
-                    <SearchInput
-                      style={{ minWidth: '30ch' }}
-                      name="heapDumpsFilter"
-                      id="heapDumpsFilter"
-                      type="search"
-                      placeholder={t('HeapDumps.SEARCH_PLACEHOLDER')}
-                      aria-label={t('HeapDumps.ARIA_LABELS.SEARCH_INPUT')}
-                      onChange={handleFilterTextChange}
-                      value={filterText}
-                    />
-                  </ToolbarItem>
-                </ToolbarGroup>
-                <ToolbarItem variant="separator" />
-                <ToolbarGroup variant="icon-button-group">
-                  <ToolbarItem>
-                    <Button
-                      key="dump-heap"
-                      name="Dump Heap"
-                      variant="secondary"
-                      aria-label="dump-heap"
-                      onClick={handleHeapDump}
-                    >
-                      <Tooltip content="Start Heap Dump" />
-                      <UploadIcon />
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarGroup>
-                {deleteHeapDumpModal}
-              </ToolbarContent>
-            </Toolbar>
-            {heapDumpRows.length ? (
-              <Table aria-label="Heap Dumps table" variant={TableVariant.compact}>
-                <Thead>
-                  <Tr>
-                    {tableColumns.map(({ title, sortable }, index) => (
-                      <Th key={`heap-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                        {title}
-                      </Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody>{heapDumpRows}</Tbody>
-              </Table>
-            ) : (
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText="No Heap Dumps"
-                  icon={<EmptyStateIcon icon={SearchIcon} />}
-                  headingLevel="h4"
-                />
-              </EmptyState>
-            )}
-          </StackItem>
-        </Stack>
-      </>
+      <Stack hasGutter style={{ marginTop: '1em' }}>
+        <StackItem>
+          <Toolbar id="heap-dumps-toolbar">
+            <ToolbarContent>
+              <ToolbarGroup variant="filter-group">
+                <ToolbarItem>
+                  <SearchInput
+                    style={{ minWidth: '30ch' }}
+                    name="heapDumpsFilter"
+                    id="heapDumpsFilter"
+                    type="search"
+                    placeholder={t('HeapDumps.SEARCH_PLACEHOLDER')}
+                    aria-label={t('HeapDumps.ARIA_LABELS.SEARCH_INPUT')}
+                    onChange={handleFilterTextChange}
+                    value={filterText}
+                  />
+                </ToolbarItem>
+              </ToolbarGroup>
+              {deleteHeapDumpModal}
+            </ToolbarContent>
+          </Toolbar>
+          {heapDumpRows.length ? (
+            <Table aria-label="Heap Dumps table" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  {tableColumns.map(({ title, sortable }, index) => (
+                    <Th key={`heap-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                      {title}
+                    </Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>{heapDumpRows}</Tbody>
+            </Table>
+          ) : (
+            <EmptyState>
+              <EmptyStateHeader
+                titleText="No Heap Dumps"
+                icon={<EmptyStateIcon icon={SearchIcon} />}
+                headingLevel="h4"
+              />
+            </EmptyState>
+          )}
+        </StackItem>
+      </Stack>
     );
   }
 };
@@ -368,7 +340,7 @@ export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDele
   const actionItems = React.useMemo(() => {
     return [
       {
-        title: 'Download Heap Dump',
+        title: 'Download',
         key: 'download-heapdump',
         onClick: () => onDownload(heapDump),
       },
@@ -388,19 +360,23 @@ export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDele
 
   const dropdownItems = React.useMemo(
     () =>
-      actionItems.map((action) => (
-        <DropdownItem
-          aria-label={action.key}
-          key={action.key}
-          onClick={() => {
-            setIsOpen(false);
-            action.onClick && action.onClick();
-          }}
-          isDanger={action.isDanger}
-        >
-          {action.title}
-        </DropdownItem>
-      )),
+      actionItems.map((action, idx) =>
+        action.isSeparator ? (
+          <Divider key={`separator-${idx}`} />
+        ) : (
+          <DropdownItem
+            aria-label={action.key}
+            key={action.key}
+            onClick={() => {
+              setIsOpen(false);
+              action.onClick && action.onClick();
+            }}
+            isDanger={action.isDanger}
+          >
+            {action.title}
+          </DropdownItem>
+        ),
+      ),
     [actionItems, setIsOpen],
   );
 

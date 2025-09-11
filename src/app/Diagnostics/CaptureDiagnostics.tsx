@@ -46,6 +46,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
   const addSubscription = useSubscriptions();
   const [running, setRunning] = React.useState(false);
   const [threadDumpReady, setThreadDumpReady] = React.useState(false);
+  const [heapDumpReady, setHeapDumpReady] = React.useState(false);
 
   const handleError = React.useCallback(
     (kind, error) => {
@@ -73,6 +74,22 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
 
   React.useEffect(() => {
     addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.getHeapDumps()),
+        )
+        .subscribe({
+          next: (dumps) => (dumps.length > 0 ? setHeapDumpReady(true) : setThreadDumpReady(false)),
+          error: () => setHeapDumpReady(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setHeapDumpReady]);
+
+  React.useEffect(() => {
+    addSubscription(
       serviceContext.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
         setThreadDumpReady(true);
       }),
@@ -97,6 +114,19 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
         complete: () => {
           setRunning(false);
           setThreadDumpReady(true);
+        },
+      }),
+    );
+  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
+
+  const handleHeapDump = React.useCallback(() => {
+    setRunning(true);
+    addSubscription(
+      serviceContext.api.runHeapDump(true).subscribe({
+        error: (err) => handleError(t('DiagnosticsCard.KINDS.HEAP_DUMP'), err),
+        complete: () => {
+          setRunning(false);
+          setHeapDumpReady(true);
         },
       }),
     );
@@ -139,6 +169,27 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                           variant="primary"
                           isAriaDisabled={!threadDumpReady}
                           component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
+                          icon={<ListIcon />}
+                        />
+                      </Tooltip>
+                    </ActionList>
+                  </StackItem>
+                  <StackItem>
+                    <ActionList>
+                      <Button
+                        variant="primary"
+                        onClick={handleHeapDump}
+                        spinnerAriaValueText="Invoke Heap Dump"
+                        spinnerAriaLabel="invoke-heap-dump"
+                        isLoading={running}
+                      >
+                        {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                      </Button>
+                      <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_TABLE_TOOLTIP')}>
+                        <Button
+                          variant="primary"
+                          isAriaDisabled={!heapDumpReady}
+                          component={(props) => <CryostatLink {...props} to="/heapdumps" />}
                           icon={<ListIcon />}
                         />
                       </Tooltip>
