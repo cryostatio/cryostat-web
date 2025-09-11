@@ -407,6 +407,14 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.ThreadDumpDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'Thread Dump Deleted',
+      body: (evt) => `${evt.message.threadDumpId} was deleted`,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.CredentialsStored,
     {
       variant: AlertVariant.success,

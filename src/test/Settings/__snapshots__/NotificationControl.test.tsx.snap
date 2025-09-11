@@ -1336,6 +1336,45 @@ exports[`<NotificationControl/> renders correctly 1`] = `
             data-ouia-component-id="OUIA-Generated-Switch-30"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
+            htmlFor="ThreadDumpDeleted"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="ThreadDumpDeleted-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="ThreadDumpDeleted"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="ThreadDumpDeleted-on"
+            >
+              Thread Dump Deleted
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="ThreadDumpDeleted-off"
+            >
+              Thread Dump Deleted
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-31"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
             htmlFor="CredentialsStored"
           >
             <input
@@ -1372,7 +1411,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-31"
+            data-ouia-component-id="OUIA-Generated-Switch-32"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsDeleted"
@@ -1411,7 +1450,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-32"
+            data-ouia-component-id="OUIA-Generated-Switch-33"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportSuccess"
@@ -1450,7 +1489,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-33"
+            data-ouia-component-id="OUIA-Generated-Switch-34"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportFailure"

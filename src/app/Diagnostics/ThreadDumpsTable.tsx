@@ -141,7 +141,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     (threadDump: ThreadDump) => {
       addSubscription(
         context.api.deleteThreadDump(threadDump.threadDumpId).subscribe(() => {
-          setThreadDumps((old) => old.filter((t) => t.threadDumpId !== threadDump.threadDumpId));
+          // do nothing - table state update is performed by ThreadDumpDeleted notification handler
         }),
       );
     },
@@ -169,6 +169,14 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
         refreshThreadDumps();
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, refreshThreadDumps]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ThreadDumpDeleted).subscribe((msg) => {
+        setThreadDumps((old) => old.filter((t) => t.threadDumpId !== msg.message.threadDumpId));
       }),
     );
   }, [addSubscription, context.notificationChannel, refreshThreadDumps]);
