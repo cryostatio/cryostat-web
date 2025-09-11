@@ -15,6 +15,7 @@
  */
 import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { Palette } from '@app/Settings/types';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -161,6 +162,9 @@ jest
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
+
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')

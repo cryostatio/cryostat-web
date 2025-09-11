@@ -103,6 +103,7 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
   const [randomKey, setRandomKey] = React.useState(Math.floor(Math.random()));
   const [chartSrc, setChartSrc] = React.useState('');
   const [dashboardUrl, setDashboardUrl] = React.useState('');
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   const updateRandomKey = React.useCallback(() => {
     setRandomKey((prev) => {
@@ -116,6 +117,7 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
 
   React.useEffect(() => {
     addSubscription(serviceContext.api.grafanaDashboardUrl().subscribe(setDashboardUrl));
+    addSubscription(serviceContext.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
   }, [addSubscription, serviceContext, setDashboardUrl]);
 
   React.useEffect(() => {
@@ -267,7 +269,7 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
                 <Trans
                   t={t}
                   values={{ recordingName: RECORDING_NAME }}
-                  components={{ label: <Label color="blue" isCompact /> }}
+                  components={{ label: <Label color="blue" isCompact={useCompactLabels} /> }}
                 >
                   CHART_CARD.NO_RECORDING.DESCRIPTION
                 </Trans>

@@ -15,7 +15,7 @@
  */
 
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
-import { ThemeSetting } from '@app/Settings/types';
+import { Palette, ThemeSetting } from '@app/Settings/types';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, fromEvent, Observable, startWith } from 'rxjs';
@@ -43,6 +43,10 @@ export class SettingsService {
 
   private readonly _theme$ = new BehaviorSubject<ThemeSetting>(getFromLocalStorage('THEME', ThemeSetting.AUTO));
 
+  private readonly _palette$ = new BehaviorSubject<Palette>(getFromLocalStorage('PALETTE', Palette.DEFAULT));
+
+  private readonly _largeUi$ = new BehaviorSubject<boolean>(getFromLocalStorage('LARGE_UI', false));
+
   constructor() {
     this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
     this._visibleNotificationsCount$.subscribe((count: number) =>
@@ -50,6 +54,8 @@ export class SettingsService {
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
     this._theme$.subscribe((theme: ThemeSetting) => saveToLocalStorage('THEME', theme));
+    this._palette$.subscribe((palette: Palette) => saveToLocalStorage('PALETTE', palette));
+    this._largeUi$.subscribe((largeUi: boolean) => saveToLocalStorage('LARGE_UI', largeUi));
   }
 
   media(query: string): Observable<MediaQueryList> {
@@ -63,6 +69,22 @@ export class SettingsService {
 
   setThemeSetting(theme: ThemeSetting): void {
     this._theme$.next(theme);
+  }
+
+  largeUi(): Observable<boolean> {
+    return this._largeUi$.asObservable();
+  }
+
+  setLargeUi(largeUi: boolean) {
+    this._largeUi$.next(largeUi);
+  }
+
+  palette(): Observable<Palette> {
+    return this._palette$.asObservable();
+  }
+
+  setPalette(palette: Palette) {
+    this._palette$.next(palette);
   }
 
   datetimeFormat(): Observable<DatetimeFormat> {
