@@ -545,11 +545,17 @@
       "CRITICAL_ONLY": "Critical Only",
       "WARNING_ONLY": "Warning Only"
     },
+    "Sort": {
+      "LAST_UPDATE": "Last Updated <0/>",
+      "REPORT_SCORE": "Report Score <0/>"
+    },
     "Tooltips": {
       "ALL_TARGETS": "Show all Targets, including those with no available generated reports.",
       "AVAILABLE_ONLY": "Only display Targets with available generated reports.",
       "CRITICAL_ONLY": "Only display Targets with at least one Critical report result.",
+      "LAST_UPDATE": "Sort by report's update timestamp.",
       "REFRESH": "Refresh Target list.",
+      "REPORT_SCORE": "Sort by report's maximum score.",
       "WARNING_ONLY": "Only display Targets with at least one Warning or Critical report result."
     }
   },
