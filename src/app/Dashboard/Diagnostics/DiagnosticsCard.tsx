@@ -99,7 +99,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
 
   React.useEffect(() => {
     addSubscription(
-      serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpSuccess).subscribe(() => {
+      serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe(() => {
         setHeapDumpReady(true);
       }),
     );
@@ -237,14 +237,6 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   );
 };
 
-/*
-                    {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
-                  </Button>
-                  <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_TABLE_TOOLTIP')}>
-                    <Button
-                      variant="primary"
-                      isAriaDisabled={!heapDumpReady}
-*/
 DiagnosticsCard.cardComponentName = 'DiagnosticsCard';
 
 export const DiagnosticsCardSizes: DashboardCardSizes = {

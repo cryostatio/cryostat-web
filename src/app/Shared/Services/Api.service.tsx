@@ -1161,7 +1161,7 @@ export class ApiService {
     this.ctx.url(threadDump.downloadUrl).subscribe((resourceUrl) => {
       let filename = this.target.target().pipe(
         filter((t) => !!t),
-        map((t) => `${t?.alias}_${threadDump.uuid}.thread_dump`),
+        map((t) => `${t?.alias}_${threadDump.threadDumpId}.thread_dump`),
         first(),
       );
       filename.subscribe((name) => {
@@ -1175,7 +1175,7 @@ export class ApiService {
     this.ctx.url(heapDump.downloadUrl).subscribe((resourceUrl) => {
       let filename = this.target.target().pipe(
         filter((t) => !!t),
-        map((t) => `${t?.alias}_${heapDump.uuid}.hprof`),
+        map((t) => `${heapDump.uuid}`),
         first(),
       );
       filename.subscribe((name) => {

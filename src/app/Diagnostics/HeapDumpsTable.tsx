@@ -165,7 +165,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
         .subscribe({
           next: (jobId) => {
             addSubscription(
-              context.notificationChannel.messages(NotificationCategory.HeapDumpSuccess).subscribe((notification) => {
+              context.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe((notification) => {
                 if (jobId == notification.message.jobId) {
                   refreshHeapDumps();
                 }

@@ -243,7 +243,7 @@ export interface Recording {
 
 export interface ThreadDump {
   downloadUrl: string;
-  uuid: string;
+  threadDumpId: string;
   jvmId?: string;
   lastModified?: number;
 }
@@ -561,7 +561,7 @@ export enum NotificationCategory {
   LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
-  HeapDumpSuccess = 'HeapDumpSuccess',
+  HeapDumpUploaded = 'HeapDumpUploaded',
   HeapDumpFailure = 'HeapDumpFailure',
   ThreadDumpSuccess = 'ThreadDumpSuccess',
   ThreadDumpFailure = 'ThreadDumpFailure',
