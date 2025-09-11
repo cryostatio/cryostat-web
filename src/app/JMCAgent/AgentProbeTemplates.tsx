@@ -35,6 +35,8 @@ import {
   ModalVariant,
   Stack,
   StackItem,
+  Text,
+  TextVariants,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -47,6 +49,7 @@ import {
   MenuToggle,
   SearchInput,
   Divider,
+  TextContent,
 } from '@patternfly/react-core';
 import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -65,7 +68,6 @@ import _ from 'lodash';
 import * as React from 'react';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, defaultIfEmpty, first, tap } from 'rxjs/operators';
-import { AboutAgentCard } from './AboutAgentCard';
 
 const tableColumns: TableColumn[] = [
   {
@@ -294,7 +296,16 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
       <>
         <Stack hasGutter style={{ marginTop: '1em' }}>
           <StackItem>
-            <AboutAgentCard />
+            <TextContent>
+              <Text component={TextVariants.h5}>About the JMC Agent</Text>
+              <Text component={TextVariants.small}>
+                The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
+                use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
+                must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met, the
+                user can upload Probe Templates to Cryostat and insert them to the target, as well as view or remove
+                currently active probes.
+              </Text>
+            </TextContent>
           </StackItem>
           <StackItem>
             <Toolbar id="probe-templates-toolbar">

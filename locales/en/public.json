@@ -365,7 +365,7 @@
     "DATETIME": "Date and Time"
   },
   "Diagnostics": {
-    "THREAD_DUMPS_TAB_TITLE": "Thread Dumps",
+    "THREAD_DUMPS_TAB_TITLE": "Targets",
     "HEAP_DUMPS_TAB_TITLE": "Heap Dumps"
   },
   "DiagnosticsCard": {
@@ -377,6 +377,7 @@
     "DIAGNOSTICS_HEAP_DUMP_BUTTON": "Invoke Heap Dump",
     "DIAGONSTICS_HEAP_REDIRECT_BUTTON": "View collected Heap Dumps",
     "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Invoke Thread Dump",
+    "DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP": "View captured Thread Dumps",
     "DIAGONSTICS_THREAD_REDIRECT_BUTTON": "View collected Thread Dumps",
     "KINDS": {
       "GC": "Garbage Collection",

@@ -246,6 +246,7 @@ export interface ThreadDump {
   threadDumpId: string;
   jvmId?: string;
   lastModified?: number;
+  size?: number;
 }
 
 export interface ArchivedRecording extends Recording {

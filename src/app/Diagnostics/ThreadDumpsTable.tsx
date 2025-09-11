@@ -22,10 +22,9 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
-  Button,
   EmptyState,
   EmptyStateIcon,
   Stack,
@@ -41,11 +40,11 @@ import {
   MenuToggleElement,
   MenuToggle,
   SearchInput,
-  Tooltip,
   Timestamp,
   TimestampTooltipVariant,
+  Divider,
 } from '@patternfly/react-core';
-import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
+import { SearchIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
   SortByDirection,
@@ -60,7 +59,6 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
-import { first } from 'rxjs/operators';
 
 const tableColumns: TableColumn[] = [
   {
@@ -71,6 +69,11 @@ const tableColumns: TableColumn[] = [
   {
     title: 'Last Modified',
     keyPaths: ['lastModified'],
+    sortable: true,
+  },
+  {
+    title: 'Size',
+    keyPaths: ['size'],
     sortable: true,
   },
 ];
@@ -159,26 +162,6 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
-
-  const handleThreadDump = React.useCallback(() => {
-    addSubscription(
-      context.api
-        .runThreadDump(true)
-        .pipe(first())
-        .subscribe({
-          next: (jobId) => {
-            addSubscription(
-              context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((notification) => {
-                if (jobId == notification.message.jobId) {
-                  refreshThreadDumps();
-                }
-              }),
-            );
-          },
-          error: () => refreshThreadDumps(),
-        }),
-    );
-  }, [addSubscription, context.api, context.notificationChannel, refreshThreadDumps]);
 
   const handleFilterTextChange = React.useCallback((_, value: string) => setFilterText(value), [setFilterText]);
 
@@ -277,6 +260,9 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
                 {dayjs(t.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
               </Timestamp>
             </Td>
+            <Td key={`thread-dump-size-${index}`} dataLabel={tableColumns[2].title}>
+              {formatBytes(t.size ?? 0)}
+            </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
               <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
             </Td>
@@ -292,68 +278,51 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     return <LoadingView />;
   } else {
     return (
-      <>
-        <Stack hasGutter style={{ marginTop: '1em' }}>
-          <StackItem>
-            <Toolbar id="thead-dumps-toolbar">
-              <ToolbarContent>
-                <ToolbarGroup variant="filter-group">
-                  <ToolbarItem>
-                    <SearchInput
-                      style={{ minWidth: '30ch' }}
-                      name="threadDumpsFilter"
-                      id="threadDumpsFilter"
-                      type="search"
-                      placeholder={t('ThreadDumps.SEARCH_PLACEHOLDER')}
-                      aria-label={t('ThreadDumps.ARIA_LABELS.SEARCH_INPUT')}
-                      onChange={handleFilterTextChange}
-                      value={filterText}
-                    />
-                  </ToolbarItem>
-                </ToolbarGroup>
-                <ToolbarItem variant="separator" />
-                <ToolbarGroup variant="icon-button-group">
-                  <ToolbarItem>
-                    <Button
-                      key="dump-threads"
-                      name="Dump Threads"
-                      variant="secondary"
-                      aria-label="dump-threads"
-                      onClick={handleThreadDump}
-                    >
-                      <Tooltip content="Start Thread Dump" />
-                      <UploadIcon />
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarGroup>
-                {deleteThreadDumpModal}
-              </ToolbarContent>
-            </Toolbar>
-            {threadDumpRows.length ? (
-              <Table aria-label="Thread Dumps table" variant={TableVariant.compact}>
-                <Thead>
-                  <Tr>
-                    {tableColumns.map(({ title, sortable }, index) => (
-                      <Th key={`thread-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                        {title}
-                      </Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody>{threadDumpRows}</Tbody>
-              </Table>
-            ) : (
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText="No Thread Dumps"
-                  icon={<EmptyStateIcon icon={SearchIcon} />}
-                  headingLevel="h4"
-                />
-              </EmptyState>
-            )}
-          </StackItem>
-        </Stack>
-      </>
+      <Stack hasGutter style={{ marginTop: '1em' }}>
+        <StackItem>
+          <Toolbar id="thead-dumps-toolbar">
+            <ToolbarContent>
+              <ToolbarGroup variant="filter-group">
+                <ToolbarItem>
+                  <SearchInput
+                    style={{ minWidth: '30ch' }}
+                    name="threadDumpsFilter"
+                    id="threadDumpsFilter"
+                    type="search"
+                    placeholder={t('ThreadDumps.SEARCH_PLACEHOLDER')}
+                    aria-label={t('ThreadDumps.ARIA_LABELS.SEARCH_INPUT')}
+                    onChange={handleFilterTextChange}
+                    value={filterText}
+                  />
+                </ToolbarItem>
+              </ToolbarGroup>
+              {deleteThreadDumpModal}
+            </ToolbarContent>
+          </Toolbar>
+          {threadDumpRows.length ? (
+            <Table aria-label="Thread Dumps table" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  {tableColumns.map(({ title, sortable }, index) => (
+                    <Th key={`thread-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                      {title}
+                    </Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>{threadDumpRows}</Tbody>
+            </Table>
+          ) : (
+            <EmptyState>
+              <EmptyStateHeader
+                titleText="No Thread Dumps"
+                icon={<EmptyStateIcon icon={SearchIcon} />}
+                headingLevel="h4"
+              />
+            </EmptyState>
+          )}
+        </StackItem>
+      </Stack>
     );
   }
 };
@@ -371,7 +340,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
   const actionItems = React.useMemo(() => {
     return [
       {
-        title: 'Download Thread Dump',
+        title: 'Download',
         key: 'download-threaddump',
         onClick: () => onDownload(threadDump),
       },
@@ -391,19 +360,23 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
 
   const dropdownItems = React.useMemo(
     () =>
-      actionItems.map((action) => (
-        <DropdownItem
-          aria-label={action.key}
-          key={action.key}
-          onClick={() => {
-            setIsOpen(false);
-            action.onClick && action.onClick();
-          }}
-          isDanger={action.isDanger}
-        >
-          {action.title}
-        </DropdownItem>
-      )),
+      actionItems.map((action, idx) =>
+        action.isSeparator ? (
+          <Divider key={`separator-${idx}`} />
+        ) : (
+          <DropdownItem
+            aria-label={action.key}
+            key={action.key}
+            onClick={() => {
+              setIsOpen(false);
+              action.onClick && action.onClick();
+            }}
+            isDanger={action.isDanger}
+          >
+            {action.title}
+          </DropdownItem>
+        ),
+      ),
     [actionItems, setIsOpen],
   );
 
