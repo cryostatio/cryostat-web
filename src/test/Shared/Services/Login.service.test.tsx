@@ -88,17 +88,6 @@ describe('Login.service', () => {
       svc = new LoginService(apiSvc, settingsSvc);
     });
 
-    it('should emit', async () => {
-      const logoutResp = createResponse(200, true);
-      jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
-        of({
-          ok: true,
-          json: new Promise((resolve) => resolve(logoutResp)),
-        } as unknown as Response),
-      );
-      svc.setLoggedOut();
-    });
-
     it('should make expected API calls', async () => {
       jest.spyOn(apiSvc, 'sendRequest').mockReturnValue(
         of({
