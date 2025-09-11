@@ -1175,7 +1175,7 @@ export class ApiService {
     this.ctx.url(heapDump.downloadUrl).subscribe((resourceUrl) => {
       let filename = this.target.target().pipe(
         filter((t) => !!t),
-        map((t) => `${heapDump.uuid}`),
+        map(() => `${heapDump.uuid}`),
         first(),
       );
       filename.subscribe((name) => {
