@@ -275,8 +275,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, [notificationsContext]);
 
   const handleLogout = React.useCallback(() => {
-    addSubscription(serviceContext.login.setLoggedOut().subscribe());
-  }, [serviceContext.login, addSubscription]);
+    serviceContext.login.setLoggedOut();
+  }, [serviceContext.login]);
 
   const handleLanguagePref = React.useCallback(() => {
     if (location.pathname === '/settings') {
