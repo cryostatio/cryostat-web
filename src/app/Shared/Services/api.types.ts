@@ -272,6 +272,7 @@ export interface HeapDump {
   uuid: string;
   jvmId?: string;
   lastModified?: number;
+  size?: number;
 }
 
 export interface ActiveRecordingsFilterInput {
