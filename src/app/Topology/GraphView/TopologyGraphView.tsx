@@ -156,7 +156,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
       }, 200),
     );
 
-    _newVisualization.fromModel(BASE_MODEL);
+    _newVisualization.fromModel(BASE_MODEL, false);
 
     return _newVisualization;
   }, [setSelectedIds, setSelectedEntity]);
@@ -198,7 +198,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
     }
 
     // Initialize the controller with model to create nodes
-    visualization.fromModel(model, true);
+    visualization.fromModel(model, false);
   }, [_transformData, visualization, discoveryTree]);
 
   // Note: Do not reorder. Must be called after registering model
