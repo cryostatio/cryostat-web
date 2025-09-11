@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { setLocationHref } from '@app/utils/utils';
-import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
-import { catchError, concatMap, debounceTime, distinctUntilChanged, finalize, map, tap } from 'rxjs/operators';
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { catchError, concatMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { SessionState } from './service.types';
 import type { SettingsService } from './Settings.service';
@@ -69,27 +69,9 @@ export class LoginService {
     return this.logout.asObservable();
   }
 
-  setLoggedOut(): Observable<boolean> {
-    return this.api
-      .sendRequest('v4', 'logout', {
-        credentials: 'include',
-        mode: 'cors',
-        method: 'POST',
-        body: null,
-      })
-      .pipe(
-        concatMap((response) => {
-          return of(response).pipe(
-            map((response) => response.ok),
-            tap(() => this.resetSessionState()),
-          );
-        }),
-        catchError((e: Error): ObservableInput<boolean> => {
-          window.console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
-          return of(false);
-        }),
-        finalize(() => this.navigateToLoginPage()),
-      );
+  setLoggedOut(): void {
+    this.resetSessionState();
+    setLocationHref('/oauth2/sign_out');
   }
 
   setSessionState(state: SessionState): void {
@@ -99,9 +81,5 @@ export class LoginService {
   private resetSessionState(): void {
     this.logout.next();
     this.sessionState.next(SessionState.NO_USER_SESSION);
-  }
-
-  private navigateToLoginPage(): void {
-    setLocationHref('/');
   }
 }
