@@ -1650,6 +1650,33 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
+  getTargetThreadDumps(target: TargetStub): Observable<ThreadDump[]> {
+    return this.graphql<any>(
+      `
+        query ThreadDumpsForTarget($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
+            target {
+              threadDumps {
+                data {
+                  jvmId
+                  downloadUrl
+                  threadDumpId
+                  lastModified
+                  size
+                }
+                aggregate {
+                  count
+                }
+              }
+            }
+          }
+        }`,
+      { id: target.id! },
+      true,
+      true,
+    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.threadDumps?.data as ThreadDump[]) ?? []));
+  }
+
   getTargetActiveRecordings(
     target: TargetStub,
     suppressNotifications = false,

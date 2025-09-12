@@ -17,7 +17,7 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { NotificationCategory, ThreadDump } from '@app/Shared/Services/api.types';
+import { NotificationCategory, NullableTarget, Target, ThreadDump } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -59,6 +59,7 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
+import { concatMap, first, Observable, of } from 'rxjs';
 
 const tableColumns: TableColumn[] = [
   {
@@ -78,9 +79,11 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-export interface ThreadDumpsProps {}
+export interface ThreadDumpsProps {
+  target: Observable<NullableTarget>;
+}
 
-export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
+export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarget }) => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
@@ -127,15 +130,32 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
     [setIsLoading, setErrorMessage],
   );
 
+  const queryTargetThreadDumps = React.useCallback(
+    (target: Target) => context.api.getTargetThreadDumps(target),
+    [context.api],
+  );
+
   const refreshThreadDumps = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getThreadDumps().subscribe({
-        next: (value) => handleThreadDumps(value),
-        error: (err) => handleError(err),
-      }),
+      propsTarget
+        .pipe(
+          first(),
+          concatMap((target: Target | undefined) => {
+            if (target) {
+              return queryTargetThreadDumps(target);
+            } else {
+              setIsLoading(false);
+              return of([]);
+            }
+          }),
+        )
+        .subscribe({
+          next: handleThreadDumps,
+          error: handleError,
+        }),
     );
-  }, [addSubscription, context.api, setIsLoading, handleThreadDumps, handleError]);
+  }, [addSubscription, propsTarget, setIsLoading, handleThreadDumps, handleError, queryTargetThreadDumps]);
 
   const handleDelete = React.useCallback(
     (threadDump: ThreadDump) => {
@@ -183,12 +203,12 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({}) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(() => {
+      propsTarget.subscribe(() => {
         setFilterText('');
         refreshThreadDumps();
       }),
     );
-  }, [context.target, addSubscription, refreshThreadDumps]);
+  }, [propsTarget, addSubscription, refreshThreadDumps]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
