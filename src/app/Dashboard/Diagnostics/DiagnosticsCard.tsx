@@ -58,7 +58,18 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const [running, setRunning] = React.useState(false);
+  const [heapDumpReady, setHeapDumpReady] = React.useState(false);
   const [threadDumpReady, setThreadDumpReady] = React.useState(false);
+  const [controlEnabled, setControlEnabled] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.target().subscribe({
+        next: (target) => setControlEnabled(target != null ? target.agent : false),
+        error: () => setControlEnabled(false),
+      }),
+    );
+  }, [addSubscription, serviceContext, setControlEnabled]);
 
   const handleError = React.useCallback(
     (kind, error) => {
@@ -82,6 +93,30 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         }),
     );
   }, [addSubscription, serviceContext.api, serviceContext.target, setThreadDumpReady]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target
+        .target()
+        .pipe(
+          filter((target) => !!target),
+          first(),
+          concatMap(() => serviceContext.api.getHeapDumps()),
+        )
+        .subscribe({
+          next: (dumps) => (dumps.length > 0 ? setHeapDumpReady(true) : setHeapDumpReady(false)),
+          error: () => setHeapDumpReady(false),
+        }),
+    );
+  }, [addSubscription, serviceContext.api, serviceContext.target, setHeapDumpReady]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe(() => {
+        setHeapDumpReady(true);
+      }),
+    );
+  }, [addSubscription, serviceContext.notificationChannel, setHeapDumpReady]);
 
   React.useEffect(() => {
     addSubscription(
@@ -109,6 +144,18 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         complete: () => {
           setRunning(false);
           setThreadDumpReady(true);
+        },
+      }),
+    );
+  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
+
+  const handleHeapDump = React.useCallback(() => {
+    setRunning(true);
+    addSubscription(
+      serviceContext.api.runHeapDump(true).subscribe({
+        error: (err) => handleError(t('DiagnosticsCard.KINDS.HEAP_DUMP'), err),
+        complete: () => {
+          setRunning(false);
         },
       }),
     );
@@ -175,6 +222,30 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                             variant="primary"
                             isAriaDisabled={!threadDumpReady}
                             component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
+                            icon={<ListIcon />}
+                          />
+                        </Tooltip>
+                      </ActionList>
+                    </FeatureFlag>
+                  </StackItem>
+                  <StackItem>
+                    <FeatureFlag level={FeatureLevel.BETA}>
+                      <ActionList>
+                        <Button
+                          variant="primary"
+                          onClick={handleHeapDump}
+                          isAriaDisabled={!controlEnabled}
+                          spinnerAriaValueText="Invoke Heap Dump"
+                          spinnerAriaLabel="invoke-heap-dump"
+                          isLoading={running}
+                        >
+                          {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                        </Button>
+                        <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
+                          <Button
+                            variant="primary"
+                            isAriaDisabled={!(heapDumpReady && controlEnabled)}
+                            component={(props) => <CryostatLink {...props} to="/heapdumps" />}
                             icon={<ListIcon />}
                           />
                         </Tooltip>
