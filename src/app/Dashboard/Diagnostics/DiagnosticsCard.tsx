@@ -60,6 +60,16 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
   const [running, setRunning] = React.useState(false);
   const [heapDumpReady, setHeapDumpReady] = React.useState(false);
   const [threadDumpReady, setThreadDumpReady] = React.useState(false);
+  const [controlEnabled, setControlEnabled] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.target().subscribe({
+        next: (target) => setControlEnabled(target != null ? target.agent : false),
+        error: () => setControlEnabled(false),
+      }),
+    );
+  }, [addSubscription, serviceContext, setControlEnabled]);
 
   const handleError = React.useCallback(
     (kind, error) => {
@@ -146,7 +156,6 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         error: (err) => handleError(t('DiagnosticsCard.KINDS.HEAP_DUMP'), err),
         complete: () => {
           setRunning(false);
-          setHeapDumpReady(true);
         },
       }),
     );
@@ -225,6 +234,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                         <Button
                           variant="primary"
                           onClick={handleHeapDump}
+                          isAriaDisabled={!controlEnabled}
                           spinnerAriaValueText="Invoke Heap Dump"
                           spinnerAriaLabel="invoke-heap-dump"
                           isLoading={running}
@@ -234,7 +244,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                         <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
                           <Button
                             variant="primary"
-                            isAriaDisabled={!heapDumpReady}
+                            isAriaDisabled={!(heapDumpReady && controlEnabled)}
                             component={(props) => <CryostatLink {...props} to="/heapdumps" />}
                             icon={<ListIcon />}
                           />

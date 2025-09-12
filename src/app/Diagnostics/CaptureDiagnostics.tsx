@@ -47,6 +47,16 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
   const [running, setRunning] = React.useState(false);
   const [threadDumpReady, setThreadDumpReady] = React.useState(false);
   const [heapDumpReady, setHeapDumpReady] = React.useState(false);
+  const [controlEnabled, setControlEnabled] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.target().subscribe({
+        next: (target) => setControlEnabled(target != null ? target.agent : false),
+        error: () => setControlEnabled(false),
+      }),
+    );
+  }, [addSubscription, serviceContext, setControlEnabled]);
 
   const handleError = React.useCallback(
     (kind, error) => {
@@ -178,6 +188,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                     <ActionList>
                       <Button
                         variant="primary"
+                        isAriaDisabled={!controlEnabled}
                         onClick={handleHeapDump}
                         spinnerAriaValueText="Invoke Heap Dump"
                         spinnerAriaLabel="invoke-heap-dump"
