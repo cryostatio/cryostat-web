@@ -16,7 +16,6 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
@@ -24,6 +23,8 @@ import { Card, CardBody, Stack, StackItem, Tab, Tabs, TabTitleText } from '@patt
 import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { of } from 'rxjs';
+import { AllTargetsThreadDumpsTable } from './AllTargetsThreadDumpsTable';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
 export interface AnalyzeThreadDumpsProps {}
@@ -39,6 +40,7 @@ export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props
   const addSubscription = useSubscriptions();
 
   const [target, setTarget] = React.useState(undefined as NullableTarget);
+  const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
@@ -69,17 +71,17 @@ export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props
             </StackItem>
             <StackItem>
               {target ? (
-                <ThreadDumpsTable />
+                <ThreadDumpsTable target={targetAsObs} />
               ) : (
                 // FIXME this should be an "AllTargetsThreadDumpsTable" like the AllTargetsArchivedRecordingsTable
-                <NoTargetSelected />
+                <AllTargetsThreadDumpsTable />
               )}
             </StackItem>
           </Stack>
         </Tab>
       </Tabs>
     ),
-    [activeTab, onTabSelect, target],
+    [activeTab, onTabSelect, target, targetAsObs],
   );
 
   return (
