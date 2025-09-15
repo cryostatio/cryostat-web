@@ -269,7 +269,7 @@ export interface ActiveRecording extends Recording {
 
 export interface HeapDump {
   downloadUrl: string;
-  uuid: string;
+  heapDumpId: string;
   jvmId?: string;
   lastModified?: number;
   size?: number;

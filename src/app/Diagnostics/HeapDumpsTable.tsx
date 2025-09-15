@@ -140,7 +140,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
   const handleDelete = React.useCallback(
     (heapDump: HeapDump) => {
       addSubscription(
-        context.api.deleteHeapDump(heapDump.uuid).subscribe(() => {
+        context.api.deleteHeapDump(heapDump.heapDumpId).subscribe(() => {
           // Do nothing, leave it to the notification handler.
         }),
       );
@@ -151,7 +151,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpDeleted).subscribe((msg) => {
-        setHeapDumps((old) => old.filter((t) => t.uuid !== msg.message.heapDumpId));
+        setHeapDumps((old) => old.filter((t) => t.heapDumpId !== msg.message.heapDumpId));
       }),
     );
   }, [addSubscription, context.notificationChannel, refreshHeapDumps]);
@@ -204,7 +204,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
       filtered = heapDumps;
     } else {
       const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-      filtered = heapDumps.filter((t: HeapDump) => reg.test(t.uuid));
+      filtered = heapDumps.filter((t: HeapDump) => reg.test(t.heapDumpId));
     }
 
     setFilteredHeapDumps(
@@ -255,7 +255,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
         return (
           <Tr key={`heap-dump-${index}`}>
             <Td key={`heap-dump-id-${index}`} dataLabel={tableColumns[0].title}>
-              {t.uuid}
+              {t.heapDumpId}
             </Td>
             <Td key={`heap-dump-lastModified-${index}`} dataLabel={tableColumns[1].title}>
               <Timestamp

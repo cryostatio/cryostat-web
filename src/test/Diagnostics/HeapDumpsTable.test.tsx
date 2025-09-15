@@ -34,7 +34,7 @@ const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
 const mockHeapDump: HeapDump = {
   downloadUrl: 'someDownloadUrl',
-  uuid: 'someUuid',
+  heapDumpId: 'someUuid',
   jvmId: 'someJvmId',
 };
 
