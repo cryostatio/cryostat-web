@@ -102,7 +102,7 @@
     "@types/lodash": "^4.17.20",
     "@types/react": "^17.0.69",
     "dayjs": "^1.11.18",
-    "humanize-duration": "^3.33.0",
+    "humanize-duration": "^3.33.1",
     "i18next": "^25.5.2",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-parser": "^9.3.0",
