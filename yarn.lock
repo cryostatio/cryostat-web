@@ -4926,7 +4926,7 @@ __metadata:
     tslib: ^2.8.1
     typescript: ^5.8.3
     url-loader: ^4.1.1
-    wait-on: ^8.0.5
+    wait-on: ^9.0.0
     webpack: ^5.101.3
     webpack-bundle-analyzer: ^4.10.2
     webpack-cli: ^6.0.1
@@ -15818,9 +15818,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wait-on@npm:^8.0.5":
-  version: 8.0.5
-  resolution: "wait-on@npm:8.0.5"
+"wait-on@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "wait-on@npm:9.0.0"
   dependencies:
     axios: ^1.12.1
     joi: ^18.0.1
@@ -15829,7 +15829,7 @@ __metadata:
     rxjs: ^7.8.2
   bin:
     wait-on: bin/wait-on
-  checksum: 98b3b3da0d59c1abda92a5b37b5b5855afd778b6e684c312067ad0fbc20fe68b8aa6e62352318159365f76128188ad30a04ce67be170381472f1870560d99180
+  checksum: 5e6a39d6af2bb5c42917e4ba9df22511bdfe18dd74d1c7d5faa7bbba5130ac60610aee79b7c8329f7d341c72341408b2b7d62afb2eb2954eb7e949726fcfd796
   languageName: node
   linkType: hard
 
