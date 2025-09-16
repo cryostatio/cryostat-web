@@ -395,7 +395,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Heap Dump Succeeded',
-      body: (evt) => `Heap Dump requested for target: ${evt.message.targetId}. Job ID: ${evt.message.jobId}`,
+      body: (evt) => `Heap Dump requested for target: ${evt.message.targetAlias}. Job ID: ${evt.message.jobId}`,
     } as NotificationMessageMapper,
   ],
   [
@@ -403,7 +403,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.danger,
       title: 'Heap Dump Failed',
-      body: (evt) => `Failed to create Heap Dump for target: ${evt.message.targetId}`,
+      body: (evt) => `Failed to create Heap Dump with JobID: ${evt.message.jobId}`,
     } as NotificationMessageMapper,
   ],
   [
