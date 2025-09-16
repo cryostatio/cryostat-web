@@ -21,6 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
 import Events from './Events/Events';
@@ -185,6 +186,16 @@ const diagnosticsRoutes: IAppRoute[] = [
     path: toPath('/thread-dumps'),
     title: 'Thread Dumps',
     description: 'View thread dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+    featureLevel: FeatureLevel.BETA,
+  },
+  {
+    component: AnalyzeHeapDumps,
+    label: 'Heap Dumps',
+    path: toPath('/heapdumps'),
+    title: 'Heap Dumps',
+    description: 'Create and view heap dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
     featureLevel: FeatureLevel.BETA,

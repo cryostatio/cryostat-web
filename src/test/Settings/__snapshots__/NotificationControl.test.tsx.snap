@@ -1258,6 +1258,162 @@ exports[`<NotificationControl/> renders correctly 1`] = `
             data-ouia-component-id="OUIA-Generated-Switch-28"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
+            htmlFor="HeapDumpSuccess"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="HeapDumpSuccess-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="HeapDumpSuccess"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="HeapDumpSuccess-on"
+            >
+              Heap Dump Succeeded
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="HeapDumpSuccess-off"
+            >
+              Heap Dump Succeeded
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-29"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="HeapDumpUploaded"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="HeapDumpUploaded-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="HeapDumpUploaded"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="HeapDumpUploaded-on"
+            >
+              Heap Dump Uploaded
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="HeapDumpUploaded-off"
+            >
+              Heap Dump Uploaded
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-30"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="HeapDumpFailure"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="HeapDumpFailure-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="HeapDumpFailure"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="HeapDumpFailure-on"
+            >
+              Heap Dump Failed
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="HeapDumpFailure-off"
+            >
+              Heap Dump Failed
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-31"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="HeapDumpDeleted"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="HeapDumpDeleted-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="HeapDumpDeleted"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="HeapDumpDeleted-on"
+            >
+              Heap Dump Deleted
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="HeapDumpDeleted-off"
+            >
+              Heap Dump Deleted
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-32"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
             htmlFor="ThreadDumpSuccess"
           >
             <input
@@ -1294,7 +1450,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-29"
+            data-ouia-component-id="OUIA-Generated-Switch-33"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ThreadDumpFailure"
@@ -1333,7 +1489,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-30"
+            data-ouia-component-id="OUIA-Generated-Switch-34"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ThreadDumpDeleted"
@@ -1372,7 +1528,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-31"
+            data-ouia-component-id="OUIA-Generated-Switch-35"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsStored"
@@ -1411,7 +1567,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-32"
+            data-ouia-component-id="OUIA-Generated-Switch-36"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsDeleted"
@@ -1450,7 +1606,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-33"
+            data-ouia-component-id="OUIA-Generated-Switch-37"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportSuccess"
@@ -1489,7 +1645,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-34"
+            data-ouia-component-id="OUIA-Generated-Switch-38"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportFailure"
