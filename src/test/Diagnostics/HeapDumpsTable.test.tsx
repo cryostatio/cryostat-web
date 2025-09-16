@@ -50,7 +50,7 @@ const mockTarget = {
 
 const mockHeapDumpNotification = {
   meta: {
-    category: NotificationCategory.HeapDumpSuccess,
+    category: NotificationCategory.HeapDumpUploaded,
     type: mockMessageType,
   } as MessageMeta,
   message: {

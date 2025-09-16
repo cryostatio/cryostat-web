@@ -21,7 +21,7 @@ import Archives from './Archives/Archives';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
-import HeapDumps from './Diagnostics/AnalyzeHeapDumps';
+import HeapDumps, { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
 import Events from './Events/Events';
@@ -191,13 +191,14 @@ const diagnosticsRoutes: IAppRoute[] = [
     featureLevel: FeatureLevel.BETA,
   },
   {
-    component: HeapDumps,
+    component: AnalyzeHeapDumps,
     label: 'Heap Dumps',
     path: toPath('/heapdumps'),
     title: 'Heap Dumps',
     description: 'Create and view heap dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
+    featureLevel: FeatureLevel.BETA,
   },
 ];
 

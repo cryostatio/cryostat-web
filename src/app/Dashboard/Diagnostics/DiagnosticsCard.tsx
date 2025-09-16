@@ -112,7 +112,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
 
   React.useEffect(() => {
     addSubscription(
-      serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpSuccess).subscribe(() => {
+      serviceContext.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe(() => {
         setHeapDumpReady(true);
       }),
     );

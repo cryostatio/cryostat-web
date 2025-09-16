@@ -395,7 +395,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Heap Dump Succeeded',
-      body: (evt) => `Heap Dump created for target: ${evt.message.targetId}`,
+      body: (evt) => `Heap Dump requested for target: ${evt.message.targetId}. Job ID: ${evt.message.jobId}`,
     } as NotificationMessageMapper,
   ],
   [

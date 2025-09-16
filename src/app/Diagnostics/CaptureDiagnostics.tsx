@@ -196,7 +196,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                       >
                         {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
                       </Button>
-                      <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_TABLE_TOOLTIP')}>
+                      <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
                         <Button
                           variant="primary"
                           isAriaDisabled={!heapDumpReady}
