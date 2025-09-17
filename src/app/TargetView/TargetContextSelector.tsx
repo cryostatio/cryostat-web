@@ -291,7 +291,12 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
               </Dropdown>
             </SplitItem>
             <SplitItem>
-              <Button variant="plain" icon={<InfoCircleIcon />} onClick={handleTargetInfoClick} />
+              <Button
+                isDisabled={!selectedTarget}
+                variant="plain"
+                icon={<InfoCircleIcon />}
+                onClick={handleTargetInfoClick}
+              />
             </SplitItem>
           </Split>
         )}
