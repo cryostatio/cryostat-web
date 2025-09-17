@@ -1753,6 +1753,33 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.threadDumps?.data as ThreadDump[]) ?? []));
   }
 
+  getTargetHeapDumps(target: TargetStub): Observable<HeapDump[]> {
+    return this.graphql<any>(
+      `
+        query HeapDumpsForTarget($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
+            target {
+              heapDumps {
+                data {
+                  jvmId
+                  downloadUrl
+                  heapDumpId
+                  lastModified
+                  size
+                }
+                aggregate {
+                  count
+                }
+              }
+            }
+          }
+        }`,
+      { id: target.id! },
+      true,
+      true,
+    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.heapDumps?.data as HeapDump[]) ?? []));
+  }
+
   getTargetActiveRecordings(
     target: TargetStub,
     suppressNotifications = false,

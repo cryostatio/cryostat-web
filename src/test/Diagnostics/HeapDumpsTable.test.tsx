@@ -74,7 +74,7 @@ describe('<HeapDumpsTable />', () => {
   afterEach(cleanup);
 
   it('should add a Heap Dump after receiving a notification', async () => {
-    render({ routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] } });
+    render({ routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable target={of(mockTarget)}/> }] } });
 
     const addTemplateName = screen.getByText('someUuid');
     expect(addTemplateName).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('<HeapDumpsTable />', () => {
   });
 
   it('should display the column header fields', async () => {
-    render({ routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] } });
+    render({ routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable target={of(mockTarget)}/> }] } });
 
     const nameHeader = screen.getByText('ID');
     expect(nameHeader).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('<HeapDumpsTable />', () => {
   it('should show warning modal and delete a Heap Dump when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteHeapDump').mockReturnValue(of(true));
     const { user } = render({
-      routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] },
+      routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable target={of(mockTarget)}/> }] },
     });
 
     await act(async () => {
@@ -133,7 +133,7 @@ describe('<HeapDumpsTable />', () => {
 
   it('should shown empty state when table is empty', async () => {
     const { user } = render({
-      routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] },
+      routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable target={of(mockTarget)}/> }] },
     });
 
     const filterInput = screen.getByLabelText(testT('HeapDumps.ARIA_LABELS.SEARCH_INPUT'));

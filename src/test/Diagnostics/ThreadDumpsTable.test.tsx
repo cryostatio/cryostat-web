@@ -74,7 +74,7 @@ describe('<ThreadDumpsTable />', () => {
   afterEach(cleanup);
 
   it('should add a Thread Dump after receiving a notification', async () => {
-    render({ routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] } });
+    render({ routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable target={of(mockTarget)}/> }] } });
 
     const addTemplateName = screen.getByText('someUuid');
     expect(addTemplateName).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('<ThreadDumpsTable />', () => {
   });
 
   it('should display the column header fields', async () => {
-    render({ routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] } });
+    render({ routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable target={of(mockTarget)}/> }] } });
 
     const nameHeader = screen.getByText('ID');
     expect(nameHeader).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('<ThreadDumpsTable />', () => {
   it('should show warning modal and delete a Thread Dump when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteThreadDump').mockReturnValue(of(true));
     const { user } = render({
-      routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] },
+      routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable target={of(mockTarget)}/> }] },
     });
 
     await act(async () => {
@@ -129,7 +129,7 @@ describe('<ThreadDumpsTable />', () => {
 
   it('should shown empty state when table is empty', async () => {
     const { user } = render({
-      routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] },
+      routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable target={of(mockTarget)}/> }] },
     });
 
     const filterInput = screen.getByLabelText(testT('ThreadDumps.ARIA_LABELS.SEARCH_INPUT'));

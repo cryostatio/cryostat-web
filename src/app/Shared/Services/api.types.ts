@@ -207,6 +207,21 @@ export interface ThreadDumpsResponse {
   };
 }
 
+export interface HeapDumpsResponse {
+  data: {
+    targetNodes: {
+      target: {
+        heapDumps: {
+          data: HeapDump[];
+          aggregate: {
+            count: number;
+          };
+        };
+      };
+    }[];
+  };
+}
+
 // ======================================
 // Recording resources
 // ======================================
@@ -329,6 +344,20 @@ export interface ThreadDumpCountResponse {
     targetNodes: {
       target: {
         threadDumps: {
+          aggregate: {
+            count: number;
+          };
+        };
+      };
+    }[];
+  };
+}
+
+export interface HeapDumpCountResponse {
+  data: {
+    targetNodes: {
+      target: {
+        heapDumps: {
           aggregate: {
             count: number;
           };

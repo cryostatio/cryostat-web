@@ -11,7 +11,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under thecontext.target License.
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { NullableTarget } from '@app/Shared/Services/api.types';
@@ -25,6 +25,8 @@ import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { HeapDumpsTable } from './HeapDumpsTable';
+import { of } from 'rxjs';
+import { AllTargetsHeapDumpsTable } from './AllTargetsHeapDumpsTable';
 
 export interface AnalyzeHeapDumpsProps {}
 
@@ -39,6 +41,7 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
   const addSubscription = useSubscriptions();
 
   const [target, setTarget] = React.useState(undefined as NullableTarget);
+  const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
@@ -69,17 +72,17 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
             </StackItem>
             <StackItem>
               {target ? (
-                <HeapDumpsTable />
+                <HeapDumpsTable target={targetAsObs}/>
               ) : (
                 // FIXME this should be an "AllTargetsHeapDumpsTable" like the AllTargetsArchivedRecordingsTable
-                <NoTargetSelected />
+                <AllTargetsHeapDumpsTable />
               )}
             </StackItem>
           </Stack>
         </Tab>
       </Tabs>
     ),
-    [activeTab, onTabSelect, target],
+    [activeTab, onTabSelect, target, targetAsObs],
   );
 
   return (
