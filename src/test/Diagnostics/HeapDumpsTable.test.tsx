@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { ThreadDumpsTable } from '@app/Diagnostics/ThreadDumpsTable';
-import { DeleteThreadDump } from '@app/Modal/types';
+import { HeapDumpsTable } from '@app/Diagnostics/HeapDumpsTable';
+import { DeleteHeapDump } from '@app/Modal/types';
 import {
   MessageMeta,
   MessageType,
   NotificationCategory,
   NotificationMessage,
-  ThreadDump,
+  HeapDump,
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
@@ -32,9 +32,9 @@ import { render, testT } from '../utils';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
-const mockThreadDump: ThreadDump = {
+const mockHeapDump: HeapDump = {
   downloadUrl: 'someDownloadUrl',
-  threadDumpId: 'someUuid',
+  heapDumpId: 'someUuid',
   jvmId: 'someJvmId',
 };
 
@@ -48,33 +48,33 @@ const mockTarget = {
   annotations: { cryostat: [], platform: [] },
 };
 
-const mockThreadDumpNotification = {
+const mockHeapDumpNotification = {
   meta: {
-    category: NotificationCategory.ThreadDumpSuccess,
+    category: NotificationCategory.HeapDumpUploaded,
     type: mockMessageType,
   } as MessageMeta,
   message: {
-    targetId: mockThreadDump.jvmId,
+    targetId: mockHeapDump.jvmId,
   },
 } as NotificationMessage;
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
-jest.spyOn(defaultServices.api, 'getThreadDumps').mockReturnValue(of([mockThreadDump]));
+jest.spyOn(defaultServices.api, 'getHeapDumps').mockReturnValue(of([mockHeapDump]));
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  .mockReturnValueOnce(of(mockThreadDumpNotification))
+  .mockReturnValueOnce(of(mockHeapDumpNotification))
   .mockReturnValue(of());
 
-describe('<ThreadDumpsTable />', () => {
+describe('<HeapDumpsTable />', () => {
   afterEach(cleanup);
 
-  it('should add a Thread Dump after receiving a notification', async () => {
-    render({ routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] } });
+  it('should add a Heap Dump after receiving a notification', async () => {
+    render({ routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] } });
 
     const addTemplateName = screen.getByText('someUuid');
     expect(addTemplateName).toBeInTheDocument();
@@ -82,25 +82,29 @@ describe('<ThreadDumpsTable />', () => {
   });
 
   it('should display the column header fields', async () => {
-    render({ routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] } });
+    render({ routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] } });
 
     const nameHeader = screen.getByText('ID');
     expect(nameHeader).toBeInTheDocument();
     expect(nameHeader).toBeVisible();
 
-    const xmlHeader = screen.getByText('Last Modified');
-    expect(xmlHeader).toBeInTheDocument();
-    expect(xmlHeader).toBeVisible();
+    const modifiedHeader = screen.getByText('Last Modified');
+    expect(modifiedHeader).toBeInTheDocument();
+    expect(modifiedHeader).toBeVisible();
+
+    const sizeHeader = screen.getByText('Size');
+    expect(sizeHeader).toBeInTheDocument();
+    expect(sizeHeader).toBeVisible();
   });
 
-  it('should show warning modal and delete a Thread Dump when confirmed', async () => {
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteThreadDump').mockReturnValue(of(true));
+  it('should show warning modal and delete a Heap Dump when confirmed', async () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteHeapDump').mockReturnValue(of(true));
     const { user } = render({
-      routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] },
+      routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] },
     });
 
     await act(async () => {
-      await user.click(screen.getByLabelText(testT('ThreadDumps.ARIA_LABELS.ROW_ACTION')));
+      await user.click(screen.getByLabelText(testT('HeapDumps.ARIA_LABELS.ROW_ACTION')));
 
       const deleteButton = await screen.findByText('Delete');
       expect(deleteButton).toBeInTheDocument();
@@ -112,7 +116,7 @@ describe('<ThreadDumpsTable />', () => {
       expect(warningModal).toBeInTheDocument();
       expect(warningModal).toBeVisible();
 
-      const modalTitle = within(warningModal).getByText(DeleteThreadDump.title);
+      const modalTitle = within(warningModal).getByText(DeleteHeapDump.title);
       expect(modalTitle).toBeInTheDocument();
       expect(modalTitle).toBeVisible();
 
@@ -129,18 +133,18 @@ describe('<ThreadDumpsTable />', () => {
 
   it('should shown empty state when table is empty', async () => {
     const { user } = render({
-      routerConfigs: { routes: [{ path: '/threaddumps', element: <ThreadDumpsTable /> }] },
+      routerConfigs: { routes: [{ path: '/heapdumps', element: <HeapDumpsTable /> }] },
     });
 
-    const filterInput = screen.getByLabelText(testT('ThreadDumps.ARIA_LABELS.SEARCH_INPUT'));
+    const filterInput = screen.getByLabelText(testT('HeapDumps.ARIA_LABELS.SEARCH_INPUT'));
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 
     await user.type(filterInput, 'someveryoddname');
 
-    expect(screen.queryByText('someThreadDump')).not.toBeInTheDocument();
+    expect(screen.queryByText('someHeapDump')).not.toBeInTheDocument();
 
-    const hintText = screen.getByText('No Thread Dumps');
+    const hintText = screen.getByText('No Heap Dumps');
     expect(hintText).toBeInTheDocument();
     expect(hintText).toBeVisible();
   });

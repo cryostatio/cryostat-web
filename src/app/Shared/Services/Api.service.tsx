@@ -68,6 +68,7 @@ import {
   MBeanMetricsResponse,
   BuildInfo,
   AggregateReport,
+  HeapDump,
   ThreadDump,
 } from './api.types';
 import {
@@ -690,12 +691,52 @@ export class ApiService {
     );
   }
 
+  runHeapDump(suppressNotifications = false): Observable<string> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/heapdump`,
+          {
+            method: 'POST',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.text()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
   deleteThreadDump(threaddumpname: string, suppressNotifications = false): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest(
           'beta',
           `diagnostics/targets/${target?.id}/threaddump/${threaddumpname}`,
+          {
+            method: 'DELETE',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          map((resp) => resp.ok),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  deleteHeapDump(heapdumpname: string, suppressNotifications = false): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target?.id}/heapdump/${heapdumpname}`,
           {
             method: 'DELETE',
           },
@@ -717,6 +758,27 @@ export class ApiService {
         this.sendRequest(
           'beta',
           `diagnostics/targets/${target!.id}/threaddump`,
+          {
+            method: 'GET',
+          },
+          undefined,
+          suppressNotifications,
+        ).pipe(
+          concatMap((resp) => resp.json()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  getHeapDumps(suppressNotifications = false): Observable<HeapDump[]> {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `diagnostics/targets/${target!.id}/heapdump`,
           {
             method: 'GET',
           },
@@ -1100,6 +1162,20 @@ export class ApiService {
       let filename = this.target.target().pipe(
         filter((t) => !!t),
         map((t) => `${t?.alias}_${threadDump.threadDumpId}.thread_dump`),
+        first(),
+      );
+      filename.subscribe((name) => {
+        resourceUrl += `?filename=${name}`;
+        this.downloadFile(resourceUrl, name);
+      });
+    });
+  }
+
+  downloadHeapDump(heapDump: HeapDump): void {
+    this.ctx.url(heapDump.downloadUrl).subscribe((resourceUrl) => {
+      let filename = this.target.target().pipe(
+        filter((t) => !!t),
+        map(() => `${heapDump.heapDumpId}`),
         first(),
       );
       filename.subscribe((name) => {
