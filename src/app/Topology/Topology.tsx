@@ -81,7 +81,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
       // Credentials will trigger modifed target event if any
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
-        .pipe(debounceTime(100))
+        .pipe(debounceTime(250))
         .subscribe(() => _refreshDiscoveryTree()),
     );
   }, [addSubscription, context.notificationChannel, _refreshDiscoveryTree]);
