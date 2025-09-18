@@ -16,7 +16,6 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
@@ -24,9 +23,9 @@ import { Card, CardBody, Stack, StackItem, Tab, Tabs, TabTitleText } from '@patt
 import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { HeapDumpsTable } from './HeapDumpsTable';
 import { of } from 'rxjs';
 import { AllTargetsHeapDumpsTable } from './AllTargetsHeapDumpsTable';
+import { HeapDumpsTable } from './HeapDumpsTable';
 
 export interface AnalyzeHeapDumpsProps {}
 
@@ -72,7 +71,7 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
             </StackItem>
             <StackItem>
               {target ? (
-                <HeapDumpsTable target={targetAsObs}/>
+                <HeapDumpsTable target={targetAsObs} />
               ) : (
                 // FIXME this should be an "AllTargetsHeapDumpsTable" like the AllTargetsArchivedRecordingsTable
                 <AllTargetsHeapDumpsTable />

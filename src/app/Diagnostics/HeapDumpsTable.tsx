@@ -130,7 +130,6 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
     [setIsLoading, setErrorMessage],
   );
 
-
   const queryTargetHeapDumps = React.useCallback(
     (target: Target) => context.api.getTargetHeapDumps(target),
     [context.api],
@@ -155,7 +154,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
           next: handleHeapDumps,
           error: handleError,
         }),
-      );
+    );
   }, [addSubscription, propsTarget, setIsLoading, handleHeapDumps, handleError, queryTargetHeapDumps]);
 
   const handleDelete = React.useCallback(

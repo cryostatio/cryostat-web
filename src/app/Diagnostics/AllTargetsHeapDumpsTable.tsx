@@ -17,12 +17,7 @@
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import {
-  Target,
-  TargetDiscoveryEvent,
-  NotificationCategory,
-  HeapDump,
-} from '@app/Shared/Services/api.types';
+import { Target, TargetDiscoveryEvent, NotificationCategory, HeapDump } from '@app/Shared/Services/api.types';
 import { isEqualTarget, indexOfTarget, includesTarget } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
