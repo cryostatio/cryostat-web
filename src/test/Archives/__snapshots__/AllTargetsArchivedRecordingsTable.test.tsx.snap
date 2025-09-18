@@ -138,7 +138,13 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
             onMouseEnter={[Function]}
             scope="col"
             tabIndex={-1}
-          />
+          >
+            <span
+              className="pf-v5-screen-reader"
+            >
+              column space
+            </span>
+          </th>
           <th
             aria-sort="none"
             className="pf-v5-c-table__th pf-v5-c-table__sort pf-m-width-80"
