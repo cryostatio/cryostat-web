@@ -16,6 +16,7 @@
 
 import {
   defaultAutomatedAnalysisFilters,
+  defaultNavMenuConfigs,
   defaultDashboardConfigs,
   defaultRecordingFilters,
   defaultTopologyConfig,
@@ -162,6 +163,7 @@ export const mockMediaQueryList: MediaQueryList = {
 };
 
 export const basePreloadedState: RootState = {
+  navMenuConfigs: defaultNavMenuConfigs,
   dashboardConfigs: defaultDashboardConfigs,
   recordingFilters: defaultRecordingFilters,
   automatedAnalysisFilters: defaultAutomatedAnalysisFilters,
