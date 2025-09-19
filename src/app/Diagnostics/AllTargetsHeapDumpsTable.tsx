@@ -375,7 +375,7 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe((v) => {
-        handleNotification(v.message.target, v.message.heapDumpId, 1);
+        handleNotification(v.message.jvmId, v.message.heapDump, 1);
       }),
     );
   }, [addSubscription, context.notificationChannel, handleNotification]);
@@ -383,7 +383,7 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpDeleted).subscribe((v) => {
-        handleNotification(v.message.target, v.message.heapDumpId, -1);
+        handleNotification(v.message.jvmId, v.message.heapDump, -1);
       }),
     );
   }, [addSubscription, context.notificationChannel, handleNotification]);
@@ -487,7 +487,7 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
         <Bullseye>
           <EmptyState>
             <EmptyStateHeader
-              titleText={t('HeapDumpsTable.NO_ARCHIVES')}
+              titleText={t('HeapDumps.NO_ARCHIVES')}
               icon={<EmptyStateIcon icon={SearchIcon} />}
               headingLevel="h4"
             />

@@ -411,7 +411,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Heap Dump Deleted',
-      body: (evt) => `${evt.message.heapDumpId} was deleted`,
+      body: (evt) => `${evt.message.heapDump.heapDumpId} was deleted`,
     } as NotificationMessageMapper,
   ],
   [

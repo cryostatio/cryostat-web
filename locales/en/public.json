@@ -402,7 +402,8 @@
     "ARIA_LABELS": {
       "ROW_ACTION": "heap-dump-action-menu",
       "SEARCH_INPUT": "heap-dump-search-input"
-    }
+    },
+    "NO_ARCHIVES": "No Heap Dumps"
   },
   "ThreadDumps": {
     "SEARCH_PLACEHOLDER": "Search Thread Dumps",
