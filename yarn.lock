@@ -4920,7 +4920,7 @@ __metadata:
     style-loader: ^4.0.0
     svg-url-loader: ^8.0.0
     terser-webpack-plugin: ^5.3.14
-    ts-jest: ^29.4.2
+    ts-jest: ^29.4.4
     ts-loader: ^9.5.4
     tsconfig-paths-webpack-plugin: ^4.2.0
     tslib: ^2.8.1
@@ -14781,9 +14781,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.4.2":
-  version: 29.4.2
-  resolution: "ts-jest@npm:29.4.2"
+"ts-jest@npm:^29.4.4":
+  version: 29.4.4
+  resolution: "ts-jest@npm:29.4.4"
   dependencies:
     bs-logger: ^0.2.6
     fast-json-stable-stringify: ^2.1.0
@@ -14817,7 +14817,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: c7f2f6b946dd4d198ba986da90086f1ae4582b83e51f230f21ac531b33017b9fdf956e891addb97e1cabd7a860bfd43cc79b67be072d5089d8ed44fbad688146
+  checksum: 4cb712fd05363d1264aed544b78fb3a00ad28069b5d08ce6fc330f35dddcdecdf475d4855eefd0ef6cc01cdcf510b92f121d0d5b6d83029ad23e5750ae544d7c
   languageName: node
   linkType: hard
 
