@@ -419,7 +419,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Heap Dump Uploaded',
-      body: (evt) => `${evt.message.filename} was uploaded`,
+      body: (evt) => `${evt.message.heapDump.heapDumpId} was uploaded`,
     } as NotificationMessageMapper,
   ],
   [
