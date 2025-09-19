@@ -427,7 +427,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Thread Dump Succeeded',
-      body: (evt) => `Thread Dump created for target: ${evt.message.targetId}`,
+      body: (evt) => `Thread Dump ${evt.message.threadDump.threadDumpId} created for target: ${evt.message.targetId}`,
     } as NotificationMessageMapper,
   ],
   [
@@ -443,7 +443,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Thread Dump Deleted',
-      body: (evt) => `${evt.message.threadDumpId} was deleted`,
+      body: (evt) => `${evt.message.threadDump.threadDumpId} was deleted`,
     } as NotificationMessageMapper,
   ],
   [

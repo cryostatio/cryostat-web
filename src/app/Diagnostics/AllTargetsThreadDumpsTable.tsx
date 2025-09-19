@@ -375,7 +375,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((v) => {
-        handleNotification(v.message.target, v.message.threadDumpId, 1);
+        handleNotification(v.message.jvmId, v.message.threadDump, 1);
       }),
     );
   }, [addSubscription, context.notificationChannel, handleNotification]);
@@ -383,7 +383,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ThreadDumpDeleted).subscribe((v) => {
-        handleNotification(v.message.target, v.message.threadDumpId, -1);
+        handleNotification(v.message.jvmId, v.message.threadDump, -1);
       }),
     );
   }, [addSubscription, context.notificationChannel, handleNotification]);
@@ -487,7 +487,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
         <Bullseye>
           <EmptyState>
             <EmptyStateHeader
-              titleText={t('ThreadDumpsTable.NO_ARCHIVES')}
+              titleText={t('ThreadDumps.NO_ARCHIVES')}
               icon={<EmptyStateIcon icon={SearchIcon} />}
               headingLevel="h4"
             />

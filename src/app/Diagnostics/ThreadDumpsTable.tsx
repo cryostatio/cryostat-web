@@ -328,7 +328,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
             </ToolbarContent>
           </Toolbar>
           {threadDumpRows.length ? (
-            <Table aria-label="Thread Dumps table" variant={TableVariant.compact}>
+            <Table aria-label="Thread Dumps Table" variant={TableVariant.compact}>
               <Thead>
                 <Tr>
                   {tableColumns.map(({ title, sortable }, index) => (

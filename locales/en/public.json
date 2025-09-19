@@ -411,7 +411,8 @@
     "ARIA_LABELS": {
       "ROW_ACTION": "thread-dump-action-menu",
       "SEARCH_INPUT": "thread-dump-search-input"
-    }
+    },
+    "NO_ARCHIVES": "No Thread Dumps"
   },
   "DurationFilter": {
     "ARIA_LABELS": {
