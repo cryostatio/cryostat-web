@@ -152,7 +152,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             <input
               aria-invalid={false}
               aria-label="Continuous checkbox"
-              checked={false}
+              checked={true}
               className="pf-v5-c-check__input"
               data-ouia-component-id="OUIA-Generated-Checkbox-2"
               data-ouia-component-type="PF5/Checkbox"
@@ -207,7 +207,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             <span
               className="pf-v5-c-check__description"
             >
-              Copy data to Archives automatically when duration elapses
+              Copy data to Archives automatically when duration elapses or recording is manually stopped
             </span>
           </div>
         </div>
@@ -219,7 +219,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           className="pf-v5-l-split__item pf-m-fill"
         >
           <span
-            className="pf-v5-c-form-control"
+            className="pf-v5-c-form-control pf-m-disabled"
           >
             <input
               aria-invalid={false}
@@ -227,7 +227,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-TextInputBase-2"
               data-ouia-component-type="PF5/TextInput"
               data-ouia-safe={true}
-              disabled={false}
+              disabled={true}
               id="duration-picker-period"
               min="0"
               onBlur={[Function]}
@@ -235,7 +235,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               onFocus={[Function]}
               required={true}
               type="number"
-              value={30}
+              value={5}
             />
           </span>
         </div>
@@ -243,7 +243,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           className="pf-v5-l-split__item"
         >
           <span
-            className="pf-v5-c-form-control duration-picker__form_select"
+            className="pf-v5-c-form-control pf-m-disabled duration-picker__form_select"
           >
             <select
               aria-invalid={false}
@@ -251,12 +251,12 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-FormSelect-default-1"
               data-ouia-component-type="PF5/FormSelect"
               data-ouia-safe={true}
-              disabled={false}
+              disabled={true}
               onBlur={[Function]}
               onChange={[Function]}
               onFocus={[Function]}
               required={false}
-              value={1000}
+              value={60000}
             >
               <option
                 className=""
@@ -317,7 +317,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             <span
               className="pf-v5-c-helper-text__item-text"
             >
-              Time before the Recording is automatically stopped and copied to archive.
+              A continuous recording will never be automatically stopped.
             </span>
           </div>
         </div>
@@ -829,7 +829,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   onFocus={[Function]}
                   required={true}
                   type="number"
-                  value={0}
+                  value={50}
                 />
               </span>
             </div>
@@ -850,7 +850,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   onChange={[Function]}
                   onFocus={[Function]}
                   required={false}
-                  value={1}
+                  value={1048576}
                 >
                   <option
                     className=""
@@ -946,7 +946,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               className="pf-v5-l-split__item pf-m-fill"
             >
               <span
-                className="pf-v5-c-form-control pf-m-disabled"
+                className="pf-v5-c-form-control"
               >
                 <input
                   aria-invalid={false}
@@ -954,7 +954,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   data-ouia-component-id="OUIA-Generated-TextInputBase-4"
                   data-ouia-component-type="PF5/TextInput"
                   data-ouia-safe={true}
-                  disabled={true}
+                  disabled={false}
                   id="maxAgeDuration"
                   min="0"
                   onBlur={[Function]}
@@ -970,7 +970,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               className="pf-v5-l-split__item"
             >
               <span
-                className="pf-v5-c-form-control pf-m-disabled recording-create__form_select"
+                className="pf-v5-c-form-control recording-create__form_select"
               >
                 <select
                   aria-invalid={false}
@@ -978,7 +978,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   data-ouia-component-id="OUIA-Generated-FormSelect-default-4"
                   data-ouia-component-type="PF5/FormSelect"
                   data-ouia-safe={true}
-                  disabled={true}
+                  disabled={false}
                   onBlur={[Function]}
                   onChange={[Function]}
                   onFocus={[Function]}
