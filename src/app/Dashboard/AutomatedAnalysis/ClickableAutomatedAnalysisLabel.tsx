@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { DefaultColourPalette, getPaletteColours } from '@app/Settings/types';
 import { AutomatedAnalysisScore, AnalysisResult } from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
@@ -22,6 +25,7 @@ import { CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangle
 import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import * as React from 'react';
+import { map } from 'rxjs';
 import { transformAADescription } from './utils';
 
 export interface ClickableAutomatedAnalysisLabelProps {
@@ -32,9 +36,13 @@ export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label
 
 export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysisLabelProps> = ({ result }) => {
   const { t } = useCryostatTranslation();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const [isDescriptionVisible, setIsDescriptionVisible] = React.useState(false);
+  const [colourPalette, setColourPalette] = React.useState(DefaultColourPalette);
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
@@ -47,17 +55,25 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
     danger: popoverStyles.modifiers.danger,
   };
 
+  React.useEffect(() => {
+    addSubscription(
+      context.settings
+        .palette()
+        .pipe(map((p) => getPaletteColours(p)))
+        .subscribe((c) => setColourPalette(c)),
+    );
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, context.settings, setColourPalette, setUseCompactLabels]);
+
   const colorScheme = React.useMemo((): LabelProps['color'] => {
-    // TODO: use label color schemes based on settings for accessibility
-    // context.settings.etc.
     return result.score == AutomatedAnalysisScore.NA_SCORE
-      ? 'grey'
+      ? colourPalette.neutral()[0]
       : result.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
-        ? 'green'
+        ? colourPalette.primary()[0]
         : result.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
-          ? 'orange'
-          : 'red';
-  }, [result.score]);
+          ? colourPalette.secondary()[0]
+          : colourPalette.tertiary()[0];
+  }, [colourPalette, result.score]);
 
   const alertPopoverVariant = React.useMemo(() => {
     return result.score == AutomatedAnalysisScore.NA_SCORE
@@ -114,7 +130,7 @@ export const ClickableAutomatedAnalysisLabel: React.FC<ClickableAutomatedAnalysi
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
         key={`${clickableAutomatedAnalysisKey}-${result.name}`}
-        isCompact
+        isCompact={useCompactLabels}
       >
         <span className={`${clickableAutomatedAnalysisKey}-name`}>{`${result.name}`}</span>
         {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
+import { Palette } from '@app/Settings/types';
 import { Target, NotificationMessage } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
@@ -258,6 +259,9 @@ jest
   .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockRecordingNotification));
+
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 describe('<AllTargetsArchivedRecordingsTable />', () => {
   afterEach(cleanup);

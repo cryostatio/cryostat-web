@@ -15,8 +15,11 @@
  */
 
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
+import { Palette } from '@app/Settings/types';
 import { AnalysisResult } from '@app/Shared/Services/api.types';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
+import { of } from 'rxjs';
 import { render } from '../../utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
@@ -90,6 +93,9 @@ const mockNaRuleEvaluation: AnalysisResult = {
     ],
   },
 };
+
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 describe('<ClickableAutomatedAnalysisLabel />', () => {
   afterEach(cleanup);

@@ -111,4 +111,5 @@ export const DeletionDialogControl: UserSetting = {
   descConstruct: 'SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION',
   content: Component,
   category: SettingTab.NOTIFICATION_MESSAGE,
+  orderInGroup: 2,
 };

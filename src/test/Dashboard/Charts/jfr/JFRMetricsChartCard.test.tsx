@@ -20,7 +20,7 @@ import { ChartContext } from '@app/Dashboard/Charts/context';
 import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/jfr/JFRMetricsChartCard';
 import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
 import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
-import { ThemeSetting } from '@app/Settings/types';
+import { Palette, ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
@@ -41,6 +41,8 @@ jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));
 jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryList));
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 
 const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,
