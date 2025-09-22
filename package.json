@@ -108,7 +108,7 @@
     "i18next-parser": "^9.3.0",
     "js-base64": "3.7.8",
     "lodash": "^4.17.21",
-    "nanoid": "^5.1.5",
+    "nanoid": "^5.1.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-i18next": "^15.7.3",
