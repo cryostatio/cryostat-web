@@ -917,6 +917,9 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   const recordingOptions = (recording: ActiveRecording): KeyValue[] => {
     const options: KeyValue[] = [];
     options.push({ key: 'toDisk', value: String(recording.toDisk) });
+    if (recording.archiveOnStop) {
+      options.push({ key: 'archiveOnStop', value: String(true) });
+    }
     if (recording.maxAge) {
       options.push({ key: 'maxAge', value: formatDuration(recording.maxAge, 1) });
     }
