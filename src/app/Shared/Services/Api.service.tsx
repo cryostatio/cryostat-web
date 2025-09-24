@@ -70,6 +70,7 @@ import {
   AggregateReport,
   HeapDump,
   ThreadDump,
+  keyValueToString,
 } from './api.types';
 import {
   isHttpError,
@@ -237,7 +238,15 @@ export class ApiService {
       if (!e || !e[0] || !e[1]) {
         return;
       }
-      body.append(e[0], e[1]);
+      if (e[0] === 'metadata') {
+        const labels = {};
+        e[1].labels.forEach((kv: KeyValue) => {
+          labels[kv.key] = kv.value;
+        });
+        body.append(e[0], JSON.stringify({ labels }));
+      } else {
+        body.append(e[0], e[1]);
+      }
     });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
     return this.ctx.headers().pipe(
