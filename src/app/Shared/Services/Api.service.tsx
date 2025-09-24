@@ -69,7 +69,7 @@ import {
   BuildInfo,
   AggregateReport,
   HeapDump,
-  ThreadDump
+  ThreadDump,
 } from './api.types';
 import {
   isHttpError,
