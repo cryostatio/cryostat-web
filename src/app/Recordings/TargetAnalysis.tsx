@@ -76,6 +76,7 @@ import {
   EmptyStateBody,
   EmptyStateFooter,
   EmptyStateActions,
+  Tooltip,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -492,15 +493,28 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
         <>
           <Stack hasGutter>
             <StackItem>
-              <Text>
-                {t('TargetAnalysis.LAST_UPDATE', {
-                  datetime: timestamp
-                    ? dayjs(new Date(timestamp * 1000))
-                        .tz(dateTimeFormat.timeZone.full)
-                        .format('LLLL')
-                    : 'unknown',
-                })}
-              </Text>
+              <Tooltip
+                position="top-start"
+                content={
+                  <div>
+                    {timestamp
+                      ? dayjs(new Date(timestamp * 1000))
+                          .tz(dateTimeFormat.timeZone.full)
+                          .format('LTS')
+                      : 'unknown'}
+                  </div>
+                }
+              >
+                <Text>
+                  {t('TargetAnalysis.LAST_UPDATE', {
+                    datetime: timestamp
+                      ? dayjs(new Date(timestamp * 1000))
+                          .tz(dateTimeFormat.timeZone.full)
+                          .format('LLLL')
+                      : 'unknown',
+                  })}
+                </Text>
+              </Tooltip>
             </StackItem>
             <StackItem>{toolbar}</StackItem>
             <StackItem>
