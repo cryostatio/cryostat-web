@@ -127,7 +127,6 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
         hidden={false}
       >
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
@@ -173,7 +172,6 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
@@ -219,7 +217,6 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
@@ -265,7 +262,6 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
@@ -311,7 +307,6 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
