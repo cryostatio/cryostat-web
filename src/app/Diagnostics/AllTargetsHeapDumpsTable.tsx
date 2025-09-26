@@ -188,6 +188,12 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
                       heapDumpId
                       lastModified
                       size
+                      metadata {
+                        labels {
+                          key
+                          value
+                        }
+                      }
                     }
                     aggregate {
                       count
@@ -234,6 +240,12 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
                         threadDumpId
                         lastModified
                         size
+                        metadata {
+                          labels {
+                            key
+                            value
+                          }
+                        }
                       }
                       aggregate {
                         count

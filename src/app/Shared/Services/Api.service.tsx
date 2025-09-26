@@ -1815,6 +1815,12 @@ export class ApiService {
                   threadDumpId
                   lastModified
                   size
+                  metadata {
+                    labels {
+                      key
+                      value
+                    }
+                  }
                 }
                 aggregate {
                   count
@@ -1842,6 +1848,12 @@ export class ApiService {
                   heapDumpId
                   lastModified
                   size
+                  metadata {
+                    labels {
+                      key
+                      value
+                    }
+                  }
                 }
                 aggregate {
                   count

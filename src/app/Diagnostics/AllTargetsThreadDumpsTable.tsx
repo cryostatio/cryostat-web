@@ -188,6 +188,12 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
                       threadDumpId
                       lastModified
                       size
+                      metadata {
+                        labels {
+                          key
+                          value
+                        }
+                      }
                     }
                     aggregate {
                       count
@@ -234,6 +240,12 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
                         threadDumpId
                         lastModified
                         size
+                        metadata {
+                          labels {
+                            key
+                            value
+                          }
+                        }
                       }
                       aggregate {
                         count
