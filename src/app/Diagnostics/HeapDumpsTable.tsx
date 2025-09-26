@@ -182,7 +182,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpDeleted).subscribe((msg) => {
-        setHeapDumps((old) => old.filter((t) => t.heapDumpId !== msg.message.heapDumpId));
+        setHeapDumps((old) => old.filter((t) => t.heapDumpId !== msg.message.heapDump.heapDumpId));
       }),
     );
   }, [addSubscription, context.notificationChannel, refreshHeapDumps]);
