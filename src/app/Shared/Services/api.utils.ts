@@ -427,7 +427,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Thread Dump Succeeded',
-      body: (evt) => `Thread Dump ${evt.message.threadDump.threadDumpId} created for target: ${evt.message.targetId}`,
+      body: (evt) => `Thread Dump ${evt.message.threadDump.threadDumpId} created for target: ${evt.message.jvmId}`,
     } as NotificationMessageMapper,
   ],
   [
