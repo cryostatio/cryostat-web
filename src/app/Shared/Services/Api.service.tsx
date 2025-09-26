@@ -721,7 +721,7 @@ export class ApiService {
   }
 
   deleteHeapDump(target: Target, heapDumpId: string): Observable<boolean> {
-    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/threaddump/${heapDumpId}`, {
+    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/heapdump/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
