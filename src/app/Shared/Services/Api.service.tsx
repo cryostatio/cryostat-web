@@ -711,42 +711,20 @@ export class ApiService {
     );
   }
 
-  deleteThreadDump(threaddumpname: string, suppressNotifications = false): Observable<boolean> {
-    return this.target.target().pipe(
-      concatMap((target) =>
-        this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/threaddump/${threaddumpname}`,
-          {
-            method: 'DELETE',
-          },
-          undefined,
-          suppressNotifications,
-        ).pipe(
-          map((resp) => resp.ok),
-          first(),
-        ),
-      ),
+  deleteThreadDump(target: Target, threadDumpId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/threaddump/${threadDumpId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
       first(),
     );
   }
 
-  deleteHeapDump(heapdumpname: string, suppressNotifications = false): Observable<boolean> {
-    return this.target.target().pipe(
-      concatMap((target) =>
-        this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/heapdump/${heapdumpname}`,
-          {
-            method: 'DELETE',
-          },
-          undefined,
-          suppressNotifications,
-        ).pipe(
-          map((resp) => resp.ok),
-          first(),
-        ),
-      ),
+  deleteHeapDump(target: Target, heapDumpId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/threaddump/${heapDumpId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
       first(),
     );
   }

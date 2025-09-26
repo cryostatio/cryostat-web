@@ -160,12 +160,23 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
   const handleDelete = React.useCallback(
     (threadDump: ThreadDump) => {
       addSubscription(
-        context.api.deleteThreadDump(threadDump.threadDumpId).subscribe(() => {
-          // do nothing - table state update is performed by ThreadDumpDeleted notification handler
-        }),
+        propsTarget
+          .pipe(
+            first(),
+            concatMap((target: Target | undefined) => {
+              if (target) {
+                return context.api.deleteThreadDump(target, threadDump.threadDumpId);
+              } else {
+                return of([]);
+              }
+            }),
+          )
+          .subscribe({
+            error: handleError,
+          }),
       );
     },
-    [addSubscription, context.api],
+    [addSubscription, handleError, propsTarget, context.api],
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
@@ -196,7 +207,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ThreadDumpDeleted).subscribe((msg) => {
-        setThreadDumps((old) => old.filter((t) => t.threadDumpId !== msg.message.threadDumpId));
+        setThreadDumps((old) => old.filter((t) => t.threadDumpId !== msg.message.threadDump.threadDumpId));
       }),
     );
   }, [addSubscription, context.notificationChannel, refreshThreadDumps]);

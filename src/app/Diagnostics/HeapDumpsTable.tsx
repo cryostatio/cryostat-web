@@ -160,12 +160,23 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
   const handleDelete = React.useCallback(
     (heapDump: HeapDump) => {
       addSubscription(
-        context.api.deleteHeapDump(heapDump.heapDumpId).subscribe(() => {
-          // Do nothing, leave it to the notification handler.
-        }),
+        propsTarget
+          .pipe(
+            first(),
+            concatMap((target: Target | undefined) => {
+              if (target) {
+                return context.api.deleteHeapDump(target, heapDump.heapDumpId);
+              } else {
+                return of([]);
+              }
+            }),
+          )
+          .subscribe({
+            error: handleError,
+          }),
       );
     },
-    [addSubscription, context.api],
+    [addSubscription, handleError, propsTarget, context.api],
   );
 
   React.useEffect(() => {

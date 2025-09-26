@@ -231,7 +231,7 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
                       data {
                         jvmId
                         downloadUrl
-                        threadDumpId
+                        heapDumpId
                         lastModified
                         size
                       }

@@ -434,7 +434,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
     });
   }, [toggleExpanded, searchedArchivesForTargets, expandedTargets, targetDisplay]);
 
-  const recordingRows = React.useMemo(() => {
+  const threadDumpRows = React.useMemo(() => {
     return searchedArchivesForTargets.map(({ target, targetAsObs }) => {
       const isExpanded: boolean = includesTarget(expandedTargets, target);
       const keyBase = hashCode(JSON.stringify(target));
@@ -456,10 +456,10 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
     const rowPairs: JSX.Element[] = [];
     for (let i = 0; i < targetRows.length; i++) {
       rowPairs.push(targetRows[i]);
-      rowPairs.push(recordingRows[i]);
+      rowPairs.push(threadDumpRows[i]);
     }
     return rowPairs;
-  }, [targetRows, recordingRows]);
+  }, [targetRows, threadDumpRows]);
 
   let view: JSX.Element;
 
