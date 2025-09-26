@@ -18,6 +18,7 @@ import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolki
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
+import HeapDumpFilterReducer from './Filters/HeapDumpFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
 import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
@@ -79,6 +80,7 @@ export const {
 export const rootReducer = combineReducers({
   dashboardConfigs: dashboardConfigReducer,
   recordingFilters: recordingFilterReducer,
+  heapDumpFilters: HeapDumpFilterReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
   topologyConfigs: topologyConfigReducer,
   topologyFilters: topologyFilterReducer,

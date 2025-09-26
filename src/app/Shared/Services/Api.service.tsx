@@ -1336,6 +1336,82 @@ export class ApiService {
     );
   }
 
+  postThreadDumpMetadata(threadDumpId: string, labels: KeyValue[]): Observable<ThreadDump[]> {
+    return this.target.target().pipe(
+      filter((target: Target) => !!target),
+      first(),
+      concatMap((target) =>
+        this.graphql<any>(
+          `
+        query PostThreadDumpMetadata($id: BigInteger!, $threadDumpId: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { targetIds: [$id] }) {
+            target {
+              threadDumps(filter: { name: $threadDumpId }) {
+                data {
+                  doPutMetadata(metadataInput:{labels: $labels }) {
+                    metadata {
+                      labels {
+                        key
+                        value
+                      }
+                    }
+                    size
+                    archivedTime
+                  }
+                }
+              }
+            }
+          }
+        }`,
+          {
+            id: target.id!,
+            threadDumpId,
+            labels: labels.map((label) => ({ key: label.key, value: label.value })),
+          },
+        ),
+      ),
+      map((v) => (v.data?.targetNodes[0]?.target?.threadDumps as ThreadDump[]) ?? []),
+    );
+  }
+
+  postHeapDumpMetadata(heapDumpId: string, labels: KeyValue[]): Observable<HeapDump[]> {
+    return this.target.target().pipe(
+      filter((target: Target) => !!target),
+      first(),
+      concatMap((target) =>
+        this.graphql<any>(
+          `
+        query PostHeapDumpMetadata($id: BigInteger!, $heapDumpId: String, $labels: [Entry_String_StringInput]) {
+          targetNodes(filter: { targetIds: [$id] }) {
+            target {
+              heapDumps(filter: { name: $heapDumpId }) {
+                data {
+                  doPutMetadata(metadataInput:{labels: $labels }) {
+                    metadata {
+                      labels {
+                        key
+                        value
+                      }
+                    }
+                    size
+                    archivedTime
+                  }
+                }
+              }
+            }
+          }
+        }`,
+          {
+            id: target.id!,
+            heapDumpId,
+            labels: labels.map((label) => ({ key: label.key, value: label.value })),
+          },
+        ),
+      ),
+      map((v) => (v.data?.targetNodes[0]?.target?.heapDumps as HeapDump[]) ?? []),
+    );
+  }
+
   postUploadedRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `

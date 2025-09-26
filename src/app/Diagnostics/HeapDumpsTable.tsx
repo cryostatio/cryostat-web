@@ -16,13 +16,24 @@
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import {
+  emptyArchivedHeapDumpFilters,
+  HeapDumpAddFilterIntent,
+  HeapDumpDeleteAllFiltersIntent,
+  HeapDumpDeleteCategoryFiltersIntent,
+  HeapDumpDeleteFilterIntent,
+  TargetHeapDumpFilters,
+} from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, HeapDump, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, formatBytes, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, hashCode, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   EmptyState,
@@ -40,9 +51,11 @@ import {
   MenuToggleElement,
   MenuToggle,
   SearchInput,
-  Timestamp,
-  TimestampTooltipVariant,
   Divider,
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
+  Checkbox,
 } from '@patternfly/react-core';
 import { SearchIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import {
@@ -59,7 +72,10 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { concatMap, first, Observable, of } from 'rxjs';
+import { HeapDumpFiltersCategories } from './Filters/HeapDumpFilters';
+import { HeapDumpLabelsPanel } from './HeapDumpLabelsPanel';
 
 const tableColumns: TableColumn[] = [
   {
@@ -77,6 +93,10 @@ const tableColumns: TableColumn[] = [
     keyPaths: ['size'],
     sortable: true,
   },
+  {
+    title: 'Labels',
+    keyPaths: ['metadata', 'labels'],
+  },
 ];
 
 export interface HeapDumpsProps {
@@ -86,11 +106,15 @@ export interface HeapDumpsProps {
 export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }) => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
+  const dispatch = useDispatch<StateDispatch>();
   const addSubscription = useSubscriptions();
   const notificationsContext = React.useContext(NotificationsContext);
 
   const [heapDumps, setHeapDumps] = React.useState<HeapDump[]>([]);
   const [filteredHeapDumps, setFilteredHeapDumps] = React.useState<HeapDump[]>([]);
+  const [showLabelsPanel, setShowLabelsPanel] = React.useState(false);
+  const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
+  const [headerChecked, setHeaderChecked] = React.useState(false);
   const [filterText, setFilterText] = React.useState('');
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
@@ -98,6 +122,14 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
   const [heapDumpToDelete, setHeapDumpToDelete] = React.useState<HeapDump | undefined>(undefined);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [dayjs, datetimeContext] = useDayjs();
+  const [targetConnectURL, setTargetConnectURL] = React.useState('');
+
+  const targetHeapDumpFilters = useSelector((state: RootState) => {
+    const filters = state.heapDumpFilters.list.filter(
+      (targetFilter: TargetHeapDumpFilters) => targetFilter.target === targetConnectURL,
+    );
+    return filters.length > 0 ? filters[0].archived.filters : emptyArchivedHeapDumpFilters;
+  }) as HeapDumpFiltersCategories;
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -130,6 +162,26 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
     [setIsLoading, setErrorMessage],
   );
 
+  const handleHeaderCheck = React.useCallback(
+    (event, checked) => {
+      setHeaderChecked(checked);
+      setCheckedIndices(checked ? filteredHeapDumps.map((r) => hashCode(r.heapDumpId)) : []);
+    },
+    [setHeaderChecked, setCheckedIndices, filteredHeapDumps],
+  );
+
+  const handleRowCheck = React.useCallback(
+    (checked, index) => {
+      if (checked) {
+        setCheckedIndices((ci) => [...ci, index]);
+      } else {
+        setHeaderChecked(false);
+        setCheckedIndices((ci) => ci.filter((v) => v !== index));
+      }
+    },
+    [setCheckedIndices, setHeaderChecked],
+  );
+
   const queryTargetHeapDumps = React.useCallback(
     (target: Target) => context.api.getTargetHeapDumps(target),
     [context.api],
@@ -156,6 +208,36 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
         }),
     );
   }, [addSubscription, propsTarget, setIsLoading, handleHeapDumps, handleError, queryTargetHeapDumps]);
+
+  const handleClearFilters = React.useCallback(() => {
+    dispatch(HeapDumpDeleteAllFiltersIntent(targetConnectURL));
+  }, [dispatch, targetConnectURL]);
+
+  const updateFilters = React.useCallback(
+    (target, { filterValue, filterKey, filterValueIndex, deleted = false, deleteOptions }: UpdateFilterOptions) => {
+      if (deleted) {
+        if (deleteOptions && deleteOptions.all) {
+          dispatch(HeapDumpDeleteCategoryFiltersIntent(target, filterKey));
+        } else {
+          dispatch(HeapDumpDeleteFilterIntent(target, filterKey, filterValue, filterValueIndex));
+        }
+      } else {
+        dispatch(HeapDumpAddFilterIntent(target, filterKey, filterValue));
+      }
+    },
+    [dispatch],
+  );
+
+  React.useEffect(() => {
+    setCheckedIndices((ci) => {
+      const filteredHeapDumpIdx = new Set(filteredHeapDumps.map((r) => hashCode(r.heapDumpId)));
+      return ci.filter((idx) => filteredHeapDumpIdx.has(idx));
+    });
+  }, [filteredHeapDumps, setCheckedIndices]);
+
+  React.useEffect(() => {
+    setHeaderChecked(checkedIndices.length === filteredHeapDumps.length);
+  }, [setHeaderChecked, checkedIndices, filteredHeapDumps.length]);
 
   const handleDelete = React.useCallback(
     (heapDump: HeapDump) => {
@@ -200,7 +282,8 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
 
   React.useEffect(() => {
     addSubscription(
-      propsTarget.subscribe(() => {
+      propsTarget.subscribe((target) => {
+        setTargetConnectURL(target?.connectUrl || '');
         setFilterText('');
         refreshHeapDumps();
       }),
@@ -258,6 +341,15 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
     [context.api],
   );
 
+  const handleEditLabels = React.useCallback(() => {
+    setShowLabelsPanel(true);
+  }, [setShowLabelsPanel]);
+
+  const LabelsPanel = React.useMemo(
+    () => <HeapDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} />,
+    [checkedIndices, setShowLabelsPanel],
+  );
+
   const deleteHeapDumpModal = React.useMemo(() => {
     return (
       <DeleteWarningModal
@@ -273,28 +365,33 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
     () =>
       filteredHeapDumps.map((t: HeapDump, index) => {
         return (
-          <Tr key={`heap-dump-${index}`}>
-            <Td key={`heap-dump-id-${index}`} dataLabel={tableColumns[0].title}>
-              {t.heapDumpId}
-            </Td>
-            <Td key={`heap-dump-lastModified-${index}`} dataLabel={tableColumns[1].title}>
-              <Timestamp
-                className="heap-dump-table__timestamp"
-                tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(t.lastModified).toISOString() }}
-              >
-                {dayjs(t.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
-              </Timestamp>
-            </Td>
-            <Td key={`heap-dump-size-${index}`} dataLabel={tableColumns[2].title}>
-              {formatBytes(t.size ?? 0)}
-            </Td>
-            <Td key={`heap-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-              <HeapDumpAction heapDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadHeapDump} />
-            </Td>
-          </Tr>
+          <HeapDumpRow
+            heapDump={t}
+            index={index}
+            currentSelectedTargetURL={targetConnectURL}
+            sourceTarget={propsTarget}
+            checkedIndices={checkedIndices}
+            labelFilters={targetHeapDumpFilters.Label}
+            updateFilters={updateFilters}
+            handleRowCheck={handleRowCheck}
+            onDownload={handleDownloadHeapDump}
+            onDelete={handleDelete}
+            handleEditLabels={handleEditLabels}
+          />
         );
       }),
-    [datetimeContext.timeZone.full, dayjs, filteredHeapDumps, handleDeleteAction, handleDownloadHeapDump],
+    [
+      handleDelete,
+      handleRowCheck,
+      propsTarget,
+      targetConnectURL,
+      targetHeapDumpFilters.Label,
+      updateFilters,
+      checkedIndices,
+      filteredHeapDumps,
+      handleEditLabels,
+      handleDownloadHeapDump,
+    ],
   );
 
   if (errorMessage != '') {
@@ -305,7 +402,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
     return (
       <Stack hasGutter style={{ marginTop: '1em' }}>
         <StackItem>
-          <Toolbar id="heap-dumps-toolbar">
+          <Toolbar id="heap-dumps-toolbar" clearAllFilters={handleClearFilters}>
             <ToolbarContent>
               <ToolbarGroup variant="filter-group">
                 <ToolbarItem>
@@ -325,18 +422,31 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
             </ToolbarContent>
           </Toolbar>
           {heapDumpRows.length ? (
-            <Table aria-label="Heap Dumps table" variant={TableVariant.compact}>
-              <Thead>
-                <Tr>
-                  {tableColumns.map(({ title, sortable }, index) => (
-                    <Th key={`heap-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                      {title}
-                    </Th>
-                  ))}
-                </Tr>
-              </Thead>
-              <Tbody>{heapDumpRows}</Tbody>
-            </Table>
+            <Drawer isExpanded={showLabelsPanel} isInline id={'heap-dumps-drawer'}>
+              <DrawerContent panelContent={LabelsPanel} className="heap-dumps-table-drawer-content">
+                <DrawerContentBody hasPadding>
+                  <Table aria-label="Heap Dumps table" variant={TableVariant.compact}>
+                    <Thead>
+                      <Tr>
+                        <Th
+                          key="table-header-check-all"
+                          select={{
+                            onSelect: handleHeaderCheck,
+                            isSelected: headerChecked,
+                          }}
+                        />
+                        {tableColumns.map(({ title, sortable }, index) => (
+                          <Th key={`heap-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                            {title}
+                          </Th>
+                        ))}
+                      </Tr>
+                    </Thead>
+                    <Tbody>{heapDumpRows}</Tbody>
+                  </Table>
+                </DrawerContentBody>
+              </DrawerContent>
+            </Drawer>
           ) : (
             <EmptyState>
               <EmptyStateHeader
@@ -354,16 +464,34 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }
 
 export interface HeapDumpActionProps {
   heapDump: HeapDump;
+  checkedIndices: number[];
   onDownload: (heapDump: HeapDump) => void;
   onDelete: (heapDump: HeapDump) => void;
+  handleEditLabels: () => void;
 }
 
-export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDelete, onDownload }) => {
+export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({
+  heapDump,
+  checkedIndices,
+  onDelete,
+  onDownload,
+  handleEditLabels,
+}) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const actionItems = React.useMemo(() => {
     return [
+      {
+        title: 'Edit Labels',
+        key: 'edit-heapdump-labels',
+        variant: 'secondary',
+        onClick: () => handleEditLabels(),
+        isDisabled: !checkedIndices.length,
+      },
+      {
+        isSeparator: true,
+      },
       {
         title: 'Download',
         key: 'download-heapdump',
@@ -379,7 +507,7 @@ export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDele
         onClick: () => onDelete(heapDump),
       },
     ];
-  }, [onDelete, onDownload, heapDump]);
+  }, [checkedIndices.length, handleEditLabels, onDelete, onDownload, heapDump]);
 
   const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
 
@@ -428,4 +556,94 @@ export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDele
       <DropdownList>{dropdownItems}</DropdownList>
     </Dropdown>
   );
+};
+
+export interface HeapDumpRowProps {
+  heapDump: HeapDump;
+  index: number;
+  currentSelectedTargetURL: string;
+  sourceTarget: Observable<NullableTarget>;
+  checkedIndices: number[];
+  labelFilters: string[];
+  handleRowCheck: (checked: boolean, rowIdx: string | number) => void;
+  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
+  onDownload: (heapDump: HeapDump) => void;
+  onDelete: (heapDump: HeapDump) => void;
+  handleEditLabels: () => void;
+}
+
+export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
+  heapDump,
+  index,
+  currentSelectedTargetURL,
+  sourceTarget,
+  checkedIndices,
+  labelFilters,
+  handleRowCheck,
+  updateFilters,
+  onDownload,
+  onDelete,
+  handleEditLabels,
+}) => {
+  const context = React.useContext(ServiceContext);
+
+  const handleCheck = React.useCallback(
+    (_, checked: boolean) => {
+      handleRowCheck(checked, index);
+    },
+    [index, handleRowCheck],
+  );
+
+  const parentRow = React.useMemo(() => {
+    return (
+      <Tr key={`${index}_parent`}>
+        <Td key={`heap-dump-table-row-${index}_0`}>
+          <Checkbox
+            name={`heap-dump-table-row-${index}-check`}
+            onChange={handleCheck}
+            isChecked={checkedIndices.includes(index)}
+            id={`heap-dump-table-row-${index}-check`}
+          />
+        </Td>
+        <Td key={`heap-dump-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
+          {heapDump.heapDumpId}
+        </Td>
+        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
+          <LabelCell
+            target={currentSelectedTargetURL}
+            clickableOptions={{
+              updateFilters: updateFilters,
+              labelFilters: labelFilters,
+            }}
+            labels={heapDump.metadata.labels}
+          />
+        </Td>
+        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1].title}>
+          {formatBytes(heapDump.size ?? 0)}
+        </Td>
+        {
+          <HeapDumpAction
+            heapDump={heapDump}
+            checkedIndices={checkedIndices}
+            onDownload={onDownload}
+            onDelete={onDelete}
+            handleEditLabels={handleEditLabels}
+          />
+        }
+      </Tr>
+    );
+  }, [
+    handleEditLabels,
+    onDelete,
+    onDownload,
+    heapDump,
+    index,
+    checkedIndices,
+    labelFilters,
+    currentSelectedTargetURL,
+    updateFilters,
+    handleCheck,
+  ]);
+
+  return <Tbody key={index}>{parentRow}</Tbody>;
 };

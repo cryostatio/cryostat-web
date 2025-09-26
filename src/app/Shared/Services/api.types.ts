@@ -267,6 +267,7 @@ export interface ThreadDump {
   jvmId?: string;
   lastModified?: number;
   size?: number;
+  metadata: Metadata;
 }
 
 export interface ArchivedRecording extends Recording {
@@ -293,6 +294,7 @@ export interface HeapDump {
   jvmId?: string;
   lastModified?: number;
   size?: number;
+  metadata: Metadata;
 }
 
 export interface ActiveRecordingsFilterInput {
@@ -615,9 +617,11 @@ export enum NotificationCategory {
   HeapDumpUploaded = 'HeapDumpUploaded',
   HeapDumpFailure = 'HeapDumpFailure',
   HeapDumpDeleted = 'HeapDumpDeleted',
+  HeapDumpMetadataUpdated = 'HeapDumpMetadataUpdated',
   ThreadDumpSuccess = 'ThreadDumpSuccess',
   ThreadDumpFailure = 'ThreadDumpFailure',
   ThreadDumpDeleted = 'ThreadDumpDeleted',
+  ThreadDumpMetadataUpdated = 'ThreadDumpMetadataUpdated',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',

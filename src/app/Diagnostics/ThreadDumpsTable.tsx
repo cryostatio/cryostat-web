@@ -22,7 +22,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, formatBytes, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, hashCode, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   EmptyState,
@@ -43,6 +43,9 @@ import {
   Timestamp,
   TimestampTooltipVariant,
   Divider,
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
 } from '@patternfly/react-core';
 import { SearchIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import {
@@ -60,6 +63,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { concatMap, first, Observable, of } from 'rxjs';
+import { ThreadDumpLabelsPanel } from './ThreadDumpLabelsPanel';
 
 const tableColumns: TableColumn[] = [
   {
@@ -77,6 +81,10 @@ const tableColumns: TableColumn[] = [
     keyPaths: ['size'],
     sortable: true,
   },
+  {
+    title: 'Labels',
+    keyPaths: ['metadata', 'labels'],
+  },
 ];
 
 export interface ThreadDumpsProps {
@@ -92,6 +100,9 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
   const [filteredThreadDumps, setFilteredThreadDumps] = React.useState<ThreadDump[]>([]);
   const [filterText, setFilterText] = React.useState('');
+  const [showLabelsPanel, setShowLabelsPanel] = React.useState(false);
+  const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
+  const [headerChecked, setHeaderChecked] = React.useState(false);
   const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -130,6 +141,26 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
     [setIsLoading, setErrorMessage],
   );
 
+  const handleHeaderCheck = React.useCallback(
+    (event, checked) => {
+      setHeaderChecked(checked);
+      setCheckedIndices(checked ? filteredThreadDumps.map((r) => hashCode(r.threadDumpId)) : []);
+    },
+    [setHeaderChecked, setCheckedIndices, filteredThreadDumps],
+  );
+
+  const handleRowCheck = React.useCallback(
+    (checked, index) => {
+      if (checked) {
+        setCheckedIndices((ci) => [...ci, index]);
+      } else {
+        setHeaderChecked(false);
+        setCheckedIndices((ci) => ci.filter((v) => v !== index));
+      }
+    },
+    [setCheckedIndices, setHeaderChecked],
+  );
+
   const queryTargetThreadDumps = React.useCallback(
     (target: Target) => context.api.getTargetThreadDumps(target),
     [context.api],
@@ -156,6 +187,17 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
         }),
     );
   }, [addSubscription, propsTarget, setIsLoading, handleThreadDumps, handleError, queryTargetThreadDumps]);
+
+  React.useEffect(() => {
+    setCheckedIndices((ci) => {
+      const filteredHeapDumpIdx = new Set(filteredThreadDumps.map((r) => hashCode(r.threadDumpId)));
+      return ci.filter((idx) => filteredHeapDumpIdx.has(idx));
+    });
+  }, [filteredThreadDumps, setCheckedIndices]);
+
+  React.useEffect(() => {
+    setHeaderChecked(checkedIndices.length === filteredThreadDumps.length);
+  }, [setHeaderChecked, checkedIndices, filteredThreadDumps.length]);
 
   const handleDelete = React.useCallback(
     (threadDump: ThreadDump) => {
@@ -261,6 +303,15 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
     [context.api],
   );
 
+  const handleEditLabels = React.useCallback(() => {
+    setShowLabelsPanel(true);
+  }, [setShowLabelsPanel]);
+
+  const LabelsPanel = React.useMemo(
+    () => <ThreadDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} />,
+    [checkedIndices, setShowLabelsPanel],
+  );
+
   const deleteThreadDumpModal = React.useMemo(() => {
     return (
       <DeleteWarningModal
@@ -292,12 +343,26 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
               {formatBytes(t.size ?? 0)}
             </Td>
             <Td key={`thread-dump-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-              <ThreadDumpAction threadDump={t} onDelete={handleDeleteAction} onDownload={handleDownloadThreadDump} />
+              <ThreadDumpAction
+                threadDump={t}
+                checkedIndices={checkedIndices}
+                onDelete={handleDeleteAction}
+                onDownload={handleDownloadThreadDump}
+                handleEditLabels={handleEditLabels}
+              />
             </Td>
           </Tr>
         );
       }),
-    [datetimeContext.timeZone.full, dayjs, filteredThreadDumps, handleDeleteAction, handleDownloadThreadDump],
+    [
+      checkedIndices,
+      datetimeContext.timeZone.full,
+      dayjs,
+      filteredThreadDumps,
+      handleEditLabels,
+      handleDeleteAction,
+      handleDownloadThreadDump,
+    ],
   );
 
   if (errorMessage != '') {
@@ -328,18 +393,31 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
             </ToolbarContent>
           </Toolbar>
           {threadDumpRows.length ? (
-            <Table aria-label="Thread Dumps Table" variant={TableVariant.compact}>
-              <Thead>
-                <Tr>
-                  {tableColumns.map(({ title, sortable }, index) => (
-                    <Th key={`thread-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                      {title}
-                    </Th>
-                  ))}
-                </Tr>
-              </Thead>
-              <Tbody>{threadDumpRows}</Tbody>
-            </Table>
+            <Drawer isExpanded={showLabelsPanel} isInline id={'thread-dumps-drawer'}>
+              <DrawerContent panelContent={LabelsPanel} className="thread-dumps-table-drawer-content">
+                <DrawerContentBody hasPadding>
+                  <Table aria-label="Thread Dumps Table" variant={TableVariant.compact}>
+                    <Thead>
+                      <Tr>
+                        <Th
+                          key="table-header-check-all"
+                          select={{
+                            onSelect: handleHeaderCheck,
+                            isSelected: headerChecked,
+                          }}
+                        />
+                        {tableColumns.map(({ title, sortable }, index) => (
+                          <Th key={`thread-dump-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                            {title}
+                          </Th>
+                        ))}
+                      </Tr>
+                    </Thead>
+                    <Tbody>{threadDumpRows}</Tbody>
+                  </Table>
+                </DrawerContentBody>
+              </DrawerContent>
+            </Drawer>
           ) : (
             <EmptyState>
               <EmptyStateHeader
@@ -357,16 +435,34 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({ target: propsTarg
 
 export interface ThreadDumpActionProps {
   threadDump: ThreadDump;
+  checkedIndices: number[];
   onDownload: (threadDump: ThreadDump) => void;
   onDelete: (threadDump: ThreadDump) => void;
+  handleEditLabels: () => void;
 }
 
-export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDelete, onDownload }) => {
+export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({
+  threadDump,
+  checkedIndices,
+  onDelete,
+  onDownload,
+  handleEditLabels,
+}) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const actionItems = React.useMemo(() => {
     return [
+      {
+        title: 'Edit Labels',
+        key: 'edit-threaddump-labels',
+        variant: 'secondary',
+        onClick: () => handleEditLabels(),
+        isDisabled: !checkedIndices.length,
+      },
+      {
+        isSeparator: true,
+      },
       {
         title: 'Download',
         key: 'download-threaddump',
@@ -382,7 +478,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
         onClick: () => onDelete(threadDump),
       },
     ];
-  }, [onDelete, onDownload, threadDump]);
+  }, [checkedIndices.length, handleEditLabels, onDelete, onDownload, threadDump]);
 
   const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
 

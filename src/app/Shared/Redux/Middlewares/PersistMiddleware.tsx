@@ -18,6 +18,7 @@ import { Middleware } from '@reduxjs/toolkit';
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlice';
 import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlice';
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
+import { enumValues as HeapDumpFilterActions } from '../Filters/HeapDumpFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { enumValues as TopologyFilterActions } from '../Filters/TopologyFilterSlice';
 import type { RootState } from '../ReduxStore';
@@ -33,6 +34,8 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', rootState.automatedAnalysisFilters);
     } else if (RecordingFilterActions.has(action.type)) {
       saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
+    } else if (HeapDumpFilterActions.has(action.type)) {
+      saveToLocalStorage('TARGET_HEAP_DUMP_FILTERS', rootState.heapDumpFilters);
     } else if (DashboardConfigActions.has(action.type)) {
       saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
     } else if (TopologyConfigActions.has(action.type)) {
