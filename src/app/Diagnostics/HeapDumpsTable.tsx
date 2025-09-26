@@ -17,7 +17,7 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { NotificationCategory, HeapDump } from '@app/Shared/Services/api.types';
+import { NotificationCategory, HeapDump, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -59,6 +59,7 @@ import {
 } from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
+import { concatMap, first, Observable, of } from 'rxjs';
 
 const tableColumns: TableColumn[] = [
   {
@@ -78,9 +79,11 @@ const tableColumns: TableColumn[] = [
   },
 ];
 
-export interface HeapDumpsProps {}
+export interface HeapDumpsProps {
+  target: Observable<NullableTarget>;
+}
 
-export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
+export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({ target: propsTarget }) => {
   const context = React.useContext(ServiceContext);
   const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
@@ -127,31 +130,59 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
     [setIsLoading, setErrorMessage],
   );
 
+  const queryTargetHeapDumps = React.useCallback(
+    (target: Target) => context.api.getTargetHeapDumps(target),
+    [context.api],
+  );
+
   const refreshHeapDumps = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getHeapDumps().subscribe({
-        next: (value) => handleHeapDumps(value),
-        error: (err) => handleError(err),
-      }),
+      propsTarget
+        .pipe(
+          first(),
+          concatMap((target: Target | undefined) => {
+            if (target) {
+              return queryTargetHeapDumps(target);
+            } else {
+              setIsLoading(false);
+              return of([]);
+            }
+          }),
+        )
+        .subscribe({
+          next: handleHeapDumps,
+          error: handleError,
+        }),
     );
-  }, [addSubscription, context.api, setIsLoading, handleHeapDumps, handleError]);
+  }, [addSubscription, propsTarget, setIsLoading, handleHeapDumps, handleError, queryTargetHeapDumps]);
 
   const handleDelete = React.useCallback(
     (heapDump: HeapDump) => {
       addSubscription(
-        context.api.deleteHeapDump(heapDump.heapDumpId).subscribe(() => {
-          // Do nothing, leave it to the notification handler.
-        }),
+        propsTarget
+          .pipe(
+            first(),
+            concatMap((target: Target | undefined) => {
+              if (target) {
+                return context.api.deleteHeapDump(target, heapDump.heapDumpId);
+              } else {
+                return of([]);
+              }
+            }),
+          )
+          .subscribe({
+            error: handleError,
+          }),
       );
     },
-    [addSubscription, context.api],
+    [addSubscription, handleError, propsTarget, context.api],
   );
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpDeleted).subscribe((msg) => {
-        setHeapDumps((old) => old.filter((t) => t.heapDumpId !== msg.message.heapDumpId));
+        setHeapDumps((old) => old.filter((t) => t.heapDumpId !== msg.message.heapDump.heapDumpId));
       }),
     );
   }, [addSubscription, context.notificationChannel, refreshHeapDumps]);
@@ -180,12 +211,12 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({}) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(() => {
+      propsTarget.subscribe(() => {
         setFilterText('');
         refreshHeapDumps();
       }),
     );
-  }, [context.target, addSubscription, refreshHeapDumps]);
+  }, [propsTarget, addSubscription, refreshHeapDumps]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {

@@ -722,42 +722,20 @@ export class ApiService {
     );
   }
 
-  deleteThreadDump(threaddumpname: string, suppressNotifications = false): Observable<boolean> {
-    return this.target.target().pipe(
-      concatMap((target) =>
-        this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/threaddump/${threaddumpname}`,
-          {
-            method: 'DELETE',
-          },
-          undefined,
-          suppressNotifications,
-        ).pipe(
-          map((resp) => resp.ok),
-          first(),
-        ),
-      ),
+  deleteThreadDump(target: Target, threadDumpId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/threaddump/${threadDumpId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
       first(),
     );
   }
 
-  deleteHeapDump(heapdumpname: string, suppressNotifications = false): Observable<boolean> {
-    return this.target.target().pipe(
-      concatMap((target) =>
-        this.sendRequest(
-          'beta',
-          `diagnostics/targets/${target?.id}/heapdump/${heapdumpname}`,
-          {
-            method: 'DELETE',
-          },
-          undefined,
-          suppressNotifications,
-        ).pipe(
-          map((resp) => resp.ok),
-          first(),
-        ),
-      ),
+  deleteHeapDump(target: Target, heapDumpId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/targets/${target?.id}/heapdump/${heapDumpId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
       first(),
     );
   }
@@ -1735,6 +1713,60 @@ export class ApiService {
       true,
       true,
     ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
+  }
+
+  getTargetThreadDumps(target: TargetStub): Observable<ThreadDump[]> {
+    return this.graphql<any>(
+      `
+        query ThreadDumpsForTarget($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
+            target {
+              threadDumps {
+                data {
+                  jvmId
+                  downloadUrl
+                  threadDumpId
+                  lastModified
+                  size
+                }
+                aggregate {
+                  count
+                }
+              }
+            }
+          }
+        }`,
+      { id: target.id! },
+      true,
+      true,
+    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.threadDumps?.data as ThreadDump[]) ?? []));
+  }
+
+  getTargetHeapDumps(target: TargetStub): Observable<HeapDump[]> {
+    return this.graphql<any>(
+      `
+        query HeapDumpsForTarget($id: BigInteger!) {
+          targetNodes(filter: { targetIds: [$id] }) {
+            target {
+              heapDumps {
+                data {
+                  jvmId
+                  downloadUrl
+                  heapDumpId
+                  lastModified
+                  size
+                }
+                aggregate {
+                  count
+                }
+              }
+            }
+          }
+        }`,
+      { id: target.id! },
+      true,
+      true,
+    ).pipe(map((v) => (v.data?.targetNodes[0]?.target?.heapDumps?.data as HeapDump[]) ?? []));
   }
 
   getTargetActiveRecordings(
