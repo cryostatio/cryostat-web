@@ -15,10 +15,12 @@
  */
 
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import { allowedHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
-import { HeapDumpUpdateCategoryIntent } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
+import {
+  allowedThreadDumpFilters,
+  ThreadDumpUpdateCategoryIntent,
+} from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { HeapDump, KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
+import { ThreadDump, KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import useDayjs, { Dayjs } from '@app/utils/hooks/useDayjs';
 // import dayjs from '@i18n/datetime';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -38,10 +40,10 @@ import { FilterIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LabelFilter } from './LabelFilter';
-import { NameFilter } from './NameFilter';
+import { ThreadDumpLabelFilter } from './ThreadDumpLabelFilter';
+import { ThreadDumpNameFilter } from './ThreadDumpNameFilter';
 
-export interface HeapDumpFiltersCategories {
+export interface ThreadDumpFiltersCategories {
   Name: string[];
   Label: string[];
 }
@@ -63,17 +65,17 @@ export const getCategoryChipDisplay = (t: TFunction, dayjs: Dayjs, category: str
 
 export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);
 
-export interface HeapDumpFiltersProps {
+export interface ThreadDumpFiltersProps {
   target: string;
   breakpoint?: 'md' | 'lg' | 'xl' | '2xl';
-  heapDumps: HeapDump[];
-  filters: HeapDumpFiltersCategories;
+  threadDumps: ThreadDump[];
+  filters: ThreadDumpFiltersCategories;
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
 
-export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
+export const ThreadDumpFilters: React.FC<ThreadDumpFiltersProps> = ({
   target,
-  heapDumps,
+  threadDumps,
   filters,
   breakpoint = 'xl',
   updateFilters,
@@ -83,9 +85,11 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
-    const targetHeapDumpFilters = state.heapDumpFilters.list.filter((targetFilter) => targetFilter.target === target);
-    if (!targetHeapDumpFilters.length) return 'Name'; // Target is not yet loaded
-    return targetHeapDumpFilters[0].archived.selectedCategory;
+    const targetThreadDumpFilters = state.threadDumpFilters.list.filter(
+      (targetFilter) => targetFilter.target === target,
+    );
+    if (!targetThreadDumpFilters.length) return 'Name'; // Target is not yet loaded
+    return targetThreadDumpFilters[0].archived.selectedCategory;
   });
 
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
@@ -97,7 +101,7 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
   const onCategorySelect = React.useCallback(
     (category) => {
       setIsCategoryDropdownOpen(false);
-      dispatch(HeapDumpUpdateCategoryIntent(target, category));
+      dispatch(ThreadDumpUpdateCategoryIntent(target, category));
     },
     [dispatch, setIsCategoryDropdownOpen, target],
   );
@@ -140,7 +144,7 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
                 <FilterIcon />
               </Icon>
             }
-            aria-label={t('HeapDumpFilters.ARIA_LABELS.MENU_TOGGLE')}
+            aria-label={t('ThreadDumpFilters.ARIA_LABELS.MENU_TOGGLE')}
             onClick={() => onCategoryToggle()}
           >
             {getCategoryDisplay(t, currentCategory)}
@@ -154,7 +158,7 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
         }}
       >
         <DropdownList>
-          {allowedHeapDumpFilters.map((cat) => (
+          {allowedThreadDumpFilters.map((cat) => (
             <DropdownItem key={cat} onClick={() => onCategorySelect(cat)} value={cat}>
               {getCategoryDisplay(t, cat)}
             </DropdownItem>
@@ -166,10 +170,20 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
 
   const filterDropdownItems = React.useMemo(
     () => [
-      <NameFilter key={'name'} heapDumps={heapDumps} onSubmit={onNameInput} filteredNames={filters.Name} />,
-      <LabelFilter key={'label'} heapDumps={heapDumps} onSubmit={onLabelInput} filteredLabels={filters.Label} />,
+      <ThreadDumpNameFilter
+        key={'name'}
+        threadDumps={threadDumps}
+        onSubmit={onNameInput}
+        filteredNames={filters.Name}
+      />,
+      <ThreadDumpLabelFilter
+        key={'label'}
+        threadDumps={threadDumps}
+        onSubmit={onLabelInput}
+        filteredLabels={filters.Label}
+      />,
     ],
-    [heapDumps, filters.Name, filters.Label, onNameInput, onLabelInput],
+    [threadDumps, filters.Name, filters.Label, onNameInput, onLabelInput],
   );
 
   return (
@@ -188,7 +202,7 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
         {Object.keys(filters).map((filterKey, idx) => (
           <ToolbarFilter
             key={`${filterKey}-filter`}
-            className="heap-dump-filter__toolbar-filter"
+            className="thread-dump-filter__toolbar-filter"
             chips={filters[filterKey].map((v: unknown, index) => {
               const display = getCategoryChipDisplay(t, dayjs, filterKey, v);
               return { node: display, key: index }; // Use key to keep value index
@@ -209,21 +223,21 @@ export const HeapDumpFilters: React.FC<HeapDumpFiltersProps> = ({
   );
 };
 
-export const filterHeapDumps = (heapDumps: any[], filters: HeapDumpFiltersCategories) => {
-  if (!heapDumps || !heapDumps.length) {
-    return heapDumps;
+export const filterThreadDumps = (threadDumps: any[], filters: ThreadDumpFiltersCategories) => {
+  if (!threadDumps || !threadDumps.length) {
+    return threadDumps;
   }
 
-  let filtered = heapDumps;
+  let filtered = threadDumps;
 
   if (filters.Name.length) {
-    filtered = filtered.filter((r) => filters.Name.includes(r.heapDumpId));
+    filtered = filtered.filter((r) => filters.Name.includes(r.threadDumpId));
   }
 
   if (filters.Label.length) {
-    filtered = filtered.filter((heapDump) => {
-      const heapDumpLabels = heapDump.metadata.labels.map((label: KeyValue) => keyValueToString(label));
-      return filters.Label.some((filterLabel) => heapDumpLabels.includes(filterLabel));
+    filtered = filtered.filter((threadDump) => {
+      const threadDumpLabels = threadDump.metadata.labels.map((label: KeyValue) => keyValueToString(label));
+      return filters.Label.some((filterLabel) => threadDumpLabels.includes(filterLabel));
     });
   }
 

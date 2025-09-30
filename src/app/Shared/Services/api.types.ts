@@ -266,7 +266,7 @@ export interface ThreadDump {
   threadDumpId: string;
   jvmId?: string;
   lastModified?: number;
-  size?: number;
+  size: number;
   metadata: Metadata;
 }
 
@@ -293,7 +293,7 @@ export interface HeapDump {
   heapDumpId: string;
   jvmId?: string;
   lastModified?: number;
-  size?: number;
+  size: number;
   metadata: Metadata;
 }
 

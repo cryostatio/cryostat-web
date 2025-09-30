@@ -71,7 +71,7 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
             </StackItem>
             <StackItem>
               {target ? (
-                <HeapDumpsTable target={targetAsObs} />
+                <HeapDumpsTable target={targetAsObs} isNestedTable={false} />
               ) : (
                 // FIXME this should be an "AllTargetsHeapDumpsTable" like the AllTargetsArchivedRecordingsTable
                 <AllTargetsHeapDumpsTable />

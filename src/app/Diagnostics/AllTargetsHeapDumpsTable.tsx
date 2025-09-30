@@ -455,7 +455,7 @@ export const AllTargetsHeapDumpsTable: React.FC<AllTargetsHeapDumpsTableProps> =
           <Td key={`target-ex-expand-${keyBase}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
             {isExpanded ? (
               <ExpandableRowContent>
-                <HeapDumpsTable target={targetAsObs} />
+                <HeapDumpsTable target={targetAsObs} isNestedTable={true} />
               </ExpandableRowContent>
             ) : null}
           </Td>

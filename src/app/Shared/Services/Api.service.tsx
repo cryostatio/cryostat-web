@@ -1333,8 +1333,6 @@ export class ApiService {
                         value
                       }
                     }
-                    size
-                    archivedTime
                   }
                 }
               }
@@ -1371,8 +1369,6 @@ export class ApiService {
                         value
                       }
                     }
-                    size
-                    archivedTime
                   }
                 }
               }

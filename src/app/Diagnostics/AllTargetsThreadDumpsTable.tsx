@@ -455,7 +455,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
           <Td key={`target-ex-expand-${keyBase}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
             {isExpanded ? (
               <ExpandableRowContent>
-                <ThreadDumpsTable target={targetAsObs} />
+                <ThreadDumpsTable target={targetAsObs} isNestedTable={true} />
               </ExpandableRowContent>
             ) : null}
           </Td>

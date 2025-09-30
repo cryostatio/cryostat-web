@@ -20,6 +20,7 @@ import topologyConfigReducer, * as topologyConfigSlice from './Configurations/To
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import HeapDumpFilterReducer from './Filters/HeapDumpFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
+import ThreadDumpFilterReducer from './Filters/ThreadDumpFilterSlice';
 import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
 
@@ -81,6 +82,7 @@ export const rootReducer = combineReducers({
   dashboardConfigs: dashboardConfigReducer,
   recordingFilters: recordingFilterReducer,
   heapDumpFilters: HeapDumpFilterReducer,
+  threadDumpFilters: ThreadDumpFilterReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
   topologyConfigs: topologyConfigReducer,
   topologyFilters: topologyFilterReducer,

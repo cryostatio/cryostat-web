@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { defaultHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
+import { defaultThreadDumpFilters } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
 import {
   defaultAutomatedAnalysisFilters,
   defaultDashboardConfigs,
@@ -164,6 +166,8 @@ export const mockMediaQueryList: MediaQueryList = {
 export const basePreloadedState: RootState = {
   dashboardConfigs: defaultDashboardConfigs,
   recordingFilters: defaultRecordingFilters,
+  heapDumpFilters: defaultHeapDumpFilters,
+  threadDumpFilters: defaultThreadDumpFilters,
   automatedAnalysisFilters: defaultAutomatedAnalysisFilters,
   topologyConfigs: defaultTopologyConfig,
   topologyFilters: defaultTopologyFilters,

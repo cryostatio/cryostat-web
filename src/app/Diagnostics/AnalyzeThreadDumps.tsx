@@ -71,7 +71,7 @@ export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props
             </StackItem>
             <StackItem>
               {target ? (
-                <ThreadDumpsTable target={targetAsObs} />
+                <ThreadDumpsTable target={targetAsObs} isNestedTable={false} />
               ) : (
                 // FIXME this should be an "AllTargetsThreadDumpsTable" like the AllTargetsArchivedRecordingsTable
                 <AllTargetsThreadDumpsTable />
