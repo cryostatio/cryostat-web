@@ -94,20 +94,20 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: KeyValue[]) => void) => {
-      const allThreadDumpLabels: KeyValue[][] = [];
+      const allHeapDumpLabels: KeyValue[][] = [];
 
       heapDumps.forEach((r: HeapDump) => {
         const idx = getIdxFromHeapDump(r);
         if (checkedIndices.includes(idx)) {
-          allThreadDumpLabels.push(r.metadata.labels);
+          allHeapDumpLabels.push(r.metadata.labels);
         }
       });
 
       const updatedCommonLabels =
-        allThreadDumpLabels.length > 0
-          ? allThreadDumpLabels.reduce(
+        allHeapDumpLabels.length > 0
+          ? allHeapDumpLabels.reduce(
               (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
-              allThreadDumpLabels[0],
+              allHeapDumpLabels[0],
             )
           : [];
 
@@ -140,8 +140,8 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
     addSubscription(context.target.target().subscribe(refreshHeapDumpsList));
   }, [addSubscription, context, context.target, refreshHeapDumpsList]);
 
-  // Depends only on ThreadDumpMetadataUpdated notifications
-  // since updates on list of thread dumps will mount a completely new BulkEditLabels.
+  // Depends only on HeapDumpMetadataUpdated notifications
+  // since updates on list of heap dumps will mount a completely new BulkEditLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
@@ -152,7 +152,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
         const event = parts[1];
 
         const isMatch =
-          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.threadDump.jvmId;
+          currentTarget?.jvmId === event.message.jvmId || currentTarget?.jvmId === event.message.heapDump.jvmId;
 
         setHeapDumps((oldHeapDumps) => {
           return oldHeapDumps.map((heapDump) => {

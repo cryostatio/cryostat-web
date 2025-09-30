@@ -56,7 +56,7 @@ const mockArchivedHeapDump: HeapDump = {
 const mockHeapDumpLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    HeapDump: {
+    heapDump: {
       ...mockArchivedHeapDump,
       metadata: {
         labels: [...mockHeapDumpLabels, { key: 'someNewLabel', value: 'someNewValue' }],
@@ -102,7 +102,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
     expect(tree?.toJSON()).toMatchSnapshot();
   });
 
-  it('should display labels from selected Thread Dumps', async () => {
+  it('should display labels from selected Heap Dumps', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -121,7 +121,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
     });
   });
 
-  it('should not display labels for unchecked Thread Dumps', async () => {
+  it('should not display labels for unchecked Heap Dumps', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -137,7 +137,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
     expect(screen.queryByText('someValue')).not.toBeInTheDocument();
   });
 
-  it('should update the Thread Dump Labels after receiving a notification', async () => {
+  it('should update the Heap Dump Labels after receiving a notification', async () => {
     render({
       routerConfigs: {
         routes: [
@@ -180,7 +180,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
     expect(closeFn).toHaveBeenCalledTimes(1);
   });
 
-  it('should save target Thread Dump Labels when Save is clicked', async () => {
+  it('should save target Heap Dump Labels when Save is clicked', async () => {
     const saveRequestSpy = jest
       .spyOn(defaultServices.api, 'postHeapDumpMetadata')
       .mockReturnValue(of([mockArchivedHeapDump]));
@@ -188,7 +188,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
       routerConfigs: {
         routes: [
           {
-            path: '/thread-dump',
+            path: '/heapdump',
             element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} />,
           },
         ],
