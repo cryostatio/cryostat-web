@@ -21,11 +21,7 @@ import {
   TargetThreadDumpFilters,
 } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  KeyValue,
-  keyValueToString,
-  ThreadDump,
-} from '@app/Shared/Services/api.types';
+import { KeyValue, keyValueToString, ThreadDump } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Text } from '@patternfly/react-core';

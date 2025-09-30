@@ -18,11 +18,7 @@ import { HeapDumpsTable } from '@app/Diagnostics/HeapDumpsTable';
 import { DeleteHeapDump, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { emptyArchivedHeapDumpFilters, TargetHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  HeapDump,
-  KeyValue,
-  keyValueToString,
-} from '@app/Shared/Services/api.types';
+import { HeapDump, KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Text } from '@patternfly/react-core';
