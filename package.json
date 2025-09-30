@@ -44,7 +44,7 @@
     "@types/jest": "^30.0.0",
     "@types/js-base64": "3.3.1",
     "@types/react-test-renderer": "^17.0.7",
-    "@types/selenium-webdriver": "^4.1.29",
+    "@types/selenium-webdriver": "^4.35.1",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "concurrently": "^9.2.1",
