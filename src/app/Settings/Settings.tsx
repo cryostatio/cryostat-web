@@ -17,6 +17,8 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -39,6 +41,7 @@ import {
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { Accessibility } from './Config/Accessibility';
 import { AutoRefresh } from './Config/AutoRefresh';
 import { ChartCards } from './Config/ChartCards';
 import { DatetimeControl } from './Config/DatetimeControl';
@@ -56,6 +59,13 @@ export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
   const { t } = useCryostatTranslation();
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [useCompactElements, setUseCompactElements] = React.useState(true);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactElements(!v)));
+  }, [context.settings, addSubscription, setUseCompactElements]);
 
   const settings = React.useMemo(
     () =>
@@ -70,6 +80,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         DatetimeControl,
         Theme,
         TopologyConfig,
+        Accessibility,
       ].map(
         (c) =>
           ({
@@ -114,7 +125,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
 
   const settingGroups = React.useMemo(() => {
     return Object.values(SettingTab).map((cat) => {
-      const panels = settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup);
+      const panels = settings.filter((s) => s.category === cat).sort((a, b) => a.orderInGroup - b.orderInGroup);
       return {
         groupLabel: t(cat),
         groupKey: cat,
@@ -162,7 +173,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                               {s.title}
                               {s.featureLevel !== FeatureLevel.PRODUCTION && (
                                 <Label
-                                  isCompact
+                                  isCompact={useCompactElements}
                                   style={{
                                     marginLeft: '1ch',
                                     textTransform: 'capitalize',

@@ -16,6 +16,7 @@
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Middleware } from '@reduxjs/toolkit';
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlice';
+import { enumValues as NavMenuConfigActions } from '../Configurations/NavMenuConfigSlice';
 import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlice';
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
 import { enumValues as HeapDumpFilterActions } from '../Filters/HeapDumpFilterSlice';
@@ -39,6 +40,8 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TARGET_HEAP_DUMP_FILTERS', rootState.heapDumpFilters);
     } else if (ThreadDumpFilterActions.has(action.type)) {
       saveToLocalStorage('TARGET_THREAD_DUMP_FILTERS', rootState.threadDumpFilters);
+    } else if (NavMenuConfigActions.has(action.type)) {
+      saveToLocalStorage('NAV_MENU_CFG', rootState.navMenuConfigs);
     } else if (DashboardConfigActions.has(action.type)) {
       saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
     } else if (TopologyConfigActions.has(action.type)) {

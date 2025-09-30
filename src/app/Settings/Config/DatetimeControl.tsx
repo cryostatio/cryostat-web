@@ -168,4 +168,5 @@ export const DatetimeControl: UserSetting = {
   descConstruct: 'SETTINGS.DATETIME_CONTROL.DESCRIPTION',
   content: Component,
   category: SettingTab.GENERAL,
+  orderInGroup: 3,
 };

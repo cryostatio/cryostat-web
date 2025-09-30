@@ -281,6 +281,7 @@ export interface ActiveRecording extends Recording {
   state: RecordingState;
   duration: number; // In miliseconds
   startTime: number;
+  archiveOnStop: boolean;
   continuous: boolean;
   toDisk: boolean;
   maxSize: number;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { FeatureLevel } from '@app/Shared/Services/service.types';
+import { LabelProps } from '@patternfly/react-core';
 
 export interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   title: string;
@@ -56,6 +57,66 @@ export enum ThemeSetting {
 }
 
 export type ThemeType = Exclude<ThemeSetting, ThemeSetting.AUTO>;
+
+export enum Palette {
+  DEFAULT = 'DEFAULT',
+  HIGH_CONTRAST = 'HIGH_CONTRAST',
+  MONOCHROME_BLUE = 'MONOCHROME_BLUE',
+  MONOCHROME_ORANGE = 'MONOCHROME_ORANGE',
+}
+
+export interface ColourPalette {
+  primary(): [LabelProps['color'], string];
+  secondary(): [LabelProps['color'], string];
+  tertiary(): [LabelProps['color'], string];
+  accent(): [LabelProps['color'], string];
+  neutral(): [LabelProps['color'], string];
+}
+
+export const DefaultColourPalette: ColourPalette = {
+  primary: () => ['green', 'var(--pf-v5-global--success-color--100)'],
+  secondary: () => ['orange', 'var(--pf-v5-global--warning-color--100)'],
+  tertiary: () => ['red', 'var(--pf-v5-global--danger-color--100)'],
+  accent: () => ['blue', 'var(--pf-v5-global--primary-color--100)'],
+  neutral: () => ['grey', 'var(--pf-v5-global---color--200)'],
+};
+
+export const MonochromeBlueColourPalette: ColourPalette = {
+  primary: () => ['cyan', 'var(--pf-v5-global--palette--blue-200)'],
+  secondary: () => ['blue', 'var(--pf-v5-global--palette--blue-300)'],
+  tertiary: () => ['purple', 'var(--pf-v5-global--palette--blue-500)'],
+  accent: () => ['gold', 'var(--pf-v5-global--palette--orange-200)'],
+  neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
+};
+
+export const MonochromeOrangeColourPalette: ColourPalette = {
+  primary: () => ['gold', 'var(--pf-v5-global--palette--gold-200)'],
+  secondary: () => ['orange', 'var(--pf-v5-global--palette--orange-300)'],
+  tertiary: () => ['red', 'var(--pf-v5-global--palette--red-100)'],
+  accent: () => ['cyan', 'var(--pf-v5-global--palette--blue-200)'],
+  neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
+};
+
+export const HighContrastColourPalette: ColourPalette = {
+  primary: () => ['green', 'var(--pf-v5-global--palette--green-300)'],
+  secondary: () => ['purple', 'var(--pf-v5-global--palette--purple-300)'],
+  tertiary: () => ['gold', 'var(--pf-v5-global--palette--gold-300)'],
+  accent: () => ['cyan', 'var(--pf-v5-global--palette--cyan-400)'],
+  neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
+};
+
+export function getPaletteColours(palette: Palette): ColourPalette {
+  switch (palette) {
+    case Palette.MONOCHROME_BLUE:
+      return MonochromeBlueColourPalette;
+    case Palette.MONOCHROME_ORANGE:
+      return MonochromeOrangeColourPalette;
+    case Palette.HIGH_CONTRAST:
+      return HighContrastColourPalette;
+    default:
+      return DefaultColourPalette;
+  }
+}
 
 export interface SettingGroup {
   groupLabel: SettingTab;

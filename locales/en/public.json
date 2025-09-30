@@ -254,7 +254,7 @@
     "ADVANCED_OPTIONS_HIDE": "Hide advanced options",
     "ADVANCED_OPTIONS_SHOW": "Show advanced options",
     "ARCHIVE_ON_STOP": "Archive on Stop",
-    "ARCHIVE_ON_STOP_DESCRIPTION": "Copy data to Archives automatically when duration elapses",
+    "ARCHIVE_ON_STOP_DESCRIPTION": "Copy data to Archives automatically when duration elapses or recording is manually stopped",
     "AUTOMATICALLY_ANALYZE": "Automatically analyze",
     "CONTINUOUS_DESCRIPTION": "Record with unlimited duration until manually stopped",
     "CREATING": "Creating",
@@ -633,6 +633,30 @@
     "TITLE": "Upload Automated Rules"
   },
   "SETTINGS": {
+    "ACCESSIBILITY": {
+      "ARIA_LABELS": {
+        "LARGE_UI": "Use larger UI elements",
+        "PALETTE_SELECT": "Select an accessible colour palette."
+      },
+      "DESCRIPTION": "Configure look and feel settings for accessibility.",
+      "LARGE_UI_DESCRIPTION": "Use larger UI elements",
+      "PALETTE_PREVIEW_DESCRIPTION": "Palette colour selection preview",
+      "PALETTE_PREVIEW": {
+        "PRIMARY": "primary",
+        "SECONDARY": "secondary",
+        "TERTIARY": "tertiary",
+        "ACCENT": "accent",
+        "NEUTRAL": "neutral"
+      },
+      "PALETTES": {
+        "DEFAULT": "Default",
+        "HIGH_CONTRAST": "High Contrast",
+        "MONOCHROME_BLUE": "Monochrome (blues)",
+        "MONOCHROME_ORANGE": "Monochrome (oranges)"
+      },
+      "PALETTE_SELECT_DESCRIPTION": "Select an accessible colour palette.",
+      "TITLE": "Accessibility"
+    },
     "AUTO_REFRESH": {
       "CHECKBOX_LABEL": "Enabled",
       "DESCRIPTION": "Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.",

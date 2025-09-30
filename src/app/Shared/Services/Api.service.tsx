@@ -232,32 +232,43 @@ export class ApiService {
     onUploadProgress?: (progress: string | number) => void,
     abortSignal?: Observable<void>,
   ): Observable<boolean> {
+    const body = new window.FormData();
+    Object.entries(rule).forEach((e) => {
+      if (!e || !e[0] || !e[1]) {
+        return;
+      }
+      if (e[0] === 'metadata') {
+        const labels = {};
+        e[1].labels.forEach((kv: KeyValue) => {
+          labels[kv.key] = kv.value;
+        });
+        body.append(e[0], JSON.stringify({ labels }));
+      } else {
+        body.append(e[0], e[1]);
+      }
+    });
     window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
-    return this.ctx
-      .headers({
-        'Content-Type': 'application/json',
-      })
-      .pipe(
-        concatMap((headers) =>
-          this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
-            method: 'POST',
-            body: JSON.stringify(rule),
-            headers,
-            listeners: {
-              onUploadProgress: (event) => {
-                onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
-              },
+    return this.ctx.headers().pipe(
+      concatMap((headers) =>
+        this.sendLegacyRequest('v4', 'rules', 'Rule Upload Failed', {
+          body,
+          method: 'POST',
+          headers,
+          listeners: {
+            onUploadProgress: (event) => {
+              onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
             },
-            abortSignal,
-          }),
-        ),
-        map((resp) => resp.ok),
-        tap({
-          next: () => (window.onbeforeunload = null),
-          error: () => (window.onbeforeunload = null),
+          },
+          abortSignal,
         }),
-        first(),
-      );
+      ),
+      map((resp) => resp.ok),
+      tap({
+        next: () => (window.onbeforeunload = null),
+        error: () => (window.onbeforeunload = null),
+      }),
+      first(),
+    );
   }
 
   createRule(rule: Rule): Observable<boolean> {

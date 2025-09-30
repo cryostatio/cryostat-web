@@ -16,7 +16,7 @@
 
 import { Language } from '@app/Settings/Config/Language';
 import { Settings } from '@app/Settings/Settings';
-import { UserSetting } from '@app/Settings/types';
+import { Palette, UserSetting } from '@app/Settings/types';
 import { FeatureLevel, SessionState } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
@@ -117,6 +117,15 @@ jest.mock('@app/Settings/Config/TopologyConfig', () => ({
   } as UserSetting,
 }));
 
+jest.mock('@app/Settings/Config/Accessibility', () => ({
+  Accessibility: {
+    titleKey: 'SETTINGS.ACCESSIBILITY.TITLE',
+    descConstruct: 'SETTINGS.ACCESSIBILITY.DESCRIPTION',
+    category: 'SETTINGS.CATEGORIES.GENERAL',
+    content: () => <Text>Accessibility Component</Text>,
+  } as UserSetting,
+}));
+
 const mockNavigate = jest.fn();
 
 jest.mock('react-router-dom-v5-compat', () => ({
@@ -125,13 +134,15 @@ jest.mock('react-router-dom-v5-compat', () => ({
 }));
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
+jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
+jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
 jest
   .spyOn(defaultServices.login, 'getSessionState')
   .mockReturnValueOnce(of(SessionState.NO_USER_SESSION)) // render correctly
   .mockReturnValueOnce(of(SessionState.NO_USER_SESSION)) // should not show settings that require authentication when the user is logged out
   .mockReturnValue(of(SessionState.USER_SESSION));
 
-describe('<Settings/>', () => {
+describe('<Settings />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {

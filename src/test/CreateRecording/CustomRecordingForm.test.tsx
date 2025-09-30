@@ -109,12 +109,12 @@ describe('<CustomRecordingForm />', () => {
     expect(onSubmitSpy).toHaveBeenCalledWith({
       name: 'a_recording',
       events: 'template=someEventTemplate,type=CUSTOM',
-      duration: 30,
+      duration: undefined,
       archiveOnStop: true,
       replace: 'NEVER',
       advancedOptions: {
-        maxAge: undefined,
-        maxSize: 0,
+        maxAge: 0,
+        maxSize: 52428800,
         toDisk: true,
       },
       metadata: {

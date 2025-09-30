@@ -27,6 +27,8 @@ import { ThemeSetting, SettingTab } from '@app/Settings/types';
 import { DARK_THEME_CLASS, selectTab, tabAsParam } from '@app/Settings/utils';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/Components/FeatureFlag';
+import { navMenuSetExpandedIntent } from '@app/Shared/Redux/Configurations/NavMenuConfigSlice';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, Notification } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
@@ -84,6 +86,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { matchPath, NavLink, useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { map } from 'rxjs/operators';
 import { LogoutIcon } from './LogoutIcon';
@@ -106,6 +109,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   } = useJoyride();
 
   const [isNavOpen, setIsNavOpen] = [joyNavOpen, setJoyNavOpen];
+  const dispatch = useDispatch();
+  const navExpandedStates = useSelector((state: RootState) => state.navMenuConfigs.states);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
@@ -122,6 +127,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [theme] = useTheme();
+  const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   React.useEffect(() => {
     if (theme === ThemeSetting.DARK) {
@@ -145,6 +151,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       }),
     );
   }, [serviceContext.target, setShowAuthModal, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(serviceContext.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
+  }, [addSubscription, serviceContext.settings, setUseCompactLabels]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
@@ -371,7 +381,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     (level: FeatureLevel) => {
       return (
         <Label
-          isCompact
+          isCompact={useCompactLabels}
           style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
           color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
         >
@@ -379,7 +389,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </Label>
       );
     },
-    [t],
+    [t, useCompactLabels],
   );
 
   const headerToolbar = React.useMemo(
@@ -548,6 +558,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [location],
   );
 
+  const handleNavExpand = React.useCallback(
+    (key: string) => (_: React.MouseEvent<HTMLButtonElement, MouseEvent>, expanded: boolean) =>
+      dispatch(navMenuSetExpandedIntent(key, expanded)),
+    [dispatch],
+  );
+
   const Navigation = React.useMemo(() => {
     const navSubgroups = (routes: IAppRoute[], groupKey?: string): Map<string | undefined, IAppRoute[]> => {
       const map = new Map<string | undefined, IAppRoute[]>();
@@ -597,7 +613,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         } else {
           const anyActive = rs.some((r) => isActiveRoute(r));
           items = [
-            <NavExpandable title={t(k)} groupId={k} isActive={anyActive} isExpanded>
+            <NavExpandable
+              key={k}
+              title={t(k)}
+              groupId={k}
+              isActive={anyActive}
+              isExpanded={navExpandedStates[k] ?? true}
+              onExpand={handleNavExpand(k)}
+            >
               {renderables}
             </NavExpandable>,
           ];
@@ -624,7 +647,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </NavList>
       </Nav>
     );
-  }, [mobileOnSelect, isActiveRoute, levelBadge, activeLevel, t]);
+  }, [mobileOnSelect, navExpandedStates, handleNavExpand, isActiveRoute, levelBadge, activeLevel, t]);
 
   const Sidebar = React.useMemo(
     () => (

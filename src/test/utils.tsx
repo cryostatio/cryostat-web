@@ -18,6 +18,7 @@ import { defaultHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilter
 import { defaultThreadDumpFilters } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
 import {
   defaultAutomatedAnalysisFilters,
+  defaultNavMenuConfigs,
   defaultDashboardConfigs,
   defaultRecordingFilters,
   defaultTopologyConfig,
@@ -164,6 +165,7 @@ export const mockMediaQueryList: MediaQueryList = {
 };
 
 export const basePreloadedState: RootState = {
+  navMenuConfigs: defaultNavMenuConfigs,
   dashboardConfigs: defaultDashboardConfigs,
   recordingFilters: defaultRecordingFilters,
   heapDumpFilters: defaultHeapDumpFilters,

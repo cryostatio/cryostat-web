@@ -17,6 +17,7 @@
 export enum LocalStorageKey {
   ASSET_VERSION,
   FEATURE_LEVEL,
+  NAV_MENU_CFG,
   DASHBOARD_CFG,
   AUTOMATED_ANALYSIS_FILTERS,
   TARGET_RECORDING_FILTERS,
@@ -42,6 +43,8 @@ export enum LocalStorageKey {
   MATCH_EXPRES_VIS_GRAPH_POSITIONS,
   MATCH_EXPRES_VIS_NODE_POSITIONS,
   THEME,
+  PALETTE,
+  LARGE_UI,
 }
 
 export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
