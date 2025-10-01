@@ -37,6 +37,16 @@
     "SEARCH_PLACEHOLDER": "Find by connection URL or alias...",
     "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
   },
+  "AllTargetsThreadDumpsTable": {
+    "HIDE_TARGET_WITH_ZERO_DUMPS": "Hide targets with zero Thread Dumps",
+    "SEARCH_PLACEHOLDER": "Find by JVM ID...",
+    "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
+  },
+  "AllTargetsHeapDumpsTable": {
+    "HIDE_TARGET_WITH_ZERO_DUMPS": "Hide targets with zero Heap Dumps",
+    "SEARCH_PLACEHOLDER": "Find by JVM ID...",
+    "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
+  },
   "AppLayout": {
     "APP_LAUNCHER": {
       "ABOUT": "About",
@@ -392,7 +402,8 @@
     "ARIA_LABELS": {
       "ROW_ACTION": "heap-dump-action-menu",
       "SEARCH_INPUT": "heap-dump-search-input"
-    }
+    },
+    "NO_ARCHIVES": "No Heap Dumps"
   },
   "ThreadDumps": {
     "SEARCH_PLACEHOLDER": "Search Thread Dumps",
@@ -401,7 +412,8 @@
     "ARIA_LABELS": {
       "ROW_ACTION": "thread-dump-action-menu",
       "SEARCH_INPUT": "thread-dump-search-input"
-    }
+    },
+    "NO_ARCHIVES": "No Thread Dumps"
   },
   "DurationFilter": {
     "ARIA_LABELS": {

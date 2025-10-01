@@ -196,7 +196,27 @@ export interface ThreadDumpsResponse {
   data: {
     targetNodes: {
       target: {
-        threadDumps: ThreadDump[];
+        threadDumps: {
+          data: ThreadDump[];
+          aggregate: {
+            count: number;
+          };
+        };
+      };
+    }[];
+  };
+}
+
+export interface HeapDumpsResponse {
+  data: {
+    targetNodes: {
+      target: {
+        heapDumps: {
+          data: HeapDump[];
+          aggregate: {
+            count: number;
+          };
+        };
       };
     }[];
   };
@@ -311,6 +331,34 @@ export interface RecordingCountResponse {
     targetNodes: {
       target: {
         activeRecordings: {
+          aggregate: {
+            count: number;
+          };
+        };
+      };
+    }[];
+  };
+}
+
+export interface ThreadDumpCountResponse {
+  data: {
+    targetNodes: {
+      target: {
+        threadDumps: {
+          aggregate: {
+            count: number;
+          };
+        };
+      };
+    }[];
+  };
+}
+
+export interface HeapDumpCountResponse {
+  data: {
+    targetNodes: {
+      target: {
+        heapDumps: {
           aggregate: {
             count: number;
           };
