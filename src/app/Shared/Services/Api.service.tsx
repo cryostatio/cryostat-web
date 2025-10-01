@@ -1800,15 +1800,12 @@ export class ApiService {
                   threadDumpId
                   lastModified
                   size
-<<<<<<< HEAD
                   metadata {
                     labels {
                       key
                       value
                     }
                   }
-=======
->>>>>>> upstream/main
                 }
                 aggregate {
                   count
