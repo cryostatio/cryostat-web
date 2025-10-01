@@ -455,6 +455,14 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.ThreadDumpMetadataUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'Thread Dump metadata updated',
+      body: (evt) => `${evt.message.threadDump.threadDumpId} in target ${evt.message.jvmId} metadata was updated`,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.CredentialsStored,
     {
       variant: AlertVariant.success,

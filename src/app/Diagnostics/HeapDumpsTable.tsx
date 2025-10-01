@@ -306,7 +306,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
     );
   }, [addSubscription, context.notificationChannel, setHeapDumps]);
 
-  /*
+  
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe(() => {
@@ -314,7 +314,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
       }),
     );
   }, [addSubscription, context.notificationChannel, refreshHeapDumps]);
-*/
+
   React.useEffect(() => {
     addSubscription(
       propsTarget.subscribe((target) => {

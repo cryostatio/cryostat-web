@@ -83,9 +83,6 @@ jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaul
 
 jest
   .spyOn(defaultServices.api, 'getTargetHeapDumps')
-  .mockReturnValueOnce(of([mockHeapDump])) // Renders Correctly
-  .mockReturnValueOnce(of([mockHeapDump]))
-  .mockReturnValueOnce(of([mockHeapDump, anotherMockHeapDump])) // Adds after a notification
   .mockReturnValue(of([mockHeapDump])); // All other tests
 
 jest.spyOn(defaultServices.api, 'deleteHeapDump').mockReturnValue(of(true));

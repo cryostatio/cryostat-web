@@ -86,9 +86,6 @@ jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaul
 
 jest
   .spyOn(defaultServices.api, 'getTargetThreadDumps')
-  .mockReturnValueOnce(of([mockThreadDump])) // Renders Correctly
-  .mockReturnValueOnce(of([mockThreadDump]))
-  .mockReturnValueOnce(of([mockThreadDump, anotherMockThreadDump])) // Adds after a notification
   .mockReturnValue(of([mockThreadDump])); // All other tests
 
 jest.spyOn(defaultServices.api, 'deleteThreadDump').mockReturnValue(of(true));
