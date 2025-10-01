@@ -178,7 +178,6 @@ const diagnosticsRoutes: IAppRoute[] = [
     title: 'Capture',
     description: 'Perform garbage collection and create thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
-    featureLevel: FeatureLevel.BETA,
   },
   {
     component: AnalyzeThreadDumps,
@@ -188,7 +187,6 @@ const diagnosticsRoutes: IAppRoute[] = [
     description: 'View thread dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
-    featureLevel: FeatureLevel.BETA,
   },
   {
     component: AnalyzeHeapDumps,
@@ -198,7 +196,6 @@ const diagnosticsRoutes: IAppRoute[] = [
     description: 'Create and view heap dumps on single target JVMs.',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
-    featureLevel: FeatureLevel.BETA,
   },
 ];
 
