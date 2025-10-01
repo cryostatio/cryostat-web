@@ -231,16 +231,21 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   <StackItem>
                     <FeatureFlag level={FeatureLevel.BETA}>
                       <ActionList>
-                        <Button
-                          variant="primary"
-                          onClick={handleHeapDump}
-                          isAriaDisabled={!controlEnabled}
-                          spinnerAriaValueText="Invoke Heap Dump"
-                          spinnerAriaLabel="invoke-heap-dump"
-                          isLoading={running}
+                        <Tooltip
+                          trigger={controlEnabled ? 'manual' : 'mouseenter focus'}
+                          content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED')}
                         >
-                          {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
-                        </Button>
+                          <Button
+                            variant="primary"
+                            onClick={handleHeapDump}
+                            isAriaDisabled={!controlEnabled}
+                            spinnerAriaValueText="Invoke Heap Dump"
+                            spinnerAriaLabel="invoke-heap-dump"
+                            isLoading={running}
+                          >
+                            {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                          </Button>
+                        </Tooltip>
                         <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
                           <Button
                             variant="primary"
