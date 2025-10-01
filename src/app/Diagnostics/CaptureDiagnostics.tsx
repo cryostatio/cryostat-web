@@ -44,7 +44,9 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
-  const [running, setRunning] = React.useState(false);
+  const [runningGc, setRunningGc] = React.useState(false);
+  const [runningThreadDump, setRunningThreadDump] = React.useState(false);
+  const [runningHeapDump, setRunningHeapDump] = React.useState(false);
   const [threadDumpReady, setThreadDumpReady] = React.useState(false);
   const [heapDumpReady, setHeapDumpReady] = React.useState(false);
   const [controlEnabled, setControlEnabled] = React.useState(false);
@@ -107,40 +109,40 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
   }, [addSubscription, serviceContext.notificationChannel, setThreadDumpReady]);
 
   const handleGC = React.useCallback(() => {
-    setRunning(true);
+    setRunningGc(true);
     addSubscription(
       serviceContext.api.runGC(true).subscribe({
         error: (err) => handleError(t('DiagnosticsCard.KINDS.GC'), err),
-        complete: () => setRunning(false),
+        complete: () => setRunningGc(false),
       }),
     );
-  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
+  }, [addSubscription, serviceContext.api, handleError, setRunningGc, t]);
 
   const handleThreadDump = React.useCallback(() => {
-    setRunning(true);
+    setRunningThreadDump(true);
     addSubscription(
       serviceContext.api.runThreadDump(true).subscribe({
         error: (err) => handleError(t('DiagnosticsCard.KINDS.THREADS'), err),
         complete: () => {
-          setRunning(false);
+          setRunningThreadDump(false);
           setThreadDumpReady(true);
         },
       }),
     );
-  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
+  }, [addSubscription, serviceContext.api, handleError, setRunningThreadDump, t]);
 
   const handleHeapDump = React.useCallback(() => {
-    setRunning(true);
+    setRunningHeapDump(true);
     addSubscription(
       serviceContext.api.runHeapDump(true).subscribe({
         error: (err) => handleError(t('DiagnosticsCard.KINDS.HEAP_DUMP'), err),
         complete: () => {
-          setRunning(false);
+          setRunningHeapDump(false);
           setHeapDumpReady(true);
         },
       }),
     );
-  }, [addSubscription, serviceContext.api, handleError, setRunning, t]);
+  }, [addSubscription, serviceContext.api, handleError, setRunningHeapDump, t]);
 
   return (
     <TargetView {...props} pageTitle="Diagnostics">
@@ -157,7 +159,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                         onClick={handleGC}
                         spinnerAriaValueText="Invoke GC"
                         spinnerAriaLabel="invoke-gc"
-                        isLoading={running}
+                        isLoading={runningGc}
                       >
                         {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
                       </Button>
@@ -170,7 +172,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                         onClick={handleThreadDump}
                         spinnerAriaValueText="Invoke Thread Dump"
                         spinnerAriaLabel="invoke-thread-dump"
-                        isLoading={running}
+                        isLoading={runningThreadDump}
                       >
                         {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
                       </Button>
@@ -196,7 +198,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                           onClick={handleHeapDump}
                           spinnerAriaValueText="Invoke Heap Dump"
                           spinnerAriaLabel="invoke-heap-dump"
-                          isLoading={running}
+                          isLoading={runningHeapDump}
                         >
                           {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
                         </Button>
