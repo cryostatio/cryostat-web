@@ -5128,7 +5128,7 @@ __metadata:
     regenerator-runtime: ^0.14.1
     rimraf: ^6.0.1
     rxjs: ^7.8.2
-    selenium-webdriver: ^4.35.0
+    selenium-webdriver: ^4.36.0
     semver: ^7.7.2
     showdown: ^2.1.0
     style-loader: ^4.0.0
@@ -13660,15 +13660,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:^4.35.0":
-  version: 4.35.0
-  resolution: "selenium-webdriver@npm:4.35.0"
+"selenium-webdriver@npm:^4.36.0":
+  version: 4.36.0
+  resolution: "selenium-webdriver@npm:4.36.0"
   dependencies:
     "@bazel/runfiles": ^6.3.1
     jszip: ^3.10.1
-    tmp: ^0.2.3
-    ws: ^8.18.2
-  checksum: 2435be2401500f44ae09ea023016097b82e252b42bd0be3f784833e21f0d03f41d01c477c1fc7f71008ff13c4bef442534a546285982f2565978e03e4063148c
+    tmp: ^0.2.5
+    ws: ^8.18.3
+  checksum: c003b381a313ffc310c4a5ffeac215789c7c85141defa0ce8fbbac26f1848804e217c661cc6fe4f914196a60118fc75b3fbd6295f1f75f99aef46a69dba0831a
   languageName: node
   linkType: hard
 
@@ -14911,10 +14911,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.3":
-  version: 0.2.4
-  resolution: "tmp@npm:0.2.4"
-  checksum: fde5fcdbd741c957458d6f7310750879172b399ac62b468c6707cef6fd0e77d0e632dd05471f607530a248c483abaa00187a6eee8561030268ac98bfb5e41720
+"tmp@npm:^0.2.5":
+  version: 0.2.5
+  resolution: "tmp@npm:0.2.5"
+  checksum: 9d18e58060114154939930457b9e198b34f9495bcc05a343bc0a0a29aa546d2c1c2b343dae05b87b17c8fde0af93ab7d8fe8574a8f6dc2cd8fd3f2ca1ad0d8e1
   languageName: node
   linkType: hard
 
@@ -16631,7 +16631,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.2":
+"ws@npm:^8.18.3":
   version: 8.18.3
   resolution: "ws@npm:8.18.3"
   peerDependencies:
