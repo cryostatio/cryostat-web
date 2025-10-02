@@ -1962,9 +1962,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:^6.9.0":
-  version: 6.9.0
-  resolution: "@testing-library/jest-dom@npm:6.9.0"
+"@testing-library/jest-dom@npm:^6.9.1":
+  version: 6.9.1
+  resolution: "@testing-library/jest-dom@npm:6.9.1"
   dependencies:
     "@adobe/css-tools": ^4.4.0
     aria-query: ^5.0.0
@@ -1972,7 +1972,7 @@ __metadata:
     dom-accessibility-api: ^0.6.3
     picocolors: ^1.1.1
     redent: ^3.0.0
-  checksum: 27d0a3bd026719a02ba47fa9aeb7d58547b493aff216d57acc4e0f5eadfc1280a5a40b11ff0bd2fb2aabd4a77c822f9fa212715ce3321b95d09b887d607abccc
+  checksum: 5c77126a59a1c0df5935d29569652364c56e5026982f0357f0daaeb21b75fcd9a6aeff8365bdcba719687a4359b3f8bf74bba81ccbae7635cf18ad9789e1e323
   languageName: node
   linkType: hard
 
@@ -4890,7 +4890,7 @@ __metadata:
     "@patternfly/react-topology": ^5.4.0
     "@reduxjs/toolkit": ^1.9.3
     "@testing-library/dom": ^10.4.1
-    "@testing-library/jest-dom": ^6.9.0
+    "@testing-library/jest-dom": ^6.9.1
     "@testing-library/react": ^12.1.5
     "@testing-library/user-event": ^14.6.1
     "@types/humanize-duration": ^3.27.4
@@ -4915,7 +4915,7 @@ __metadata:
     file-loader: ^6.2.0
     html-webpack-plugin: ^5.6.4
     humanize-duration: ^3.33.1
-    i18next: ^25.5.2
+    i18next: ^25.5.3
     i18next-browser-languagedetector: ^8.2.0
     i18next-parser: ^9.3.0
     imagemin: ^9.0.1
@@ -8550,9 +8550,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^25.5.2":
-  version: 25.5.2
-  resolution: "i18next@npm:25.5.2"
+"i18next@npm:^25.5.3":
+  version: 25.5.3
+  resolution: "i18next@npm:25.5.3"
   dependencies:
     "@babel/runtime": ^7.27.6
   peerDependencies:
@@ -8560,7 +8560,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 90eae05de97ca4d4d25fa967963d694c91d6189c43ca7cf07b553e5820a989e47a07c0d89c1cc168fe3a822b3761bb1d606e5910b34f0e386c904490c6cb7d1d
+  checksum: dece3c0a7c5957eaed312c048dfe8e7120535c6e4516d18bec1ae76a7458b40d8aee55933d482bbece4facfc5658eca7ddcb63b190f35f58557265b0806c654f
   languageName: node
   linkType: hard
 
