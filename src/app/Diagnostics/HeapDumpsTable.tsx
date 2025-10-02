@@ -306,7 +306,6 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
     );
   }, [addSubscription, context.notificationChannel, setHeapDumps]);
 
-  
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpUploaded).subscribe(() => {
@@ -369,7 +368,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
   }, [setShowLabelsPanel]);
 
   const LabelsPanel = React.useMemo(
-    () => <HeapDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} />,
+    () => <HeapDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} target={propsTarget}/>,
     [checkedIndices, setShowLabelsPanel],
   );
 

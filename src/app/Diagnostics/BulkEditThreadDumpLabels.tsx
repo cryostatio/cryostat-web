@@ -16,7 +16,7 @@
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { includesLabel } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { NotificationCategory, Target, KeyValue, ThreadDump } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Target, KeyValue, ThreadDump, NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
@@ -37,10 +37,11 @@ import { combineLatest, concatMap, filter, first, forkJoin, Observable } from 'r
 
 export interface BulkEditLabelsProps {
   checkedIndices: number[];
+  target: Observable<NullableTarget>;
   closePanelFn?: () => void;
 }
 
-export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedIndices, closePanelFn }) => {
+export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedIndices, target: propsTarget, closePanelFn }) => {
   const context = React.useContext(ServiceContext);
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
@@ -59,21 +60,26 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
     setLoading(true);
     const tasks: Observable<unknown>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
-
-    threadDumps.forEach((r: ThreadDump) => {
-      const idx = getIdxFromThreadDump(r);
-      if (checkedIndices.includes(idx)) {
-        const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
-          (label) => !includesLabel(toDelete, label),
-        );
-
-        tasks.push(context.api.postThreadDumpMetadata(r.threadDumpId, updatedLabels).pipe(first()));
-      }
-    });
     addSubscription(
-      forkJoin(tasks).subscribe({
-        next: handlePostUpdate,
-        error: handlePostUpdate,
+      propsTarget.subscribe((t) => {
+        if (!t) {
+          return;
+        }
+        threadDumps.forEach((r: ThreadDump) => {
+          const idx = hashCode(r.threadDumpId);
+          if (checkedIndices.includes(idx)) {
+            const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
+              (label) => !includesLabel(toDelete, label),
+            );
+            tasks.push(context.api.postHeapDumpMetadata(r.threadDumpId, updatedLabels, t).pipe(first()));
+          }
+        });
+        addSubscription(
+          forkJoin(tasks).subscribe({
+            next: () => handlePostUpdate(),
+            error: () => handlePostUpdate(),
+        }),
+        );
       }),
     );
   }, [
@@ -81,6 +87,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
     context.api,
     getIdxFromThreadDump,
     handlePostUpdate,
+    propsTarget,
     commonLabels,
     savedCommonLabels,
     checkedIndices,
@@ -118,13 +125,13 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
 
   const refreshThreadDumpsList = React.useCallback(() => {
     let observable: Observable<ThreadDump[]>;
-    observable = context.target.target().pipe(
+    observable = propsTarget.pipe(
       filter((target) => !!target),
       concatMap((target: Target) => context.api.getTargetThreadDumps(target)),
       first(),
     );
     addSubscription(observable.subscribe((value) => setThreadDumps(value)));
-  }, [addSubscription, context.target, context.api]);
+  }, [addSubscription, propsTarget, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
@@ -137,15 +144,15 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
   );
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshThreadDumpsList));
-  }, [addSubscription, context, context.target, refreshThreadDumpsList]);
+    addSubscription(propsTarget.subscribe(refreshThreadDumpsList));
+  }, [addSubscription, propsTarget, refreshThreadDumpsList]);
 
   // Depends only on ThreadDumpMetadataUpdated notifications
   // since updates on list of thread dumps will mount a completely new BulkEditLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        propsTarget,
         context.notificationChannel.messages(NotificationCategory.ThreadDumpMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
@@ -170,7 +177,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
         });
       }),
     );
-  }, [addSubscription, context.target, context.notificationChannel, setThreadDumps]);
+  }, [addSubscription, propsTarget, context.notificationChannel, setThreadDumps]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);

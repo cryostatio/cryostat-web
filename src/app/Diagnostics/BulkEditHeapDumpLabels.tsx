@@ -16,7 +16,7 @@
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { includesLabel } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { NotificationCategory, Target, KeyValue, HeapDump } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Target, KeyValue, HeapDump, NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
@@ -37,10 +37,11 @@ import { combineLatest, concatMap, filter, first, forkJoin, Observable } from 'r
 
 export interface BulkEditLabelsProps {
   checkedIndices: number[];
+  target: Observable<NullableTarget>;
   closePanelFn?: () => void;
 }
 
-export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedIndices, closePanelFn }) => {
+export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedIndices, target: propsTarget, closePanelFn }) => {
   const context = React.useContext(ServiceContext);
   const [heapDumps, setHeapDumps] = React.useState<HeapDump[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
@@ -59,28 +60,34 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
     setLoading(true);
     const tasks: Observable<unknown>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
-
-    heapDumps.forEach((r: HeapDump) => {
-      const idx = getIdxFromHeapDump(r);
-      if (checkedIndices.includes(idx)) {
-        const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
-          (label) => !includesLabel(toDelete, label),
-        );
-
-        tasks.push(context.api.postHeapDumpMetadata(r.heapDumpId, updatedLabels).pipe(first()));
-      }
-    });
     addSubscription(
-      forkJoin(tasks).subscribe({
-        next: handlePostUpdate,
-        error: handlePostUpdate,
+      propsTarget.subscribe((t) => {
+        if (!t) {
+          return;
+        }
+        heapDumps.forEach((r: HeapDump) => {
+          const idx = hashCode(r.heapDumpId);
+          if (checkedIndices.includes(idx)) {
+            const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
+              (label) => !includesLabel(toDelete, label),
+            );
+            tasks.push(context.api.postHeapDumpMetadata(r.heapDumpId, updatedLabels, t).pipe(first()));
+          }
+        });
+        addSubscription(
+          forkJoin(tasks).subscribe({
+            next: () => handlePostUpdate(),
+            error: () => handlePostUpdate(),
+        }),
+        );
       }),
     );
-  }, [
+  },[
     addSubscription,
     context.api,
     getIdxFromHeapDump,
     handlePostUpdate,
+    propsTarget,
     commonLabels,
     savedCommonLabels,
     checkedIndices,
@@ -118,13 +125,15 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
 
   const refreshHeapDumpsList = React.useCallback(() => {
     let observable: Observable<HeapDump[]>;
-    observable = context.target.target().pipe(
+    observable = propsTarget.pipe(
       filter((target) => !!target),
-      concatMap((target: Target) => context.api.getTargetHeapDumps(target)),
+      concatMap((target: Target) => {
+        return context.api.getTargetHeapDumps(target)}),
       first(),
     );
-    addSubscription(observable.subscribe((value) => setHeapDumps(value)));
-  }, [addSubscription, context.target, context.api]);
+    addSubscription(observable.subscribe((value) => {
+      setHeapDumps(value)}));
+  }, [addSubscription, propsTarget, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
@@ -137,15 +146,15 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
   );
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshHeapDumpsList));
-  }, [addSubscription, context, context.target, refreshHeapDumpsList]);
+    addSubscription(propsTarget.subscribe(refreshHeapDumpsList));
+  }, [addSubscription, context, propsTarget, refreshHeapDumpsList]);
 
   // Depends only on HeapDumpMetadataUpdated notifications
   // since updates on list of heap dumps will mount a completely new BulkEditLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        propsTarget,
         context.notificationChannel.messages(NotificationCategory.HeapDumpMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
@@ -170,7 +179,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
         });
       }),
     );
-  }, [addSubscription, context.target, context.notificationChannel, setHeapDumps]);
+  }, [addSubscription, propsTarget, context.notificationChannel, setHeapDumps]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);

@@ -22,26 +22,29 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { BulkEditHeapDumpLabels } from './BulkEditHeapDumpLabels';
+import { NullableTarget } from '@app/Shared/Services/api.types';
+import { Observable } from 'rxjs';
 
 export interface HeapDumpLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   checkedIndices: number[];
+  target: Observable<NullableTarget>;
 }
 
-export const HeapDumpLabelsPanel: React.FC<HeapDumpLabelsPanelProps> = (props) => {
+export const HeapDumpLabelsPanel: React.FC<HeapDumpLabelsPanelProps> = ({ checkedIndices, target: propsTarget, setShowPanel }) => {
   return (
     <DrawerPanelContent isResizable>
       <DrawerHead>
         <DrawerActions>
           <DrawerCloseButton
-            onClick={() => props.setShowPanel(false)}
+            onClick={() => setShowPanel(false)}
             data-testid="hide-table-actions-panel"
             aria-label="hide table actions panel"
           />
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>
-        <BulkEditHeapDumpLabels checkedIndices={props.checkedIndices} closePanelFn={() => props.setShowPanel(false)} />
+        <BulkEditHeapDumpLabels checkedIndices={checkedIndices} closePanelFn={() => setShowPanel(false)} target={propsTarget}/>
       </DrawerPanelBody>
     </DrawerPanelContent>
   );

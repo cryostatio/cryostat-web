@@ -22,19 +22,22 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { BulkEditThreadDumpLabels } from './BulkEditThreadDumpLabels';
+import { Observable } from 'rxjs';
+import { NullableTarget } from '@app/Shared/Services/api.types';
 
 export interface ThreadDumpLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   checkedIndices: number[];
+  target: Observable<NullableTarget>;
 }
 
-export const ThreadDumpLabelsPanel: React.FC<ThreadDumpLabelsPanelProps> = (props) => {
+export const ThreadDumpLabelsPanel: React.FC<ThreadDumpLabelsPanelProps> = ({ checkedIndices, target: propsTarget, setShowPanel }) => {
   return (
     <DrawerPanelContent isResizable>
       <DrawerHead>
         <DrawerActions>
           <DrawerCloseButton
-            onClick={() => props.setShowPanel(false)}
+            onClick={() => setShowPanel(false)}
             data-testid="hide-table-actions-panel"
             aria-label="hide table actions panel"
           />
@@ -42,8 +45,9 @@ export const ThreadDumpLabelsPanel: React.FC<ThreadDumpLabelsPanelProps> = (prop
       </DrawerHead>
       <DrawerPanelBody>
         <BulkEditThreadDumpLabels
-          checkedIndices={props.checkedIndices}
-          closePanelFn={() => props.setShowPanel(false)}
+          checkedIndices={checkedIndices}
+          target={propsTarget}
+          closePanelFn={() => setShowPanel(false)}
         />
       </DrawerPanelBody>
     </DrawerPanelContent>

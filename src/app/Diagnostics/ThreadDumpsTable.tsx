@@ -370,7 +370,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
   }, [setShowLabelsPanel]);
 
   const LabelsPanel = React.useMemo(
-    () => <ThreadDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} />,
+    () => <ThreadDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} target={propsTarget}/>,
     [checkedIndices, setShowLabelsPanel],
   );
 
