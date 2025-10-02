@@ -80,13 +80,13 @@ const tableColumns: TableColumn[] = [
     sortable: true,
   },
   {
+    title: 'Labels',
+    keyPaths: ['metadata', 'labels'],
+  },
+  {
     title: 'Size',
     keyPaths: ['size'],
     sortable: true,
-  },
-  {
-    title: 'Labels',
-    keyPaths: ['metadata', 'labels'],
   },
 ];
 
@@ -370,8 +370,10 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
   }, [setShowLabelsPanel]);
 
   const LabelsPanel = React.useMemo(
-    () => <ThreadDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} target={propsTarget}/>,
-    [checkedIndices, setShowLabelsPanel],
+    () => (
+      <ThreadDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} target={propsTarget} />
+    ),
+    [checkedIndices, propsTarget, setShowLabelsPanel],
   );
 
   const threadDumpsToolbar = React.useMemo(
@@ -576,16 +578,16 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
             id={`thread-dump-table-row-${index}-check`}
           />
         </Td>
-        <Td key={`active-table-row-${index}_1`} dataLabel={tableColumns[1].title}>
+        <Td key={`thread-dump-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
+          {threadDump.threadDumpId}
+        </Td>
+        <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
           <Timestamp
             className="thread-dump-table__timestamp"
             tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(threadDump.lastModified).toISOString() }}
           >
             {dayjs(threadDump.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>
-        </Td>
-        <Td key={`thread-dump-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
-          {threadDump.threadDumpId}
         </Td>
         <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
           <LabelCell

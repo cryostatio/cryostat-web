@@ -41,7 +41,11 @@ export interface BulkEditLabelsProps {
   closePanelFn?: () => void;
 }
 
-export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedIndices, target: propsTarget, closePanelFn }) => {
+export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
+  checkedIndices,
+  target: propsTarget,
+  closePanelFn,
+}) => {
   const context = React.useContext(ServiceContext);
   const [heapDumps, setHeapDumps] = React.useState<HeapDump[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
@@ -49,8 +53,6 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
-
-  const getIdxFromHeapDump = React.useCallback((r: HeapDump): number => hashCode(r.heapDumpId), []);
 
   const handlePostUpdate = React.useCallback(() => {
     setLoading(false);
@@ -78,14 +80,13 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
           forkJoin(tasks).subscribe({
             next: () => handlePostUpdate(),
             error: () => handlePostUpdate(),
-        }),
+          }),
         );
       }),
     );
-  },[
+  }, [
     addSubscription,
     context.api,
-    getIdxFromHeapDump,
     handlePostUpdate,
     propsTarget,
     commonLabels,
@@ -104,7 +105,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
       const allHeapDumpLabels: KeyValue[][] = [];
 
       heapDumps.forEach((r: HeapDump) => {
-        const idx = getIdxFromHeapDump(r);
+        const idx = hashCode(r.heapDumpId);
         if (checkedIndices.includes(idx)) {
           allHeapDumpLabels.push(r.metadata.labels);
         }
@@ -120,7 +121,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
 
       setLabels(updatedCommonLabels);
     },
-    [heapDumps, getIdxFromHeapDump, checkedIndices],
+    [heapDumps, checkedIndices],
   );
 
   const refreshHeapDumpsList = React.useCallback(() => {
@@ -128,11 +129,15 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedI
     observable = propsTarget.pipe(
       filter((target) => !!target),
       concatMap((target: Target) => {
-        return context.api.getTargetHeapDumps(target)}),
+        return context.api.getTargetHeapDumps(target);
+      }),
       first(),
     );
-    addSubscription(observable.subscribe((value) => {
-      setHeapDumps(value)}));
+    addSubscription(
+      observable.subscribe((value) => {
+        setHeapDumps(value);
+      }),
+    );
   }, [addSubscription, propsTarget, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(

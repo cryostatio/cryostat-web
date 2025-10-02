@@ -81,13 +81,13 @@ const tableColumns: TableColumn[] = [
     sortable: true,
   },
   {
+    title: 'Labels',
+    keyPaths: ['metadata', 'labels'],
+  },
+  {
     title: 'Size',
     keyPaths: ['size'],
     sortable: true,
-  },
-  {
-    title: 'Labels',
-    keyPaths: ['metadata', 'labels'],
   },
 ];
 
@@ -368,8 +368,10 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
   }, [setShowLabelsPanel]);
 
   const LabelsPanel = React.useMemo(
-    () => <HeapDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} target={propsTarget}/>,
-    [checkedIndices, setShowLabelsPanel],
+    () => (
+      <HeapDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} target={propsTarget} />
+    ),
+    [checkedIndices, propsTarget, setShowLabelsPanel],
   );
 
   const heapDumpsToolbar = React.useMemo(
@@ -581,16 +583,16 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
             id={`heap-dump-table-row-${index}-check`}
           />
         </Td>
-        <Td key={`active-table-row-${index}_1`} dataLabel={tableColumns[1].title}>
+        <Td key={`heap-dump-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
+          {heapDump.heapDumpId}
+        </Td>
+        <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
           <Timestamp
             className="thread-dump-table__timestamp"
             tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(heapDump.lastModified).toISOString() }}
           >
             {dayjs(heapDump.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>
-        </Td>
-        <Td key={`heap-dump-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
-          {heapDump.heapDumpId}
         </Td>
         <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
           <LabelCell
@@ -602,7 +604,7 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
             labels={heapDump.metadata.labels}
           />
         </Td>
-        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1].title}>
+        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
           {formatBytes(heapDump.size ?? 0)}
         </Td>
         {<HeapDumpAction heapDump={heapDump} index={index} onDownload={onDownload} />}

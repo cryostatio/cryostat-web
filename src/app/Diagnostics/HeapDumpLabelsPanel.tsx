@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { NullableTarget } from '@app/Shared/Services/api.types';
 import {
   DrawerActions,
   DrawerCloseButton,
@@ -21,9 +22,8 @@ import {
   DrawerPanelContent,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { BulkEditHeapDumpLabels } from './BulkEditHeapDumpLabels';
-import { NullableTarget } from '@app/Shared/Services/api.types';
 import { Observable } from 'rxjs';
+import { BulkEditHeapDumpLabels } from './BulkEditHeapDumpLabels';
 
 export interface HeapDumpLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
@@ -31,7 +31,11 @@ export interface HeapDumpLabelsPanelProps {
   target: Observable<NullableTarget>;
 }
 
-export const HeapDumpLabelsPanel: React.FC<HeapDumpLabelsPanelProps> = ({ checkedIndices, target: propsTarget, setShowPanel }) => {
+export const HeapDumpLabelsPanel: React.FC<HeapDumpLabelsPanelProps> = ({
+  checkedIndices,
+  target: propsTarget,
+  setShowPanel,
+}) => {
   return (
     <DrawerPanelContent isResizable>
       <DrawerHead>
@@ -44,7 +48,11 @@ export const HeapDumpLabelsPanel: React.FC<HeapDumpLabelsPanelProps> = ({ checke
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>
-        <BulkEditHeapDumpLabels checkedIndices={checkedIndices} closePanelFn={() => setShowPanel(false)} target={propsTarget}/>
+        <BulkEditHeapDumpLabels
+          checkedIndices={checkedIndices}
+          closePanelFn={() => setShowPanel(false)}
+          target={propsTarget}
+        />
       </DrawerPanelBody>
     </DrawerPanelContent>
   );

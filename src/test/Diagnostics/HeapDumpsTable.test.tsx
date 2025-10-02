@@ -55,15 +55,6 @@ const mockHeapDump: HeapDump = {
   metadata: { labels: [{ key: 'someLabel', value: 'someValue' }] },
 };
 
-const anotherMockHeapDump: HeapDump = {
-  downloadUrl: 'someDownloadUrl',
-  heapDumpId: 'anotherUuid',
-  jvmId: mockTarget.jvmId,
-  size: 1,
-  lastModified: 2,
-  metadata: { labels: [{ key: 'someLabel', value: 'someValue' }] },
-};
-
 jest.mock('@app/Diagnostics/BulkEditHeapDumpLabels', () => {
   return {
     BulkEditHeapDumpLabels: (_) => <Text>Edit Heap Dump Labels</Text>,
@@ -81,9 +72,7 @@ jest.mock('@app/Diagnostics/Filters/HeapDumpFilters', () => {
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
-jest
-  .spyOn(defaultServices.api, 'getTargetHeapDumps')
-  .mockReturnValue(of([mockHeapDump])); // All other tests
+jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump])); // All other tests
 
 jest.spyOn(defaultServices.api, 'deleteHeapDump').mockReturnValue(of(true));
 

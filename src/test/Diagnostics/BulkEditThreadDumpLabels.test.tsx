@@ -94,7 +94,7 @@ describe('<BulkEditThreadDumpLabels />', () => {
         routes: [
           {
             path: '/thread-dumps',
-            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -108,7 +108,7 @@ describe('<BulkEditThreadDumpLabels />', () => {
         routes: [
           {
             path: '/thread-dumps',
-            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -127,7 +127,7 @@ describe('<BulkEditThreadDumpLabels />', () => {
         routes: [
           {
             path: '/thread-dumps',
-            element: <BulkEditThreadDumpLabels checkedIndices={emptycheckIndices} />,
+            element: <BulkEditThreadDumpLabels checkedIndices={emptycheckIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -143,7 +143,7 @@ describe('<BulkEditThreadDumpLabels />', () => {
         routes: [
           {
             path: '/thread-dumps',
-            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -165,7 +165,13 @@ describe('<BulkEditThreadDumpLabels />', () => {
         routes: [
           {
             path: '/thread-dumps',
-            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} closePanelFn={closeFn} />,
+            element: (
+              <BulkEditThreadDumpLabels
+                checkedIndices={checkedIndices}
+                closePanelFn={closeFn}
+                target={of(mockTarget)}
+              />
+            ),
           },
         ],
       },
@@ -189,7 +195,7 @@ describe('<BulkEditThreadDumpLabels />', () => {
         routes: [
           {
             path: '/thread-dump',
-            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditThreadDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },

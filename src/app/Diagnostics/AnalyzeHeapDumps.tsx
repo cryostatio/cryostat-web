@@ -70,12 +70,7 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
               <TargetContextSelector />
             </StackItem>
             <StackItem>
-              {target ? (
-                <HeapDumpsTable target={targetAsObs} isNestedTable={false} />
-              ) : (
-                // FIXME this should be an "AllTargetsHeapDumpsTable" like the AllTargetsArchivedRecordingsTable
-                <AllTargetsHeapDumpsTable />
-              )}
+              {target ? <HeapDumpsTable target={targetAsObs} isNestedTable={false} /> : <AllTargetsHeapDumpsTable />}
             </StackItem>
           </Stack>
         </Tab>

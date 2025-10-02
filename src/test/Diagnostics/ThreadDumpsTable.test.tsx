@@ -58,15 +58,6 @@ const mockThreadDump: ThreadDump = {
   metadata: { labels: [{ key: 'someLabel', value: 'someValue' }] },
 };
 
-const anotherMockThreadDump: ThreadDump = {
-  downloadUrl: 'someDownloadUrl',
-  threadDumpId: 'anotherUuid',
-  jvmId: mockTarget.jvmId,
-  size: 1,
-  lastModified: 2,
-  metadata: { labels: [{ key: 'someLabel', value: 'someValue' }] },
-};
-
 jest.mock('@app/Diagnostics/BulkEditThreadDumpLabels', () => {
   return {
     BulkEditThreadDumpLabels: (_) => <Text>Edit Thread Dump Labels</Text>,
@@ -84,9 +75,7 @@ jest.mock('@app/Diagnostics/Filters/ThreadDumpFilters', () => {
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
-jest
-  .spyOn(defaultServices.api, 'getTargetThreadDumps')
-  .mockReturnValue(of([mockThreadDump])); // All other tests
+jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockReturnValue(of([mockThreadDump])); // All other tests
 
 jest.spyOn(defaultServices.api, 'deleteThreadDump').mockReturnValue(of(true));
 

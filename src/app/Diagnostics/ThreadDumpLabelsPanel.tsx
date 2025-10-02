@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { NullableTarget } from '@app/Shared/Services/api.types';
 import {
   DrawerActions,
   DrawerCloseButton,
@@ -21,9 +22,8 @@ import {
   DrawerPanelContent,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { BulkEditThreadDumpLabels } from './BulkEditThreadDumpLabels';
 import { Observable } from 'rxjs';
-import { NullableTarget } from '@app/Shared/Services/api.types';
+import { BulkEditThreadDumpLabels } from './BulkEditThreadDumpLabels';
 
 export interface ThreadDumpLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
@@ -31,7 +31,11 @@ export interface ThreadDumpLabelsPanelProps {
   target: Observable<NullableTarget>;
 }
 
-export const ThreadDumpLabelsPanel: React.FC<ThreadDumpLabelsPanelProps> = ({ checkedIndices, target: propsTarget, setShowPanel }) => {
+export const ThreadDumpLabelsPanel: React.FC<ThreadDumpLabelsPanelProps> = ({
+  checkedIndices,
+  target: propsTarget,
+  setShowPanel,
+}) => {
   return (
     <DrawerPanelContent isResizable>
       <DrawerHead>

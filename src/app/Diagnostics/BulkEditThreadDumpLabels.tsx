@@ -41,7 +41,11 @@ export interface BulkEditLabelsProps {
   closePanelFn?: () => void;
 }
 
-export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checkedIndices, target: propsTarget, closePanelFn }) => {
+export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
+  checkedIndices,
+  target: propsTarget,
+  closePanelFn,
+}) => {
   const context = React.useContext(ServiceContext);
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
   const [commonLabels, setCommonLabels] = React.useState<KeyValue[]>([]);
@@ -49,8 +53,6 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
-
-  const getIdxFromThreadDump = React.useCallback((r: ThreadDump): number => hashCode(r.threadDumpId), []);
 
   const handlePostUpdate = React.useCallback(() => {
     setLoading(false);
@@ -71,21 +73,20 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
             const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
-            tasks.push(context.api.postHeapDumpMetadata(r.threadDumpId, updatedLabels, t).pipe(first()));
+            tasks.push(context.api.postThreadDumpMetadata(r.threadDumpId, updatedLabels, t).pipe(first()));
           }
         });
         addSubscription(
           forkJoin(tasks).subscribe({
             next: () => handlePostUpdate(),
             error: () => handlePostUpdate(),
-        }),
+          }),
         );
       }),
     );
   }, [
     addSubscription,
     context.api,
-    getIdxFromThreadDump,
     handlePostUpdate,
     propsTarget,
     commonLabels,
@@ -104,7 +105,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
       const allThreadDumpLabels: KeyValue[][] = [];
 
       threadDumps.forEach((r: ThreadDump) => {
-        const idx = getIdxFromThreadDump(r);
+        const idx = hashCode(r.threadDumpId);
         if (checkedIndices.includes(idx)) {
           allThreadDumpLabels.push(r.metadata.labels);
         }
@@ -120,7 +121,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({ checke
 
       setLabels(updatedCommonLabels);
     },
-    [threadDumps, getIdxFromThreadDump, checkedIndices],
+    [threadDumps, checkedIndices],
   );
 
   const refreshThreadDumpsList = React.useCallback(() => {

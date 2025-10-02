@@ -94,7 +94,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
         routes: [
           {
             path: '/heapdumps',
-            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -108,7 +108,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
         routes: [
           {
             path: '/heapdumps',
-            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -127,7 +127,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
         routes: [
           {
             path: '/heapdumps',
-            element: <BulkEditHeapDumpLabels checkedIndices={emptycheckIndices} />,
+            element: <BulkEditHeapDumpLabels checkedIndices={emptycheckIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -143,7 +143,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
         routes: [
           {
             path: '/heapdumps',
-            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },
@@ -165,7 +165,9 @@ describe('<BulkEditHeapDumpLabels />', () => {
         routes: [
           {
             path: '/heapdumps',
-            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} closePanelFn={closeFn} />,
+            element: (
+              <BulkEditHeapDumpLabels checkedIndices={checkedIndices} closePanelFn={closeFn} target={of(mockTarget)} />
+            ),
           },
         ],
       },
@@ -189,7 +191,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
         routes: [
           {
             path: '/heapdump',
-            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} />,
+            element: <BulkEditHeapDumpLabels checkedIndices={checkedIndices} target={of(mockTarget)} />,
           },
         ],
       },
