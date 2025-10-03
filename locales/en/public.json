@@ -385,6 +385,7 @@
     "DIAGNOSTICS_CARD_TITLE": "Diagnostics",
     "DIAGNOSTICS_GC_BUTTON": "Invoke Garbage Collection",
     "DIAGNOSTICS_HEAP_DUMP_BUTTON": "Invoke Heap Dump",
+    "DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED": "Heap Dump collection requires the Cryostat Agent",
     "DIAGNOSTICS_HEAP_REDIRECT_BUTTON": "View collected Heap Dumps",
     "DIAGNOSTICS_THREAD_DUMP_BUTTON": "Invoke Thread Dump",
     "DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP": "View captured Thread Dumps",
