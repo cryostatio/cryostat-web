@@ -86,6 +86,8 @@ const mockThreadDump: ThreadDump = {
   downloadUrl: 'someDownloadUrl',
   threadDumpId: 'someUuid',
   jvmId: mockTarget1.jvmId,
+  size: 1,
+  metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
 };
 
 const mockCount1 = 1;

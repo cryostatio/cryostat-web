@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { defaultHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
+import { defaultThreadDumpFilters } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
 import {
   defaultAutomatedAnalysisFilters,
   defaultNavMenuConfigs,
@@ -166,6 +168,8 @@ export const basePreloadedState: RootState = {
   navMenuConfigs: defaultNavMenuConfigs,
   dashboardConfigs: defaultDashboardConfigs,
   recordingFilters: defaultRecordingFilters,
+  heapDumpFilters: defaultHeapDumpFilters,
+  threadDumpFilters: defaultThreadDumpFilters,
   automatedAnalysisFilters: defaultAutomatedAnalysisFilters,
   topologyConfigs: defaultTopologyConfig,
   topologyFilters: defaultTopologyFilters,
