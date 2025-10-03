@@ -355,7 +355,6 @@ exports[`<EventTypes /> renders correctly 1`] = `
           tabIndex={-1}
         />
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
@@ -401,7 +400,6 @@ exports[`<EventTypes /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
@@ -447,7 +445,6 @@ exports[`<EventTypes /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}
@@ -493,7 +490,6 @@ exports[`<EventTypes /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          aria-sort="none"
           className="pf-v5-c-table__th pf-v5-c-table__sort"
           onBlur={[Function]}
           onFocus={[Function]}

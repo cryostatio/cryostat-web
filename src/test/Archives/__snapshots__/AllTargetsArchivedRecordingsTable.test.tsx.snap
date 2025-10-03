@@ -146,7 +146,6 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
             </span>
           </th>
           <th
-            aria-sort="none"
             className="pf-v5-c-table__th pf-v5-c-table__sort pf-m-width-80"
             onBlur={[Function]}
             onFocus={[Function]}
@@ -192,7 +191,6 @@ exports[`<AllTargetsArchivedRecordingsTable /> renders correctly 1`] = `
             </button>
           </th>
           <th
-            aria-sort="none"
             className="pf-v5-c-table__th pf-v5-c-table__sort pf-m-width-15"
             onBlur={[Function]}
             onFocus={[Function]}
