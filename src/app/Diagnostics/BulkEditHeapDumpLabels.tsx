@@ -63,10 +63,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
     const tasks: Observable<unknown>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
     addSubscription(
-      propsTarget.subscribe((t) => {
-        if (!t) {
-          return;
-        }
+      propsTarget.pipe(filter((t) => !!t)).subscribe((t) => {
         heapDumps.forEach((r: HeapDump) => {
           const idx = hashCode(r.heapDumpId);
           if (checkedIndices.includes(idx)) {
