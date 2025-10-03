@@ -406,6 +406,16 @@
     },
     "NO_ARCHIVES": "No Heap Dumps"
   },
+  "HeapDumpFilters": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "heap-dump-filters-toggle"
+    }
+  },
+  "HeapDumpActions": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "heap-dump-action-toggle"
+    }
+  },
   "ThreadDumps": {
     "SEARCH_PLACEHOLDER": "Search Thread Dumps",
     "DELETION_FAILURE_CATEGORY": "Thread Dump Deletion Failure",
@@ -415,6 +425,16 @@
       "SEARCH_INPUT": "thread-dump-search-input"
     },
     "NO_ARCHIVES": "No Thread Dumps"
+  },
+  "ThreadDumpFilters": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "thread-dump-filters-toggle"
+    }
+  },
+  "ThreadDumpActions": {
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "thread-dump-action-toggle"
+    }
   },
   "DurationFilter": {
     "ARIA_LABELS": {

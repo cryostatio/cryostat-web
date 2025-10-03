@@ -423,6 +423,14 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.HeapDumpMetadataUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'Heap Dump metadata updated',
+      body: (evt) => `${evt.message.heapDump.heapDumpId} in target ${evt.message.jvmId} metadata was updated`,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.ThreadDumpSuccess,
     {
       variant: AlertVariant.success,
@@ -444,6 +452,14 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Thread Dump Deleted',
       body: (evt) => `${evt.message.threadDump.threadDumpId} was deleted`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ThreadDumpMetadataUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'Thread Dump metadata updated',
+      body: (evt) => `${evt.message.threadDump.threadDumpId} in target ${evt.message.jvmId} metadata was updated`,
     } as NotificationMessageMapper,
   ],
   [
