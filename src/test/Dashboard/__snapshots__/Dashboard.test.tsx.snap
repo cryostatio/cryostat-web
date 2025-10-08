@@ -597,7 +597,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                             </g>
                             <g>
                               <g
-                                clipPath="url(#victory-clip-5)"
+                                clipPath="url(#victory-clip-7)"
                                 style={
                                   {
                                     "height": "100%",
@@ -608,7 +608,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                               >
                                 <defs>
                                   <clipPath
-                                    id="victory-clip-5"
+                                    id="victory-clip-7"
                                   >
                                     <rect
                                       height={230}
