@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
@@ -23,15 +24,18 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
 
-export const Events: React.FC = () => {
+export const Events: React.FC = ({ ...props }) => {
   return (
-    <TargetView pageTitle="Events">
-      <Card isCompact>
-        <CardBody>
-          <EventTabs />
-        </CardBody>
-      </Card>
-    </TargetView>
+    <>
+      <TargetContextSelector />
+      <BreadcrumbPage {...props} pageTitle="Events">
+        <Card>
+          <CardBody isFilled>
+            <EventTabs />
+          </CardBody>
+        </Card>
+      </BreadcrumbPage>
+    </>
   );
 };
 
