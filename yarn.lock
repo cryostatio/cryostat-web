@@ -5013,7 +5013,7 @@ __metadata:
     eslint: ^9.37.0
     eslint-plugin-import: ^2.32.0
     eslint-plugin-react: ^7.37.5
-    eslint-plugin-react-hooks: ^6.1.1
+    eslint-plugin-react-hooks: ^7.0.0
     eslint-plugin-unused-imports: ^4.2.0
     eslint-webpack-plugin: ^5.0.2
     file-loader: ^6.2.0
@@ -6934,17 +6934,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "eslint-plugin-react-hooks@npm:6.1.1"
+"eslint-plugin-react-hooks@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "eslint-plugin-react-hooks@npm:7.0.0"
   dependencies:
     "@babel/core": ^7.24.4
     "@babel/parser": ^7.24.4
+    hermes-parser: ^0.25.1
     zod: ^3.22.4 || ^4.0.0
     zod-validation-error: ^3.0.3 || ^4.0.0
   peerDependencies:
     eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
-  checksum: 9bcef231fa5b95bb3b9b7720c4b437316894997e097b1c2f8a97b726f71102dcfe986e71147b86e971f1916aa4a977e941e37899ec288f659d68cbfc59409721
+  checksum: 2ce87bf30b42b086ed053ed371492e926837dc674fc362a6c3ce5a19d2507f58c29dfbb8fc59e102029acbd9104f86043901bbf56e21035aabaf6746673d3c08
   languageName: node
   linkType: hard
 
@@ -8327,6 +8328,22 @@ __metadata:
   dependencies:
     rsvp: ~3.2.1
   checksum: 5b28d3df4e77ea94293b43c29f0a358381aa811079817f780a1dafc9d244c891a0a713691a3c53d0d2dc31a76484fb36d998e7ae5040ef4b52e8c4a00d2173ae
+  languageName: node
+  linkType: hard
+
+"hermes-estree@npm:0.25.1":
+  version: 0.25.1
+  resolution: "hermes-estree@npm:0.25.1"
+  checksum: 97f42e9178dff61db017810b4f79f5a2cdbb3cde94b7d99ba84ed632ee2adfcae2244555587951b3151fc036676c68f48f57fbe2b49e253eb1f3f904d284a8b0
+  languageName: node
+  linkType: hard
+
+"hermes-parser@npm:^0.25.1":
+  version: 0.25.1
+  resolution: "hermes-parser@npm:0.25.1"
+  dependencies:
+    hermes-estree: 0.25.1
+  checksum: 4edcfaa3030931343b540182b83c432aba4cdcb1925952521ab4cfb7ab90c2c1543dfcb042ccd51d5e81e4bfe2809420e85902c2ff95ef7c6c64644ce17138ea
   languageName: node
   linkType: hard
 
