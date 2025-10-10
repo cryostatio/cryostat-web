@@ -1287,8 +1287,8 @@ export class ApiService {
     );
   }
 
-  postRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
-    return this.target.target().pipe(
+  postRecordingMetadata(recordingName: string, labels: KeyValue[], target: Observable<Target>): Observable<ArchivedRecording[]> {
+    return target.pipe(
       filter((target: Target) => !!target),
       first(),
       concatMap((target) =>

@@ -105,7 +105,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
             } else if (isUploadsTable) {
               tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
             } else {
-              tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first()));
+              tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels, of(t)).pipe(first()));
             }
           }
         });
@@ -234,10 +234,15 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         const isMatch =
           currentTarget?.jvmId === event.message.jvmId ||
           currentTarget?.jvmId === event.message.recording.jvmId ||
-          currentTarget?.jvmId === 'uploads';
+          currentTarget?.jvmId === 'uploads' ||
+          currentTarget?.connectUrl == 'uploads';
+
+        console.log(currentTarget);
+        console.log(event);
 
         setRecordings((oldRecordings) => {
           return oldRecordings.map((recording) => {
+            console.log(recording);
             if (isMatch && recording.name === event.message.recording.name) {
               const updatedRecording = {
                 ...recording,

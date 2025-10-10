@@ -228,6 +228,7 @@ export interface HeapDumpsResponse {
 export interface RecordingDirectory {
   connectUrl: string;
   jvmId: string;
+  targetId: number;
   recordings: ArchivedRecording[];
 }
 
