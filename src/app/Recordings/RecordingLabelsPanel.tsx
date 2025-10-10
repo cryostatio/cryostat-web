@@ -15,7 +15,7 @@
  */
 
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
-import { RecordingDirectory, ArchivedRecording } from '@app/Shared/Services/api.types';
+import { RecordingDirectory, ArchivedRecording, NullableTarget } from '@app/Shared/Services/api.types';
 import {
   DrawerActions,
   DrawerCloseButton,
@@ -24,12 +24,14 @@ import {
   DrawerPanelContent,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { Observable } from 'rxjs';
 
 export interface RecordingLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   isTargetRecording: boolean;
   isUploadsTable?: boolean;
   checkedIndices: number[];
+  target: Observable<NullableTarget>;
   directory?: RecordingDirectory;
   directoryRecordings?: ArchivedRecording[];
 }
@@ -51,6 +53,7 @@ export const RecordingLabelsPanel: React.FC<RecordingLabelsPanelProps> = (props)
           isTargetRecording={props.isTargetRecording}
           checkedIndices={props.checkedIndices}
           isUploadsTable={props.isUploadsTable}
+          target={props.target}
           directory={props.directory}
           directoryRecordings={props.directoryRecordings}
           closePanelFn={() => props.setShowPanel(false)}

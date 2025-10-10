@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
-import { ArchivedRecording } from '@app/Shared/Services/api.types';
+import { ArchivedRecording, Target } from '@app/Shared/Services/api.types';
 import { Drawer, DrawerContent } from '@patternfly/react-core';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { of } from 'rxjs';
 import { render, renderSnapshot } from '../utils';
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
@@ -40,6 +41,17 @@ const mockRecordingLabels = [
   },
 ];
 
+const mockConnectUrl = 'service:jmx:rmi://someUrl';
+const mockJvmId = 'id';
+const mockTarget: Target = {
+  agent: false,
+  connectUrl: mockConnectUrl,
+  alias: 'fooTarget',
+  jvmId: mockJvmId,
+  labels: [],
+  annotations: { cryostat: [], platform: [] },
+};
+
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
@@ -58,6 +70,7 @@ describe('<RecordingLabelsPanel />', () => {
     setShowPanel: jest.fn(() => (_showPanel: boolean) => undefined),
     isTargetRecording: isTargetRecording,
     checkedIndices: checkedIndices,
+    target: of(mockTarget),
     recordings: recordings,
   };
 
