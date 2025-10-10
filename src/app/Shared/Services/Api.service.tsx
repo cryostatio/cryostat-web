@@ -1287,13 +1287,9 @@ export class ApiService {
     );
   }
 
-  postRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
-    return this.target.target().pipe(
-      filter((target: Target) => !!target),
-      first(),
-      concatMap((target) =>
-        this.graphql<any>(
-          `
+  postRecordingMetadata(recordingName: string, labels: KeyValue[], target: Target): Observable<ArchivedRecording[]> {
+    return this.graphql<any>(
+      `
         query PostRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
@@ -1314,13 +1310,13 @@ export class ApiService {
             }
           }
         }`,
-          {
-            id: target.id!,
-            recordingName,
-            labels: labels.map((label) => ({ key: label.key, value: label.value })),
-          },
-        ),
-      ),
+      {
+        id: target.id!,
+        recordingName,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
+      },
+    ).pipe(
+      first(),
       map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings as ArchivedRecording[]) ?? []),
     );
   }
@@ -1416,13 +1412,13 @@ export class ApiService {
     ).pipe(map((v) => (v.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []));
   }
 
-  postTargetRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ActiveRecording[]> {
-    return this.target.target().pipe(
-      filter((target) => !!target),
-      first(),
-      concatMap((target: Target) =>
-        this.graphql<any>(
-          `
+  postTargetRecordingMetadata(
+    recordingName: string,
+    labels: KeyValue[],
+    target: Target,
+  ): Observable<ActiveRecording[]> {
+    return this.graphql<any>(
+      `
         query PostActiveRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
@@ -1443,13 +1439,13 @@ export class ApiService {
             }
           }
         }`,
-          {
-            id: target.id!,
-            recordingName,
-            labels: labels.map((label) => ({ key: label.key, value: label.value })),
-          },
-        ),
-      ),
+      {
+        id: target.id!,
+        recordingName,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
+      },
+    ).pipe(
+      first(),
       map((v) => (v.data?.targetNodes[0]?.target?.activeRecordings as ActiveRecording[]) ?? []),
     );
   }

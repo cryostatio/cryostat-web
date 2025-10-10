@@ -24,6 +24,7 @@ import {
   NotificationCategory,
   Target,
   KeyValue,
+  NullableTarget,
 } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -49,6 +50,7 @@ export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
   isUploadsTable?: boolean;
   checkedIndices: number[];
+  target: Observable<NullableTarget>;
   directory?: RecordingDirectory;
   directoryRecordings?: ArchivedRecording[];
   closePanelFn?: () => void;
@@ -58,6 +60,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   isTargetRecording,
   isUploadsTable,
   checkedIndices,
+  target,
   directory,
   directoryRecordings,
   closePanelFn,
@@ -69,7 +72,6 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
-
   const getIdxFromRecording = React.useCallback(
     (r: Recording): number => (isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
     [isTargetRecording],
@@ -84,29 +86,40 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     const tasks: Observable<unknown>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
-    recordings.forEach((r: Recording) => {
-      const idx = getIdxFromRecording(r);
-      if (checkedIndices.includes(idx)) {
-        const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
-          (label) => !includesLabel(toDelete, label),
-        );
-
-        if (directory) {
-          tasks.push(context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()));
-        }
-        if (isTargetRecording) {
-          tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first()));
-        } else if (isUploadsTable) {
-          tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
-        } else {
-          tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first()));
-        }
-      }
-    });
     addSubscription(
-      forkJoin(tasks).subscribe({
-        next: handlePostUpdate,
-        error: handlePostUpdate,
+      target.pipe(filter((t) => !!t)).subscribe((t) => {
+        console.log("Target: ");
+        console.log(t);
+        recordings.forEach((r: Recording) => {
+          const idx = getIdxFromRecording(r);
+          if (checkedIndices.includes(idx)) {
+            const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
+              (label) => !includesLabel(toDelete, label),
+            );
+
+            if (directory) {
+              tasks.push(
+                context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()),
+              );
+            } 
+            
+            if (isTargetRecording) {
+              tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels, t).pipe(first()));
+            } else if (isUploadsTable) {
+              tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
+            } else {
+              console.log("Calling postRecordingMetadata");
+              console.log(t);
+              tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels, t).pipe(first()));
+            }
+          }
+        });
+        addSubscription(
+          forkJoin(tasks).subscribe({
+            next: handlePostUpdate,
+            error: handlePostUpdate,
+          }),
+        );
       }),
     );
   }, [
@@ -117,6 +130,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     commonLabels,
     savedCommonLabels,
     recordings,
+    target,
     checkedIndices,
     isTargetRecording,
     isUploadsTable,
@@ -157,7 +171,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     if (directoryRecordings) {
       observable = of(directoryRecordings);
     } else if (isTargetRecording) {
-      observable = context.target.target().pipe(
+      observable = target.pipe(
         filter((target) => !!target),
         concatMap((target: Target) => context.api.getTargetActiveRecordings(target)),
         first(),
@@ -187,7 +201,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               map((v) => (v.data?.archivedRecordings?.data as ArchivedRecording[]) ?? []),
               first(),
             )
-        : context.target.target().pipe(
+        : target.pipe(
             filter((target) => !!target),
             concatMap((target: Target) => context.api.getTargetArchivedRecordings(target)),
             first(),
@@ -200,7 +214,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     isTargetRecording,
     isUploadsTable,
     directoryRecordings,
-    context.target,
+    target,
     context.api,
     setRecordings,
   ]);
@@ -216,15 +230,15 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
   );
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshRecordingList));
-  }, [addSubscription, context, context.target, refreshRecordingList]);
+    addSubscription(target.subscribe(refreshRecordingList));
+  }, [addSubscription, context, target, refreshRecordingList]);
 
   // Depends only on RecordingMetadataUpdated notifications
   // since updates on list of recordings will mount a completely new BulkEditLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        isUploadsTable ? of(uploadAsTarget) : context.target.target(),
+        isUploadsTable ? of(uploadAsTarget) : target,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
@@ -251,7 +265,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
         });
       }),
     );
-  }, [addSubscription, context.target, context.notificationChannel, setRecordings, isUploadsTable]);
+  }, [addSubscription, target, context.notificationChannel, setRecordings, isUploadsTable]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);

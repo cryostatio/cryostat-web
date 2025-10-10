@@ -138,7 +138,9 @@ describe('<BulkEditLabels />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+            element: (
+              <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} target={of(mockTarget)} />
+            ),
           },
         ],
       },
@@ -152,7 +154,9 @@ describe('<BulkEditLabels />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+            element: (
+              <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} target={of(mockTarget)} />
+            ),
           },
         ],
       },
@@ -171,7 +175,9 @@ describe('<BulkEditLabels />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} />,
+            element: (
+              <BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} target={of(mockTarget)} />
+            ),
           },
         ],
       },
@@ -187,7 +193,9 @@ describe('<BulkEditLabels />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+            element: (
+              <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} target={of(mockTarget)} />
+            ),
           },
         ],
       },
@@ -208,7 +216,13 @@ describe('<BulkEditLabels />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
+            element: (
+              <BulkEditLabels
+                checkedIndices={archivedCheckedIndices}
+                isTargetRecording={false}
+                target={of(mockTarget)}
+              />
+            ),
           },
         ],
       },
@@ -234,6 +248,7 @@ describe('<BulkEditLabels />', () => {
               <BulkEditLabels
                 checkedIndices={archivedCheckedIndices}
                 isTargetRecording={false}
+                target={of(mockTarget)}
                 closePanelFn={closeFn}
               />
             ),
@@ -260,7 +275,9 @@ describe('<BulkEditLabels />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />,
+            element: (
+              <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} target={of(mockTarget)} />
+            ),
           },
         ],
       },
@@ -284,7 +301,13 @@ describe('<BulkEditLabels />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />,
+            element: (
+              <BulkEditLabels
+                checkedIndices={archivedCheckedIndices}
+                isTargetRecording={false}
+                target={of(mockTarget)}
+              />
+            ),
           },
         ],
       },

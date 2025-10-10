@@ -514,12 +514,13 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         setShowPanel={setShowLabelsPanel}
         isTargetRecording={false}
         isUploadsTable={isUploadsTable}
+        target={propsTarget}
         checkedIndices={checkedIndices}
         directory={propsDirectory}
         directoryRecordings={directoryRecordings}
       />
     ),
-    [checkedIndices, setShowLabelsPanel, isUploadsTable, propsDirectory, directoryRecordings],
+    [checkedIndices, setShowLabelsPanel, isUploadsTable, propsDirectory, propsTarget, directoryRecordings],
   );
 
   const totalArchiveSize = React.useMemo(
