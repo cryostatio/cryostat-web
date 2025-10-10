@@ -1287,9 +1287,13 @@ export class ApiService {
     );
   }
 
-  postRecordingMetadata(recordingName: string, labels: KeyValue[], target: Target): Observable<ArchivedRecording[]> {
-    return this.graphql<any>(
-      `
+  postRecordingMetadata(recordingName: string, labels: KeyValue[]): Observable<ArchivedRecording[]> {
+    return this.target.target().pipe(
+      filter((target: Target) => !!target),
+      first(),
+      concatMap((target) =>
+        this.graphql<any>(
+          `
         query PostRecordingMetadata($id: BigInteger!, $recordingName: String, $labels: [Entry_String_StringInput]) {
           targetNodes(filter: { targetIds: [$id] }) {
             target {
@@ -1310,13 +1314,13 @@ export class ApiService {
             }
           }
         }`,
-      {
-        id: target.id!,
-        recordingName,
-        labels: labels.map((label) => ({ key: label.key, value: label.value })),
-      },
-    ).pipe(
-      first(),
+          {
+            id: target.id!,
+            recordingName,
+            labels: labels.map((label) => ({ key: label.key, value: label.value })),
+          },
+        ),
+      ),
       map((v) => (v.data?.targetNodes[0]?.target?.archivedRecordings as ArchivedRecording[]) ?? []),
     );
   }

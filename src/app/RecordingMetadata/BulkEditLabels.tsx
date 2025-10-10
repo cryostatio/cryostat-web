@@ -88,8 +88,6 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
 
     addSubscription(
       target.pipe(filter((t) => !!t)).subscribe((t) => {
-        console.log("Target: ");
-        console.log(t);
         recordings.forEach((r: Recording) => {
           const idx = getIdxFromRecording(r);
           if (checkedIndices.includes(idx)) {
@@ -101,16 +99,13 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               tasks.push(
                 context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()),
               );
-            } 
-            
+            }
             if (isTargetRecording) {
               tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels, t).pipe(first()));
             } else if (isUploadsTable) {
               tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
             } else {
-              console.log("Calling postRecordingMetadata");
-              console.log(t);
-              tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels, t).pipe(first()));
+              tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first()));
             }
           }
         });
@@ -209,15 +204,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
     }
 
     addSubscription(observable.subscribe((value) => setRecordings(value)));
-  }, [
-    addSubscription,
-    isTargetRecording,
-    isUploadsTable,
-    directoryRecordings,
-    target,
-    context.api,
-    setRecordings,
-  ]);
+  }, [addSubscription, isTargetRecording, isUploadsTable, directoryRecordings, target, context.api, setRecordings]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
