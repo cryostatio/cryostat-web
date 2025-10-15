@@ -35,7 +35,6 @@ export const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
     agent: dir.connectUrl.startsWith('http'),
     connectUrl: dir.connectUrl,
     alias: dir.jvmId,
-    id: dir.targetId,
     labels: [],
     annotations: {
       cryostat: [],

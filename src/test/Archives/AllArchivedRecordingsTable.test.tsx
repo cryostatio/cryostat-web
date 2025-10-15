@@ -73,21 +73,18 @@ const mockRecording: ArchivedRecording = {
 const mockRecordingDirectory1: RecordingDirectory = {
   connectUrl: mockConnectUrl1,
   jvmId: mockJvmId1,
-  targetId: 0,
   recordings: [mockRecording],
 };
 
 const mockRecordingDirectory2: RecordingDirectory = {
   connectUrl: mockConnectUrl2,
   jvmId: mockJvmId2,
-  targetId: 1,
   recordings: [mockRecording],
 };
 
 const mockRecordingDirectory3: RecordingDirectory = {
   connectUrl: mockConnectUrl3,
   jvmId: mockJvmId3,
-  targetId: 2,
   recordings: [mockRecording, mockRecording, mockRecording],
 };
 
@@ -99,7 +96,6 @@ const mockRecordingDirectory3Removed: RecordingDirectory = {
 const mockRecordingDirectory3Added: RecordingDirectory = {
   connectUrl: mockConnectUrl3,
   jvmId: mockJvmId3,
-  targetId: 3,
   recordings: [mockRecording, mockRecording, mockRecording, mockRecording],
 };
 
