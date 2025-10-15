@@ -99,8 +99,7 @@ export const BulkEditLabels: React.FC<BulkEditLabelsProps> = ({
               tasks.push(
                 context.api.postRecordingMetadataForJvmId(directory.jvmId, r.name, updatedLabels).pipe(first()),
               );
-            }
-            else if (isTargetRecording) {
+            } else if (isTargetRecording) {
               tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels, t).pipe(first()));
             } else if (isUploadsTable) {
               tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
