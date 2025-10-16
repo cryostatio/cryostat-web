@@ -797,14 +797,6 @@
     "TOGGLE_LABEL": "Select Target",
     "TOGGLE_PLACEHOLDER": "Select a Target"
   },
-  "TargetSelect": {
-    "ARIA_LABELS": {
-      "CARD_DETAILS": "Details"
-    },
-    "CARD": {
-      "TITLE": "Target JVM"
-    }
-  },
   "ThemeToggle": {
     "ARIA_LABELS": {
       "DARK_THEME": "dark-theme",
