@@ -57,6 +57,7 @@ import {
   OverflowMenuControl,
   Timestamp,
   TimestampTooltipVariant,
+  Divider,
 } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Table, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
@@ -476,7 +477,7 @@ export interface ThreadDumpActionProps {
   onDownload: (threadDump: ThreadDump) => void;
 }
 
-export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDownload }) => {
+export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDownload, ...props }) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -490,48 +491,54 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
     ] as RowAction[];
   }, [onDownload, threadDump]);
 
-  const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
-
-  const dropdownItems = React.useMemo(
-    () =>
-      actionItems.map((action) => (
-        <DropdownItem
-          aria-label={action.key}
-          key={action.key}
-          onClick={() => {
-            setIsOpen(false);
-            action.onClick && action.onClick();
-          }}
-          data-quickstart-id={action.key}
-        >
-          {action.title}
-        </DropdownItem>
-      )),
-    [actionItems, setIsOpen],
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={() => setIsOpen((isOpen) => !isOpen)}
+        isExpanded={isOpen}
+        variant="plain"
+        data-quickstart-id="recording-kebab"
+        aria-label={t('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')}
+      >
+        <EllipsisVIcon />
+      </MenuToggle>
+    ),
+    [t, setIsOpen, isOpen],
   );
 
   return (
-    <Dropdown
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          aria-label={t('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')}
-          variant="plain"
-          ref={toggleRef}
-          onClick={(event) => handleToggle(event, !isOpen)}
-        >
-          <EllipsisVIcon />
-        </MenuToggle>
-      )}
-      onOpenChange={setIsOpen}
-      onOpenChangeKeys={['Escape']}
-      isOpen={isOpen}
-      popperProps={{
-        position: 'right',
-        enableFlip: true,
-      }}
-    >
-      <DropdownList>{dropdownItems}</DropdownList>
-    </Dropdown>
+    <Td {...props} isActionCell>
+      <Dropdown
+        toggle={toggle}
+        popperProps={{
+          enableFlip: true,
+          position: 'right',
+        }}
+        isOpen={isOpen}
+        onOpenChange={(isOpen) => setIsOpen(isOpen)}
+        onOpenChangeKeys={['Escape']}
+      >
+        <DropdownList>
+          {actionItems.map((action) =>
+            action.isSeparator ? (
+              <Divider />
+            ) : (
+              <DropdownItem
+                key={action.key}
+                onClick={() => {
+                  setIsOpen(false);
+                  action.onClick && action.onClick();
+                }}
+                data-quickstart-id={action.key}
+              >
+                {action.title}
+              </DropdownItem>
+            ),
+          )}
+        </DropdownList>
+      </Dropdown>
+    </Td>
   );
 };
 
