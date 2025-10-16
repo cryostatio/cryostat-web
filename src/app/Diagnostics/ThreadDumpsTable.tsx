@@ -519,6 +519,7 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
           variant="plain"
           ref={toggleRef}
           onClick={(event) => handleToggle(event, !isOpen)}
+          data-quickstart-id="thread-dumps-kebab"
         >
           <EllipsisVIcon />
         </MenuToggle>
@@ -576,6 +577,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
             onChange={handleCheck}
             isChecked={checkedIndices.includes(index)}
             id={`thread-dump-table-row-${index}-check`}
+            data-quickstart-id={`thread-dumps-check-box`}
           />
         </Td>
         <Td key={`thread-dump-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
@@ -682,7 +684,12 @@ const ThreadDumpsToolbar: React.FC<ThreadDumpsTableToolbarProps> = (props) => {
     return [
       {
         default: (
-          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
+          <Button
+            variant="secondary"
+            onClick={props.handleEditLabels}
+            isDisabled={!props.checkedIndices.length}
+            data-quickstart-id="thread-dumps-edit-labels"
+          >
             Edit Labels
           </Button>
         ),

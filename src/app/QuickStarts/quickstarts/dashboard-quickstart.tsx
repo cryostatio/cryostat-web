@@ -88,6 +88,7 @@ The following Dashboard Cards are available:
 - **Automated analysis**
 - **JFR Metrics Chart (BETA)**
 - **MBean Metrics Chart**
+- **Diagnostics**
 
 Each card displays a different set of information about the currently selected Target JVM, such as the heap usage, thread statistics, JVM vendor, and more.
 
