@@ -40,6 +40,7 @@ import {
   ActionListItem,
   SplitItem,
   Split,
+  Truncate,
 } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
@@ -164,7 +165,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
                 key={t.connectUrl}
                 description={t.connectUrl}
               >
-                {t.alias}
+                <Truncate content={t.alias} />
               </DropdownItem>
             ))}
         </DropdownGroup>
@@ -180,7 +181,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
                 .filter((t) => t !== undefined)
                 .map((t: Target) => (
                   <DropdownItem isFavorited itemId={t} key={`favorited-${t.connectUrl}`} description={t.connectUrl}>
-                    {t.alias}
+                    <Truncate content={t.alias} />
                   </DropdownItem>
                 ))}
             </DropdownGroup>,
@@ -264,9 +265,11 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
                     variant="plainText"
                     icon={selectionPrefix}
                   >
-                    {!selectedTarget
-                      ? t('TargetContextSelector.TOGGLE_PLACEHOLDER')
-                      : getTargetRepresentation(selectedTarget)}
+                    {!selectedTarget ? (
+                      t('TargetContextSelector.TOGGLE_PLACEHOLDER')
+                    ) : (
+                      <Truncate content={getTargetRepresentation(selectedTarget)} />
+                    )}
                   </MenuToggle>
                 )}
                 popperProps={{
