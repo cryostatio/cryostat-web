@@ -433,7 +433,6 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
                 <Table borders={false}>
                   <Tbody>
                     <Tr>
-                      <Td></Td>
                       <Td width={15}>
                         <b>Total size: {formatBytes(totalArchiveSize)}</b>
                       </Td>
@@ -581,7 +580,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
         <Td key={`thread-dump-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
           {threadDump.threadDumpId}
         </Td>
-        <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
+        <Td key={`thread-dump-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
           <Timestamp
             className="thread-dump-table__timestamp"
             tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(threadDump.lastModified).toISOString() }}
@@ -589,7 +588,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
             {dayjs(threadDump.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>
         </Td>
-        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
+        <Td key={`thread-dump-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
           <LabelCell
             target={currentSelectedTargetURL}
             clickableOptions={{
@@ -599,7 +598,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
             labels={threadDump.metadata.labels}
           />
         </Td>
-        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1].title}>
+        <Td key={`thread-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
           {formatBytes(threadDump.size ?? 0)}
         </Td>
         {<ThreadDumpAction threadDump={threadDump} onDownload={onDownload} />}
