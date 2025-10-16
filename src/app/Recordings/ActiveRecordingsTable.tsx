@@ -78,7 +78,7 @@ import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { combineLatest, forkJoin, Observable, Subject } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
@@ -529,8 +529,15 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const LabelsPanel = React.useMemo(
-    () => <RecordingLabelsPanel setShowPanel={setShowPanel} isTargetRecording={true} checkedIndices={checkedIndices} />,
-    [checkedIndices, setShowPanel],
+    () => (
+      <RecordingLabelsPanel
+        setShowPanel={setShowPanel}
+        isTargetRecording={true}
+        checkedIndices={checkedIndices}
+        target={of(target)}
+      />
+    ),
+    [checkedIndices, setShowPanel, target],
   );
 
   const ReportPanel = React.useMemo(
