@@ -144,7 +144,6 @@ export const DiagnosticsTable: React.FC<DiagnosticsTableProps> = ({
                   isSelected: isHeaderChecked,
                 }}
               />
-              <Th key="table-header-expand" screenReaderText="column space" />
               {tableColumns.columns.map(({ title, sortable }, index) => (
                 <Th key={`table-header-${title}`} sort={sortable ? tableColumns.onSort(index) : undefined}>
                   {title}
