@@ -77,7 +77,7 @@ To capture a **Heap Dump**:
 
 1. Click [Invoke Heap Dump]{{highlight heap-dumps-invoke-btn}} to capture a **Heap Dump**.
 
-After the creation of a Heap Dump, the Heap Dump will be displayed in the **Heap Dumps** table. You can navigate there through the [Sidebar]{{highlight heap-dumps-tab}} or by clicking on the [Archives Button]{{highlight heap-dumps-archive-btn}} next to the capture button. You should be able to see the Heap Dump's ID, start time, file size, and any attached Labels.
+After the creation of a Heap Dump, the Heap Dump will be displayed in the **Heap Dumps** table. You can navigate there through the [Sidebar]{{highlight nav-heapdumps-tab}} or by clicking on the [Archives Button]{{highlight heap-dumps-archive-btn}} next to the capture button. You should be able to see the Heap Dump's ID, start time, file size, and any attached Labels.
 `,
         review: {
           instructions: '#### Verify that you see the Heap Dump within the table.',

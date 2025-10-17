@@ -81,7 +81,7 @@ To capture a **Thread Dump**:
 
 1. Click [Invoke Thread Dump]{{highlight thread-dumps-invoke-btn}} to capture a **Thread Dump**.
 
-After the creation of a Thread Dump, the Thread Dump will be displayed in the **Thread Dumps** table. You can navigate there through the [Sidebar]{{highlight thread-dumps-tab}} or by clicking on the [Archives Button]{{highlight thread-dumps-archive-btn}} next to the capture button. You should be able to see the Thread Dump's ID, start time, file size, and any attached Labels.
+After the creation of a Thread Dump, the Thread Dump will be displayed in the **Thread Dumps** table. You can navigate there through the [Sidebar]{{highlight nav-threaddumps-tab}} or by clicking on the [Archives Button]{{highlight thread-dumps-archive-btn}} next to the capture button. You should be able to see the Thread Dump's ID, start time, file size, and any attached Labels.
 `,
         review: {
           instructions: '#### Verify that you see the Thread Dump within the table.',

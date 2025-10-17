@@ -174,6 +174,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                         <Button
                           variant="primary"
                           onClick={handleThreadDump}
+                          data-quickstart-id="thread-dumps-invoke-btn"
                           spinnerAriaValueText="Invoke Thread Dump"
                           spinnerAriaLabel="invoke-thread-dump"
                           isLoading={runningThreadDump}
@@ -186,6 +187,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                           <Button
                             variant="primary"
                             isAriaDisabled={!threadDumpReady}
+                            data-quickstart-id="thread-dumps-archive-btn"
                             component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
                             icon={<ListIcon />}
                           />
@@ -204,6 +206,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                             variant="primary"
                             isAriaDisabled={!controlEnabled}
                             onClick={handleHeapDump}
+                            data-quickstart-id="heap-dumps-invoke-btn"
                             spinnerAriaValueText="Invoke Heap Dump"
                             spinnerAriaLabel="invoke-heap-dump"
                             isLoading={runningHeapDump}
@@ -217,6 +220,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                           <Button
                             variant="primary"
                             isAriaDisabled={!heapDumpReady}
+                            data-quickstart-id="heap-dumps-archive-btn"
                             component={(props) => <CryostatLink {...props} to="/heapdumps" />}
                             icon={<ListIcon />}
                           />

@@ -211,11 +211,10 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   </StackItem>
                   <StackItem>
                     <ActionList>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="thread-dumps-invoke-btn">
                         <Button
                           variant="primary"
                           onClick={handleThreadDump}
-                          data-quickstart-id="thread-dumps-invoke-btn"
                           spinnerAriaValueText="Invoke Thread Dump"
                           spinnerAriaLabel="invoke-thread-dump"
                           isLoading={runningThreadDump}
@@ -223,12 +222,11 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
                         </Button>
                       </ActionListItem>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="thread-dumps-archive-btn">
                         <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
                           <Button
                             variant="primary"
                             isAriaDisabled={!threadDumpReady}
-                            data-quickstart-id="thread-dumps-archive-btn"
                             component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
                             icon={<ListIcon />}
                           />
@@ -238,7 +236,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   </StackItem>
                   <StackItem>
                     <ActionList>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="heap-dumps-invoke-btn">
                         <Tooltip
                           trigger={controlEnabled ? 'manual' : 'mouseenter focus'}
                           content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED')}
@@ -246,7 +244,6 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           <Button
                             variant="primary"
                             onClick={handleHeapDump}
-                            data-quickstart-id="heap-dumps-invoke-btn"
                             isAriaDisabled={!controlEnabled}
                             spinnerAriaValueText="Invoke Heap Dump"
                             spinnerAriaLabel="invoke-heap-dump"
@@ -256,12 +253,11 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           </Button>
                         </Tooltip>
                       </ActionListItem>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="heap-dumps-archive-btn">
                         <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
                           <Button
                             variant="primary"
                             isAriaDisabled={!(heapDumpReady && controlEnabled)}
-                            data-quickstart-id="heap-dumps-archive-btn"
                             component={(props) => <CryostatLink {...props} to="/heapdumps" />}
                             icon={<ListIcon />}
                           />
