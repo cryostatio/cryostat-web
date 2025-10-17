@@ -975,6 +975,50 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             };
             break;
           }
+          case 'AllTargetsHeapDumps':
+          case 'HeapDumpCountForTarget':
+          case 'HeapDumpsForTarget':
+            data = {
+              targetNodes: [
+                {
+                  target: {
+                    id: 1,
+                    agent: true,
+                    alias: 'Fake Target',
+                    connectUrl: 'http://fake-target.local:1234',
+                    jvmId: '1234',
+                    heapDumps: {
+                      data: [],
+                      aggregate: {
+                        count: 0,
+                      },
+                    },
+                  },
+                },
+              ],
+            };
+            break;
+          case 'AllTargetsThreadDumps':
+          case 'ThreadDumpCountForTarget':
+          case 'ThreadDumpsForTarget':
+            data = {
+              targetNodes: [
+                {
+                  target: {
+                    id: 1,
+                    agent: true,
+                    alias: 'Fake Target',
+                    connectUrl: 'http://fake-target.local:1234',
+                    jvmId: '1234',
+                    threadDumps: {
+                      data: [],
+                      aggregate: { count: 0 },
+                    },
+                  },
+                },
+              ],
+            };
+            break;
           default: {
             const msg = `${JSON.stringify(request.url)} (query: '${name}') currently unsupported in demo`;
             console.error(msg);
@@ -985,6 +1029,17 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       });
       this.get('api/v4/tls/certs', () => {
         return new Response(200, {}, ['/truststore/additional-app.crt']);
+      });
+      this.get('api/beta/diagnostics/targets/:targetId/threaddump', () => []);
+      this.get('api/beta/diagnostics/targets/:targetId/heapdump', () => []);
+      this.post('api/beta/diagnostics/targets/:targetId/threaddump', () => {
+        return new Response(400, {}, 'Unsupported in Demo');
+      });
+      this.post('api/beta/diagnostics/targets/:targetId/heapdump', () => {
+        return new Response(400, {}, 'Unsupported in Demo');
+      });
+      this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
+        return new Response(400, {}, 'Unsupported in Demo');
       });
     },
   });
