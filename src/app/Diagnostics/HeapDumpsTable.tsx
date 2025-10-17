@@ -496,7 +496,7 @@ export const HeapDumpAction: React.FC<HeapDumpActionProps> = ({ heapDump, onDown
         onClick={() => setIsOpen((isOpen) => !isOpen)}
         isExpanded={isOpen}
         variant="plain"
-        data-quickstart-id="recording-kebab"
+        data-quickstart-id="heap-dumps-kebab"
         aria-label={t('HeapDumpActions.ARIA_LABELS.MENU_TOGGLE')}
       >
         <EllipsisVIcon />
@@ -580,6 +580,7 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
             onChange={handleCheck}
             isChecked={checkedIndices.includes(index)}
             id={`heap-dump-table-row-${index}-check`}
+            data-quickstart-id="heap-dumps-check-box"
           />
         </Td>
         <Td key={`heap-dump-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
@@ -686,7 +687,12 @@ const HeapDumpsToolbar: React.FC<HeapDumpsTableToolbarProps> = (props) => {
     return [
       {
         default: (
-          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
+          <Button
+            variant="secondary"
+            onClick={props.handleEditLabels}
+            isDisabled={!props.checkedIndices.length}
+            data-quickstart-id="heap-dumps-edit-labels"
+          >
             Edit Labels
           </Button>
         ),

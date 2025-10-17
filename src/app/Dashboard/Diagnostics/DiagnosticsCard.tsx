@@ -211,7 +211,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   </StackItem>
                   <StackItem>
                     <ActionList>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="thread-dumps-invoke-btn">
                         <Button
                           variant="primary"
                           onClick={handleThreadDump}
@@ -222,7 +222,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
                         </Button>
                       </ActionListItem>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="thread-dumps-archive-btn">
                         <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
                           <Button
                             variant="primary"
@@ -236,7 +236,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                   </StackItem>
                   <StackItem>
                     <ActionList>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="heap-dumps-invoke-btn">
                         <Tooltip
                           trigger={controlEnabled ? 'manual' : 'mouseenter focus'}
                           content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED')}
@@ -253,7 +253,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           </Button>
                         </Tooltip>
                       </ActionListItem>
-                      <ActionListItem>
+                      <ActionListItem data-quickstart-id="heap-dumps-archive-btn">
                         <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
                           <Button
                             variant="primary"
