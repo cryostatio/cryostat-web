@@ -825,8 +825,6 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             break;
           }
           case 'MBeanMXMetricsForTarget': {
-            {
-            }
             data = {
               targetNodes: [
                 {
@@ -1038,6 +1036,9 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(400, {}, 'Unsupported in Demo');
       });
       this.post('api/beta/diagnostics/targets/:targetId/heapdump', () => {
+        return new Response(400, {}, 'Unsupported in Demo');
+      });
+      this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
         return new Response(400, {}, 'Unsupported in Demo');
       });
     },
