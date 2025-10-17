@@ -57,6 +57,7 @@ import {
   OverflowMenuControl,
   Timestamp,
   TimestampTooltipVariant,
+  Divider,
 } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Table, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
@@ -433,7 +434,6 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
                 <Table borders={false}>
                   <Tbody>
                     <Tr>
-                      <Td></Td>
                       <Td width={15}>
                         <b>Total size: {formatBytes(totalArchiveSize)}</b>
                       </Td>
@@ -477,7 +477,7 @@ export interface ThreadDumpActionProps {
   onDownload: (threadDump: ThreadDump) => void;
 }
 
-export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDownload }) => {
+export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDownload, ...props }) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -491,49 +491,54 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
     ] as RowAction[];
   }, [onDownload, threadDump]);
 
-  const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
-
-  const dropdownItems = React.useMemo(
-    () =>
-      actionItems.map((action) => (
-        <DropdownItem
-          aria-label={action.key}
-          key={action.key}
-          onClick={() => {
-            setIsOpen(false);
-            action.onClick && action.onClick();
-          }}
-          data-quickstart-id={action.key}
-        >
-          {action.title}
-        </DropdownItem>
-      )),
-    [actionItems, setIsOpen],
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={() => setIsOpen((isOpen) => !isOpen)}
+        isExpanded={isOpen}
+        variant="plain"
+        data-quickstart-id="recording-kebab"
+        aria-label={t('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')}
+      >
+        <EllipsisVIcon />
+      </MenuToggle>
+    ),
+    [t, setIsOpen, isOpen],
   );
 
   return (
-    <Dropdown
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          aria-label={t('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')}
-          variant="plain"
-          ref={toggleRef}
-          onClick={(event) => handleToggle(event, !isOpen)}
-          data-quickstart-id="thread-dumps-kebab"
-        >
-          <EllipsisVIcon />
-        </MenuToggle>
-      )}
-      onOpenChange={setIsOpen}
-      onOpenChangeKeys={['Escape']}
-      isOpen={isOpen}
-      popperProps={{
-        position: 'right',
-        enableFlip: true,
-      }}
-    >
-      <DropdownList>{dropdownItems}</DropdownList>
-    </Dropdown>
+    <Td {...props} isActionCell>
+      <Dropdown
+        toggle={toggle}
+        popperProps={{
+          enableFlip: true,
+          position: 'right',
+        }}
+        isOpen={isOpen}
+        onOpenChange={(isOpen) => setIsOpen(isOpen)}
+        onOpenChangeKeys={['Escape']}
+      >
+        <DropdownList>
+          {actionItems.map((action) =>
+            action.isSeparator ? (
+              <Divider />
+            ) : (
+              <DropdownItem
+                key={action.key}
+                onClick={() => {
+                  setIsOpen(false);
+                  action.onClick && action.onClick();
+                }}
+                data-quickstart-id={action.key}
+              >
+                {action.title}
+              </DropdownItem>
+            ),
+          )}
+        </DropdownList>
+      </Dropdown>
+    </Td>
   );
 };
 
@@ -583,7 +588,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
         <Td key={`thread-dump-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
           {threadDump.threadDumpId}
         </Td>
-        <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
+        <Td key={`thread-dump-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
           <Timestamp
             className="thread-dump-table__timestamp"
             tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(threadDump.lastModified).toISOString() }}
@@ -591,7 +596,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
             {dayjs(threadDump.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>
         </Td>
-        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
+        <Td key={`thread-dump-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
           <LabelCell
             target={currentSelectedTargetURL}
             clickableOptions={{
@@ -601,7 +606,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
             labels={threadDump.metadata.labels}
           />
         </Td>
-        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1].title}>
+        <Td key={`thread-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
           {formatBytes(threadDump.size ?? 0)}
         </Td>
         {<ThreadDumpAction threadDump={threadDump} onDownload={onDownload} />}
