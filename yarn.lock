@@ -5038,7 +5038,7 @@ __metadata:
     raw-loader: ^4.0.2
     react: ^17.0.2
     react-dom: ^17.0.2
-    react-i18next: ^15.7.3
+    react-i18next: ^16.2.1
     react-joyride: ^2.9.3
     react-redux: ^8.0.5
     react-router-dom: 5.3.x
@@ -12686,14 +12686,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^15.7.3":
-  version: 15.7.3
-  resolution: "react-i18next@npm:15.7.3"
+"react-i18next@npm:^16.2.1":
+  version: 16.2.1
+  resolution: "react-i18next@npm:16.2.1"
   dependencies:
     "@babel/runtime": ^7.27.6
     html-parse-stringify: ^3.0.1
+    use-sync-external-store: ^1.6.0
   peerDependencies:
-    i18next: ">= 25.4.1"
+    i18next: ">= 25.5.2"
     react: ">= 16.8.0"
     typescript: ^5
   peerDependenciesMeta:
@@ -12703,7 +12704,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: f669eb48f1b15ae043f2aaf218d4f4c08c73d77358531cd6b7776b73a996791c5df7b766c4a1f5c9d974a1aa519a8501c4c242908592285b12b14a861a0765e4
+  checksum: e7ee163c7ca20d426fc669985c0c485405a63f45e1b4f3d0c2eca4a1f0ec2ef09ea05ba516ea0e7b982c3dea4f2232812d9de7ad821cd296f18a2dd8c98ba1ec
   languageName: node
   linkType: hard
 
@@ -15571,6 +15572,15 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "use-sync-external-store@npm:1.6.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 61a62e910713adfaf91bdb72ff2cd30e5ba83687accaf3b6e75a903b45bf635f5722e3694af30d83a03e92cb533c0a5c699298d2fef639a03ffc86b469f4eee2
   languageName: node
   linkType: hard
 
