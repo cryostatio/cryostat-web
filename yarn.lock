@@ -2902,13 +2902,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/selenium-webdriver@npm:^4.35.1":
-  version: 4.35.1
-  resolution: "@types/selenium-webdriver@npm:4.35.1"
+"@types/selenium-webdriver@npm:^4.35.3":
+  version: 4.35.3
+  resolution: "@types/selenium-webdriver@npm:4.35.3"
   dependencies:
     "@types/node": "*"
     "@types/ws": "*"
-  checksum: 66d84284adb30e8debe340a94969627510e1e09aae8b902fe2e0462004e18ac0b5e7f465f636d0e411b700f68377ea7197e2a5ba0b1eadb478a26067f23b766b
+  checksum: 37e7846627575c58fe14de55c2c267946c0419b9bcfff5c0c9aebb2fab3f8916bf80d228cff51f7cf294577dcbeee3169808fc67445b2ac6780116033220c665
   languageName: node
   linkType: hard
 
@@ -5088,7 +5088,7 @@ __metadata:
     "@types/lodash": ^4.17.20
     "@types/react": ^17.0.69
     "@types/react-test-renderer": ^17.0.7
-    "@types/selenium-webdriver": ^4.35.1
+    "@types/selenium-webdriver": ^4.35.3
     "@typescript-eslint/eslint-plugin": ^8.46.3
     "@typescript-eslint/parser": ^8.46.1
     concurrently: ^9.2.1
@@ -5132,7 +5132,7 @@ __metadata:
     regenerator-runtime: ^0.14.1
     rimraf: ^6.1.0
     rxjs: ^7.8.2
-    selenium-webdriver: ^4.36.0
+    selenium-webdriver: ^4.38.0
     semver: ^7.7.3
     showdown: ^2.1.0
     style-loader: ^4.0.0
@@ -13692,15 +13692,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:^4.36.0":
-  version: 4.36.0
-  resolution: "selenium-webdriver@npm:4.36.0"
+"selenium-webdriver@npm:^4.38.0":
+  version: 4.38.0
+  resolution: "selenium-webdriver@npm:4.38.0"
   dependencies:
     "@bazel/runfiles": ^6.3.1
     jszip: ^3.10.1
     tmp: ^0.2.5
     ws: ^8.18.3
-  checksum: c003b381a313ffc310c4a5ffeac215789c7c85141defa0ce8fbbac26f1848804e217c661cc6fe4f914196a60118fc75b3fbd6295f1f75f99aef46a69dba0831a
+  checksum: 6ec476c28622de75fb54685ec4cc1ae5cb7ab124a86377aed07850f9ef51accfad49a0e2cd6030f0ef2a278d74418245a30e666c3383cd8749ec5f7ec07a1075
   languageName: node
   linkType: hard
 
