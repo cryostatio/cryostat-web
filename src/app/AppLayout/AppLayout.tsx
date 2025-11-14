@@ -611,15 +611,16 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         } else if (!renderables.length) {
           items = [];
         } else {
+          const navKey = `${group}.${k}`;
           const anyActive = rs.some((r) => isActiveRoute(r));
           items = [
             <NavExpandable
-              key={k}
+              key={navKey}
               title={t(k)}
-              groupId={k}
+              groupId={navKey}
               isActive={anyActive}
-              isExpanded={navExpandedStates[k] ?? true}
-              onExpand={handleNavExpand(k)}
+              isExpanded={navExpandedStates[navKey] ?? true}
+              onExpand={handleNavExpand(navKey)}
             >
               {renderables}
             </NavExpandable>,
