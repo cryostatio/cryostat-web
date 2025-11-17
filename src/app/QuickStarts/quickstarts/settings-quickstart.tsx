@@ -90,6 +90,14 @@ The **Dashboard** tab allows you to configure settings for the various Dashboard
 `,
       },
       {
+        title: 'Go to the **Topology** tab',
+        description: `
+The **Topology** tab allows you to configure settings for the Topology view.
+1. Click [Topology]{{highlight settings-topology-tab}}
+2. Move Automated Analysis Rule types between the Analyzed and Ignored lists to configure how scores and statuses are determined within the Topology view.
+        `,
+      },
+      {
         title: 'Go to the **Advanced** tab',
         description: `
 [APP] has a few advanced settings that can be configured.
