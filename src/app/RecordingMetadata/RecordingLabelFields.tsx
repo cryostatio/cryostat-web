@@ -189,7 +189,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
         </>
       )}
       <LabelGroup
-        categoryName="Recording Labels"
+        categoryName="Labels"
         numLabels={10}
         isEditable
         addLabelControl={

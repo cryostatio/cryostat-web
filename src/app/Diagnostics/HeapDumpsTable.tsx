@@ -607,7 +607,14 @@ export const HeapDumpRow: React.FC<HeapDumpRowProps> = ({
         <Td key={`heap-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
           {formatBytes(heapDump.size ?? 0)}
         </Td>
-        {<HeapDumpAction heapDump={heapDump} index={index} onDownload={onDownload} />}
+        {
+          <HeapDumpAction
+            heapDump={heapDump}
+            index={index}
+            onDownload={onDownload}
+            data-quickstart-id="heap-dumps-kebab"
+          />
+        }
       </Tr>
     );
   }, [
