@@ -609,7 +609,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
         <Td key={`thread-dump-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
           {formatBytes(threadDump.size ?? 0)}
         </Td>
-        {<ThreadDumpAction threadDump={threadDump} onDownload={onDownload} />}
+        {<ThreadDumpAction threadDump={threadDump} onDownload={onDownload} data-quickstart-id="thread-dumps-kebab" />}
       </Tr>
     );
   }, [
