@@ -61,7 +61,7 @@ exports[`<BulkEditHeapDumpLabels /> renders correctly 1`] = `
           className="pf-v5-c-label-group__label"
           id="pf-random-id-0"
         >
-          Recording Labels
+          Labels
         </span>
         <ul
           aria-labelledby="pf-random-id-0"
