@@ -49,6 +49,7 @@ import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DashboardCard } from '../DashboardCard';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
 
@@ -209,62 +210,66 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                       </ActionListItem>
                     </ActionList>
                   </StackItem>
-                  <StackItem>
-                    <ActionList>
-                      <ActionListItem data-quickstart-id="thread-dumps-invoke-btn">
-                        <Button
-                          variant="primary"
-                          onClick={handleThreadDump}
-                          spinnerAriaValueText="Invoke Thread Dump"
-                          spinnerAriaLabel="invoke-thread-dump"
-                          isLoading={runningThreadDump}
-                        >
-                          {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
-                        </Button>
-                      </ActionListItem>
-                      <ActionListItem data-quickstart-id="thread-dumps-archive-btn">
-                        <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                  <FeatureFlag level={FeatureLevel.BETA}>
+                    <StackItem>
+                      <ActionList>
+                        <ActionListItem data-quickstart-id="thread-dumps-invoke-btn">
                           <Button
                             variant="primary"
-                            isAriaDisabled={!threadDumpReady}
-                            component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
-                            icon={<ListIcon />}
-                          />
-                        </Tooltip>
-                      </ActionListItem>
-                    </ActionList>
-                  </StackItem>
-                  <StackItem>
-                    <ActionList>
-                      <ActionListItem data-quickstart-id="heap-dumps-invoke-btn">
-                        <Tooltip
-                          trigger={controlEnabled ? 'manual' : 'mouseenter focus'}
-                          content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED')}
-                        >
-                          <Button
-                            variant="primary"
-                            onClick={handleHeapDump}
-                            isAriaDisabled={!controlEnabled}
-                            spinnerAriaValueText="Invoke Heap Dump"
-                            spinnerAriaLabel="invoke-heap-dump"
-                            isLoading={runningHeapDump}
+                            onClick={handleThreadDump}
+                            spinnerAriaValueText="Invoke Thread Dump"
+                            spinnerAriaLabel="invoke-thread-dump"
+                            isLoading={runningThreadDump}
                           >
-                            {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                            {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
                           </Button>
-                        </Tooltip>
-                      </ActionListItem>
-                      <ActionListItem data-quickstart-id="heap-dumps-archive-btn">
-                        <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
-                          <Button
-                            variant="primary"
-                            isAriaDisabled={!(heapDumpReady && controlEnabled)}
-                            component={(props) => <CryostatLink {...props} to="/heapdumps" />}
-                            icon={<ListIcon />}
-                          />
-                        </Tooltip>
-                      </ActionListItem>
-                    </ActionList>
-                  </StackItem>
+                        </ActionListItem>
+                        <ActionListItem data-quickstart-id="thread-dumps-archive-btn">
+                          <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                            <Button
+                              variant="primary"
+                              isAriaDisabled={!threadDumpReady}
+                              component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
+                              icon={<ListIcon />}
+                            />
+                          </Tooltip>
+                        </ActionListItem>
+                      </ActionList>
+                    </StackItem>
+                  </FeatureFlag>
+                  <FeatureFlag level={FeatureLevel.BETA}>
+                    <StackItem>
+                      <ActionList>
+                        <ActionListItem data-quickstart-id="heap-dumps-invoke-btn">
+                          <Tooltip
+                            trigger={controlEnabled ? 'manual' : 'mouseenter focus'}
+                            content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED')}
+                          >
+                            <Button
+                              variant="primary"
+                              onClick={handleHeapDump}
+                              isAriaDisabled={!controlEnabled}
+                              spinnerAriaValueText="Invoke Heap Dump"
+                              spinnerAriaLabel="invoke-heap-dump"
+                              isLoading={runningHeapDump}
+                            >
+                              {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                            </Button>
+                          </Tooltip>
+                        </ActionListItem>
+                        <ActionListItem data-quickstart-id="heap-dumps-archive-btn">
+                          <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
+                            <Button
+                              variant="primary"
+                              isAriaDisabled={!(heapDumpReady && controlEnabled)}
+                              component={(props) => <CryostatLink {...props} to="/heapdumps" />}
+                              icon={<ListIcon />}
+                            />
+                          </Tooltip>
+                        </ActionListItem>
+                      </ActionList>
+                    </StackItem>
+                  </FeatureFlag>
                 </Stack>
               </EmptyStateFooter>
             </EmptyState>

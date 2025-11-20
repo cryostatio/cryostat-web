@@ -15,8 +15,10 @@
  */
 import { MBeanMetricsChartCard } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { CryostatLink } from '@app/Shared/Components/CryostatLink';
+import { FeatureFlag } from '@app/Shared/Components/FeatureFlag';
 import { NotificationCategory } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -168,66 +170,70 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                       </ActionListItem>
                     </ActionList>
                   </StackItem>
-                  <StackItem>
-                    <ActionList>
-                      <ActionListItem>
-                        <Button
-                          variant="primary"
-                          onClick={handleThreadDump}
-                          data-quickstart-id="thread-dumps-invoke-btn"
-                          spinnerAriaValueText="Invoke Thread Dump"
-                          spinnerAriaLabel="invoke-thread-dump"
-                          isLoading={runningThreadDump}
-                        >
-                          {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
-                        </Button>
-                      </ActionListItem>
-                      <ActionListItem>
-                        <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                  <FeatureFlag level={FeatureLevel.BETA}>
+                    <StackItem>
+                      <ActionList>
+                        <ActionListItem>
                           <Button
                             variant="primary"
-                            isAriaDisabled={!threadDumpReady}
-                            data-quickstart-id="thread-dumps-archive-btn"
-                            component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
-                            icon={<ListIcon />}
-                          />
-                        </Tooltip>
-                      </ActionListItem>
-                    </ActionList>
-                  </StackItem>
-                  <StackItem>
-                    <ActionList>
-                      <ActionListItem>
-                        <Tooltip
-                          trigger={controlEnabled ? 'manual' : 'mouseenter focus'}
-                          content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED')}
-                        >
-                          <Button
-                            variant="primary"
-                            isAriaDisabled={!controlEnabled}
-                            onClick={handleHeapDump}
-                            data-quickstart-id="heap-dumps-invoke-btn"
-                            spinnerAriaValueText="Invoke Heap Dump"
-                            spinnerAriaLabel="invoke-heap-dump"
-                            isLoading={runningHeapDump}
+                            onClick={handleThreadDump}
+                            data-quickstart-id="thread-dumps-invoke-btn"
+                            spinnerAriaValueText="Invoke Thread Dump"
+                            spinnerAriaLabel="invoke-thread-dump"
+                            isLoading={runningThreadDump}
                           >
-                            {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                            {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
                           </Button>
-                        </Tooltip>
-                      </ActionListItem>
-                      <ActionListItem>
-                        <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
-                          <Button
-                            variant="primary"
-                            isAriaDisabled={!heapDumpReady}
-                            data-quickstart-id="heap-dumps-archive-btn"
-                            component={(props) => <CryostatLink {...props} to="/heapdumps" />}
-                            icon={<ListIcon />}
-                          />
-                        </Tooltip>
-                      </ActionListItem>
-                    </ActionList>
-                  </StackItem>
+                        </ActionListItem>
+                        <ActionListItem>
+                          <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_TABLE_TOOLTIP')}>
+                            <Button
+                              variant="primary"
+                              isAriaDisabled={!threadDumpReady}
+                              data-quickstart-id="thread-dumps-archive-btn"
+                              component={(props) => <CryostatLink {...props} to="/thread-dumps" />}
+                              icon={<ListIcon />}
+                            />
+                          </Tooltip>
+                        </ActionListItem>
+                      </ActionList>
+                    </StackItem>
+                  </FeatureFlag>
+                  <FeatureFlag level={FeatureLevel.BETA}>
+                    <StackItem>
+                      <ActionList>
+                        <ActionListItem>
+                          <Tooltip
+                            trigger={controlEnabled ? 'manual' : 'mouseenter focus'}
+                            content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON_DISABLED')}
+                          >
+                            <Button
+                              variant="primary"
+                              isAriaDisabled={!controlEnabled}
+                              onClick={handleHeapDump}
+                              data-quickstart-id="heap-dumps-invoke-btn"
+                              spinnerAriaValueText="Invoke Heap Dump"
+                              spinnerAriaLabel="invoke-heap-dump"
+                              isLoading={runningHeapDump}
+                            >
+                              {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                            </Button>
+                          </Tooltip>
+                        </ActionListItem>
+                        <ActionListItem>
+                          <Tooltip content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_REDIRECT_BUTTON')}>
+                            <Button
+                              variant="primary"
+                              isAriaDisabled={!heapDumpReady}
+                              data-quickstart-id="heap-dumps-archive-btn"
+                              component={(props) => <CryostatLink {...props} to="/heapdumps" />}
+                              icon={<ListIcon />}
+                            />
+                          </Tooltip>
+                        </ActionListItem>
+                      </ActionList>
+                    </StackItem>
+                  </FeatureFlag>
                 </Stack>
               </Bullseye>
             </CardBody>
