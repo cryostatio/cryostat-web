@@ -614,7 +614,6 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
   );
 
   const parentRow = React.useMemo(() => {
-    console.log({ lastModified: threadDump.lastModified });
     return (
       <Tr key={`${index}_parent`}>
         <Td key={`thread-dump-table-row-${index}_0`}>
