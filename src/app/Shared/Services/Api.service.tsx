@@ -1341,6 +1341,33 @@ export class ApiService {
     );
   }
 
+  postThreadDumpMetadataForJvmId(jvmId: string, threadDumpId: string, labels: KeyValue[]): Observable<ThreadDump[]> {
+    return this.graphql<any>(
+      `
+      query postThreadDumpMetadataForJvmId($jvmId: String!, $threadDumpId: String!, $labels: [Entry_String_StringInput]) {
+        threadDumps(filter: {sourceTarget: $jvmId, name: $threadDumpId }) {
+          data {
+            doPutMetadata(metadataInput: { labels: $labels }) {
+              metadata {
+                labels {
+                  key
+                  value
+                }
+              }
+              size
+              lastModified
+            }
+          }
+        }
+      }`,
+      {
+        jvmId,
+        threadDumpId,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
+      },
+    ).pipe(map((v) => (v.data?.threadDumps?.data as ThreadDump[]) ?? []));
+  }
+
   postThreadDumpMetadata(threadDumpId: string, labels: KeyValue[], target: Target): Observable<ThreadDump[]> {
     return this.graphql<any>(
       `
@@ -1371,6 +1398,33 @@ export class ApiService {
       first(),
       map((v) => (v.data?.targetNodes[0]?.target?.threadDumps as ThreadDump[]) ?? []),
     );
+  }
+
+  postHeapDumpMetadataForJvmId(jvmId: string, heapDumpId: string, labels: KeyValue[]): Observable<HeapDump[]> {
+    return this.graphql<any>(
+      `
+      query postThreadDumpMetadataForJvmId($jvmId: String!, $heapDumpId: String!, $labels: [Entry_String_StringInput]) {
+        heapDumps(filter: {sourceTarget: $jvmId, name: $heapDumpId }) {
+          data {
+            doPutMetadata(metadataInput: { labels: $labels }) {
+              metadata {
+                labels {
+                  key
+                  value
+                }
+              }
+              size
+              lastModified
+            }
+          }
+        }
+      }`,
+      {
+        jvmId,
+        heapDumpId,
+        labels: labels.map((label) => ({ key: label.key, value: label.value })),
+      },
+    ).pipe(map((v) => (v.data?.heapDumps?.data as HeapDump[]) ?? []));
   }
 
   postHeapDumpMetadata(heapDumpId: string, labels: KeyValue[], target: Target): Observable<HeapDump[]> {

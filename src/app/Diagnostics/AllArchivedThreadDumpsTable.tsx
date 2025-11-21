@@ -177,7 +177,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
           const newDirectories = currentDirectories.map((directory) => ({
             ...directory,
             threadDumps: directory.threadDumps.map((threadDump) => {
-              if (threadDump.threadDumpId === updatedThreadDumpInfo.recording.name) {
+              if (threadDump.threadDumpId === updatedThreadDumpInfo.threadDump.threadDumpId) {
                 return {
                   ...threadDump,
                   metadata: { ...threadDump.metadata, labels: updatedThreadDumpInfo?.threadDump?.metadata?.labels },
