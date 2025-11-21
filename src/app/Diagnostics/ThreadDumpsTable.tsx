@@ -614,6 +614,7 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
   );
 
   const parentRow = React.useMemo(() => {
+    console.log({ lastModified: threadDump.lastModified });
     return (
       <Tr key={`${index}_parent`}>
         <Td key={`thread-dump-table-row-${index}_0`}>
@@ -631,9 +632,14 @@ export const ThreadDumpRow: React.FC<ThreadDumpRowProps> = ({
         <Td key={`thread-dump-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
           <Timestamp
             className="thread-dump-table__timestamp"
-            tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(threadDump.lastModified).toISOString() }}
+            tooltip={{
+              variant: TimestampTooltipVariant.custom,
+              content: dayjs((threadDump.lastModified ?? 0) * 1000).toISOString(),
+            }}
           >
-            {dayjs(threadDump.lastModified).tz(datetimeContext.timeZone.full).format('L LTS z')}
+            {dayjs((threadDump.lastModified ?? 0) * 1000)
+              .tz(datetimeContext.timeZone.full)
+              .format('L LTS z')}
           </Timestamp>
         </Td>
         <Td key={`thread-dump-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
