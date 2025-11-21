@@ -1030,6 +1030,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.get('api/v4/tls/certs', () => {
         return new Response(200, {}, ['/truststore/additional-app.crt']);
       });
+      this.get('api/beta/diagnostics/fs/threaddumps', () => []);
+      this.get('api/beta/diagnostics/fs/heapdumps', () => []);
       this.get('api/beta/diagnostics/targets/:targetId/threaddump', () => []);
       this.get('api/beta/diagnostics/targets/:targetId/heapdump', () => []);
       this.post('api/beta/diagnostics/targets/:targetId/threaddump', () => {

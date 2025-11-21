@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NullableTarget } from '@app/Shared/Services/api.types';
+import { HeapDump, HeapDumpDirectory, NullableTarget } from '@app/Shared/Services/api.types';
 import {
   DrawerActions,
   DrawerCloseButton,
@@ -29,11 +29,15 @@ export interface HeapDumpLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   checkedIndices: number[];
   target: Observable<NullableTarget>;
+  directory?: HeapDumpDirectory;
+  directoryHeapDumps?: HeapDump[];
 }
 
 export const HeapDumpLabelsPanel: React.FC<HeapDumpLabelsPanelProps> = ({
   checkedIndices,
   target: propsTarget,
+  directory: propsDirectory,
+  directoryHeapDumps,
   setShowPanel,
 }) => {
   return (
@@ -52,6 +56,8 @@ export const HeapDumpLabelsPanel: React.FC<HeapDumpLabelsPanelProps> = ({
           checkedIndices={checkedIndices}
           closePanelFn={() => setShowPanel(false)}
           target={propsTarget}
+          directory={propsDirectory}
+          directoryHeapDumps={directoryHeapDumps}
         />
       </DrawerPanelBody>
     </DrawerPanelContent>

@@ -24,13 +24,15 @@ import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { of } from 'rxjs';
+import { AllArchivedThreadDumpsTable } from './AllArchivedThreadDumpsTable';
 import { AllTargetsThreadDumpsTable } from './AllTargetsThreadDumpsTable';
 import { ThreadDumpsTable } from './ThreadDumpsTable';
 
 export interface AnalyzeThreadDumpsProps {}
 
 enum AnalyzeThreadDumpsTab {
-  THREAD_DUMPS = 'target-thread-dumps',
+  PER_TARGET = 'target-thread-dumps',
+  ALL_ARCHIVES = 'all-thread-dumps',
 }
 
 export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props }) => {
@@ -47,7 +49,7 @@ export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props
   }, [addSubscription, context.target, setTarget]);
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, 'tab', Object.values(AnalyzeThreadDumpsTab), AnalyzeThreadDumpsTab.THREAD_DUMPS);
+    return getActiveTab(search, 'tab', Object.values(AnalyzeThreadDumpsTab), AnalyzeThreadDumpsTab.PER_TARGET);
   }, [search]);
 
   const onTabSelect = React.useCallback(
@@ -61,7 +63,7 @@ export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props
       <Tabs id="threadDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
         <Tab
           id="threadDumps"
-          eventKey={AnalyzeThreadDumpsTab.THREAD_DUMPS}
+          eventKey={AnalyzeThreadDumpsTab.PER_TARGET}
           title={<TabTitleText>{t('Diagnostics.TARGET_THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
           data-quickstart-id="thread-dumps-tab"
         >
@@ -77,6 +79,14 @@ export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props
               )}
             </StackItem>
           </Stack>
+        </Tab>
+        <Tab
+          id="allThreadDumps"
+          eventKey={AnalyzeThreadDumpsTab.ALL_ARCHIVES}
+          title={<TabTitleText>{t('Diagnostics.ALL_THREAD_DUMPS_TAB_TITLE')}</TabTitleText>}
+          data-quickstart-id="all-thread-dumps-tab"
+        >
+          <AllArchivedThreadDumpsTable />
         </Tab>
       </Tabs>
     ),
