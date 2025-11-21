@@ -1138,10 +1138,11 @@ export class ApiService {
 
   downloadRecording(recording: Recording): void {
     this.ctx.url(recording.downloadUrl).subscribe((resourceUrl) => {
-      this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
+      const jfrFilename = recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr');
+      this.downloadFile(resourceUrl, new URLSearchParams({ filename: jfrFilename }), jfrFilename);
 
       const metadataUrl = createBlobURL(JSON.stringify(recording.metadata), 'application/json');
-      this.downloadFile(metadataUrl, recording.name.replace(/\.jfr$/, '') + '.metadata.json', false);
+      this.downloadFile(metadataUrl, undefined, recording.name.replace(/\.jfr$/, '') + '.metadata.json', false);
       setTimeout(() => URL.revokeObjectURL(metadataUrl), 1000);
     });
   }
@@ -1154,24 +1155,17 @@ export class ApiService {
         first(),
       );
       filename.subscribe((name) => {
-        resourceUrl += `?filename=${name}`;
-        this.downloadFile(resourceUrl, name);
+        this.downloadFile(resourceUrl, new URLSearchParams({ filename: name }), name);
       });
     });
   }
 
   downloadHeapDump(heapDump: HeapDump): void {
-    this.ctx.url(heapDump.downloadUrl).subscribe((resourceUrl) => {
-      let filename = this.target.target().pipe(
-        filter((t) => !!t),
-        map(() => `${heapDump.heapDumpId}`),
-        first(),
+    this.ctx
+      .url(heapDump.downloadUrl)
+      .subscribe((resourceUrl) =>
+        this.downloadFile(resourceUrl, new URLSearchParams({ filename: heapDump.heapDumpId }), heapDump.heapDumpId),
       );
-      filename.subscribe((name) => {
-        resourceUrl += `?filename=${name}`;
-        this.downloadFile(resourceUrl, name);
-      });
-    });
   }
 
   downloadTemplate(template: EventTemplate): void {
@@ -1199,7 +1193,7 @@ export class ApiService {
       return;
     }
     url.subscribe((resourceUrl) => {
-      this.downloadFile(resourceUrl, `${template.name}.jfc`);
+      this.downloadFile(resourceUrl, undefined, `${template.name}.jfc`);
     });
   }
 
@@ -1210,7 +1204,7 @@ export class ApiService {
         const filename = `${rule.name}.json`;
         const file = new File([JSON.stringify(rule)], filename);
         const resourceUrl = URL.createObjectURL(file);
-        this.downloadFile(resourceUrl, filename, false);
+        this.downloadFile(resourceUrl, undefined, filename, false);
         setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
       });
   }
@@ -1917,7 +1911,7 @@ export class ApiService {
     const stringifiedSerializedLayout = this.stringifyLayoutTemplate(template);
     const filename = `cryostat-dashboard-${template.name}.json`;
     const resourceUrl = createBlobURL(stringifiedSerializedLayout, 'application/json');
-    this.downloadFile(resourceUrl, filename, false);
+    this.downloadFile(resourceUrl, undefined, filename, false);
   }
 
   private stringifyLayoutTemplate(template: LayoutTemplate): string {
@@ -1953,7 +1947,7 @@ export class ApiService {
     );
   }
 
-  private downloadFile(url: string, filename: string, headers = true): void {
+  private downloadFile(url: string, query: URLSearchParams | undefined, filename: string, headers = true): void {
     const o = headers ? this.instanceSelectorHeadersAsQuery() : of('');
     o.subscribe((q) => {
       const anchor = document.createElement('a');
@@ -1961,6 +1955,9 @@ export class ApiService {
       anchor.target = '_blank';
       let href = url;
       anchor.download = filename;
+      if (query) {
+        href.includes('?') ? (href += `&${query.toString()}`) : (href += `?${query.toString()}`);
+      }
       if (q) {
         href.includes('?') ? (href += `&${q}`) : (href += `?${q}`);
       }
