@@ -261,6 +261,11 @@ export interface Recording {
   metadata: Metadata;
 }
 
+export interface ThreadDumpDirectory {
+  jvmId: string;
+  threadDumps: ThreadDump[];
+}
+
 export interface ThreadDump {
   downloadUrl: string;
   threadDumpId: string;
@@ -287,6 +292,11 @@ export interface ActiveRecording extends Recording {
   maxSize: number;
   maxAge: number;
   remoteId: number;
+}
+
+export interface HeapDumpDirectory {
+  jvmId: string;
+  heapDumps: HeapDump[];
 }
 
 export interface HeapDump {

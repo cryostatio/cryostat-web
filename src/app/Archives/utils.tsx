@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-import { RecordingDirectory, Target } from '@app/Shared/Services/api.types';
+import { HeapDumpDirectory, RecordingDirectory, Target, ThreadDumpDirectory } from '@app/Shared/Services/api.types';
 
-export const includesDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): boolean => {
-  return arr.some((t) => t.connectUrl === dir.connectUrl);
-};
+export function includesDirectory<T extends RecordingDirectory | ThreadDumpDirectory | HeapDumpDirectory>(
+  arr: T[],
+  dir: T,
+): boolean {
+  return arr.some((t) => (t['connectUrl'] && t['connectUrl'] === dir['connectUrl']) || t.jvmId === dir.jvmId);
+}
 
-export const indexOfDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): number => {
+export function indexOfDirectory<T extends RecordingDirectory | ThreadDumpDirectory | HeapDumpDirectory>(
+  arr: T[],
+  dir: T,
+): number {
   let index = -1;
   arr.forEach((d, idx) => {
-    if (d.connectUrl === dir.connectUrl) {
+    if (d['connectUrl'] && d['connectUrl'] === dir['connectUrl']) {
+      index = idx;
+    } else if (d.jvmId === dir.jvmId) {
       index = idx;
     }
   });
   return index;
-};
+}
 
-export const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
+export const getTargetFromDirectory = (dir: RecordingDirectory | ThreadDumpDirectory | HeapDumpDirectory): Target => {
   return {
-    agent: dir.connectUrl.startsWith('http'),
-    connectUrl: dir.connectUrl,
+    agent: dir['connectUrl']?.startsWith('http') || false,
+    connectUrl: dir['connectUrl'] ?? '',
     alias: dir.jvmId,
     labels: [],
     annotations: {
