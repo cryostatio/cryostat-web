@@ -731,8 +731,26 @@ export class ApiService {
     );
   }
 
+  deleteArchivedThreadDumpFromPath(jvmId: string, threadDumpId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/fs/threaddumps/${jvmId}/${threadDumpId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
   deleteHeapDump(target: Target, heapDumpId: string): Observable<boolean> {
     return this.sendRequest('beta', `diagnostics/targets/${target?.id}/heapdump/${heapDumpId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  deleteArchivedHeapDumpFromPath(jvmId: string, heapDumpId: string): Observable<boolean> {
+    return this.sendRequest('beta', `diagnostics/fs/heapdumps/${jvmId}/${heapDumpId}`, {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),

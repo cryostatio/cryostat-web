@@ -28,7 +28,13 @@ import {
   TargetThreadDumpFilters,
 } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { NotificationCategory, NullableTarget, Target, ThreadDump } from '@app/Shared/Services/api.types';
+import {
+  NotificationCategory,
+  NullableTarget,
+  Target,
+  ThreadDump,
+  ThreadDumpDirectory,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -94,12 +100,16 @@ const tableColumns: TableColumn[] = [
 export interface ThreadDumpsProps {
   target: Observable<NullableTarget>;
   isNestedTable: boolean;
+  directory?: ThreadDumpDirectory;
+  directoryThreadDumps?: ThreadDump[];
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
   target: propsTarget,
   isNestedTable,
+  directory: propsDirectory,
+  directoryThreadDumps,
   toolbarBreakReference,
 }) => {
   const context = React.useContext(ServiceContext);
@@ -204,30 +214,41 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
   const handleDeleteThreadDumps = React.useCallback(() => {
     setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<boolean>[] = [];
-    addSubscription(
-      propsTarget.subscribe((t) => {
-        if (!t) {
-          return;
+    if (propsDirectory) {
+      const directory = propsDirectory;
+      filteredThreadDumps.forEach((r: ThreadDump) => {
+        if (checkedIndices.includes(hashCode(r.threadDumpId))) {
+          tasks.push(context.api.deleteArchivedThreadDumpFromPath(directory.jvmId, r.threadDumpId).pipe(first()));
         }
-        filteredThreadDumps.forEach((r: ThreadDump) => {
-          if (checkedIndices.includes(hashCode(r.threadDumpId))) {
-            tasks.push(context.api.deleteThreadDump(t, r.threadDumpId).pipe(first()));
+      });
+      addSubscription(forkJoin(tasks).subscribe());
+    } else {
+      addSubscription(
+        propsTarget.subscribe((t) => {
+          if (!t) {
+            return;
           }
-        });
-        addSubscription(
-          forkJoin(tasks).subscribe({
-            next: () => handlePostActions('DELETE'),
-            error: () => handlePostActions('DELETE'),
-          }),
-        );
-      }),
-    );
+          filteredThreadDumps.forEach((r: ThreadDump) => {
+            if (checkedIndices.includes(hashCode(r.threadDumpId))) {
+              tasks.push(context.api.deleteThreadDump(t, r.threadDumpId).pipe(first()));
+            }
+          });
+          addSubscription(
+            forkJoin(tasks).subscribe({
+              next: () => handlePostActions('DELETE'),
+              error: () => handlePostActions('DELETE'),
+            }),
+          );
+        }),
+      );
+    }
   }, [
     addSubscription,
     filteredThreadDumps,
     checkedIndices,
     context.api,
     propsTarget,
+    propsDirectory,
     setActionLoadings,
     handlePostActions,
   ]);
@@ -251,25 +272,38 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
 
   const refreshThreadDumps = React.useCallback(() => {
     setIsLoading(true);
-    addSubscription(
-      propsTarget
-        .pipe(
-          first(),
-          concatMap((target: Target | undefined) => {
-            if (target) {
-              return queryTargetThreadDumps(target);
-            } else {
-              setIsLoading(false);
-              return of([]);
-            }
+    if (propsDirectory) {
+      handleThreadDumps(directoryThreadDumps ?? []);
+    } else {
+      addSubscription(
+        propsTarget
+          .pipe(
+            first(),
+            concatMap((target: Target | undefined) => {
+              if (target) {
+                return queryTargetThreadDumps(target);
+              } else {
+                setIsLoading(false);
+                return of([]);
+              }
+            }),
+          )
+          .subscribe({
+            next: handleThreadDumps,
+            error: handleError,
           }),
-        )
-        .subscribe({
-          next: handleThreadDumps,
-          error: handleError,
-        }),
-    );
-  }, [addSubscription, propsTarget, setIsLoading, handleThreadDumps, handleError, queryTargetThreadDumps]);
+      );
+    }
+  }, [
+    addSubscription,
+    propsTarget,
+    setIsLoading,
+    handleThreadDumps,
+    handleError,
+    queryTargetThreadDumps,
+    propsDirectory,
+    directoryThreadDumps,
+  ]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(ThreadDumpDeleteAllFiltersIntent(targetConnectURL));

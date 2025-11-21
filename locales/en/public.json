@@ -375,6 +375,7 @@
     "DATETIME": "Date and Time"
   },
   "Diagnostics": {
+    "ALL_THREAD_DUMPS_TAB_TITLE": "All Archives",
     "TARGET_THREAD_DUMPS_TAB_TITLE": "Targets",
     "TARGET_HEAP_DUMPS_TAB_TITLE": "Targets"
   },
