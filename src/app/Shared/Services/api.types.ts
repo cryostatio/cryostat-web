@@ -296,7 +296,7 @@ export interface ActiveRecording extends Recording {
 
 export interface HeapDumpDirectory {
   jvmId: string;
-  threadDumps: HeapDump[];
+  heapDumps: HeapDump[];
 }
 
 export interface HeapDump {

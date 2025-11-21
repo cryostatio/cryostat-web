@@ -28,7 +28,13 @@ import {
   TargetHeapDumpFilters,
 } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { NotificationCategory, HeapDump, NullableTarget, Target } from '@app/Shared/Services/api.types';
+import {
+  NotificationCategory,
+  HeapDump,
+  NullableTarget,
+  Target,
+  HeapDumpDirectory,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -94,12 +100,16 @@ const tableColumns: TableColumn[] = [
 export interface HeapDumpsProps {
   target: Observable<NullableTarget>;
   isNestedTable: boolean;
+  directory?: HeapDumpDirectory;
+  directoryHeapDumps?: HeapDump[];
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
   target: propsTarget,
   isNestedTable,
+  directory: propsDirectory,
+  directoryHeapDumps,
   toolbarBreakReference,
 }) => {
   const context = React.useContext(ServiceContext);
@@ -201,30 +211,41 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
   const handleDeleteHeapDumps = React.useCallback(() => {
     setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<boolean>[] = [];
-    addSubscription(
-      propsTarget.subscribe((t) => {
-        if (!t) {
-          return;
+    if (propsDirectory) {
+      const directory = propsDirectory;
+      filteredHeapDumps.forEach((r: HeapDump) => {
+        if (checkedIndices.includes(hashCode(r.heapDumpId))) {
+          tasks.push(context.api.deleteArchivedHeapDumpFromPath(directory.jvmId, r.heapDumpId).pipe(first()));
         }
-        filteredHeapDumps.forEach((r: HeapDump) => {
-          if (checkedIndices.includes(hashCode(r.heapDumpId))) {
-            tasks.push(context.api.deleteHeapDump(t, r.heapDumpId).pipe(first()));
+      });
+      addSubscription(forkJoin(tasks).subscribe());
+    } else {
+      addSubscription(
+        propsTarget.subscribe((t) => {
+          if (!t) {
+            return;
           }
-        });
-        addSubscription(
-          forkJoin(tasks).subscribe({
-            next: () => handlePostActions('DELETE'),
-            error: () => handlePostActions('DELETE'),
-          }),
-        );
-      }),
-    );
+          filteredHeapDumps.forEach((r: HeapDump) => {
+            if (checkedIndices.includes(hashCode(r.heapDumpId))) {
+              tasks.push(context.api.deleteHeapDump(t, r.heapDumpId).pipe(first()));
+            }
+          });
+          addSubscription(
+            forkJoin(tasks).subscribe({
+              next: () => handlePostActions('DELETE'),
+              error: () => handlePostActions('DELETE'),
+            }),
+          );
+        }),
+      );
+    }
   }, [
     addSubscription,
     filteredHeapDumps,
     checkedIndices,
     context.api,
     propsTarget,
+    propsDirectory,
     setActionLoadings,
     handlePostActions,
   ]);
@@ -248,25 +269,38 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
 
   const refreshHeapDumps = React.useCallback(() => {
     setIsLoading(true);
-    addSubscription(
-      propsTarget
-        .pipe(
-          first(),
-          concatMap((target: Target | undefined) => {
-            if (target) {
-              return queryTargetHeapDumps(target);
-            } else {
-              setIsLoading(false);
-              return of([]);
-            }
+    if (propsDirectory) {
+      handleHeapDumps(directoryHeapDumps ?? []);
+    } else {
+      addSubscription(
+        propsTarget
+          .pipe(
+            first(),
+            concatMap((target: Target | undefined) => {
+              if (target) {
+                return queryTargetHeapDumps(target);
+              } else {
+                setIsLoading(false);
+                return of([]);
+              }
+            }),
+          )
+          .subscribe({
+            next: handleHeapDumps,
+            error: handleError,
           }),
-        )
-        .subscribe({
-          next: handleHeapDumps,
-          error: handleError,
-        }),
-    );
-  }, [addSubscription, propsTarget, setIsLoading, handleHeapDumps, handleError, queryTargetHeapDumps]);
+      );
+    }
+  }, [
+    addSubscription,
+    propsTarget,
+    setIsLoading,
+    handleHeapDumps,
+    handleError,
+    queryTargetHeapDumps,
+    propsDirectory,
+    directoryHeapDumps,
+  ]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(HeapDumpDeleteAllFiltersIntent(targetConnectURL));
@@ -369,9 +403,15 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
 
   const LabelsPanel = React.useMemo(
     () => (
-      <HeapDumpLabelsPanel setShowPanel={setShowLabelsPanel} checkedIndices={checkedIndices} target={propsTarget} />
+      <HeapDumpLabelsPanel
+        setShowPanel={setShowLabelsPanel}
+        checkedIndices={checkedIndices}
+        target={propsTarget}
+        directory={propsDirectory}
+        directoryHeapDumps={directoryHeapDumps}
+      />
     ),
-    [checkedIndices, propsTarget, setShowLabelsPanel],
+    [checkedIndices, propsTarget, setShowLabelsPanel, propsDirectory, directoryHeapDumps],
   );
 
   const heapDumpsToolbar = React.useMemo(

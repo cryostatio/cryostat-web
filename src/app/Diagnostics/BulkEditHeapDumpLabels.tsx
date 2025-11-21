@@ -16,7 +16,14 @@
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { includesLabel } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { NotificationCategory, Target, KeyValue, HeapDump, NullableTarget } from '@app/Shared/Services/api.types';
+import {
+  NotificationCategory,
+  Target,
+  KeyValue,
+  HeapDump,
+  NullableTarget,
+  HeapDumpDirectory,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
@@ -33,17 +40,21 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { combineLatest, concatMap, filter, first, forkJoin, Observable } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 
 export interface BulkEditLabelsProps {
   checkedIndices: number[];
   target: Observable<NullableTarget>;
+  directory?: HeapDumpDirectory;
+  directoryHeapDumps?: HeapDump[];
   closePanelFn?: () => void;
 }
 
 export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
   checkedIndices,
   target: propsTarget,
+  directory,
+  directoryHeapDumps,
   closePanelFn,
 }) => {
   const context = React.useContext(ServiceContext);
@@ -70,7 +81,11 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
             const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
-            tasks.push(context.api.postHeapDumpMetadata(r.heapDumpId, updatedLabels, t).pipe(first()));
+            if (directory) {
+              tasks.push(context.api.postHeapDumpMetadataForJvmId(directory.jvmId, r.heapDumpId, updatedLabels));
+            } else {
+              tasks.push(context.api.postHeapDumpMetadata(r.heapDumpId, updatedLabels, t).pipe(first()));
+            }
           }
         });
         addSubscription(
@@ -86,6 +101,7 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
     context.api,
     handlePostUpdate,
     propsTarget,
+    directory,
     commonLabels,
     savedCommonLabels,
     checkedIndices,
@@ -123,19 +139,23 @@ export const BulkEditHeapDumpLabels: React.FC<BulkEditLabelsProps> = ({
 
   const refreshHeapDumpsList = React.useCallback(() => {
     let observable: Observable<HeapDump[]>;
-    observable = propsTarget.pipe(
-      filter((target) => !!target),
-      concatMap((target: Target) => {
-        return context.api.getTargetHeapDumps(target);
-      }),
-      first(),
-    );
+    if (directory) {
+      observable = of(directoryHeapDumps ?? []);
+    } else {
+      observable = propsTarget.pipe(
+        filter((target) => !!target),
+        concatMap((target: Target) => {
+          return context.api.getTargetHeapDumps(target);
+        }),
+        first(),
+      );
+    }
     addSubscription(
       observable.subscribe((value) => {
         setHeapDumps(value);
       }),
     );
-  }, [addSubscription, propsTarget, context.api]);
+  }, [addSubscription, propsTarget, directory, directoryHeapDumps, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
