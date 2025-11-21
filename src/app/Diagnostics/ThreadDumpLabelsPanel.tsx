@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NullableTarget } from '@app/Shared/Services/api.types';
+import { NullableTarget, ThreadDump, ThreadDumpDirectory } from '@app/Shared/Services/api.types';
 import {
   DrawerActions,
   DrawerCloseButton,
@@ -29,11 +29,15 @@ export interface ThreadDumpLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   checkedIndices: number[];
   target: Observable<NullableTarget>;
+  directory?: ThreadDumpDirectory;
+  directoryThreadDumps?: ThreadDump[];
 }
 
 export const ThreadDumpLabelsPanel: React.FC<ThreadDumpLabelsPanelProps> = ({
   checkedIndices,
   target: propsTarget,
+  directory,
+  directoryThreadDumps,
   setShowPanel,
 }) => {
   return (
@@ -51,6 +55,8 @@ export const ThreadDumpLabelsPanel: React.FC<ThreadDumpLabelsPanelProps> = ({
         <BulkEditThreadDumpLabels
           checkedIndices={checkedIndices}
           target={propsTarget}
+          directory={directory}
+          directoryThreadDumps={directoryThreadDumps}
           closePanelFn={() => setShowPanel(false)}
         />
       </DrawerPanelBody>

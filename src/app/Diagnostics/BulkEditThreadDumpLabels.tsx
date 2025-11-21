@@ -16,7 +16,14 @@
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { includesLabel } from '@app/RecordingMetadata/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { NotificationCategory, Target, KeyValue, ThreadDump, NullableTarget } from '@app/Shared/Services/api.types';
+import {
+  NotificationCategory,
+  Target,
+  KeyValue,
+  ThreadDump,
+  NullableTarget,
+  ThreadDumpDirectory,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
@@ -33,17 +40,21 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import * as React from 'react';
-import { combineLatest, concatMap, filter, first, forkJoin, Observable } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, Observable, of } from 'rxjs';
 
 export interface BulkEditLabelsProps {
   checkedIndices: number[];
   target: Observable<NullableTarget>;
+  directory?: ThreadDumpDirectory;
+  directoryThreadDumps?: ThreadDump[];
   closePanelFn?: () => void;
 }
 
 export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
   checkedIndices,
   target: propsTarget,
+  directory,
+  directoryThreadDumps,
   closePanelFn,
 }) => {
   const context = React.useContext(ServiceContext);
@@ -70,7 +81,15 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
             const updatedLabels = [...r.metadata.labels, ...commonLabels].filter(
               (label) => !includesLabel(toDelete, label),
             );
-            tasks.push(context.api.postThreadDumpMetadata(r.threadDumpId, updatedLabels, t).pipe(first()));
+            if (directory) {
+              tasks.push(
+                context.api
+                  .postThreadDumpMetadataForJvmId(directory.jvmId, r.threadDumpId, updatedLabels)
+                  .pipe(first()),
+              );
+            } else {
+              tasks.push(context.api.postThreadDumpMetadata(r.threadDumpId, updatedLabels, t).pipe(first()));
+            }
           }
         });
         addSubscription(
@@ -86,6 +105,7 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
     context.api,
     handlePostUpdate,
     propsTarget,
+    directory,
     commonLabels,
     savedCommonLabels,
     checkedIndices,
@@ -123,13 +143,17 @@ export const BulkEditThreadDumpLabels: React.FC<BulkEditLabelsProps> = ({
 
   const refreshThreadDumpsList = React.useCallback(() => {
     let observable: Observable<ThreadDump[]>;
-    observable = propsTarget.pipe(
-      filter((target) => !!target),
-      concatMap((target: Target) => context.api.getTargetThreadDumps(target)),
-      first(),
-    );
+    if (directory) {
+      observable = of(directoryThreadDumps ?? []);
+    } else {
+      observable = propsTarget.pipe(
+        filter((target) => !!target),
+        concatMap((target: Target) => context.api.getTargetThreadDumps(target)),
+        first(),
+      );
+    }
     addSubscription(observable.subscribe((value) => setThreadDumps(value)));
-  }, [addSubscription, propsTarget, context.api]);
+  }, [addSubscription, propsTarget, directory, directoryThreadDumps, context.api]);
 
   const saveButtonLoadingProps = React.useMemo(
     () =>

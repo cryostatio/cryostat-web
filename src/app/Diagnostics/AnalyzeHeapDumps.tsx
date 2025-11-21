@@ -24,13 +24,15 @@ import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { of } from 'rxjs';
+import { AllArchivedHeapDumpsTable } from './AllArchivedHeapDumpsTable';
 import { AllTargetsHeapDumpsTable } from './AllTargetsHeapDumpsTable';
 import { HeapDumpsTable } from './HeapDumpsTable';
 
 export interface AnalyzeHeapDumpsProps {}
 
 enum AnalyzeHeapDumpsTab {
-  HEAP_DUMPS = 'target-heap-dumps',
+  PER_TARGET = 'target-heap-dumps',
+  ALL_ARCHIVES = 'all-heap-dumps',
 }
 
 export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) => {
@@ -47,7 +49,7 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
   }, [addSubscription, context.target, setTarget]);
 
   const activeTab = React.useMemo(() => {
-    return getActiveTab(search, 'tab', Object.values(AnalyzeHeapDumpsTab), AnalyzeHeapDumpsTab.HEAP_DUMPS);
+    return getActiveTab(search, 'tab', Object.values(AnalyzeHeapDumpsTab), AnalyzeHeapDumpsTab.PER_TARGET);
   }, [search]);
 
   const onTabSelect = React.useCallback(
@@ -61,7 +63,7 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
       <Tabs id="heapDumps" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
         <Tab
           id="heapDumps"
-          eventKey={AnalyzeHeapDumpsTab.HEAP_DUMPS}
+          eventKey={AnalyzeHeapDumpsTab.PER_TARGET}
           title={<TabTitleText>{t('Diagnostics.TARGET_HEAP_DUMPS_TAB_TITLE')}</TabTitleText>}
           data-quickstart-id="heap-dumps-tab"
         >
@@ -73,6 +75,14 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
               {target ? <HeapDumpsTable target={targetAsObs} isNestedTable={false} /> : <AllTargetsHeapDumpsTable />}
             </StackItem>
           </Stack>
+        </Tab>
+        <Tab
+          id="allHeapDumps"
+          eventKey={AnalyzeHeapDumpsTab.ALL_ARCHIVES}
+          title={<TabTitleText>{t('Diagnostics.ALL_HEAP_DUMPS_TAB_TITLE')}</TabTitleText>}
+          data-quickstart-id="all-heap-dumps-tab"
+        >
+          <AllArchivedHeapDumpsTable />
         </Tab>
       </Tabs>
     ),
