@@ -504,6 +504,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.28.4":
+  version: 7.28.4
+  resolution: "@babel/runtime@npm:7.28.4"
+  checksum: 934b0a0460f7d06637d93fcd1a44ac49adc33518d17253b5a0b55ff4cb90a45d8fe78bf034b448911dbec7aff2a90b918697559f78d21c99ff8dbadae9565b55
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.27.2":
   version: 7.27.2
   resolution: "@babel/template@npm:7.27.2"
@@ -5103,7 +5110,7 @@ __metadata:
     file-loader: ^6.2.0
     html-webpack-plugin: ^5.6.5
     humanize-duration: ^3.33.1
-    i18next: ^25.6.2
+    i18next: ^25.6.3
     i18next-browser-languagedetector: ^8.2.0
     i18next-parser: ^9.3.0
     imagemin: ^9.0.1
@@ -8771,17 +8778,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^25.6.2":
-  version: 25.6.2
-  resolution: "i18next@npm:25.6.2"
+"i18next@npm:^25.6.3":
+  version: 25.6.3
+  resolution: "i18next@npm:25.6.3"
   dependencies:
-    "@babel/runtime": ^7.27.6
+    "@babel/runtime": ^7.28.4
   peerDependencies:
     typescript: ^5
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 9376e5b269dd777b813dd8dfe62e864e035e550ce8cfe057a6bf517237e944a3d5ab0cddb22e5d3aea0277ed67e1c5899ef57b3ec84680e909c87c30e6b99145
+  checksum: 65f7d1aa3a78f7551e1cbfc9b18ceffb71ed963077ef05a8495d4228ed9d2ec83b2b803c75e10dcacc9b825ae06899f2c8a05f81e10ebf9b6f4ba509c48eaef7
   languageName: node
   linkType: hard
 
