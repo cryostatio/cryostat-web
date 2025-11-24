@@ -5145,7 +5145,7 @@ __metadata:
     url-loader: ^4.1.1
     wait-on: ^9.0.3
     webpack: ^5.102.1
-    webpack-bundle-analyzer: ^4.10.2
+    webpack-bundle-analyzer: ^5.0.1
     webpack-cli: ^6.0.1
     webpack-dev-server: ^5.2.2
     webpack-merge: ^6.0.1
@@ -6254,13 +6254,6 @@ __metadata:
     es-errors: ^1.3.0
     gopd: ^1.2.0
   checksum: 149207e36f07bd4941921b0ca929e3a28f1da7bd6b6ff8ff7f4e2f2e460675af4576eeba359c635723dc189b64cdd4787e0255897d5b135ccc5d15cb8685fc90
-  languageName: node
-  linkType: hard
-
-"duplexer@npm:^0.1.2":
-  version: 0.1.2
-  resolution: "duplexer@npm:0.1.2"
-  checksum: 62ba61a830c56801db28ff6305c7d289b6dc9f859054e8c982abd8ee0b0a14d2e9a8e7d086ffee12e868d43e2bbe8a964be55ddbd8c8957714c87373c7a4f9b0
   languageName: node
   linkType: hard
 
@@ -8219,15 +8212,6 @@ __metadata:
   dependencies:
     through2: ^2.0.1
   checksum: 8645d80b26990290e8623ccf38420e319a4ea67b64ac3e4f2b5de6c20b9006973001fd989dfe0fe3b2560044d3dfbc005685126826536e01718a2628aa45d0c5
-  languageName: node
-  linkType: hard
-
-"gzip-size@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "gzip-size@npm:6.0.0"
-  dependencies:
-    duplexer: ^0.1.2
-  checksum: 2df97f359696ad154fc171dcb55bc883fe6e833bca7a65e457b9358f3cb6312405ed70a8da24a77c1baac0639906cd52358dc0ce2ec1a937eaa631b934c94194
   languageName: node
   linkType: hard
 
@@ -16188,9 +16172,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-bundle-analyzer@npm:^4.10.2":
-  version: 4.10.2
-  resolution: "webpack-bundle-analyzer@npm:4.10.2"
+"webpack-bundle-analyzer@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "webpack-bundle-analyzer@npm:5.0.1"
   dependencies:
     "@discoveryjs/json-ext": 0.5.7
     acorn: ^8.0.4
@@ -16198,7 +16182,6 @@ __metadata:
     commander: ^7.2.0
     debounce: ^1.2.1
     escape-string-regexp: ^4.0.0
-    gzip-size: ^6.0.0
     html-escaper: ^2.0.2
     opener: ^1.5.2
     picocolors: ^1.0.0
@@ -16206,7 +16189,7 @@ __metadata:
     ws: ^7.3.1
   bin:
     webpack-bundle-analyzer: lib/bin/analyzer.js
-  checksum: 4f0275e7d87bb6203a618ca5d2d4953943979d986fa2b91be1bf1ad0bcd22bec13398803273d11699f9fbcf106896311208a72d63fe5f8a47b687a226e598dc1
+  checksum: 29b67418802bb58b9ecb06f5561294730a4cee9e34615f5c8036d36fc62ad4815ca3b0e34667a14b9aa7f7b40f946731492c3b307c520a2bb0e41f91e9fa8246
   languageName: node
   linkType: hard
 
