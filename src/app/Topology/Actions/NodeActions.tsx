@@ -34,11 +34,10 @@ import { Observable, Subject, switchMap } from 'rxjs';
 import { GraphElement, ListElement } from '../Shared/types';
 import { ActionUtils, MenuItemComponent, MenuItemVariant, NodeActionFunction } from './types';
 
-export interface ContextMenuItemProps
-  extends Omit<
-    React.ComponentProps<typeof PFContextMenuItem> & React.ComponentProps<typeof DropdownItem>,
-    'onClick' | 'isDisabled'
-  > {
+export interface ContextMenuItemProps extends Omit<
+  React.ComponentProps<typeof PFContextMenuItem> & React.ComponentProps<typeof DropdownItem>,
+  'onClick' | 'isDisabled'
+> {
   onClick?: NodeActionFunction;
   element: GraphElement | ListElement;
   variant: MenuItemVariant;
