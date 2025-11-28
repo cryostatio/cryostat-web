@@ -20,7 +20,7 @@ import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { concatMap, filter } from 'rxjs';
+import { concatMap, filter, tap } from 'rxjs';
 import { AgentLiveProbes } from './AgentLiveProbes';
 import { AgentProbeTemplates } from './AgentProbeTemplates';
 
@@ -71,6 +71,7 @@ const AgentTabs: React.FC = () => {
       context.target
         .target()
         .pipe(
+          tap(() => setAgentDetected(false)),
           filter((target) => !!target),
           concatMap((_) => context.api.isProbeEnabled()),
         )
