@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AgentLiveProbes } from '@app/JMCAgent/AgentLiveProbes';
+import { AgentLiveProbes } from '@app/Instrumentation/AgentLiveProbes';
 import { DeleteActiveProbes } from '@app/Modal/types';
 import {
   MessageType,
