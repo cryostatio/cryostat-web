@@ -19,8 +19,8 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
-import { t } from 'i18next';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { of } from 'rxjs';
@@ -36,6 +36,7 @@ enum AnalyzeThreadDumpsTab {
 }
 
 export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props }) => {
+  const { t } = useCryostatTranslation();
   const { search, pathname } = useLocation();
   const navigate = useNavigate();
   const context = React.useContext(ServiceContext);
