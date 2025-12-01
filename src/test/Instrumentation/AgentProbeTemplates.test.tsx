@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AgentProbeTemplates } from '@app/JMCAgent/AgentProbeTemplates';
+import { AgentProbeTemplates } from '@app/Instrumentation/AgentProbeTemplates';
 import { DeleteProbeTemplates } from '@app/Modal/types';
 import {
   MessageType,
