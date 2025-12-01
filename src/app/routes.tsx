@@ -25,7 +25,7 @@ import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
 import Events from './Events/Events';
-import JMCAgent from './JMCAgent/JMCAgent';
+import Instrumentation from './Instrumentation/Instrumentation';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
@@ -141,7 +141,7 @@ const flightRecorderRoutes: IAppRoute[] = [
     ],
   },
   {
-    component: JMCAgent,
+    component: Instrumentation,
     label: 'Instrumentation',
     path: toPath('/instrumentation'),
     title: 'Instrumentation',
