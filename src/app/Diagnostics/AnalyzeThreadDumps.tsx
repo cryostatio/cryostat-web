@@ -91,7 +91,7 @@ export const AnalyzeThreadDumps: React.FC<AnalyzeThreadDumpsProps> = ({ ...props
         </Tab>
       </Tabs>
     ),
-    [activeTab, onTabSelect, target, targetAsObs],
+    [activeTab, onTabSelect, t, target, targetAsObs],
   );
 
   return (

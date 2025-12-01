@@ -87,7 +87,7 @@ export const AnalyzeHeapDumps: React.FC<AnalyzeHeapDumpsProps> = ({ ...props }) 
         </Tab>
       </Tabs>
     ),
-    [activeTab, onTabSelect, target, targetAsObs],
+    [activeTab, onTabSelect, t, target, targetAsObs],
   );
 
   return (
