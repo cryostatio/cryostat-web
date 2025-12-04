@@ -528,7 +528,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           type: 'PRESET',
           description: 'This is not a real event template, but it is here!',
         },
-      ])
+      ]);
       this.get('api/v4/targets/:targetId/event_templates', () => [
         {
           name: 'Demo Template',
