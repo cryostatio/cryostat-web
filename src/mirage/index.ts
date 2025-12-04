@@ -1041,7 +1041,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(400, {}, 'Unsupported in Demo');
       });
       this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
-        return new Response(400, {}, 'Unsupported in Demo');
+        return new Response(204);
       });
     },
   });
