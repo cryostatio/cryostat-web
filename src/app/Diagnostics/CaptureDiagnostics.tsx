@@ -33,6 +33,7 @@ import {
   Stack,
   StackItem,
   Tooltip,
+  Truncate,
 } from '@patternfly/react-core';
 import { ListIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -163,7 +164,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                           spinnerAriaLabel="invoke-gc"
                           isLoading={runningGc}
                         >
-                          {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')} />
                         </Button>
                       </ActionListItem>
                     </ActionList>
@@ -179,7 +180,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                           spinnerAriaLabel="invoke-thread-dump"
                           isLoading={runningThreadDump}
                         >
-                          {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}/>
                         </Button>
                       </ActionListItem>
                       <ActionListItem>
@@ -211,7 +212,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                             spinnerAriaLabel="invoke-heap-dump"
                             isLoading={runningHeapDump}
                           >
-                            {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                            <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}/>
                           </Button>
                         </Tooltip>
                       </ActionListItem>
