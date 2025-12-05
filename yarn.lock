@@ -5030,7 +5030,7 @@ __metadata:
     "@typescript-eslint/parser": ^8.48.1
     concurrently: ^9.2.1
     css-loader: ^7.1.2
-    css-minimizer-webpack-plugin: ^7.0.2
+    css-minimizer-webpack-plugin: ^7.0.3
     dayjs: ^1.11.19
     eslint: ^9.39.1
     eslint-plugin-import: ^2.32.0
@@ -5123,13 +5123,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-minimizer-webpack-plugin@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "css-minimizer-webpack-plugin@npm:7.0.2"
+"css-minimizer-webpack-plugin@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "css-minimizer-webpack-plugin@npm:7.0.3"
   dependencies:
     "@jridgewell/trace-mapping": ^0.3.25
     cssnano: ^7.0.4
-    jest-worker: ^29.7.0
+    jest-worker: ^30.0.5
     postcss: ^8.4.40
     schema-utils: ^4.2.0
     serialize-javascript: ^6.0.2
@@ -5148,7 +5148,7 @@ __metadata:
       optional: true
     lightningcss:
       optional: true
-  checksum: b859ab75ff0bf6c8feb337b88e112c612e7c9ce86c2f59d0a38c0ec5927f9b0392f79d3bbb234f5652e81bec03c369e527b9986e49b049e0835e6d08aba3374f
+  checksum: 7ee31890d2ce6287d4088961558c8eec178a9b2768ac91217da3edb53f00685820511a871ccff0787f8804adfc02c798e5f67a5ffcfa90f65bdf982aeab153a4
   languageName: node
   linkType: hard
 
@@ -10205,7 +10205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-worker@npm:30.2.0":
+"jest-worker@npm:30.2.0, jest-worker@npm:^30.0.5":
   version: 30.2.0
   resolution: "jest-worker@npm:30.2.0"
   dependencies:
