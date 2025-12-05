@@ -23,16 +23,21 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, filter, tap } from 'rxjs';
 import { AgentLiveProbes } from './AgentLiveProbes';
 import { AgentProbeTemplates } from './AgentProbeTemplates';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
-export const JMCAgent: React.FC = () => {
+export const JMCAgent: React.FC = ({ ...props }) => {
   return (
-    <TargetView pageTitle="Instrumentation">
-      <Card isCompact>
-        <CardBody>
-          <AgentTabs />
-        </CardBody>
-      </Card>
-    </TargetView>
+    <>
+      <TargetContextSelector />
+      <BreadcrumbPage {...props} pageTitle="Instrumentation">
+        <Card>
+          <CardBody isFilled>
+            <AgentTabs />
+          </CardBody>
+        </Card>
+      </BreadcrumbPage>
+    </>
   );
 };
 
