@@ -180,7 +180,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                           spinnerAriaLabel="invoke-thread-dump"
                           isLoading={runningThreadDump}
                         >
-                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}/>
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')} />
                         </Button>
                       </ActionListItem>
                       <ActionListItem>
@@ -212,7 +212,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
                             spinnerAriaLabel="invoke-heap-dump"
                             isLoading={runningHeapDump}
                           >
-                            <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}/>
+                            <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')} />
                           </Button>
                         </Tooltip>
                       </ActionListItem>
