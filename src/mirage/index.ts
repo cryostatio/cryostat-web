@@ -521,11 +521,25 @@ export const startMirage = ({ environment = 'development' } = {}) => {
           description: 'The configuration of the garbage collected heap',
         },
       ]);
+      this.get('api/v4/event_templates', () => [
+        {
+          name: 'Preset Template',
+          provider: 'Cryostat',
+          type: 'PRESET',
+          description: 'This is not a real event template, but it is here!',
+        },
+      ]);
       this.get('api/v4/targets/:targetId/event_templates', () => [
         {
           name: 'Demo Template',
           provider: 'Demo',
           type: 'TARGET',
+          description: 'This is not a real event template, but it is here!',
+        },
+        {
+          name: 'Preset Template',
+          provider: 'Cryostat',
+          type: 'PRESET',
           description: 'This is not a real event template, but it is here!',
         },
       ]);
@@ -1041,7 +1055,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         return new Response(400, {}, 'Unsupported in Demo');
       });
       this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
-        return new Response(400, {}, 'Unsupported in Demo');
+        return new Response(204);
       });
     },
   });
