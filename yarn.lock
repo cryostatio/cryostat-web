@@ -583,10 +583,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bazel/runfiles@npm:^6.3.1":
-  version: 6.3.1
-  resolution: "@bazel/runfiles@npm:6.3.1"
-  checksum: a39bb40b8750059180ce19c19885d2d1676d2e5e02626bafb897c37a01c702a35130226261a556f7c5b064a3497ec30b9544339bbceedc9f027468273ae3b2e8
+"@bazel/runfiles@npm:^6.5.0":
+  version: 6.5.0
+  resolution: "@bazel/runfiles@npm:6.5.0"
+  checksum: df1958efd2f6b8c8ed2abb7e4f321af2f989ddb86bb954475e8bc4ef2dfa311b99e3f05440fc2913ff30d458ec6b74b5d8b05da6d7b674bca8a77008a7927661
   languageName: node
   linkType: hard
 
@@ -5069,7 +5069,7 @@ __metadata:
     regenerator-runtime: ^0.14.1
     rimraf: ^6.1.2
     rxjs: ^7.8.2
-    selenium-webdriver: ^4.38.0
+    selenium-webdriver: ^4.39.0
     semver: ^7.7.3
     showdown: ^2.1.0
     style-loader: ^4.0.0
@@ -13614,15 +13614,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selenium-webdriver@npm:^4.38.0":
-  version: 4.38.0
-  resolution: "selenium-webdriver@npm:4.38.0"
+"selenium-webdriver@npm:^4.39.0":
+  version: 4.39.0
+  resolution: "selenium-webdriver@npm:4.39.0"
   dependencies:
-    "@bazel/runfiles": ^6.3.1
+    "@bazel/runfiles": ^6.5.0
     jszip: ^3.10.1
     tmp: ^0.2.5
     ws: ^8.18.3
-  checksum: 6ec476c28622de75fb54685ec4cc1ae5cb7ab124a86377aed07850f9ef51accfad49a0e2cd6030f0ef2a278d74418245a30e666c3383cd8749ec5f7ec07a1075
+  checksum: 0bb03b76a222cb14c7d1937b5876ceb98c13095cb86f234081a3e1c1b2eaef028505888d06b8466db5868ec1d044b07287f62585cd6eec7705552f5958484c33
   languageName: node
   linkType: hard
 
