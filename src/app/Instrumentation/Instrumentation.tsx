@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, Tooltip } from '@patternfly/react-core';
@@ -23,8 +24,6 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, filter, tap } from 'rxjs';
 import { AgentLiveProbes } from './AgentLiveProbes';
 import { AgentProbeTemplates } from './AgentProbeTemplates';
-import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 export const JMCAgent: React.FC = ({ ...props }) => {
   return (
