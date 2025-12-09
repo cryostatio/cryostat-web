@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
+import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, Tooltip } from '@patternfly/react-core';
@@ -24,15 +25,18 @@ import { concatMap, filter, tap } from 'rxjs';
 import { AgentLiveProbes } from './AgentLiveProbes';
 import { AgentProbeTemplates } from './AgentProbeTemplates';
 
-export const JMCAgent: React.FC = () => {
+export const JMCAgent: React.FC = ({ ...props }) => {
   return (
-    <TargetView pageTitle="Instrumentation">
-      <Card isCompact>
-        <CardBody>
-          <AgentTabs />
-        </CardBody>
-      </Card>
-    </TargetView>
+    <>
+      <TargetContextSelector />
+      <BreadcrumbPage {...props} pageTitle="Instrumentation">
+        <Card>
+          <CardBody isFilled>
+            <AgentTabs />
+          </CardBody>
+        </Card>
+      </BreadcrumbPage>
+    </>
   );
 };
 
