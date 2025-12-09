@@ -5022,7 +5022,7 @@ __metadata:
     "@types/jest": ^30.0.0
     "@types/js-base64": 3.3.1
     "@types/lodash": ^4.17.21
-    "@types/react": ^17.0.69
+    "@types/react": ^19.2.7
     "@types/react-test-renderer": ^17.0.7
     "@types/selenium-webdriver": ^4.35.4
     "@typescript-eslint/eslint-plugin": ^8.49.0
@@ -5057,7 +5057,7 @@ __metadata:
     prettier: ^3.7.4
     prop-types: ^15.7.2
     raw-loader: ^4.0.2
-    react: ^17.0.2
+    react: ^19.2.1
     react-dom: ^17.0.2
     react-i18next: ^15.7.3
     react-joyride: ^2.9.3
@@ -12913,13 +12913,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^17.0.2":
-  version: 17.0.2
-  resolution: "react@npm:17.0.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-  checksum: b254cc17ce3011788330f7bbf383ab653c6848902d7936a87b09d835d091e3f295f7e9dd1597c6daac5dc80f90e778c8230218ba8ad599f74adcc11e33b9d61b
+"react@npm:^19.2.1":
+  version: 19.2.1
+  resolution: "react@npm:19.2.1"
+  checksum: 9b32ace5c532ed78bc5a907bfec77d966c8f117049d9bf06b627c4cebe5ef2c899f18ed283f8ed5b85346176b5ccc5328ab6fae0b389f2936a87575ce0e47670
   languageName: node
   linkType: hard
 
