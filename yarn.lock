@@ -5029,7 +5029,7 @@ __metadata:
     "@typescript-eslint/parser": ^8.49.0
     concurrently: ^9.2.1
     css-loader: ^7.1.2
-    css-minimizer-webpack-plugin: ^7.0.3
+    css-minimizer-webpack-plugin: ^7.0.4
     dayjs: ^1.11.19
     eslint: ^9.39.1
     eslint-plugin-import: ^2.32.0
@@ -5122,9 +5122,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-minimizer-webpack-plugin@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "css-minimizer-webpack-plugin@npm:7.0.3"
+"css-minimizer-webpack-plugin@npm:^7.0.4":
+  version: 7.0.4
+  resolution: "css-minimizer-webpack-plugin@npm:7.0.4"
   dependencies:
     "@jridgewell/trace-mapping": ^0.3.25
     cssnano: ^7.0.4
@@ -5147,7 +5147,7 @@ __metadata:
       optional: true
     lightningcss:
       optional: true
-  checksum: 7ee31890d2ce6287d4088961558c8eec178a9b2768ac91217da3edb53f00685820511a871ccff0787f8804adfc02c798e5f67a5ffcfa90f65bdf982aeab153a4
+  checksum: 93859a1ab8747aefb67d3330d4a1f0d73c15f3a13da6c9396ec9aacce9172f0aa33908a9a1f39e5b5881fac729d020c8b57bd7693d0c0d64d51b1f45646d0075
   languageName: node
   linkType: hard
 
