@@ -44,13 +44,16 @@ import {
   Stack,
   StackItem,
   ActionListItem,
+  Truncate,
 } from '@patternfly/react-core';
 import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DashboardCard } from '../DashboardCard';
 
-export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
+export interface DiagnosticsCardProps extends DashboardCardTypeProps {
+  isCompact: boolean;
+}
 
 export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) => {
   const { t } = useCryostatTranslation();
@@ -171,6 +174,16 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     );
   }, [props.actions, t]);
 
+  const stateHeader = React.useMemo(() => {
+    return (
+      <EmptyStateHeader
+        titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
+        icon={<EmptyStateIcon icon={WrenchIcon} />}
+        headingLevel="h2"
+      />
+    );
+  }, [t]);
+
   return (
     <>
       <DashboardCard
@@ -178,7 +191,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         dashboardId={props.dashboardId}
         cardSizes={DiagnosticsCardSizes}
         isCompact
-        cardHeader={header}
+        cardHeader={!props.isCompact ? header : null}
         isDraggable={props.isDraggable}
         isResizable={props.isResizable}
         isFullHeight={props.isFullHeight}
@@ -186,12 +199,10 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         <CardBody>
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.lg}>
-              <EmptyStateHeader
-                titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
-                icon={<EmptyStateIcon icon={WrenchIcon} />}
-                headingLevel="h2"
-              />
-              <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
+              {!props.isCompact ? stateHeader : null}
+              {!props.isCompact ? (
+                <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
+              ) : null}
               <EmptyStateFooter>
                 <Stack hasGutter>
                   <StackItem>
@@ -204,7 +215,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           spinnerAriaLabel="invoke-gc"
                           isLoading={runningGc}
                         >
-                          {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}/>
                         </Button>
                       </ActionListItem>
                     </ActionList>
@@ -219,7 +230,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           spinnerAriaLabel="invoke-thread-dump"
                           isLoading={runningThreadDump}
                         >
-                          {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}/>
                         </Button>
                       </ActionListItem>
                       <ActionListItem data-quickstart-id="thread-dumps-archive-btn">
@@ -249,7 +260,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                             spinnerAriaLabel="invoke-heap-dump"
                             isLoading={runningHeapDump}
                           >
-                            {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                            <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}/>
                           </Button>
                         </Tooltip>
                       </ActionListItem>
