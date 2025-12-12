@@ -50,7 +50,9 @@ import * as React from 'react';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DashboardCard } from '../DashboardCard';
 
-export interface DiagnosticsCardProps extends DashboardCardTypeProps {}
+export interface DiagnosticsCardProps extends DashboardCardTypeProps {
+  isCompact: boolean;
+}
 
 export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) => {
   const { t } = useCryostatTranslation();
@@ -171,6 +173,16 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     );
   }, [props.actions, t]);
 
+  const stateHeader = React.useMemo(() => {
+    return (
+      <EmptyStateHeader
+        titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
+        icon={<EmptyStateIcon icon={WrenchIcon} />}
+        headingLevel="h2"
+      />
+    );
+  }, [t]);
+
   return (
     <>
       <DashboardCard
@@ -178,7 +190,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         dashboardId={props.dashboardId}
         cardSizes={DiagnosticsCardSizes}
         isCompact
-        cardHeader={header}
+        cardHeader={!props.isCompact ? header : null}
         isDraggable={props.isDraggable}
         isResizable={props.isResizable}
         isFullHeight={props.isFullHeight}
@@ -186,12 +198,10 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         <CardBody>
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.lg}>
-              <EmptyStateHeader
-                titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
-                icon={<EmptyStateIcon icon={WrenchIcon} />}
-                headingLevel="h2"
-              />
-              <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
+              {!props.isCompact ? stateHeader : null}
+              {!props.isCompact ? (
+                <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
+              ) : null}
               <EmptyStateFooter>
                 <Stack hasGutter>
                   <StackItem>
