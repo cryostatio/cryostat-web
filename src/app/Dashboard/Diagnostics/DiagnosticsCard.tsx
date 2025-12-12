@@ -44,6 +44,7 @@ import {
   Stack,
   StackItem,
   ActionListItem,
+  Truncate,
 } from '@patternfly/react-core';
 import { ListIcon, WrenchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -214,7 +215,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           spinnerAriaLabel="invoke-gc"
                           isLoading={runningGc}
                         >
-                          {t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}/>
                         </Button>
                       </ActionListItem>
                     </ActionList>
@@ -229,7 +230,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           spinnerAriaLabel="invoke-thread-dump"
                           isLoading={runningThreadDump}
                         >
-                          {t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}/>
                         </Button>
                       </ActionListItem>
                       <ActionListItem data-quickstart-id="thread-dumps-archive-btn">
@@ -259,7 +260,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                             spinnerAriaLabel="invoke-heap-dump"
                             isLoading={runningHeapDump}
                           >
-                            {t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}
+                            <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}/>
                           </Button>
                         </Tooltip>
                       </ActionListItem>
