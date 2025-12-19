@@ -2013,6 +2013,73 @@ export class ApiService {
     );
   }
 
+  getAsyncProfilerStatus(target: Target): Observable<boolean> {
+    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
+      map((s) => s['status'] === 'RUNNING'),
+    );
+  }
+
+  getAsyncProfilerAvailableEvents(target: Target): Observable<string[]> {
+    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
+      map((s) => s['availableEvents']),
+    );
+  }
+
+  startAsyncProfile(target: Target, events: string[], duration: number) {
+    return this.ctx
+      .headers({
+        'Content-Type': 'application/json',
+      })
+      .pipe(
+        concatMap((headers) =>
+          this.sendRequest('beta', `targets/${target.id}/async-profiler`, {
+            method: 'POST',
+            body: JSON.stringify({
+              events,
+              duration,
+            }),
+            headers,
+          }),
+        ),
+        map((resp) => ({
+          ok: resp.ok,
+          status: resp.status,
+        })),
+        catchError((err) => {
+          if (isHttpError(err)) {
+            return of({
+              ok: false,
+              status: err.httpResponse.status,
+            });
+          } else {
+            return of(undefined);
+          }
+        }),
+        first(),
+      );
+  }
+
+  getAsyncProfiles(target: Target): Observable<string[]> {
+    return this.doGet<string[]>(`targets/${target.id}/async-profiler`, 'beta');
+  }
+
+  downloadAsyncProfile(target: Target, profileId: string): void {
+    this.ctx.url(`/api/beta/targets/${target.id}/async-profiler/${profileId}`).subscribe((resourceUrl) => {
+      const jfrFilename = `${target.alias}_${profileId}.asprof.jfr`;
+      this.downloadFile(resourceUrl, new URLSearchParams({ filename: jfrFilename }), jfrFilename);
+    });
+  }
+
+  deleteAsyncProfile(target: Target, profileId: string): Observable<boolean> {
+    return this.sendRequest('beta', `targets/${target.id}/async-profiler/${profileId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      catchError(() => of(false)),
+      first(),
+    );
+  }
+
   downloadLayoutTemplate(template: LayoutTemplate): void {
     const stringifiedSerializedLayout = this.stringifyLayoutTemplate(template);
     const filename = `cryostat-dashboard-${template.name}.json`;
