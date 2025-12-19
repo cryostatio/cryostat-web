@@ -20,6 +20,7 @@ export enum DeleteOrDisableWarningType {
   DisableAutomatedRules = 'DisableAutomatedRules',
   DeleteEventTemplates = 'DeleteEventTemplates',
   DeleteProbeTemplates = 'DeleteProbeTemplates',
+  DeleteAsyncProfile = 'DeleteAsyncProfile',
   DeleteHeapDump = 'DeleteHeapDump',
   DeleteThreadDump = 'DeleteThreadDump',
   DeleteActiveProbes = 'DeleteActiveProbes',
@@ -150,6 +151,14 @@ export const DeleteLayoutTemplate: DeleteOrDisableWarning = {
   ariaLabel: 'Layout Template delete warning',
 };
 
+export const DeleteAsyncProfile: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteAsyncProfile,
+  title: 'Permanently delete your async-profile?',
+  label: 'Delete Async Profile',
+  description: `If you click Delete, async-profile data will be lost.`,
+  ariaLabel: 'async-profiler delete warning',
+};
+
 export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteActiveRecordings,
   DeleteArchivedRecordings,
@@ -165,4 +174,5 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteDashboardLayout,
   DeleteLayoutTemplate,
   ClearDashboardLayout,
+  DeleteAsyncProfile,
 ];

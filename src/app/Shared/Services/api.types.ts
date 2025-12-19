@@ -637,6 +637,9 @@ export enum NotificationCategory {
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',
   ReportFail = 'ReportFailure',
+  AsyncProfileCreated = 'AsyncProfilerCreated',
+  AsyncProfileStopped = 'AsyncProfilerStopped',
+  AsyncProfileDeleted = 'AsyncProfilerDeleted',
 }
 
 export enum CloseStatus {
