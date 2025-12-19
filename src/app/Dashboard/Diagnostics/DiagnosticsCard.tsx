@@ -52,7 +52,7 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { DashboardCard } from '../DashboardCard';
 
 export interface DiagnosticsCardProps extends DashboardCardTypeProps {
-  isCompact: boolean;
+  headerDisabled: boolean;
 }
 
 export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) => {
@@ -190,17 +190,17 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
         id={'diagnostics-card'}
         dashboardId={props.dashboardId}
         cardSizes={DiagnosticsCardSizes}
-        isCompact
-        cardHeader={!props.isCompact ? header : null}
+        isCompact={props.headerDisabled}
+        cardHeader={!props.headerDisabled ? header : null}
         isDraggable={props.isDraggable}
         isResizable={props.isResizable}
         isFullHeight={props.isFullHeight}
       >
         <CardBody>
           <Bullseye>
-            <EmptyState variant={EmptyStateVariant.lg}>
-              {!props.isCompact ? stateHeader : null}
-              {!props.isCompact ? (
+            <EmptyState variant={!props.headerDisabled ? EmptyStateVariant.lg : EmptyStateVariant.xs}>
+              {!props.headerDisabled ? stateHeader : null}
+              {!props.headerDisabled ? (
                 <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
               ) : null}
               <EmptyStateFooter>
@@ -215,7 +215,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           spinnerAriaLabel="invoke-gc"
                           isLoading={runningGc}
                         >
-                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')}/>
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_GC_BUTTON')} />
                         </Button>
                       </ActionListItem>
                     </ActionList>
@@ -230,7 +230,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                           spinnerAriaLabel="invoke-thread-dump"
                           isLoading={runningThreadDump}
                         >
-                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')}/>
+                          <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_THREAD_DUMP_BUTTON')} />
                         </Button>
                       </ActionListItem>
                       <ActionListItem data-quickstart-id="thread-dumps-archive-btn">
@@ -260,7 +260,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
                             spinnerAriaLabel="invoke-heap-dump"
                             isLoading={runningHeapDump}
                           >
-                            <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')}/>
+                            <Truncate content={t('DiagnosticsCard.DIAGNOSTICS_HEAP_DUMP_BUTTON')} />
                           </Button>
                         </Tooltip>
                       </ActionListItem>

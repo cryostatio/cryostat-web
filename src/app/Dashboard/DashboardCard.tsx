@@ -80,13 +80,13 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           </div>
         </DraggableRef>
       ) : (
-        <>
-          <Card isRounded {...props}>
+        <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
+          <Card className="dashboard-card" isRounded {...props}>
             {cardHeader}
             {children}
           </Card>
           {resizeBar}
-        </>
+        </div>
       ),
     [cardRef, props, onMouseEnter, onMouseLeave, cardHeader, children, isDraggable, dashboardId, resizeBar],
   );

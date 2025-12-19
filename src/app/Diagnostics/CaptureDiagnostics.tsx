@@ -26,7 +26,7 @@ export const CaptureDiagnostics: React.FC<CaptureDiagnosticsProps> = ({ ...props
     <TargetView {...props} pageTitle="Diagnostics">
       <Grid hasGutter>
         <GridItem span={3}>
-          <DiagnosticsCard span={0} dashboardId={0} isCompact={true} />
+          <DiagnosticsCard span={3} dashboardId={0} headerDisabled={true} isResizable={false} isDraggable={false} />
         </GridItem>
         <GridItem span={9}>
           <MBeanMetricsChartCard
