@@ -19,6 +19,7 @@ import { useLocation, Route, Routes } from 'react-router-dom-v5-compat';
 import About from './About/About';
 import Archives from './Archives/Archives';
 import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
+import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
@@ -43,7 +44,6 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
