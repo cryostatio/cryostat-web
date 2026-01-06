@@ -2013,9 +2013,21 @@ export class ApiService {
     );
   }
 
-  getAsyncProfilerStatus(target: Target): Observable<boolean> {
-    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
-      map((s) => s['status'] === 'RUNNING'),
+  getAsyncProfilerStatus(target: Target): Observable<{
+    status: boolean;
+    currentProfile: { id: string; events: string[]; startTime: number; duration: number };
+  }> {
+    return this.doGet<{
+      currentProfile: {
+        id: string;
+        events: string[];
+        startTime: number;
+        duration: number;
+      };
+      status: string;
+      availableEvents: string[];
+    }>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
+      map((s) => ({ ...s, status: s['status'] === 'RUNNING' })),
     );
   }
 

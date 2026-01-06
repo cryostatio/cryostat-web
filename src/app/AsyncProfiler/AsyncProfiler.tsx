@@ -23,6 +23,7 @@ import { LoadingProps } from '@app/Shared/Components/types';
 import { NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
+import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -39,6 +40,9 @@ import {
   EmptyState,
   EmptyStateHeader,
   EmptyStateIcon,
+  Icon,
+  Label,
+  LabelGroup,
   MenuToggle,
   MenuToggleElement,
   OverflowMenu,
@@ -52,7 +56,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon, LockIcon, LockOpenIcon, SearchIcon } from '@patternfly/react-icons';
 import {
   InnerScrollContainer,
   ISortBy,
@@ -91,7 +95,16 @@ export const AsyncProfiler: React.FC = () => {
   const addSubscription = useSubscriptions();
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [isProfilerRunning, setProfilerRunning] = React.useState(false);
-  const [archiveEnabled, setArchiveEnabled] = React.useState(false);
+  const [currentProfile, setCurrentProfile] = React.useState(
+    undefined as
+      | {
+          id: string;
+          duration: number;
+          events: string[];
+          startTime: number;
+        }
+      | undefined,
+  );
   const [ids, setIds] = React.useState<string[]>([]);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -101,24 +114,8 @@ export const AsyncProfiler: React.FC = () => {
   const [actionLoadings, setActionLoadings] = React.useState<Record<ProfileActions, boolean>>({ DELETE: false });
 
   React.useEffect(() => {
-    addSubscription(context.api.isArchiveEnabled().subscribe((v) => setArchiveEnabled(v)));
-  }, [addSubscription, context.api, setArchiveEnabled]);
-
-  React.useEffect(() => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context, context.target, setTarget]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((t) => !!t),
-          concatMap((t) => context.api.getAsyncProfilerStatus(t)),
-        )
-        .subscribe((s) => setProfilerRunning(s)),
-    );
-  }, [addSubscription, context.target, context.api, setProfilerRunning]);
 
   const handleProfiles = React.useCallback(
     (ids: string[]) => {
@@ -136,6 +133,55 @@ export const AsyncProfiler: React.FC = () => {
     },
     [setIsLoading, setErrorMessage],
   );
+
+  const queryTargetAsyncProfiles = React.useCallback(
+    (target: Target) => context.api.getAsyncProfiles(target),
+    [context.api],
+  );
+
+  const refreshProfiles = React.useCallback(() => {
+    setIsLoading(true);
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((t) => !!t),
+          first(),
+          concatMap((target: Target | undefined) => {
+            if (target) {
+              return queryTargetAsyncProfiles(target);
+            } else {
+              setIsLoading(false);
+              return of([]);
+            }
+          }),
+        )
+        .subscribe({
+          next: handleProfiles,
+          error: handleError,
+        }),
+    );
+  }, [addSubscription, context.target, setIsLoading, handleProfiles, handleError, queryTargetAsyncProfiles]);
+
+  const handleStatus = React.useCallback(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((t) => !!t),
+          concatMap((t) => context.api.getAsyncProfilerStatus(t)),
+        )
+        .subscribe((s) => {
+          setProfilerRunning(s.status);
+          setCurrentProfile(s.currentProfile);
+          refreshProfiles();
+        }),
+    );
+  }, [addSubscription, context.target, context.api, setProfilerRunning, setCurrentProfile, refreshProfiles]);
+
+  React.useEffect(() => {
+    handleStatus();
+  }, [handleStatus]);
 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
@@ -198,35 +244,6 @@ export const AsyncProfiler: React.FC = () => {
     [setCheckedIndices, setHeaderChecked],
   );
 
-  const queryTargetAsyncProfiles = React.useCallback(
-    (target: Target) => context.api.getAsyncProfiles(target),
-    [context.api],
-  );
-
-  const refreshProfiles = React.useCallback(() => {
-    setIsLoading(true);
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((t) => !!t),
-          first(),
-          concatMap((target: Target | undefined) => {
-            if (target) {
-              return queryTargetAsyncProfiles(target);
-            } else {
-              setIsLoading(false);
-              return of([]);
-            }
-          }),
-        )
-        .subscribe({
-          next: handleProfiles,
-          error: handleError,
-        }),
-    );
-  }, [addSubscription, context.target, setIsLoading, handleProfiles, handleError, queryTargetAsyncProfiles]);
-
   React.useEffect(() => {
     addSubscription(
       context.target
@@ -269,13 +286,9 @@ export const AsyncProfiler: React.FC = () => {
         context.notificationChannel.messages(NotificationCategory.AsyncProfileCreated),
         context.notificationChannel.messages(NotificationCategory.AsyncProfileStopped),
         context.notificationChannel.messages(NotificationCategory.AsyncProfileDeleted),
-      )
-        .pipe(
-          concatMap(() => target ? context.api.getAsyncProfilerStatus(target) : of(false)),
-        )
-        .subscribe((s) => setProfilerRunning(s)),
+      ).subscribe(() => handleStatus()),
     );
-  }, [addSubscription, target, context.api, context.notificationChannel, setProfilerRunning]);
+  }, [addSubscription, context.notificationChannel, handleStatus]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -302,6 +315,7 @@ export const AsyncProfiler: React.FC = () => {
     () => (
       <AsyncProfilesToolbar
         target={target}
+        currentProfile={currentProfile}
         checkedIndices={checkedIndices}
         profiles={ids}
         profilerRunning={isProfilerRunning}
@@ -310,7 +324,16 @@ export const AsyncProfiler: React.FC = () => {
         actionLoadings={actionLoadings}
       />
     ),
-    [target, checkedIndices, ids, isProfilerRunning, handleCreate, handleDeleteProfiles, actionLoadings],
+    [
+      target,
+      checkedIndices,
+      ids,
+      currentProfile,
+      isProfilerRunning,
+      handleCreate,
+      handleDeleteProfiles,
+      actionLoadings,
+    ],
   );
 
   const getSortParams = React.useCallback(
@@ -368,6 +391,12 @@ export const AsyncProfiler: React.FC = () => {
 
 export interface AsyncProfilesTableToolbarProps {
   target: NullableTarget;
+  currentProfile?: {
+    startTime?: number;
+    id: string;
+    duration: number;
+    events: string[];
+  };
   checkedIndices: number[];
   profiles: string[];
   profilerRunning: boolean;
@@ -380,6 +409,7 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
+  const [dayjs, dateFormat] = useDayjs();
 
   const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
@@ -496,6 +526,34 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
                 </Dropdown>
               </OverflowMenuControl>
             </OverflowMenu>
+          </ToolbarItem>
+          <ToolbarItem variant="separator" />
+          <ToolbarItem>
+            {props.currentProfile ? (
+              <>
+                <Icon size="lg">
+                  <LockIcon />
+                </Icon>{' '}
+                <LabelGroup>
+                  <Label>{props.currentProfile.id}</Label>
+                  <Label>{JSON.stringify(props.currentProfile.events)}</Label>
+                  <Label>duration: {props.currentProfile.duration}s</Label>
+                  <Label>
+                    start time: {dayjs(props.currentProfile.startTime).tz(dateFormat.timeZone.full).format('L LTS z')}
+                  </Label>
+                  <Label>
+                    end time:{' '}
+                    {dayjs(props.currentProfile.startTime! + props.currentProfile.duration * 1000)
+                      .tz(dateFormat.timeZone.full)
+                      .format('L LTS z')}
+                  </Label>
+                </LabelGroup>
+              </>
+            ) : (
+              <Icon size="lg">
+                <LockOpenIcon />
+              </Icon>
+            )}
           </ToolbarItem>
         </ToolbarGroup>
         {deleteAsyncProfileWarningModal}
