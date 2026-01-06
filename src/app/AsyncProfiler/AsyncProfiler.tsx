@@ -197,11 +197,8 @@ export const AsyncProfiler: React.FC = () => {
   );
 
   const handleCreate = React.useCallback(() => {
-    if (!target) {
-      return;
-    }
     navigate(toPath('/async-profiler/create'), { relative: 'path' });
-  }, [addSubscription, context.api, target]);
+  }, [navigate]);
 
   const handleDeleteProfiles = React.useCallback(() => {
     setActionLoadings((old) => ({ ...old, DELETE: true }));

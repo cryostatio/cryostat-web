@@ -51,7 +51,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context, context.target, setTarget]);
 
-  function convertEventsToTree(rawEvents: string[]): DualListSelectorTreeItemData[] {
+  const convertEventsToTree = React.useCallback((rawEvents: string[]): DualListSelectorTreeItemData[] => {
     const out: DualListSelectorTreeItemData[] = [];
     Object.keys(rawEvents).forEach((k) => {
       const events: string[] = rawEvents[k];
@@ -69,9 +69,9 @@ export const CreateAsyncProfilerSession: React.FC = () => {
       out.push(category);
     });
     return out;
-  }
+  }, []);
 
-  function convertSelectionToEvents(selection: DualListSelectorTreeItemData[]): string[] {
+  const convertSelectionToEvents = React.useCallback((selection: DualListSelectorTreeItemData[]): string[] => {
     const flattened: DualListSelectorTreeItemData[] = [];
     selection.forEach((s) => {
       if (s.children) {
@@ -81,7 +81,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
       }
     });
     return _.sortedUniq(flattened.map((v) => v.id).sort());
-  }
+  }, []);
 
   React.useEffect(() => {
     if (!target) {
@@ -90,7 +90,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     addSubscription(
       context.api.getAsyncProfilerAvailableEvents(target).pipe(map(convertEventsToTree)).subscribe(setAvailableEvents),
     );
-  }, [addSubscription, target, context.api, setAvailableEvents]);
+  }, [addSubscription, target, context.api, convertEventsToTree, setAvailableEvents]);
 
   const handleListChange = React.useCallback(
     (
@@ -121,7 +121,16 @@ export const CreateAsyncProfilerSession: React.FC = () => {
         .startAsyncProfile(target, events, (duration * durationUnits) / MILLIS)
         .subscribe(() => navigate(toPath('/async-profiler'))),
     );
-  }, [addSubscription, target, context.api, convertSelectionToEvents, selectedEvents]);
+  }, [
+    navigate,
+    addSubscription,
+    target,
+    context.api,
+    convertSelectionToEvents,
+    selectedEvents,
+    duration,
+    durationUnits,
+  ]);
 
   return (
     <TargetView pageTitle="Create" breadcrumbs={[{ title: 'async-profiler', path: toPath('/async-profiler') }]}>
