@@ -31,7 +31,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { hashCode, portalRoot, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, portalRoot, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
@@ -77,6 +77,10 @@ const tableColumns: TableColumn[] = [
   {
     title: 'Timing',
     keyPaths: ['timing'],
+  },
+  {
+    title: 'Size',
+    keyPaths: ['size'],
   },
 ];
 
@@ -693,6 +697,9 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
               .tz(dateFormat.timeZone.full)
               .format('L LTS z')}
           </Timestamp>
+        </Td>
+        <Td key={`async-profile-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
+          {formatBytes(profile.size)}
         </Td>
         {<AsyncProfileAction id={profile.id} onDownload={onDownload} data-quickstart-id="async-profiles-kebab" />}
       </Tr>

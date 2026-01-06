@@ -583,6 +583,7 @@ export interface AsyncProfile {
   id: string;
   starttime: number;
   endtime: number;
+  size: number;
 }
 
 export interface AsyncProfilerSession {
