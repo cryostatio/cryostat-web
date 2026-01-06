@@ -31,7 +31,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, hashCode, portalRoot, TableColumn } from '@app/utils/utils';
+import { formatBytes, hashCode, portalRoot, TableColumn, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
@@ -67,6 +67,7 @@ import {
 import { EllipsisVIcon, LockIcon, LockOpenIcon, SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, filter, first, forkJoin, merge, Observable, of } from 'rxjs';
 
 const tableColumns: TableColumn[] = [
@@ -95,9 +96,10 @@ export type ProfileActions = 'DELETE';
 export const AsyncProfiler: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const navigate = useNavigate();
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [isProfilerRunning, setProfilerRunning] = React.useState(false);
-  const [currentProfile, setCurrentProfile] = React.useState(undefined as AsyncProfilerSession | undefined);
+  const [currentProfile, setCurrentProfile] = React.useState<AsyncProfilerSession | undefined>(undefined);
   const [profiles, setProfiles] = React.useState<AsyncProfile[]>([]);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -198,7 +200,7 @@ export const AsyncProfiler: React.FC = () => {
     if (!target) {
       return;
     }
-    addSubscription(context.api.startAsyncProfile(target, ['cpu'], 10).subscribe());
+    navigate(toPath('/async-profiler/create'), { relative: 'path' });
   }, [addSubscription, context.api, target]);
 
   const handleDeleteProfiles = React.useCallback(() => {
