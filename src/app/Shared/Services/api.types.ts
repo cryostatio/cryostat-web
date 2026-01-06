@@ -576,6 +576,23 @@ export interface TargetNode extends _AbstractNode {
 }
 
 // ======================================
+// async-profiler resources
+// ======================================
+
+export interface AsyncProfilerSession {
+  id: string;
+  events: string[];
+  startTime: number;
+  duration: number;
+}
+
+export interface AsyncProfilerStatus {
+  status: boolean;
+  availableEvents: string[];
+  currentProfile?: AsyncProfilerSession;
+}
+
+// ======================================
 // Notification resources
 // ======================================
 

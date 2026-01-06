@@ -20,7 +20,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { RowAction } from '@app/Recordings/RecordingActions';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
+import { AsyncProfilerSession, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -95,16 +95,7 @@ export const AsyncProfiler: React.FC = () => {
   const addSubscription = useSubscriptions();
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [isProfilerRunning, setProfilerRunning] = React.useState(false);
-  const [currentProfile, setCurrentProfile] = React.useState(
-    undefined as
-      | {
-          id: string;
-          duration: number;
-          events: string[];
-          startTime: number;
-        }
-      | undefined,
-  );
+  const [currentProfile, setCurrentProfile] = React.useState(undefined as AsyncProfilerSession | undefined);
   const [ids, setIds] = React.useState<string[]>([]);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -391,12 +382,7 @@ export const AsyncProfiler: React.FC = () => {
 
 export interface AsyncProfilesTableToolbarProps {
   target: NullableTarget;
-  currentProfile?: {
-    startTime?: number;
-    id: string;
-    duration: number;
-    events: string[];
-  };
+  currentProfile?: AsyncProfilerSession;
   checkedIndices: number[];
   profiles: string[];
   profilerRunning: boolean;
