@@ -20,7 +20,13 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { RowAction } from '@app/Recordings/RecordingActions';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { AsyncProfilerSession, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
+import {
+  AsyncProfile,
+  AsyncProfilerSession,
+  NotificationCategory,
+  NullableTarget,
+  Target,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import useDayjs from '@app/utils/hooks/useDayjs';
@@ -51,24 +57,15 @@ import {
   OverflowMenuDropdownItem,
   OverflowMenuGroup,
   OverflowMenuItem,
+  Timestamp,
+  TimestampTooltipVariant,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, LockIcon, LockOpenIcon, SearchIcon } from '@patternfly/react-icons';
-import {
-  InnerScrollContainer,
-  ISortBy,
-  OuterScrollContainer,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  ThProps,
-  Tr,
-} from '@patternfly/react-table';
+import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { concatMap, filter, first, forkJoin, merge, Observable, of } from 'rxjs';
 
@@ -76,16 +73,17 @@ const tableColumns: TableColumn[] = [
   {
     title: 'ID',
     keyPaths: ['id'],
-    sortable: true,
+  },
+  {
+    title: 'Timing',
+    keyPaths: ['timing'],
   },
 ];
 
 export interface ColumnConfig {
   columns: {
     title: string;
-    sortable?: boolean;
   }[];
-  onSort: (columnIndex: number) => ThProps['sort'];
 }
 
 export type ProfileActions = 'DELETE';
@@ -96,10 +94,9 @@ export const AsyncProfiler: React.FC = () => {
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [isProfilerRunning, setProfilerRunning] = React.useState(false);
   const [currentProfile, setCurrentProfile] = React.useState(undefined as AsyncProfilerSession | undefined);
-  const [ids, setIds] = React.useState<string[]>([]);
+  const [profiles, setProfiles] = React.useState<AsyncProfile[]>([]);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
-  const [sortBy, setSortBy] = React.useState<ISortBy>({});
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [actionLoadings, setActionLoadings] = React.useState<Record<ProfileActions, boolean>>({ DELETE: false });
@@ -109,12 +106,12 @@ export const AsyncProfiler: React.FC = () => {
   }, [addSubscription, context, context.target, setTarget]);
 
   const handleProfiles = React.useCallback(
-    (ids: string[]) => {
-      setIds(ids);
+    (profiles: AsyncProfile[]) => {
+      setProfiles(profiles);
       setIsLoading(false);
       setErrorMessage('');
     },
-    [setIds, setIsLoading, setErrorMessage],
+    [setProfiles, setIsLoading, setErrorMessage],
   );
 
   const handleError = React.useCallback(
@@ -177,9 +174,9 @@ export const AsyncProfiler: React.FC = () => {
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? ids.map((r) => hashCode(r)) : []);
+      setCheckedIndices(checked ? profiles.map((r) => hashCode(r.id)) : []);
     },
-    [setHeaderChecked, setCheckedIndices, ids],
+    [setHeaderChecked, setCheckedIndices, profiles],
   );
 
   const handlePostActions = React.useCallback(
@@ -208,9 +205,9 @@ export const AsyncProfiler: React.FC = () => {
         .target()
         .pipe(filter((t) => !!t))
         .subscribe((t) => {
-          ids.forEach((id: string) => {
-            if (checkedIndices.includes(hashCode(id))) {
-              tasks.push(context.api.deleteAsyncProfile(t, id).pipe(first()));
+          profiles.forEach((profile: AsyncProfile) => {
+            if (checkedIndices.includes(hashCode(profile.id))) {
+              tasks.push(context.api.deleteAsyncProfile(t, profile.id).pipe(first()));
             }
           });
           addSubscription(
@@ -221,7 +218,7 @@ export const AsyncProfiler: React.FC = () => {
           );
         }),
     );
-  }, [addSubscription, ids, checkedIndices, context.target, context.api, setActionLoadings, handlePostActions]);
+  }, [addSubscription, profiles, checkedIndices, context.target, context.api, setActionLoadings, handlePostActions]);
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
@@ -246,19 +243,19 @@ export const AsyncProfiler: React.FC = () => {
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
-      const filteredIdIdx = new Set(ids.map((id) => hashCode(id)));
+      const filteredIdIdx = new Set(profiles.map((profile) => hashCode(profile.id)));
       return ci.filter((idx) => filteredIdIdx.has(idx));
     });
-  }, [ids, setCheckedIndices]);
+  }, [profiles, setCheckedIndices]);
 
   React.useEffect(() => {
-    setHeaderChecked(checkedIndices.length === ids.length);
-  }, [setHeaderChecked, checkedIndices, ids.length]);
+    setHeaderChecked(checkedIndices.length === profiles.length);
+  }, [setHeaderChecked, checkedIndices, profiles]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.AsyncProfileDeleted).subscribe((msg) => {
-        setIds((old) => old.filter((t) => t !== msg.message.id));
+        setProfiles((old) => old.filter((p: AsyncProfile) => p.id !== msg.message.id));
       }),
     );
   }, [addSubscription, context.notificationChannel]);
@@ -308,7 +305,7 @@ export const AsyncProfiler: React.FC = () => {
         target={target}
         currentProfile={currentProfile}
         checkedIndices={checkedIndices}
-        profiles={ids}
+        profiles={profiles}
         profilerRunning={isProfilerRunning}
         handleCreate={handleCreate}
         handleDelete={handleDeleteProfiles}
@@ -318,7 +315,7 @@ export const AsyncProfiler: React.FC = () => {
     [
       target,
       checkedIndices,
-      ids,
+      profiles,
       currentProfile,
       isProfilerRunning,
       handleCreate,
@@ -327,26 +324,11 @@ export const AsyncProfiler: React.FC = () => {
     ],
   );
 
-  const getSortParams = React.useCallback(
-    (columnIndex: number): ThProps['sort'] => ({
-      sortBy: sortBy,
-      onSort: (_event, index, direction) => {
-        setSortBy({
-          index: index,
-          direction: direction,
-        });
-      },
-      columnIndex,
-    }),
-    [sortBy, setSortBy],
-  );
-
   const columnConfig: ColumnConfig = React.useMemo(
     () => ({
       columns: tableColumns,
-      onSort: getSortParams,
     }),
-    [getSortParams],
+    [],
   );
 
   return (
@@ -360,14 +342,14 @@ export const AsyncProfiler: React.FC = () => {
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
             isLoading={isLoading}
-            isEmpty={!ids.length}
+            isEmpty={!profiles.length}
             errorMessage={errorMessage}
           >
-            {ids.map((id) => (
+            {profiles.map((profile) => (
               <AsyncProfileRow
-                key={id}
-                id={id}
-                index={hashCode(id)}
+                key={profile.id}
+                index={hashCode(profile.id)}
+                profile={profile}
                 checkedIndices={checkedIndices}
                 handleRowCheck={handleRowCheck}
                 onDownload={handleDownloadProfile}
@@ -384,7 +366,7 @@ export interface AsyncProfilesTableToolbarProps {
   target: NullableTarget;
   currentProfile?: AsyncProfilerSession;
   checkedIndices: number[];
-  profiles: string[];
+  profiles: AsyncProfile[];
   profilerRunning: boolean;
   handleCreate: () => void;
   handleDelete: () => void;
@@ -525,11 +507,14 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
                   <Label>{JSON.stringify(props.currentProfile.events)}</Label>
                   <Label>duration: {props.currentProfile.duration}s</Label>
                   <Label>
-                    start time: {dayjs(props.currentProfile.startTime).tz(dateFormat.timeZone.full).format('L LTS z')}
+                    start time:{' '}
+                    {dayjs(props.currentProfile.startTime * 1000)
+                      .tz(dateFormat.timeZone.full)
+                      .format('L LTS z')}
                   </Label>
                   <Label>
                     end time:{' '}
-                    {dayjs(props.currentProfile.startTime! + props.currentProfile.duration * 1000)
+                    {dayjs((props.currentProfile.startTime! + props.currentProfile.duration) * 1000)
                       .tz(dateFormat.timeZone.full)
                       .format('L LTS z')}
                   </Label>
@@ -623,10 +608,8 @@ export const AsyncProfilerTable: React.FC<AsyncProfilerTableProps> = ({
                   isSelected: isHeaderChecked,
                 }}
               />
-              {tableColumns.columns.map(({ title, sortable }, index) => (
-                <Th key={`table-header-${title}`} sort={sortable ? tableColumns.onSort(index) : undefined}>
-                  {title}
-                </Th>
+              {tableColumns.columns.map(({ title }) => (
+                <Th key={`table-header-${title}`}>{title}</Th>
               ))}
               <Th key="table-header-actions" screenReaderText="actions header" />
             </Tr>
@@ -648,20 +631,22 @@ export const AsyncProfilerTable: React.FC<AsyncProfilerTableProps> = ({
 };
 
 export interface AsyncProfileRowProps {
-  id: string;
   index: number;
+  profile: AsyncProfile;
   checkedIndices: number[];
   handleRowCheck: (checked: boolean, rowIdx: string | number) => void;
   onDownload: (id: string) => void;
 }
 
 export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
-  id,
+  profile,
   index,
   checkedIndices,
   handleRowCheck,
   onDownload,
 }) => {
+  const [dayjs, dateFormat] = useDayjs();
+
   const handleCheck = React.useCallback(
     (_, checked: boolean) => {
       handleRowCheck(checked, index);
@@ -682,12 +667,37 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
           />
         </Td>
         <Td key={`async-profile-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
-          {id}
+          {profile.id}
         </Td>
-        {<AsyncProfileAction id={id} onDownload={onDownload} data-quickstart-id="async-profiles-kebab" />}
+        <Td key={`async-profile-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
+          <Timestamp
+            className="async-profiler-table__timestamp"
+            tooltip={{
+              variant: TimestampTooltipVariant.custom,
+              content: dayjs(profile.starttime * 1000).toISOString(),
+            }}
+          >
+            {dayjs(profile.starttime * 1000)
+              .tz(dateFormat.timeZone.full)
+              .format('L LTS z')}
+          </Timestamp>
+          &nbsp;-&nbsp;
+          <Timestamp
+            className="async-profiler-table__timestamp"
+            tooltip={{
+              variant: TimestampTooltipVariant.custom,
+              content: dayjs(profile.endtime * 1000).toISOString(),
+            }}
+          >
+            {dayjs(profile.endtime * 1000)
+              .tz(dateFormat.timeZone.full)
+              .format('L LTS z')}
+          </Timestamp>
+        </Td>
+        {<AsyncProfileAction id={profile.id} onDownload={onDownload} data-quickstart-id="async-profiles-kebab" />}
       </Tr>
     );
-  }, [onDownload, id, index, checkedIndices, handleCheck]);
+  }, [profile, onDownload, index, checkedIndices, handleCheck, dayjs, dateFormat]);
 
   return <Tbody key={index}>{parentRow}</Tbody>;
 };

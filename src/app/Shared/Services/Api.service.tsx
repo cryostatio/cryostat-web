@@ -71,6 +71,7 @@ import {
   HeapDump,
   ThreadDump,
   AsyncProfilerStatus,
+  AsyncProfile,
 } from './api.types';
 import {
   isHttpError,
@@ -2038,8 +2039,8 @@ export class ApiService {
       );
   }
 
-  getAsyncProfiles(target: Target): Observable<string[]> {
-    return this.doGet<string[]>(`targets/${target.id}/async-profiler`, 'beta');
+  getAsyncProfiles(target: Target): Observable<AsyncProfile[]> {
+    return this.doGet<AsyncProfile[]>(`targets/${target.id}/async-profiler`, 'beta');
   }
 
   downloadAsyncProfile(target: Target, profileId: string): void {
