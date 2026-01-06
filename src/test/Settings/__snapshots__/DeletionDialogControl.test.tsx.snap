@@ -351,6 +351,45 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
             data-ouia-component-id="OUIA-Generated-Switch-8"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
+            htmlFor="DeleteAsyncProfile"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="DeleteAsyncProfile-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="DeleteAsyncProfile"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="DeleteAsyncProfile-on"
+            >
+              Delete Async Profile
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="DeleteAsyncProfile-off"
+            >
+              Delete Async Profile
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-9"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
             htmlFor="DeleteHeapDump"
           >
             <input
@@ -387,7 +426,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-9"
+            data-ouia-component-id="OUIA-Generated-Switch-10"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteThreadDump"
@@ -426,7 +465,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-10"
+            data-ouia-component-id="OUIA-Generated-Switch-11"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteActiveProbes"
@@ -465,7 +504,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-11"
+            data-ouia-component-id="OUIA-Generated-Switch-12"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteSmartTrigger"
