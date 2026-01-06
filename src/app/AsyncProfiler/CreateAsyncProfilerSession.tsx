@@ -1,0 +1,161 @@
+/*
+ * Copyright The Cryostat Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { DurationPicker } from '@app/DurationPicker/DurationPicker';
+import { NullableTarget } from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetView } from '@app/TargetView/TargetView';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { toPath } from '@app/utils/utils';
+import {
+  Button,
+  Card,
+  CardBody,
+  DualListSelector,
+  DualListSelectorTreeItemData,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
+import _ from 'lodash';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom-v5-compat';
+import { map } from 'rxjs';
+
+const MILLIS = 1000;
+
+export const CreateAsyncProfilerSession: React.FC = () => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const navigate = useNavigate();
+
+  const [target, setTarget] = React.useState<NullableTarget>(undefined);
+  const [selectedEvents, setSelectedEvents] = React.useState<DualListSelectorTreeItemData[]>([]);
+  const [availableEvents, setAvailableEvents] = React.useState<DualListSelectorTreeItemData[]>([]);
+  const [duration, setDuration] = React.useState(5);
+  const [durationUnits, setDurationUnits] = React.useState(MILLIS);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => setTarget(t)));
+  }, [addSubscription, context, context.target, setTarget]);
+
+  function convertEventsToTree(rawEvents: string[]): DualListSelectorTreeItemData[] {
+    const out: DualListSelectorTreeItemData[] = [];
+    Object.keys(rawEvents).forEach((k) => {
+      const events: string[] = rawEvents[k];
+      const category: DualListSelectorTreeItemData = {
+        id: k.trim(),
+        text: k.trim(),
+        isChecked: false,
+        hasBadge: true,
+        children: events.map((e) => ({
+          id: e.trim(),
+          text: e.trim(),
+          isChecked: false,
+        })),
+      };
+      out.push(category);
+    });
+    return out;
+  }
+
+  function convertSelectionToEvents(selection: DualListSelectorTreeItemData[]): string[] {
+    const flattened: DualListSelectorTreeItemData[] = [];
+    selection.forEach((s) => {
+      if (s.children) {
+        s.children.forEach((c) => flattened.push(c));
+      } else {
+        flattened.push(s);
+      }
+    });
+    return _.sortedUniq(flattened.map((v) => v.id).sort());
+  }
+
+  React.useEffect(() => {
+    if (!target) {
+      return;
+    }
+    addSubscription(
+      context.api.getAsyncProfilerAvailableEvents(target).pipe(map(convertEventsToTree)).subscribe(setAvailableEvents),
+    );
+  }, [addSubscription, target, context.api, setAvailableEvents]);
+
+  const handleListChange = React.useCallback(
+    (
+      _: React.MouseEvent<HTMLElement>,
+      newAvailableOptions: DualListSelectorTreeItemData[],
+      newChosenOptions: DualListSelectorTreeItemData[],
+    ) => {
+      setAvailableEvents(newAvailableOptions.sort());
+      setSelectedEvents(newChosenOptions.sort());
+    },
+    [setAvailableEvents, setSelectedEvents],
+  );
+
+  const handleSubmit = React.useCallback(() => {
+    if (!target) {
+      navigate(toPath('/async-profiler'));
+      return;
+    }
+    const events = convertSelectionToEvents(selectedEvents);
+    if (!events) {
+      return;
+    }
+    if (duration < 1) {
+      return;
+    }
+    addSubscription(
+      context.api
+        .startAsyncProfile(target, events, (duration * durationUnits) / MILLIS)
+        .subscribe(() => navigate(toPath('/async-profiler'))),
+    );
+  }, [addSubscription, target, context.api, convertSelectionToEvents, selectedEvents]);
+
+  return (
+    <TargetView pageTitle="Create" breadcrumbs={[{ title: 'async-profiler', path: toPath('/async-profiler') }]}>
+      <Card>
+        <CardBody>
+          <Stack hasGutter>
+            <StackItem>
+              <DualListSelector
+                isSearchable
+                isTree
+                availableOptions={availableEvents}
+                chosenOptions={selectedEvents}
+                onListChange={handleListChange}
+              />
+            </StackItem>
+            <StackItem>
+              <DurationPicker
+                enabled={true}
+                onPeriodChange={setDuration}
+                onUnitScalarChange={setDurationUnits}
+                period={duration}
+                unitScalar={durationUnits}
+              />
+            </StackItem>
+            <StackItem>
+              <Button onClick={handleSubmit} isDisabled={!selectedEvents.length || duration < 1}>
+                Submit
+              </Button>
+            </StackItem>
+          </Stack>
+        </CardBody>
+      </Card>
+    </TargetView>
+  );
+};
+
+export default CreateAsyncProfilerSession;

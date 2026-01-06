@@ -43,6 +43,7 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
+import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
@@ -169,6 +170,13 @@ const flightRecorderRoutes: IAppRoute[] = [
     navGroup: FLIGHT_RECORDER,
     navSubgroup: CAPTURE,
     featureLevel: FeatureLevel.BETA,
+    children: [
+      {
+        component: CreateAsyncProfilerSession,
+        path: toPath('/async-profiler/create'),
+        title: 'Create Async Profiler session',
+      },
+    ],
   },
   {
     component: Archives,

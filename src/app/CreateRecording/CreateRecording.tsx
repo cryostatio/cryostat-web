@@ -30,7 +30,7 @@ export const CreateRecording: React.FC = () => {
   );
 
   return (
-    <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: toPath('/recordings') }]}>
+    <TargetView pageTitle="Create" breadcrumbs={[{ title: 'Recordings', path: toPath('/recordings') }]}>
       <Card>
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={onTabSelect}>
