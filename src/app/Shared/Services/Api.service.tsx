@@ -70,6 +70,7 @@ import {
   AggregateReport,
   HeapDump,
   ThreadDump,
+  AsyncProfilerStatus,
 } from './api.types';
 import {
   isHttpError,
@@ -1988,10 +1989,7 @@ export class ApiService {
     );
   }
 
-  getAsyncProfilerStatus(target: Target): Observable<{
-    status: boolean;
-    currentProfile: { id: string; events: string[]; startTime: number; duration: number };
-  }> {
+  getAsyncProfilerStatus(target: Target): Observable<AsyncProfilerStatus> {
     return this.doGet<{
       currentProfile: {
         id: string;
