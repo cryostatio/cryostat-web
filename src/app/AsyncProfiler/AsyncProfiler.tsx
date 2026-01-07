@@ -66,7 +66,6 @@ import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, filter, first, forkJoin, merge, Observable, of } from 'rxjs';
-import { MILLIS } from './CreateAsyncProfilerSession';
 
 const tableColumns: TableColumn[] = [
   {
@@ -697,16 +696,14 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
             className="async-profiler-table__timestamp"
             tooltip={{
               variant: TimestampTooltipVariant.custom,
-              content: dayjs(profile.startTime * MILLIS).toISOString(),
+              content: dayjs(profile.startTime).toISOString(),
             }}
           >
-            {dayjs(profile.startTime * MILLIS)
-              .tz(dateFormat.timeZone.full)
-              .format('L LTS z')}
+            {dayjs(profile.startTime).tz(dateFormat.timeZone.full).format('L LTS z')}
           </Timestamp>
         </Td>
         <Td key={`async-profile-table-row-${index}_2`} dataLabel={tableColumns[2].title}>
-          {formatDuration(profile.duration)}
+          {formatDuration(profile.duration, 1)}
         </Td>
         <Td key={`async-profile-table-row-${index}_3`} dataLabel={tableColumns[3].title}>
           {'size' in profile ? 'STOPPED' : 'RUNNING'}
