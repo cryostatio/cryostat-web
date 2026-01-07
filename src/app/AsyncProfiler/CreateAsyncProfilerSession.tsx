@@ -63,13 +63,13 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   const convertEventsToTree = React.useCallback((rawEvents: string[]): DualListSelectorTreeItemData[] => {
     const out: DualListSelectorTreeItemData[] = [];
     Object.keys(rawEvents).forEach((k) => {
-      const events: string[] = rawEvents[k];
       const category: DualListSelectorTreeItemData = {
         id: k.trim(),
         text: k.trim(),
         isChecked: false,
         hasBadge: true,
-        children: events.map((e) => ({
+        defaultExpanded: true,
+        children: rawEvents[k].map((e) => ({
           id: e.trim(),
           text: e.trim(),
           isChecked: false,
