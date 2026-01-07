@@ -23,6 +23,7 @@ import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
+  Bullseye,
   Button,
   Card,
   CardBody,
@@ -30,6 +31,7 @@ import {
   DualListSelectorTreeItemData,
   Form,
   FormGroup,
+  Spinner,
   Text,
   TextContent,
   TextVariants,
@@ -52,6 +54,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   const [availableEvents, setAvailableEvents] = React.useState<DualListSelectorTreeItemData[]>([]);
   const [duration, setDuration] = React.useState(5);
   const [durationUnits, setDurationUnits] = React.useState(MILLIS);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
@@ -94,9 +97,15 @@ export const CreateAsyncProfilerSession: React.FC = () => {
       return;
     }
     addSubscription(
-      context.api.getAsyncProfilerAvailableEvents(target).pipe(map(convertEventsToTree)).subscribe(setAvailableEvents),
+      context.api
+        .getAsyncProfilerAvailableEvents(target)
+        .pipe(map(convertEventsToTree))
+        .subscribe((e) => {
+          setAvailableEvents(e);
+          setLoading(false);
+        }),
     );
-  }, [addSubscription, target, context.api, convertEventsToTree, setAvailableEvents]);
+  }, [addSubscription, target, context.api, convertEventsToTree, setAvailableEvents, setLoading]);
 
   const handleListChange = React.useCallback(
     (
@@ -144,37 +153,43 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     <TargetView pageTitle="Create" breadcrumbs={[{ title: 'async-profiler', path: toPath('/async-profiler') }]}>
       <Card>
         <CardBody>
-          <Form isHorizontal>
-            <TextContent>
-              <Text component={TextVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Text>
-            </TextContent>
-            <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
-              <DualListSelector
-                isSearchable
-                isTree
-                availableOptions={availableEvents}
-                chosenOptions={selectedEvents}
-                onListChange={handleListChange}
-              />
-            </FormGroup>
-            <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
-              <DurationPicker
-                enabled={true}
-                onPeriodChange={setDuration}
-                onUnitScalarChange={setDurationUnits}
-                period={duration}
-                unitScalar={durationUnits}
-              />
-            </FormGroup>
-            <ActionGroup>
-              <Button variant="primary" onClick={handleSubmit} isDisabled={!selectedEvents.length || duration < 1}>
-                {t('CREATE')}
-              </Button>
-              <Button variant="secondary" onClick={exitForm}>
-                {t('CANCEL')}
-              </Button>
-            </ActionGroup>
-          </Form>
+          {loading ? (
+            <Bullseye>
+              <Spinner />
+            </Bullseye>
+          ) : (
+            <Form isHorizontal>
+              <TextContent>
+                <Text component={TextVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Text>
+              </TextContent>
+              <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
+                <DualListSelector
+                  isSearchable
+                  isTree
+                  availableOptions={availableEvents}
+                  chosenOptions={selectedEvents}
+                  onListChange={handleListChange}
+                />
+              </FormGroup>
+              <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
+                <DurationPicker
+                  enabled={true}
+                  onPeriodChange={setDuration}
+                  onUnitScalarChange={setDurationUnits}
+                  period={duration}
+                  unitScalar={durationUnits}
+                />
+              </FormGroup>
+              <ActionGroup>
+                <Button variant="primary" onClick={handleSubmit} isDisabled={!selectedEvents.length || duration < 1}>
+                  {t('CREATE')}
+                </Button>
+                <Button variant="secondary" onClick={exitForm}>
+                  {t('CANCEL')}
+                </Button>
+              </ActionGroup>
+            </Form>
+          )}
         </CardBody>
       </Card>
     </TargetView>
