@@ -65,7 +65,7 @@ import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
-import { concatMap, filter, first, forkJoin, merge, Observable, of } from 'rxjs';
+import { first, forkJoin, merge, Observable, tap } from 'rxjs';
 
 const tableColumns: TableColumn[] = [
   {
@@ -129,18 +129,16 @@ export const AsyncProfiler: React.FC = () => {
   const handleProfiles = React.useCallback(
     (profiles: AsyncProfile[]) => {
       setProfiles(profiles);
-      setIsLoading(false);
       setErrorMessage('');
     },
-    [setProfiles, setIsLoading, setErrorMessage],
+    [setProfiles, setErrorMessage],
   );
 
   const handleError = React.useCallback(
     (error) => {
-      setIsLoading(false);
       setErrorMessage(error.message);
     },
-    [setIsLoading, setErrorMessage],
+    [setErrorMessage],
   );
 
   const queryTargetAsyncProfiles = React.useCallback(
@@ -152,22 +150,13 @@ export const AsyncProfiler: React.FC = () => {
     if (!isProfilerDetected) {
       return;
     }
+    if (!target) {
+      return;
+    }
     setIsLoading(true);
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((t) => !!t),
-          first(),
-          concatMap((target: Target | undefined) => {
-            if (target) {
-              return queryTargetAsyncProfiles(target);
-            } else {
-              setIsLoading(false);
-              return of([]);
-            }
-          }),
-        )
+      queryTargetAsyncProfiles(target)
+        .pipe(tap(() => setIsLoading(false)))
         .subscribe({
           next: handleProfiles,
           error: handleError,
@@ -176,7 +165,7 @@ export const AsyncProfiler: React.FC = () => {
   }, [
     isProfilerDetected,
     addSubscription,
-    context.target,
+    target,
     setIsLoading,
     handleProfiles,
     handleError,
@@ -184,26 +173,20 @@ export const AsyncProfiler: React.FC = () => {
   ]);
 
   const handleStatus = React.useCallback(() => {
-    if (!isProfilerDetected) {
+    if (!isProfilerDetected || !target) {
       return;
     }
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((t) => !!t),
-          concatMap((t) => context.api.getAsyncProfilerStatus(t)),
-        )
-        .subscribe((s) => {
-          setProfilerRunning(s.status);
-          setCurrentProfile(s.currentProfile);
-          refreshProfiles();
-        }),
+      context.api.getAsyncProfilerStatus(target).subscribe((s) => {
+        setProfilerRunning(s.status);
+        setCurrentProfile(s.currentProfile);
+        refreshProfiles();
+      }),
     );
   }, [
     isProfilerDetected,
     addSubscription,
-    context.target,
+    target,
     context.api,
     setProfilerRunning,
     setCurrentProfile,
@@ -238,35 +221,28 @@ export const AsyncProfiler: React.FC = () => {
   }, [navigate]);
 
   const handleDeleteProfiles = React.useCallback(() => {
-    if (!isProfilerDetected) {
+    if (!isProfilerDetected || !target) {
       return;
     }
     setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<boolean>[] = [];
+    profiles.forEach((profile: AsyncProfile) => {
+      if (checkedIndices.includes(hashCode(profile.id))) {
+        tasks.push(context.api.deleteAsyncProfile(target, profile.id).pipe(first()));
+      }
+    });
     addSubscription(
-      context.target
-        .target()
-        .pipe(filter((t) => !!t))
-        .subscribe((t) => {
-          profiles.forEach((profile: AsyncProfile) => {
-            if (checkedIndices.includes(hashCode(profile.id))) {
-              tasks.push(context.api.deleteAsyncProfile(t, profile.id).pipe(first()));
-            }
-          });
-          addSubscription(
-            forkJoin(tasks).subscribe({
-              next: () => handlePostActions('DELETE'),
-              error: () => handlePostActions('DELETE'),
-            }),
-          );
-        }),
+      forkJoin(tasks).subscribe({
+        next: () => handlePostActions('DELETE'),
+        error: () => handlePostActions('DELETE'),
+      }),
     );
   }, [
     isProfilerDetected,
     addSubscription,
+    target,
     profiles,
     checkedIndices,
-    context.target,
     context.api,
     setActionLoadings,
     handlePostActions,
@@ -285,13 +261,11 @@ export const AsyncProfiler: React.FC = () => {
   );
 
   React.useEffect(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(filter((t) => !!t))
-        .subscribe(() => refreshProfiles()),
-    );
-  }, [addSubscription, context.target, refreshProfiles]);
+    if (!target) {
+      return;
+    }
+    refreshProfiles();
+  }, [target, refreshProfiles]);
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
