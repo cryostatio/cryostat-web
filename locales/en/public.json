@@ -72,6 +72,11 @@
       "LOGOUT": "Log out"
     }
   },
+  "AsyncProfiler": {
+    "AGENT_INTEGRATION_REQUIRED": "async-profiler integration requires cryostat-agent",
+    "NO_PROFILES": "No async-profiler sessions",
+    "NOT_DETECTED": "No async-profiler detected"
+  },
   "AutomatedAnalysisCard": {
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues.",
     "CARD_DESCRIPTION_FULL": "Creates a Recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",

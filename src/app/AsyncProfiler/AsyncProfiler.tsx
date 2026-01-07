@@ -100,6 +100,7 @@ export type ProfileActions = 'DELETE';
 
 export const AsyncProfiler: React.FC = () => {
   const context = React.useContext(ServiceContext);
+  const { t } = useCryostatTranslation();
   const addSubscription = useSubscriptions();
   const navigate = useNavigate();
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
@@ -383,7 +384,11 @@ export const AsyncProfiler: React.FC = () => {
             <Bullseye>
               <EmptyState>
                 <EmptyStateHeader
-                  titleText={<>No async-profiler detected</>}
+                  titleText={
+                    !target || !target.agent
+                      ? t('AsyncProfiler.AGENT_INTEGRATION_REQUIRED')
+                      : t('AsyncProfiler.NOT_DETECTED')
+                  }
                   icon={<EmptyStateIcon icon={SearchIcon} />}
                   headingLevel="h4"
                 />
@@ -430,6 +435,7 @@ export interface AsyncProfilesTableToolbarProps {
 
 const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const { t } = useCryostatTranslation();
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
@@ -474,15 +480,15 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
       {
         default: (
           <Button variant="primary" onClick={props.handleCreate} isDisabled={props.profilerRunning}>
-            Create
+            {t('CREATE')}
           </Button>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Delete'} isShared onClick={props.handleCreate}>
-            Create
+            {t('CREATE')}
           </OverflowMenuDropdownItem>
         ),
-        key: 'Delete',
+        key: 'Create',
       },
       {
         // FIXME the Delete button should be disabled if the only checked row item is the currently running profile, which we don't currently have a way to stop/delete until it completes
@@ -493,18 +499,19 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
             isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
             {...actionLoadingProps['DELETE']}
           >
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+            {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}
           </Button>
         ),
         collapsed: (
           <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+            {props.actionLoadings['DELETE'] ? t('DELETING') : t('DELETE')}
           </OverflowMenuDropdownItem>
         ),
         key: 'Delete',
       },
     ];
   }, [
+    t,
     handleDeleteButton,
     props.checkedIndices.length,
     props.handleCreate,
@@ -585,6 +592,7 @@ export const AsyncProfilerTable: React.FC<AsyncProfilerTableProps> = ({
   innerContainerStyles,
   ...props
 }) => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   let view: JSX.Element;
 
@@ -611,7 +619,7 @@ export const AsyncProfilerTable: React.FC<AsyncProfilerTableProps> = ({
       <Bullseye>
         <EmptyState>
           <EmptyStateHeader
-            titleText={<>No {tableTitle}</>}
+            titleText={t('AsyncProfiler.NO_PROFILES')}
             icon={<EmptyStateIcon icon={SearchIcon} />}
             headingLevel="h4"
           />
