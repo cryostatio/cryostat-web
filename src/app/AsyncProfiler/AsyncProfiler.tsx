@@ -114,8 +114,36 @@ export const AsyncProfiler: React.FC = () => {
   const [actionLoadings, setActionLoadings] = React.useState<Record<ProfileActions, boolean>>({ DELETE: false });
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe((t) => setTarget(t)));
-  }, [addSubscription, context, context.target, setTarget]);
+    addSubscription(
+      context.target
+        .target()
+        .pipe(tap(() => setIsLoading(true)))
+        .subscribe((t) => {
+          setTarget(t);
+          setProfilerRunning(false);
+          setProfilerDetected(false);
+          setCurrentProfile(undefined);
+          setProfiles([]);
+          setCheckedIndices([]);
+          setHeaderChecked(false);
+          setErrorMessage('');
+          setIsLoading(false);
+        }),
+    );
+  }, [
+    addSubscription,
+    context,
+    context.target,
+    setIsLoading,
+    setTarget,
+    setProfilerRunning,
+    setProfilerDetected,
+    setCurrentProfile,
+    setProfiles,
+    setCheckedIndices,
+    setHeaderChecked,
+    setErrorMessage,
+  ]);
 
   React.useEffect(() => {
     if (!target) {
