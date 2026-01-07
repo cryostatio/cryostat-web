@@ -316,23 +316,13 @@ export const AsyncProfiler: React.FC = () => {
         target={target}
         currentProfile={currentProfile}
         checkedIndices={checkedIndices}
-        profiles={profiles}
         profilerRunning={isProfilerRunning}
         handleCreate={handleCreate}
         handleDelete={handleDeleteProfiles}
         actionLoadings={actionLoadings}
       />
     ),
-    [
-      target,
-      checkedIndices,
-      profiles,
-      currentProfile,
-      isProfilerRunning,
-      handleCreate,
-      handleDeleteProfiles,
-      actionLoadings,
-    ],
+    [target, checkedIndices, currentProfile, isProfilerRunning, handleCreate, handleDeleteProfiles, actionLoadings],
   );
 
   const columnConfig: ColumnConfig = React.useMemo(
@@ -377,7 +367,6 @@ export interface AsyncProfilesTableToolbarProps {
   target: NullableTarget;
   currentProfile?: AsyncProfilerSession;
   checkedIndices: number[];
-  profiles: AsyncProfile[];
   profilerRunning: boolean;
   handleCreate: () => void;
   handleDelete: () => void;
