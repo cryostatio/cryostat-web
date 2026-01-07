@@ -567,8 +567,8 @@ export interface TargetNode extends _AbstractNode {
 
 export interface AsyncProfile {
   id: string;
-  starttime: number;
-  endtime: number;
+  startTime: number;
+  duration: number;
   size: number;
 }
 

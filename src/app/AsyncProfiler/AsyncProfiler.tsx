@@ -31,7 +31,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { formatBytes, hashCode, portalRoot, TableColumn, toPath } from '@app/utils/utils';
+import { formatBytes, formatDuration, hashCode, portalRoot, TableColumn, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
@@ -69,6 +69,7 @@ import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, filter, first, forkJoin, merge, Observable, of } from 'rxjs';
+import { MILLIS } from './CreateAsyncProfilerSession';
 
 const tableColumns: TableColumn[] = [
   {
@@ -76,8 +77,12 @@ const tableColumns: TableColumn[] = [
     keyPaths: ['id'],
   },
   {
-    title: 'Timing',
-    keyPaths: ['timing'],
+    title: 'Start Time',
+    keyPaths: ['startTime'],
+  },
+  {
+    title: 'Duration',
+    keyPaths: ['duration'],
   },
   {
     title: 'Size',
@@ -669,35 +674,26 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
             data-quickstart-id={`async-profiles-check-box`}
           />
         </Td>
-        <Td key={`async-profile-table-row-${index}_1`} dataLabel={tableColumns[0].title}>
+        <Td key={`async-profile-table-row-${index}_0`} dataLabel={tableColumns[0].title}>
           {profile.id}
         </Td>
-        <Td key={`async-profile-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
+        <Td key={`async-profile-table-row-${index}_1`} dataLabel={tableColumns[1].title}>
           <Timestamp
             className="async-profiler-table__timestamp"
             tooltip={{
               variant: TimestampTooltipVariant.custom,
-              content: dayjs(profile.starttime * 1000).toISOString(),
+              content: dayjs(profile.startTime * MILLIS).toISOString(),
             }}
           >
-            {dayjs(profile.starttime * 1000)
-              .tz(dateFormat.timeZone.full)
-              .format('L LTS z')}
-          </Timestamp>
-          &nbsp;-&nbsp;
-          <Timestamp
-            className="async-profiler-table__timestamp"
-            tooltip={{
-              variant: TimestampTooltipVariant.custom,
-              content: dayjs(profile.endtime * 1000).toISOString(),
-            }}
-          >
-            {dayjs(profile.endtime * 1000)
+            {dayjs(profile.startTime * MILLIS)
               .tz(dateFormat.timeZone.full)
               .format('L LTS z')}
           </Timestamp>
         </Td>
-        <Td key={`async-profile-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
+        <Td key={`async-profile-table-row-${index}_2`} dataLabel={tableColumns[2].title}>
+          {formatDuration(profile.duration)}
+        </Td>
+        <Td key={`async-profile-table-row-${index}_3`} dataLabel={tableColumns[3].title}>
           {formatBytes(profile.size)}
         </Td>
         {<AsyncProfileAction id={profile.id} onDownload={onDownload} data-quickstart-id="async-profiles-kebab" />}
