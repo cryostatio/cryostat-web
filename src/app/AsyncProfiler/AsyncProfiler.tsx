@@ -117,6 +117,8 @@ export const AsyncProfiler: React.FC = () => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context, context.target, setTarget]);
 
+  const allProfiles = React.useMemo(() => [currentProfile, ...profiles].filter((p) => !!p), [currentProfile, profiles]);
+
   const handleProfiles = React.useCallback(
     (profiles: AsyncProfile[]) => {
       setProfiles(profiles);
@@ -186,9 +188,9 @@ export const AsyncProfiler: React.FC = () => {
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? profiles.map((r) => hashCode(r.id)) : []);
+      setCheckedIndices(checked ? allProfiles.map((r) => hashCode(r.id)) : []);
     },
-    [setHeaderChecked, setCheckedIndices, profiles],
+    [setHeaderChecked, setCheckedIndices, allProfiles],
   );
 
   const handlePostActions = React.useCallback(
@@ -252,14 +254,14 @@ export const AsyncProfiler: React.FC = () => {
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
-      const filteredIdIdx = new Set(profiles.map((profile) => hashCode(profile.id)));
+      const filteredIdIdx = new Set(allProfiles.map((profile) => hashCode(profile.id)));
       return ci.filter((idx) => filteredIdIdx.has(idx));
     });
-  }, [profiles, setCheckedIndices]);
+  }, [allProfiles, setCheckedIndices]);
 
   React.useEffect(() => {
-    setHeaderChecked(checkedIndices.length === profiles.length);
-  }, [setHeaderChecked, checkedIndices, profiles]);
+    setHeaderChecked(checkedIndices.length === allProfiles.length);
+  }, [setHeaderChecked, checkedIndices, allProfiles]);
 
   React.useEffect(() => {
     addSubscription(
@@ -351,21 +353,19 @@ export const AsyncProfiler: React.FC = () => {
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
             isLoading={isLoading}
-            isEmpty={!profiles.length}
+            isEmpty={!allProfiles.length}
             errorMessage={errorMessage}
           >
-            {[currentProfile, ...profiles]
-              .filter((p) => !!p)
-              .map((profile) => (
-                <AsyncProfileRow
-                  key={profile.id}
-                  index={hashCode(profile.id)}
-                  profile={profile}
-                  checkedIndices={checkedIndices}
-                  handleRowCheck={handleRowCheck}
-                  onDownload={handleDownloadProfile}
-                />
-              ))}
+            {allProfiles.map((profile) => (
+              <AsyncProfileRow
+                key={profile.id}
+                index={hashCode(profile.id)}
+                profile={profile}
+                checkedIndices={checkedIndices}
+                handleRowCheck={handleRowCheck}
+                onDownload={handleDownloadProfile}
+              />
+            ))}
           </AsyncProfilerTable>
         </CardBody>
       </Card>
