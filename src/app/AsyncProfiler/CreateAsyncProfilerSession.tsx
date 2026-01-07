@@ -106,15 +106,14 @@ export const CreateAsyncProfilerSession: React.FC = () => {
 
   const handleSubmit = React.useCallback(() => {
     if (!target) {
-      navigate(toPath('/async-profiler'));
-      return;
+      throw new Error('invalid state: must have a target selection');
     }
     const events = convertSelectionToEvents(selectedEvents);
     if (!events) {
-      return;
+      throw new Error('invalid state: no events');
     }
     if (duration < 1) {
-      return;
+      throw new Error('invalid state: duration must be positive');
     }
     addSubscription(
       context.api
