@@ -20,6 +20,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { toPath } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   Card,
@@ -37,6 +38,7 @@ import { filter, map } from 'rxjs';
 const MILLIS = 1000;
 
 export const CreateAsyncProfilerSession: React.FC = () => {
+  const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const navigate = useNavigate();
@@ -157,7 +159,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
             </StackItem>
             <StackItem>
               <Button onClick={handleSubmit} isDisabled={!selectedEvents.length || duration < 1}>
-                Submit
+                {t('CREATE')}
               </Button>
             </StackItem>
           </Stack>
