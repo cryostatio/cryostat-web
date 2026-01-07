@@ -52,7 +52,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
   const [selectedEvents, setSelectedEvents] = React.useState<DualListSelectorTreeItemData[]>([]);
   const [availableEvents, setAvailableEvents] = React.useState<DualListSelectorTreeItemData[]>([]);
-  const [duration, setDuration] = React.useState(5);
+  const [duration, setDuration] = React.useState(0);
   const [durationUnits, setDurationUnits] = React.useState(MILLIS);
   const [loading, setLoading] = React.useState(true);
 
