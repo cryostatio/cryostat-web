@@ -200,6 +200,11 @@
       "POPOVER": "automated-analysis-description-popover"
     }
   },
+  "CreateAsyncProfilerSession": {
+    "DESCRIPTION": "async-profiler enables precise CPU-time profiling of program execution as well as VM and native memory allocations. Profiling sessions will be dumped to JFR-format binary files. Not all combinations of available events are acceptable.",
+    "DURATION": "Duration",
+    "EVENTS": "Events"
+  },
   "CreateCredentialModal": {
     "ARIA_LABELS": {
       "HELPER_ICON": "More info for Match Expression field"
