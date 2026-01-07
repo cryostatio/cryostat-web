@@ -104,6 +104,7 @@ export const AsyncProfiler: React.FC = () => {
   const addSubscription = useSubscriptions();
   const navigate = useNavigate();
   const [target, setTarget] = React.useState<NullableTarget>(undefined);
+  const [isProfilerDetected, setProfilerDetected] = React.useState(false);
   const [isProfilerRunning, setProfilerRunning] = React.useState(false);
   const [currentProfile, setCurrentProfile] = React.useState<AsyncProfilerSession | undefined>(undefined);
   const [profiles, setProfiles] = React.useState<AsyncProfile[]>([]);
@@ -116,6 +117,13 @@ export const AsyncProfiler: React.FC = () => {
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context, context.target, setTarget]);
+
+  React.useEffect(() => {
+    if (!target) {
+      return;
+    }
+    addSubscription(context.api.isAsyncProfilerSupported(target).subscribe((v) => setProfilerDetected(v)));
+  }, [addSubscription, context, context.api, target, setProfilerDetected]);
 
   const allProfiles = React.useMemo(() => [currentProfile, ...profiles].filter((p) => !!p), [currentProfile, profiles]);
 
@@ -142,6 +150,9 @@ export const AsyncProfiler: React.FC = () => {
   );
 
   const refreshProfiles = React.useCallback(() => {
+    if (!isProfilerDetected) {
+      return;
+    }
     setIsLoading(true);
     addSubscription(
       context.target
@@ -163,9 +174,20 @@ export const AsyncProfiler: React.FC = () => {
           error: handleError,
         }),
     );
-  }, [addSubscription, context.target, setIsLoading, handleProfiles, handleError, queryTargetAsyncProfiles]);
+  }, [
+    isProfilerDetected,
+    addSubscription,
+    context.target,
+    setIsLoading,
+    handleProfiles,
+    handleError,
+    queryTargetAsyncProfiles,
+  ]);
 
   const handleStatus = React.useCallback(() => {
+    if (!isProfilerDetected) {
+      return;
+    }
     addSubscription(
       context.target
         .target()
@@ -179,7 +201,15 @@ export const AsyncProfiler: React.FC = () => {
           refreshProfiles();
         }),
     );
-  }, [addSubscription, context.target, context.api, setProfilerRunning, setCurrentProfile, refreshProfiles]);
+  }, [
+    isProfilerDetected,
+    addSubscription,
+    context.target,
+    context.api,
+    setProfilerRunning,
+    setCurrentProfile,
+    refreshProfiles,
+  ]);
 
   React.useEffect(() => {
     handleStatus();
@@ -209,6 +239,9 @@ export const AsyncProfiler: React.FC = () => {
   }, [navigate]);
 
   const handleDeleteProfiles = React.useCallback(() => {
+    if (!isProfilerDetected) {
+      return;
+    }
     setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<boolean>[] = [];
     addSubscription(
@@ -229,7 +262,16 @@ export const AsyncProfiler: React.FC = () => {
           );
         }),
     );
-  }, [addSubscription, profiles, checkedIndices, context.target, context.api, setActionLoadings, handlePostActions]);
+  }, [
+    isProfilerDetected,
+    addSubscription,
+    profiles,
+    checkedIndices,
+    context.target,
+    context.api,
+    setActionLoadings,
+    handlePostActions,
+  ]);
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
@@ -336,27 +378,39 @@ export const AsyncProfiler: React.FC = () => {
     <TargetView pageTitle="async-profiler">
       <Card isCompact>
         <CardBody>
-          <AsyncProfilerTable
-            tableTitle="async-profiles"
-            toolbar={asyncProfilesToolbar}
-            tableColumns={columnConfig}
-            isHeaderChecked={headerChecked}
-            onHeaderCheck={handleHeaderCheck}
-            isLoading={isLoading}
-            isEmpty={!allProfiles.length}
-            errorMessage={errorMessage}
-          >
-            {allProfiles.map((profile) => (
-              <AsyncProfileRow
-                key={profile.id}
-                index={hashCode(profile.id)}
-                profile={profile}
-                checkedIndices={checkedIndices}
-                handleRowCheck={handleRowCheck}
-                onDownload={handleDownloadProfile}
-              />
-            ))}
-          </AsyncProfilerTable>
+          {!isProfilerDetected ? (
+            <Bullseye>
+              <EmptyState>
+                <EmptyStateHeader
+                  titleText={<>No async-profiler detected</>}
+                  icon={<EmptyStateIcon icon={SearchIcon} />}
+                  headingLevel="h4"
+                />
+              </EmptyState>
+            </Bullseye>
+          ) : (
+            <AsyncProfilerTable
+              tableTitle="async-profiles"
+              toolbar={asyncProfilesToolbar}
+              tableColumns={columnConfig}
+              isHeaderChecked={headerChecked}
+              onHeaderCheck={handleHeaderCheck}
+              isLoading={isLoading}
+              isEmpty={!allProfiles.length}
+              errorMessage={errorMessage}
+            >
+              {allProfiles.map((profile) => (
+                <AsyncProfileRow
+                  key={profile.id}
+                  index={hashCode(profile.id)}
+                  profile={profile}
+                  checkedIndices={checkedIndices}
+                  handleRowCheck={handleRowCheck}
+                  onDownload={handleDownloadProfile}
+                />
+              ))}
+            </AsyncProfilerTable>
+          )}
         </CardBody>
       </Card>
     </TargetView>
