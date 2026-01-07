@@ -22,13 +22,17 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+  ActionGroup,
   Button,
   Card,
   CardBody,
   DualListSelector,
   DualListSelectorTreeItemData,
-  Stack,
-  StackItem,
+  Form,
+  FormGroup,
+  Text,
+  TextContent,
+  TextVariants,
 } from '@patternfly/react-core';
 import _ from 'lodash';
 import * as React from 'react';
@@ -106,6 +110,8 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     [setAvailableEvents, setSelectedEvents],
   );
 
+  const exitForm = React.useCallback(() => navigate(toPath('/async-profiler')), [navigate]);
+
   const handleSubmit = React.useCallback(() => {
     if (!target) {
       throw new Error('invalid state: must have a target selection');
@@ -121,10 +127,9 @@ export const CreateAsyncProfilerSession: React.FC = () => {
       context.api
         .startAsyncProfile(target, events, (duration * durationUnits) / MILLIS)
         .pipe(filter((e) => e?.ok ?? true))
-        .subscribe(() => navigate(toPath('/async-profiler'))),
+        .subscribe(() => exitForm()),
     );
   }, [
-    navigate,
     addSubscription,
     target,
     context.api,
@@ -132,14 +137,18 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     selectedEvents,
     duration,
     durationUnits,
+    exitForm,
   ]);
 
   return (
     <TargetView pageTitle="Create" breadcrumbs={[{ title: 'async-profiler', path: toPath('/async-profiler') }]}>
       <Card>
         <CardBody>
-          <Stack hasGutter>
-            <StackItem>
+          <Form isHorizontal>
+            <TextContent>
+              <Text component={TextVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Text>
+            </TextContent>
+            <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
               <DualListSelector
                 isSearchable
                 isTree
@@ -147,8 +156,8 @@ export const CreateAsyncProfilerSession: React.FC = () => {
                 chosenOptions={selectedEvents}
                 onListChange={handleListChange}
               />
-            </StackItem>
-            <StackItem>
+            </FormGroup>
+            <FormGroup label={t('CreateAsyncProfilerSession.DURATION')} fieldId="duration" isRequired>
               <DurationPicker
                 enabled={true}
                 onPeriodChange={setDuration}
@@ -156,13 +165,16 @@ export const CreateAsyncProfilerSession: React.FC = () => {
                 period={duration}
                 unitScalar={durationUnits}
               />
-            </StackItem>
-            <StackItem>
-              <Button onClick={handleSubmit} isDisabled={!selectedEvents.length || duration < 1}>
+            </FormGroup>
+            <ActionGroup>
+              <Button variant="primary" onClick={handleSubmit} isDisabled={!selectedEvents.length || duration < 1}>
                 {t('CREATE')}
               </Button>
-            </StackItem>
-          </Stack>
+              <Button variant="secondary" onClick={exitForm}>
+                {t('CANCEL')}
+              </Button>
+            </ActionGroup>
+          </Form>
         </CardBody>
       </Card>
     </TargetView>
