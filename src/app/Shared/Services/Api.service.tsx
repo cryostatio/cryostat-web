@@ -1984,7 +1984,7 @@ export class ApiService {
     );
   }
 
-  getAsyncProfilerStatus(target: Target): Observable<AsyncProfilerStatus> {
+  getAsyncProfilerStatus(target: Target, suppressNotifications = false): Observable<AsyncProfilerStatus> {
     return this.doGet<{
       currentProfile: {
         id: string;
@@ -1994,8 +1994,16 @@ export class ApiService {
       };
       status: string;
       availableEvents: string[];
-    }>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
+    }>(`targets/${target.id}/async-profiler/status`, 'beta', undefined, suppressNotifications).pipe(
       map((s) => ({ ...s, status: s['status'] === 'RUNNING' })),
+    );
+  }
+
+  isAsyncProfilerSupported(target: Target): Observable<boolean> {
+    return this.getAsyncProfilerStatus(target, true).pipe(
+      map((_) => true),
+      catchError((_) => of(false)),
+      first(),
     );
   }
 
