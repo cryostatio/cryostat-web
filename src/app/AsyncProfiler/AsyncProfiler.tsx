@@ -46,9 +46,6 @@ import {
   EmptyState,
   EmptyStateHeader,
   EmptyStateIcon,
-  Icon,
-  Label,
-  LabelGroup,
   MenuToggle,
   MenuToggleElement,
   OverflowMenu,
@@ -64,7 +61,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { EllipsisVIcon, LockIcon, LockOpenIcon, SearchIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
@@ -83,6 +80,10 @@ const tableColumns: TableColumn[] = [
   {
     title: 'Duration',
     keyPaths: ['duration'],
+  },
+  {
+    title: 'State',
+    keyPaths: ['state'],
   },
   {
     title: 'Size',
@@ -353,16 +354,18 @@ export const AsyncProfiler: React.FC = () => {
             isEmpty={!profiles.length}
             errorMessage={errorMessage}
           >
-            {profiles.map((profile) => (
-              <AsyncProfileRow
-                key={profile.id}
-                index={hashCode(profile.id)}
-                profile={profile}
-                checkedIndices={checkedIndices}
-                handleRowCheck={handleRowCheck}
-                onDownload={handleDownloadProfile}
-              />
-            ))}
+            {[currentProfile, ...profiles]
+              .filter((p) => !!p)
+              .map((profile) => (
+                <AsyncProfileRow
+                  key={profile.id}
+                  index={hashCode(profile.id)}
+                  profile={profile}
+                  checkedIndices={checkedIndices}
+                  handleRowCheck={handleRowCheck}
+                  onDownload={handleDownloadProfile}
+                />
+              ))}
           </AsyncProfilerTable>
         </CardBody>
       </Card>
@@ -385,7 +388,6 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
-  const [dayjs, dateFormat] = useDayjs();
 
   const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
@@ -503,37 +505,6 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
               </OverflowMenuControl>
             </OverflowMenu>
           </ToolbarItem>
-          <ToolbarItem variant="separator" />
-          <ToolbarItem>
-            {props.currentProfile ? (
-              <>
-                <Icon size="lg">
-                  <LockIcon />
-                </Icon>{' '}
-                <LabelGroup>
-                  <Label>{props.currentProfile.id}</Label>
-                  <Label>{JSON.stringify(props.currentProfile.events)}</Label>
-                  <Label>duration: {props.currentProfile.duration}s</Label>
-                  <Label>
-                    start time:{' '}
-                    {dayjs(props.currentProfile.startTime * 1000)
-                      .tz(dateFormat.timeZone.full)
-                      .format('L LTS z')}
-                  </Label>
-                  <Label>
-                    end time:{' '}
-                    {dayjs((props.currentProfile.startTime! + props.currentProfile.duration) * 1000)
-                      .tz(dateFormat.timeZone.full)
-                      .format('L LTS z')}
-                  </Label>
-                </LabelGroup>
-              </>
-            ) : (
-              <Icon size="lg">
-                <LockOpenIcon />
-              </Icon>
-            )}
-          </ToolbarItem>
         </ToolbarGroup>
         {deleteAsyncProfileWarningModal}
       </ToolbarContent>
@@ -640,7 +611,7 @@ export const AsyncProfilerTable: React.FC<AsyncProfilerTableProps> = ({
 
 export interface AsyncProfileRowProps {
   index: number;
-  profile: AsyncProfile;
+  profile: AsyncProfile | AsyncProfilerSession;
   checkedIndices: number[];
   handleRowCheck: (checked: boolean, rowIdx: string | number) => void;
   onDownload: (id: string) => void;
@@ -694,7 +665,10 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
           {formatDuration(profile.duration)}
         </Td>
         <Td key={`async-profile-table-row-${index}_3`} dataLabel={tableColumns[3].title}>
-          {formatBytes(profile.size)}
+          {'size' in profile ? 'STOPPED' : 'RUNNING'}
+        </Td>
+        <Td key={`async-profile-table-row-${index}_4`} dataLabel={tableColumns[4].title}>
+          {'size' in profile ? formatBytes(profile.size) : ''}
         </Td>
         {<AsyncProfileAction id={profile.id} onDownload={onDownload} data-quickstart-id="async-profiles-kebab" />}
       </Tr>
