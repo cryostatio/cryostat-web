@@ -32,7 +32,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
-import { map } from 'rxjs';
+import { filter, map } from 'rxjs';
 
 const MILLIS = 1000;
 
@@ -119,6 +119,7 @@ export const CreateAsyncProfilerSession: React.FC = () => {
     addSubscription(
       context.api
         .startAsyncProfile(target, events, (duration * durationUnits) / MILLIS)
+        .pipe(filter((e) => e?.ok ?? true))
         .subscribe(() => navigate(toPath('/async-profiler'))),
     );
   }, [
