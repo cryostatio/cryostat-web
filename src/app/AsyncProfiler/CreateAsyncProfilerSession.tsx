@@ -41,7 +41,7 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { filter, map } from 'rxjs';
 
-export const MILLIS = 1000;
+const MILLIS = 1000;
 
 export const CreateAsyncProfilerSession: React.FC = () => {
   const { t } = useCryostatTranslation();
