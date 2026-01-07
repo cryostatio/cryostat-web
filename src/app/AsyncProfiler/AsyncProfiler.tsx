@@ -430,6 +430,7 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
         key: 'Delete',
       },
       {
+        // FIXME the Delete button should be disabled if the only checked row item is the currently running profile, which we don't currently have a way to stop/delete until it completes
         default: (
           <Button
             variant="danger"
@@ -659,7 +660,11 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
         <Td key={`async-profile-table-row-${index}_4`} dataLabel={tableColumns[4].title}>
           {'size' in profile ? formatBytes(profile.size) : ''}
         </Td>
-        {<AsyncProfileAction id={profile.id} onDownload={onDownload} data-quickstart-id="async-profiles-kebab" />}
+        <AsyncProfileAction
+          id={profile.id}
+          onDownload={'size' in profile ? onDownload : undefined}
+          data-quickstart-id="async-profiles-kebab"
+        />
       </Tr>
     );
   }, [profile, onDownload, index, checkedIndices, handleCheck, dayjs, dateFormat]);
@@ -669,7 +674,7 @@ export const AsyncProfileRow: React.FC<AsyncProfileRowProps> = ({
 
 export interface AsyncProfileActionProps {
   id: string;
-  onDownload: (id: string) => void;
+  onDownload?: (id: string) => void;
 }
 
 export const AsyncProfileAction: React.FC<AsyncProfileActionProps> = ({ id, onDownload, ...props }) => {
@@ -681,7 +686,8 @@ export const AsyncProfileAction: React.FC<AsyncProfileActionProps> = ({ id, onDo
       {
         title: 'Download',
         key: 'download-async-profile',
-        onClick: () => onDownload(id),
+        onClick: onDownload ? () => onDownload(id) : () => {},
+        isDisabled: !onDownload,
       },
     ] as RowAction[];
   }, [onDownload, id]);
@@ -721,6 +727,7 @@ export const AsyncProfileAction: React.FC<AsyncProfileActionProps> = ({ id, onDo
             ) : (
               <DropdownItem
                 key={action.key}
+                isDisabled={action.isDisabled}
                 onClick={() => {
                   setIsOpen(false);
                   action.onClick && action.onClick();
