@@ -2909,13 +2909,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/selenium-webdriver@npm:^4.35.4":
-  version: 4.35.4
-  resolution: "@types/selenium-webdriver@npm:4.35.4"
+"@types/selenium-webdriver@npm:^4.35.5":
+  version: 4.35.5
+  resolution: "@types/selenium-webdriver@npm:4.35.5"
   dependencies:
     "@types/node": "*"
     "@types/ws": "*"
-  checksum: e9139067af659cbbda1392c95ab51b07d57986d9e86ed603c4a7d8b84e9eb1ad10c2e6ffd766e68cea117647c489447c1380c553c1e2b2d7e15c8c14a11be7e7
+  checksum: f49608de52e5b44bff4bb979e4a229c10d88c1609e2289b68d3522a05cc0e757cc233cafef8f7ea2163228ad4dbeee8b345ac4ec4a4be36bb8537aa2dcc1cd2c
   languageName: node
   linkType: hard
 
@@ -5092,7 +5092,7 @@ __metadata:
     "@types/lodash": ^4.17.21
     "@types/react": ^17.0.69
     "@types/react-test-renderer": ^17.0.7
-    "@types/selenium-webdriver": ^4.35.4
+    "@types/selenium-webdriver": ^4.35.5
     "@typescript-eslint/eslint-plugin": ^8.51.0
     "@typescript-eslint/parser": ^8.53.0
     concurrently: ^9.2.1
