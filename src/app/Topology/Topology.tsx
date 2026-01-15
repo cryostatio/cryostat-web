@@ -48,6 +48,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
     () => ({ showOnlyTopGroup: groupings.flattenIntermediates, expandMode: !groupings.collapseSingles }),
     [groupings],
   );
+  const mergeRealms = React.useMemo(() => groupings.mergeRealms, [groupings]);
 
   const [discoveryTree, setDiscoveryTree] = React.useState(DEFAULT_EMPTY_UNIVERSE);
 
@@ -61,7 +62,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   const _refreshDiscoveryTree = React.useCallback(
     (onSuccess?: () => void) => {
       addSubscription(
-        context.api.getDiscoveryTree().subscribe({
+        context.api.getDiscoveryTree(mergeRealms).subscribe({
           next: (tree) => {
             onSuccess && onSuccess();
             setError(undefined);
@@ -73,7 +74,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         }),
       );
     },
-    [addSubscription, context.api, setDiscoveryTree, setError],
+    [addSubscription, context.api, mergeRealms, setDiscoveryTree, setError],
   );
 
   React.useEffect(() => {
