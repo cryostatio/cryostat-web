@@ -42,6 +42,7 @@ export interface DisplayOptions {
   groupings: {
     collapseSingles: boolean;
     flattenIntermediates: boolean;
+    mergeRealms: boolean;
   };
 }
 
@@ -120,6 +121,7 @@ export const defaultTopologyConfig: TopologyConfig = {
     groupings: {
       flattenIntermediates: false,
       collapseSingles: false,
+      mergeRealms: true,
     },
   },
   reportFilter: {
