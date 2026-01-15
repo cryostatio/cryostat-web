@@ -81,6 +81,7 @@ const mockRemoveProbesNotification = {
   } as MessageMeta,
   message: {
     jvmId: mockJvmId,
+    target: mockTarget.alias,
   },
 } as NotificationMessage;
 
