@@ -1599,10 +1599,16 @@ export class ApiService {
     );
   }
 
-  getDiscoveryTree(): Observable<EnvironmentNode> {
-    return this.sendRequest('v4', 'discovery', {
-      method: 'GET',
-    }).pipe(
+  getDiscoveryTree(mergeRealms = true): Observable<EnvironmentNode> {
+    const params = new URLSearchParams([['mergeRealms', `${mergeRealms}`]]);
+    return this.sendRequest(
+      'v4',
+      'discovery',
+      {
+        method: 'GET',
+      },
+      params,
+    ).pipe(
       concatMap((resp) => resp.json()),
       first(),
     );
