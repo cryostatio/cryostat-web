@@ -41,7 +41,7 @@ export interface DisplayOptions {
   };
   groupings: {
     collapseSingles: boolean;
-    realmOnly: boolean;
+    flattenIntermediates: boolean;
   };
 }
 
@@ -118,7 +118,7 @@ export const defaultTopologyConfig: TopologyConfig = {
       icon: true,
     },
     groupings: {
-      realmOnly: false,
+      flattenIntermediates: false,
       collapseSingles: false,
     },
   },
@@ -156,8 +156,8 @@ export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = cr
       }
 
       // Special case for groupings
-      // If realmOnly is true, singleGroups should also be true
-      if (category === 'groupings' && key === 'realmOnly') {
+      // If flattenIntermediates is true, singleGroups should also be true
+      if (category === 'groupings' && key === 'flattenIntermediates') {
         if (value) {
           state.displayOptions.groupings.collapseSingles = true;
         }

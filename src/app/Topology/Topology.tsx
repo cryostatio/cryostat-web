@@ -45,7 +45,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   const displayOptions = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
   const { groupings } = displayOptions;
   const transformConfig = React.useMemo(
-    () => ({ showOnlyTopGroup: groupings.realmOnly, expandMode: !groupings.collapseSingles }),
+    () => ({ showOnlyTopGroup: groupings.flattenIntermediates, expandMode: !groupings.collapseSingles }),
     [groupings],
   );
 
