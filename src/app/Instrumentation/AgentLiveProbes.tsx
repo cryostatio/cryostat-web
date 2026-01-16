@@ -215,17 +215,10 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
         if (currentTarget?.jvmId != e.message.jvmId) {
           return;
         }
-        setProbes((old) => {
-          const probes = e.message.events as EventProbe[];
-          const probeIds = probes.map((p) => p.id);
-          if (probes?.length > 0) {
-            return [...old.filter((probe) => !probeIds.includes(probe.id)), ...probes];
-          }
-          return old;
-        });
+        refreshProbes();
       }),
     );
-  }, [addSubscription, context, context.notificationChannel, context.target, setProbes]);
+  }, [addSubscription, context, context.notificationChannel, context.target, refreshProbes]);
 
   React.useEffect(() => {
     addSubscription(
