@@ -5213,7 +5213,7 @@ __metadata:
     eslint-plugin-unused-imports: ^4.3.0
     eslint-webpack-plugin: ^5.0.2
     file-loader: ^6.2.0
-    html-webpack-plugin: ^5.6.5
+    html-webpack-plugin: ^5.6.6
     humanize-duration: ^3.33.2
     i18next: ^25.7.4
     i18next-browser-languagedetector: ^8.2.0
@@ -8631,9 +8631,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-webpack-plugin@npm:^5.6.5":
-  version: 5.6.5
-  resolution: "html-webpack-plugin@npm:5.6.5"
+"html-webpack-plugin@npm:^5.6.6":
+  version: 5.6.6
+  resolution: "html-webpack-plugin@npm:5.6.6"
   dependencies:
     "@types/html-minifier-terser": ^6.0.0
     html-minifier-terser: ^6.0.2
@@ -8648,7 +8648,7 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 74fa9b1a25cb1e5434d22bbc7cce8d7a182f2db9061accf8b535cdb676e251bd0d9f3d7efd6aaab0988157acc8c8349a435c6fd0d4f2c21f5d24c2b3c5c9f611
+  checksum: 6aab02f4be85ed2d939bd7dff296bf4af4b7288d6523670176c143d67f7cd4163daa1070c459d1c40e75b233f7fccefae714f58c3402a78aa83dbe9378ecf76f
   languageName: node
   linkType: hard
 
