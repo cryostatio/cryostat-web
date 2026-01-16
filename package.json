@@ -114,7 +114,7 @@
     "react-i18next": "^15.7.3",
     "react-joyride": "^2.9.3",
     "react-redux": "^8.0.5",
-    "react-router-dom": "5.3.x",
+    "react-router-dom": "7.12.x",
     "react-router-dom-v5-compat": "^6.11.2",
     "rxjs": "^7.8.2",
     "semver": "^7.7.3",
