@@ -99,7 +99,8 @@ jest
 
   .mockReturnValueOnce(of([])) // should disable remove button if there is no probe
 
-  .mockReturnValueOnce(of([mockProbe])) // should add a probe after receiving a notification
+  .mockReturnValueOnce(of([mockProbe])) // should add a probe after receiving a notification - initial load
+  .mockReturnValueOnce(of([mockProbe, mockAnotherProbe])) // should add a probe after receiving a notification - after refresh from notification
 
   .mockReturnValue(of([mockProbe])); // All other tests
 
