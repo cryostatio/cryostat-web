@@ -70,7 +70,7 @@ const mockApplyTemplateNotification = {
   } as MessageMeta,
   message: {
     jvmId: mockJvmId,
-    events: [mockAnotherProbe],
+    probeTemplate: 'someProbeTemplate',
   },
 } as NotificationMessage;
 
