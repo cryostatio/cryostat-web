@@ -5229,7 +5229,7 @@ __metadata:
     mock-socket: ^9.3.1
     nanoid: ^5.1.6
     npm-run-all: ^4.1.5
-    prettier: ^3.8.0
+    prettier: ^3.8.1
     prop-types: ^15.7.2
     raw-loader: ^4.0.2
     react: ^17.0.2
@@ -12643,12 +12643,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "prettier@npm:3.8.0"
+"prettier@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "prettier@npm:3.8.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 50770d842539d5fa208bd84ecfb28ae367258b14a5e7e4b9472ba087ed9f8888a5bfd387bfd5596473529f04347670f9b1aa6f0bd8631bec1644e6a8e47c7d35
+  checksum: 36fe4ecd95751aa17fea70b48afd5086e88002988238112fc1be30a5307af6983e1833be790b0cc1c54702b71f73b12bfec12c05166d7619e3151ab221654297
   languageName: node
   linkType: hard
 
