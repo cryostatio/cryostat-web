@@ -866,6 +866,12 @@ export class ApiService {
     );
   }
 
+  downloadProbeTemplate(template: ProbeTemplate): void {
+    this.ctx.url(`/api/v4/probes/${encodeURIComponent(template.name)}`).subscribe((resourceUrl) => {
+      this.downloadFile(resourceUrl, undefined, template.name);
+    });
+  }
+
   cryostatVersion(): Observable<string> {
     return this.cryostatVersionSubject.asObservable();
   }
