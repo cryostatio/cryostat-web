@@ -527,7 +527,12 @@ export interface AgentTemplateActionProps {
   onDelete: (template: ProbeTemplate) => void;
 }
 
-export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDownload, onDelete, template }) => {
+export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({
+  onInsert,
+  onDownload,
+  onDelete,
+  template,
+}) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
