@@ -1,15 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":dependencyDashboard"
-  ],
+  "extends": ["config:recommended", ":dependencyDashboard"],
   "reviewersFromCodeOwners": true,
-  "labels": [
-    "dependencies",
-    "chore",
-    "safe-to-test"
-  ],
+  "labels": ["dependencies", "chore", "safe-to-test"],
   "semanticCommits": "enabled",
   "major": {
     "dependencyDashboardApproval": true
@@ -18,28 +11,22 @@
   "packageRules": [
     {
       "groupName": "react ecosystem",
-      "matchPackagePatterns": [
-        "^react",
-        "^@types/react",
-        "^@testing-library/react"
-      ],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "matchPackageNames": [
+        "/^react/",
+        "/^@types/react/",
+        "/^@testing-library/react/"
+      ]
     },
     {
       "groupName": "patternfly",
-      "matchPackagePatterns": [
-        "^@patternfly/"
-      ],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "matchPackageNames": ["/^@patternfly//"]
     },
     {
       "groupName": "redux",
-      "matchPackagePatterns": [
-        "^@reduxjs/",
-        "^redux",
-        "^react-redux"
-      ],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "matchPackageNames": ["/^@reduxjs//", "/^redux/", "/^react-redux/"]
     }
   ]
 }
