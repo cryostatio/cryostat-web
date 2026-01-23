@@ -1,0 +1,45 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard"
+  ],
+  "reviewersFromCodeOwners": true,
+  "labels": [
+    "dependencies",
+    "chore",
+    "safe-to-test"
+  ],
+  "semanticCommits": "enabled",
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+  "stopUpdatingLabel": "blocked",
+  "packageRules": [
+    {
+      "groupName": "react ecosystem",
+      "matchPackagePatterns": [
+        "^react",
+        "^@types/react",
+        "^@testing-library/react"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "groupName": "patternfly",
+      "matchPackagePatterns": [
+        "^@patternfly/"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "groupName": "redux",
+      "matchPackagePatterns": [
+        "^@reduxjs/",
+        "^redux",
+        "^react-redux"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}
