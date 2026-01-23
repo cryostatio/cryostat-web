@@ -20,7 +20,8 @@
       "groupName": "react ecosystem",
       "matchPackagePatterns": [
         "^react",
-        "^@types/react"
+        "^@types/react",
+        "^@testing-library/react"
       ],
       "dependencyDashboardApproval": true
     },
