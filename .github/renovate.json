@@ -14,5 +14,31 @@
   "major": {
     "dependencyDashboardApproval": true
   },
-  "stopUpdatingLabel": "blocked"
+  "stopUpdatingLabel": "blocked",
+  "packageRules": [
+    {
+      "groupName": "react ecosystem",
+      "matchPackagePatterns": [
+        "^react",
+        "^@types/react"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "groupName": "patternfly",
+      "matchPackagePatterns": [
+        "^@patternfly/"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "groupName": "redux",
+      "matchPackagePatterns": [
+        "^@reduxjs/",
+        "^redux",
+        "^react-redux"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ]
 }
