@@ -2128,10 +2128,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.21.0":
-  version: 1.21.0
-  resolution: "@remix-run/router@npm:1.21.0"
-  checksum: d9477a7772053ad0ffcf03385cfb1a54e56f8a56d1f9f5062de3b1dfcbd019dd73282a00a5a72aa55c120771110982448c165c1405d64540aaef13051a8e45cc
+"@remix-run/router@npm:1.23.2":
+  version: 1.23.2
+  resolution: "@remix-run/router@npm:1.23.2"
+  checksum: 0f046e480372be17d14f88684435cd6af4c05ce842bd6094a549605dd5b8f0ab1e9a1e9d9e2faec9e4d5cd370d02179b456189192f06415e461bce44c28295d8
   languageName: node
   linkType: hard
 
@@ -3026,22 +3026,22 @@ __metadata:
   linkType: hard
 
 "@types/react-test-renderer@npm:^17.0.7":
-  version: 17.0.7
-  resolution: "@types/react-test-renderer@npm:17.0.7"
+  version: 17.0.9
+  resolution: "@types/react-test-renderer@npm:17.0.9"
   dependencies:
     "@types/react": ^17
-  checksum: edd51f3e7409a3b3fc8a661380d98cd4e403afd9c48e0c9a705f17001782338b3022dc77495bc9df570ea949b54aab6ccfe60d12bb31debe8e497d16abad44de
+  checksum: 4d78a7c98cdfedc0d706df873a55534b70deab143b0403d0db1ca91d580a246322a4da4460862dd80d2a3452882cb40f4188efa358bd3468a93699a65ce5b089
   languageName: node
   linkType: hard
 
 "@types/react@npm:^17.0.69":
-  version: 17.0.69
-  resolution: "@types/react@npm:17.0.69"
+  version: 17.0.90
+  resolution: "@types/react@npm:17.0.90"
   dependencies:
     "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: b83d4ec968b712b2b1a444c614b1ef3e59879c6911bc4001158de5de49b80b6a20fc4859353244f0171b94845d4c85a6379071445242ff23bbbc9b0ff24577d7
+    "@types/scheduler": ^0.16
+    csstype: ^3.2.2
+  checksum: 96de8ae4ecb49263de1a3adb405ab929fcb6577af4080b6aa17757c3ccc00a3163c0fab66e0938265888020bf7f31aefead2622385da81a8c562d01f60343b91
   languageName: node
   linkType: hard
 
@@ -3052,10 +3052,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/scheduler@npm:*":
-  version: 0.16.2
-  resolution: "@types/scheduler@npm:0.16.2"
-  checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+"@types/scheduler@npm:^0.16":
+  version: 0.16.8
+  resolution: "@types/scheduler@npm:0.16.8"
+  checksum: 6c091b096daa490093bf30dd7947cd28e5b2cd612ec93448432b33f724b162587fed9309a0acc104d97b69b1d49a0f3fc755a62282054d62975d53d7fd13472d
   languageName: node
   linkType: hard
 
@@ -5469,10 +5469,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2":
-  version: 3.1.1
-  resolution: "csstype@npm:3.1.1"
-  checksum: 1f7b4f5fdd955b7444b18ebdddf3f5c699159f13e9cf8ac9027ae4a60ae226aef9bbb14a6e12ca7dba3358b007cee6354b116e720262867c398de6c955ea451d
+"csstype@npm:^3.2.2":
+  version: 3.2.3
+  resolution: "csstype@npm:3.2.3"
+  checksum: cb882521b3398958a1ce6ca98c011aec0bde1c77ecaf8a1dd4db3b112a189939beae3b1308243b2fe50fc27eb3edeb0f73a5a4d91d928765dc6d5ecc7bda92ee
   languageName: node
   linkType: hard
 
@@ -12855,13 +12855,13 @@ __metadata:
   linkType: hard
 
 "react-i18next@npm:^15.7.3":
-  version: 15.7.3
-  resolution: "react-i18next@npm:15.7.3"
+  version: 15.7.4
+  resolution: "react-i18next@npm:15.7.4"
   dependencies:
     "@babel/runtime": ^7.27.6
     html-parse-stringify: ^3.0.1
   peerDependencies:
-    i18next: ">= 25.4.1"
+    i18next: ">= 23.4.0"
     react: ">= 16.8.0"
     typescript: ^5
   peerDependenciesMeta:
@@ -12871,7 +12871,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: f669eb48f1b15ae043f2aaf218d4f4c08c73d77358531cd6b7776b73a996791c5df7b766c4a1f5c9d974a1aa519a8501c4c242908592285b12b14a861a0765e4
+  checksum: d7747443850ad8f7ed144312311b998922be6b35dd4aacd590fdee9b8d275d4b4f7a719dc923a8dd8ed1a8a766439c828c9bc5a78e852ec3a834e36210ca83db
   languageName: node
   linkType: hard
 
@@ -12983,17 +12983,17 @@ __metadata:
   linkType: hard
 
 "react-router-dom-v5-compat@npm:^6.11.2":
-  version: 6.28.1
-  resolution: "react-router-dom-v5-compat@npm:6.28.1"
+  version: 6.30.3
+  resolution: "react-router-dom-v5-compat@npm:6.30.3"
   dependencies:
-    "@remix-run/router": 1.21.0
+    "@remix-run/router": 1.23.2
     history: ^5.3.0
-    react-router: 6.28.1
+    react-router: 6.30.3
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
     react-router-dom: 4 || 5
-  checksum: 7925523df69335e7b5407e818a91fe44ae2fc59340f8300c58bc3c83e91a5ecdc6a84f100e67adc08658e91165d1cbed76678e6e3ddf0d2d189c7fcba0f79b55
+  checksum: 86947fa1887b47571ae653348dbd3f4d9db9c549b9cc6381a1d09e83c9de9e70f3e220ac52559b89d90c55a848a5caaffb9ce845e11f26c17b26917160ba37d1
   languageName: node
   linkType: hard
 
@@ -13033,14 +13033,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.28.1":
-  version: 6.28.1
-  resolution: "react-router@npm:6.28.1"
+"react-router@npm:6.30.3":
+  version: 6.30.3
+  resolution: "react-router@npm:6.30.3"
   dependencies:
-    "@remix-run/router": 1.21.0
+    "@remix-run/router": 1.23.2
   peerDependencies:
     react: ">=16.8"
-  checksum: c1c4fe644a7197437f9ce9b8b621e79f9620b7a7b1192c9d1d44a6971b08af94408f3e63bd2cf122903c27d9a73b2e5632e4ca428e9ac0bf1d61e325968d4994
+  checksum: b61e1a456b72ed35907dadc261d8572a65dd4caae008f7a85a6b09b437b1a4b90034fc7df0e418f1f01b73c2b8a8f6755d7fc0108b1ec3f2ed37f03a1e248513
   languageName: node
   linkType: hard
 
