@@ -839,5 +839,16 @@
         "TOOLTIP": "{{count}} rules evaluated, maximum score {{score}}. Last update: {{date}}"
       }
     }
+  },
+  "Triggers": {
+    "EXPRESION_TOOLTIP": "Raw expression that defines the smart trigger.",
+    "TEMPLATE_TOOLTIP": "Template to start a recording with when the trigger condition is met.",
+    "DURATION_CONSTRAINT_TOOLTIP": "Expression that defines the the duration a trigger must be met for",
+    "TARGET_DURATION_TOOLTIP": "Length of time the trigger must be met for to start a recording.",
+    "TRIGGER_CONDITION_TOOLTIP": "Condition that must be met to fulfill the smart trigger.",
+    "SEARCH_PLACEHOLDER": "Find by expression, duration, etc...",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "smart-trigger-filter"
+    }
   }
 }
