@@ -30,6 +30,7 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+    ActionGroup,
   Bullseye,
   Button,
   Card,
@@ -41,8 +42,11 @@ import {
   EmptyState,
   EmptyStateHeader,
   EmptyStateIcon,
+  FormGroup,
   MenuToggle,
   MenuToggleElement,
+  Modal,
+  ModalVariant,
   OverflowMenu,
   OverflowMenuContent,
   OverflowMenuControl,
@@ -52,12 +56,14 @@ import {
   SearchInput,
   Switch,
   Text,
+  TextArea,
   TextContent,
   TextVariants,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  ValidatedOptions,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import {
@@ -79,7 +85,7 @@ import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
 import { Trans } from 'react-i18next';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { Form, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, first, forkJoin, Observable, of } from 'rxjs';
 
 export type SmartTriggerActions = 'REMOVE';
@@ -140,10 +146,19 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [actionLoadings, setActionLoadings] = React.useState<Record<SmartTriggerActions, boolean>>({ REMOVE: false });
+  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target]);
+
+  const handleUploadModalClose = React.useCallback(() => {
+    setUploadModalOpen(false);
+  }, [setUploadModalOpen]);
+  
+  const handleUploadModalOpen = React.useCallback(() => {
+    setUploadModalOpen(true);
+  }, [setUploadModalOpen]);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -333,6 +348,7 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
         setFilterText={setFilterText}
         triggers={triggers}
         handleDelete={handleDeleteTriggers}
+        handleUploadModalOpen={handleUploadModalOpen}
         actionLoadings={actionLoadings}
         toolbarBreakReference={toolbarBreakReference}
       />
@@ -383,6 +399,9 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
             />
           </EmptyState>
         )}
+        <CreateSmartTriggersModal isOpen={uploadModalOpen} target={propsTarget} onClose={function (): void {
+                throw new Error('Function not implemented.');
+            } } />
       </>
     );
   }
@@ -454,6 +473,7 @@ export interface TriggersTableToolbarProps {
   checkedIndices: number[];
   triggers: SmartTrigger[];
   handleDelete: () => void;
+  handleUploadModalOpen: () => void;
   setFilterText: (s: string) => void;
   actionLoadings: Record<SmartTriggerActions, boolean>;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
@@ -522,6 +542,24 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
         ),
         key: 'Delete',
       },
+      {
+        default: (
+          <Button
+            variant="secondary"
+            onClick={props.handleUploadModalOpen}
+            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+            {...actionLoadingProps['CREATE']}
+          >
+            {props.actionLoadings['CREATE'] ? 'Creating' : 'Create'}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Create'} isShared onClick={props.handleUploadModalOpen}>
+            {props.actionLoadings['CREATE'] ? 'Creating' : 'Create'}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Create',
+      },
     ];
   }, [
     handleDeleteButton,
@@ -587,5 +625,109 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
         {deleteTriggerWarningModal}
       </ToolbarContent>
     </Toolbar>
+  );
+};
+
+export interface CreateSmartTriggersModalProps {
+  isOpen: boolean;
+  target: Observable<NullableTarget>;
+  onClose: () => void;
+}
+
+export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, target: propsTarget, ...props }) => {
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+  const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
+  const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
+
+  const [uploading, setUploading] = React.useState(false);
+  const [isDisabled, setIsDisabled] = React.useState(false);
+
+  const expressionRegex = RegExp("\\[(.*(&&)*|(\\|\\|)*)\\]~([\\w\\-]+)(?:\\.jfc)?");
+
+  const [expressionInput, setExpressionInput] = React.useState('');
+  const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
+
+  const reset = React.useCallback(() => {
+    setUploading(false);
+  }, [setUploading]);
+
+  const handleClose = React.useCallback(() => {
+    if (uploading) {
+      abortRef.current && abortRef.current.click();
+    } else {
+      reset();
+      onClose();
+    }
+  }, [uploading, abortRef, reset, onClose]);
+
+  const handleSubmit = React.useCallback(() => {
+    submitRef.current && submitRef.current.click();
+    addSubscription(
+        propsTarget.subscribe((t) => {
+            if (!t) {
+                return;
+            }
+            context.api.addTrigger(t, expressionInput)
+        })
+    )
+  },[addSubscription, context.api, expressionInput, submitRef]) 
+
+  const submitButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Submitting',
+        spinnerAriaLabel: 'submitting-custom-event-template',
+        isLoading: uploading,
+      }) as LoadingProps,
+    [uploading],
+  );
+
+  return (
+    <Modal
+      appendTo={portalRoot}
+      isOpen={props.isOpen}
+      variant={ModalVariant.large}
+      showClose={true}
+      onClose={handleClose}
+      title="Create custom Smart Trigger"
+      description="Create a customized Smart Trigger. This is a specialized tool available in the Cryostat Agent that listens for a condition to be met for a specified Mbean, after which a recording will be started with the specified template. This is only available for targets using the Cryostat Agent."
+    >
+      <Form>
+        <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
+        <TextArea
+          value={expressionInput}
+          isDisabled={isDisabled}
+          isRequired
+          type="text"
+          id="expr"
+          aria-describedby="expr-helper"
+          onChange={(_event, v) => {
+            setExpressionInput(v);
+            expressionRegex.test(v) ? setExpressionValid(ValidatedOptions.success) : setExpressionValid(ValidatedOptions.error);
+          }}
+          validated={expressionValid}
+          autoFocus
+          autoResize
+          resizeOrientation="vertical"
+        />
+        </FormGroup>
+        <ActionGroup>
+            <>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                isDisabled={expressionValid == ValidatedOptions.success}
+                {...submitButtonLoadingProps}
+              >
+                {uploading ? 'Submitting' : 'Submit'}
+              </Button>
+              <Button variant="link" onClick={handleClose}>
+                Cancel
+              </Button>
+            </>
+        </ActionGroup>
+      </Form>
+    </Modal>
   );
 };
