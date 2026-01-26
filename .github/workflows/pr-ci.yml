@@ -75,7 +75,7 @@ jobs:
       PR_num: ${{ needs.checkout-branch.outputs.PR_num }}
       head_sha: ${{ needs.checkout-branch.outputs.PR_head_sha }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         repository: cryostatio/cryostat
         submodules: true
