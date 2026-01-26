@@ -34,7 +34,7 @@ jobs:
         && (!contains(github.event.issue.labels.*.name, 'safe-to-test') || github.event.issue.user.name != github.event.comment.user.name)
       run: exit 1
     - name: React to comment
-      uses: actions/github-script@v4
+      uses: actions/github-script@v8
       with:
         script: |
             const {owner, repo} = context.issue
@@ -54,7 +54,7 @@ jobs:
       PR_head_sha: ${{ fromJSON(steps.comment-branch.outputs.result).head_sha }}
       PR_num: ${{ fromJSON(steps.comment-branch.outputs.result).num }}
     steps:
-    - uses: actions/github-script@v4
+    - uses: actions/github-script@v8
       id: comment-branch
       with:
         script: |
