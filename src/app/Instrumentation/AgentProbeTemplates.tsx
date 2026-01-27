@@ -258,6 +258,13 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
     [addSubscription, context.api],
   );
 
+  const handleDownloadAction = React.useCallback(
+    (template: ProbeTemplate) => {
+      context.api.downloadProbeTemplate(template);
+    },
+    [context.api],
+  );
+
   const templateRows = React.useMemo(
     () =>
       filteredTemplates.map((t: ProbeTemplate, index) => {
@@ -273,13 +280,14 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
               <AgentTemplateAction
                 template={t}
                 onDelete={handleDeleteAction}
+                onDownload={handleDownloadAction}
                 onInsert={agentDetected ? handleInsertAction : undefined}
               />
             </Td>
           </Tr>
         );
       }),
-    [filteredTemplates, agentDetected, handleInsertAction, handleDeleteAction],
+    [filteredTemplates, agentDetected, handleInsertAction, handleDownloadAction, handleDeleteAction],
   );
 
   if (errorMessage != '') {
@@ -515,10 +523,16 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
 export interface AgentTemplateActionProps {
   template: ProbeTemplate;
   onInsert?: (template: ProbeTemplate) => void;
+  onDownload: (template: ProbeTemplate) => void;
   onDelete: (template: ProbeTemplate) => void;
 }
 
-export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDelete, template }) => {
+export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({
+  onInsert,
+  onDownload,
+  onDelete,
+  template,
+}) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -531,6 +545,11 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
         isDisabled: !onInsert,
       },
       {
+        key: 'download-template',
+        title: 'Download',
+        onClick: () => onDownload(template),
+      },
+      {
         isSeparator: true,
       },
       {
@@ -540,7 +559,7 @@ export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInse
         onClick: () => onDelete(template),
       },
     ];
-  }, [onInsert, onDelete, template]);
+  }, [onInsert, onDownload, onDelete, template]);
 
   const handleToggle = React.useCallback((_, opened: boolean) => setIsOpen(opened), [setIsOpen]);
 
