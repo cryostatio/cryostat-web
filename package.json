@@ -121,7 +121,8 @@
     "showdown": "^2.1.0"
   },
   "resolutions": {
-    "@types/react": "^17.0.69"
+    "@types/react": "^17.0.69",
+    "lodash": "^4.17.23"
   },
   "packageManager": "yarn@4.12.0"
 }
