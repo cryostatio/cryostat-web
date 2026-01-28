@@ -265,7 +265,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({
         <EntityDetails entity={selectedEntity} hideLineageTab={true} hideActions={hideActions} />
       </TopologySideBar>
     ),
-    [handleDrawerClose, selectedEntity],
+    [handleDrawerClose, selectedEntity, hideActions],
   );
 
   return (
