@@ -18,6 +18,7 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'index.html'),
         favicon: './src/app/assets/favicon.ico',
+        publicPath: '/',
       })
     ],
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
