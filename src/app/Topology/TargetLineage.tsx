@@ -50,8 +50,7 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId, hideActions
           setRoot(v);
           setHasError(false);
         },
-        error: (err) => {
-          console.warn('Target lineage unavailable:', err);
+        error: (_) => {
           setHasError(true);
           setRoot(undefined);
         },
