@@ -1609,7 +1609,7 @@ export class ApiService {
   }
 
   getTargetLineage(jvmId: string): Observable<EnvironmentNode> {
-    return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta');
+    return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta', undefined, true);
   }
 
   // Filter targets that the expression matches
