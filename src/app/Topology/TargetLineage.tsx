@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { EnvironmentNode } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import * as React from 'react';
-import { DiscoveryTreeContext } from './Shared/utils';
-import { useSelector } from 'react-redux';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { EmptyState, EmptyStateHeader, EmptyStateIcon } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
+import * as React from 'react';
+import { useSelector } from 'react-redux';
+import { TopologyGraphView } from './GraphView/TopologyGraphView';
+import { DiscoveryTreeContext } from './Shared/utils';
 
 interface TargetLineageProps {
   jvmId: string;
@@ -44,19 +44,17 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId }) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api
-        .doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta')
-        .subscribe({
-          next: (v) => {
-            setRoot(v);
-            setHasError(false);
-          },
-          error: (err) => {
-            console.warn('Target lineage unavailable:', err);
-            setHasError(true);
-            setRoot(undefined);
-          },
-        }),
+      context.api.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta').subscribe({
+        next: (v) => {
+          setRoot(v);
+          setHasError(false);
+        },
+        error: (err) => {
+          console.warn('Target lineage unavailable:', err);
+          setHasError(true);
+          setRoot(undefined);
+        },
+      }),
     );
   }, [jvmId, context, context.api, addSubscription]);
 
@@ -73,9 +71,11 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId }) => {
   }
 
   return root ? (
-    <DiscoveryTreeContext.Provider value={root}>
-      <TopologyGraphView transformConfig={transformConfig} />
-    </DiscoveryTreeContext.Provider>
+    <div style={{ height: '100%', width: '100%' }}>
+      <DiscoveryTreeContext.Provider value={root}>
+        <TopologyGraphView transformConfig={transformConfig} hideToolbar={true} />
+      </DiscoveryTreeContext.Provider>
+    </div>
   ) : (
     <></>
   );
