@@ -44,7 +44,7 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId }) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta').subscribe({
+      context.api.getTargetLineage(jvmId).subscribe({
         next: (v) => {
           setRoot(v);
           setHasError(false);
