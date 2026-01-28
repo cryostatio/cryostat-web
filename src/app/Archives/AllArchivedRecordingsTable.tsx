@@ -131,13 +131,12 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     setLoadingLineage(true);
     setLineageRoot(undefined);
     addSubscription(
-      context.api.doGet<EnvironmentNode>(`audit/target_lineage/${selectedJvmId}`, 'beta').subscribe({
+      context.api.getTargetLineage(selectedJvmId).subscribe({
         next: (root) => {
           setLineageRoot(root);
           setLoadingLineage(false);
         },
-        error: (err) => {
-          console.warn('Target lineage unavailable:', err);
+        error: (_) => {
           setLineageRoot(undefined);
           setLoadingLineage(false);
         },
