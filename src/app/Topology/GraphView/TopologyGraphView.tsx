@@ -255,7 +255,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
   const sidebar = React.useMemo(
     () => (
       <TopologySideBar onClose={handleDrawerClose}>
-        <EntityDetails entity={selectedEntity} />
+        <EntityDetails entity={selectedEntity} hideLineageTab={true} />
       </TopologySideBar>
     ),
     [handleDrawerClose, selectedEntity],
