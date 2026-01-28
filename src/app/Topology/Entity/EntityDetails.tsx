@@ -140,7 +140,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             </Tab>
             {isTarget && !hideLineageTab && data.target.jvmId ? (
               <Tab eventKey={EntityTab.LINEAGE} title={<TabTitleText>Lineage</TabTitleText>}>
-                <div className="entity-overview__wrapper">
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <TargetLineage jvmId={data.target.jvmId} />
                 </div>
               </Tab>
