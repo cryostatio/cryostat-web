@@ -150,7 +150,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions]);
+  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions, hideLineageTab]);
   return (
     <div {...props} className={css('entity-overview', className)}>
       {viewContent}

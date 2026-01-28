@@ -19,6 +19,7 @@ import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetLineage } from '@app/Topology/TargetLineage';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
@@ -32,17 +33,16 @@ import {
   EmptyState,
   EmptyStateIcon,
   Text,
-  Tooltip,
   Split,
   SplitItem,
   EmptyStateHeader,
   Button,
   Icon,
   Bullseye,
-  Stack,
-  StackItem,
+  Modal,
+  ModalVariant,
 } from '@patternfly/react-core';
-import { FileIcon, HelpIcon, SearchIcon } from '@patternfly/react-icons';
+import { FileIcon, InfoCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import {
   Table,
   Th,
@@ -59,7 +59,6 @@ import _ from 'lodash';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './utils';
-import { TargetLineage } from '@app/Topology/TargetLineage';
 
 const tableColumns: TableColumn[] = [
   {
@@ -92,6 +91,8 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const [expandedDirectories, setExpandedDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showLineageModal, setShowLineageModal] = React.useState(false);
+  const [selectedJvmId, setSelectedJvmId] = React.useState<string>('');
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
 
@@ -253,9 +254,17 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                 <Text>{dir.connectUrl}</Text>
               </SplitItem>
               <SplitItem>
-                <Tooltip hidden={!dir.jvmId} content={<TargetLineage jvmId={dir.jvmId} />} appendTo={portalRoot}>
-                  <HelpIcon />
-                </Tooltip>
+                <Button
+                  variant="plain"
+                  onClick={() => {
+                    setSelectedJvmId(dir.jvmId);
+                    setShowLineageModal(true);
+                  }}
+                  isDisabled={!dir.jvmId}
+                  aria-label="View target lineage"
+                >
+                  <InfoCircleIcon />
+                </Button>
               </SplitItem>
             </Split>
           </Td>
@@ -362,23 +371,37 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }
 
   return (
-    <OuterScrollContainer className="archive-table-outer-container">
-      <Toolbar id="all-archives-toolbar">
-        <ToolbarContent>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <SearchInput
-                style={{ minWidth: '30ch' }}
-                placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
-                value={searchText}
-                onChange={handleSearchInput}
-                onClear={handleSearchInputClear}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-      <InnerScrollContainer className="">{view}</InnerScrollContainer>
-    </OuterScrollContainer>
+    <>
+      <Modal
+        isOpen={showLineageModal}
+        onClose={() => setShowLineageModal(false)}
+        title="Target Lineage"
+        variant={ModalVariant.large}
+        className="target-details-modal"
+        appendTo={portalRoot}
+      >
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <TargetLineage jvmId={selectedJvmId} />
+        </div>
+      </Modal>
+      <OuterScrollContainer className="archive-table-outer-container">
+        <Toolbar id="all-archives-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  style={{ minWidth: '30ch' }}
+                  placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
+                  value={searchText}
+                  onChange={handleSearchInput}
+                  onClear={handleSearchInputClear}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        <InnerScrollContainer className="">{view}</InnerScrollContainer>
+      </OuterScrollContainer>
+    </>
   );
 };
