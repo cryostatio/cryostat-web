@@ -21,6 +21,8 @@ import { DiscoveryTreeContext } from './Shared/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
+import { EmptyState, EmptyStateHeader, EmptyStateIcon } from '@patternfly/react-core';
+import { TopologyIcon } from '@patternfly/react-icons';
 
 interface TargetLineageProps {
   jvmId: string;
@@ -38,12 +40,37 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId }) => {
   );
 
   const [root, setRoot] = React.useState(undefined as EnvironmentNode | undefined);
+  const [hasError, setHasError] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(
-      context.api.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta').subscribe((v) => setRoot(v)),
+      context.api
+        .doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta')
+        .subscribe({
+          next: (v) => {
+            setRoot(v);
+            setHasError(false);
+          },
+          error: (err) => {
+            console.warn('Target lineage unavailable:', err);
+            setHasError(true);
+            setRoot(undefined);
+          },
+        }),
     );
-  }, [jvmId, context, context.api]);
+  }, [jvmId, context, context.api, addSubscription]);
+
+  if (hasError) {
+    return (
+      <EmptyState>
+        <EmptyStateHeader
+          titleText="Target Lineage Unavailable"
+          icon={<EmptyStateIcon icon={TopologyIcon} />}
+          headingLevel="h4"
+        />
+      </EmptyState>
+    );
+  }
 
   return root ? (
     <DiscoveryTreeContext.Provider value={root}>
