@@ -36,13 +36,12 @@ import SecurityPanel from './SecurityPanel/SecurityPanel';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
 import { FeatureLevel } from './Shared/Services/service.types';
-import { TriggersTable } from './Triggers/Triggers';
 import CreateTarget from './Topology/Actions/CreateTarget';
 import Topology from './Topology/Topology';
+import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';

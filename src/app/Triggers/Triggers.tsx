@@ -14,34 +14,27 @@
  * limitations under the License.
  */
 
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { isAuthFail } from '@app/ErrorView/types';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
-import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { NotificationCategory, NullableTarget, SmartTrigger, Target } from '@app/Shared/Services/api.types';
-import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
-    ActionGroup,
-  Bullseye,
+  ActionGroup,
   Button,
-  Card,
-  CardBody,
-  CardTitle,
   Checkbox,
   Dropdown,
   DropdownList,
   EmptyState,
   EmptyStateHeader,
   EmptyStateIcon,
+  Form,
   FormGroup,
   MenuToggle,
   MenuToggleElement,
@@ -54,11 +47,7 @@ import {
   OverflowMenuGroup,
   OverflowMenuItem,
   SearchInput,
-  Switch,
-  Text,
   TextArea,
-  TextContent,
-  TextVariants,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -67,10 +56,7 @@ import {
 } from '@patternfly/react-core';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import {
-  ActionsColumn,
-  InnerScrollContainer,
   ISortBy,
-  OuterScrollContainer,
   SortByDirection,
   Table,
   TableVariant,
@@ -84,8 +70,6 @@ import {
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
-import { Trans } from 'react-i18next';
-import { Form, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, first, forkJoin, Observable, of } from 'rxjs';
 
 export type SmartTriggerActions = 'REMOVE';
@@ -96,42 +80,41 @@ export interface TriggersTableProps {
 }
 
 export const tableColumns: TableColumn[] = [
-      {
-        title: t('RAW_EXPRESSION'),
-        keyPaths: ['rawExpression'],
-        sortable: true,
-        tooltip: t('Triggers.EXPRESSION_TOOLTIP'),
-      },
-      {
-        title: t('TEMPLATE'),
-        keyPaths: ['recordingTemplate'],
-        sortable: true,
-        tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
-      },
-      {
-        title: t('DURATION_CONSTRAINT'),
-        keyPaths: ['durationConstraint'],
-        sortable: true,
-        tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
-      },
-      {
-        title: t('TARGET_DURATION'),
-        keyPaths: ['targetDuration'],
-        sortable: true,
-        tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
-      },
-      {
-        title: t('TRIGGER_CONDITION'),
-        keyPaths: ['triggerCondition'],
-        sortable: false,
-        tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
-      },
-    ];
+  {
+    title: t('RAW_EXPRESSION'),
+    keyPaths: ['rawExpression'],
+    sortable: true,
+    tooltip: t('Triggers.EXPRESSION_TOOLTIP'),
+  },
+  {
+    title: t('TEMPLATE'),
+    keyPaths: ['recordingTemplate'],
+    sortable: true,
+    tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
+  },
+  {
+    title: t('DURATION_CONSTRAINT'),
+    keyPaths: ['durationConstraint'],
+    sortable: true,
+    tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
+  },
+  {
+    title: t('TARGET_DURATION'),
+    keyPaths: ['targetDuration'],
+    sortable: true,
+    tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
+  },
+  {
+    title: t('TRIGGER_CONDITION'),
+    keyPaths: ['triggerCondition'],
+    sortable: false,
+    tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
+  },
+];
 
 export type ArchiveActions = 'DELETE';
 
-export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarget,
-  toolbarBreakReference }) => {
+export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarget, toolbarBreakReference }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const { t } = useCryostatTranslation();
@@ -146,19 +129,10 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [actionLoadings, setActionLoadings] = React.useState<Record<SmartTriggerActions, boolean>>({ REMOVE: false });
-  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target]);
-
-  const handleUploadModalClose = React.useCallback(() => {
-    setUploadModalOpen(false);
-  }, [setUploadModalOpen]);
-  
-  const handleUploadModalOpen = React.useCallback(() => {
-    setUploadModalOpen(true);
-  }, [setUploadModalOpen]);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -174,7 +148,7 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
     [sortBy, setSortBy],
   );
 
-  const queryTargetTriggers = React.useCallback((target: Target) => context.api.getTriggers(target), [context.api]);
+  const queryTargetTriggers = React.useCallback((target: Target) => context.api.getTriggers(), [context.api]);
 
   const handleError = React.useCallback(
     (error) => {
@@ -198,24 +172,24 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
   const handleDeleteTriggers = React.useCallback(() => {
     setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<boolean>[] = [];
-      addSubscription(
-        propsTarget.subscribe((t) => {
-          if (!t) {
-            return;
+    addSubscription(
+      propsTarget.subscribe((t) => {
+        if (!t) {
+          return;
+        }
+        filteredTriggers.forEach((r: SmartTrigger) => {
+          if (checkedIndices.includes(hashCode(r.rawExpression))) {
+            tasks.push(context.api.deleteTrigger(r.rawExpression).pipe(first()));
           }
-          filteredTriggers.forEach((r: SmartTrigger) => {
-            if (checkedIndices.includes(hashCode(r.rawExpression))) {
-              tasks.push(context.api.deleteTrigger(t, r.rawExpression).pipe(first()));
-            }
-          });
-          addSubscription(
-            forkJoin(tasks).subscribe({
-              next: () => handlePostActions('DELETE'),
-              error: () => handlePostActions('DELETE'),
-            }),
-          );
-        }),
-      );
+        });
+        addSubscription(
+          forkJoin(tasks).subscribe({
+            next: () => handlePostActions('DELETE'),
+            error: () => handlePostActions('DELETE'),
+          }),
+        );
+      }),
+    );
   }, [
     addSubscription,
     filteredTriggers,
@@ -238,6 +212,15 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
     [setCheckedIndices, setHeaderChecked],
   );
 
+    const handleTriggers = React.useCallback(
+    (triggers: SmartTrigger[]) => {
+      setTriggers(triggers);
+      setIsLoading(false);
+      setErrorMessage('');
+    },
+    [setTriggers, setIsLoading, setErrorMessage],
+  );
+
   const refreshTriggers = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
@@ -258,48 +241,39 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
           error: handleError,
         }),
     );
-  }, []);
-
-  const handleTriggers = React.useCallback(
-    (triggers: SmartTrigger[]) => {
-      setTriggers(triggers);
-      setIsLoading(false);
-      setErrorMessage('');
-    },
-    [setTriggers, setIsLoading, setErrorMessage],
-  );
+  }, [addSubscription, handleError, handleTriggers, propsTarget, queryTargetTriggers]);
 
   React.useEffect(() => {
     refreshTriggers();
   }, [refreshTriggers]);
 
   React.useEffect(() => {
-      let filtered: SmartTrigger[];
-      if (!filterText) {
-        filtered = triggers;
-      } else {
-        const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-        filtered = triggers.filter(
-          (t: SmartTrigger) =>
-            reg.test(t.rawExpression) ||
-            reg.test(t.recordingTemplate) ||
-            reg.test(t.durationConstraint) ||
-            reg.test(t.targetDuration) ||
-            reg.test(t.triggerCondition),
-        );
-      }
-  
-      setFilteredTriggers(
-        sortResources(
-          {
-            index: sortBy.index ?? 0,
-            direction: sortBy.direction ?? SortByDirection.asc,
-          },
-          filtered,
-          tableColumns,
-        ),
+    let filtered: SmartTrigger[];
+    if (!filterText) {
+      filtered = triggers;
+    } else {
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
+      filtered = triggers.filter(
+        (t: SmartTrigger) =>
+          reg.test(t.rawExpression) ||
+          reg.test(t.recordingTemplate) ||
+          reg.test(t.durationConstraint) ||
+          reg.test(t.targetDuration) ||
+          reg.test(t.triggerCondition),
       );
-    }, [filterText, triggers, sortBy, setFilteredTriggers]);
+    }
+
+    setFilteredTriggers(
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filtered,
+        tableColumns,
+      ),
+    );
+  }, [filterText, triggers, sortBy, setFilteredTriggers]);
 
   React.useEffect(() => {
     addSubscription(
@@ -330,16 +304,16 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
   }, [context.settings, refreshTriggers]);
 
   const triggerRows = React.useMemo(() => {
-    return filteredTriggers
-      .map((trigger: SmartTrigger, index) => (
-        <TriggerRow 
-        trigger={trigger} 
+    return filteredTriggers.map((trigger: SmartTrigger, index) => (
+      <TriggerRow
+        trigger={trigger}
         index={index}
-        sourceTarget={propsTarget} 
-        checkedIndices={[]} 
-        handleRowCheck={handleRowCheck}/>
-      ));
-  }, [triggers, sortBy, t, tableColumns, searchTerm]);
+        sourceTarget={propsTarget}
+        checkedIndices={[]}
+        handleRowCheck={handleRowCheck}
+      />
+    ));
+  }, [handleRowCheck, propsTarget, filteredTriggers]);
 
   const triggersToolbar = React.useMemo(
     () => (
@@ -347,20 +321,13 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
         checkedIndices={checkedIndices}
         setFilterText={setFilterText}
         triggers={triggers}
+        propsTarget={propsTarget}
         handleDelete={handleDeleteTriggers}
-        handleUploadModalOpen={handleUploadModalOpen}
         actionLoadings={actionLoadings}
         toolbarBreakReference={toolbarBreakReference}
       />
     ),
-    [
-      checkedIndices,
-      triggers,
-      filteredTriggers,
-      handleDeleteTriggers,
-      actionLoadings,
-      toolbarBreakReference,
-    ],
+    [checkedIndices, triggers, handleDeleteTriggers, propsTarget, actionLoadings, toolbarBreakReference],
   );
 
   if (errorMessage != '') {
@@ -376,7 +343,7 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
   } else {
     return (
       <>
-      {triggersToolbar}
+        {triggersToolbar}
         {triggerRows.length ? (
           <Table aria-label="Smart Triggers table" variant={TableVariant.compact}>
             <Thead>
@@ -399,14 +366,10 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ target: propsTarge
             />
           </EmptyState>
         )}
-        <CreateSmartTriggersModal isOpen={uploadModalOpen} target={propsTarget} onClose={function (): void {
-                throw new Error('Function not implemented.');
-            } } />
       </>
     );
   }
 };
-
 
 export interface TriggerRowProps {
   trigger: SmartTrigger;
@@ -416,13 +379,7 @@ export interface TriggerRowProps {
   handleRowCheck: (checked: boolean, rowIdx: string | number) => void;
 }
 
-export const TriggerRow: React.FC<TriggerRowProps> = ({
-  trigger,
-  index,
-  checkedIndices,
-  handleRowCheck,
-}) => {
-
+export const TriggerRow: React.FC<TriggerRowProps> = ({ trigger, index, checkedIndices, handleRowCheck }) => {
   const handleCheck = React.useCallback(
     (_, checked: boolean) => {
       handleRowCheck(checked, index);
@@ -432,8 +389,8 @@ export const TriggerRow: React.FC<TriggerRowProps> = ({
 
   const parentRow = React.useMemo(() => {
     return (
-        <Tr key={`smart-trigger-${index}`}>
-          <Td key={`smart-trigger-table-row-${index}_0`}>
+      <Tr key={`smart-trigger-${index}`}>
+        <Td key={`smart-trigger-table-row-${index}_0`}>
           <Checkbox
             name={`smart-trigger-table-row-${index}-check`}
             onChange={handleCheck}
@@ -441,30 +398,25 @@ export const TriggerRow: React.FC<TriggerRowProps> = ({
             id={`smart-trigger-table-row-${index}-check`}
             data-quickstart-id={`smart-trigger-check-box`}
           />
-          </Td>
-          <Td key={`smart-trigger-expression-${index}`} dataLabel={tableColumns[0].title}>
-            {trigger.rawExpression}
-          </Td>
-          <Td key={`smart-trigger-template-${index}`} dataLabel={tableColumns[1].title}>
-            {trigger.recordingTemplate}
-          </Td>
-          <Td key={`smart-trigger-duration-constraint-${index}`} width={25} dataLabel={tableColumns[3].title}>
-            {trigger.durationConstraint}
-          </Td>
-          <Td key={`smart-trigger-target-duration-${index}`} dataLabel={tableColumns[4].title}>
-            {trigger.targetDuration}
-          </Td>
-          <Td key={`smart-trigger-condition-${index}`} dataLabel={tableColumns[5].title}>
-            {trigger.triggerCondition}
-          </Td>
-        </Tr>
+        </Td>
+        <Td key={`smart-trigger-expression-${index}`} dataLabel={tableColumns[0].title}>
+          {trigger.rawExpression}
+        </Td>
+        <Td key={`smart-trigger-template-${index}`} dataLabel={tableColumns[1].title}>
+          {trigger.recordingTemplate}
+        </Td>
+        <Td key={`smart-trigger-duration-constraint-${index}`} width={25} dataLabel={tableColumns[3].title}>
+          {trigger.durationConstraint}
+        </Td>
+        <Td key={`smart-trigger-target-duration-${index}`} dataLabel={tableColumns[4].title}>
+          {trigger.targetDuration}
+        </Td>
+        <Td key={`smart-trigger-condition-${index}`} dataLabel={tableColumns[5].title}>
+          {trigger.triggerCondition}
+        </Td>
+      </Tr>
     );
-  }, [
-    trigger,
-    index,
-    checkedIndices,
-    handleCheck,
-  ]);
+  }, [trigger, index, checkedIndices, handleCheck]);
 
   return <Tbody key={index}>{parentRow}</Tbody>;
 };
@@ -472,8 +424,8 @@ export const TriggerRow: React.FC<TriggerRowProps> = ({
 export interface TriggersTableToolbarProps {
   checkedIndices: number[];
   triggers: SmartTrigger[];
+  propsTarget: Observable<NullableTarget>;
   handleDelete: () => void;
-  handleUploadModalOpen: () => void;
   setFilterText: (s: string) => void;
   actionLoadings: Record<SmartTriggerActions, boolean>;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
@@ -483,14 +435,26 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
 
-  const handleFilterTextChange = React.useCallback((_, value: string) => props.setFilterText(value), [props.setFilterText]);
+  const handleFilterTextChange = React.useCallback(
+    (_, value: string) => props.setFilterText(value),
+    [props],
+  );
 
   const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
+
+  const handleUploadModalClose = React.useCallback(() => {
+    setUploadModalOpen(false);
+  }, [setUploadModalOpen]);
+
+  const handleUploadModalOpen = React.useCallback(() => {
+    setUploadModalOpen(true);
+  }, [setUploadModalOpen]);
 
   const handleDeleteButton = React.useCallback(() => {
     if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteThreadDump)) {
@@ -511,12 +475,23 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
     );
   }, [warningModalOpen, props.handleDelete, handleWarningModalClose]);
 
+  const createTriggersModal = React.useMemo(() => {
+    return (
+      <CreateSmartTriggersModal isOpen={uploadModalOpen} target={props.propsTarget} onClose={handleUploadModalClose} />
+    );
+  }, [uploadModalOpen, props.propsTarget, handleUploadModalClose]);
+
   const actionLoadingProps = React.useMemo<Record<ArchiveActions, LoadingProps>>(
     () => ({
       DELETE: {
         spinnerAriaValueText: 'Deleting',
         spinnerAriaLabel: 'deleting-smart-triggers',
         isLoading: props.actionLoadings['DELETE'],
+      } as LoadingProps,
+      CREATE: {
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'creating-smart-triggers',
+        isLoading: props.actionLoadings['CREATE'],
       } as LoadingProps,
     }),
     [props],
@@ -544,17 +519,12 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
       },
       {
         default: (
-          <Button
-            variant="secondary"
-            onClick={props.handleUploadModalOpen}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
-            {...actionLoadingProps['CREATE']}
-          >
+          <Button variant="secondary" onClick={handleUploadModalOpen} {...actionLoadingProps['CREATE']}>
             {props.actionLoadings['CREATE'] ? 'Creating' : 'Create'}
           </Button>
         ),
         collapsed: (
-          <OverflowMenuDropdownItem key={'Create'} isShared onClick={props.handleUploadModalOpen}>
+          <OverflowMenuDropdownItem key={'Create'} isShared onClick={handleUploadModalOpen}>
             {props.actionLoadings['CREATE'] ? 'Creating' : 'Create'}
           </OverflowMenuDropdownItem>
         ),
@@ -563,6 +533,7 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
     ];
   }, [
     handleDeleteButton,
+    handleUploadModalOpen,
     props.checkedIndices.length,
     props.actionLoadings,
     actionLoadingProps,
@@ -572,17 +543,17 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
     <Toolbar id="smart-triggers-toolbar" aria-label="smart-triggers-toolbar">
       <ToolbarContent>
         <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-                <SearchInput
-                  style={{ minWidth: '36ch' }}
-                  name="smartTriggersFilter"
-                  id="smartTriggersFilter"
-                  type="search"
-                  placeholder={t('Triggers.SEARCH_PLACEHOLDER')}
-                  aria-label={t('Triggers.ARIA_LABELS.SEARCH_INPUT')}
-                  onChange={handleFilterTextChange}
-                />
-            </ToolbarItem>
+          <ToolbarItem>
+            <SearchInput
+              style={{ minWidth: '36ch' }}
+              name="smartTriggersFilter"
+              id="smartTriggersFilter"
+              type="search"
+              placeholder={t('Triggers.SEARCH_PLACEHOLDER')}
+              aria-label={t('Triggers.ARIA_LABELS.SEARCH_INPUT')}
+              onChange={handleFilterTextChange}
+            />
+          </ToolbarItem>
         </ToolbarGroup>
         <ToolbarItem variant="separator" className="smart-triggers-toolbar-separator" />
         <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
@@ -590,7 +561,8 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
             <OverflowMenu
               breakpoint="sm"
               breakpointReference={
-                props.toolbarBreakReference || (() => document.getElementById('smart-triggers-toolbar') || document.body)
+                props.toolbarBreakReference ||
+                (() => document.getElementById('smart-triggers-toolbar') || document.body)
               }
             >
               <OverflowMenuContent>
@@ -623,6 +595,7 @@ const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
           </ToolbarItem>
         </ToolbarGroup>
         {deleteTriggerWarningModal}
+        {createTriggersModal}
       </ToolbarContent>
     </Toolbar>
   );
@@ -634,7 +607,11 @@ export interface CreateSmartTriggersModalProps {
   onClose: () => void;
 }
 
-export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, target: propsTarget, ...props }) => {
+export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({
+  onClose,
+  target: propsTarget,
+  ...props
+}) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -643,7 +620,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   const [uploading, setUploading] = React.useState(false);
   const [isDisabled, setIsDisabled] = React.useState(false);
 
-  const expressionRegex = RegExp("\\[(.*(&&)*|(\\|\\|)*)\\]~([\\w\\-]+)(?:\\.jfc)?");
+  const expressionRegex = RegExp('\\[(.*(&&)*|(\\|\\|)*)\\]~([\\w\\-]+)(?:\\.jfc)?');
 
   const [expressionInput, setExpressionInput] = React.useState('');
   const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
@@ -663,21 +640,14 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    addSubscription(
-        propsTarget.subscribe((t) => {
-            if (!t) {
-                return;
-            }
-            context.api.addTrigger(t, expressionInput)
-        })
-    )
-  },[addSubscription, context.api, expressionInput, submitRef]) 
+    context.api.addTrigger(expressionInput);
+  }, [addSubscription, context.api, expressionInput, propsTarget, submitRef]);
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
       ({
         spinnerAriaValueText: 'Submitting',
-        spinnerAriaLabel: 'submitting-custom-event-template',
+        spinnerAriaLabel: 'submitting-custom-smart-trigger',
         isLoading: uploading,
       }) as LoadingProps,
     [uploading],
@@ -685,7 +655,6 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   return (
     <Modal
-      appendTo={portalRoot}
       isOpen={props.isOpen}
       variant={ModalVariant.large}
       showClose={true}
@@ -695,37 +664,39 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     >
       <Form>
         <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
-        <TextArea
-          value={expressionInput}
-          isDisabled={isDisabled}
-          isRequired
-          type="text"
-          id="expr"
-          aria-describedby="expr-helper"
-          onChange={(_event, v) => {
-            setExpressionInput(v);
-            expressionRegex.test(v) ? setExpressionValid(ValidatedOptions.success) : setExpressionValid(ValidatedOptions.error);
-          }}
-          validated={expressionValid}
-          autoFocus
-          autoResize
-          resizeOrientation="vertical"
-        />
+          <TextArea
+            value={expressionInput}
+            isDisabled={isDisabled}
+            isRequired
+            type="text"
+            id="expr"
+            aria-describedby="expr-helper"
+            onChange={(_event, v) => {
+              setExpressionInput(v);
+              expressionRegex.test(v)
+                ? setExpressionValid(ValidatedOptions.success)
+                : setExpressionValid(ValidatedOptions.error);
+            }}
+            validated={expressionValid}
+            autoFocus
+            autoResize
+            resizeOrientation="vertical"
+          />
         </FormGroup>
         <ActionGroup>
-            <>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                isDisabled={expressionValid == ValidatedOptions.success}
-                {...submitButtonLoadingProps}
-              >
-                {uploading ? 'Submitting' : 'Submit'}
-              </Button>
-              <Button variant="link" onClick={handleClose}>
-                Cancel
-              </Button>
-            </>
+          <>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              isDisabled={expressionValid != ValidatedOptions.success}
+              {...submitButtonLoadingProps}
+            >
+              {uploading ? 'Submitting' : 'Submit'}
+            </Button>
+            <Button variant="link" onClick={handleClose}>
+              Cancel
+            </Button>
+          </>
         </ActionGroup>
       </Form>
     </Modal>

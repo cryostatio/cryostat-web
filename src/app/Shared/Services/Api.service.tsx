@@ -228,66 +228,66 @@ export class ApiService {
     );
   }
 
-  getTriggers(target: TargetStub, suppressNotifications = false, skipStatusCheck = false): Observable<SmartTrigger[]> {
-    return this.sendRequest(
-      'v4',
-      `targets/${target.id}/smart-triggers`,
-      {
-        method: 'GET',
-      },
-      undefined,
-      suppressNotifications,
-      skipStatusCheck,
-    ).pipe(
-      concatMap((resp) => resp.json()),
+  getTriggers(
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<SmartTrigger[]> {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
+          method: 'GET',
+        }).pipe(
+          concatMap((resp) => resp.json()),
+          first(),
+        ),
+      ),
       first(),
     );
   }
 
   deleteTrigger(
-    target: TargetStub,
     definition: string,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<boolean> {
     const form = new window.FormData();
     form.append('definition', String(definition));
-    return this.sendRequest(
-      'v4',
-      `targets/${target.id}/smart-triggers`,
-      {
-        method: 'DELETE',
-        body: form,
-      },
-      undefined,
-      suppressNotifications,
-      skipStatusCheck,
-    ).pipe(
-      map((resp) => resp.ok),
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
+          method: 'DELETE',
+          body: form,
+        }).pipe(
+          map((resp) => resp.ok),
+          catchError(() => of(false)),
+          first(),
+        ),
+      ),
       first(),
     );
   }
 
   addTrigger(
-    target: TargetStub,
     definition: string,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<boolean> {
     const form = new window.FormData();
     form.append('definition', String(definition));
-    return this.sendRequest(
-      'v4',
-      `targets/${target.id}/smart-triggers`,
-      {
-        method: 'DELETE',
-        body: form,
-      },
-      undefined,
-      suppressNotifications,
-      skipStatusCheck,
-    ).pipe(
-      map((resp) => resp.ok),
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
+          method: 'POST',
+          body: form,
+        }).pipe(
+          map((resp) => resp.ok),
+          catchError(() => of(false)),
+          first(),
+        ),
+      ),
       first(),
     );
   }

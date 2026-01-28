@@ -38,16 +38,12 @@ export const CaptureSmartTriggers: React.FC<CaptureTriggersProps> = ({ ...props 
 
   const cardBody = React.useMemo(
     () => (
-          <Stack hasGutter>
-            <StackItem>
-              <TargetContextSelector />
-            </StackItem>
-            <StackItem>
-              {
-                <TriggersTable target={targetAsObs}/>
-              }
-            </StackItem>
-          </Stack>
+      <Stack hasGutter>
+        <StackItem>
+          <TargetContextSelector />
+        </StackItem>
+        <StackItem>{<TriggersTable target={targetAsObs} />}</StackItem>
+      </Stack>
     ),
     [targetAsObs],
   );
