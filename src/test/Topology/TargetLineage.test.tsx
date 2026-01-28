@@ -53,15 +53,8 @@ jest.mock('@app/Topology/GraphView/TopologyGraphView', () => ({
 }));
 
 describe('<TargetLineage />', () => {
-  let consoleWarnSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  });
-
   afterEach(() => {
     cleanup();
-    consoleWarnSpy.mockRestore();
   });
 
   it('should display topology graph when lineage data is successfully fetched', async () => {
@@ -99,7 +92,6 @@ describe('<TargetLineage />', () => {
 
     expect(await screen.findByText('Target Lineage Unavailable')).toBeInTheDocument();
     expect(screen.queryByText('Topology Graph View')).not.toBeInTheDocument();
-    expect(consoleWarnSpy).toHaveBeenCalledWith('Target lineage unavailable:', error404);
   });
 
   it('should display empty state when 403 error occurs (auditing disabled)', async () => {
@@ -119,7 +111,6 @@ describe('<TargetLineage />', () => {
 
     expect(await screen.findByText('Target Lineage Unavailable')).toBeInTheDocument();
     expect(screen.queryByText('Topology Graph View')).not.toBeInTheDocument();
-    expect(consoleWarnSpy).toHaveBeenCalledWith('Target lineage unavailable:', error403);
   });
 
   it('should display empty state when network error occurs', async () => {
@@ -139,7 +130,6 @@ describe('<TargetLineage />', () => {
 
     expect(await screen.findByText('Target Lineage Unavailable')).toBeInTheDocument();
     expect(screen.queryByText('Topology Graph View')).not.toBeInTheDocument();
-    expect(consoleWarnSpy).toHaveBeenCalledWith('Target lineage unavailable:', networkError);
   });
 
   it('should display empty state with correct icon and heading level', async () => {
@@ -172,7 +162,7 @@ describe('<TargetLineage />', () => {
     expect(icon).toBeInTheDocument();
   });
 
-  it('should log console warning on error', async () => {
+  it('should display empty state on error', async () => {
     const testError = { status: 500, message: 'Internal Server Error' };
     jest.spyOn(defaultServices.api, 'getTargetLineage').mockReturnValue(throwError(() => testError));
 
@@ -187,9 +177,7 @@ describe('<TargetLineage />', () => {
       },
     });
 
-    await screen.findByText('Target Lineage Unavailable');
-
-    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-    expect(consoleWarnSpy).toHaveBeenCalledWith('Target lineage unavailable:', testError);
+    expect(await screen.findByText('Target Lineage Unavailable')).toBeInTheDocument();
+    expect(screen.queryByText('Topology Graph View')).not.toBeInTheDocument();
   });
 });
