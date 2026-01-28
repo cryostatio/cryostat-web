@@ -86,6 +86,7 @@ export interface EntityDetailsProps {
   alertOptions?: AlertOptions;
   actionFilter?: (_: NodeAction) => boolean;
   hideLineageTab?: boolean;
+  hideActions?: boolean;
 }
 
 enum EntityTab {
@@ -101,6 +102,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   actionFilter,
   alertOptions,
   hideLineageTab = false,
+  hideActions = false,
   ...props
 }) => {
   const [activeTab, setActiveTab] = React.useState(EntityTab.DETAIL);
@@ -120,7 +122,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             badge={nodeTypeToAbbr(data.nodeType)}
             badgeTooltipContent={data.nodeType}
             status={isTarget ? getStatusTargetNode(data) : []}
-            actionDropdown={_actions.length ? <ActionDropdown actions={_actions} /> : null}
+            actionDropdown={!hideActions && _actions.length ? <ActionDropdown actions={_actions} /> : null}
           />
           <Divider />
           <Tabs activeKey={activeTab} onSelect={(_, tab: string) => setActiveTab(tab as EntityTab)}>
