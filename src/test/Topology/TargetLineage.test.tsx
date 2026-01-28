@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { TargetLineage } from '@app/Topology/TargetLineage';
 import { EnvironmentNode, NodeType } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
+import { TargetLineage } from '@app/Topology/TargetLineage';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of, throwError } from 'rxjs';
