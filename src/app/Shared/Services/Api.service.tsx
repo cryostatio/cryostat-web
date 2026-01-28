@@ -1608,6 +1608,10 @@ export class ApiService {
     );
   }
 
+  getTargetLineage(jvmId: string): Observable<EnvironmentNode> {
+    return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta', undefined, true);
+  }
+
   // Filter targets that the expression matches
   matchTargetsWithExpr(matchExpression: string, targets: Target[]): Observable<Target[]> {
     const body = JSON.stringify({

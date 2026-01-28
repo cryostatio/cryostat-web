@@ -67,6 +67,7 @@ const _transformDataGroupedByTopLevel = (
                     className="topology__list-view__entity-details"
                     entity={{ getData: () => child }}
                     columnModifier={{ default: '3Col' }}
+                    hideLineageTab={true}
                   />
                 ),
               },
@@ -127,6 +128,7 @@ const _buildFullData = (
                 className="topology__list-view__entity-details"
                 entity={{ getData: () => node }}
                 columnModifier={{ default: '3Col' }}
+                hideLineageTab={true}
               />
             ),
           },
