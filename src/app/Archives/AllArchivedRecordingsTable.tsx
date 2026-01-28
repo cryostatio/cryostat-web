@@ -39,6 +39,8 @@ import {
   Button,
   Icon,
   Bullseye,
+  Stack,
+  StackItem,
 } from '@patternfly/react-core';
 import { FileIcon, HelpIcon, SearchIcon } from '@patternfly/react-icons';
 import {
@@ -57,6 +59,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { Observable, of } from 'rxjs';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './utils';
+import { TargetLineage } from '@app/Topology/TargetLineage';
 
 const tableColumns: TableColumn[] = [
   {
@@ -250,7 +253,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                 <Text>{dir.connectUrl}</Text>
               </SplitItem>
               <SplitItem>
-                <Tooltip hidden={!dir.jvmId} content={`JVM hash ID: ${dir.jvmId}`} appendTo={portalRoot}>
+                <Tooltip hidden={!dir.jvmId} content={<TargetLineage jvmId={dir.jvmId} />} appendTo={portalRoot}>
                   <HelpIcon />
                 </Tooltip>
               </SplitItem>
