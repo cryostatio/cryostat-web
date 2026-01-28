@@ -83,11 +83,13 @@ export type SavedNodePosition = {
 export interface TopologyGraphViewProps {
   transformConfig?: TransformConfig;
   hideToolbar?: boolean;
+  hideActions?: boolean;
 }
 
 export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({
   transformConfig,
   hideToolbar = false,
+  hideActions = false,
   ...props
 }) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]); // selectedIds is exactly matched by VisualizationSurface
@@ -260,7 +262,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({
   const sidebar = React.useMemo(
     () => (
       <TopologySideBar onClose={handleDrawerClose}>
-        <EntityDetails entity={selectedEntity} hideLineageTab={true} />
+        <EntityDetails entity={selectedEntity} hideLineageTab={true} hideActions={hideActions} />
       </TopologySideBar>
     ),
     [handleDrawerClose, selectedEntity],

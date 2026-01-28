@@ -447,7 +447,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
             <Spinner />
           </Bullseye>
         ) : wrappedTarget ? (
-          <EntityDetails entity={wrappedTarget} className="target-details-modal" />
+          <EntityDetails entity={wrappedTarget} className="target-details-modal" hideActions={true} />
         ) : (
           <EmptyState>
             <EmptyStateHeader
