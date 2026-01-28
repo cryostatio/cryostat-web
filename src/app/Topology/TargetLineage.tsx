@@ -26,9 +26,10 @@ import { DiscoveryTreeContext } from './Shared/utils';
 
 interface TargetLineageProps {
   jvmId: string;
+  hideActions?: boolean;
 }
 
-export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId }) => {
+export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId, hideActions = false }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -73,7 +74,7 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId }) => {
   return root ? (
     <div style={{ height: '100%', width: '100%' }}>
       <DiscoveryTreeContext.Provider value={root}>
-        <TopologyGraphView transformConfig={transformConfig} hideToolbar={true} />
+        <TopologyGraphView transformConfig={transformConfig} hideToolbar={true} hideActions={hideActions} />
       </DiscoveryTreeContext.Provider>
     </div>
   ) : (
