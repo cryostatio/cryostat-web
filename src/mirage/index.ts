@@ -1057,6 +1057,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
         return new Response(204);
       });
+      this.get('api/beta/audit/targets/:jvmId', () => new Response(404));
+      this.get('api/beta/audit/target_lineage/:jvmId', () => new Response(404));
     },
   });
 };
