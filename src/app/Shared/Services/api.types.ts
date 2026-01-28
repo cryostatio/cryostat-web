@@ -432,6 +432,17 @@ export interface Rule {
 }
 
 // ======================================
+// Smart Triggers Resources
+// ======================================
+export interface SmartTrigger {
+  rawExpression: string;
+  recordingTemplate: string;
+  durationConstraint: string;
+  targetDuration: string;
+  triggerCondition: string;
+}
+
+// ======================================
 // Template resources
 // ======================================
 export interface OptionDescriptor {

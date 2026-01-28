@@ -70,6 +70,7 @@ import {
   AggregateReport,
   HeapDump,
   ThreadDump,
+  SmartTrigger,
 } from './api.types';
 import {
   isHttpError,
@@ -223,6 +224,70 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
+      first(),
+    );
+  }
+
+  getTriggers(
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<SmartTrigger[]> {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
+          method: 'GET',
+        }).pipe(
+          concatMap((resp) => resp.json()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  deleteTrigger(
+    definition: string,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<boolean> {
+    const form = new window.FormData();
+    form.append('definition', String(definition));
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
+          method: 'DELETE',
+          body: form,
+        }).pipe(
+          map((resp) => resp.ok),
+          catchError(() => of(false)),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  addTrigger(
+    definition: string,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<boolean> {
+    const form = new window.FormData();
+    form.append('definition', String(definition));
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
+          method: 'POST',
+          body: form,
+        }).pipe(
+          map((resp) => resp.ok),
+          catchError(() => of(false)),
+          first(),
+        ),
+      ),
       first(),
     );
   }

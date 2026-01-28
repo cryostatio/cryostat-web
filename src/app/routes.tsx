@@ -38,6 +38,7 @@ import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundar
 import { FeatureLevel } from './Shared/Services/service.types';
 import CreateTarget from './Topology/Actions/CreateTarget';
 import Topology from './Topology/Topology';
+import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
@@ -139,6 +140,15 @@ const flightRecorderRoutes: IAppRoute[] = [
         title: 'Create Automated Rule',
       },
     ],
+  },
+  {
+    component: CaptureSmartTriggers,
+    label: 'Triggers',
+    path: toPath('/triggers'),
+    title: 'Triggers',
+    description: 'Create Smart Triggers on targets that start recordings when specified MBean conditions are met',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
   },
   {
     component: Instrumentation,
