@@ -20,6 +20,7 @@ import { EnvironmentNode, MBeanMetrics, MBeanMetricsResponse, TargetNode } from 
 import { isTargetNode } from '@app/Shared/Services/api.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown } from '@app/Topology/Actions/NodeActions';
+import { TargetLineage } from '@app/Topology/TargetLineage';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, hashCode, portalRoot, splitWordsOnUppercase } from '@app/utils/utils';
@@ -84,11 +85,13 @@ export interface EntityDetailsProps {
   className?: string;
   alertOptions?: AlertOptions;
   actionFilter?: (_: NodeAction) => boolean;
+  hideLineageTab?: boolean;
 }
 
 enum EntityTab {
   DETAIL = 'detail',
   RESOURCE = 'resource',
+  LINEAGE = 'lineage',
 }
 
 export const EntityDetails: React.FC<EntityDetailsProps> = ({
@@ -97,6 +100,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   columnModifier,
   actionFilter,
   alertOptions,
+  hideLineageTab = false,
   ...props
 }) => {
   const [activeTab, setActiveTab] = React.useState(EntityTab.DETAIL);
@@ -129,11 +133,18 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
                 )}
               </div>
             </Tab>
-            <Tab eventKey={EntityTab.RESOURCE} title={<TabTitleText>{'Resources'}</TabTitleText>}>
+            <Tab eventKey={EntityTab.RESOURCE} title={<TabTitleText>Resources</TabTitleText>}>
               <div className="entity-overview__wrapper">
                 {isTarget ? <TargetResources targetNode={data} /> : <GroupResources envNode={data} />}
               </div>
             </Tab>
+            {isTarget && !hideLineageTab && data.target.jvmId ? (
+              <Tab eventKey={EntityTab.LINEAGE} title={<TabTitleText>Lineage</TabTitleText>}>
+                <div className="entity-overview__wrapper">
+                  <TargetLineage jvmId={data.target.jvmId} />
+                </div>
+              </Tab>
+            ) : null}
           </Tabs>
         </>
       );
