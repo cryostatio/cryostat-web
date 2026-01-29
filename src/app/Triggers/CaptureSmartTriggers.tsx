@@ -33,7 +33,8 @@ export const CaptureSmartTriggers: React.FC<CaptureTriggersProps> = ({ ...props 
   const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe((t) => setTarget(t)));
+    addSubscription(context.target.target().subscribe((t) => {
+      setTarget(t)}));
   }, [addSubscription, context.target, setTarget]);
 
   const cardBody = React.useMemo(

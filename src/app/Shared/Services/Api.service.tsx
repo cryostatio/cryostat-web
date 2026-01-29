@@ -228,66 +228,44 @@ export class ApiService {
     );
   }
 
-  getTriggers(
+  getTargetTriggers(
+    target: TargetStub,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<SmartTrigger[]> {
-    return this.target.target().pipe(
-      filter((t) => !!t),
-      concatMap((target) =>
-        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
-          method: 'GET',
-        }).pipe(
-          concatMap((resp) => resp.json()),
-          first(),
-        ),
-      ),
-      first(),
-    );
+    return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
   }
 
   deleteTrigger(
     definition: string,
+    target: TargetStub,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<boolean> {
-    const form = new window.FormData();
-    form.append('definition', String(definition));
-    return this.target.target().pipe(
-      filter((t) => !!t),
-      concatMap((target) =>
-        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
-          method: 'DELETE',
-          body: form,
+    const body = new window.FormData();
+    body.append('definition', String(definition));
+    return this.sendRequest('beta', `targets/${target!.id}/smart_triggers/${definition}`, {
+          method: 'POST',
+          body,
         }).pipe(
-          map((resp) => resp.ok),
-          catchError(() => of(false)),
-          first(),
-        ),
-      ),
+      map((resp) => resp.ok),
       first(),
     );
   }
 
-  addTrigger(
+  addTriggers(
     definition: string,
+    target: TargetStub,
     suppressNotifications = false,
     skipStatusCheck = false,
   ): Observable<boolean> {
-    const form = new window.FormData();
-    form.append('definition', String(definition));
-    return this.target.target().pipe(
-      filter((t) => !!t),
-      concatMap((target) =>
-        this.sendRequest('beta', `/smart-triggers/targets/${target!.id}/smart-triggers`, {
+    const body = new window.FormData();
+    body.append('definition', String(definition));
+    return this.sendRequest('beta', `targets/${target!.id}/smart_triggers/${definition}`, {
           method: 'POST',
-          body: form,
+          body,
         }).pipe(
-          map((resp) => resp.ok),
-          catchError(() => of(false)),
-          first(),
-        ),
-      ),
+      map((resp) => resp.ok),
       first(),
     );
   }
@@ -2150,9 +2128,10 @@ export class ApiService {
           }),
         ),
       ]).pipe(
-        concatMap((parts) => fromFetch(parts[0], parts[1])),
+        concatMap((parts) => {
+          return fromFetch(parts[0], parts[1])}),
         map((resp) => {
-          if (resp.ok) return resp;
+          if (resp.ok)  return resp;
           throw new HttpError(resp);
         }),
         catchError((err) => {
