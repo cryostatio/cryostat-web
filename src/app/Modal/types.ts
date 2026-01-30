@@ -96,11 +96,11 @@ export const DeleteActiveProbes: DeleteOrDisableWarning = {
 };
 
 export const DeleteSmartTrigger: DeleteOrDisableWarning = {
-  id: DeleteOrDisableWarningType.DeleteActiveProbes,
+  id: DeleteOrDisableWarningType.DeleteSmartTrigger,
   title: 'Permanently remove your active smart triggers from the target?',
-  label: 'Remove smart triggers',
+  label: 'Remove Smart Triggers',
   description: `If you click Delete, active smart triggers will be removed from the target.`,
-  ariaLabel: 'Active smart triggers remove warning',
+  ariaLabel: 'Smart Triggers remove warning',
 };
 
 export const DeleteHeapDump: DeleteOrDisableWarning = {
@@ -173,5 +173,6 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteCustomTargets,
   DeleteDashboardLayout,
   DeleteLayoutTemplate,
+  DeleteSmartTrigger,
   ClearDashboardLayout,
 ];

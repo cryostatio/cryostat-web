@@ -15,16 +15,15 @@
  */
 
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { isAuthFail } from '@app/ErrorView/types';
+import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { NotificationCategory, NullableTarget, SmartTrigger, Target } from '@app/Shared/Services/api.types';
+import { NotificationCategory, NullableTarget, SmartTrigger } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { hashCode, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
-import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
   Button,
@@ -70,42 +69,41 @@ import {
 import { t } from 'i18next';
 import _ from 'lodash';
 import React from 'react';
-import { concatMap, first, forkJoin, Observable, of } from 'rxjs';
+import { first, forkJoin, Observable } from 'rxjs';
 
 export type SmartTriggerActions = 'REMOVE';
 
 export interface TriggersTableProps {
-  target: Observable<NullableTarget>;
   toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 export const tableColumns: TableColumn[] = [
   {
-    title: t('RAW_EXPRESSION'),
+    title: 'Raw Expression',
     keyPaths: ['rawExpression'],
     sortable: true,
     tooltip: t('Triggers.EXPRESSION_TOOLTIP'),
   },
   {
-    title: t('TEMPLATE'),
+    title: 'Template',
     keyPaths: ['recordingTemplate'],
     sortable: true,
     tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
   },
   {
-    title: t('DURATION_CONSTRAINT'),
+    title: 'Duration Constraint',
     keyPaths: ['durationConstraint'],
     sortable: true,
     tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
   },
   {
-    title: t('TARGET_DURATION'),
+    title: 'Target Duration',
     keyPaths: ['targetDuration'],
     sortable: true,
     tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
   },
   {
-    title: t('TRIGGER_CONDITION'),
+    title: 'Trigger Condition',
     keyPaths: ['triggerCondition'],
     sortable: false,
     tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
@@ -117,7 +115,6 @@ export type ArchiveActions = 'DELETE';
 export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakReference }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const { t } = useCryostatTranslation();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
@@ -129,19 +126,11 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [actionLoadings, setActionLoadings] = React.useState<Record<SmartTriggerActions, boolean>>({ REMOVE: false });
   const [controlEnabled, setControlEnabled] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
+  const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
-  React.useEffect(() => {
-      addSubscription(
-        context.target.target().subscribe({
-          next: (target) => setControlEnabled(target != null ? target.agent : false),
-          error: () => setControlEnabled(false),
-        }),
-      );
-  }, [addSubscription, context, setControlEnabled]);
-
-  const authRetry = React.useCallback(() => {
-    context.target.setAuthRetry();
-  }, [context.target]);
+  const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -157,6 +146,43 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
     [sortBy, setSortBy],
   );
 
+  React.useEffect(() => {
+    let filtered: SmartTrigger[];
+    if (!filterText) {
+      filtered = triggers;
+    } else {
+      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
+      filtered = triggers.filter(
+        (t: SmartTrigger) =>
+          reg.test(t.rawExpression) ||
+          reg.test(t.recordingTemplate) ||
+          reg.test(t.durationConstraint) ||
+          reg.test(t.targetDuration) ||
+          reg.test(t.triggerCondition),
+      );
+    }
+
+    setFilteredTriggers(
+      sortResources(
+        {
+          index: sortBy.index ?? 0,
+          direction: sortBy.direction ?? SortByDirection.asc,
+        },
+        filtered,
+        tableColumns,
+      ),
+    );
+  }, [filterText, triggers, sortBy, setFilteredTriggers]);
+
+  const handleTriggers = React.useCallback(
+    (triggers: SmartTrigger[]) => {
+      setTriggers(triggers);
+      setIsLoading(false);
+      setErrorMessage('');
+    },
+    [setTriggers, setIsLoading, setErrorMessage],
+  );
+
   const handleError = React.useCallback(
     (error) => {
       setIsLoading(false);
@@ -164,6 +190,68 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
     },
     [setIsLoading, setErrorMessage],
   );
+
+  const refreshTriggers = React.useCallback(() => {
+    setIsLoading(true);
+    addSubscription(
+      context.target.target().subscribe((target) => {
+        if (!target) {
+          setIsLoading(false);
+          return;
+        }
+        addSubscription(
+          context.api.getTargetTriggers(target).subscribe({
+            next: handleTriggers,
+            error: handleError,
+          }),
+        );
+      }),
+    );
+  }, [addSubscription, setIsLoading, handleError, handleTriggers, context.api, context.target]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(() => {
+        setFilterText('');
+        refreshTriggers();
+      }),
+    );
+  }, [context.target, addSubscription, refreshTriggers]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TriggerDeleted).subscribe((msg) => {
+        setTriggers((old) => old.filter((t) => t.rawExpression !== msg.message.trigger));
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, refreshTriggers]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TriggerCreated).subscribe(() => {
+        refreshTriggers();
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, refreshTriggers]);
+
+  React.useEffect(() => {
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(
+      () => refreshTriggers(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
+    );
+    return () => window.clearInterval(id);
+  }, [context.settings, refreshTriggers]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      }),
+    );
+  }, [addSubscription, context.target, setErrorMessage]);
 
   const handlePostActions = React.useCallback(
     (action: ArchiveActions) => {
@@ -202,17 +290,51 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
     filteredTriggers,
     checkedIndices,
     context.api,
+    context.target,
     setActionLoadings,
     handlePostActions,
   ]);
 
-  const handleHeaderCheck = React.useCallback(
-      (event, checked) => {
-        setHeaderChecked(checked);
-        setCheckedIndices(checked ? filteredTriggers.map((r) => hashCode(r.rawExpression)) : []);
-      },
-      [setHeaderChecked, setCheckedIndices, filteredTriggers],
+  const handleDeleteButton = React.useCallback(() => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteSmartTrigger)) {
+      setWarningModalOpen(true);
+    } else {
+      handleDeleteTriggers();
+    }
+  }, [context.settings, handleDeleteTriggers, setWarningModalOpen]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const handleUploadModalClose = React.useCallback(() => {
+    setUploadModalOpen(false);
+  }, [setUploadModalOpen]);
+
+  const handleUploadModalOpen = React.useCallback(() => {
+    setUploadModalOpen(true);
+  }, [setUploadModalOpen]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe({
+        next: (target) => setControlEnabled(target != null ? target.agent : false),
+        error: () => setControlEnabled(false),
+      }),
     );
+  }, [addSubscription, context, setControlEnabled]);
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target]);
+
+  const handleHeaderCheck = React.useCallback(
+    (event, checked) => {
+      setHeaderChecked(checked);
+      setCheckedIndices(checked ? filteredTriggers.map((r) => hashCode(r.rawExpression)) : []);
+    },
+    [setHeaderChecked, setCheckedIndices, filteredTriggers],
+  );
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
@@ -226,96 +348,6 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
     [setCheckedIndices, setHeaderChecked],
   );
 
-    const handleTriggers = React.useCallback(
-    (triggers: SmartTrigger[]) => {
-      setTriggers(triggers);
-      setIsLoading(false);
-      setErrorMessage('');
-    },
-    [setTriggers, setIsLoading, setErrorMessage],
-  );
-
-  const refreshTriggers = React.useCallback(() => {
-    setIsLoading(true);
-    addSubscription(
-        context.target.target().subscribe((target) => {
-            if (!target) {
-                setIsLoading(false);
-                return;
-            }
-            addSubscription(
-                context.api.getTargetTriggers(target).subscribe({
-                    next: handleTriggers,
-                    error: handleError
-                }))
-        })
-    )
-  }, [addSubscription, setIsLoading, context.api, context.target]);
-
-  React.useEffect(() => {
-      addSubscription(
-        context.target.target().subscribe((target) => {
-          setFilterText('');
-          refreshTriggers();
-        }),
-      );
-  }, [context.target, addSubscription]);
-
-  React.useEffect(() => {
-    let filtered: SmartTrigger[];
-    if (!filterText) {
-      filtered = triggers;
-    } else {
-      const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-      filtered = triggers.filter(
-        (t: SmartTrigger) =>
-          reg.test(t.rawExpression) ||
-          reg.test(t.recordingTemplate) ||
-          reg.test(t.durationConstraint) ||
-          reg.test(t.targetDuration) ||
-          reg.test(t.triggerCondition),
-      );
-    }
-
-    setFilteredTriggers(
-      sortResources(
-        {
-          index: sortBy.index ?? 0,
-          direction: sortBy.direction ?? SortByDirection.asc,
-        },
-        filtered,
-        tableColumns,
-      ),
-    );
-  }, [filterText, triggers, sortBy, setFilteredTriggers]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ThreadDumpDeleted).subscribe((msg) => {
-        setTriggers((old) => old.filter((t) => t.rawExpression !== msg.message.trigger));
-      }),
-    );
-  }, [addSubscription, context.notificationChannel, refreshTriggers]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe(() => {
-        refreshTriggers();
-      }),
-    );
-  }, [addSubscription, context.notificationChannel, refreshTriggers]);
-
-  React.useEffect(() => {
-    if (!context.settings.autoRefreshEnabled()) {
-      return;
-    }
-    const id = window.setInterval(
-      () => refreshTriggers(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits(),
-    );
-    return () => window.clearInterval(id);
-  }, [context.settings, refreshTriggers]);
-
   const triggerRows = React.useMemo(() => {
     return filteredTriggers.map((trigger: SmartTrigger, index) => (
       <TriggerRow
@@ -328,21 +360,68 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
     ));
   }, [handleRowCheck, context.target, filteredTriggers]);
 
-  const triggersToolbar = React.useMemo(
-    () => (
-      <TriggersToolbar
-        checkedIndices={checkedIndices}
-        setFilterText={setFilterText}
-        triggers={triggers}
-        triggersEnabled={controlEnabled}
-        propsTarget={context.target.target()}
-        handleDelete={handleDeleteTriggers}
-        actionLoadings={actionLoadings}
-        toolbarBreakReference={toolbarBreakReference}
-      />
-    ),
-    [checkedIndices, triggers, handleDeleteTriggers, context.target, actionLoadings, toolbarBreakReference],
+  const actionLoadingProps = React.useMemo<Record<ArchiveActions, LoadingProps>>(
+    () => ({
+      DELETE: {
+        spinnerAriaValueText: 'Deleting',
+        spinnerAriaLabel: 'deleting-smart-triggers',
+        isLoading: actionLoadings['DELETE'],
+      } as LoadingProps,
+      CREATE: {
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'creating-smart-triggers',
+        isLoading: actionLoadings['CREATE'],
+      } as LoadingProps,
+    }),
+    [actionLoadings],
   );
+
+  const buttons = React.useMemo(() => {
+    return [
+      {
+        default: (
+          <Button
+            variant="danger"
+            onClick={handleDeleteButton}
+            isDisabled={false} //!checkedIndices.length || actionLoadings['DELETE'] || !controlEnabled}
+            {...actionLoadingProps['DELETE']}
+          >
+            {actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
+            {actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Delete',
+      },
+      {
+        default: (
+          <Button
+            variant="secondary"
+            onClick={handleUploadModalOpen}
+            isDisabled={!controlEnabled}
+            {...actionLoadingProps['CREATE']}
+          >
+            {actionLoadings['CREATE'] ? 'Creating' : 'Create'}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Create'} isShared onClick={handleUploadModalOpen}>
+            {actionLoadings['CREATE'] ? 'Creating' : 'Create'}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Create',
+      },
+    ];
+  }, [
+    handleDeleteButton,
+    handleUploadModalOpen,
+    actionLoadings,
+    controlEnabled,
+    actionLoadingProps,
+  ]);
 
   if (errorMessage != '') {
     return (
@@ -357,18 +436,80 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
   } else {
     return (
       <>
-        {triggersToolbar}
+        <Toolbar id="smart-triggers-toolbar" aria-label="smart-triggers-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  style={{ minWidth: '36ch' }}
+                  name="smartTriggersFilter"
+                  id="smartTriggersFilter"
+                  type="search"
+                  placeholder={t('Triggers.SEARCH_PLACEHOLDER')}
+                  aria-label={t('Triggers.ARIA_LABELS.SEARCH_INPUT')}
+                  onChange={(_, value: string) => setFilterText(value)}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarItem variant="separator" className="smart-triggers-toolbar-separator" />
+            <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
+              <ToolbarItem variant="overflow-menu">
+                <OverflowMenu
+                  breakpoint="sm"
+                  breakpointReference={
+                    toolbarBreakReference || (() => document.getElementById('smart-triggers-toolbar') || document.body)
+                  }
+                >
+                  <OverflowMenuContent>
+                    <OverflowMenuGroup groupType="button">
+                      {buttons.map((b) => (
+                        <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
+                      ))}
+                    </OverflowMenuGroup>
+                  </OverflowMenuContent>
+                  <OverflowMenuControl>
+                    <Dropdown
+                      onSelect={() => setActionToggleOpen(false)}
+                      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                        <MenuToggle variant="plain" ref={toggleRef} onClick={() => handleActionToggle()}>
+                          <EllipsisVIcon />
+                        </MenuToggle>
+                      )}
+                      onOpenChange={setActionToggleOpen}
+                      onOpenChangeKeys={['Escape']}
+                      isOpen={actionToggleOpen}
+                      popperProps={{
+                        appendTo: portalRoot,
+                        enableFlip: true,
+                      }}
+                    >
+                      <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
+                    </Dropdown>
+                  </OverflowMenuControl>
+                </OverflowMenu>
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        <DeleteWarningModal
+          warningType={DeleteOrDisableWarningType.DeleteSmartTrigger}
+          visible={warningModalOpen}
+          onAccept={handleDeleteTriggers}
+          onClose={handleWarningModalClose}
+        />
         {triggerRows.length ? (
           <Table aria-label="Smart Triggers table" variant={TableVariant.compact}>
             <Thead>
               <Tr>
                 {tableColumns.map(({ title, sortable }, index) => (
-                  <Th key={`smart-triggers-header-${title}`} 
-                      sort={sortable ? getSortParams(index) : undefined}
-                      select={{
-                        onSelect: handleHeaderCheck,
-                        isSelected: headerChecked,
-                      }}>
+                  <Th
+                    key={`smart-triggers-header-${title}`}
+                    sort={sortable ? getSortParams(index) : undefined}
+                    select={{
+                      onSelect: handleHeaderCheck,
+                      isSelected: headerChecked,
+                    }}
+                  >
                     {title}
                   </Th>
                 ))}
@@ -385,6 +526,7 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
             />
           </EmptyState>
         )}
+        <CreateSmartTriggersModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
       </>
     );
   }
@@ -424,13 +566,13 @@ export const TriggerRow: React.FC<TriggerRowProps> = ({ trigger, index, checkedI
         <Td key={`smart-trigger-template-${index}`} dataLabel={tableColumns[1].title}>
           {trigger.recordingTemplate}
         </Td>
-        <Td key={`smart-trigger-duration-constraint-${index}`} width={25} dataLabel={tableColumns[3].title}>
+        <Td key={`smart-trigger-duration-constraint-${index}`} width={25} dataLabel={tableColumns[2].title}>
           {trigger.durationConstraint}
         </Td>
-        <Td key={`smart-trigger-target-duration-${index}`} dataLabel={tableColumns[4].title}>
+        <Td key={`smart-trigger-target-duration-${index}`} dataLabel={tableColumns[3].title}>
           {trigger.targetDuration}
         </Td>
-        <Td key={`smart-trigger-condition-${index}`} dataLabel={tableColumns[5].title}>
+        <Td key={`smart-trigger-condition-${index}`} dataLabel={tableColumns[4].title}>
           {trigger.triggerCondition}
         </Td>
       </Tr>
@@ -440,198 +582,12 @@ export const TriggerRow: React.FC<TriggerRowProps> = ({ trigger, index, checkedI
   return <Tbody key={index}>{parentRow}</Tbody>;
 };
 
-export interface TriggersTableToolbarProps {
-  checkedIndices: number[];
-  triggers: SmartTrigger[];
-  propsTarget: Observable<NullableTarget>;
-  triggersEnabled: boolean;
-  handleDelete: () => void;
-  setFilterText: (s: string) => void;
-  actionLoadings: Record<SmartTriggerActions, boolean>;
-  toolbarBreakReference?: HTMLElement | (() => HTMLElement);
-}
-
-const TriggersToolbar: React.FC<TriggersTableToolbarProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-  const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
-  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
-
-  const handleFilterTextChange = React.useCallback(
-    (_, value: string) => props.setFilterText(value),
-    [props],
-  );
-
-  const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
-
-  const handleWarningModalClose = React.useCallback(() => {
-    setWarningModalOpen(false);
-  }, [setWarningModalOpen]);
-
-  const handleUploadModalClose = React.useCallback(() => {
-    setUploadModalOpen(false);
-  }, [setUploadModalOpen]);
-
-  const handleUploadModalOpen = React.useCallback(() => {
-    setUploadModalOpen(true);
-  }, [setUploadModalOpen]);
-
-  const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteThreadDump)) {
-      setWarningModalOpen(true);
-    } else {
-      props.handleDelete();
-    }
-  }, [context.settings, setWarningModalOpen, props]);
-
-  const deleteTriggerWarningModal = React.useMemo(() => {
-    return (
-      <DeleteWarningModal
-        warningType={DeleteOrDisableWarningType.DeleteSmartTrigger}
-        visible={warningModalOpen}
-        onAccept={props.handleDelete}
-        onClose={handleWarningModalClose}
-      />
-    );
-  }, [warningModalOpen, props.handleDelete, handleWarningModalClose]);
-
-  const createTriggersModal = React.useMemo(() => {
-    return (
-      <CreateSmartTriggersModal isOpen={uploadModalOpen} target={props.propsTarget} onClose={handleUploadModalClose} />
-    );
-  }, [uploadModalOpen, props.propsTarget, handleUploadModalClose]);
-
-  const actionLoadingProps = React.useMemo<Record<ArchiveActions, LoadingProps>>(
-    () => ({
-      DELETE: {
-        spinnerAriaValueText: 'Deleting',
-        spinnerAriaLabel: 'deleting-smart-triggers',
-        isLoading: props.actionLoadings['DELETE'],
-      } as LoadingProps,
-      CREATE: {
-        spinnerAriaValueText: 'Creating',
-        spinnerAriaLabel: 'creating-smart-triggers',
-        isLoading: props.actionLoadings['CREATE'],
-      } as LoadingProps,
-    }),
-    [props],
-  );
-
-  const buttons = React.useMemo(() => {
-    return [
-      {
-        default: (
-          <Button
-            variant="danger"
-            onClick={handleDeleteButton}
-            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE'] || !props.triggersEnabled}
-            {...actionLoadingProps['DELETE']}
-          >
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
-          </Button>
-        ),
-        collapsed: (
-          <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
-            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
-          </OverflowMenuDropdownItem>
-        ),
-        key: 'Delete',
-      },
-      {
-        default: (
-          <Button variant="secondary" onClick={handleUploadModalOpen} isDisabled={/*!props.triggersEnabled*/ false} {...actionLoadingProps['CREATE']}>
-            {props.actionLoadings['CREATE'] ? 'Creating' : 'Create'}
-          </Button>
-        ),
-        collapsed: (
-          <OverflowMenuDropdownItem key={'Create'} isShared onClick={handleUploadModalOpen}>
-            {props.actionLoadings['CREATE'] ? 'Creating' : 'Create'}
-          </OverflowMenuDropdownItem>
-        ),
-        key: 'Create',
-      },
-    ];
-  }, [
-    handleDeleteButton,
-    handleUploadModalOpen,
-    props.checkedIndices.length,
-    props.actionLoadings,
-    actionLoadingProps,
-  ]);
-
-  return (
-    <Toolbar id="smart-triggers-toolbar" aria-label="smart-triggers-toolbar">
-      <ToolbarContent>
-        <ToolbarGroup variant="filter-group">
-          <ToolbarItem>
-            <SearchInput
-              style={{ minWidth: '36ch' }}
-              name="smartTriggersFilter"
-              id="smartTriggersFilter"
-              type="search"
-              placeholder={t('Triggers.SEARCH_PLACEHOLDER')}
-              aria-label={t('Triggers.ARIA_LABELS.SEARCH_INPUT')}
-              onChange={handleFilterTextChange}
-            />
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarItem variant="separator" className="smart-triggers-toolbar-separator" />
-        <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem variant="overflow-menu">
-            <OverflowMenu
-              breakpoint="sm"
-              breakpointReference={
-                props.toolbarBreakReference ||
-                (() => document.getElementById('smart-triggers-toolbar') || document.body)
-              }
-            >
-              <OverflowMenuContent>
-                <OverflowMenuGroup groupType="button">
-                  {buttons.map((b) => (
-                    <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
-                  ))}
-                </OverflowMenuGroup>
-              </OverflowMenuContent>
-              <OverflowMenuControl>
-                <Dropdown
-                  onSelect={() => setActionToggleOpen(false)}
-                  toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                    <MenuToggle variant="plain" ref={toggleRef} onClick={() => handleActionToggle()}>
-                      <EllipsisVIcon />
-                    </MenuToggle>
-                  )}
-                  onOpenChange={setActionToggleOpen}
-                  onOpenChangeKeys={['Escape']}
-                  isOpen={actionToggleOpen}
-                  popperProps={{
-                    appendTo: portalRoot,
-                    enableFlip: true,
-                  }}
-                >
-                  <DropdownList>{buttons.map((b) => b.collapsed)}</DropdownList>
-                </Dropdown>
-              </OverflowMenuControl>
-            </OverflowMenu>
-          </ToolbarItem>
-        </ToolbarGroup>
-        {deleteTriggerWarningModal}
-        {createTriggersModal}
-      </ToolbarContent>
-    </Toolbar>
-  );
-};
-
 export interface CreateSmartTriggersModalProps {
   isOpen: boolean;
-  target: Observable<NullableTarget>;
   onClose: () => void;
 }
 
-export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({
-  onClose,
-  target: propsTarget,
-  ...props
-}) => {
+export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -659,14 +615,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    addSubscription(
-        context.target.target().subscribe((target) => {
-            if (!target) {
-                return;
-            }
-            context.api.addTriggers(expressionInput, target);
-        })
-    )
+    context.api.addTriggers(expressionInput);
   }, [addSubscription, context.api, expressionInput, submitRef]);
 
   const submitButtonLoadingProps = React.useMemo(
@@ -711,6 +660,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         <ActionGroup>
           <>
             <Button
+              aria-label="submit-button"
               variant="primary"
               onClick={handleSubmit}
               isDisabled={expressionValid != ValidatedOptions.success}

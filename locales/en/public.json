@@ -841,7 +841,7 @@
     }
   },
   "Triggers": {
-    "EXPRESION_TOOLTIP": "Raw expression that defines the smart trigger.",
+    "EXPRESSION_TOOLTIP": "Raw expression that defines the smart trigger.",
     "TEMPLATE_TOOLTIP": "Template to start a recording with when the trigger condition is met.",
     "DURATION_CONSTRAINT_TOOLTIP": "Expression that defines the the duration a trigger must be met for",
     "TARGET_DURATION_TOOLTIP": "Length of time the trigger must be met for to start a recording.",

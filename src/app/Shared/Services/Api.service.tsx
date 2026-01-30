@@ -236,36 +236,29 @@ export class ApiService {
     return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  deleteTrigger(
-    definition: string,
-    target: TargetStub,
-    suppressNotifications = false,
-    skipStatusCheck = false,
-  ): Observable<boolean> {
+  deleteTrigger(definition: string, target: TargetStub): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', String(definition));
-    return this.sendRequest('beta', `targets/${target!.id}/smart_triggers/${definition}`, {
-          method: 'POST',
-          body,
-        }).pipe(
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers`, { method: 'DELETE', body }).pipe(
       map((resp) => resp.ok),
       first(),
     );
   }
 
-  addTriggers(
-    definition: string,
-    target: TargetStub,
-    suppressNotifications = false,
-    skipStatusCheck = false,
-  ): Observable<boolean> {
+  addTriggers(definition: string): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', String(definition));
-    return this.sendRequest('beta', `targets/${target!.id}/smart_triggers/${definition}`, {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `targets/${target!.id}/smart_triggers`, {
           method: 'POST',
           body,
         }).pipe(
-      map((resp) => resp.ok),
+          map((resp) => resp.ok),
+          first(),
+        ),
+      ),
       first(),
     );
   }
@@ -2128,10 +2121,9 @@ export class ApiService {
           }),
         ),
       ]).pipe(
-        concatMap((parts) => {
-          return fromFetch(parts[0], parts[1])}),
+        concatMap((parts) => fromFetch(parts[0], parts[1])),
         map((resp) => {
-          if (resp.ok)  return resp;
+          if (resp.ok) return resp;
           throw new HttpError(resp);
         }),
         catchError((err) => {
