@@ -13,7 +13,7 @@ defaults:
     shell: bash
 
 jobs:
-  update-submodule:
+  update-cryostat-submodule:
     if: ${{ github.repository_owner == 'cryostatio' }}
     runs-on: ubuntu-latest
     steps:
@@ -71,3 +71,62 @@ jobs:
         git commit -S -m "${title}" \
           && git push --set-upstream origin "${branch}" \
           && gh pr create --repo cryostatio/cryostat --base "${{ github.ref_name }}" --title "${title}" --body "${body}" --label chore
+
+  update-console-plugin-submodule:
+    if: ${{ github.repository_owner == 'cryostatio' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        repository: cryostatio/cryostat-openshift-console-plugin
+        token: "${{ secrets.SUBMODULE_TOKEN }}"
+        ref: "${{ github.ref_name }}"
+    - name: Check remote cryostat submodule branch
+      run: |
+        remote_branch="$(git config --get -f .gitmodules submodule."src/cryostat-web".branch)"
+        if [[ "$remote_branch" != "${{ github.ref_name }}" ]]; then
+          printf "Expected remote branch %s, found branch %s\n" "${{ github.ref_name }}" "$remote_branch" >&2
+          exit 1
+        fi
+    - name: Import GPG key
+      uses: crazy-max/ghaction-import-gpg@v6
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        git_user_signingkey: true
+        git_commit_gpgsign: true
+    - name: Update submodule to latest commit
+      run: |
+        git submodule update --init
+        git submodule update --remote
+    - uses: actions/github-script@v6
+      id: get_issue_number
+      with:
+        script: |
+          if (context.issue.number) {
+            // Return issue number if present
+            return context.issue.number;
+          } else {
+            // Otherwise return issue number from commit
+            return (
+              await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                commit_sha: context.sha,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              })
+            ).data[0].number;
+          }
+        result-encoding: string
+    - name: Commit and push submodule
+      env:
+        GH_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
+      run: |
+        git add --all
+        git_hash="$(git rev-parse --short :src/cryostat-web)"
+        export title="build(webui): update submodule to $git_hash"
+        export body="see cryostatio/cryostat-web#${{ steps.get_issue_number.outputs.result }}"
+        export branch="ci-update-${git_hash}"
+        git checkout -b "${branch}"
+        git commit -S -m "${title}" \
+          && git push --set-upstream origin "${branch}" \
+          && gh pr create --repo cryostatio/cryostat-openshift-console-plugin --base "${{ github.ref_name }}" --title "${title}" --body "${body}" --label chore
