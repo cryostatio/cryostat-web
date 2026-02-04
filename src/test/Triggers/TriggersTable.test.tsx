@@ -35,6 +35,7 @@ const mockTarget = {
 };
 
 const mockSmartTrigger: SmartTrigger = {
+  uuid : 'someuuid',
   rawExpression: '[foo > 123 ; TargetDuration > duration("30s")]~bar',
   recordingTemplate: 'bar',
   durationConstraint: 'TargetDuration > duration("30s")',

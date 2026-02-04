@@ -236,10 +236,9 @@ export class ApiService {
     return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
   }
 
-  deleteTrigger(definition: string, target: TargetStub): Observable<boolean> {
+  deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
     const body = new window.FormData();
-    body.append('definition', String(definition));
-    return this.sendRequest('beta', `targets/${target.id}/smart_triggers`, { method: 'DELETE', body }).pipe(
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE', body }).pipe(
       map((resp) => resp.ok),
       first(),
     );

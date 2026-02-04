@@ -79,6 +79,11 @@ export interface TriggersTableProps {
 
 export const tableColumns: TableColumn[] = [
   {
+    title: 'UUID',
+    keyPaths: ['uuid'],
+    sortable: true
+  },
+  {
     title: 'Raw Expression',
     keyPaths: ['rawExpression'],
     sortable: true,
@@ -273,8 +278,8 @@ export const TriggersTable: React.FC<TriggersTableProps> = ({ toolbarBreakRefere
           return;
         }
         filteredTriggers.forEach((r: SmartTrigger) => {
-          if (checkedIndices.includes(hashCode(r.rawExpression))) {
-            tasks.push(context.api.deleteTrigger(r.rawExpression, t).pipe(first()));
+          if (checkedIndices.includes(hashCode(r.uuid))) {
+            tasks.push(context.api.deleteTrigger(r.uuid, t).pipe(first()));
           }
         });
         addSubscription(
@@ -560,19 +565,22 @@ export const TriggerRow: React.FC<TriggerRowProps> = ({ trigger, index, checkedI
             data-quickstart-id={`smart-trigger-check-box`}
           />
         </Td>
-        <Td key={`smart-trigger-expression-${index}`} dataLabel={tableColumns[0].title}>
+        <Td key={`smart-trigger-uuid-${index}`} dataLabel={tableColumns[0].title}>
+          {trigger.uuid}
+        </Td>
+        <Td key={`smart-trigger-expression-${index}`} dataLabel={tableColumns[1].title}>
           {trigger.rawExpression}
         </Td>
-        <Td key={`smart-trigger-template-${index}`} dataLabel={tableColumns[1].title}>
+        <Td key={`smart-trigger-template-${index}`} dataLabel={tableColumns[2].title}>
           {trigger.recordingTemplate}
         </Td>
-        <Td key={`smart-trigger-duration-constraint-${index}`} width={25} dataLabel={tableColumns[2].title}>
+        <Td key={`smart-trigger-duration-constraint-${index}`} dataLabel={tableColumns[3].title}>
           {trigger.durationConstraint}
         </Td>
-        <Td key={`smart-trigger-target-duration-${index}`} dataLabel={tableColumns[3].title}>
+        <Td key={`smart-trigger-target-duration-${index}`} dataLabel={tableColumns[4].title}>
           {trigger.targetDuration}
         </Td>
-        <Td key={`smart-trigger-condition-${index}`} dataLabel={tableColumns[4].title}>
+        <Td key={`smart-trigger-condition-${index}`} dataLabel={tableColumns[5].title}>
           {trigger.triggerCondition}
         </Td>
       </Tr>
