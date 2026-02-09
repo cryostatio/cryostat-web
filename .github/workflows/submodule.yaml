@@ -81,7 +81,7 @@ jobs:
     - name: Commit and push submodule
       run: |
         git add --all
-        git_hash="$(git rev-parse --short :src/main/webui)"
+        git_hash="$(git rev-parse --short :src/cryostat-web)"
         export msg="build(webui): update submodule to $git_hash"
         export branch="ci-update-${git_hash}"
         git checkout -b "${branch}"
