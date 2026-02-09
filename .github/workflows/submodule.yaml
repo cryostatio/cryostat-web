@@ -51,7 +51,7 @@ jobs:
         git checkout -b "${branch}"
         git commit -S -m "${msg}" \
           && git push --set-upstream origin "${branch}" \
-          && gh pr create --repo cryostatio/cryostat --base "${{ github.ref_name }}" --title "${msg}" --body 'automatic update' --label chore --reviewer '@cryostatio/maintainers'
+          && gh pr create --repo cryostatio/cryostat --base "${{ github.ref_name }}" --title "${msg}" --body 'automatic update' --label chore
 
   update-console-plugin-submodule:
     if: ${{ github.repository_owner == 'cryostatio' }}
@@ -91,4 +91,4 @@ jobs:
         git checkout -b "${branch}"
         git commit -S -m "${msg}" \
           && git push --set-upstream origin "${branch}" \
-          && gh pr create --repo cryostatio/cryostat-openshift-console-plugin --base "${{ github.ref_name }}" --title "${msg}" --body 'automatic update' --label chore --reviewer '@cryostatio/maintainers'
+          && gh pr create --repo cryostatio/cryostat-openshift-console-plugin --base "${{ github.ref_name }}" --title "${msg}" --body 'automatic update' --label chore
