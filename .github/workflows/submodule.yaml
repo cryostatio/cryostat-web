@@ -44,8 +44,12 @@ jobs:
       run: |
         git add --all
         git_hash="$(git rev-parse --short :src/main/webui)"
-        git commit -S -m "build(webui): update submodule to $git_hash" || echo "No changes to commit"
-        git push
+        export msg="build(webui): update submodule to $git_hash"
+        export branch="ci-update-${git_hash}"
+        git checkout -b "${branch}"
+        git commit -S -m "${msg}" \
+          && git push --set-upstream origin "${branch}" \
+          && gh pr create --repo cryostatio/cryostat --base "${{ github.ref_name }}" --title "${msg}" --body 'automatic update' --label chore --reviewer '@cryostatio/maintainers'
 
   update-console-plugin-submodule:
     if: ${{ github.repository_owner == 'cryostatio' }}
@@ -77,6 +81,10 @@ jobs:
     - name: Commit and push submodule
       run: |
         git add --all
-        git_hash="$(git rev-parse --short :src/cryostat-web)"
-        git commit -S -m "build(cryostat-web): update submodule to $git_hash" || echo "No changes to commit"
-        git push
+        git_hash="$(git rev-parse --short :src/main/webui)"
+        export msg="build(webui): update submodule to $git_hash"
+        export branch="ci-update-${git_hash}"
+        git checkout -b "${branch}"
+        git commit -S -m "${msg}" \
+          && git push --set-upstream origin "${branch}" \
+          && gh pr create --repo cryostatio/cryostat-openshift-console-plugin --base "${{ github.ref_name }}" --title "${msg}" --body 'automatic update' --label chore --reviewer '@cryostatio/maintainers'
