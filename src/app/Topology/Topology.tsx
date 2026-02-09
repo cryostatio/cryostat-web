@@ -25,10 +25,13 @@ import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.ser
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Bullseye, Card, CardBody } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import { Bullseye, Card, CardBody, Modal, ModalVariant } from '@patternfly/react-core';
 import * as React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
 import { debounceTime } from 'rxjs';
+import CreateTarget from './Actions/CreateTarget';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
 import { DiscoveryTreeContext } from './Shared/utils';
@@ -38,6 +41,8 @@ export interface TopologyProps {}
 export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
+  const navigate = useNavigate();
+  const location = useLocation();
   const matchExpreRef = React.useRef(new MatchExpressionService());
   const firstFetchRef = React.useRef(false);
   const firstFetched = firstFetchRef.current;
@@ -57,6 +62,20 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   });
 
   const [error, setError] = React.useState<Error>();
+  const [createTargetModalOpen, setCreateTargetModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if ((location.state as { openCreateModal?: boolean } | null)?.openCreateModal) {
+      setCreateTargetModalOpen(true);
+    }
+  }, [location.state]);
+
+  const closeCreateTargetModal = React.useCallback(() => {
+    setCreateTargetModalOpen(false);
+    if (location.state) {
+      navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
+    }
+  }, [navigate, location.pathname, location.search, location.hash, location.state]);
 
   const _refreshDiscoveryTree = React.useCallback(
     (onSuccess?: () => void) => {
@@ -157,6 +176,15 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         </Card>
         <></>
       </BreadcrumbPage>
+      <Modal
+        appendTo={portalRoot}
+        isOpen={createTargetModalOpen}
+        variant={ModalVariant.large}
+        title="Create Custom Target"
+        onClose={closeCreateTargetModal}
+      >
+        {createTargetModalOpen ? <CreateTarget embedded onClose={closeCreateTargetModal} /> : null}
+      </Modal>
     </>
   );
 };

@@ -55,11 +55,13 @@ import {
 import { CheckCircleIcon, ExclamationCircleIcon, PendingIcon, SyncAltIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);
 
 export interface CreateTargetProps {
+  embedded?: boolean;
+  onClose?: () => void;
   prefilled?: {
     connectUrl: string;
     alias?: string;
@@ -68,11 +70,28 @@ export interface CreateTargetProps {
   };
 }
 
-export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
+export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useCryostatTranslation();
+  const locationPrefilled = React.useMemo(() => {
+    const state = location.state as Partial<CreateTargetProps['prefilled']> | null;
+    if (!state?.connectUrl) {
+      return undefined;
+    }
+    return {
+      connectUrl: state.connectUrl,
+      alias: state.alias,
+      username: state.username,
+      password: state.password,
+    };
+  }, [location.state]);
+  const resolvedPrefilled = React.useMemo(
+    () => prefilled ?? locationPrefilled,
+    [prefilled, locationPrefilled],
+  );
 
   const [example, setExample] = React.useState('');
   const [{ connectUrl, alias, validConnectUrl, username, password }, setFormData] = React.useState({
@@ -163,7 +182,13 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
     [setFormData, resetTestState],
   );
 
-  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+  const exitForm = React.useCallback(() => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    navigate('..', { relative: 'path' });
+  }, [navigate, onClose]);
 
   const handleSubmit = React.useCallback(() => {
     setLoading(true);
@@ -223,8 +248,8 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
   }, [connectUrl, alias, credentials, addSubscription, context.api, resetTestState, setTesting]);
 
   React.useEffect(() => {
-    if (prefilled) {
-      const { connectUrl, alias, username, password } = prefilled;
+    if (resolvedPrefilled) {
+      const { connectUrl, alias, username, password } = resolvedPrefilled;
       setFormData({
         connectUrl: connectUrl,
         alias: alias || '',
@@ -233,7 +258,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
         password: password || '',
       });
     }
-  }, [prefilled]);
+  }, [resolvedPrefilled]);
 
   React.useEffect(() => {
     addSubscription(
@@ -285,141 +310,147 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled }) => {
     );
   }, [validConnectUrl, example]);
 
+  const content = (
+    <Card isFullHeight={!embedded}>
+      <CardTitle>Create Custom Target</CardTitle>
+      <CardBody>
+        <Form className="console-form-group">
+          <Grid hasGutter>
+            <GridItem {...responsiveSpans[0]} order={{ default: '0', lg: '0', xl: '0' }}>
+              <FormAlert>
+                <Alert
+                  variant="info"
+                  title={'Note: If the target requires authentication, use JMX Credential options to provide credentials.'}
+                  aria-live="polite"
+                  isInline
+                />
+              </FormAlert>
+              <FormGroup label="Connection URL" isRequired fieldId="connect-url">
+                <TextInput
+                  aria-label={'Connection URL'}
+                  value={connectUrl}
+                  isRequired
+                  type="text"
+                  id="connect-url"
+                  placeholder={example}
+                  onChange={handleConnectUrlChange}
+                  isDisabled={loading || testing}
+                  validated={validConnectUrl}
+                  data-quickstart-id="ct-connecturl-input"
+                />
+                <FormHelperText>
+                  <HelperText>
+                    <HelperTextItem variant={validConnectUrl}>{connectUrlHelperText}</HelperTextItem>
+                  </HelperText>
+                </FormHelperText>
+              </FormGroup>
+              <FormGroup label="Alias" fieldId="alias">
+                <TextInput
+                  value={alias}
+                  type="text"
+                  id="alias"
+                  onChange={handleAliasChange}
+                  isDisabled={loading || testing}
+                  data-quickstart-id="ct-alias-input"
+                />
+                <FormHelperText>
+                  <HelperText>
+                    <HelperTextItem>Connection nickname (same as Connection URL if not specified).</HelperTextItem>
+                  </HelperText>
+                </FormHelperText>
+              </FormGroup>
+              <FormGroup>
+                <Accordion asDefinitionList={false} data-quickstart-id="ct-credential-expand">
+                  <AccordionItem>
+                    <AccordionToggle
+                      className="expandable-form__accordion-toggle-block"
+                      id={'jmx-credential-option'}
+                      isExpanded={expandedSections.includes('jmx-credential-option')}
+                      onClick={() => toggleCredentialForm('jmx-credential-option')}
+                      type={'button'}
+                    >
+                      <span className="expandable-form__title">JMX Credential options</span>
+                    </AccordionToggle>
+                    <div className="expandable-form__help-block " id={'jmx-credential-option-description'}>
+                      Creates credentials that Cryostat uses to connect to target JVMs over JMX.
+                    </div>
+                    <AccordionContent
+                      isHidden={!expandedSections.includes('jmx-credential-option')}
+                      id={'expanded-jmx-credential-option'}
+                    >
+                      <FormGroup label={'Username'} fieldId="username" className="expandable-form__form-group">
+                        <TextInput
+                          aria-label={'Username'}
+                          value={username}
+                          isRequired
+                          type="text"
+                          id="username"
+                          onChange={handleUsernameChange}
+                          isDisabled={loading || testing}
+                          data-quickstart-id="ct-username-input"
+                        />
+                        <FormHelperText>
+                          <HelperText>
+                            <HelperTextItem>Username for JMX connection.</HelperTextItem>
+                          </HelperText>
+                        </FormHelperText>
+                      </FormGroup>
+                      <FormGroup label={'Password'} fieldId="password" className="expandable-form__form-group">
+                        <TextInput
+                          value={password}
+                          isDisabled={loading || testing}
+                          isRequired
+                          type="password"
+                          id="password"
+                          onChange={handlePasswordChange}
+                          data-quickstart-id="ct-password-input"
+                        />
+                        <FormHelperText>
+                          <HelperText>
+                            <HelperTextItem>Password for JMX connection.</HelperTextItem>
+                          </HelperText>
+                        </FormHelperText>
+                      </FormGroup>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </FormGroup>
+            </GridItem>
+            <GridItem {...responsiveSpans[1]} order={{ default: '1', lg: '1', xl: '1', md: '1' }}>
+              <SampleNodeDonut
+                target={{ ...target, labels: [], annotations: { cryostat: [], platform: [] } }}
+                validation={validation}
+                testing={testing}
+                onClick={testTarget}
+              />
+            </GridItem>
+          </Grid>
+          <ActionGroup>
+            <Button
+              variant="primary"
+              isDisabled={validation.option !== ValidatedOptions.success}
+              onClick={handleSubmit}
+              {...createButtonLoadingProps}
+              data-quickstart-id="ct-create-btn"
+            >
+              {loading ? t('CREATING') : t('CREATE')}
+            </Button>
+            <Button variant="secondary" onClick={exitForm}>
+              {t('CANCEL')}
+            </Button>
+          </ActionGroup>
+        </Form>
+      </CardBody>
+    </Card>
+  );
+
+  if (embedded) {
+    return content;
+  }
+
   return (
     <BreadcrumbPage pageTitle={'Create Custom Target'} breadcrumbs={[{ title: 'Topology', path: toPath('/topology') }]}>
-      <Card isFullHeight>
-        <CardTitle>Create Custom Target</CardTitle>
-        <CardBody>
-          <Form className="console-form-group">
-            <Grid hasGutter>
-              <GridItem {...responsiveSpans[0]} order={{ default: '0', lg: '0', xl: '0' }}>
-                <FormAlert>
-                  <Alert
-                    variant="info"
-                    title={
-                      'Note: If the target requires authentication, use JMX Credential options to provide credentials.'
-                    }
-                    aria-live="polite"
-                    isInline
-                  />
-                </FormAlert>
-                <FormGroup label="Connection URL" isRequired fieldId="connect-url">
-                  <TextInput
-                    aria-label={'Connection URL'}
-                    value={connectUrl}
-                    isRequired
-                    type="text"
-                    id="connect-url"
-                    placeholder={example}
-                    onChange={handleConnectUrlChange}
-                    isDisabled={loading || testing}
-                    validated={validConnectUrl}
-                    data-quickstart-id="ct-connecturl-input"
-                  />
-                  <FormHelperText>
-                    <HelperText>
-                      <HelperTextItem variant={validConnectUrl}>{connectUrlHelperText}</HelperTextItem>
-                    </HelperText>
-                  </FormHelperText>
-                </FormGroup>
-                <FormGroup label="Alias" fieldId="alias">
-                  <TextInput
-                    value={alias}
-                    type="text"
-                    id="alias"
-                    onChange={handleAliasChange}
-                    isDisabled={loading || testing}
-                    data-quickstart-id="ct-alias-input"
-                  />
-                  <FormHelperText>
-                    <HelperText>
-                      <HelperTextItem>Connection nickname (same as Connection URL if not specified).</HelperTextItem>
-                    </HelperText>
-                  </FormHelperText>
-                </FormGroup>
-                <FormGroup>
-                  <Accordion asDefinitionList={false} data-quickstart-id="ct-credential-expand">
-                    <AccordionItem>
-                      <AccordionToggle
-                        className="expandable-form__accordion-toggle-block"
-                        id={'jmx-credential-option'}
-                        isExpanded={expandedSections.includes('jmx-credential-option')}
-                        onClick={() => toggleCredentialForm('jmx-credential-option')}
-                        type={'button'}
-                      >
-                        <span className="expandable-form__title">JMX Credential options</span>
-                      </AccordionToggle>
-                      <div className="expandable-form__help-block " id={'jmx-credential-option-description'}>
-                        Creates credentials that Cryostat uses to connect to target JVMs over JMX.
-                      </div>
-                      <AccordionContent
-                        isHidden={!expandedSections.includes('jmx-credential-option')}
-                        id={'expanded-jmx-credential-option'}
-                      >
-                        <FormGroup label={'Username'} fieldId="username" className="expandable-form__form-group">
-                          <TextInput
-                            aria-label={'Username'}
-                            value={username}
-                            isRequired
-                            type="text"
-                            id="username"
-                            onChange={handleUsernameChange}
-                            isDisabled={loading || testing}
-                            data-quickstart-id="ct-username-input"
-                          />
-                          <FormHelperText>
-                            <HelperText>
-                              <HelperTextItem>Username for JMX connection.</HelperTextItem>
-                            </HelperText>
-                          </FormHelperText>
-                        </FormGroup>
-                        <FormGroup label={'Password'} fieldId="password" className="expandable-form__form-group">
-                          <TextInput
-                            value={password}
-                            isDisabled={loading || testing}
-                            isRequired
-                            type="password"
-                            id="password"
-                            onChange={handlePasswordChange}
-                            data-quickstart-id="ct-password-input"
-                          />
-                          <FormHelperText>
-                            <HelperText>
-                              <HelperTextItem>Password for JMX connection.</HelperTextItem>
-                            </HelperText>
-                          </FormHelperText>
-                        </FormGroup>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </FormGroup>
-              </GridItem>
-              <GridItem {...responsiveSpans[1]} order={{ default: '1', lg: '1', xl: '1', md: '1' }}>
-                <SampleNodeDonut
-                  target={{ ...target, labels: [], annotations: { cryostat: [], platform: [] } }}
-                  validation={validation}
-                  testing={testing}
-                  onClick={testTarget}
-                />
-              </GridItem>
-            </Grid>
-            <ActionGroup>
-              <Button
-                variant="primary"
-                isDisabled={validation.option !== ValidatedOptions.success}
-                onClick={handleSubmit}
-                {...createButtonLoadingProps}
-                data-quickstart-id="ct-create-btn"
-              >
-                {loading ? t('CREATING') : t('CREATE')}
-              </Button>
-              <Button variant="secondary" onClick={exitForm}>
-                {t('CANCEL')}
-              </Button>
-            </ActionGroup>
-          </Form>
-        </CardBody>
-      </Card>
+      {content}
       <></>
     </BreadcrumbPage>
   );

@@ -21,7 +21,12 @@ import * as React from 'react';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
-export const CreateRecording: React.FC = () => {
+export interface CreateRecordingProps {
+  embedded?: boolean;
+  onClose?: () => void;
+}
+
+export const CreateRecording: React.FC<CreateRecordingProps> = ({ embedded, onClose }) => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const onTabSelect = React.useCallback(
@@ -29,20 +34,28 @@ export const CreateRecording: React.FC = () => {
     [setActiveTab],
   );
 
+  const content = (
+    <Card>
+      <CardBody>
+        <Tabs activeKey={activeTab} onSelect={onTabSelect}>
+          <Tab eventKey={0} title={<TabTitleText>Custom Flight Recording</TabTitleText>}>
+            <CustomRecordingForm onExit={onClose} />
+          </Tab>
+          <Tab eventKey={1} title={<TabTitleText>Snapshot Recording</TabTitleText>}>
+            <SnapshotRecordingForm onExit={onClose} />
+          </Tab>
+        </Tabs>
+      </CardBody>
+    </Card>
+  );
+
+  if (embedded) {
+    return content;
+  }
+
   return (
     <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: toPath('/recordings') }]}>
-      <Card>
-        <CardBody>
-          <Tabs activeKey={activeTab} onSelect={onTabSelect}>
-            <Tab eventKey={0} title={<TabTitleText>Custom Flight Recording</TabTitleText>}>
-              <CustomRecordingForm />
-            </Tab>
-            <Tab eventKey={1} title={<TabTitleText>Snapshot Recording</TabTitleText>}>
-              <SnapshotRecordingForm />
-            </Tab>
-          </Tabs>
-        </CardBody>
-      </Card>
+      {content}
     </TargetView>
   );
 };

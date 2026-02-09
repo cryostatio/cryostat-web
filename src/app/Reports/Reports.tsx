@@ -376,7 +376,10 @@ export const Reports: React.FC = () => {
               <TextContent>
                 <Trans
                   t={t}
-                  components={[<CryostatLink to={'/recordings#report'} />, <CryostatLink to={'/rules/create'} />]}
+                  components={[
+                    <CryostatLink to={'/recordings#report'} />,
+                    <CryostatLink to={'/rules'} state={{ openCreateModal: true }} />,
+                  ]}
                 >
                   Reports.DESCRIPTION
                 </Trans>

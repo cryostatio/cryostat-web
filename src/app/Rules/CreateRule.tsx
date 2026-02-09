@@ -65,11 +65,13 @@ import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { RuleFormData } from './types';
 import { CEL_SPEC_HREF, isRuleNameValid } from './utils';
 
-export interface CreateRuleFormProps {}
+export interface CreateRuleFormProps {
+  onExit?: () => void;
+}
 
 export const AUTOANALYZE_KEY = 'autoanalyze';
 
-export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
+export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
@@ -271,7 +273,13 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     [setFormData],
   );
 
-  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+  const exitForm = React.useCallback(() => {
+    if (onExit) {
+      onExit();
+      return;
+    }
+    navigate('..', { relative: 'path' });
+  }, [navigate, onExit]);
 
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
@@ -740,7 +748,12 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 };
 
-export const CreateRule: React.FC = () => {
+export interface CreateRuleProps {
+  embedded?: boolean;
+  onClose?: () => void;
+}
+
+export const CreateRule: React.FC<CreateRuleProps> = ({ embedded, onClose }) => {
   const matchExpreRef = React.useRef(new MatchExpressionService());
   const { t } = useCryostatTranslation();
 
@@ -754,35 +767,45 @@ export const CreateRule: React.FC = () => {
     [t],
   );
 
-  const gridStyles: React.CSSProperties = React.useMemo(
-    () => ({
+  const gridStyles: React.CSSProperties | undefined = React.useMemo(() => {
+    if (embedded) {
+      return undefined;
+    }
+    return {
       // viewportHeight - masterheadHeight - pageSectionPadding - breadcrumbHeight
       height: 'calc(100vh - 4.375rem - 48px - 1.5rem)',
-    }),
-    [],
+    };
+  }, [embedded]);
+
+  const content = (
+    <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
+      <Grid hasGutter style={gridStyles}>
+        <GridItem xl={5} order={{ xl: '0', default: '1' }}>
+          <Card isFullHeight={!embedded}>
+            <CardBody className="overflow-auto">
+              <CreateRuleForm onExit={onClose} />
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xl={7} order={{ xl: '1', default: '0' }}>
+          <Card isFullHeight={!embedded}>
+            <CardTitle>{t('MATCH_EXPRESSION_VISUALIZER.TITLE')}</CardTitle>
+            <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
+              <MatchExpressionVisualizer />
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
+    </SearchExprServiceContext.Provider>
   );
+
+  if (embedded) {
+    return content;
+  }
 
   return (
     <BreadcrumbPage pageTitle={t('CREATE')} breadcrumbs={breadcrumbs}>
-      <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
-        <Grid hasGutter style={gridStyles}>
-          <GridItem xl={5} order={{ xl: '0', default: '1' }}>
-            <Card isFullHeight>
-              <CardBody className="overflow-auto">
-                <CreateRuleForm />
-              </CardBody>
-            </Card>
-          </GridItem>
-          <GridItem xl={7} order={{ xl: '1', default: '0' }}>
-            <Card isFullHeight>
-              <CardTitle>{t('MATCH_EXPRESSION_VISUALIZER.TITLE')}</CardTitle>
-              <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
-                <MatchExpressionVisualizer />
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </SearchExprServiceContext.Provider>
+      {content}
     </BreadcrumbPage>
   );
 };

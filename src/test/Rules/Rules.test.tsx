@@ -23,6 +23,11 @@ import { act, act as doAct, cleanup, screen, within } from '@testing-library/rea
 import { of, Subject } from 'rxjs';
 import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
 
+jest.mock('@app/Rules/CreateRule', () => ({
+  AUTOANALYZE_KEY: 'autoanalyze',
+  CreateRule: () => <>Create Rule</>,
+}));
+
 const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
@@ -129,7 +134,8 @@ describe('<Rules />', () => {
     });
 
     await user.click(screen.getByRole('button', { name: /Create/ }));
-    expect(router.state.location.pathname).toEqual('/rules/create');
+    expect(router.state.location.pathname).toEqual('/rules');
+    expect(router.state.location.search).toEqual('');
   });
 
   it('opens create rule view when Edit is clicked', async () => {
@@ -149,7 +155,8 @@ describe('<Rules />', () => {
       await user.click(await screen.findByText('Edit'));
     });
 
-    expect(router.state.location.pathname).toEqual('/rules/create');
+    expect(router.state.location.pathname).toEqual('/rules');
+    expect(router.state.location.search).toEqual('');
   });
 
   it('opens upload modal when upload icon is clicked', async () => {

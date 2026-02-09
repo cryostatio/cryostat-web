@@ -469,6 +469,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
                     data-quickstart-id="recordings-analyze-create-recording"
                     state={
                       {
+                        openCreateModal: true,
                         name: 'analysis',
                         continuous: true,
                         restart: true,
@@ -478,9 +479,9 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
                         maxSize: 20,
                         maxSizeUnit: 1024 * 1024,
                         toDisk: true,
-                      } as Partial<CustomRecordingFormData>
+                      } as Partial<CustomRecordingFormData> & { openCreateModal: boolean }
                     }
-                    to="/recordings/create"
+                    to="/recordings"
                   />,
                 ]}
               >

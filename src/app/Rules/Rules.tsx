@@ -30,6 +30,7 @@ import {
   sortResources,
   portalRoot,
   LABEL_TEXT_MAXWIDTH,
+  toPath,
 } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -51,6 +52,8 @@ import {
   Bullseye,
   LabelGroup,
   Label,
+  Modal,
+  ModalVariant,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -71,9 +74,9 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
-import { AUTOANALYZE_KEY } from './CreateRule';
+import { AUTOANALYZE_KEY, CreateRule } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
@@ -84,6 +87,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const context = React.useContext(ServiceContext);
   const capabilities = React.useContext(CapabilitiesContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const addSubscription = useSubscriptions();
   const { t } = useCryostatTranslation();
 
@@ -95,6 +99,13 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [createRuleModalOpen, setCreateRuleModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if ((location.state as { openCreateModal?: boolean } | null)?.openCreateModal) {
+      setCreateRuleModalOpen(true);
+    }
+  }, [location.state]);
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
@@ -205,7 +216,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   }, [context.settings, refreshRules]);
 
   const handleCreateRule = React.useCallback(() => {
-    navigate('create', { relative: 'path' });
+    navigate(toPath('/rules'), { state: { openCreateModal: true } });
   }, [navigate]);
 
   const handleUploadRule = React.useCallback(() => {
@@ -257,9 +268,9 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
 
   const handleEditButton = React.useCallback(
     (rule: Rule) => {
-      navigate('create', {
-        relative: 'path',
+      navigate(toPath('/rules'), {
         state: {
+          openCreateModal: true,
           ...rule,
           edit: true,
         },
@@ -270,9 +281,9 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
 
   const handleCopyButton = React.useCallback(
     (rule: Rule) => {
-      navigate('create', {
-        relative: 'path',
+      navigate(toPath('/rules'), {
         state: {
+          openCreateModal: true,
           ...rule,
           name: `${rule.name}_copy`,
         },
@@ -341,6 +352,13 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const handleUploadModalClose = React.useCallback(() => {
     setIsUploadModalOpen(false);
   }, [setIsUploadModalOpen]);
+
+  const handleCreateRuleModalClose = React.useCallback(() => {
+    setCreateRuleModalOpen(false);
+    if (location.state) {
+      navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
+    }
+  }, [navigate, location.pathname, location.search, location.hash, location.state]);
 
   const ruleOptions = React.useCallback(
     (rule: Rule): KeyValue[] => {
@@ -589,6 +607,15 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         </Card>
         <></>
       </BreadcrumbPage>
+      <Modal
+        appendTo={portalRoot}
+        isOpen={createRuleModalOpen}
+        variant={ModalVariant.large}
+        title={t('CREATE')}
+        onClose={handleCreateRuleModalClose}
+      >
+        {createRuleModalOpen ? <CreateRule embedded onClose={handleCreateRuleModalClose} /> : null}
+      </Modal>
       <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
     </>
   );

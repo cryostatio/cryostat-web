@@ -257,8 +257,11 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
         {
           title: 'Create Recording...',
           onClick: () =>
-            navigate(toPath('/recordings/create'), {
-              state: { template: { name: t.name, type: t.type } } as Partial<CustomRecordingFormData>,
+            navigate(toPath('/recordings'), {
+              state: {
+                openCreateModal: true,
+                template: { name: t.name, type: t.type },
+              } as Partial<CustomRecordingFormData> & { openCreateModal: boolean },
             }),
         },
       ] as IAction[];

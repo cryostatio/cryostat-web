@@ -23,16 +23,24 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs';
 
-export interface SnapshotRecordingFormProps {}
+export interface SnapshotRecordingFormProps {
+  onExit?: () => void;
+}
 
-export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) => {
+export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = ({ onExit }) => {
   const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+  const exitForm = React.useCallback(() => {
+    if (onExit) {
+      onExit();
+      return;
+    }
+    navigate('..', { relative: 'path' });
+  }, [navigate, onExit]);
 
   const handleCreateSnapshot = React.useCallback(() => {
     setLoading(true);

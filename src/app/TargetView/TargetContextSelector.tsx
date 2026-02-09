@@ -223,10 +223,7 @@ export const TargetContextSelector: React.FC<TargetContextSelectorProps> = ({ cl
     () => (
       <ActionList>
         <ActionListItem>
-          <Button
-            variant="secondary"
-            component={(props) => <CryostatLink {...props} to={'/topology/create-custom-target'} />}
-          >
+          <Button variant="secondary" component={(props) => <CryostatLink {...props} to={'/topology'} state={{ openCreateModal: true }} />}>
             {t('TargetContextSelector.CREATE_TARGET')}
           </Button>
         </ActionListItem>

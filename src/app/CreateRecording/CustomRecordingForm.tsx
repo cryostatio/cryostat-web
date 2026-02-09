@@ -63,7 +63,11 @@ import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
 
-export const CustomRecordingForm: React.FC = () => {
+export interface CustomRecordingFormProps {
+  onExit?: () => void;
+}
+
+export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
@@ -93,7 +97,13 @@ export const CustomRecordingForm: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+  const exitForm = React.useCallback(() => {
+    if (onExit) {
+      onExit();
+      return;
+    }
+    navigate('..', { relative: 'path' });
+  }, [navigate, onExit]);
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {

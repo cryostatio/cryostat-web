@@ -356,7 +356,8 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     await user.click(screen.getByText('Create'));
-    expect(router.state.location.pathname).toBe('/recordings/create');
+    expect(router.state.location.pathname).toBe('/recordings');
+    expect(router.state.location.search).toBe('');
   });
 
   it('archives the selected Recording when Archive is clicked', async () => {
