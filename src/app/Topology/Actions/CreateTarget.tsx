@@ -88,10 +88,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, p
       password: state.password,
     };
   }, [location.state]);
-  const resolvedPrefilled = React.useMemo(
-    () => prefilled ?? locationPrefilled,
-    [prefilled, locationPrefilled],
-  );
+  const resolvedPrefilled = React.useMemo(() => prefilled ?? locationPrefilled, [prefilled, locationPrefilled]);
 
   const [example, setExample] = React.useState('');
   const [{ connectUrl, alias, validConnectUrl, username, password }, setFormData] = React.useState({
@@ -320,7 +317,9 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, p
               <FormAlert>
                 <Alert
                   variant="info"
-                  title={'Note: If the target requires authentication, use JMX Credential options to provide credentials.'}
+                  title={
+                    'Note: If the target requires authentication, use JMX Credential options to provide credentials.'
+                  }
                   aria-live="polite"
                   isInline
                 />
