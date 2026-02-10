@@ -193,6 +193,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.post('api/v4/targets/:targetId/recordings', (schema, request) => {
         // Note: MirageJS will fake serialize FormData (i.e. FormData object is returned when accessing request.requestBody)
         const attrs = request.requestBody as any;
+        const target = schema.findBy(Resource.TARGET, { id: request.params.targetId });
 
         const remoteId = Math.floor(Math.random() * 1000000);
         const recording = schema.create(Resource.RECORDING, {
@@ -231,6 +232,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             message: {
               target: request.params.targetId,
               recording,
+              jvmId: target?.jvmId,
             },
           }),
         );

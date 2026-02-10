@@ -769,7 +769,10 @@ export const CreateRule: React.FC<CreateRuleProps> = ({ embedded, onClose }) => 
 
   const gridStyles: React.CSSProperties | undefined = React.useMemo(() => {
     if (embedded) {
-      return undefined;
+      // viewportHeight - modalHeader - modalPadding - margin
+      return {
+        height: 'calc(100vh - 12rem)',
+      };
     }
     return {
       // viewportHeight - masterheadHeight - pageSectionPadding - breadcrumbHeight
@@ -781,14 +784,14 @@ export const CreateRule: React.FC<CreateRuleProps> = ({ embedded, onClose }) => 
     <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
       <Grid hasGutter style={gridStyles}>
         <GridItem xl={5} order={{ xl: '0', default: '1' }}>
-          <Card isFullHeight={!embedded}>
+          <Card isFullHeight>
             <CardBody className="overflow-auto">
               <CreateRuleForm onExit={onClose} />
             </CardBody>
           </Card>
         </GridItem>
         <GridItem xl={7} order={{ xl: '1', default: '0' }}>
-          <Card isFullHeight={!embedded}>
+          <Card isFullHeight>
             <CardTitle>{t('MATCH_EXPRESSION_VISUALIZER.TITLE')}</CardTitle>
             <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
               <MatchExpressionVisualizer />

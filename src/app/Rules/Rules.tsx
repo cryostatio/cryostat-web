@@ -611,6 +611,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         appendTo={portalRoot}
         isOpen={createRuleModalOpen}
         variant={ModalVariant.large}
+        width="90vw"
         title={t('CREATE')}
         onClose={handleCreateRuleModalClose}
       >

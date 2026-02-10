@@ -100,10 +100,6 @@ describe('<CreateRule />', () => {
         routes: [
           {
             path: '/rules',
-            element: <>Rules</>,
-          },
-          {
-            path: '/rules/create',
             element: <CreateRule />,
           },
         ],
@@ -127,10 +123,6 @@ describe('<CreateRule />', () => {
         routes: [
           {
             path: '/rules',
-            element: <>Rules</>,
-          },
-          {
-            path: '/rules/create',
             element: <CreateRule />,
           },
         ],
@@ -153,10 +145,6 @@ describe('<CreateRule />', () => {
         routes: [
           {
             path: '/rules',
-            element: <>Rules</>,
-          },
-          {
-            path: '/rules/create',
             element: <CreateRule />,
           },
         ],
@@ -179,10 +167,6 @@ describe('<CreateRule />', () => {
         routes: [
           {
             path: '/rules',
-            element: <>Rules</>,
-          },
-          {
-            path: '/rules/create',
             element: <CreateRule />,
           },
         ],
@@ -222,10 +206,6 @@ describe('<CreateRule />', () => {
         routes: [
           {
             path: '/rules',
-            element: <>Rules</>,
-          },
-          {
-            path: '/rules/create',
             element: <CreateRule />,
           },
         ],
