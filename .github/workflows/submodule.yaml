@@ -42,7 +42,7 @@ jobs:
         git submodule update --remote
     - name: Commit and push submodule
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
       run: |
         git add --all
         git_hash="$(git rev-parse --short :src/main/webui)"
@@ -82,7 +82,7 @@ jobs:
         git submodule update --remote
     - name: Commit and push submodule
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
       run: |
         git add --all
         git_hash="$(git rev-parse --short :src/cryostat-web)"
