@@ -23,6 +23,7 @@ import { Rule, NotificationCategory, keyValueToString, KeyValue } from '@app/Sha
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import {
   TableColumn,
   formatBytes,
@@ -74,7 +75,7 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
 import { AUTOANALYZE_KEY, CreateRule } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
@@ -87,7 +88,6 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const context = React.useContext(ServiceContext);
   const capabilities = React.useContext(CapabilitiesContext);
   const navigate = useNavigate();
-  const location = useLocation();
   const addSubscription = useSubscriptions();
   const { t } = useCryostatTranslation();
 
@@ -99,13 +99,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [createRuleModalOpen, setCreateRuleModalOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if ((location.state as { openCreateModal?: boolean } | null)?.openCreateModal) {
-      setCreateRuleModalOpen(true);
-    }
-  }, [location.state]);
+  const [createRuleModalOpen, setCreateRuleModalOpen, handleCreateRuleModalClose] = useModalFromLocationState();
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
@@ -216,8 +210,8 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   }, [context.settings, refreshRules]);
 
   const handleCreateRule = React.useCallback(() => {
-    navigate(toPath('/rules'), { state: { openCreateModal: true } });
-  }, [navigate]);
+    setCreateRuleModalOpen(true);
+  }, [setCreateRuleModalOpen]);
 
   const handleUploadRule = React.useCallback(() => {
     setIsUploadModalOpen(true);
@@ -352,13 +346,6 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const handleUploadModalClose = React.useCallback(() => {
     setIsUploadModalOpen(false);
   }, [setIsUploadModalOpen]);
-
-  const handleCreateRuleModalClose = React.useCallback(() => {
-    setCreateRuleModalOpen(false);
-    if (location.state) {
-      navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
-    }
-  }, [navigate, location.pathname, location.search, location.hash, location.state]);
 
   const ruleOptions = React.useCallback(
     (rule: Rule): KeyValue[] => {

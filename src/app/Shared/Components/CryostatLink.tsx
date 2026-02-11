@@ -37,6 +37,6 @@ const toDestination = (destination: To) => {
   } as Partial<Path>;
 };
 
-export const CryostatLink: React.FC<CryostatLinkProps> = ({ to, onClick, state, ...props }) => {
-  return <Link to={toDestination(to)} onClick={onClick} state={state} {...props}></Link>;
+export const CryostatLink: React.FC<CryostatLinkProps> = ({ to, onClick, ...props }) => {
+  return <Link to={toDestination(to)} onClick={onClick} {...props}></Link>;
 };

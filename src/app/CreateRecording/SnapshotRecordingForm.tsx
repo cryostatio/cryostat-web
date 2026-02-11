@@ -20,7 +20,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { first } from 'rxjs';
 
 export interface SnapshotRecordingFormProps {
@@ -28,19 +28,12 @@ export interface SnapshotRecordingFormProps {
 }
 
 export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = ({ onExit }) => {
-  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => {
-    if (onExit) {
-      onExit();
-      return;
-    }
-    navigate('..', { relative: 'path' });
-  }, [navigate, onExit]);
+  const exitForm = useExitForm(onExit);
 
   const handleCreateSnapshot = React.useCallback(() => {
     setLoading(true);

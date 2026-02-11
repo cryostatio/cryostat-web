@@ -25,11 +25,11 @@ import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.ser
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { portalRoot } from '@app/utils/utils';
 import { Bullseye, Card, CardBody, Modal, ModalVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { debounceTime } from 'rxjs';
 import CreateTarget from './Actions/CreateTarget';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
@@ -41,8 +41,6 @@ export interface TopologyProps {}
 export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const navigate = useNavigate();
-  const location = useLocation();
   const matchExpreRef = React.useRef(new MatchExpressionService());
   const firstFetchRef = React.useRef(false);
   const firstFetched = firstFetchRef.current;
@@ -62,20 +60,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   });
 
   const [error, setError] = React.useState<Error>();
-  const [createTargetModalOpen, setCreateTargetModalOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if ((location.state as { openCreateModal?: boolean } | null)?.openCreateModal) {
-      setCreateTargetModalOpen(true);
-    }
-  }, [location.state]);
-
-  const closeCreateTargetModal = React.useCallback(() => {
-    setCreateTargetModalOpen(false);
-    if (location.state) {
-      navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
-    }
-  }, [navigate, location.pathname, location.search, location.hash, location.state]);
+  const [createTargetModalOpen, , closeCreateTargetModal] = useModalFromLocationState();
 
   const _refreshDiscoveryTree = React.useCallback(
     (onSuccess?: () => void) => {

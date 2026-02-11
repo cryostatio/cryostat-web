@@ -59,7 +59,8 @@ import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
+import { useLocation } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { RuleFormData } from './types';
@@ -74,7 +75,6 @@ export const AUTOANALYZE_KEY = 'autoanalyze';
 export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useCryostatTranslation();
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
@@ -273,13 +273,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     [setFormData],
   );
 
-  const exitForm = React.useCallback(() => {
-    if (onExit) {
-      onExit();
-      return;
-    }
-    navigate('..', { relative: 'path' });
-  }, [navigate, onExit]);
+  const exitForm = useExitForm(onExit);
 
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];

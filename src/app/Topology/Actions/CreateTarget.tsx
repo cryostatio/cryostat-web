@@ -55,7 +55,8 @@ import {
 import { CheckCircleIcon, ExclamationCircleIcon, PendingIcon, SyncAltIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
+import { useLocation } from 'react-router-dom-v5-compat';
 
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);
 
@@ -73,7 +74,6 @@ export interface CreateTargetProps {
 export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useCryostatTranslation();
   const locationPrefilled = React.useMemo(() => {
@@ -179,13 +179,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, p
     [setFormData, resetTestState],
   );
 
-  const exitForm = React.useCallback(() => {
-    if (onClose) {
-      onClose();
-      return;
-    }
-    navigate('..', { relative: 'path' });
-  }, [navigate, onClose]);
+  const exitForm = useExitForm(onClose);
 
   const handleSubmit = React.useCallback(() => {
     setLoading(true);

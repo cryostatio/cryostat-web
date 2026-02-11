@@ -57,7 +57,8 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
+import { useLocation } from 'react-router-dom-v5-compat';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
@@ -71,7 +72,6 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const location = useLocation();
 
@@ -97,13 +97,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => {
-    if (onExit) {
-      onExit();
-      return;
-    }
-    navigate('..', { relative: 'path' });
-  }, [navigate, onExit]);
+  const exitForm = useExitForm(onExit);
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
