@@ -21,6 +21,7 @@ import { LoadingProps } from '@app/Shared/Components/types';
 import { Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getAnnotation, portalRoot, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -55,7 +56,6 @@ import {
 import { CheckCircleIcon, ExclamationCircleIcon, PendingIcon, SyncAltIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useLocation } from 'react-router-dom-v5-compat';
 
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);

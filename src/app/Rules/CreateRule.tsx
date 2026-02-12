@@ -26,6 +26,7 @@ import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.ser
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot, toPath } from '@app/utils/utils';
@@ -59,7 +60,6 @@ import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useLocation } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
