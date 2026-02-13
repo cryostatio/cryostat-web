@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import { TargetView } from '@app/TargetView/TargetView';
-import { toPath } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
 export interface CreateRecordingProps {
-  embedded?: boolean;
   onClose?: () => void;
 }
 
-export const CreateRecording: React.FC<CreateRecordingProps> = ({ embedded, onClose }) => {
+export const CreateRecording: React.FC<CreateRecordingProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const onTabSelect = React.useCallback(
@@ -34,7 +31,7 @@ export const CreateRecording: React.FC<CreateRecordingProps> = ({ embedded, onCl
     [setActiveTab],
   );
 
-  const content = (
+  return (
     <Card>
       <CardBody>
         <Tabs activeKey={activeTab} onSelect={onTabSelect}>
@@ -47,16 +44,6 @@ export const CreateRecording: React.FC<CreateRecordingProps> = ({ embedded, onCl
         </Tabs>
       </CardBody>
     </Card>
-  );
-
-  if (embedded) {
-    return content;
-  }
-
-  return (
-    <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: toPath('/recordings') }]}>
-      {content}
-    </TargetView>
   );
 };
 

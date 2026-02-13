@@ -602,7 +602,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         title={t('CREATE')}
         onClose={handleCreateRuleModalClose}
       >
-        {createRuleModalOpen ? <CreateRule embedded onClose={handleCreateRuleModalClose} /> : null}
+        {createRuleModalOpen ? <CreateRule onClose={handleCreateRuleModalClose} /> : null}
       </Modal>
       <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
     </>

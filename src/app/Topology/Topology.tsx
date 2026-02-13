@@ -168,7 +168,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         title="Create Custom Target"
         onClose={closeCreateTargetModal}
       >
-        {createTargetModalOpen ? <CreateTarget embedded onClose={closeCreateTargetModal} /> : null}
+        {createTargetModalOpen ? <CreateTarget onClose={closeCreateTargetModal} /> : null}
       </Modal>
     </>
   );

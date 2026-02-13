@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { BreadcrumbTrail } from '@app/BreadcrumbPage/types';
 import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { templateFromEventSpecifier } from '@app/CreateRecording/utils';
 import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
@@ -29,7 +27,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { portalRoot, toPath } from '@app/utils/utils';
+import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
@@ -743,38 +741,22 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
 };
 
 export interface CreateRuleProps {
-  embedded?: boolean;
   onClose?: () => void;
 }
 
-export const CreateRule: React.FC<CreateRuleProps> = ({ embedded, onClose }) => {
+export const CreateRule: React.FC<CreateRuleProps> = ({ onClose }) => {
   const matchExpreRef = React.useRef(new MatchExpressionService());
   const { t } = useCryostatTranslation();
 
-  const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
-    () => [
-      {
-        title: t('AUTOMATED_RULES'),
-        path: toPath('/rules'),
-      },
-    ],
-    [t],
+  const gridStyles: React.CSSProperties = React.useMemo(
+    () => ({
+      // viewportHeight - modalHeader - modalPadding - margin
+      height: 'calc(100vh - 12rem)',
+    }),
+    [],
   );
 
-  const gridStyles: React.CSSProperties | undefined = React.useMemo(() => {
-    if (embedded) {
-      // viewportHeight - modalHeader - modalPadding - margin
-      return {
-        height: 'calc(100vh - 12rem)',
-      };
-    }
-    return {
-      // viewportHeight - masterheadHeight - pageSectionPadding - breadcrumbHeight
-      height: 'calc(100vh - 4.375rem - 48px - 1.5rem)',
-    };
-  }, [embedded]);
-
-  const content = (
+  return (
     <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
       <Grid hasGutter style={gridStyles}>
         <GridItem xl={5} order={{ xl: '0', default: '1' }}>
@@ -794,16 +776,6 @@ export const CreateRule: React.FC<CreateRuleProps> = ({ embedded, onClose }) => 
         </GridItem>
       </Grid>
     </SearchExprServiceContext.Provider>
-  );
-
-  if (embedded) {
-    return content;
-  }
-
-  return (
-    <BreadcrumbPage pageTitle={t('CREATE')} breadcrumbs={breadcrumbs}>
-      {content}
-    </BreadcrumbPage>
   );
 };
 

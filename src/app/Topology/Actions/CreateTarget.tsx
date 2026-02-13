@@ -15,7 +15,6 @@
  */
 
 import openjdkSvg from '@app/assets/openjdk.svg';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { Target } from '@app/Shared/Services/api.types';
@@ -23,7 +22,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
 import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { getAnnotation, portalRoot, toPath } from '@app/utils/utils';
+import { getAnnotation, portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Accordion,
@@ -61,7 +60,6 @@ import { useLocation } from 'react-router-dom-v5-compat';
 export const isValidTargetConnectURL = (connectUrl?: string) => connectUrl && !connectUrl.match(/\s+/);
 
 export interface CreateTargetProps {
-  embedded?: boolean;
   onClose?: () => void;
   prefilled?: {
     connectUrl: string;
@@ -71,7 +69,7 @@ export interface CreateTargetProps {
   };
 }
 
-export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, prefilled }) => {
+export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const location = useLocation();
@@ -301,8 +299,8 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, p
     );
   }, [validConnectUrl, example]);
 
-  const content = (
-    <Card isFullHeight={!embedded}>
+  return (
+    <Card>
       <CardTitle>Create Custom Target</CardTitle>
       <CardBody>
         <Form className="console-form-group">
@@ -435,17 +433,6 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ embedded, onClose, p
         </Form>
       </CardBody>
     </Card>
-  );
-
-  if (embedded) {
-    return content;
-  }
-
-  return (
-    <BreadcrumbPage pageTitle={'Create Custom Target'} breadcrumbs={[{ title: 'Topology', path: toPath('/topology') }]}>
-      {content}
-      <></>
-    </BreadcrumbPage>
   );
 };
 

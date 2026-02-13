@@ -47,7 +47,7 @@ export const Recordings: React.FC = () => {
         title="Create Recording"
         onClose={closeCreateRecordingModal}
       >
-        {createRecordingModalOpen ? <CreateRecording embedded onClose={closeCreateRecordingModal} /> : null}
+        {createRecordingModalOpen ? <CreateRecording onClose={closeCreateRecordingModal} /> : null}
       </Modal>
     </TargetView>
   );
