@@ -47,8 +47,16 @@ import {
   TextArea,
   ActionGroup,
   SearchInput,
+  Bullseye,
+  EmptyState,
+  EmptyStateHeader,
+  EmptyStateIcon,
+  EmptyStateBody,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
 } from '@patternfly/react-core';
-import { EllipsisVIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
 import { t } from 'i18next';
 import _ from 'lodash';
@@ -350,31 +358,49 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
     [getSortParams],
   );
 
-  return (
-    <DiagnosticsTable
-      tableTitle="Smart Triggers"
-      toolbar={triggersToolbar}
-      tableColumns={columnConfig}
-      isHeaderChecked={headerChecked}
-      onHeaderCheck={handleHeaderCheck}
-      isLoading={isLoading}
-      isEmpty={!triggers.length}
-      isEmptyFilterResult={!filteredTriggers.length}
-      isNestedTable={isNestedTable}
-      errorMessage={errorMessage}
-    >
-      {filteredTriggers.map((r) => (
-        <SmartTriggerRow
-          key={r.id}
-          trigger={r}
-          index={hashCode(r.id)}
-          sourceTarget={propsTarget}
-          checkedIndices={checkedIndices}
-          handleRowCheck={handleRowCheck}
-        />
-      ))}
-    </DiagnosticsTable>
-  );
+  if (controlEnabled) {
+    return (
+      <DiagnosticsTable
+        tableTitle="Smart Triggers"
+        toolbar={triggersToolbar}
+        tableColumns={columnConfig}
+        isHeaderChecked={headerChecked}
+        onHeaderCheck={handleHeaderCheck}
+        isLoading={isLoading}
+        isEmpty={!triggers.length}
+        isEmptyFilterResult={!filteredTriggers.length}
+        isNestedTable={isNestedTable}
+        errorMessage={errorMessage}
+      >
+        {filteredTriggers.map((r) => (
+          <SmartTriggerRow
+            key={r.id}
+            trigger={r}
+            index={hashCode(r.id)}
+            sourceTarget={propsTarget}
+            checkedIndices={checkedIndices}
+            handleRowCheck={handleRowCheck}
+          />
+        ))}
+      </DiagnosticsTable>
+    );
+  } else {
+    return (
+      <Bullseye>
+        <EmptyState>
+          <EmptyStateHeader
+            titleText={<>Smart Triggers not supported</>}
+            icon={<EmptyStateIcon icon={SearchIcon} />}
+            headingLevel="h4"
+          />
+          <EmptyStateBody>
+            Smart Triggers are not supported for the selected target. Only Cryostat agent targets support use of Smart
+            Triggers.
+          </EmptyStateBody>
+        </EmptyState>
+      </Bullseye>
+    );
+  }
 };
 
 export interface SmartTriggerRowProps {
@@ -641,6 +667,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     if (uploading) {
       abortRef.current && abortRef.current.click();
     } else {
+      setExpressionInput('');
       reset();
       onClose();
     }
@@ -651,6 +678,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     props.onAccept(expressionInput);
     setUploading(false);
     onClose();
+    setExpressionInput('');
   }, [props, onClose, expressionInput, submitRef]);
 
   const submitButtonLoadingProps = React.useMemo(
@@ -692,6 +720,23 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
             resizeOrientation="vertical"
           />
         </FormGroup>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('Triggers.DEFINITION_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('Triggers.DEFINITION_HINT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem variant={expressionValid}>
+              {expressionValid === ValidatedOptions.error ? t('Triggers.DEFINITION_HINT_BODY') : ''}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
         <ActionGroup>
           <>
             <Button

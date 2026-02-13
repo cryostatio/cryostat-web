@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { NullableTarget } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
+import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Card, CardBody, Stack, StackItem } from '@patternfly/react-core';
+import { Card, CardBody } from '@patternfly/react-core';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { SmartTriggersTable } from './SmartTriggers';
 
 export interface CaptureTriggersProps {}
 
-export const CaptureSmartTriggers: React.FC<CaptureTriggersProps> = ({ ...props }) => {
+export const CaptureSmartTriggers: React.FC<CaptureTriggersProps> = ({}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [target, setTarget] = React.useState(undefined as NullableTarget);
@@ -35,24 +34,14 @@ export const CaptureSmartTriggers: React.FC<CaptureTriggersProps> = ({ ...props 
     addSubscription(context.target.target().subscribe((t) => setTarget(t)));
   }, [addSubscription, context.target, setTarget]);
 
-  const cardBody = React.useMemo(
-    () => (
-      <Stack hasGutter>
-        <StackItem>
-          <TargetContextSelector />
-        </StackItem>
-        <StackItem>{<SmartTriggersTable target={targetAsObs} isNestedTable={false} />}</StackItem>
-      </Stack>
-    ),
-    [targetAsObs],
-  );
-
   return (
-    <BreadcrumbPage {...props} pageTitle="Smart Triggers">
-      <Card isFullHeight>
-        <CardBody isFilled>{cardBody}</CardBody>
+    <TargetView pageTitle="Smart Triggers">
+      <Card isCompact>
+        <CardBody>
+          <SmartTriggersTable target={targetAsObs} isNestedTable={false} />
+        </CardBody>
       </Card>
-    </BreadcrumbPage>
+    </TargetView>
   );
 };
 
