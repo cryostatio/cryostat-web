@@ -17,8 +17,8 @@
 import { DeleteSmartTrigger, DeleteOrDisableWarningType } from '@app/Modal/types';
 import { SmartTrigger } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { TriggersTable } from '@app/Triggers/Triggers';
 import '@testing-library/jest-dom';
+import { SmartTriggersTable } from '@app/Triggers/SmartTriggers';
 import { cleanup, screen, within, act } from '@testing-library/react';
 import { of } from 'rxjs';
 import { DEFAULT_DIMENSIONS, escapeKeyboardInput, render, resize } from '../utils';
@@ -35,12 +35,14 @@ const mockTarget = {
 };
 
 const mockSmartTrigger: SmartTrigger = {
-  uuid : 'someuuid',
-  rawExpression: '[foo > 123 ; TargetDuration > duration("30s")]~bar',
-  recordingTemplate: 'bar',
+  id: 'someuuid',
+  expression: '[foo > 123 ; TargetDuration > duration("30s")]~bar',
+  recordingTemplateName: 'bar',
   durationConstraint: 'TargetDuration > duration("30s")',
-  targetDuration: '30s',
   triggerCondition: 'foo > 123',
+  state: '',
+  simple: false,
+  timeConditionFirstMet: '',
 };
 
 jest.spyOn(defaultServices.api, 'getTargetTriggers').mockReturnValue(of([mockSmartTrigger])); // All other tests
@@ -61,7 +63,7 @@ jest
 
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
 
-describe('<TriggerTable />', () => {
+describe('<SmartTriggerTable />', () => {
   beforeAll(async () => {
     await act(async () => {
       resize(2400, 1080);
@@ -80,7 +82,9 @@ describe('<TriggerTable />', () => {
         routes: [
           {
             path: '/triggers',
-            element: <TriggersTable toolbarBreakReference={document.body} />,
+            element: (
+              <SmartTriggersTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
           },
         ],
       },
@@ -92,7 +96,7 @@ describe('<TriggerTable />', () => {
       expect(button).toBeVisible();
     });
 
-    ['Raw Expression', 'Template', 'Duration Constraint', 'Target Duration', 'Trigger Condition'].map((text) => {
+    ['Expression', 'Template', 'Duration Constraint', 'Trigger Condition'].map((text) => {
       const header = screen.getByText(text);
       expect(header).toBeInTheDocument();
       expect(header).toBeVisible();
@@ -105,7 +109,7 @@ describe('<TriggerTable />', () => {
       expect(checkbox).toBeVisible();
     });
 
-    const name = screen.getByText(mockSmartTrigger.rawExpression);
+    const name = screen.getByText(mockSmartTrigger.expression);
     expect(name).toBeInTheDocument();
     expect(name).toBeVisible();
   });
@@ -116,7 +120,9 @@ describe('<TriggerTable />', () => {
         routes: [
           {
             path: '/triggers',
-            element: <TriggersTable toolbarBreakReference={document.body} />,
+            element: (
+              <SmartTriggersTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
           },
         ],
       },
@@ -132,7 +138,9 @@ describe('<TriggerTable />', () => {
         routes: [
           {
             path: '/triggers',
-            element: <TriggersTable toolbarBreakReference={document.body} />,
+            element: (
+              <SmartTriggersTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
           },
         ],
       },
@@ -154,7 +162,7 @@ describe('<TriggerTable />', () => {
     await user.click(within(screen.getByLabelText(DeleteSmartTrigger.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith('[foo > 123 ; TargetDuration > duration("30s")]~bar', mockTarget);
+    expect(deleteRequestSpy).toHaveBeenCalledWith('someuuid', mockTarget);
     expect(dialogWarningSpy).toHaveBeenCalledTimes(1);
     expect(dialogWarningSpy).toHaveBeenCalledWith(DeleteOrDisableWarningType.DeleteSmartTrigger, false);
   });
@@ -165,7 +173,9 @@ describe('<TriggerTable />', () => {
         routes: [
           {
             path: '/triggers',
-            element: <TriggersTable toolbarBreakReference={document.body} />,
+            element: (
+              <SmartTriggersTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
           },
         ],
       },
@@ -180,7 +190,7 @@ describe('<TriggerTable />', () => {
 
     expect(screen.queryByLabelText(DeleteSmartTrigger.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith('[foo > 123 ; TargetDuration > duration("30s")]~bar', mockTarget);
+    expect(deleteRequestSpy).toHaveBeenCalledWith('someuuid', mockTarget);
   });
 
   it('should upload Smart Triggers when submit button is clicked', async () => {
@@ -189,7 +199,9 @@ describe('<TriggerTable />', () => {
         routes: [
           {
             path: '/triggers',
-            element: <TriggersTable toolbarBreakReference={document.body} />,
+            element: (
+              <SmartTriggersTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
           },
         ],
       },
@@ -214,12 +226,17 @@ describe('<TriggerTable />', () => {
       expect(submitButton).toBeInTheDocument();
       expect(submitButton).toBeVisible();
 
-      const expressionInput = within(modal).getByText('Smart Trigger definition');
+      const expressionInput = within(modal).getByRole('textbox');
       expect(expressionInput).toBeInTheDocument();
       expect(expressionInput).toBeVisible();
 
       await user.type(expressionInput, escapeKeyboardInput('[foo]~bar'));
+      expect(submitButton).toBeEnabled();
       await user.click(submitButton);
+
+      const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
+      expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
+      expect(uploadRequestSpy).toHaveBeenCalledWith('[foo]~bar', mockTarget);
     });
   });
 });

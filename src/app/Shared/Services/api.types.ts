@@ -435,12 +435,14 @@ export interface Rule {
 // Smart Triggers Resources
 // ======================================
 export interface SmartTrigger {
-  uuid: string;
-  rawExpression: string;
-  recordingTemplate: string;
+  id: string;
+  expression: string;
   durationConstraint: string;
-  targetDuration: string;
   triggerCondition: string;
+  recordingTemplateName: string;
+  state: string;
+  simple: boolean;
+  timeConditionFirstMet: string;
 }
 
 // ======================================

@@ -237,27 +237,17 @@ export class ApiService {
   }
 
   deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
-    const body = new window.FormData();
-    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE', body }).pipe(
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
       map((resp) => resp.ok),
       first(),
     );
   }
 
-  addTriggers(definition: string): Observable<boolean> {
+  addTriggers(definition: string, target: TargetStub): Observable<boolean> {
     const body = new window.FormData();
     body.append('definition', String(definition));
-    return this.target.target().pipe(
-      filter((t) => !!t),
-      concatMap((target) =>
-        this.sendRequest('beta', `targets/${target!.id}/smart_triggers`, {
-          method: 'POST',
-          body,
-        }).pipe(
-          map((resp) => resp.ok),
-          first(),
-        ),
-      ),
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
+      map((resp) => resp.ok),
       first(),
     );
   }
