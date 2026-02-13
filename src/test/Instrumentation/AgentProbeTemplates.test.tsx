@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within, act } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { render, testT } from '../utils';
+import { createMockForPFTableRef, render, renderSnapshot, testT } from '../utils';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -72,6 +72,8 @@ const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addCustomProbeTemplate
 
 jest
   .spyOn(defaultServices.api, 'getProbeTemplates')
+  .mockReturnValueOnce(of([mockProbeTemplate])) // renders correctly
+
   .mockReturnValueOnce(of([mockProbeTemplate])) // should add a probe template after receiving a notification
   .mockReturnValueOnce(of([mockProbeTemplate, mockAnotherProbeTemplate]))
 
@@ -82,6 +84,9 @@ jest
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
+  .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of())
+
   .mockReturnValueOnce(of(mockCreateTemplateNotification)) // adds a template after receiving a notification
   .mockReturnValueOnce(of())
 
@@ -92,6 +97,15 @@ jest
 
 describe('<AgentProbeTemplates />', () => {
   afterEach(cleanup);
+
+  it('renders correctly', async () => {
+    const tree = await renderSnapshot({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+      createNodeMock: createMockForPFTableRef,
+    });
+    expect(tree?.toJSON()).toMatchSnapshot();
+    tree?.unmount();
+  });
 
   it('should add a Probe Template after receiving a notification', async () => {
     render({ routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] } });
@@ -247,6 +261,26 @@ describe('<AgentProbeTemplates />', () => {
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledWith('someProbeTemplate');
+  });
+
+  it('should download a Probe Template when Download is clicked', async () => {
+    const downloadSpy = jest.spyOn(defaultServices.api, 'downloadProbeTemplate').mockReturnValue(undefined);
+    const { user } = render({
+      routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
+    });
+
+    await act(async () => {
+      await user.click(screen.getByLabelText(testT('AgentProbeTemplates.ARIA_LABELS.ROW_ACTION')));
+
+      const downloadButton = await screen.findByText('Download');
+      expect(downloadButton).toBeInTheDocument();
+      expect(downloadButton).toBeVisible();
+
+      await user.click(downloadButton);
+    });
+
+    expect(downloadSpy).toHaveBeenCalledTimes(1);
+    expect(downloadSpy).toHaveBeenCalledWith(mockProbeTemplate);
   });
 
   it('should insert probes if agent is enabled', async () => {
