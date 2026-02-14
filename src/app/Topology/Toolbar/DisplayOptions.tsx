@@ -73,7 +73,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = fal
         <Switch
           id={`${option.toLowerCase()}-mode`}
           label={option}
-          isDisabled={key === 'collapseSingles' && groupings.realmOnly}
+          isDisabled={key === 'collapseSingles' && groupings.flattenIntermediates}
           isChecked={groupings[key]}
           onChange={getToggleHandler('groupings', key, groupings)}
         />
