@@ -96,7 +96,7 @@ describe('<SmartTriggerTable />', () => {
       expect(button).toBeVisible();
     });
 
-    ['Expression', 'Template', 'Duration Constraint', 'Trigger Condition'].map((text) => {
+    ['Template', 'Duration Constraint', 'Trigger Condition'].map((text) => {
       const header = screen.getByText(text);
       expect(header).toBeInTheDocument();
       expect(header).toBeVisible();
@@ -109,9 +109,17 @@ describe('<SmartTriggerTable />', () => {
       expect(checkbox).toBeVisible();
     });
 
-    const name = screen.getByText(mockSmartTrigger.expression);
-    expect(name).toBeInTheDocument();
-    expect(name).toBeVisible();
+    const duration = screen.getByText(mockSmartTrigger.durationConstraint);
+    expect(duration).toBeInTheDocument();
+    expect(duration).toBeVisible();
+
+    const condition = screen.getByText(mockSmartTrigger.triggerCondition);
+    expect(condition).toBeInTheDocument();
+    expect(condition).toBeVisible();
+
+    const template = screen.getByText(mockSmartTrigger.recordingTemplateName);
+    expect(template).toBeInTheDocument();
+    expect(template).toBeVisible();
   });
 
   it('should display the toolbar buttons', async () => {
