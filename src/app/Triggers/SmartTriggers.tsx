@@ -16,6 +16,7 @@
 import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTable';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
+import { CEL_SPEC_HREF } from '@app/Rules/utils';
 import { LoadingProps } from '@app/Shared/Components/types';
 
 import { NotificationCategory, NullableTarget, SmartTrigger } from '@app/Shared/Services/api.types';
@@ -61,6 +62,7 @@ import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/re
 import { t } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
+import { Trans } from 'react-i18next';
 import { first, forkJoin, Observable } from 'rxjs';
 
 export const tableColumns: TableColumn[] = [
@@ -70,16 +72,10 @@ export const tableColumns: TableColumn[] = [
     sortable: true,
   },
   {
-    title: 'Expression',
-    keyPaths: ['expression'],
-    sortable: true,
-    tooltip: t('Triggers.EXPRESSION_TOOLTIP'),
-  },
-  {
-    title: 'Template',
-    keyPaths: ['recordingTemplateName'],
-    sortable: true,
-    tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
+    title: 'Trigger Condition',
+    keyPaths: ['triggerCondition'],
+    sortable: false,
+    tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
   },
   {
     title: 'Duration Constraint',
@@ -88,10 +84,10 @@ export const tableColumns: TableColumn[] = [
     tooltip: t('Triggers.DURATION_CONSTRAINT_TOOLTIP'),
   },
   {
-    title: 'Trigger Condition',
-    keyPaths: ['triggerCondition'],
-    sortable: false,
-    tooltip: t('Triggers.TARGET_DURATION_TOOLTIP'),
+    title: 'Template',
+    keyPaths: ['recordingTemplateName'],
+    sortable: true,
+    tooltip: t('Triggers.TEMPLATE_TOOLTIP'),
   },
 ];
 
@@ -252,7 +248,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
           return;
         }
         addSubscription(
-          context.api.getTargetTriggers(target).subscribe({
+          context.api.getTargetTriggers(target, true).subscribe({
             next: handleTriggers,
             error: handleError,
           }),
@@ -435,16 +431,13 @@ export const SmartTriggerRow: React.FC<SmartTriggerRowProps> = ({ trigger, index
           {trigger.id}
         </Td>
         <Td key={`smart-trigger-table-row-${index}_2`} dataLabel={tableColumns[1].title}>
-          {trigger.expression}
+          {trigger.triggerCondition}
         </Td>
         <Td key={`smart-trigger-table-row-${index}_3`} dataLabel={tableColumns[2].title}>
-          {trigger.recordingTemplateName}
+          {trigger.durationConstraint != '' ? trigger.durationConstraint : 'None'}
         </Td>
         <Td key={`smart-trigger-table-row-${index}_4`} dataLabel={tableColumns[3].title}>
-          {trigger.durationConstraint}
-        </Td>
-        <Td key={`smart-trigger-table-row-${index}_5`} dataLabel={tableColumns[4].title}>
-          {trigger.triggerCondition}
+          {trigger.recordingTemplateName}
         </Td>
       </Tr>
     );
@@ -721,9 +714,9 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
           />
         </FormGroup>
         <FormHelperText>
-          <HelperText>
-            <HelperTextItem>{t('Triggers.DEFINITION_HELPER_TEXT')}</HelperTextItem>
-          </HelperText>
+          <Trans t={t} components={{ a: <a target="_blank" href={CEL_SPEC_HREF} /> }}>
+            Triggers.DEFINITION_HELPER_TEXT
+          </Trans>
         </FormHelperText>
         <FormHelperText>
           <HelperText>

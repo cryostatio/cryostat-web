@@ -850,7 +850,7 @@
     "ARIA_LABELS": {
       "SEARCH_INPUT": "smart-trigger-filter"
     },
-    "DEFINITION_HELPER_TEXT": "Enter a Smart Trigger definition. A custom trigger definition must consist of both an expression that defines the overall trigger condition and the name of an event template that is used for the JFR Recording. The expression is a Common Expression Language (CEL) code snippet that defines one or more constraints and a target duration.",
+    "DEFINITION_HELPER_TEXT": "Enter a Smart Trigger definition. A custom trigger definition must consist of both an expression that defines the overall trigger condition and the name of an event template that is used for the JFR Recording. The expression is a <a>Common Expression Language (CEL)</a> code snippet that defines one or more constraints and a target duration.",
     "DEFINITION_HINT": "The set of constraints and target duration must be separated by a semicolon (;) character. Each constraint must include: the name of an MBean counter; a relational operator such as > (greater than), = (equal to), <(less than), and so on; and a specified value. The type of relational operator and value that you can specify depends on the associated MBean counter type. The constraint and duration must be enclosed in square brackets, followed by a tilde then the Recording Template name.",
     "DEFINITION_HINT_BODY": "For an example definition: [ProcessCpuLoad>0.2;TargetDuration>duration(\"30s\")]~Profiling"
   }
