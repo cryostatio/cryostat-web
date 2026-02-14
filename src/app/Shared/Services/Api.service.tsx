@@ -70,6 +70,7 @@ import {
   AggregateReport,
   HeapDump,
   ThreadDump,
+  SmartTrigger,
 } from './api.types';
 import {
   isHttpError,
@@ -223,6 +224,30 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
+      first(),
+    );
+  }
+
+  getTargetTriggers(
+    target: TargetStub,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<SmartTrigger[]> {
+    return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
+  }
+
+  deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  addTriggers(definition: string, target: TargetStub): Observable<boolean> {
+    const body = new window.FormData();
+    body.append('definition', String(definition));
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
+      map((resp) => resp.ok),
       first(),
     );
   }

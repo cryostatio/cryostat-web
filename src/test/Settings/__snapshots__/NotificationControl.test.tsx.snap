@@ -1609,6 +1609,84 @@ exports[`<NotificationControl/> renders correctly 1`] = `
             data-ouia-component-id="OUIA-Generated-Switch-37"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
+            htmlFor="TriggerCreated"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="TriggerCreated-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="TriggerCreated"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="TriggerCreated-on"
+            >
+              Smart Trigger created
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="TriggerCreated-off"
+            >
+              Smart Trigger created
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-38"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
+            htmlFor="TriggerDeleted"
+          >
+            <input
+              aria-label=""
+              aria-labelledby="TriggerDeleted-on"
+              checked={true}
+              className="pf-v5-c-switch__input"
+              disabled={false}
+              id="TriggerDeleted"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-v5-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-on"
+              id="TriggerDeleted-on"
+            >
+              Smart Trigger deleted
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-v5-c-switch__label pf-m-off"
+              id="TriggerDeleted-off"
+            >
+              Smart Trigger deleted
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-v5-l-stack__item"
+        >
+          <label
+            className="pf-v5-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-39"
+            data-ouia-component-type="PF5/Switch"
+            data-ouia-safe={true}
             htmlFor="CredentialsStored"
           >
             <input
@@ -1645,7 +1723,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-38"
+            data-ouia-component-id="OUIA-Generated-Switch-40"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="CredentialsDeleted"
@@ -1684,7 +1762,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-39"
+            data-ouia-component-id="OUIA-Generated-Switch-41"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportSuccess"
@@ -1723,7 +1801,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-40"
+            data-ouia-component-id="OUIA-Generated-Switch-42"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ReportFailure"

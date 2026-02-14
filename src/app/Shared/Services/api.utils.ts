@@ -463,6 +463,22 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.TriggerCreated,
+    {
+      variant: AlertVariant.success,
+      title: 'Smart Trigger created',
+      body: (evt) => `Smart Trigger ${evt.message.trigger} in target ${evt.message.jvmId} was created.`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.TriggerDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'Smart Trigger deleted',
+      body: (evt) => `Smart Trigger ${evt.message.trigger} in target ${evt.message.jvmId} was deleted.`,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.CredentialsStored,
     {
       variant: AlertVariant.success,

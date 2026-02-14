@@ -23,6 +23,7 @@ export enum DeleteOrDisableWarningType {
   DeleteHeapDump = 'DeleteHeapDump',
   DeleteThreadDump = 'DeleteThreadDump',
   DeleteActiveProbes = 'DeleteActiveProbes',
+  DeleteSmartTrigger = 'DeleteSmartTrigger',
   DeleteCredentials = 'DeleteCredentials',
   DeleteCustomTargets = 'DeleteCustomTargets',
   DeleteDashboardLayout = 'DeleteDashboardLayout',
@@ -92,6 +93,14 @@ export const DeleteActiveProbes: DeleteOrDisableWarning = {
   label: 'Remove active probes',
   description: `If you click Delete, active probes will be removed from the target.`,
   ariaLabel: 'Active probes remove warning',
+};
+
+export const DeleteSmartTrigger: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteSmartTrigger,
+  title: 'Permanently remove your active smart triggers from the target?',
+  label: 'Remove Smart Triggers',
+  description: `If you click Delete, active smart triggers will be removed from the target.`,
+  ariaLabel: 'Smart Triggers remove warning',
 };
 
 export const DeleteHeapDump: DeleteOrDisableWarning = {
@@ -164,5 +173,6 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteCustomTargets,
   DeleteDashboardLayout,
   DeleteLayoutTemplate,
+  DeleteSmartTrigger,
   ClearDashboardLayout,
 ];

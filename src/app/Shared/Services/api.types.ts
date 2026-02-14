@@ -432,6 +432,20 @@ export interface Rule {
 }
 
 // ======================================
+// Smart Triggers Resources
+// ======================================
+export interface SmartTrigger {
+  id: string;
+  expression: string;
+  durationConstraint: string;
+  triggerCondition: string;
+  recordingTemplateName: string;
+  state: string;
+  simple: boolean;
+  timeConditionFirstMet: string;
+}
+
+// ======================================
 // Template resources
 // ======================================
 export interface OptionDescriptor {
@@ -633,6 +647,8 @@ export enum NotificationCategory {
   ThreadDumpFailure = 'ThreadDumpFailure',
   ThreadDumpDeleted = 'ThreadDumpDeleted',
   ThreadDumpMetadataUpdated = 'ThreadDumpMetadataUpdated',
+  TriggerCreated = 'TriggerCreated',
+  TriggerDeleted = 'TriggerDeleted',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',
