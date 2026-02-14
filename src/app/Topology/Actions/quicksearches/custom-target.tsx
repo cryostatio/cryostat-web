@@ -32,7 +32,7 @@ const _CustomTargetSearchItem: QuickSearchItem = {
   descriptionFull: 'Provide a JMX Service URL along with necessary credentials to point to a Target JVM.',
   featureLevel: FeatureLevel.PRODUCTION,
   createAction: ({ navigate }) => {
-    navigate(toPath('/topology/create-custom-target'));
+    navigate(toPath('/topology'), { state: { openCreateModal: true } });
   },
 };
 
