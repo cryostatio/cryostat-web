@@ -278,7 +278,7 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
     }
     return (
       <TopologySideBar onClose={handleDrawerClose}>
-        <EntityDetails entity={selectedEntity} alertOptions={alertOptions} />
+        <EntityDetails entity={selectedEntity} alertOptions={alertOptions} hideLineageTab={true} />
       </TopologySideBar>
     );
   }, [handleDrawerClose, selectedEntity, alertOptions]);
