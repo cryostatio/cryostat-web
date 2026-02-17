@@ -68,7 +68,7 @@ jobs:
         export body="see cryostatio/cryostat-web#${{ steps.get_issue_number.outputs.result }}"
         export branch="ci-update-${git_hash}"
         git checkout -b "${branch}"
-        gh repo fork --remote fork
+        gh repo fork --remote-name fork
         git commit -S -m "${title}"
         git push --set-upstream fork "${branch}"
         gh pr create --repo cryostatio/cryostat --base "${{ github.ref_name }}" --title "${title}" --body "${body}" --label chore
@@ -128,7 +128,7 @@ jobs:
         export body="see cryostatio/cryostat-web#${{ steps.get_issue_number.outputs.result }}"
         export branch="ci-update-${git_hash}"
         git checkout -b "${branch}"
-        gh repo fork --remote fork
+        gh repo fork --remote-name fork
         git commit -S -m "${title}"
         git push --set-upstream fork "${branch}"
         gh pr create --repo cryostatio/cryostat-openshift-console-plugin --base "${{ github.ref_name }}" --title "${title}" --body "${body}" --label chore
