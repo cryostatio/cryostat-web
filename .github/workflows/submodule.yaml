@@ -40,7 +40,7 @@ jobs:
       run: |
         git submodule update --init
         git submodule update --remote
-    - uses: actions/github-script@v6
+    - uses: actions/github-script@v8
       id: get_issue_number
       with:
         script: |
@@ -99,7 +99,7 @@ jobs:
       run: |
         git submodule update --init
         git submodule update --remote
-    - uses: actions/github-script@v6
+    - uses: actions/github-script@v8
       id: get_issue_number
       with:
         script: |
