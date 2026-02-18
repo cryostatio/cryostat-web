@@ -17,22 +17,23 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail, missingSSLMessage } from '@app/ErrorView/types';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs';
 
-export interface SnapshotRecordingFormProps {}
+export interface SnapshotRecordingFormProps {
+  onExit?: () => void;
+}
 
-export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) => {
-  const navigate = useNavigate();
+export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = ({ onExit }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+  const exitForm = useExitForm(onExit);
 
   const handleCreateSnapshot = React.useCallback(() => {
     setLoading(true);

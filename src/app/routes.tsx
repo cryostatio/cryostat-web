@@ -18,7 +18,6 @@ import * as React from 'react';
 import { useLocation, Route, Routes } from 'react-router-dom-v5-compat';
 import About from './About/About';
 import Archives from './Archives/Archives';
-import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
 import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
@@ -30,13 +29,11 @@ import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
-import CreateRule from './Rules/CreateRule';
 import RulesTable from './Rules/Rules';
 import SecurityPanel from './SecurityPanel/SecurityPanel';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
 import { FeatureLevel } from './Shared/Services/service.types';
-import CreateTarget from './Topology/Actions/CreateTarget';
 import Topology from './Topology/Topology';
 import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
@@ -88,13 +85,6 @@ const overviewRoutes: IAppRoute[] = [
     path: toPath('/topology'),
     title: 'Topology',
     navGroup: OVERVIEW,
-    children: [
-      {
-        component: CreateTarget,
-        path: toPath('/topology/create-custom-target'),
-        title: 'Create Custom Target',
-      },
-    ],
   },
 ];
 
@@ -107,13 +97,6 @@ const flightRecorderRoutes: IAppRoute[] = [
     description: 'Create, view and archive JFR Recordings on single target JVMs.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: CAPTURE,
-    children: [
-      {
-        component: CreateRecording,
-        path: toPath('/recordings/create'),
-        title: 'Create Recording',
-      },
-    ],
   },
   {
     component: Events,
@@ -133,13 +116,6 @@ const flightRecorderRoutes: IAppRoute[] = [
       'Create Recordings on multiple target JVMs at once using Automated Rules consisting of a name, Match Expression, template, archival period, and more.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: CAPTURE,
-    children: [
-      {
-        component: CreateRule,
-        path: toPath('/rules/create'),
-        title: 'Create Automated Rule',
-      },
-    ],
   },
   {
     component: CaptureSmartTriggers,

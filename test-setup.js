@@ -2,6 +2,18 @@
 // components from the ServiceContext
 import '@i18n/config';
 
+if (typeof globalThis.Request === 'undefined') {
+  globalThis.Request = class {
+    constructor(input, init = {}) {
+      this.url = typeof input === 'string' ? input : String(input);
+      this.method = init.method || 'GET';
+      this.signal = init.signal;
+      this.headers = init.headers;
+      this.body = init.body;
+    }
+  };
+}
+
 jest.mock('@app/Shared/Services/Api.service');
 jest.mock('@app/Shared/Services/Login.service');
 jest.mock('@app/Shared/Services/NotificationChannel.service');

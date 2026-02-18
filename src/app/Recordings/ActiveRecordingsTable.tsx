@@ -191,7 +191,7 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate(toPath('/recordings/create'), { relative: 'path' });
+    navigate(toPath('/recordings'), { state: { openCreateModal: true } });
   }, [navigate]);
 
   const handleEditLabels = React.useCallback(() => {
