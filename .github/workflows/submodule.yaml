@@ -12,6 +12,10 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: write
+  pull-requests-: write
+
 jobs:
   update-cryostat-submodule:
     if: ${{ github.repository_owner == 'cryostatio' }}
