@@ -18,6 +18,8 @@ import * as React from 'react';
 import { useLocation, Route, Routes } from 'react-router-dom-v5-compat';
 import About from './About/About';
 import Archives from './Archives/Archives';
+import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
+import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import CreateRecording from './CreateRecording/CreateRecording';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
@@ -158,6 +160,23 @@ const flightRecorderRoutes: IAppRoute[] = [
     description: 'Instrument Targets to dynamically insert JFR event emission.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: CAPTURE,
+  },
+  {
+    component: AsyncProfiler,
+    label: 'async-profiler',
+    path: toPath('/async-profiler'),
+    title: 'async-profiler',
+    description: 'async-profiler',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
+    featureLevel: FeatureLevel.BETA,
+    children: [
+      {
+        component: CreateAsyncProfilerSession,
+        path: toPath('/async-profiler/create'),
+        title: 'Create Async Profiler session',
+      },
+    ],
   },
   {
     component: Archives,

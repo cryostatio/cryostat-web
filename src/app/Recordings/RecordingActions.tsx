@@ -31,6 +31,7 @@ export interface RowAction {
   key?: string;
   onClick?: () => void;
   isSeparator?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface RecordingActionsProps {

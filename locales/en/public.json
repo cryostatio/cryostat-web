@@ -72,6 +72,11 @@
       "LOGOUT": "Log out"
     }
   },
+  "AsyncProfiler": {
+    "AGENT_INTEGRATION_REQUIRED": "async-profiler integration requires cryostat-agent",
+    "NO_PROFILES": "No async-profiler sessions",
+    "NOT_DETECTED": "No async-profiler detected"
+  },
   "AutomatedAnalysisCard": {
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues.",
     "CARD_DESCRIPTION_FULL": "Creates a Recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
@@ -199,6 +204,11 @@
     "ARIA_LABELS": {
       "POPOVER": "automated-analysis-description-popover"
     }
+  },
+  "CreateAsyncProfilerSession": {
+    "DESCRIPTION": "async-profiler enables precise CPU-time profiling of program execution as well as VM and native memory allocations. Profiling sessions will be dumped to JFR-format binary files. Not all combinations of available events are acceptable.",
+    "DURATION": "Duration",
+    "EVENTS": "Events"
   },
   "CreateCredentialModal": {
     "ARIA_LABELS": {

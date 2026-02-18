@@ -548,4 +548,28 @@ export const messageKeys = new Map([
       hidden: true,
     } as NotificationMessageMapper,
   ],
+  [
+    NotificationCategory.AsyncProfileCreated,
+    {
+      variant: AlertVariant.success,
+      title: 'async-profiler session started',
+      body: (evt) => `Started an async-profiler session in target ${evt.message.target.alias}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.AsyncProfileStopped,
+    {
+      variant: AlertVariant.success,
+      title: 'async-profiler session stopped',
+      body: (evt) => `async-profiler session in target ${evt.message.target.alias} stopped`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.AsyncProfileDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'async-profiler remote file deleted',
+      body: (evt) => `async-profiler remote file ${evt.message.id} was deleted`,
+    } as NotificationMessageMapper,
+  ],
 ]);

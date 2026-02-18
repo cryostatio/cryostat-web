@@ -576,6 +576,30 @@ export interface TargetNode extends _AbstractNode {
 }
 
 // ======================================
+// async-profiler resources
+// ======================================
+
+export interface AsyncProfile {
+  id: string;
+  startTime: number;
+  duration: number;
+  size: number;
+}
+
+export interface AsyncProfilerSession {
+  id: string;
+  events: string[];
+  startTime: number;
+  duration: number;
+}
+
+export interface AsyncProfilerStatus {
+  status: boolean;
+  availableEvents: string[];
+  currentProfile?: AsyncProfilerSession;
+}
+
+// ======================================
 // Notification resources
 // ======================================
 
@@ -653,6 +677,9 @@ export enum NotificationCategory {
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',
   ReportFail = 'ReportFailure',
+  AsyncProfileCreated = 'AsyncProfilerCreated',
+  AsyncProfileStopped = 'AsyncProfilerStopped',
+  AsyncProfileDeleted = 'AsyncProfilerDeleted',
 }
 
 export enum CloseStatus {
