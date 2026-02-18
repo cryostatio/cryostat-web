@@ -1840,7 +1840,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-41"
+            data-ouia-component-id="OUIA-Generated-Switch-43"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="AsyncProfilerCreated"
@@ -1879,7 +1879,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-42"
+            data-ouia-component-id="OUIA-Generated-Switch-44"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="AsyncProfilerStopped"
@@ -1918,7 +1918,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-43"
+            data-ouia-component-id="OUIA-Generated-Switch-45"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="AsyncProfilerDeleted"

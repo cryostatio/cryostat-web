@@ -543,7 +543,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-12"
+            data-ouia-component-id="OUIA-Generated-Switch-13"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteCredentials"
@@ -582,7 +582,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-13"
+            data-ouia-component-id="OUIA-Generated-Switch-14"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteCustomTargets"
@@ -621,7 +621,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-14"
+            data-ouia-component-id="OUIA-Generated-Switch-15"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteDashboardLayout"
@@ -660,7 +660,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-15"
+            data-ouia-component-id="OUIA-Generated-Switch-16"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="DeleteLayoutTemplate"
@@ -699,7 +699,7 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
         >
           <label
             className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-16"
+            data-ouia-component-id="OUIA-Generated-Switch-17"
             data-ouia-component-type="PF5/Switch"
             data-ouia-safe={true}
             htmlFor="ClearDashboardLayout"
