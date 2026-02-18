@@ -58,20 +58,27 @@ jobs:
             ).data[0].number;
           }
         result-encoding: string
-    - name: Commit and push submodule
+    - name: Commit
       env:
         GH_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
       run: |
         git add --all
         git_hash="$(git rev-parse --short :src/main/webui)"
-        export title="build(webui): update submodule to $git_hash"
-        export body="see cryostatio/cryostat-web#${{ steps.get_issue_number.outputs.result }}"
-        export branch="ci-update-${git_hash}"
-        git checkout -b "${branch}"
-        gh repo fork
-        git commit -S -m "${title}"
-        git push --set-upstream origin "${branch}"
-        gh pr create --repo cryostatio/cryostat --base "${{ github.ref_name }}" --title "${title}" --body "${body}" --label chore
+        title="build(webui): update submodule to ${git_hash}"
+        body="see cryostatio/cryostat-web#${{ steps.get_issue_number.outputs.result }}"
+        branch="ci-update-${git_hash}"
+        git commit -S -m "${title}" -m "${body}"
+        echo "PR_TITLE=${title}" >> "$GITHUB_ENV"
+        echo "PR_BRANCH=${branch}" >> "$GITHUB_ENV"
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v8
+      with:
+        title: ${{ env.PR_TITLE }}
+        branch: ${{ env.PR_BRANCH }}
+        branch-token: ${{ secrets.SUBMODULE_TOKEN }}
+        push-to-fork: cryostat-bot/cryostat
+        maintainer-can-modify: false
+        delete-branch: true
 
   update-console-plugin-submodule:
     if: ${{ github.repository_owner == 'cryostatio' }}
@@ -118,17 +125,24 @@ jobs:
             ).data[0].number;
           }
         result-encoding: string
-    - name: Commit and push submodule
+    - name: Commit
       env:
         GH_TOKEN: ${{ secrets.SUBMODULE_TOKEN }}
       run: |
         git add --all
         git_hash="$(git rev-parse --short :src/cryostat-web)"
-        export title="build(webui): update submodule to $git_hash"
-        export body="see cryostatio/cryostat-web#${{ steps.get_issue_number.outputs.result }}"
-        export branch="ci-update-${git_hash}"
-        git checkout -b "${branch}"
-        gh repo fork
-        git commit -S -m "${title}"
-        git push --set-upstream origin "${branch}"
-        gh pr create --repo cryostatio/cryostat-openshift-console-plugin --base "${{ github.ref_name }}" --title "${title}" --body "${body}" --label chore
+        title="build(webui): update submodule to ${git_hash}"
+        body="see cryostatio/cryostat-web#${{ steps.get_issue_number.outputs.result }}"
+        branch="ci-update-${git_hash}"
+        git commit -S -m "${title}" -m "${body}"
+        echo "PR_TITLE=${title}" >> "$GITHUB_ENV"
+        echo "PR_BRANCH=${branch}" >> "$GITHUB_ENV"
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v8
+      with:
+        title: ${{ env.PR_TITLE }}
+        branch: ${{ env.PR_BRANCH }}
+        branch-token: ${{ secrets.SUBMODULE_TOKEN }}
+        push-to-fork: cryostat-bot/cryostat-openshift-console-plugin
+        maintainer-can-modify: false
+        delete-branch: true
