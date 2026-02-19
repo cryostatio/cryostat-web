@@ -146,7 +146,7 @@ jobs:
       with:
         title: ${{ env.PR_TITLE }}
         branch: ${{ env.PR_BRANCH }}
-        branch-token: ${{ secrets.SUBMODULE_TOKEN }}
+        token: ${{ secrets.SUBMODULE_TOKEN }}
         push-to-fork: cryostat-bot/cryostat-openshift-console-plugin
         maintainer-can-modify: false
         delete-branch: true
