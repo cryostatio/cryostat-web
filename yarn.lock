@@ -13699,14 +13699,14 @@ __metadata:
   linkType: hard
 
 "selenium-webdriver@npm:^4.40.0":
-  version: 4.40.0
-  resolution: "selenium-webdriver@npm:4.40.0"
+  version: 4.41.0
+  resolution: "selenium-webdriver@npm:4.41.0"
   dependencies:
     "@bazel/runfiles": "npm:^6.5.0"
     jszip: "npm:^3.10.1"
     tmp: "npm:^0.2.5"
-    ws: "npm:^8.18.3"
-  checksum: 10/bcc425bad982577ef28f8d93af5a99da4a2984d35fff7e0d5502208c3f8a6262fb9dc8e5e0e40c7786bd872abbd36ffed25e0a2c32a23c1bdb0d474597675589
+    ws: "npm:^8.19.0"
+  checksum: 10/29eaea5f8f67d173568ffbd82534ed724dbf61aa12d5f1a1e4141f2f8e3a17ec2f1a71aa386c66442936f45e74203a8e5a6f34e9086f93ca971debb8b66f9665
   languageName: node
   linkType: hard
 
@@ -16579,21 +16579,6 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10/70dfe53f23ff4368d46e4c0b1d4ca734db2c4149c6f68bc62cb16fc21f753c47b35fcc6e582f3bdfba0eaeb1c488cddab3c2255755a5c3eecb251431e42b3ff6
-  languageName: node
-  linkType: hard
-
-"ws@npm:^8.18.3":
-  version: 8.18.3
-  resolution: "ws@npm:8.18.3"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10/725964438d752f0ab0de582cd48d6eeada58d1511c3f613485b5598a83680bedac6187c765b0fe082e2d8cc4341fc57707c813ae780feee82d0c5efe6a4c61b6
   languageName: node
   linkType: hard
 
