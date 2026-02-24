@@ -82,9 +82,16 @@ export type SavedNodePosition = {
 
 export interface TopologyGraphViewProps {
   transformConfig?: TransformConfig;
+  hideToolbar?: boolean;
+  hideActions?: boolean;
 }
 
-export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformConfig, ...props }) => {
+export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({
+  transformConfig,
+  hideToolbar = false,
+  hideActions = false,
+  ...props
+}) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]); // selectedIds is exactly matched by VisualizationSurface
   const [selectedEntity, setSelectedEntity] = React.useState<GraphElement>();
   const [showGraphAnyway, setShowGraphAnyway] = React.useState(false);
@@ -255,26 +262,30 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
   const sidebar = React.useMemo(
     () => (
       <TopologySideBar onClose={handleDrawerClose}>
-        <EntityDetails entity={selectedEntity} />
+        <EntityDetails entity={selectedEntity} hideLineageTab={true} hideActions={hideActions} />
       </TopologySideBar>
     ),
-    [handleDrawerClose, selectedEntity],
+    [handleDrawerClose, selectedEntity, hideActions],
   );
 
   return (
     <>
       <Stack>
-        <StackItem>
-          <TopologyToolbar
-            variant={TopologyToolbarVariant.Graph}
-            visualization={visualization}
-            isDisabled={exceedLimit && !showGraphAnyway}
-          />
-        </StackItem>
-        <StackItem>
-          <Divider />
-        </StackItem>
-        <StackItem isFilled>
+        {!hideToolbar && (
+          <>
+            <StackItem>
+              <TopologyToolbar
+                variant={TopologyToolbarVariant.Graph}
+                visualization={visualization}
+                isDisabled={exceedLimit && !showGraphAnyway}
+              />
+            </StackItem>
+            <StackItem>
+              <Divider />
+            </StackItem>
+          </>
+        )}
+        <StackItem isFilled className={hideToolbar ? 'topology__graph-view--full-height' : ''}>
           {isEmptyGraph ? (
             <TopologyEmptyState />
           ) : exceedLimit && !showGraphAnyway ? (
