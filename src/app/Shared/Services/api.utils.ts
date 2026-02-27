@@ -463,6 +463,22 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.TriggerCreated,
+    {
+      variant: AlertVariant.success,
+      title: 'Smart Trigger created',
+      body: (evt) => `Smart Trigger ${evt.message.trigger} in target ${evt.message.jvmId} was created.`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.TriggerDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'Smart Trigger deleted',
+      body: (evt) => `Smart Trigger ${evt.message.trigger} in target ${evt.message.jvmId} was deleted.`,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.CredentialsStored,
     {
       variant: AlertVariant.success,
@@ -530,6 +546,30 @@ export const messageKeys = new Map([
       title: 'Recording Archive Failed',
       body: (evt) => `Failed to archive recording for job: ${evt.message.jobId}`,
       hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.AsyncProfileCreated,
+    {
+      variant: AlertVariant.success,
+      title: 'async-profiler session started',
+      body: (evt) => `Started an async-profiler session in target ${evt.message.target.alias}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.AsyncProfileStopped,
+    {
+      variant: AlertVariant.success,
+      title: 'async-profiler session stopped',
+      body: (evt) => `async-profiler session in target ${evt.message.target.alias} stopped`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.AsyncProfileDeleted,
+    {
+      variant: AlertVariant.success,
+      title: 'async-profiler remote file deleted',
+      body: (evt) => `async-profiler remote file ${evt.message.id} was deleted`,
     } as NotificationMessageMapper,
   ],
 ]);

@@ -70,6 +70,9 @@ import {
   AggregateReport,
   HeapDump,
   ThreadDump,
+  SmartTrigger,
+  AsyncProfilerStatus,
+  AsyncProfile,
 } from './api.types';
 import {
   isHttpError,
@@ -223,6 +226,30 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
+      first(),
+    );
+  }
+
+  getTargetTriggers(
+    target: TargetStub,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<SmartTrigger[]> {
+    return this.doGet(`targets/${target.id}/smart_triggers`, 'beta', undefined, suppressNotifications, skipStatusCheck);
+  }
+
+  deleteTrigger(uuid: string, target: TargetStub): Observable<boolean> {
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/${uuid}`, { method: 'DELETE' }).pipe(
+      map((resp) => resp.ok),
+      first(),
+    );
+  }
+
+  addTriggers(definition: string, target: TargetStub): Observable<boolean> {
+    const body = new window.FormData();
+    body.append('definition', String(definition));
+    return this.sendRequest('beta', `targets/${target.id}/smart_triggers/`, { method: 'POST', body }).pipe(
+      map((resp) => resp.ok),
       first(),
     );
   }
@@ -1599,10 +1626,16 @@ export class ApiService {
     );
   }
 
-  getDiscoveryTree(): Observable<EnvironmentNode> {
-    return this.sendRequest('v4', 'discovery', {
-      method: 'GET',
-    }).pipe(
+  getDiscoveryTree(mergeRealms = true): Observable<EnvironmentNode> {
+    const params = new URLSearchParams([['mergeRealms', `${mergeRealms}`]]);
+    return this.sendRequest(
+      'v4',
+      'discovery',
+      {
+        method: 'GET',
+      },
+      params,
+    ).pipe(
       concatMap((resp) => resp.json()),
       first(),
     );
@@ -1985,6 +2018,90 @@ export class ApiService {
       undefined,
       suppressNotifications,
       skipStatusCheck,
+    );
+  }
+
+  getAsyncProfilerStatus(target: Target, suppressNotifications = false): Observable<AsyncProfilerStatus> {
+    return this.doGet<{
+      currentProfile: {
+        id: string;
+        events: string[];
+        startTime: number;
+        duration: number;
+      };
+      status: string;
+      availableEvents: string[];
+    }>(`targets/${target.id}/async-profiler/status`, 'beta', undefined, suppressNotifications).pipe(
+      map((s) => ({ ...s, status: s['status'] === 'RUNNING' })),
+    );
+  }
+
+  isAsyncProfilerSupported(target: Target): Observable<boolean> {
+    return this.getAsyncProfilerStatus(target, true).pipe(
+      map((_) => true),
+      catchError((_) => of(false)),
+      first(),
+    );
+  }
+
+  getAsyncProfilerAvailableEvents(target: Target): Observable<string[]> {
+    return this.doGet<string[]>(`targets/${target.id}/async-profiler/status`, 'beta').pipe(
+      map((s) => s['availableEvents']),
+    );
+  }
+
+  startAsyncProfile(target: Target, events: string[], duration: number) {
+    return this.ctx
+      .headers({
+        'Content-Type': 'application/json',
+      })
+      .pipe(
+        concatMap((headers) =>
+          this.sendRequest('beta', `targets/${target.id}/async-profiler`, {
+            method: 'POST',
+            body: JSON.stringify({
+              events,
+              duration,
+            }),
+            headers,
+          }),
+        ),
+        map((resp) => ({
+          ok: resp.ok,
+          status: resp.status,
+        })),
+        catchError((err) => {
+          if (isHttpError(err)) {
+            return of({
+              ok: false,
+              status: err.httpResponse.status,
+            });
+          } else {
+            return of(undefined);
+          }
+        }),
+        first(),
+      );
+  }
+
+  getAsyncProfiles(target: Target): Observable<AsyncProfile[]> {
+    return this.doGet<AsyncProfile[]>(`targets/${target.id}/async-profiler`, 'beta');
+  }
+
+  downloadAsyncProfile(target: Target, profileId: string): void {
+    this.ctx.url(`/api/beta/targets/${target.id}/async-profiler/${profileId}`).subscribe((resourceUrl) => {
+      const jfrFilename = `${target.alias}_${profileId}.asprof.jfr`;
+      this.downloadFile(resourceUrl, new URLSearchParams({ filename: jfrFilename }), jfrFilename);
+    });
+  }
+
+  deleteAsyncProfile(target: Target, profileId: string): Observable<boolean> {
+    return this.sendRequest('beta', `targets/${target.id}/async-profiler/${profileId}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      catchError(() => of(false)),
+      first(),
     );
   }
 

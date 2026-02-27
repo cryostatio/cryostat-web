@@ -72,6 +72,11 @@
       "LOGOUT": "Log out"
     }
   },
+  "AsyncProfiler": {
+    "AGENT_INTEGRATION_REQUIRED": "async-profiler integration requires cryostat-agent",
+    "NO_PROFILES": "No async-profiler sessions",
+    "NOT_DETECTED": "No async-profiler detected"
+  },
   "AutomatedAnalysisCard": {
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues.",
     "CARD_DESCRIPTION_FULL": "Creates a Recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
@@ -199,6 +204,11 @@
     "ARIA_LABELS": {
       "POPOVER": "automated-analysis-description-popover"
     }
+  },
+  "CreateAsyncProfilerSession": {
+    "DESCRIPTION": "async-profiler enables precise CPU-time profiling of program execution as well as VM and native memory allocations. Profiling sessions will be dumped to JFR-format binary files. Not all combinations of available events are acceptable.",
+    "DURATION": "Duration",
+    "EVENTS": "Events"
   },
   "CreateCredentialModal": {
     "ARIA_LABELS": {
@@ -839,5 +849,19 @@
         "TOOLTIP": "{{count}} rules evaluated, maximum score {{score}}. Last update: {{date}}"
       }
     }
+  },
+  "Triggers": {
+    "EXPRESSION_TOOLTIP": "Raw expression that defines the smart trigger.",
+    "TEMPLATE_TOOLTIP": "Template to start a recording with when the trigger condition is met.",
+    "DURATION_CONSTRAINT_TOOLTIP": "Expression that defines the the duration a trigger must be met for",
+    "TARGET_DURATION_TOOLTIP": "Length of time the trigger must be met for to start a recording.",
+    "TRIGGER_CONDITION_TOOLTIP": "Condition that must be met to fulfill the smart trigger.",
+    "SEARCH_PLACEHOLDER": "Find by expression, duration, etc...",
+    "ARIA_LABELS": {
+      "SEARCH_INPUT": "smart-trigger-filter"
+    },
+    "DEFINITION_HELPER_TEXT": "Enter a Smart Trigger definition. A custom trigger definition must consist of both an expression that defines the overall trigger condition and the name of an event template that is used for the JFR Recording. The expression is a <a>Common Expression Language (CEL)</a> code snippet that defines one or more constraints and a target duration.",
+    "DEFINITION_HINT": "The set of constraints and target duration must be separated by a semicolon (;) character. Each constraint must include: the name of an MBean counter; a relational operator such as > (greater than), = (equal to), <(less than), and so on; and a specified value. The type of relational operator and value that you can specify depends on the associated MBean counter type. The constraint and duration must be enclosed in square brackets, followed by a tilde then the Recording Template name.",
+    "DEFINITION_HINT_BODY": "For an example definition: [ProcessCpuLoad>0.2;TargetDuration>duration(\"30s\")]~Profiling"
   }
 }

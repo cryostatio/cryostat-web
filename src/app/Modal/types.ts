@@ -20,9 +20,11 @@ export enum DeleteOrDisableWarningType {
   DisableAutomatedRules = 'DisableAutomatedRules',
   DeleteEventTemplates = 'DeleteEventTemplates',
   DeleteProbeTemplates = 'DeleteProbeTemplates',
+  DeleteAsyncProfile = 'DeleteAsyncProfile',
   DeleteHeapDump = 'DeleteHeapDump',
   DeleteThreadDump = 'DeleteThreadDump',
   DeleteActiveProbes = 'DeleteActiveProbes',
+  DeleteSmartTrigger = 'DeleteSmartTrigger',
   DeleteCredentials = 'DeleteCredentials',
   DeleteCustomTargets = 'DeleteCustomTargets',
   DeleteDashboardLayout = 'DeleteDashboardLayout',
@@ -94,6 +96,14 @@ export const DeleteActiveProbes: DeleteOrDisableWarning = {
   ariaLabel: 'Active probes remove warning',
 };
 
+export const DeleteSmartTrigger: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteSmartTrigger,
+  title: 'Permanently remove your active smart triggers from the target?',
+  label: 'Remove Smart Triggers',
+  description: `If you click Delete, active smart triggers will be removed from the target.`,
+  ariaLabel: 'Smart Triggers remove warning',
+};
+
 export const DeleteHeapDump: DeleteOrDisableWarning = {
   id: DeleteOrDisableWarningType.DeleteHeapDump,
   title: 'Permanently delete your archived heap dump?',
@@ -150,6 +160,14 @@ export const DeleteLayoutTemplate: DeleteOrDisableWarning = {
   ariaLabel: 'Layout Template delete warning',
 };
 
+export const DeleteAsyncProfile: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteAsyncProfile,
+  title: 'Permanently delete your async-profile?',
+  label: 'Delete Async Profile',
+  description: `If you click Delete, async-profile data will be lost.`,
+  ariaLabel: 'async-profiler delete warning',
+};
+
 export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteActiveRecordings,
   DeleteArchivedRecordings,
@@ -164,5 +182,7 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteCustomTargets,
   DeleteDashboardLayout,
   DeleteLayoutTemplate,
+  DeleteSmartTrigger,
   ClearDashboardLayout,
+  DeleteAsyncProfile,
 ];

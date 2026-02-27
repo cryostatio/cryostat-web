@@ -432,6 +432,20 @@ export interface Rule {
 }
 
 // ======================================
+// Smart Triggers Resources
+// ======================================
+export interface SmartTrigger {
+  id: string;
+  expression: string;
+  durationConstraint: string;
+  triggerCondition: string;
+  recordingTemplateName: string;
+  state: string;
+  simple: boolean;
+  timeConditionFirstMet: string;
+}
+
+// ======================================
 // Template resources
 // ======================================
 export interface OptionDescriptor {
@@ -562,6 +576,30 @@ export interface TargetNode extends _AbstractNode {
 }
 
 // ======================================
+// async-profiler resources
+// ======================================
+
+export interface AsyncProfile {
+  id: string;
+  startTime: number;
+  duration: number;
+  size: number;
+}
+
+export interface AsyncProfilerSession {
+  id: string;
+  events: string[];
+  startTime: number;
+  duration: number;
+}
+
+export interface AsyncProfilerStatus {
+  status: boolean;
+  availableEvents: string[];
+  currentProfile?: AsyncProfilerSession;
+}
+
+// ======================================
 // Notification resources
 // ======================================
 
@@ -633,10 +671,15 @@ export enum NotificationCategory {
   ThreadDumpFailure = 'ThreadDumpFailure',
   ThreadDumpDeleted = 'ThreadDumpDeleted',
   ThreadDumpMetadataUpdated = 'ThreadDumpMetadataUpdated',
+  TriggerCreated = 'TriggerCreated',
+  TriggerDeleted = 'TriggerDeleted',
   CredentialsStored = 'CredentialsStored',
   CredentialsDeleted = 'CredentialsDeleted',
   ReportSuccess = 'ReportSuccess',
   ReportFail = 'ReportFailure',
+  AsyncProfileCreated = 'AsyncProfilerCreated',
+  AsyncProfileStopped = 'AsyncProfilerStopped',
+  AsyncProfileDeleted = 'AsyncProfilerDeleted',
 }
 
 export enum CloseStatus {

@@ -18,6 +18,8 @@ import * as React from 'react';
 import { useLocation, Route, Routes } from 'react-router-dom-v5-compat';
 import About from './About/About';
 import Archives from './Archives/Archives';
+import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
+import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
 import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
@@ -35,6 +37,7 @@ import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
 import { FeatureLevel } from './Shared/Services/service.types';
 import Topology from './Topology/Topology';
+import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
@@ -117,6 +120,15 @@ const flightRecorderRoutes: IAppRoute[] = [
     navSubgroup: CAPTURE,
   },
   {
+    component: CaptureSmartTriggers,
+    label: 'Triggers',
+    path: toPath('/triggers'),
+    title: 'Triggers',
+    description: 'Create Smart Triggers on targets that start recordings when specified MBean conditions are met',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
+  },
+  {
     component: Instrumentation,
     label: 'Instrumentation',
     path: toPath('/instrumentation'),
@@ -124,6 +136,23 @@ const flightRecorderRoutes: IAppRoute[] = [
     description: 'Instrument Targets to dynamically insert JFR event emission.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: CAPTURE,
+  },
+  {
+    component: AsyncProfiler,
+    label: 'async-profiler',
+    path: toPath('/async-profiler'),
+    title: 'async-profiler',
+    description: 'async-profiler',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: CAPTURE,
+    featureLevel: FeatureLevel.BETA,
+    children: [
+      {
+        component: CreateAsyncProfilerSession,
+        path: toPath('/async-profiler/create'),
+        title: 'Create Async Profiler session',
+      },
+    ],
   },
   {
     component: Archives,

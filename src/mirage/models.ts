@@ -22,6 +22,7 @@ const RecordingModel: ModelDefinition<any> = Model.extend({});
 const ArchiveModel: ModelDefinition<any> = Model.extend({});
 const RuleModel: ModelDefinition<any> = Model.extend({});
 const CredentialModel: ModelDefinition<any> = Model.extend({});
+const SmartTriggerModel: ModelDefinition<any> = Model.extend({});
 
 export const models = {
   [Resource.TARGET]: TargetModel,
@@ -29,6 +30,7 @@ export const models = {
   [Resource.ARCHIVE]: ArchiveModel,
   [Resource.RULE]: RuleModel,
   [Resource.CREDENTIAL]: CredentialModel,
+  [Resource.SMART_TRIGGER]: SmartTriggerModel,
 };
 
 export default models;

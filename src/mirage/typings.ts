@@ -19,4 +19,5 @@ export enum Resource {
   ARCHIVE = 'archive',
   RULE = 'rule',
   CREDENTIAL = 'credential',
+  SMART_TRIGGER = 'smart-trigger',
 }
