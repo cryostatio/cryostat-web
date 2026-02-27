@@ -16,10 +16,10 @@
 import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { templateFromEventSpecifier } from '@app/CreateRecording/utils';
 import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
-import { store } from '@app/Shared/Redux/ReduxStore';
 import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import { EventTemplate, Target, Rule, Metadata } from '@app/Shared/Services/api.types';
 import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
