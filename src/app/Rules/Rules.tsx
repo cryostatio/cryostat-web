@@ -22,6 +22,7 @@ import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/M
 import { Rule, NotificationCategory, keyValueToString, KeyValue } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
   TableColumn,
@@ -30,6 +31,7 @@ import {
   sortResources,
   portalRoot,
   LABEL_TEXT_MAXWIDTH,
+  toPath,
 } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -51,6 +53,8 @@ import {
   Bullseye,
   LabelGroup,
   Label,
+  Modal,
+  ModalVariant,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -73,7 +77,7 @@ import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
-import { AUTOANALYZE_KEY } from './CreateRule';
+import { AUTOANALYZE_KEY, CreateRule } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 import { RuleUploadModal } from './RulesUploadModal';
 import { RuleToDeleteOrDisable } from './types';
@@ -95,6 +99,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [createRuleModalOpen, setCreateRuleModalOpen, handleCreateRuleModalClose] = useModalFromLocationState();
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
@@ -205,8 +210,8 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   }, [context.settings, refreshRules]);
 
   const handleCreateRule = React.useCallback(() => {
-    navigate('create', { relative: 'path' });
-  }, [navigate]);
+    setCreateRuleModalOpen(true);
+  }, [setCreateRuleModalOpen]);
 
   const handleUploadRule = React.useCallback(() => {
     setIsUploadModalOpen(true);
@@ -257,9 +262,9 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
 
   const handleEditButton = React.useCallback(
     (rule: Rule) => {
-      navigate('create', {
-        relative: 'path',
+      navigate(toPath('/rules'), {
         state: {
+          openCreateModal: true,
           ...rule,
           edit: true,
         },
@@ -270,9 +275,9 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
 
   const handleCopyButton = React.useCallback(
     (rule: Rule) => {
-      navigate('create', {
-        relative: 'path',
+      navigate(toPath('/rules'), {
         state: {
+          openCreateModal: true,
           ...rule,
           name: `${rule.name}_copy`,
         },
@@ -589,6 +594,16 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         </Card>
         <></>
       </BreadcrumbPage>
+      <Modal
+        appendTo={portalRoot}
+        isOpen={createRuleModalOpen}
+        variant={ModalVariant.large}
+        width="90vw"
+        title={t('CREATE')}
+        onClose={handleCreateRuleModalClose}
+      >
+        {createRuleModalOpen ? <CreateRule onClose={handleCreateRuleModalClose} /> : null}
+      </Modal>
       <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
     </>
   );

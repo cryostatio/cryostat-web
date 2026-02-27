@@ -589,7 +589,7 @@ exports[`<Reports /> renders correctly 1`] = `
                   </a>
                    or 
                   <a
-                    href="/rules/create"
+                    href="/rules"
                     onClick={[Function]}
                   >
                     automatically on a recurring basis

@@ -241,10 +241,13 @@ export class Recordings {
 
     const submitButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'crf-create-btn');
     await submitButton.click();
+
+    // Creating from a modal can update the table asynchronously.
+    await this.driver.wait(async () => (await this.getRecordings()).length > 0, 15000);
   }
 
   async getRecordings(): Promise<WebElement[]> {
-    const tableXPath = "//div[@class='recording-table-inner-container pf-v5-c-scroll-inner-wrapper']";
+    const tableXPath = "//div[contains(@class,'recording-table-inner-container')]";
     return this.driver.findElements(By.xpath(`${tableXPath}//tbody`));
   }
 

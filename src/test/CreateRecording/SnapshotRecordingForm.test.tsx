@@ -76,9 +76,8 @@ describe('<SnapshotRecordingForm />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <>Recordings</>,
+            element: <SnapshotRecordingForm />,
           },
-          { path: '/recordings/create', element: <SnapshotRecordingForm /> },
         ],
       },
     });
@@ -92,9 +91,8 @@ describe('<SnapshotRecordingForm />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <>Recordings</>,
+            element: <SnapshotRecordingForm />,
           },
-          { path: '/recordings/create', element: <SnapshotRecordingForm /> },
         ],
       },
     });
@@ -124,9 +122,8 @@ describe('<SnapshotRecordingForm />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <>Recordings</>,
+            element: <SnapshotRecordingForm />,
           },
-          { path: '/recordings/create', element: <SnapshotRecordingForm /> },
         ],
       },
       providers: [{ kind: ServiceContext.Provider, instance: services }],

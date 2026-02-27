@@ -216,8 +216,9 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
   }, [props.actions, props.chartKind, props.duration, props.period, t, controllerState, actions]);
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate(toPath('/recordings/create'), {
+    navigate(toPath('/recordings'), {
       state: {
+        openCreateModal: true,
         name: RECORDING_NAME,
         template: {
           name: 'Continuous',

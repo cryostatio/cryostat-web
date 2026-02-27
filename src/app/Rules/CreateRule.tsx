@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { BreadcrumbTrail } from '@app/BreadcrumbPage/types';
 import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { templateFromEventSpecifier } from '@app/CreateRecording/utils';
 import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
 import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import { EventTemplate, Target, Rule, Metadata } from '@app/Shared/Services/api.types';
 import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { portalRoot, toPath } from '@app/utils/utils';
+import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   ActionGroup,
@@ -59,20 +59,21 @@ import { HelpIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, iif, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { RuleFormData } from './types';
 import { CEL_SPEC_HREF, isRuleNameValid } from './utils';
 
-export interface CreateRuleFormProps {}
+export interface CreateRuleFormProps {
+  onExit?: () => void;
+}
 
 export const AUTOANALYZE_KEY = 'autoanalyze';
 
-export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
+export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const navigate = useNavigate();
   const location = useLocation();
   const { t } = useCryostatTranslation();
   // Do not use useSearchExpression for display. This causes the cursor to jump to the end due to async updates.
@@ -167,11 +168,20 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 
   React.useEffect(() => {
-    const prefilled: Partial<RuleFormData> = location.state || {};
-    const eventSpecifier = location?.state?.eventSpecifier;
-    const maxAgeSeconds = location?.state?.maxAgeSeconds;
-    const maxSizeBytes = location?.state?.maxSizeBytes;
-    const archivalPeriodSeconds = location?.state?.archivalPeriodSeconds;
+    let stateSource: Record<string, unknown> = {};
+    if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
+      stateSource = location.state as Record<string, unknown>;
+    } else {
+      const { modalPrefill } = store.getState();
+      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
+        stateSource = modalPrefill.data;
+      }
+    }
+    const prefilled: Partial<RuleFormData> = stateSource as Partial<RuleFormData>;
+    const eventSpecifier = stateSource.eventSpecifier as string;
+    const maxAgeSeconds = stateSource.maxAgeSeconds as number | undefined;
+    const maxSizeBytes = stateSource.maxSizeBytes as number | undefined;
+    const archivalPeriodSeconds = stateSource.archivalPeriodSeconds as number | undefined;
     let {
       name,
       enabled,
@@ -271,7 +281,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
     [setFormData],
   );
 
-  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+  const exitForm = useExitForm(onExit);
 
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
@@ -740,50 +750,42 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = (_props) => {
   );
 };
 
-export const CreateRule: React.FC = () => {
+export interface CreateRuleProps {
+  onClose?: () => void;
+}
+
+export const CreateRule: React.FC<CreateRuleProps> = ({ onClose }) => {
   const matchExpreRef = React.useRef(new MatchExpressionService());
   const { t } = useCryostatTranslation();
 
-  const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
-    () => [
-      {
-        title: t('AUTOMATED_RULES'),
-        path: toPath('/rules'),
-      },
-    ],
-    [t],
-  );
-
   const gridStyles: React.CSSProperties = React.useMemo(
     () => ({
-      // viewportHeight - masterheadHeight - pageSectionPadding - breadcrumbHeight
-      height: 'calc(100vh - 4.375rem - 48px - 1.5rem)',
+      // viewportHeight - modalHeader - modalPadding - margin
+      height: 'calc(100vh - 12rem)',
     }),
     [],
   );
 
   return (
-    <BreadcrumbPage pageTitle={t('CREATE')} breadcrumbs={breadcrumbs}>
-      <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
-        <Grid hasGutter style={gridStyles}>
-          <GridItem xl={5} order={{ xl: '0', default: '1' }}>
-            <Card isFullHeight>
-              <CardBody className="overflow-auto">
-                <CreateRuleForm />
-              </CardBody>
-            </Card>
-          </GridItem>
-          <GridItem xl={7} order={{ xl: '1', default: '0' }}>
-            <Card isFullHeight>
-              <CardTitle>{t('MATCH_EXPRESSION_VISUALIZER.TITLE')}</CardTitle>
-              <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
-                <MatchExpressionVisualizer />
-              </CardBody>
-            </Card>
-          </GridItem>
-        </Grid>
-      </SearchExprServiceContext.Provider>
-    </BreadcrumbPage>
+    <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
+      <Grid hasGutter style={gridStyles}>
+        <GridItem xl={5} order={{ xl: '0', default: '1' }}>
+          <Card isFullHeight>
+            <CardBody className="overflow-auto">
+              <CreateRuleForm onExit={onClose} />
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xl={7} order={{ xl: '1', default: '0' }}>
+          <Card isFullHeight>
+            <CardTitle>{t('MATCH_EXPRESSION_VISUALIZER.TITLE')}</CardTitle>
+            <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
+              <MatchExpressionVisualizer />
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
+    </SearchExprServiceContext.Provider>
   );
 };
 

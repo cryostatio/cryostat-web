@@ -163,8 +163,9 @@ describe('<JFRMetricsChartCard />', () => {
     });
 
     await user.click(screen.getByRole('button', { name: /create/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/recordings/create', {
+    expect(mockNavigate).toHaveBeenCalledWith('/recordings', {
       state: {
+        openCreateModal: true,
         name: 'dashboard_metrics',
         template: {
           name: 'Continuous',

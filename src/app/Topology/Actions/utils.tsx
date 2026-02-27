@@ -90,7 +90,7 @@ export const nodeActions: NodeAction[] = [
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      navigate(toPath('/recordings/create'));
+      navigate(toPath('/recordings'), { state: { openCreateModal: true } });
     },
     title: 'Create Recordings',
   },
@@ -100,7 +100,7 @@ export const nodeActions: NodeAction[] = [
       const targetNode: TargetNode = element.getData();
 
       services.target.setTarget(targetNode.target);
-      navigate(toPath('/rules/create'));
+      navigate(toPath('/rules'), { state: { openCreateModal: true } });
     },
     title: 'Create Automated Rules',
   },

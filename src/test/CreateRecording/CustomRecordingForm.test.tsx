@@ -76,7 +76,7 @@ describe('<CustomRecordingForm />', () => {
 
   it('renders correctly', async () => {
     const tree = await renderSnapshot({
-      routerConfigs: { routes: [{ path: '/recordings/create', element: <CustomRecordingForm /> }] },
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
     });
     expect(tree?.toJSON()).toMatchSnapshot();
   });
@@ -84,7 +84,7 @@ describe('<CustomRecordingForm />', () => {
   it('should create Recording when form is filled and create is clicked', async () => {
     const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of(mockResponse));
     const { user } = render({
-      routerConfigs: { routes: [{ path: '/recordings/create', element: <CustomRecordingForm /> }] },
+      routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
     });
 
     const nameInput = screen.getByLabelText('Name *');
@@ -135,9 +135,8 @@ describe('<CustomRecordingForm />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <>Recordings</>,
+            element: <CustomRecordingForm />,
           },
-          { path: '/recordings/create', element: <CustomRecordingForm /> },
         ],
       },
     });
@@ -168,9 +167,8 @@ describe('<CustomRecordingForm />', () => {
         routes: [
           {
             path: '/recordings',
-            element: <>Recordings</>,
+            element: <CustomRecordingForm />,
           },
-          { path: '/recordings/create', element: <CustomRecordingForm /> },
         ],
       },
       providers: [{ kind: ServiceContext.Provider, instance: services }],

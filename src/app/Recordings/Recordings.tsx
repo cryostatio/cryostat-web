@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import CreateRecording from '@app/CreateRecording/CreateRecording';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
+import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Card, CardBody } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import { Card, CardBody, Modal, ModalVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 
@@ -24,6 +27,7 @@ export const Recordings: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
+  const [createRecordingModalOpen, , closeCreateRecordingModal] = useModalFromLocationState();
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe((v) => setArchiveEnabled(v)));
@@ -36,6 +40,15 @@ export const Recordings: React.FC = () => {
           <ActiveRecordingsTable archiveEnabled={archiveEnabled} />
         </CardBody>
       </Card>
+      <Modal
+        appendTo={portalRoot}
+        isOpen={createRecordingModalOpen}
+        variant={ModalVariant.large}
+        title="Create Recording"
+        onClose={closeCreateRecordingModal}
+      >
+        {createRecordingModalOpen ? <CreateRecording onClose={closeCreateRecordingModal} /> : null}
+      </Modal>
     </TargetView>
   );
 };
