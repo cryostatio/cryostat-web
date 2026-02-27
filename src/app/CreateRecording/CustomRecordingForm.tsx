@@ -19,6 +19,7 @@ import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import {
   EventTemplate,
   RecordingAttributes,
@@ -368,7 +369,15 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   }, [addSubscription, context.target, refreshFormOptions]);
 
   React.useEffect(() => {
-    const prefilled: Partial<CustomRecordingFormData> = location.state || {};
+    let prefilled: Partial<CustomRecordingFormData> = {};
+    if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
+      prefilled = location.state as Partial<CustomRecordingFormData>;
+    } else {
+      const { modalPrefill } = store.getState();
+      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
+        prefilled = modalPrefill.data as Partial<CustomRecordingFormData>;
+      }
+    }
     const {
       name,
       restart,

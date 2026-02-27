@@ -16,6 +16,7 @@
 import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { templateFromEventSpecifier } from '@app/CreateRecording/utils';
 import { MatchExpressionHint } from '@app/Shared/Components/MatchExpression/MatchExpressionHint';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import { MatchExpressionVisualizer } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
@@ -167,11 +168,20 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   );
 
   React.useEffect(() => {
-    const prefilled: Partial<RuleFormData> = location.state || {};
-    const eventSpecifier = location?.state?.eventSpecifier;
-    const maxAgeSeconds = location?.state?.maxAgeSeconds;
-    const maxSizeBytes = location?.state?.maxSizeBytes;
-    const archivalPeriodSeconds = location?.state?.archivalPeriodSeconds;
+    let stateSource: Record<string, unknown> = {};
+    if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
+      stateSource = location.state as Record<string, unknown>;
+    } else {
+      const { modalPrefill } = store.getState();
+      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
+        stateSource = modalPrefill.data;
+      }
+    }
+    const prefilled: Partial<RuleFormData> = stateSource as Partial<RuleFormData>;
+    const eventSpecifier = stateSource.eventSpecifier as string;
+    const maxAgeSeconds = stateSource.maxAgeSeconds as number | undefined;
+    const maxSizeBytes = stateSource.maxSizeBytes as number | undefined;
+    const archivalPeriodSeconds = stateSource.archivalPeriodSeconds as number | undefined;
     let {
       name,
       enabled,

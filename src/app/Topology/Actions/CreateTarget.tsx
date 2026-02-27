@@ -17,6 +17,7 @@
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { LinearDotSpinner } from '@app/Shared/Components/LinearDotSpinner';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import { Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import '@app/Topology/styles/base.css';
@@ -75,7 +76,13 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }
   const location = useLocation();
   const { t } = useCryostatTranslation();
   const locationPrefilled = React.useMemo(() => {
-    const state = location.state as Partial<CreateTargetProps['prefilled']> | null;
+    let state = location.state as Partial<CreateTargetProps['prefilled']> | null;
+    if (!state?.connectUrl) {
+      const { modalPrefill } = store.getState();
+      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
+        state = modalPrefill.data as Partial<CreateTargetProps['prefilled']>;
+      }
+    }
     if (!state?.connectUrl) {
       return undefined;
     }

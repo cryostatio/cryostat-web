@@ -24,6 +24,7 @@ import recordingFilterReducer, * as recordingFilterSlice from './Filters/Recordi
 import ThreadDumpFilterReducer from './Filters/ThreadDumpFilterSlice';
 import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
+import modalPrefillReducer, * as modalPrefillSlice from './ModalPrefillSlice';
 
 // Export actions
 export const { navMenuSetExpandedIntent, defaultNavMenuConfigs } = navMenuConfigSlice;
@@ -81,6 +82,8 @@ export const {
   defaultTopologyFilters,
 } = topologyFilterSlice;
 
+export const { modalPrefillSetIntent, modalPrefillClearIntent } = modalPrefillSlice;
+
 export const rootReducer = combineReducers({
   navMenuConfigs: navMenuConfigReducer,
   dashboardConfigs: dashboardConfigReducer,
@@ -90,6 +93,7 @@ export const rootReducer = combineReducers({
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
   topologyConfigs: topologyConfigReducer,
   topologyFilters: topologyFilterReducer,
+  modalPrefill: modalPrefillReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
