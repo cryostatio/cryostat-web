@@ -1112,6 +1112,8 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return new Response(200);
       });
+      this.get('api/beta/audit/targets/:jvmId', () => new Response(404));
+      this.get('api/beta/audit/target_lineage/:jvmId', () => new Response(404));
     },
   });
 };
