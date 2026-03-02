@@ -36,7 +36,7 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId, hideActions
   const displayOptions = useSelector((state: RootState) => state.topologyConfigs.displayOptions);
   const { groupings } = displayOptions;
   const transformConfig = React.useMemo(
-    () => ({ showOnlyTopGroup: groupings.realmOnly, expandMode: !groupings.collapseSingles }),
+    () => ({ showOnlyTopGroup: groupings.flattenIntermediates, expandMode: !groupings.collapseSingles }),
     [groupings],
   );
 
