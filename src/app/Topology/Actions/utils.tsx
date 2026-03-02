@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import {
   ActiveRecording,
   EnvironmentNode,
@@ -88,9 +89,11 @@ export const nodeActions: NodeAction[] = [
     key: 'CREATE_RECORDINGS',
     action: (element, { navigate, services }) => {
       const targetNode: TargetNode = element.getData();
+      const state = { openCreateModal: true };
 
       services.target.setTarget(targetNode.target);
-      navigate(toPath('/recordings'), { state: { openCreateModal: true } });
+      store.dispatch(modalPrefillSetIntent(toPath('/recordings'), state));
+      navigate(toPath('/recordings'), { state });
     },
     title: 'Create Recordings',
   },
@@ -98,9 +101,11 @@ export const nodeActions: NodeAction[] = [
     key: 'CREATE_RULES',
     action: (element, { navigate, services }) => {
       const targetNode: TargetNode = element.getData();
+      const state = { openCreateModal: true };
 
       services.target.setTarget(targetNode.target);
-      navigate(toPath('/rules'), { state: { openCreateModal: true } });
+      store.dispatch(modalPrefillSetIntent(toPath('/rules'), state));
+      navigate(toPath('/rules'), { state });
     },
     title: 'Create Automated Rules',
   },

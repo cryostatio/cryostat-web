@@ -21,6 +21,7 @@ import {
   DashboardCardDescriptor,
 } from '@app/Dashboard/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -216,26 +217,24 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
   }, [props.actions, props.chartKind, props.duration, props.period, t, controllerState, actions]);
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate(toPath('/recordings'), {
-      state: {
-        openCreateModal: true,
-        name: RECORDING_NAME,
-        template: {
-          name: 'Continuous',
-          type: 'TARGET',
-        },
-        restart: true,
-        labels: [{ key: 'origin', value: RECORDING_NAME }],
-        duration: -1,
-        skipDurationCheck: true,
-        // TODO these are arbitrary defaults that will be set in the recording creation form.
-        // Should these values be inferred in some more intelligent way?
-        maxAge: 120,
-        maxAgeUnit: 1, // seconds
-        maxSize: 100 * 1024 * 1024,
-        maxSizeUnit: 1, // bytes
+    const state = {
+      openCreateModal: true,
+      name: RECORDING_NAME,
+      template: {
+        name: 'Continuous',
+        type: 'TARGET',
       },
-    });
+      restart: true,
+      labels: [{ key: 'origin', value: RECORDING_NAME }],
+      duration: -1,
+      skipDurationCheck: true,
+      maxAge: 120,
+      maxAgeUnit: 1,
+      maxSize: 100 * 1024 * 1024,
+      maxSizeUnit: 1,
+    };
+    store.dispatch(modalPrefillSetIntent(toPath('/recordings'), state));
+    navigate(toPath('/recordings'), { state });
   }, [navigate]);
 
   return (

@@ -22,6 +22,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/Components/FileUploads';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { EventTemplate, NotificationCategory, Target } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -256,13 +257,14 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
       let actions = [
         {
           title: 'Create Recording...',
-          onClick: () =>
-            navigate(toPath('/recordings'), {
-              state: {
-                openCreateModal: true,
-                template: { name: t.name, type: t.type },
-              } as Partial<CustomRecordingFormData> & { openCreateModal: boolean },
-            }),
+          onClick: () => {
+            const state = {
+              openCreateModal: true,
+              template: { name: t.name, type: t.type },
+            } as Partial<CustomRecordingFormData> & { openCreateModal: boolean };
+            store.dispatch(modalPrefillSetIntent(toPath('/recordings'), state as Record<string, unknown>));
+            navigate(toPath('/recordings'), { state });
+          },
         },
       ] as IAction[];
 

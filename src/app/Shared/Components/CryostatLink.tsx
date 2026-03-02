@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { toPath } from '@app/utils/utils';
 import React from 'react';
 import { Link, LinkProps, Path, To } from 'react-router-dom-v5-compat';
@@ -37,6 +38,23 @@ const toDestination = (destination: To) => {
   } as Partial<Path>;
 };
 
-export const CryostatLink: React.FC<CryostatLinkProps> = ({ to, onClick, ...props }) => {
-  return <Link to={toDestination(to)} onClick={onClick} {...props}></Link>;
+const resolvePathname = (destination: To): string => {
+  if (typeof destination === 'string') {
+    return toPath(destination);
+  }
+  return toPath((destination as Partial<Path>).pathname || '');
+};
+
+export const CryostatLink: React.FC<CryostatLinkProps> = ({ to, onClick, state, ...props }) => {
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (state && typeof state === 'object' && (state as Record<string, unknown>).openCreateModal) {
+        store.dispatch(modalPrefillSetIntent(resolvePathname(to), state as Record<string, unknown>));
+      }
+      onClick?.(e);
+    },
+    [to, state, onClick],
+  );
+
+  return <Link to={toDestination(to)} state={state} onClick={handleClick} {...props}></Link>;
 };
