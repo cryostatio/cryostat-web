@@ -358,3 +358,23 @@ Below CSS rules only apply to Topology components
 .target-details-modal {
   min-height: 36em;
 }
+
+.target-details-modal .pf-v5-c-modal-box__body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.target-details-modal .pf-v5-c-modal-box__body > div {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topology__graph-view--full-height {
+  height: 100%;
+}
+
+.topology__graph-view--full-height .topology__main-container {
+  height: 100%;
+}
