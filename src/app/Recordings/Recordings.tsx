@@ -27,7 +27,7 @@ export const Recordings: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
-  const [createRecordingModalOpen, , closeCreateRecordingModal] = useModalFromLocationState();
+  const [createRecordingModalOpen, _, closeCreateRecordingModal] = useModalFromLocationState();
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe((v) => setArchiveEnabled(v)));
