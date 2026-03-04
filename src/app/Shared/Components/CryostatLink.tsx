@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { BASEPATH, toPath } from '@app/utils/utils';
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
+import { toPath } from '@app/utils/utils';
 import React from 'react';
 import { Link, LinkProps, Path, To } from 'react-router-dom-v5-compat';
 
@@ -25,18 +26,35 @@ export interface CryostatLinkProps extends LinkProps {}
  * @param {string | Partial<Path>} destination - the target destination
  */
 const toDestination = (destination: To) => {
-  if (BASEPATH) {
-    if (typeof destination === 'string') {
-      return toPath(destination);
-    } else {
-      (destination as Partial<Path>).pathname = `/${BASEPATH}${(destination as Partial<Path>).pathname}`;
-      return destination as Partial<Path>;
-    }
-  } else {
+  if (typeof destination === 'string') {
+    return toPath(destination);
+  } else if (!(destination as Partial<Path>).pathname) {
     return destination;
   }
+  const pathDestination = destination as Partial<Path>;
+  return {
+    ...pathDestination,
+    pathname: toPath(pathDestination.pathname!),
+  } as Partial<Path>;
 };
 
-export const CryostatLink: React.FC<CryostatLinkProps> = ({ to, onClick, ...props }) => {
-  return <Link to={toDestination(to)} onClick={onClick} {...props}></Link>;
+const resolvePathname = (destination: To): string => {
+  if (typeof destination === 'string') {
+    return toPath(destination);
+  }
+  return toPath((destination as Partial<Path>).pathname || '');
+};
+
+export const CryostatLink: React.FC<CryostatLinkProps> = ({ to, onClick, state, ...props }) => {
+  const handleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (state && typeof state === 'object' && (state as Record<string, unknown>).openCreateModal) {
+        store.dispatch(modalPrefillSetIntent(resolvePathname(to), state as Record<string, unknown>));
+      }
+      onClick?.(e);
+    },
+    [to, state, onClick],
+  );
+
+  return <Link to={toDestination(to)} state={state} onClick={handleClick} {...props}></Link>;
 };

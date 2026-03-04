@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { TargetView } from '@app/TargetView/TargetView';
-import { toPath } from '@app/utils/utils';
 import { Card, CardBody, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
-export const CreateRecording: React.FC = () => {
+export interface CreateRecordingProps {
+  onClose?: () => void;
+}
+
+export const CreateRecording: React.FC<CreateRecordingProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const onTabSelect = React.useCallback(
@@ -30,20 +32,18 @@ export const CreateRecording: React.FC = () => {
   );
 
   return (
-    <TargetView pageTitle="Create" breadcrumbs={[{ title: 'Recordings', path: toPath('/recordings') }]}>
-      <Card>
-        <CardBody>
-          <Tabs activeKey={activeTab} onSelect={onTabSelect}>
-            <Tab eventKey={0} title={<TabTitleText>Custom Flight Recording</TabTitleText>}>
-              <CustomRecordingForm />
-            </Tab>
-            <Tab eventKey={1} title={<TabTitleText>Snapshot Recording</TabTitleText>}>
-              <SnapshotRecordingForm />
-            </Tab>
-          </Tabs>
-        </CardBody>
-      </Card>
-    </TargetView>
+    <Card>
+      <CardBody>
+        <Tabs activeKey={activeTab} onSelect={onTabSelect}>
+          <Tab eventKey={0} title={<TabTitleText>Custom Flight Recording</TabTitleText>}>
+            <CustomRecordingForm onExit={onClose} />
+          </Tab>
+          <Tab eventKey={1} title={<TabTitleText>Snapshot Recording</TabTitleText>}>
+            <SnapshotRecordingForm onExit={onClose} />
+          </Tab>
+        </Tabs>
+      </CardBody>
+    </Card>
   );
 };
 

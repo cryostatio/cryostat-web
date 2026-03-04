@@ -24,11 +24,14 @@ import { DEFAULT_EMPTY_UNIVERSE } from '@app/Shared/Services/api.utils';
 import { MatchExpressionService } from '@app/Shared/Services/MatchExpression.service';
 import { SearchExprServiceContext } from '@app/Shared/Services/service.utils';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { Bullseye, Card, CardBody } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import { Bullseye, Card, CardBody, Modal, ModalVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { debounceTime } from 'rxjs';
+import CreateTarget from './Actions/CreateTarget';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
 import { DiscoveryTreeContext } from './Shared/utils';
@@ -58,6 +61,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   });
 
   const [error, setError] = React.useState<Error>();
+  const [createTargetModalOpen, , closeCreateTargetModal] = useModalFromLocationState();
 
   const _refreshDiscoveryTree = React.useCallback(
     (onSuccess?: () => void) => {
@@ -158,6 +162,15 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         </Card>
         <></>
       </BreadcrumbPage>
+      <Modal
+        appendTo={portalRoot}
+        isOpen={createTargetModalOpen}
+        variant={ModalVariant.large}
+        title="Create Custom Target"
+        onClose={closeCreateTargetModal}
+      >
+        {createTargetModalOpen ? <CreateTarget onClose={closeCreateTargetModal} /> : null}
+      </Modal>
     </>
   );
 };

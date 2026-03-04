@@ -23,6 +23,7 @@ import { enumValues as HeapDumpFilterActions } from '../Filters/HeapDumpFilterSl
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { enumValues as ThreadDumpFilterActions } from '../Filters/ThreadDumpFilterSlice';
 import { enumValues as TopologyFilterActions } from '../Filters/TopologyFilterSlice';
+import { enumValues as ModalPrefillActions } from '../ModalPrefillSlice';
 import type { RootState } from '../ReduxStore';
 
 export const persistMiddleware: Middleware<{}, RootState> =
@@ -48,6 +49,8 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TOPOLOGY_CONFIG', rootState.topologyConfigs);
     } else if (TopologyFilterActions.has(action.type)) {
       saveToLocalStorage('TOPOLOGY_FILTERS', rootState.topologyFilters);
+    } else if (ModalPrefillActions.has(action.type)) {
+      // Intentionally not persisted — transient state for modal open/prefill
     } else {
       console.warn(`Action ${action.type} does not persist state.`);
     }

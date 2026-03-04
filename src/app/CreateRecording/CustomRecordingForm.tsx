@@ -19,6 +19,7 @@ import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import {
   EventTemplate,
   RecordingAttributes,
@@ -28,6 +29,7 @@ import {
 } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -57,17 +59,20 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation } from 'react-router-dom-v5-compat';
 import { forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EventTemplateIdentifier, CustomRecordingFormData } from './types';
 import { isDurationValid, isRecordingNameValid } from './utils';
 
-export const CustomRecordingForm: React.FC = () => {
+export interface CustomRecordingFormProps {
+  onExit?: () => void;
+}
+
+export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const location = useLocation();
 
@@ -93,7 +98,7 @@ export const CustomRecordingForm: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const exitForm = React.useCallback(() => navigate('..', { relative: 'path' }), [navigate]);
+  const exitForm = useExitForm(onExit);
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
@@ -364,7 +369,15 @@ export const CustomRecordingForm: React.FC = () => {
   }, [addSubscription, context.target, refreshFormOptions]);
 
   React.useEffect(() => {
-    const prefilled: Partial<CustomRecordingFormData> = location.state || {};
+    let prefilled: Partial<CustomRecordingFormData> = {};
+    if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
+      prefilled = location.state as Partial<CustomRecordingFormData>;
+    } else {
+      const { modalPrefill } = store.getState();
+      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
+        prefilled = modalPrefill.data as Partial<CustomRecordingFormData>;
+      }
+    }
     const {
       name,
       restart,

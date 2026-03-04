@@ -173,6 +173,7 @@ export const basePreloadedState: RootState = {
   automatedAnalysisFilters: defaultAutomatedAnalysisFilters,
   topologyConfigs: defaultTopologyConfig,
   topologyFilters: defaultTopologyFilters,
+  modalPrefill: { route: null, data: {} },
 };
 
 export const escapeKeyboardInput = (value: string) => value.replace(/[{[]/g, '$&$&');

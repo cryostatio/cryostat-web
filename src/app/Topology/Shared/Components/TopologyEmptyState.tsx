@@ -49,7 +49,10 @@ export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props
       return (
         <EmptyStateActions>
           Start launching a Java application or define a{' '}
-          <CryostatLink to={'/topology/create-custom-target'}>Custom Target</CryostatLink>.
+          <CryostatLink to={'/topology'} state={{ openCreateModal: true }}>
+            Custom Target
+          </CryostatLink>
+          .
         </EmptyStateActions>
       );
     }

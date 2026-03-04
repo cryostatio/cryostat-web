@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import openjdkSvg from '@app/assets/openjdk.svg';
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { toPath } from '@app/utils/utils';
 import { QuickSearchItem } from '../types';
@@ -32,7 +33,9 @@ const _CustomTargetSearchItem: QuickSearchItem = {
   descriptionFull: 'Provide a JMX Service URL along with necessary credentials to point to a Target JVM.',
   featureLevel: FeatureLevel.PRODUCTION,
   createAction: ({ navigate }) => {
-    navigate(toPath('/topology/create-custom-target'));
+    const state = { openCreateModal: true };
+    store.dispatch(modalPrefillSetIntent(toPath('/topology'), state));
+    navigate(toPath('/topology'), { state });
   },
 };
 
