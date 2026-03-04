@@ -25,8 +25,10 @@ import {
   recordingDeleteAllFiltersIntent,
   recordingDeleteCategoryFiltersIntent,
   recordingDeleteFilterIntent,
+  modalPrefillSetIntent,
   RootState,
   StateDispatch,
+  store,
 } from '@app/Shared/Redux/ReduxStore';
 import {
   ActiveRecording,
@@ -77,7 +79,7 @@ import { EllipsisVIcon, ProcessAutomationIcon } from '@patternfly/react-icons';
 import { SortByDirection, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
+import { useLocation } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -138,7 +140,6 @@ export interface ActiveRecordingsTableProps {
 
 export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const navigate = useNavigate();
   const location = useLocation();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
@@ -191,8 +192,8 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
   );
 
   const handleCreateRecording = React.useCallback(() => {
-    navigate(toPath('/recordings'), { state: { openCreateModal: true } });
-  }, [navigate]);
+    store.dispatch(modalPrefillSetIntent(toPath('/recordings'), { openCreateModal: true }));
+  }, []);
 
   const handleEditLabels = React.useCallback(() => {
     setPanelContent(PanelContent.LABELS);

@@ -30,18 +30,24 @@ export function useModalFromLocationState(
   const location = useLocation();
   const dispatch = useDispatch();
   const modalPrefill = useSelector((state: RootState) => state.modalPrefill);
+  const closedRef = React.useRef(false);
 
   React.useEffect(() => {
-    if ((location.state as Record<string, unknown> | null)?.[key]) {
-      setIsOpen(true);
+    const stateHasKey = (location.state as Record<string, unknown> | null)?.[key];
+    const reduxHasKey =
+      modalPrefill.route === location.pathname && (modalPrefill.data as Record<string, unknown>)?.[key];
+
+    if (!stateHasKey && !reduxHasKey) {
+      closedRef.current = false;
       return;
     }
-    if (modalPrefill.route === location.pathname && (modalPrefill.data as Record<string, unknown>)?.[key]) {
-      setIsOpen(true);
-    }
+    if (closedRef.current) return;
+
+    setIsOpen(true);
   }, [location.state, location.pathname, key, modalPrefill]);
 
   const close = React.useCallback(() => {
+    closedRef.current = true;
     setIsOpen(false);
     dispatch(modalPrefillClearIntent());
     if (location.state) {

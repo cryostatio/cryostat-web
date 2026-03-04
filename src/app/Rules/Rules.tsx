@@ -19,6 +19,7 @@ import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { Rule, NotificationCategory, keyValueToString, KeyValue } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -75,7 +76,6 @@ import {
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
 import { AUTOANALYZE_KEY, CreateRule } from './CreateRule';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
@@ -87,7 +87,6 @@ export interface RulesTableProps {}
 export const RulesTable: React.FC<RulesTableProps> = () => {
   const context = React.useContext(ServiceContext);
   const capabilities = React.useContext(CapabilitiesContext);
-  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
   const { t } = useCryostatTranslation();
 
@@ -260,31 +259,25 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
     [addSubscription, context.api],
   );
 
-  const handleEditButton = React.useCallback(
-    (rule: Rule) => {
-      navigate(toPath('/rules'), {
-        state: {
-          openCreateModal: true,
-          ...rule,
-          edit: true,
-        },
-      });
-    },
-    [navigate],
-  );
+  const handleEditButton = React.useCallback((rule: Rule) => {
+    store.dispatch(
+      modalPrefillSetIntent(toPath('/rules'), {
+        openCreateModal: true,
+        ...rule,
+        edit: true,
+      } as unknown as Record<string, unknown>),
+    );
+  }, []);
 
-  const handleCopyButton = React.useCallback(
-    (rule: Rule) => {
-      navigate(toPath('/rules'), {
-        state: {
-          openCreateModal: true,
-          ...rule,
-          name: `${rule.name}_copy`,
-        },
-      });
-    },
-    [navigate],
-  );
+  const handleCopyButton = React.useCallback((rule: Rule) => {
+    store.dispatch(
+      modalPrefillSetIntent(toPath('/rules'), {
+        openCreateModal: true,
+        ...rule,
+        name: `${rule.name}_copy`,
+      } as unknown as Record<string, unknown>),
+    );
+  }, []);
 
   const handleDeleteButton = React.useCallback(
     (rule: Rule) => {
