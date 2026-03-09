@@ -18,7 +18,7 @@ import { KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { ValidatedOptions } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import { cleanup, screen, act, within } from '@testing-library/react';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 const mockUploadedRecordingLabels: KeyValue = {
   key: 'someUploaded',
@@ -69,7 +69,7 @@ describe('<RecordingLabelFields />', () => {
   });
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {

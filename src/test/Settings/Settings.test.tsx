@@ -22,7 +22,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { Content } from '@patternfly/react-core';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderSnapshot, render, testT } from '../utils';
+import { render, testT } from '../utils';
 
 jest.mock('@app/Settings/Config/NotificationControl', () => ({
   NotificationControl: {
@@ -146,7 +146,7 @@ describe('<Settings />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -156,7 +156,7 @@ describe('<Settings />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   // useNavigate() is mocked. Can't switch tab

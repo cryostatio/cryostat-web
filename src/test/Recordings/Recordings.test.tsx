@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
@@ -84,7 +84,7 @@ describe('<Recordings />', () => {
   });
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -94,6 +94,6 @@ describe('<Recordings />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 });

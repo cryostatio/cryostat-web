@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { createMockForPFTableRef, render, renderSnapshot, testT } from '../utils';
+import { createMockForPFTableRef, render, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
@@ -124,11 +124,10 @@ describe('<AgentLiveProbes />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] },
-      createNodeMock: createMockForPFTableRef,
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should disable remove button if there is no probe', async () => {

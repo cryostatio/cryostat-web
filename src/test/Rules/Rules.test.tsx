@@ -21,7 +21,7 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import '@testing-library/jest-dom';
 import { act, act as doAct, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
+import { createMockForPFTableRef, render } from '../utils';
 
 jest.mock('@app/Rules/CreateRule', () => ({
   AUTOANALYZE_KEY: 'autoanalyze',
@@ -107,7 +107,7 @@ describe('<Rules />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -116,9 +116,8 @@ describe('<Rules />', () => {
           },
         ],
       },
-      createNodeMock: createMockForPFTableRef,
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('opens create rule view when Create is clicked', async () => {

@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { of, throwError } from 'rxjs';
-import { basePreloadedState, render, renderSnapshot, testT } from '../../utils';
+import { basePreloadedState, render, testT } from '../../utils';
 
 jest.mock('@app/Recordings/TargetAnalysis', () => {
   return {
@@ -119,7 +119,7 @@ describe('<AutomatedAnalysisCard />', () => {
 
   it('renders correctly', async () => {
     jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValueOnce(of(mockReport));
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -129,7 +129,7 @@ describe('<AutomatedAnalysisCard />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('renders report generation error view correctly', async () => {

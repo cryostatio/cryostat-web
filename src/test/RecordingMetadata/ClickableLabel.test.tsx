@@ -20,7 +20,7 @@ import { KeyValue } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 const mockLabel: KeyValue = {
   key: 'someLabel',
@@ -39,7 +39,7 @@ describe('<ClickableLabel />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -49,7 +49,7 @@ describe('<ClickableLabel />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should display blue when the label is currently selected', async () => {

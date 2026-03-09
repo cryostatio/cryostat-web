@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
+import { createMockForPFTableRef, render } from '../utils';
 
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
 const mockNewAlias = 'newTarget';
@@ -277,11 +277,10 @@ describe('<AllTargetsHeapDumpsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/heapdumps', element: <AllTargetsHeapDumpsTable /> }] },
-      createNodeMock: createMockForPFTableRef,
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('has the correct table elements', async () => {

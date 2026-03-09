@@ -20,7 +20,7 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { act, cleanup, screen } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { createMockForPFTableRef, render, renderSnapshot, testT } from '../utils';
+import { createMockForPFTableRef, render, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = {
@@ -112,7 +112,7 @@ describe('<EventTypes />', () => {
 
   // FIXME: Do not reorder tests. Snapshot test is required to run last here.
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -121,8 +121,7 @@ describe('<EventTypes />', () => {
           },
         ],
       },
-      createNodeMock: createMockForPFTableRef,
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 });
