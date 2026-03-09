@@ -5226,6 +5226,7 @@ __metadata:
     js-base64: "npm:3.7.8"
     license-check-and-add: "npm:^4.0.5"
     lodash: "npm:^4.17.23"
+    marked: "npm:^15.0.6"
     mini-css-extract-plugin: "npm:^2.10.0"
     miragejs: "npm:^0.1.48"
     mock-socket: "npm:^9.3.1"
@@ -10942,6 +10943,15 @@ __metadata:
   dependencies:
     tmpl: "npm:1.0.5"
   checksum: 10/4c66ddfc654537333da952c084f507fa4c30c707b1635344eb35be894d797ba44c901a9cebe914aa29a7f61357543ba09b09dddbd7f65b4aee756b450f169f40
+  languageName: node
+  linkType: hard
+
+"marked@npm:^15.0.6":
+  version: 15.0.12
+  resolution: "marked@npm:15.0.12"
+  bin:
+    marked: bin/marked.js
+  checksum: 10/deeb619405c0c46af00c99b18b3365450abeb309104b24e3658f46142344f6b7c4117608c3b5834084d8738e92f81240c19f596e6ee369260f96e52b3457eaee
   languageName: node
   linkType: hard
 
