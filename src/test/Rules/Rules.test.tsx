@@ -329,7 +329,7 @@ describe('<Rules />', () => {
       },
     });
 
-    await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
+    await user.click(screen.getByRole('switch', { name: `${mockRule.name} is enabled` }));
     expect(updateSpy).toHaveBeenCalledTimes(1);
     expect(updateSpy).toHaveBeenCalledWith({ ...mockRule, enabled: !mockRule.enabled }, expect.any(Boolean));
   });
@@ -348,7 +348,7 @@ describe('<Rules />', () => {
     });
 
     await act(async () => {
-      await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
+      await user.click(screen.getByRole('switch', { name: `${mockRule.name} is enabled` }));
 
       expect(screen.getByLabelText(DisableAutomatedRules.ariaLabel));
 
