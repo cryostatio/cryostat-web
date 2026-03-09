@@ -366,7 +366,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   const resizeObserver = React.useRef((): void => undefined);
-  const [cardWidth, setCardWidth] = React.useState(1); // Use non-zero as 0 means Infinity (invalid)
+  const [cardWidth, setCardWidth] = React.useState(300); // Default to reasonable width until resize observer sets actual value
 
   const containerRef: React.Ref<any> = React.createRef();
 
