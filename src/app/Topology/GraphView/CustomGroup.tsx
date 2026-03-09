@@ -100,7 +100,6 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
           collapsedHeight: collapsedHeight,
           collapsedWidth: collapsedWidth,
           badge: showBadge ? data.nodeType : undefined,
-          badgeClassName: css('topology__group-node-badge'),
           showLabel: true,
           contextMenuOpen: contextMenuOpen,
           onContextMenu: onContextMenu,

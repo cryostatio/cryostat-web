@@ -126,8 +126,6 @@ const CustomNode: React.FC<CustomNodeProps> = ({
           onContextMenu={onContextMenu}
           scaleNode={(hover || contextMenuOpen) && detailsLevel !== ScaleDetailsLevel.high}
           badge={showBadge ? nodeTypeToAbbr(data.nodeType) : undefined}
-          badgeColor={NODE_BADGE_COLOR}
-          badgeClassName={css('topology__node-badge')}
           nodeStatus={showStatus ? nodeStatus : undefined}
           showStatusBackground={!hover && detailsLevel === ScaleDetailsLevel.low}
           truncateLength={RESOURCE_NAME_TRUNCATE_LENGTH}

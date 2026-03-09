@@ -91,9 +91,6 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-t--global--background--color--primary--default);
 }
 
-:where(.pf-v6-theme-dark) .sample-node-donut__node-label {
-  background-color: var(--pf-t--global--background--color--primary--default);
-}
 
 .sample-node-donut__node-label-badge {
   position: relative;
@@ -153,9 +150,6 @@ Below CSS rules only apply to Topology components
   color: var(--pf-t--global--text--color--brand--default);
 }
 
-:where(.pf-v6-theme-dark) .entity-overview__entity-title-wrapper {
-  color: var(--pf-t--global--text--color--brand--default);
-}
 
 .entity-overview__entity-title-badge {
   background-color: var(--pf-t--global--background--color--brand--default);
@@ -188,9 +182,6 @@ Below CSS rules only apply to Topology components
   margin-right: 0.5em;
 }
 
-:where(.pf-v6-theme-dark) .topology-listview__realm-title {
-  color: var(--pf-t--global--text--color--brand--default);
-}
 
 .topology__help-icon {
   color: var(--pf-t--global--text--color--link--default);
@@ -207,9 +198,6 @@ Below CSS rules only apply to Topology components
   color: var(--pf-t--global--text--color--regular);
 }
 
-:where(.pf-v6-theme-dark) .topology__shortcut-command {
-  color: var(--pf-t--global--text--color--regular);
-}
 
 .topology__shortcut-command-icon {
   margin-right: 0.5em;
@@ -219,22 +207,7 @@ Below CSS rules only apply to Topology components
   margin: 0 0.5em
 }
 
-:where(.pf-v6-theme-dark) .topology__short-cuts.pf-v6-c-table {
-  background-color: var(--pf-t--global--background--color--primary--default);
-}
 
-.topology__node-badge text {
-  fill: var(--pf-t--global--text--color--on-brand--default) !important;
-  font-weight: 700;
-}
-
-.topology__group-node-badge {
-  fill: var(--pf-t--global--background--color--primary--default);
-}
-
-:where(.pf-v6-theme-dark) .topology__group-node-badge {
-  fill: var(--pf-t--global--background--color--primary--default);
-}
 
 .topology__visualization-container.topology__main-container {
   padding: 1em;
@@ -279,9 +252,6 @@ Below CSS rules only apply to Topology components
   background-color: var(--pf-t--global--background--color--primary--default);
 }
 
-:where(.pf-v6-theme-dark) .topology__quicksearch__tab-icon {
-  background-color: var(--pf-t--global--background--color--primary--default);
-}
 
 .topology__quicksearch__tab-text {
   font-weight: 700;
@@ -291,25 +261,11 @@ Below CSS rules only apply to Topology components
   margin: 0 !important;
 }
 
-:where(.pf-v6-theme-dark) .topology__quicksearch__tabs {
-  background-color: var(--pf-t--global--background--color--primary--default);
-}
-
-:where(.pf-v6-theme-dark) .topology__quicksearch__tabs .pf-v6-c-label {
-  background-color: var(--pf-t--global--background--color--secondary--default);
-}
 
 .topology__quicksearch__tab.pf-m-current {
   background-color: var(--pf-t--global--background--color--secondary--default);
 }
 
-:where(.pf-v6-theme-dark) .topology__quicksearch__tab.pf-m-current {
-  background-color: var(--pf-t--global--background--color--secondary--default);
-}
-
-:where(.pf-v6-theme-dark) .topology__quicksearch__tab-content {
-  background-color: var(--pf-t--global--background--color--primary--default);
-}
 
 .topology__quicksearch__tab-content-title {
   margin-bottom: -1em;
@@ -342,9 +298,6 @@ Below CSS rules only apply to Topology components
   height: 25em !important;
 }
 
-:where(.pf-v6-theme-dark) .topology__list-view__entity-details {
-  background-color: var(--pf-t--global--background--color--primary--default);
-}
 
 .topology__treeview-container {
   padding: 1em;
