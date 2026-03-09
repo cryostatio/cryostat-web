@@ -19,7 +19,7 @@ import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from 
 import { AnalysisResult } from '@app/Shared/Services/api.types';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
-  ToolbarChipGroup,
+  ToolbarLabelGroup,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
@@ -87,13 +87,13 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
   );
 
   const onDelete = React.useCallback(
-    (category: string | ToolbarChipGroup, value) =>
+    (category: string | ToolbarLabelGroup, value) =>
       updateFilters(target, { filterKey: category as string, filterValue: value, deleted: true }),
     [updateFilters, target],
   );
 
   const onDeleteGroup = React.useCallback(
-    (category: string | ToolbarChipGroup) =>
+    (category: string | ToolbarLabelGroup) =>
       updateFilters(target, { filterKey: category as string, deleted: true, deleteOptions: { all: true } }),
     [updateFilters, target],
   );
@@ -179,9 +179,9 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
             .map((filterKey, i) => (
               <ToolbarFilter
                 key={filterKey}
-                chips={filters[filterKey]}
-                deleteChip={onDelete}
-                deleteChipGroup={onDeleteGroup}
+                labels={filters[filterKey]}
+                deleteLabel={onDelete}
+                deleteLabelGroup={onDeleteGroup}
                 categoryName={filterKey}
                 showToolbarItem={filterKey === currentCategory}
               >

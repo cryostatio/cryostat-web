@@ -15,7 +15,8 @@
  */
 
 import { portalRoot } from '@app/utils/utils';
-import { Button, Modal } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
+import { Modal } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 
 export interface CancelUploadModalProps {

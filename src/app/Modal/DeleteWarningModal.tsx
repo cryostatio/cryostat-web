@@ -15,7 +15,8 @@
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { portalRoot } from '@app/utils/utils';
-import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
+import { Button, Checkbox, Stack, Split } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useState } from 'react';
 import { DeleteOrDisableWarningType } from './types';

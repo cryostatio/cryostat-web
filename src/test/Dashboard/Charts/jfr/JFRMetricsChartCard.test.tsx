@@ -24,7 +24,7 @@ import { Palette, ThemeSetting } from '@app/Settings/types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { mockMediaQueryList, render, renderSnapshot } from '../../../utils';
+import { mockMediaQueryList, render } from '../../../utils';
 
 const mockDashboardUrl = 'http://localhost:3000';
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDashboardUrl));
@@ -76,7 +76,7 @@ describe('<JFRMetricsChartCard />', () => {
   it('renders correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -87,13 +87,13 @@ describe('<JFRMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('renders loading state correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.UNKNOWN));
 
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -104,13 +104,13 @@ describe('<JFRMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('renders empty state correctly', async () => {
     jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -121,7 +121,7 @@ describe('<JFRMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('renders empty state with information and action button', async () => {

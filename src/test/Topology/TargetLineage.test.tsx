@@ -155,7 +155,7 @@ describe('<TargetLineage />', () => {
 
     const emptyStateContainer = screen
       .getByText('Target Lineage Unavailable')
-      .closest('.pf-v5-c-empty-state') as HTMLElement;
+      .closest('.pf-v6-c-empty-state') as HTMLElement;
     expect(emptyStateContainer).toBeInTheDocument();
 
     const icon = within(emptyStateContainer).getByRole('img', { hidden: true });
