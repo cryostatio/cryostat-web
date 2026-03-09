@@ -15,7 +15,7 @@
  */
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
-import { createMockForPFTableRef } from '@test/utils';
+import { createMockForPFTableRef, render } from '@test/utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
   name: 'rule1',

@@ -64,7 +64,7 @@ describe('<ClickableLabel />', () => {
       },
     });
 
-    const label = screen.getByLabelText(mockLabelAsString, { selector: '.pf-v5-c-label' });
+    const label = screen.getByLabelText(mockLabelAsString, { selector: '.pf-v6-c-label' });
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
 
@@ -83,7 +83,7 @@ describe('<ClickableLabel />', () => {
       },
     });
 
-    const label = screen.getByLabelText(mockLabelAsString, { selector: '.pf-v5-c-label' });
+    const label = screen.getByLabelText(mockLabelAsString, { selector: '.pf-v6-c-label' });
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
 

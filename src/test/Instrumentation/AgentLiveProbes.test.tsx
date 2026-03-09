@@ -133,7 +133,7 @@ describe('<AgentLiveProbes />', () => {
   it('should disable remove button if there is no probe', async () => {
     render({ routerConfigs: { routes: [{ path: '/events', element: <AgentLiveProbes /> }] } });
 
-    const removeButton = screen.getByText('Remove all probes');
+    const removeButton = screen.getByRole('button', { name: 'Remove all probes' });
     expect(removeButton).toBeInTheDocument();
     expect(removeButton).toBeVisible();
     expect(removeButton).toBeDisabled();

@@ -26,7 +26,7 @@ import { MBeanMetrics } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@i18n/config';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { mockMediaQueryList } from '@test/utils';
+import { mockMediaQueryList, render } from '@test/utils';
 import { cleanup } from '@testing-library/react';
 import { from, of } from 'rxjs';
 

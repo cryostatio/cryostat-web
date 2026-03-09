@@ -79,7 +79,7 @@ describe('<RecordingLabelFields />', () => {
         ],
       },
     });
-    expect(tree).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should display all available labels', async () => {
