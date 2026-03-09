@@ -38,18 +38,15 @@ import {
   ToolbarItem,
   SearchInput,
   EmptyState,
-  EmptyStateIcon,
-  Text,
+  Content,
   Split,
   SplitItem,
-  EmptyStateHeader,
   Button,
   Icon,
   Bullseye,
-  Modal,
-  ModalVariant,
   Spinner,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { FileIcon, InfoCircleIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import {
   Table,
@@ -312,10 +309,11 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
             <Split hasGutter>
               <SplitItem>
-                <Text>{dir.connectUrl}</Text>
+                <Content component="p">{dir.connectUrl}</Content>
               </SplitItem>
               <SplitItem>
                 <Button
+                  icon={<InfoCircleIcon />}
                   variant="plain"
                   onClick={() => {
                     setSelectedJvmId(dir.jvmId);
@@ -323,19 +321,23 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                   }}
                   isDisabled={!dir.jvmId || dir.jvmId === 'uploads'}
                   aria-label="View target details"
-                >
-                  <InfoCircleIcon />
-                </Button>
+                />
               </SplitItem>
             </Split>
           </Td>
           <Td key={`directory-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Button variant="plain" onClick={() => toggleExpanded(dir)}>
-              <Icon iconSize="md">
-                <FileIcon />
-              </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{dir.recordings.length || 0}</span>
-            </Button>
+            <Button
+              icon={
+                <>
+                  <Icon iconSize="md">
+                    <FileIcon />
+                  </Icon>
+                  <span style={{ marginLeft: 'var(--pf-t--global--spacer--sm)' }}>{dir.recordings.length || 0}</span>
+                </>
+              }
+              variant="plain"
+              onClick={() => toggleExpanded(dir)}
+            />
           </Td>
         </Tr>
       );
@@ -399,13 +401,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     view = (
       <>
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText={t('RecordingsTable.NO_ARCHIVES')}
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('RecordingsTable.NO_ARCHIVES')}></EmptyState>
         </Bullseye>
       </>
     );
@@ -448,13 +444,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         ) : wrappedTarget ? (
           <EntityDetails entity={wrappedTarget} className="target-details-modal" hideActions={true} />
         ) : (
-          <EmptyState>
-            <EmptyStateHeader
-              titleText="Target Details Unavailable"
-              icon={<EmptyStateIcon icon={TopologyIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Details Unavailable"></EmptyState>
         )}
       </Modal>
       <OuterScrollContainer className="archive-table-outer-container">

@@ -16,7 +16,7 @@
 
 import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { cleanup, screen } from '@testing-library/react';
-import { render, renderSnapshot, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const onSelect = jest.fn((_: boolean) => undefined);
 
@@ -28,7 +28,7 @@ describe('<MeridiemPicker/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -38,7 +38,7 @@ describe('<MeridiemPicker/>', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should select a meridiem when click', async () => {

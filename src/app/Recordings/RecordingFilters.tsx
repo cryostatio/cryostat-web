@@ -314,12 +314,12 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
           <ToolbarFilter
             key={`${filterKey}-filter`}
             className="recording-filter__toolbar-filter"
-            chips={filters[filterKey].map((v: unknown, index) => {
+            labels={filters[filterKey].map((v: unknown, index) => {
               const display = getCategoryChipDisplay(t, dayjs, filterKey, v);
               return { node: display, key: index }; // Use key to keep value index
             })}
-            deleteChip={onDelete}
-            deleteChipGroup={onDeleteGroup}
+            deleteLabel={onDelete}
+            deleteLabelGroup={onDeleteGroup}
             categoryName={{
               key: filterKey,
               name: getCategoryDisplay(t, filterKey),

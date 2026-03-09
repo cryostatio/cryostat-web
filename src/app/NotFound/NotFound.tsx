@@ -23,10 +23,8 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
   EmptyState,
-  EmptyStateIcon,
   EmptyStateBody,
   EmptyStateActions,
-  EmptyStateHeader,
   EmptyStateFooter,
   Gallery,
   GalleryItem,
@@ -63,12 +61,7 @@ export const NotFound: React.FC<NotFoundProps> = (_) => {
 
   return (
     <>
-      <EmptyState>
-        <EmptyStateHeader
-          titleText={t('NotFound.TITLE')}
-          icon={<EmptyStateIcon icon={MapMarkedAltIcon} />}
-          headingLevel="h4"
-        />
+      <EmptyState headingLevel="h4" icon={MapMarkedAltIcon} titleText={t('NotFound.TITLE')}>
         <EmptyStateBody>{t('NotFound.DESCRIPTION')}</EmptyStateBody>
         <EmptyStateFooter>
           <EmptyStateActions>

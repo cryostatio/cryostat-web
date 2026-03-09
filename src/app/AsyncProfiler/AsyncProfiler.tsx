@@ -44,8 +44,6 @@ import {
   DropdownItem,
   DropdownList,
   EmptyState,
-  EmptyStateHeader,
-  EmptyStateIcon,
   MenuToggle,
   MenuToggleElement,
   OverflowMenu,
@@ -382,17 +380,15 @@ export const AsyncProfiler: React.FC = () => {
         <CardBody>
           {!isProfilerDetected ? (
             <Bullseye>
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText={
-                    !target || !target.agent
-                      ? t('AsyncProfiler.AGENT_INTEGRATION_REQUIRED')
-                      : t('AsyncProfiler.NOT_DETECTED')
-                  }
-                  icon={<EmptyStateIcon icon={SearchIcon} />}
-                  headingLevel="h4"
-                />
-              </EmptyState>
+              <EmptyState
+                headingLevel="h4"
+                icon={SearchIcon}
+                titleText={
+                  !target || !target.agent
+                    ? t('AsyncProfiler.AGENT_INTEGRATION_REQUIRED')
+                    : t('AsyncProfiler.NOT_DETECTED')
+                }
+              ></EmptyState>
             </Bullseye>
           ) : (
             <AsyncProfilerTable
@@ -523,8 +519,8 @@ const AsyncProfilesToolbar: React.FC<AsyncProfilesTableToolbarProps> = (props) =
   return (
     <Toolbar id="async-profiles-toolbar" aria-label="async-profiles-toolbar">
       <ToolbarContent>
-        <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem variant="overflow-menu">
+        <ToolbarGroup variant="action-group" style={{ alignSelf: 'start' }}>
+          <ToolbarItem>
             <OverflowMenu
               breakpoint="sm"
               breakpointReference={() => document.getElementById('async-profiles-toolbar') || document.body}
@@ -617,13 +613,7 @@ export const AsyncProfilerTable: React.FC<AsyncProfilerTableProps> = ({
   } else if (isEmpty) {
     view = (
       <Bullseye>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={t('AsyncProfiler.NO_PROFILES')}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
-        </EmptyState>
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('AsyncProfiler.NO_PROFILES')}></EmptyState>
       </Bullseye>
     );
   } else {

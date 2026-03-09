@@ -21,11 +21,9 @@ import {
   Bullseye,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
-  Text,
-  TextVariants,
-  EmptyStateHeader,
+  Content,
+  ContentVariants,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -80,12 +78,12 @@ export const DefaultFallBack: React.FC<DefaultFallBackProps> = ({ error, ...prop
 
   return (
     <Bullseye {...props}>
-      <EmptyState variant={EmptyStateVariant.lg}>
-        <EmptyStateHeader
-          titleText={<>{t('SOMETHING_WENT_WRONG')}</>}
-          icon={<EmptyStateIcon icon={ExclamationCircleIcon} color="red" />}
-          headingLevel={'h1'}
-        />
+      <EmptyState
+        headingLevel={'h1'}
+        icon={ExclamationCircleIcon}
+        titleText={<>{t('SOMETHING_WENT_WRONG')}</>}
+        variant={EmptyStateVariant.lg}
+      >
         <EmptyStateBody>
           <p>{t('ERROR_BOUNDARY.ERROR_MESSAGE', { message: error?.message || 'Unknown error.' })}</p>
           <Trans
@@ -95,10 +93,10 @@ export const DefaultFallBack: React.FC<DefaultFallBackProps> = ({ error, ...prop
               fileReport: t('AboutDescription.FILE_A_REPORT'),
             }}
             components={{
-              issue: <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl} />,
+              issue: <Content component={ContentVariants.a} target="_blank" href={build.knownIssuesUrl} />,
               report: (
-                <Text
-                  component={TextVariants.a}
+                <Content
+                  component={ContentVariants.a}
                   target="_blank"
                   href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
                 />

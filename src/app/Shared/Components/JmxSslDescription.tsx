@@ -13,42 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { DescriptionProps } from './types';
 
 export const JmxSslDescription: React.FC<React.PropsWithChildren<DescriptionProps>> = ({ children }) => {
   return (
-    <TextContent>
+    <Content>
       {children}
-      <Text component={TextVariants.p}>
+      <Content component={ContentVariants.p}>
         JVM applications can be configured to present an SSL/TLS certificate for incoming JMX connections. Clients, such
         as Cryostat, should be configured to trust these certificates so that the origin and authenticity of the
         connection data can be verified.
-      </Text>
-      <Text component={TextVariants.p}>
+      </Content>
+      <Content component={ContentVariants.p}>
         Check the deployment configuration of your JVM application for system properties such as:
-      </Text>
-      <TextList>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.keyStore</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.keyStorePassword</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.ssl.need.client.auth</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.trustStore</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>javax.net.ssl.trustStorePassword</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.registry.ssl</Text>
-        </TextListItem>
-      </TextList>
-    </TextContent>
+      </Content>
+      <Content component="ul">
+        <Content component="li">
+          <Content component={ContentVariants.pre}>javax.net.ssl.keyStore</Content>
+        </Content>
+        <Content component="li">
+          <Content component={ContentVariants.pre}>javax.net.ssl.keyStorePassword</Content>
+        </Content>
+        <Content component="li">
+          <Content component={ContentVariants.pre}>com.sun.management.jmxremote.ssl.need.client.auth</Content>
+        </Content>
+        <Content component="li">
+          <Content component={ContentVariants.pre}>javax.net.ssl.trustStore</Content>
+        </Content>
+        <Content component="li">
+          <Content component={ContentVariants.pre}>javax.net.ssl.trustStorePassword</Content>
+        </Content>
+        <Content component="li">
+          <Content component={ContentVariants.pre}>com.sun.management.jmxremote.registry.ssl</Content>
+        </Content>
+      </Content>
+    </Content>
   );
 };

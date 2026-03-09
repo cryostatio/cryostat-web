@@ -31,7 +31,7 @@ import {
   keyValueToString,
 } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { Text } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
 import { screen, within, cleanup, act } from '@testing-library/react';
@@ -130,7 +130,7 @@ const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFile
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
-    BulkEditLabels: (_) => <Text>Edit Recording Labels</Text>,
+    BulkEditLabels: (_) => <Content component="p">Edit Recording Labels</Content>,
   };
 });
 
