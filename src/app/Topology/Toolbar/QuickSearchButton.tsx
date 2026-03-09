@@ -38,14 +38,13 @@ export const QuickSearchButton: React.FC<QuickSearchButtonProps> = ({ onClick, t
         appendTo={() => document.getElementById('topology-quicksearch-btn-wrapper') || document.body}
       >
         <Button
+          icon={<QuickSearchIcon />}
           variant="plain"
           onClick={handleClick}
           style={{ padding: 0 }}
           data-quickstart-id={'topology-catalog-btn'}
           ref={catalogRef}
-        >
-          <QuickSearchIcon />
-        </Button>
+        />
       </Tooltip>
     </div>
   );

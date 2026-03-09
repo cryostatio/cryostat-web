@@ -25,7 +25,6 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
-  DualListSelector,
   DualListSelectorTreeItemData,
   HelperText,
   HelperTextItem,
@@ -33,6 +32,7 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
+import { DualListSelector } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { tap } from 'rxjs';
