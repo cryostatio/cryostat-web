@@ -695,7 +695,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             <Alert
               isLiveRegion
               variant={variant}
-              key={title}
+              key={key}
               title={title}
               actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
               timeout={true}
