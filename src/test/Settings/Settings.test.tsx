@@ -19,17 +19,17 @@ import { Settings } from '@app/Settings/Settings';
 import { Palette, UserSetting } from '@app/Settings/types';
 import { FeatureLevel, SessionState } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { Text } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderSnapshot, render, testT } from '../utils';
+import { render, testT } from '../utils';
 
 jest.mock('@app/Settings/Config/NotificationControl', () => ({
   NotificationControl: {
     titleKey: 'SETTINGS.NOTIFICATION_CONTROL.TITLE',
     descConstruct: 'SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
-    content: () => <Text>Notification Control Component</Text>,
+    content: () => <Content component="p">Notification Control Component</Content>,
     orderInGroup: 1,
   } as UserSetting,
 }));
@@ -39,7 +39,7 @@ jest.mock('@app/Settings/Config/ChartCards', () => ({
     titleKey: 'SETTINGS.CHARTS_CONFIG.TITLE',
     descConstruct: 'SETTINGS.CHARTS_CONFIG.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.DASHBOARD',
-    content: () => <Text>Chart Cards Config Component</Text>,
+    content: () => <Content component="p">Chart Cards Config Component</Content>,
   } as UserSetting,
 }));
 
@@ -48,7 +48,7 @@ jest.mock('@app/Settings/Config/DeletionDialogControl', () => ({
     titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',
     descConstruct: 'SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
-    content: () => <Text>Deletion Dialog Control Component</Text>,
+    content: () => <Content component="p">Deletion Dialog Control Component</Content>,
   } as UserSetting,
 }));
 
@@ -57,7 +57,7 @@ jest.mock('@app/Settings/Config/WebSocketDebounce', () => ({
     titleKey: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE',
     descConstruct: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
-    content: () => <Text>WebSocket Debounce Component</Text>,
+    content: () => <Content component="p">WebSocket Debounce Component</Content>,
   } as UserSetting,
 }));
 
@@ -66,7 +66,7 @@ jest.mock('@app/Settings/Config/AutoRefresh', () => ({
     titleKey: 'SETTINGS.AUTO_REFRESH.TITLE',
     descConstruct: 'SETTINGS.AUTO_REFRESH.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
-    content: () => <Text>AutoRefresh Component</Text>,
+    content: () => <Content component="p">AutoRefresh Component</Content>,
   } as UserSetting,
 }));
 
@@ -75,7 +75,7 @@ jest.mock('@app/Settings/Config/FeatureLevels', () => ({
     titleKey: 'SETTINGS.FEATURE_LEVEL.TITLE',
     descConstruct: 'SETTINGS.FEATURE_LEVEL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.ADVANCED',
-    content: () => <Text>Feature Levels Component</Text>,
+    content: () => <Content component="p">Feature Levels Component</Content>,
   } as UserSetting,
 }));
 
@@ -86,7 +86,7 @@ jest.mock('@app/Settings/Config/Language', () => ({
     category: 'SETTINGS.CATEGORIES.GENERAL',
     featureLevel: 1,
     orderInGroup: 1,
-    content: () => <Text>Language Component</Text>,
+    content: () => <Content component="p">Language Component</Content>,
   } as UserSetting,
 }));
 
@@ -95,7 +95,7 @@ jest.mock('@app/Settings/Config/DatetimeControl', () => ({
     titleKey: 'SETTINGS.DATETIME_CONTROL.TITLE',
     descConstruct: 'SETTINGS.DATETIME_CONTROL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.GENERAL',
-    content: () => <Text>DatetimeControl Component</Text>,
+    content: () => <Content component="p">DatetimeControl Component</Content>,
   } as UserSetting,
 }));
 
@@ -104,7 +104,7 @@ jest.mock('@app/Settings/Config/Theme', () => ({
     titleKey: 'SETTINGS.THEME.TITLE',
     descConstruct: 'SETTINGS.THEME.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.GENERAL',
-    content: () => <Text>Theme Component</Text>,
+    content: () => <Content component="p">Theme Component</Content>,
   } as UserSetting,
 }));
 
@@ -113,7 +113,7 @@ jest.mock('@app/Settings/Config/TopologyConfig', () => ({
     titleKey: 'SETTINGS.TOPOLOGY.TITLE',
     descConstruct: 'SETTINGS.TOPOLOGY.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.TOPOLOGY',
-    content: () => <Text>Topology Component</Text>,
+    content: () => <Content component="p">Topology Component</Content>,
   } as UserSetting,
 }));
 
@@ -122,7 +122,7 @@ jest.mock('@app/Settings/Config/Accessibility', () => ({
     titleKey: 'SETTINGS.ACCESSIBILITY.TITLE',
     descConstruct: 'SETTINGS.ACCESSIBILITY.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.GENERAL',
-    content: () => <Text>Accessibility Component</Text>,
+    content: () => <Content component="p">Accessibility Component</Content>,
   } as UserSetting,
 }));
 
@@ -146,7 +146,7 @@ describe('<Settings />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -156,7 +156,7 @@ describe('<Settings />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   // useNavigate() is mocked. Can't switch tab
