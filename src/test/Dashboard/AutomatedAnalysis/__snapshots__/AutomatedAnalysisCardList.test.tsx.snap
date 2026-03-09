@@ -142,7 +142,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
                   class=""
                 >
                   <span
-                    class="pf-m-red pf-v5-c-label__icon"
+                    class="pf-m-red pf-v6-c-label__icon"
                   >
                     <svg
                       aria-hidden="true"
@@ -310,7 +310,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
                   class=""
                 >
                   <span
-                    class="pf-m-orange pf-v5-c-label__icon"
+                    class="pf-m-orange pf-v6-c-label__icon"
                   >
                     <svg
                       aria-hidden="true"
@@ -435,7 +435,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
                   class=""
                 >
                   <span
-                    class="pf-m-green pf-v5-c-label__icon"
+                    class="pf-m-green pf-v6-c-label__icon"
                   >
                     <svg
                       aria-hidden="true"
@@ -560,7 +560,7 @@ exports[`<AutomatedAnalysisCardList /> renders correctly 1`] = `
                   class=""
                 >
                   <span
-                    class="pf-m-grey pf-v5-c-label__icon"
+                    class="pf-m-grey pf-v6-c-label__icon"
                   >
                     <svg
                       aria-hidden="true"

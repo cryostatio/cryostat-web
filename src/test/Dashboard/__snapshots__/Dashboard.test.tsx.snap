@@ -235,7 +235,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <tspan
                                   dx="0"
                                   dy="0"
-                                  style="fill: var(--pf-v5-chart-global--label--Fill, #151515); text-anchor: middle; font-family: var(--pf-v6-chart-global--FontFamily, 'Red Hat Text', 'RedHatText', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Malayalam', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', Helvetica, Arial, sans-serif); font-size: 14px; letter-spacing: var(--pf-v6-chart-global--letter-spacing, normal); stroke: transparent;"
+                                  style="fill: var(--pf-t--global--text--color--regular); text-anchor: middle; font-family: var(--pf-v6-chart-global--FontFamily, 'Red Hat Text', 'RedHatText', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Malayalam', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', Helvetica, Arial, sans-serif); font-size: 14px; letter-spacing: var(--pf-v6-chart-global--letter-spacing, normal); stroke: transparent;"
                                   text-anchor="middle"
                                   x="14"
                                 >
@@ -654,7 +654,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <tspan
                                   dx="0"
                                   dy="0"
-                                  style="fill: var(--pf-v5-chart-global--label--Fill, #151515); text-anchor: middle; font-family: var(--pf-v6-chart-global--FontFamily, 'Red Hat Text', 'RedHatText', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Malayalam', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', Helvetica, Arial, sans-serif); font-size: 14px; letter-spacing: var(--pf-v6-chart-global--letter-spacing, normal); stroke: transparent;"
+                                  style="fill: var(--pf-t--global--text--color--regular); text-anchor: middle; font-family: var(--pf-v6-chart-global--FontFamily, 'Red Hat Text', 'RedHatText', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Malayalam', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', Helvetica, Arial, sans-serif); font-size: 14px; letter-spacing: var(--pf-v6-chart-global--letter-spacing, normal); stroke: transparent;"
                                   text-anchor="middle"
                                   x="14"
                                 >
@@ -1090,7 +1090,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
                                 <tspan
                                   dx="0"
                                   dy="0"
-                                  style="fill: var(--pf-v5-chart-global--label--Fill, #151515); text-anchor: middle; font-family: var(--pf-v6-chart-global--FontFamily, 'Red Hat Text', 'RedHatText', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Malayalam', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', Helvetica, Arial, sans-serif); font-size: 14px; letter-spacing: var(--pf-v6-chart-global--letter-spacing, normal); stroke: transparent;"
+                                  style="fill: var(--pf-t--global--text--color--regular); text-anchor: middle; font-family: var(--pf-v6-chart-global--FontFamily, 'Red Hat Text', 'RedHatText', 'Noto Sans Arabic', 'Noto Sans Hebrew', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Malayalam', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans Thai', Helvetica, Arial, sans-serif); font-size: 14px; letter-spacing: var(--pf-v6-chart-global--letter-spacing, normal); stroke: transparent;"
                                   text-anchor="middle"
                                   x="14"
                                 >

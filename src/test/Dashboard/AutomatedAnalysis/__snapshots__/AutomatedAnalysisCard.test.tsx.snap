@@ -9,7 +9,7 @@ exports[`<AutomatedAnalysisCard /> renders correctly 1`] = `
       class="dashboard-card-resizable-wrapper"
     >
       <div
-        class="pf-v6-c-card pf-m-compact pf-m-expanded dashboard-card"
+        class="pf-v6-c-card pf-m-compact pf-m-expanded automated-analysis-card"
         data-ouia-component-id="OUIA-Generated-Card-1"
         data-ouia-component-type="PF6/Card"
         data-ouia-safe="true"

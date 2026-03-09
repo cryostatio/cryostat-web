@@ -8,6 +8,7 @@ exports[`<DashboardLayoutToolbar /> renders correctly 1`] = `
     data-ouia-component-type="PF6/Toolbar"
     data-ouia-safe="true"
     id="pf-random-id-0"
+    style="margin-top: var(--pf-t--global--spacer--md);"
   >
     <div
       class="pf-v6-c-toolbar__content"
