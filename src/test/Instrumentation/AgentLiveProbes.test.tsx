@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { createMockForPFTableRef, render, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';

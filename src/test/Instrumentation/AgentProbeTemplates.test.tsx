@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within, act } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { createMockForPFTableRef, render, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 

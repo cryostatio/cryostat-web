@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
 import { of } from 'rxjs';
-import { createMockForPFTableRef, render } from '../utils';
+import { render } from '../utils';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';

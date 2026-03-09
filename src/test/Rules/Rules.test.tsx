@@ -21,7 +21,7 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import '@testing-library/jest-dom';
 import { act, act as doAct, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { createMockForPFTableRef, render } from '../utils';
+import { render } from '../utils';
 
 jest.mock('@app/Rules/CreateRule', () => ({
   AUTOANALYZE_KEY: 'autoanalyze',

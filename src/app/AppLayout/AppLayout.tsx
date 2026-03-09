@@ -77,7 +77,6 @@ import {
 } from '@patternfly/react-core';
 import {
   BarsIcon,
-  BellIcon,
   CogIcon,
   ExternalLinkAltIcon,
   LanguageIcon,
@@ -545,7 +544,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge, t],
+    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge, cryostatLogo, t],
   );
 
   const isActiveRoute = React.useCallback(

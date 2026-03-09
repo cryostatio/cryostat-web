@@ -83,7 +83,7 @@ const SimpleChart: React.FC<{
   samples: Sample[];
   units: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
-}> = ({ cryostatTheme, themeColor, style, width, samples, units, interpolation }) => {
+}> = ({ themeColor, style, width, samples, units, interpolation }) => {
   const [dayjs, dateTimeFormat] = useDayjs();
 
   const data = React.useMemo(

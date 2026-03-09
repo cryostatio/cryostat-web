@@ -42,7 +42,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { map } from 'rxjs';
 import { getStatusTargetNode, nodeTypeToAbbr, TOPOLOGY_GRAPH_ID } from '../Shared/utils';
-import { NODE_BADGE_COLOR, NODE_ICON_PADDING, RESOURCE_NAME_TRUNCATE_LENGTH } from './const';
+import { NODE_ICON_PADDING, RESOURCE_NAME_TRUNCATE_LENGTH } from './const';
 import { getNodeDecorators } from './NodeDecorator';
 
 export const renderNodeIcon = (graphic: string, _data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {

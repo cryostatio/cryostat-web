@@ -21,7 +21,7 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { createMockForPFTableRef, render, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = {
