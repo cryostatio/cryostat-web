@@ -35,9 +35,7 @@ import {
   CardTitle,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
-  EmptyStateHeader,
   EmptyStateFooter,
   ActionList,
   Tooltip,
@@ -174,16 +172,6 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     );
   }, [props.actions, t]);
 
-  const stateHeader = React.useMemo(() => {
-    return (
-      <EmptyStateHeader
-        titleText={<>{t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE')}</>}
-        icon={<EmptyStateIcon icon={WrenchIcon} />}
-        headingLevel="h2"
-      />
-    );
-  }, [t]);
-
   return (
     <>
       <DashboardCard
@@ -198,8 +186,12 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
       >
         <CardBody>
           <Bullseye>
-            <EmptyState variant={!props.headerDisabled ? EmptyStateVariant.lg : EmptyStateVariant.xs}>
-              {!props.headerDisabled ? stateHeader : null}
+            <EmptyState
+              variant={!props.headerDisabled ? EmptyStateVariant.lg : EmptyStateVariant.xs}
+              icon={!props.headerDisabled ? WrenchIcon : undefined}
+              titleText={!props.headerDisabled ? t('DiagnosticsCard.DIAGNOSTICS_CARD_TITLE') : undefined}
+              headingLevel="h2"
+            >
               {!props.headerDisabled ? (
                 <EmptyStateBody>{t('DiagnosticsCard.DIAGNOSTICS_CARD_DESCRIPTION')}</EmptyStateBody>
               ) : null}

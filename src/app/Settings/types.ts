@@ -95,7 +95,7 @@ export const DefaultColourPalette: ColourPalette = {
 
 export const MonochromeBlueColourPalette: ColourPalette = {
   primary: () => [
-    'cyan',
+    'teal',
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-200 */,
   ],
   secondary: () => [
@@ -107,7 +107,7 @@ export const MonochromeBlueColourPalette: ColourPalette = {
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-500 */,
   ],
   accent: () => [
-    'gold',
+    'yellow',
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--orange-200 */,
   ],
   neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
@@ -115,7 +115,7 @@ export const MonochromeBlueColourPalette: ColourPalette = {
 
 export const MonochromeOrangeColourPalette: ColourPalette = {
   primary: () => [
-    'gold',
+    'yellow',
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--gold-200 */,
   ],
   secondary: () => [
@@ -127,7 +127,7 @@ export const MonochromeOrangeColourPalette: ColourPalette = {
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--red-100 */,
   ],
   accent: () => [
-    'cyan',
+    'teal',
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-200 */,
   ],
   neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
@@ -143,11 +143,11 @@ export const HighContrastColourPalette: ColourPalette = {
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--purple-300 */,
   ],
   tertiary: () => [
-    'gold',
+    'yellow',
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--gold-300 */,
   ],
   accent: () => [
-    'cyan',
+    'teal',
     'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--cyan-400 */,
   ],
   neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],

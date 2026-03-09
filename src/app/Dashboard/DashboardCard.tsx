@@ -23,7 +23,7 @@ import { DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
 import { DashboardCardSizes } from './types';
 
-export interface DashboardCardProps extends CardProps {
+export interface DashboardCardProps extends Omit<CardProps, 'ref'> {
   dashboardId: number;
   cardSizes: DashboardCardSizes;
   cardHeader: React.ReactNode;

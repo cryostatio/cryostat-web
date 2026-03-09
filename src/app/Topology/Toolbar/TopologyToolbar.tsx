@@ -175,7 +175,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
             </ToolbarItem>
           ) : null}
           {!isDisabled ? <ToolbarItem align={{ default: 'alignEnd' }}>{shortcuts}</ToolbarItem> : null}
-          <ToolbarItem align={isDisabled ? { default: 'alignRight' } : undefined}>{modeIcon}</ToolbarItem>
+          <ToolbarItem align={isDisabled ? { default: 'alignEnd' } : undefined}>{modeIcon}</ToolbarItem>
         </ToolbarContent>
       </Toolbar>
       <TopologyFilterChips className="topology__toolbar-chip-content" />

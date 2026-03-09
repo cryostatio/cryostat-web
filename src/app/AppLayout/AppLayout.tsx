@@ -384,7 +384,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <Label
           isCompact={useCompactLabels}
           style={{ marginLeft: '2ch', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
-          color={level === FeatureLevel.BETA ? 'cyan' : 'red'}
+          color={level === FeatureLevel.BETA ? 'teal' : 'red'}
         >
           {t(FeatureLevel[level])}
         </Label>
