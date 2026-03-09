@@ -1,127 +1,120 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<AllArchivedRecordingsTable /> renders correctly 1`] = `
-<div
-  className="archive-table-outer-container pf-v5-c-scroll-outer-wrapper"
->
+<div>
   <div
-    className="pf-v5-c-toolbar"
-    data-ouia-component-id="OUIA-Generated-Toolbar-1"
-    data-ouia-component-type="PF5/Toolbar"
-    data-ouia-safe={true}
-    id="all-archives-toolbar"
+    class="archive-table-outer-container pf-v6-c-scroll-outer-wrapper"
   >
     <div
-      className="pf-v5-c-toolbar__content"
+      class="pf-v6-c-toolbar"
+      data-ouia-component-id="OUIA-Generated-Toolbar-1"
+      data-ouia-component-type="PF6/Toolbar"
+      data-ouia-safe="true"
+      id="all-archives-toolbar"
     >
       <div
-        className="pf-v5-c-toolbar__content-section"
+        class="pf-v6-c-toolbar__content"
       >
         <div
-          className="pf-v5-c-toolbar__group pf-m-filter-group"
+          class="pf-v6-c-toolbar__content-section"
         >
           <div
-            className="pf-v5-c-toolbar__item"
+            class="pf-v6-c-toolbar__group pf-m-filter-group"
           >
             <div
-              className="pf-v5-c-text-input-group"
-              style={
-                {
-                  "minWidth": "30ch",
-                }
-              }
+              class="pf-v6-c-toolbar__item"
             >
               <div
-                className="pf-v5-c-text-input-group__main pf-m-icon"
-                onKeyDown={[Function]}
+                class="pf-v6-c-text-input-group"
+                style="min-width: 30ch;"
               >
-                <span
-                  className="pf-v5-c-text-input-group__text"
+                <div
+                  class="pf-v6-c-text-input-group__main pf-m-icon"
                 >
                   <span
-                    className="pf-v5-c-text-input-group__icon"
+                    class="pf-v6-c-text-input-group__text"
                   >
-                    <svg
-                      aria-hidden={true}
-                      aria-labelledby={null}
-                      className="pf-v5-svg"
-                      fill="currentColor"
-                      height="1em"
-                      role="img"
-                      viewBox="0 0 512 512"
-                      width="1em"
+                    <span
+                      class="pf-v6-c-text-input-group__icon"
                     >
-                      <path
-                        d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
-                      />
-                    </svg>
+                      <svg
+                        aria-hidden="true"
+                        class="pf-v6-svg"
+                        fill="currentColor"
+                        height="1em"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        width="1em"
+                      >
+                        <path
+                          d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
+                        />
+                      </svg>
+                    </span>
+                    <input
+                      aria-label="Search input"
+                      class="pf-v6-c-text-input-group__text-input"
+                      placeholder="Find by JVM ID..."
+                      type="text"
+                      value=""
+                    />
                   </span>
-                  <input
-                    aria-label="Search input"
-                    className="pf-v5-c-text-input-group__text-input"
-                    disabled={false}
-                    onChange={[Function]}
-                    placeholder="Find by JVM ID..."
-                    type="text"
-                    value=""
-                  />
-                </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div
-      className="pf-v5-c-toolbar__content pf-m-hidden"
-      hidden={true}
-    >
       <div
-        className="pf-v5-c-toolbar__group"
-      />
-    </div>
-  </div>
-  <div
-    className="pf-v5-c-scroll-inner-wrapper"
-  >
-    <div
-      className="pf-v5-l-bullseye"
-    >
-      <div
-        className="pf-v5-c-empty-state"
+        class="pf-v6-c-toolbar__content pf-m-hidden"
+        hidden=""
       >
         <div
-          className="pf-v5-c-empty-state__content"
+          class="pf-v6-c-toolbar__group"
+        />
+      </div>
+    </div>
+    <div
+      class="pf-v6-c-scroll-inner-wrapper"
+    >
+      <div
+        class="pf-v6-l-bullseye"
+      >
+        <div
+          class="pf-v6-c-empty-state"
         >
           <div
-            className="pf-v5-c-empty-state__header"
+            class="pf-v6-c-empty-state__content"
           >
             <div
-              className="pf-v5-c-empty-state__icon"
+              class="pf-v6-c-empty-state__header"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                className="pf-v5-svg"
-                fill="currentColor"
-                height="1em"
-                role="img"
-                viewBox="0 0 512 512"
-                width="1em"
+              <div
+                class="pf-v6-c-empty-state__icon"
               >
-                <path
-                  d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
-                />
-              </svg>
-            </div>
-            <div
-              className="pf-v5-c-empty-state__title"
-            >
-              <h4
-                className="pf-v5-c-empty-state__title-text"
+                <svg
+                  aria-hidden="true"
+                  class="pf-v6-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
+                  />
+                </svg>
+              </div>
+              <div
+                class="pf-v6-c-empty-state__title"
               >
-                No Archived Recordings
-              </h4>
+                <h4
+                  class="pf-v6-c-empty-state__title-text"
+                >
+                  No Archived Recordings
+                </h4>
+              </div>
             </div>
           </div>
         </div>

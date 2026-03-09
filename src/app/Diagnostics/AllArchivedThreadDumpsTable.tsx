@@ -31,14 +31,12 @@ import {
   ToolbarItem,
   SearchInput,
   EmptyState,
-  EmptyStateIcon,
-  EmptyStateHeader,
   Button,
   Icon,
   Bullseye,
   Split,
   SplitItem,
-  Text,
+  Content,
   Tooltip,
 } from '@patternfly/react-core';
 import { FileIcon, HelpIcon, SearchIcon } from '@patternfly/react-icons';
@@ -243,7 +241,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
           <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
             <Split hasGutter>
               <SplitItem>
-                <Text>{dir.jvmId}</Text>
+                <Content component="p">{dir.jvmId}</Content>
               </SplitItem>
               <SplitItem>
                 <Tooltip hidden={!dir.jvmId} content={`JVM hash ID: ${dir.jvmId}`} appendTo={portalRoot}>
@@ -253,12 +251,18 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
             </Split>
           </Td>
           <Td key={`directory-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Button variant="plain" onClick={() => toggleExpanded(dir)}>
-              <Icon iconSize="md">
-                <FileIcon />
-              </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{dir.threadDumps.length || 0}</span>
-            </Button>
+            <Button
+              icon={
+                <>
+                  <Icon iconSize="md">
+                    <FileIcon />
+                  </Icon>
+                  <span style={{ marginLeft: 'var(--pf-t--global--spacer--sm)' }}>{dir.threadDumps.length || 0}</span>
+                </>
+              }
+              variant="plain"
+              onClick={() => toggleExpanded(dir)}
+            />
           </Td>
         </Tr>
       );
@@ -321,13 +325,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
     view = (
       <>
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText={t('ThreadDumps.NO_ARCHIVES')}
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('ThreadDumps.NO_ARCHIVES')}></EmptyState>
         </Bullseye>
       </>
     );

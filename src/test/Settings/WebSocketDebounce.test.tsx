@@ -18,7 +18,7 @@ import { WebSocketDebounce } from '@app/Settings/Config/WebSocketDebounce';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 const defaultValue = 100;
 
@@ -32,7 +32,7 @@ describe('<WebSocketDebounce/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -42,7 +42,7 @@ describe('<WebSocketDebounce/>', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should set correct default period', async () => {
