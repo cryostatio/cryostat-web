@@ -24,7 +24,7 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { KeyValue, keyValueToString, ThreadDump } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { Text } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within, act } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
@@ -60,7 +60,7 @@ const mockThreadDump: ThreadDump = {
 
 jest.mock('@app/Diagnostics/BulkEditThreadDumpLabels', () => {
   return {
-    BulkEditThreadDumpLabels: (_) => <Text>Edit Thread Dump Labels</Text>,
+    BulkEditThreadDumpLabels: (_) => <Content component="p">Edit Thread Dump Labels</Content>,
   };
 });
 

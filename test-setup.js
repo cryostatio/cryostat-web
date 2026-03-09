@@ -1,6 +1,7 @@
 // Mock out the services shared across the app in order to help isolate
 // components from the ServiceContext
 import '@i18n/config';
+import '@testing-library/jest-dom';
 
 if (typeof globalThis.Request === 'undefined') {
   globalThis.Request = class {
@@ -67,3 +68,7 @@ jest.mock('@i18n/datetime', () => ({
 jest.mock('nanoid', () => {
   return { nanoid: () => '1234' };
 });
+
+// Configure jsdom environment for PatternFly v6 components
+// PatternFly v6 components require real DOM APIs (querySelector, refs, etc.)
+// which are provided by jsdom but not by react-test-renderer

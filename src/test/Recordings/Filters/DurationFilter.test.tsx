@@ -18,7 +18,7 @@ import { DurationFilter, DurationRange } from '@app/Recordings/Filters/DurationF
 import { DurationUnit } from '@app/Shared/Components/DurationUnitSelect';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { cleanup, screen, waitFor, act } from '@testing-library/react';
-import { render, renderSnapshot, testT } from '../../utils';
+import { render, testT } from '../../utils';
 
 const mockRecordingLabels = [
   {
@@ -65,7 +65,7 @@ describe('<DurationFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -75,7 +75,7 @@ describe('<DurationFilter />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should check continous box if continous is in filter', async () => {

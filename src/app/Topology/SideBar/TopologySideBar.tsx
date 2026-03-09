@@ -27,7 +27,7 @@ export interface TopologySideBarProps {
 export const TopologySideBar: React.FC<TopologySideBarProps> = ({ children, onClose, className, ...props }) => {
   return (
     <>
-      <DrawerHead hasNoPadding>
+      <DrawerHead>
         <DrawerActions>
           <DrawerCloseButton className="entity-overview__entity-close-button" onClick={onClose} />
         </DrawerActions>

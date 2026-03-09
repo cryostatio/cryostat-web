@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-import { renderSnapshot, render } from '../utils';
+import { render } from '../utils';
 
 jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
@@ -89,7 +89,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -99,7 +99,7 @@ describe('<BulkEditHeapDumpLabels />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should display labels from selected Heap Dumps', async () => {

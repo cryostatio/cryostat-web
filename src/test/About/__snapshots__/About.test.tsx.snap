@@ -2,39 +2,40 @@
 
 exports[`<About /> renders correctly 1`] = `
 <div>
-  About
-  <div
-    className="pf-v5-c-card"
-    data-ouia-component-id="OUIA-Generated-Card-1"
-    data-ouia-component-type="PF5/Card"
-    data-ouia-safe={true}
-    id=""
-  >
+  <div>
+    About
     <div
-      className="pf-v5-c-card__header"
+      class="pf-v6-c-card"
+      data-ouia-component-id="OUIA-Generated-Card-1"
+      data-ouia-component-type="PF6/Card"
+      data-ouia-safe="true"
+      id=""
     >
       <div
-        className="pf-v5-c-card__header-main"
+        class="pf-v6-c-card__header"
       >
-        <img
-          alt="Cryostat"
-          className="pf-v5-c-brand cryostat-logo"
-          src="test-file-stub"
-          style={{}}
-        />
+        <div
+          class="pf-v6-c-card__header-main"
+        >
+          <img
+            alt="Cryostat"
+            class="pf-v6-c-brand cryostat-logo"
+            src="test-file-stub"
+          />
+        </div>
       </div>
-    </div>
-    <div
-      className="pf-v5-c-card__body"
-    >
-      <div>
-        AboutDescription
+      <div
+        class="pf-v6-c-card__body"
+      >
+        <div>
+          AboutDescription
+        </div>
       </div>
-    </div>
-    <div
-      className="pf-v5-c-card__footer"
-    >
-      Copyright The Cryostat Authors, The Apache License, Version 2.0
+      <div
+        class="pf-v6-c-card__footer"
+      >
+        Copyright The Cryostat Authors, The Apache License, Version 2.0
+      </div>
     </div>
   </div>
 </div>

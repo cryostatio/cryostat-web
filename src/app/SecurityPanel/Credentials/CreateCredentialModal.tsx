@@ -35,8 +35,6 @@ import {
   GridItem,
   HelperText,
   HelperTextItem,
-  Modal,
-  ModalVariant,
   Popover,
   Tab,
   Tabs,
@@ -45,6 +43,7 @@ import {
   TextArea,
   ValidatedOptions,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
@@ -94,7 +93,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
           <TestPoolContext.Provider value={testPoolRef.current}>
             <Grid hasGutter style={{ height: '100%' }}>
               <GridItem xl={4}>
-                <Card isFullHeight isFlat>
+                <Card isFullHeight>
                   <CardBody className="overflow-auto">
                     <AuthForm
                       {...props}
@@ -106,7 +105,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
                 </Card>
               </GridItem>
               <GridItem xl={8}>
-                <Card isFullHeight isFlat>
+                <Card isFullHeight>
                   <CardBody className="overflow-auto">
                     <FormHelper />
                   </CardBody>
@@ -226,7 +225,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
     >
       <FormGroup
         label={t('MATCH_EXPRESSION')}
-        labelIcon={
+        labelHelp={
           <Popover
             appendTo={portalRoot}
             headerContent={t('CreateCredentialModal.MATCH_EXPRESSION_HINT_MODAL_HEADER')}
@@ -238,9 +237,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             }
             hasAutoWidth
           >
-            <Button variant="plain" aria-label={t('CreateCredentialModal.ARIA_LABELS.HELPER_ICON')}>
-              <HelpIcon />
-            </Button>
+            <Button
+              icon={<HelpIcon />}
+              variant="plain"
+              aria-label={t('CreateCredentialModal.ARIA_LABELS.HELPER_ICON')}
+            />
           </Popover>
         }
         isRequired
