@@ -468,8 +468,11 @@ body,
   cursor: col-resize;
   position: relative;
   border-right: 4px solid var(--pf-t--global--border--color--default);
-  border-top-right-radius: var(--pf-t--global--border--radius--small);
-  border-bottom-right-radius: var(--pf-t--global--border--radius--small);
+  border-top-right-radius: var(--pf-t--global--border--radius--medium);
+  border-bottom-right-radius: var(--pf-t--global--border--radius--medium);
+  margin-left: -4px;
+  margin-top: calc(var(--pf-t--global--border--radius--medium) / 2);
+  margin-bottom: calc(var(--pf-t--global--border--radius--medium) / 2);
 }
 
 .draggable-ref__grip {
