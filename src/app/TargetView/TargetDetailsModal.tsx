@@ -47,6 +47,7 @@ export const TargetDetailsModal: React.FC<TargetDetailsModalProps> = ({ visible,
       showClose={true}
       className="target-details-modal"
       onClose={onDismiss}
+      title={target?.alias || 'Target Details'}
     >
       <EntityDetails entity={wrappedTarget} className={'target-details-modal'} />
     </Modal>
