@@ -32,8 +32,8 @@ import {
   NotificationDrawerListItem,
   NotificationDrawerListItemBody,
   NotificationDrawerListItemHeader,
-  Text,
-  TextVariants,
+  Content,
+  ContentVariants,
 } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -184,7 +184,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ onClose 
                     <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read}>
                       <NotificationDrawerListItemHeader title={title} variant={variant} />
                       <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)}>
-                        <Text component={TextVariants.p}>{message?.toString()}</Text>
+                        <Content component={ContentVariants.p}>{message?.toString()}</Content>
                       </NotificationDrawerListItemBody>
                     </NotificationDrawerListItem>
                   ))}

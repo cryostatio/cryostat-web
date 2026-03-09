@@ -16,7 +16,7 @@
 
 import { NodeType, NullableTarget } from '@app/Shared/Services/api.types';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
-import { Modal, ModalVariant } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 
 export interface TargetDetailsModalProps {

@@ -90,14 +90,13 @@ export const AutomatedAnalysisTopicFilter: React.FC<AutomatedAnalysisTopicFilter
           <TextInputGroupUtilities>
             {filterValue ? (
               <Button
+                icon={<TimesIcon aria-hidden />}
                 variant="plain"
                 onClick={() => {
                   setFilterValue('');
                 }}
                 aria-label="Clear input value"
-              >
-                <TimesIcon aria-hidden />
-              </Button>
+              />
             ) : null}
           </TextInputGroupUtilities>
         </TextInputGroup>

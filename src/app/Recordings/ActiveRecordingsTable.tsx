@@ -548,14 +548,13 @@ export const ActiveRecordingsTable: React.FC<ActiveRecordingsTableProps> = (prop
           <DrawerHead>
             <DrawerActions>
               <Button
+                icon={<ProcessAutomationIcon />}
                 variant="plain"
                 onClick={handleReportRefresh}
                 aria-label="Request analysis"
                 isDisabled={!recordings.length}
                 data-quickstart-id="recordings-analyze-request"
-              >
-                <ProcessAutomationIcon />
-              </Button>
+              />
               <DrawerCloseButton
                 onClick={() => setShowPanel(false)}
                 data-testid="hide-recordings-analysis-panel"
@@ -848,8 +847,8 @@ const ActiveRecordingsToolbar: React.FC<ActiveRecordingsToolbarProps> = (props) 
           breakpoint={'xl'}
         />
         <ToolbarItem variant="separator" className="recording-toolbar-separator" />
-        <ToolbarGroup style={{ alignSelf: 'start' }} variant="button-group">
-          <ToolbarItem variant="overflow-menu">
+        <ToolbarGroup style={{ alignSelf: 'start' }} variant="action-group">
+          <ToolbarItem>
             <OverflowMenu
               breakpoint="lg"
               breakpointReference={

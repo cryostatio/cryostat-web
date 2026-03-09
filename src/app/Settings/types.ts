@@ -74,34 +74,82 @@ export interface ColourPalette {
 }
 
 export const DefaultColourPalette: ColourPalette = {
-  primary: () => ['green', 'var(--pf-v5-global--success-color--100)'],
-  secondary: () => ['orange', 'var(--pf-v5-global--warning-color--100)'],
-  tertiary: () => ['red', 'var(--pf-v5-global--danger-color--100)'],
-  accent: () => ['blue', 'var(--pf-v5-global--primary-color--100)'],
+  primary: () => [
+    'green',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--success-color--100 */,
+  ],
+  secondary: () => [
+    'orange',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--warning-color--100 */,
+  ],
+  tertiary: () => [
+    'red',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--danger-color--100 */,
+  ],
+  accent: () => [
+    'blue',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--primary-color--100 */,
+  ],
   neutral: () => ['grey', 'var(--pf-v5-global---color--200)'],
 };
 
 export const MonochromeBlueColourPalette: ColourPalette = {
-  primary: () => ['cyan', 'var(--pf-v5-global--palette--blue-200)'],
-  secondary: () => ['blue', 'var(--pf-v5-global--palette--blue-300)'],
-  tertiary: () => ['purple', 'var(--pf-v5-global--palette--blue-500)'],
-  accent: () => ['gold', 'var(--pf-v5-global--palette--orange-200)'],
+  primary: () => [
+    'cyan',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-200 */,
+  ],
+  secondary: () => [
+    'blue',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-300 */,
+  ],
+  tertiary: () => [
+    'purple',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-500 */,
+  ],
+  accent: () => [
+    'gold',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--orange-200 */,
+  ],
   neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
 };
 
 export const MonochromeOrangeColourPalette: ColourPalette = {
-  primary: () => ['gold', 'var(--pf-v5-global--palette--gold-200)'],
-  secondary: () => ['orange', 'var(--pf-v5-global--palette--orange-300)'],
-  tertiary: () => ['red', 'var(--pf-v5-global--palette--red-100)'],
-  accent: () => ['cyan', 'var(--pf-v5-global--palette--blue-200)'],
+  primary: () => [
+    'gold',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--gold-200 */,
+  ],
+  secondary: () => [
+    'orange',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--orange-300 */,
+  ],
+  tertiary: () => [
+    'red',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--red-100 */,
+  ],
+  accent: () => [
+    'cyan',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-200 */,
+  ],
   neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
 };
 
 export const HighContrastColourPalette: ColourPalette = {
-  primary: () => ['green', 'var(--pf-v5-global--palette--green-300)'],
-  secondary: () => ['purple', 'var(--pf-v5-global--palette--purple-300)'],
-  tertiary: () => ['gold', 'var(--pf-v5-global--palette--gold-300)'],
-  accent: () => ['cyan', 'var(--pf-v5-global--palette--cyan-400)'],
+  primary: () => [
+    'green',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--green-300 */,
+  ],
+  secondary: () => [
+    'purple',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--purple-300 */,
+  ],
+  tertiary: () => [
+    'gold',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--gold-300 */,
+  ],
+  accent: () => [
+    'cyan',
+    'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--cyan-400 */,
+  ],
   neutral: () => ['grey', 'var(--pf-v5-global--color--200)'],
 };
 

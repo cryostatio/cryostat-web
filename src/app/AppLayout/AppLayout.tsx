@@ -48,10 +48,11 @@ import {
   Icon,
   Label,
   Masthead,
-  MastheadBrand,
+  MastheadLogo,
   MastheadContent,
   MastheadMain,
   MastheadToggle,
+  MastheadBrand,
   Nav,
   NavGroup,
   NavItem,
@@ -397,7 +398,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <>
         <Toolbar isFullHeight isStatic>
           <ToolbarContent>
-            <ToolbarGroup variant="icon-button-group" align={{ default: 'alignRight' }}>
+            <ToolbarGroup variant="action-group-plain" align={{ default: 'alignEnd' }}>
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
                 <ToolbarItem>
                   <Button
@@ -411,12 +412,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   />
                 </ToolbarItem>
               </FeatureFlag>
-              <ToolbarGroup variant="icon-button-group" spacer={{ default: 'spacerSm' }}>
+              <ToolbarGroup variant="action-group-plain" gap={{ default: 'gapSm' }}>
                 <ToolbarItem>
                   <ThemeToggle />
                 </ToolbarItem>
               </ToolbarGroup>
-              <ToolbarGroup variant="icon-button-group">
+              <ToolbarGroup variant="action-group-plain">
                 <ToolbarItem>
                   <NotificationBadge
                     id="notification-badge"
@@ -434,16 +435,17 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </ToolbarItem>
                 <ToolbarItem>
                   <Button
+                    icon={
+                      <Icon>
+                        <CogIcon />
+                      </Icon>
+                    }
                     variant="plain"
                     aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.SETTINGS')}
                     data-tour-id="settings-link"
                     data-quickstart-id="settings-link"
                     component={(props) => <CryostatLink {...props} to="/settings" />}
-                  >
-                    <Icon>
-                      <CogIcon />
-                    </Icon>
-                  </Button>
+                  />
                 </ToolbarItem>
                 <ToolbarItem>
                   <Dropdown
@@ -511,25 +513,27 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     () => (
       <>
         <Masthead>
-          <MastheadToggle>
-            <PageToggleButton
-              variant="plain"
-              aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NAVIGATION')}
-              isSidebarOpen={isNavOpen}
-              onSidebarToggle={onNavToggle}
-              data-quickstart-id="nav-toggle-btn"
-              data-tour-id="nav-toggle-btn"
-            >
-              <Icon>
-                <BarsIcon />
-              </Icon>
-            </PageToggleButton>
-          </MastheadToggle>
           <MastheadMain>
-            <MastheadBrand component={'div'}>
-              <CryostatLink to={'/'}>
-                <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
-              </CryostatLink>
+            <MastheadToggle>
+              <PageToggleButton
+                variant="plain"
+                aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NAVIGATION')}
+                isSidebarOpen={isNavOpen}
+                onSidebarToggle={onNavToggle}
+                data-quickstart-id="nav-toggle-btn"
+                data-tour-id="nav-toggle-btn"
+              >
+                <Icon>
+                  <BarsIcon />
+                </Icon>
+              </PageToggleButton>
+            </MastheadToggle>
+            <MastheadBrand data-codemods>
+              <MastheadLogo data-codemods component={'div'}>
+                <CryostatLink to={'/'}>
+                  <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
+                </CryostatLink>
+              </MastheadLogo>
             </MastheadBrand>
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>
@@ -632,7 +636,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     return (
       <Nav
         id="nav-primary-simple"
-        theme="dark"
         variant="default"
         onSelect={mobileOnSelect}
         aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.GLOBAL_NAVIGATION')}
@@ -652,7 +655,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const Sidebar = React.useMemo(
     () => (
-      <PageSidebar theme="dark" isSidebarOpen={isNavOpen}>
+      <PageSidebar isSidebarOpen={isNavOpen}>
         <PageSidebarBody>{Navigation}</PageSidebarBody>
       </PageSidebar>
     ),
@@ -702,7 +705,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </AlertGroup>
         <Page
           mainContainerId="primary-app-container"
-          header={header}
+          masthead={header}
           sidebar={Sidebar}
           notificationDrawer={NotificationDrawer}
           isNotificationDrawerExpanded={isNotificationDrawerExpanded}

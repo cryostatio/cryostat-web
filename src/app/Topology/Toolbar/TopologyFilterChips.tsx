@@ -21,7 +21,7 @@ import {
 } from '@app/Shared/Redux/ReduxStore';
 import { NodeType } from '@app/Shared/Services/api.types';
 import { getDisplayFieldName } from '@app/utils/utils';
-import { Chip, ChipGroup } from '@patternfly/react-core';
+import { Label, LabelGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -109,7 +109,7 @@ export const TopologyFilterChip: React.FC<TopologyFilterChipProps> = ({
   }, [dispatch, isGroupCategory, nodeType, category]);
 
   return (
-    <ChipGroup
+    <LabelGroup
       {...props}
       categoryName={`${nodeType}/${getDisplayFieldName(category)}`}
       isClosable
@@ -117,10 +117,10 @@ export const TopologyFilterChip: React.FC<TopologyFilterChipProps> = ({
       className={className}
     >
       {chipValues.map((value) => (
-        <Chip key={value} onClick={() => handleDeleteChip(value)}>
+        <Label variant="outline" key={value} onClose={() => handleDeleteChip(value)}>
           {value}
-        </Chip>
+        </Label>
       ))}
-    </ChipGroup>
+    </LabelGroup>
   );
 };

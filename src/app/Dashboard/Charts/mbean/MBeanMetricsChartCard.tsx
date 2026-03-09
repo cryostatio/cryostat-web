@@ -40,7 +40,7 @@ import {
   ChartLegend,
   ChartLine,
   ChartVoronoiContainer,
-} from '@patternfly/react-charts';
+} from '@patternfly/react-charts/victory';
 import { getResizeObserver, Button, CardBody, CardHeader, CardTitle, Tooltip } from '@patternfly/react-core';
 import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
@@ -124,7 +124,7 @@ const SimpleChart: React.FC<{
               style={{
                 fill:
                   cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-v5-global--palette--black-200)'
+                    ? 'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--black-200 */
                     : 'var(--pf-v5-chart-global--label--Fill, #151515)',
               }}
             />
@@ -151,7 +151,7 @@ const SimpleChart: React.FC<{
             style={{
               fill:
                 cryostatTheme === ThemeSetting.DARK
-                  ? 'var(--pf-v5-global--palette--black-200)'
+                  ? 'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--black-200 */
                   : 'var(--pf-v5-chart-global--label--Fill, #151515)',
             }}
           />
@@ -297,7 +297,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
               style={{
                 fill:
                   cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-v5-global--palette--black-200)'
+                    ? 'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--black-200 */
                     : 'var(--pf-v5-chart-donut--label--title--Fill, #151515)',
                 fontSize: '24px',
               }}

@@ -30,7 +30,8 @@ export const DEFAULT_GROUP_PADDINGS = [
 
 export const RESOURCE_NAME_TRUNCATE_LENGTH = 20;
 
-export const NODE_BADGE_COLOR = 'var(--pf-v5-global--palette--blue-500)';
+export const NODE_BADGE_COLOR =
+  'var(--pf-t--temp--dev--tbd)'; /* CODEMODS: original v5 color was --pf-v5-global--palette--blue-500 */
 
 export const NODE_ICON_PADDING = 5;
 

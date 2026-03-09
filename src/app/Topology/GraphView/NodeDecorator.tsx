@@ -74,7 +74,11 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
   const iconConfig = React.useMemo(() => {
     if (loading) {
       return {
-        icon: <InProgressIcon className="var(--pf-v5-global--info-color--100)" />,
+        icon: (
+          <InProgressIcon
+            className="var(--pf-t--temp--dev--tbd)" /* CODEMODS: original v5 color was --pf-v5-global--info-color--100 */
+          />
+        ),
         tooltip: 'Retrieving Active Recordings.',
       };
     }
@@ -149,7 +153,11 @@ export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, qu
   const iconConfig = React.useMemo(() => {
     if (loading) {
       return {
-        icon: <InProgressIcon className="var(--pf-v5-global--info-color--100)" />,
+        icon: (
+          <InProgressIcon
+            className="var(--pf-t--temp--dev--tbd)" /* CODEMODS: original v5 color was --pf-v5-global--info-color--100 */
+          />
+        ),
         tooltip: 'Retrieving Active Recordings.',
       };
     }

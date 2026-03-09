@@ -41,22 +41,18 @@ import {
   CardBody,
   CardTitle,
   EmptyState,
-  EmptyStateIcon,
   Switch,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
-  EmptyStateHeader,
-  TextContent,
-  Text,
-  TextVariants,
+  Content,
+  ContentVariants,
   SearchInput,
   Bullseye,
   LabelGroup,
   Label,
-  Modal,
-  ModalVariant,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ActionsColumn,
@@ -460,16 +456,14 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
             />
           </ToolbarItem>
           <ToolbarItem variant="separator" />
-          <ToolbarItem key="create" spacer={{ default: 'spacerSm' }}>
+          <ToolbarItem key="create" gap={{ default: 'gapSm' }}>
             <Button variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
               {t('CREATE')}
             </Button>
           </ToolbarItem>
           {capabilities.fileUploads ? (
             <ToolbarItem key="upload">
-              <Button variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
-                <UploadIcon />
-              </Button>
+              <Button icon={<UploadIcon />} variant="secondary" aria-label="Upload" onClick={handleUploadRule}></Button>
             </ToolbarItem>
           ) : (
             <></>
@@ -516,13 +510,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
       view = (
         <>
           <Bullseye>
-            <EmptyState>
-              <EmptyStateHeader
-                titleText={t('Rules.NO_RULES')}
-                icon={<EmptyStateIcon icon={SearchIcon} />}
-                headingLevel="h4"
-              />
-            </EmptyState>
+            <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('Rules.NO_RULES')}></EmptyState>
           </Bullseye>
         </>
       );
@@ -567,8 +555,8 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         <Card isCompact>
           <CardTitle>
             {t('AUTOMATED_RULES')}
-            <TextContent>
-              <Text component={TextVariants.small}>
+            <Content>
+              <Content component={ContentVariants.small}>
                 <Trans
                   t={t}
                   components={[
@@ -580,8 +568,8 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
                 >
                   Rules.ABOUT_BODY
                 </Trans>
-              </Text>
-            </TextContent>
+              </Content>
+            </Content>
           </CardTitle>
           <CardBody isFilled>{viewContent}</CardBody>
         </Card>

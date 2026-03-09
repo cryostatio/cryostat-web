@@ -32,8 +32,6 @@ import {
   SearchInput,
   Checkbox,
   EmptyState,
-  EmptyStateIcon,
-  EmptyStateHeader,
   Button,
   Icon,
   Bullseye,
@@ -434,12 +432,18 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
             {targetDisplay(target)}
           </Td>
           <Td key={`target-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Button variant="plain" onClick={() => toggleExpanded(target)}>
-              <Icon iconSize="md">
-                <FileIcon />
-              </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{archiveCount}</span>
-            </Button>
+            <Button
+              icon={
+                <>
+                  <Icon iconSize="md">
+                    <FileIcon />
+                  </Icon>
+                  <span style={{ marginLeft: 'var(--pf-t--global--spacer--sm)' }}>{archiveCount}</span>
+                </>
+              }
+              variant="plain"
+              onClick={() => toggleExpanded(target)}
+            />
           </Td>
         </Tr>
       );
@@ -497,13 +501,7 @@ export const AllTargetsThreadDumpsTable: React.FC<AllTargetsThreadDumpsTableProp
     view = (
       <>
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText={t('ThreadDumps.NO_ARCHIVES')}
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('ThreadDumps.NO_ARCHIVES')}></EmptyState>
         </Bullseye>
       </>
     );

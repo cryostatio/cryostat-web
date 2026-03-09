@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { AnalysisResult, Evaluation } from '@app/Shared/Services/api.types';
-import { Stack, StackItem, Label, Title, Text } from '@patternfly/react-core';
+import { Stack, StackItem, Label, Title, Content } from '@patternfly/react-core';
 import _ from 'lodash';
 
 export const transformAADescription = (result: AnalysisResult): JSX.Element => {
   const format = (s: Evaluation): JSX.Element => {
     if (typeof s === 'string') {
-      return <Text>{s}</Text>;
+      return <Content component="p">{s}</Content>;
     }
     if (Array.isArray(s)) {
       return (

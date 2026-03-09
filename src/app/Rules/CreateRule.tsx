@@ -49,10 +49,10 @@ import {
   Split,
   SplitItem,
   Switch,
-  Text,
+  Content,
   TextArea,
   TextInput,
-  TextVariants,
+  ContentVariants,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
@@ -429,7 +429,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
 
   return (
     <Form>
-      <Text component={TextVariants.small}>{t('CreateRule.ABOUT')}</Text>
+      <Content component={ContentVariants.small}>{t('CreateRule.ABOUT')}</Content>
       <FormGroup label={t('NAME')} isRequired fieldId="rule-name" data-quickstart-id="rule-name">
         <TextInput
           value={formData.name}
@@ -470,7 +470,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
       </FormGroup>
       <FormGroup
         label={t('MATCH_EXPRESSION')}
-        labelIcon={
+        labelHelp={
           <Popover
             appendTo={portalRoot}
             headerContent={t('CreateRule.MATCH_EXPRESSION_HINT_MODAL_HEADER')}
@@ -483,12 +483,11 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
             hasAutoWidth
           >
             <Button
+              icon={<HelpIcon />}
               variant="plain"
               aria-label={t('CreateRule.ARIA_LABELS.HELPER_ICON')}
               data-quickstart-id="rule-matchexpr-help"
-            >
-              <HelpIcon />
-            </Button>
+            />
           </Popover>
         }
         isRequired

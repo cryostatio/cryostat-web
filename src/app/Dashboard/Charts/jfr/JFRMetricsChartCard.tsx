@@ -36,10 +36,8 @@ import {
   CardTitle,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
   Label,
-  EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon, TachometerAltIcon } from '@patternfly/react-icons';
@@ -259,12 +257,12 @@ export const JFRMetricsChartCard: DashboardCardFC<JFRMetricsChartCardProps> = (p
           </div>
         ) : (
           <Bullseye>
-            <EmptyState variant={EmptyStateVariant.lg}>
-              <EmptyStateHeader
-                titleText={<>{t('CHART_CARD.NO_RECORDING.TITLE')}</>}
-                icon={<EmptyStateIcon icon={DataSourceIcon} />}
-                headingLevel="h2"
-              />
+            <EmptyState
+              headingLevel="h2"
+              icon={DataSourceIcon}
+              titleText={<>{t('CHART_CARD.NO_RECORDING.TITLE')}</>}
+              variant={EmptyStateVariant.lg}
+            >
               <EmptyStateBody>
                 <Trans
                   t={t}
