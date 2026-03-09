@@ -319,12 +319,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const userInfoToggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (
-      <MenuToggle variant="plainText" ref={toggleRef} onClick={handleUserInfoToggle}>
-        {username || (
-          <Icon size="sm">
-            <UserIcon color="white" />
-          </Icon>
-        )}
+      <MenuToggle
+        variant="plainText"
+        ref={toggleRef}
+        onClick={handleUserInfoToggle}
+        icon={!username ? <UserIcon /> : undefined}
+      >
+        {username}
       </MenuToggle>
     ),
     [username, handleUserInfoToggle],
@@ -528,8 +529,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </Icon>
               </PageToggleButton>
             </MastheadToggle>
-            <MastheadBrand data-codemods>
-              <MastheadLogo data-codemods component={'div'}>
+            <MastheadBrand>
+              <MastheadLogo component={'div'}>
                 <CryostatLink to={'/'}>
                   <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
                 </CryostatLink>
