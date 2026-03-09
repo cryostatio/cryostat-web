@@ -176,6 +176,7 @@ export const DiagnosticsCard: DashboardCardFC<DiagnosticsCardProps> = (props) =>
     <>
       <DashboardCard
         id={'diagnostics-card'}
+        className="diagnostics-card"
         dashboardId={props.dashboardId}
         cardSizes={DiagnosticsCardSizes}
         isCompact={props.headerDisabled}

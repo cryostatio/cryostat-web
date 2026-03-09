@@ -236,7 +236,7 @@ Below CSS rules only apply to Topology components
   fill: var(--pf-t--global--background--color--primary--default);
 }
 
-#topology__visualization-container.topology__main-container {
+.topology__visualization-container.topology__main-container {
   padding: 1em;
 }
 

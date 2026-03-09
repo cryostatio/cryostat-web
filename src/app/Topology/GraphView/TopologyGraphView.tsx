@@ -295,7 +295,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({
               <TopologyView
                 {...props}
                 id="topology__visualization-container"
-                className={css('topology__main-container')}
+                className={css('topology__visualization-container', 'topology__main-container')}
                 controlBar={<TopologyControlBar visualization={visualization} />}
                 sideBar={sidebar}
                 sideBarOpen={selectedIds.length > 0}
