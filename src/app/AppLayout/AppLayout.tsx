@@ -434,11 +434,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     }
                     onClick={handleNotificationCenterToggle}
                     aria-label={t('AppLayout.TOOLBAR.ARIA_LABELS.NOTIFICATIONS')}
-                  >
-                    <Icon>
-                      <BellIcon />
-                    </Icon>
-                  </NotificationBadge>
+                  />
                 </ToolbarItem>
                 <ToolbarItem>
                   <Button
