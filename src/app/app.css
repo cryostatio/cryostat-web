@@ -96,8 +96,15 @@ body,
   padding-inline: var(--pf-t--global--spacer--sm);
 }
 
+/* Fix QuickStarts catalog page excessive padding in first section */
 .pf-v6-c-page__main-section:has(.pf-v6-c-toolbar) {
+  padding-block-end: var(--pf-t--global--spacer--sm) !important;
   gap: var(--pf-t--global--spacer--sm) !important;
+}
+
+.pf-v6-c-page__main-section:has(.pf-v6-c-toolbar):has(.pf-v6-c-content) {
+  min-height: unset !important;
+  height: auto !important;
 }
 
 .pf-v6-c-card__body .pf-v6-c-tabs {
