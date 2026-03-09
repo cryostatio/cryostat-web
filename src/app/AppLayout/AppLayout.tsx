@@ -17,7 +17,8 @@ import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import { AuthModal } from '@app/AppLayout/AuthModal';
 import { NotificationCenter } from '@app/AppLayout/NotificationCenter';
 import { SslErrorModal } from '@app/AppLayout/SslErrorModal';
-import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
+import cryostatLogoLight from '@app/assets/cryostat_logo_hori_rgb_default.svg';
+import cryostatLogoDark from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import build from '@app/build.json';
 import CryostatJoyride from '@app/Joyride/CryostatJoyride';
 import { useJoyride } from '@app/Joyride/JoyrideProvider';
@@ -129,6 +130,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const [theme] = useTheme();
   const [useCompactLabels, setUseCompactLabels] = React.useState(true);
+
+  const cryostatLogo = React.useMemo(
+    () => (theme === ThemeSetting.DARK ? cryostatLogoDark : cryostatLogoLight),
+    [theme],
+  );
 
   React.useEffect(() => {
     if (theme === ThemeSetting.DARK) {
