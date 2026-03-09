@@ -148,8 +148,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
           <FormGroup label={'Template'} fieldId="template" isRequired>
             <div
               style={{
-                border:
-                  'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--BorderColor--100 */,
+                border: 'var(--pf-t--global--border--color--default)',
                 height: '50vh',
               }}
             >

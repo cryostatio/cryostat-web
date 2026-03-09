@@ -122,10 +122,7 @@ const SimpleChart: React.FC<{
           labelComponent={
             <ChartLabel
               style={{
-                fill:
-                  cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--black-200 */
-                    : 'var(--pf-v5-chart-global--label--Fill, #151515)',
+                fill: 'var(--pf-t--global--text--color--regular)',
               }}
             />
           }
@@ -149,10 +146,7 @@ const SimpleChart: React.FC<{
         axisLabelComponent={
           <ChartLabel
             style={{
-              fill:
-                cryostatTheme === ThemeSetting.DARK
-                  ? 'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--black-200 */
-                  : 'var(--pf-v5-chart-global--label--Fill, #151515)',
+              fill: 'var(--pf-t--global--text--color--regular)',
             }}
           />
         }
@@ -295,10 +289,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
           titleComponent={
             <ChartLabel
               style={{
-                fill:
-                  cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-t--temp--dev--tbd)' /* CODEMODS: original v5 color was --pf-v5-global--palette--black-200 */
-                    : 'var(--pf-v5-chart-donut--label--title--Fill, #151515)',
+                fill: 'var(--pf-t--global--text--color--regular)',
                 fontSize: '24px',
               }}
             />

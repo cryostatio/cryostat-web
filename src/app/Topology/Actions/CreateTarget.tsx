@@ -470,20 +470,12 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
     }
     return validation.option === ValidatedOptions.success
       ? {
-          icon: (
-            <CheckCircleIcon
-              color="var(--pf-t--temp--dev--tbd)" /* CODEMODS: original v5 color was --pf-v5-global--success-color--100 */
-            />
-          ),
+          icon: <CheckCircleIcon color="var(--pf-t--global--icon--color--status--success--default)" />,
           message: 'Target definition is valid.',
         }
       : validation.option === ValidatedOptions.error
         ? {
-            icon: (
-              <ExclamationCircleIcon
-                color="var(--pf-t--temp--dev--tbd)" /* CODEMODS: original v5 color was --pf-v5-global--danger-color--100 */
-              />
-            ),
+            icon: <ExclamationCircleIcon color="var(--pf-t--global--icon--color--status--danger--default)" />,
             message: validation.errorMessage,
           }
         : { icon: <PendingIcon />, message: '' };

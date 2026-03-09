@@ -55,12 +55,7 @@ export const renderNodeIcon = (graphic: string, _data: TargetNode, element: Node
 
   return (
     <>
-      <circle
-        cx={cx}
-        cy={cy}
-        r={contentSize / 2}
-        fill="var(--pf-t--temp--dev--tbd)" /* CODEMODS: original v5 color was --pf-v5-global--palette--white */
-      />
+      <circle cx={cx} cy={cy} r={contentSize / 2} fill="#ffffff" />
       {useAlt ? (
         <g transform={`translate(${trueCx}, ${trueCy})`}>
           <ContainerNodeIcon width={mainContentSize} height={mainContentSize} />

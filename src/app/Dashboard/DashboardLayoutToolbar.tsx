@@ -569,7 +569,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         setIsUploadModalOpen: setIsUploadModalOpen,
       }}
     >
-      <Toolbar>
+      <Toolbar style={{ marginTop: 'var(--pf-t--global--spacer--md)' }}>
         {toolbarContent}
         <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
         <LayoutTemplateUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />

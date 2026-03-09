@@ -247,7 +247,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({
     // Visualize surface needs time to intialize.
     // Workaround: find drawer body which is already ready and tightly wraps the surface.
     const container: HTMLElement | null = document.querySelector(
-      '#topology__visualization-container .pf-v5-c-drawer__content',
+      '#topology__visualization-container .pf-v6-c-drawer__content',
     );
     if (container) {
       container.addEventListener('contextmenu', showMenu);
@@ -270,7 +270,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({
 
   return (
     <>
-      <Stack>
+      <Stack style={{ height: '100%' }}>
         {!hideToolbar && (
           <>
             <StackItem>
