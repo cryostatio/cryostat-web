@@ -212,6 +212,7 @@ body,
 
 .automated-analysis-card {
   height: 100%;
+  width: 100%;
 }
 
 .automated-analysis-datalist-outerscroll.pf-v6-c-scroll-outer-wrapper {
