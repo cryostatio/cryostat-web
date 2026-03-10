@@ -175,8 +175,6 @@ export class Dashboard {
     const addCardButton = await getElementById(this.driver, 'dashboard-add-btn');
     await this.driver.executeScript('arguments[0].click();', addCardButton);
 
-    const twoPartCards = [CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
-
     switch (cardType) {
       case CardType.AUTOMATED_ANALYSIS: {
         const aaCard = await getElementById(this.driver, `AutomatedAnalysisCard.CARD_TITLE-input`);
@@ -218,7 +216,7 @@ export class Dashboard {
         const nextButton = await getElementById(this.driver, 'card-props-config-next');
         await this.driver.executeScript('arguments[0].click();', nextButton);
         await this.driver.sleep(1000);
-      } catch (e) {
+      } catch (_) {
         // Button not found, modal likely closed
         break;
       }
@@ -278,7 +276,7 @@ export class Recordings {
     try {
       const demoOption = await this.driver.findElement(By.xpath("//option[contains(text(), 'Demo Template')]"));
       await demoOption.click();
-    } catch (e) {
+    } catch (_) {
       await templateSelect.sendKeys('Demo Template');
     }
 
@@ -345,7 +343,7 @@ export class Recordings {
         3000,
       );
       await this.driver.executeScript('arguments[0].click();', confirmButton);
-    } catch (e) {
+    } catch (_) {
       // No confirmation dialog found, delete may have happened automatically
     }
   }
