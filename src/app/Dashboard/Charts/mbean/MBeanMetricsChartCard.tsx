@@ -86,9 +86,6 @@ const SimpleChart: React.FC<{
 }> = ({ themeColor, style, width, samples, units, interpolation }) => {
   const [dayjs, dateTimeFormat] = useDayjs();
 
-  // Ensure width is always a valid positive number to prevent Infinity calculations
-  const safeWidth = React.useMemo(() => Math.max(width, 300), [width]);
-
   const data = React.useMemo(
     () => samples.map((v) => ({ x: v.timestamp, y: v.datapoint.value, name: v.datapoint.name })),
     [samples],
@@ -105,15 +102,6 @@ const SimpleChart: React.FC<{
       ),
     [units, interpolation],
   );
-
-  // Don't render chart if there's no data or invalid width
-  if (data.length === 0 || safeWidth <= 0) {
-    return (
-      <div style={{ width: safeWidth, height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        No data available
-      </div>
-    );
-  }
 
   return (
     <Chart
@@ -141,8 +129,7 @@ const SimpleChart: React.FC<{
         />
       }
       themeColor={themeColor}
-      width={safeWidth}
-      height={300}
+      width={width}
       padding={{
         left: 54,
         right: 30,
@@ -293,8 +280,6 @@ const chartKinds: MBeanMetricsChartKind[] = [
       if (samples?.length > 0) {
         value = samples.slice(-1)[0].datapoint.value * 100;
       }
-      // Ensure width is always a valid positive number to prevent Infinity calculations
-      const safeWidth = Math.max(width, 300);
       return (
         <ChartDonutUtilization
           constrainToVisibleArea
@@ -310,8 +295,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
             />
           }
           themeColor={themeColor}
-          width={safeWidth}
-          height={300}
+          width={width}
         />
       );
     },
@@ -382,7 +366,7 @@ export const MBeanMetricsChartCard: DashboardCardFC<MBeanMetricsChartCardProps> 
   const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   const resizeObserver = React.useRef((): void => undefined);
-  const [cardWidth, setCardWidth] = React.useState(300); // Default to reasonable width until resize observer sets actual value
+  const [cardWidth, setCardWidth] = React.useState(1); // Use non-zero as 0 means Infinity (invalid)
 
   const containerRef: React.Ref<any> = React.createRef();
 
