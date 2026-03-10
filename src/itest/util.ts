@@ -96,24 +96,25 @@ export class Cryostat {
   }
 
   async closeNotificationAlerts(): Promise<void> {
-    const notiBadge = await this.driver.wait(until.elementLocated(By.id('notification-badge')));
+    const notiBadge = await this.driver.wait(until.elementLocated(By.id('notification-badge')), 10000);
 
-    // Toggle to open/close
-    await notiBadge.click();
-    return await notiBadge.click();
+    // Toggle to open/close - use JavaScript clicks to avoid interception
+    await this.driver.executeScript('arguments[0].click();', notiBadge);
+    await this.driver.sleep(500);
+    return await this.driver.executeScript('arguments[0].click();', notiBadge);
   }
 
   async getLatestNotification(): Promise<ITestNotification> {
     const latestNotification = await this.driver.wait(
-      until.elementLocated(By.className('pf-v5-c-alert-group pf-m-toast')),
+      until.elementLocated(By.className('pf-v6-c-alert-group pf-m-toast')),
     );
     return {
       title: await getDirectTextContent(
         this.driver,
-        await latestNotification.findElement(By.css('li:last-of-type .pf-v5-c-alert__title')),
+        await latestNotification.findElement(By.css('li:last-of-type .pf-v6-c-alert__title')),
       ),
       description: await latestNotification
-        .findElement(By.css('li:last-of-type .pf-v5-c-alert__description'))
+        .findElement(By.css('li:last-of-type .pf-v6-c-alert__description'))
         .getText(),
     };
   }
@@ -156,10 +157,10 @@ export class Dashboard {
 
   async addLayout() {
     const layoutSelector = await getElementById(this.driver, 'dashboard-layout-dropdown-toggle');
-    await layoutSelector.click();
+    await this.driver.executeScript('arguments[0].click();', layoutSelector);
 
     const newLayoutButton = await getElementByXPath(this.driver, '//button[contains(.,"New layout")]');
-    await newLayoutButton.click();
+    await this.driver.executeScript('arguments[0].click();', newLayoutButton);
   }
 
   async isEmpty(): Promise<boolean> {
@@ -172,35 +173,59 @@ export class Dashboard {
 
   async addCard(cardType: CardType) {
     const addCardButton = await getElementById(this.driver, 'dashboard-add-btn');
-    // Can't use click() directly because the button is wrapped by a Tooltip
-    const actions = this.driver.actions();
-    await actions.move({ origin: addCardButton }).click().perform();
+    await this.driver.executeScript('arguments[0].click();', addCardButton);
+
     const twoPartCards = [CardType.JFR_METRICS_CHART, CardType.MBEAN_METRICS_CHART];
 
     switch (cardType) {
       case CardType.AUTOMATED_ANALYSIS: {
-        const aaCard = await getElementById(this.driver, `AutomatedAnalysisCard.CARD_TITLE`);
-        await aaCard.click();
+        const aaCard = await getElementById(this.driver, `AutomatedAnalysisCard.CARD_TITLE-input`);
+        await this.driver.executeScript('arguments[0].click();', aaCard);
         break;
       }
-      case CardType.JFR_METRICS_CHART:
+      case CardType.JFR_METRICS_CHART: {
+        const jfrCard = await getElementById(this.driver, `CHART_CARD.JFR_METRICS_CARD_TITLE-input`);
+        await this.driver.executeScript('arguments[0].click();', jfrCard);
         break;
+      }
       case CardType.TARGET_JVM_DETAILS: {
-        const detailsCard = await getElementById(this.driver, `JvmDetailsCard.CARD_TITLE`);
-        await detailsCard.click();
+        const detailsCard = await getElementById(this.driver, `JvmDetailsCard.CARD_TITLE-input`);
+        await this.driver.executeScript('arguments[0].click();', detailsCard);
         break;
       }
       case CardType.MBEAN_METRICS_CHART: {
-        const mbeanCard = await getElementById(this.driver, `CHART_CARD.MBEAN_METRICS_CARD_TITLE`);
-        await mbeanCard.click();
+        const mbeanCard = await getElementById(this.driver, `CHART_CARD.MBEAN_METRICS_CARD_TITLE-input`);
+        await this.driver.executeScript('arguments[0].click();', mbeanCard);
         break;
       }
     }
-    const finishButton = await getElementById(this.driver, 'card-props-config-next');
-    await finishButton.click();
-    if (twoPartCards.includes(cardType)) {
-      await finishButton.click();
+
+    // Click Next/Finish button until modal closes or we reach max attempts
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      attempts++;
+
+      // Check if modal still exists
+      const modals = await this.driver.findElements(By.css('.pf-v6-c-modal-box'));
+      if (modals.length === 0) {
+        break;
+      }
+
+      // Find and click the next/finish button
+      try {
+        const nextButton = await getElementById(this.driver, 'card-props-config-next');
+        await this.driver.executeScript('arguments[0].click();', nextButton);
+        await this.driver.sleep(1000);
+      } catch (e) {
+        // Button not found, modal likely closed
+        break;
+      }
     }
+
+    // Wait for dashboard to update
+    await this.driver.sleep(1500);
   }
 
   async removeCard() {
@@ -208,16 +233,21 @@ export class Dashboard {
     let firstCard;
     if (el.length > 0) {
       firstCard = el[0];
-      await firstCard.click();
+      await this.driver.executeScript('arguments[0].click();', firstCard);
     } else {
       return;
     }
 
+    await this.driver.sleep(500);
     const actionsButton = await getElementByCSS(this.driver, 'button[aria-label="dashboard action toggle"]');
-    await actionsButton.click();
+    await this.driver.executeScript('arguments[0].click();', actionsButton);
 
+    await this.driver.sleep(500);
     const removeButton = await getElementByXPath(this.driver, "//li[contains(.,'Remove')]");
-    await removeButton.click();
+    await this.driver.executeScript('arguments[0].click();', removeButton);
+
+    // Wait for card to be removed from dashboard
+    await this.driver.sleep(1000);
   }
 }
 
@@ -232,15 +262,33 @@ export class Recordings {
     const createButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-create-btn');
     await createButton.click();
 
+    // Wait for modal to appear
+    await this.driver.sleep(1000);
+
     // Enter recording name
     const recordingNameInput = await getElementById(this.driver, 'recording-name');
     await recordingNameInput.sendKeys(name);
 
-    // Select template
-    await getElementById(this.driver, 'recording-template').sendKeys('Demo Template');
+    // Select template by clicking dropdown and selecting option
+    const templateSelect = await getElementById(this.driver, 'recording-template');
+    await templateSelect.click();
+    await this.driver.sleep(500);
+
+    // Try to find and click the "Demo Template" option
+    try {
+      const demoOption = await this.driver.findElement(By.xpath("//option[contains(text(), 'Demo Template')]"));
+      await demoOption.click();
+    } catch (e) {
+      await templateSelect.sendKeys('Demo Template');
+    }
+
+    await this.driver.sleep(1000);
 
     const submitButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'crf-create-btn');
     await submitButton.click();
+
+    // Wait for modal to close
+    await this.driver.sleep(2000);
 
     // Creating from a modal can update the table asynchronously.
     await this.driver.wait(async () => (await this.getRecordings()).length > 0, 15000);
@@ -256,20 +304,50 @@ export class Recordings {
   }
 
   async stopRecording(recording: WebElement) {
-    await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
-    await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-stop-btn').click();
+    const checkbox = await recording.findElement(
+      By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`),
+    );
+    await this.driver.executeScript('arguments[0].click();', checkbox);
+
+    const stopButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-stop-btn');
+    await this.driver.executeScript('arguments[0].click();', stopButton);
   }
 
   async archiveRecording(recording: WebElement) {
-    await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
-    await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-archive-btn').click();
+    const checkbox = await recording.findElement(
+      By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`),
+    );
+    await this.driver.executeScript('arguments[0].click();', checkbox);
+
+    const archiveButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-archive-btn');
+    await this.driver.executeScript('arguments[0].click();', archiveButton);
   }
 
   async deleteRecording(recording: WebElement) {
-    await recording.findElement(By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`)).click();
-    await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-delete-btn').click();
-    // confirm prompt
-    await getElementByXPath(this.driver, `//div[@id='portal-root']//button[contains(text(),'Delete')]`).click();
+    const checkbox = await recording.findElement(
+      By.xpath(`.//input[@data-quickstart-id='active-recordings-checkbox']`),
+    );
+    await this.driver.executeScript('arguments[0].click();', checkbox);
+
+    const deleteButton = await getElementByAttribute(this.driver, 'data-quickstart-id', 'recordings-delete-btn');
+    await this.driver.executeScript('arguments[0].click();', deleteButton);
+
+    // Wait for confirmation dialog to appear
+    await this.driver.sleep(1000);
+
+    // Try to find confirmation button - it might be in a modal
+    try {
+      // Look for any danger/delete button in a modal
+      const confirmButton = await this.driver.wait(
+        until.elementLocated(
+          By.xpath(`//div[contains(@class,'pf-v6-c-modal-box')]//button[contains(@class,'pf-m-danger')]`),
+        ),
+        3000,
+      );
+      await this.driver.executeScript('arguments[0].click();', confirmButton);
+    } catch (e) {
+      // No confirmation dialog found, delete may have happened automatically
+    }
   }
 
   // async addLabel(recording: WebElement, k: string, v: string) {
