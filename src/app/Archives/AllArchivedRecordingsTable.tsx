@@ -321,7 +321,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                     setSelectedJvmId(dir.jvmId);
                     setShowDetailsModal(true);
                   }}
-                  isDisabled={!dir.jvmId}
+                  isDisabled={!dir.jvmId || dir.jvmId === 'uploads'}
                   aria-label="View target details"
                 >
                   <InfoCircleIcon />
