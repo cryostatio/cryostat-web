@@ -504,7 +504,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
     <Stack {...props} hasGutter>
       {tableConfigs.map(({ title, columns, rowData }) => (
         <StackItem key={title}>
-          <Card isCompact isFlat isRounded>
+          <Card isCompact>
             <CardHeader>
               <CardTitle>{title}</CardTitle>
             </CardHeader>
@@ -603,7 +603,7 @@ export const GroupResources: React.FC<{ envNode: EnvironmentNode }> = ({ envNode
       const [status, extra] = getStatusTargetNode(child);
 
       return (
-        <Card isFlat isCompact key={child.name}>
+        <Card isCompact key={child.name}>
           <CardBody>
             <Flex>
               <FlexItem flex={{ default: 'flex_1' }}>

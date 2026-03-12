@@ -17,7 +17,7 @@
 import { NameFilter } from '@app/Diagnostics/Filters/NameFilter';
 import { HeapDump } from '@app/Shared/Services/api.types';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
-import { render, renderSnapshot } from '../../utils';
+import { render } from '../../utils';
 
 const mockHeapDumpLabels = [
   {
@@ -51,7 +51,7 @@ describe('<NameFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -63,7 +63,7 @@ describe('<NameFilter />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should display name selections when text input is clicked', async () => {

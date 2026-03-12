@@ -28,12 +28,9 @@ import {
   Button,
   Checkbox,
   EmptyState,
-  EmptyStateIcon,
   Popover,
-  Text,
-  TextContent,
-  TextVariants,
-  EmptyStateHeader,
+  Content,
+  ContentVariants,
   Dropdown,
   DropdownList,
   DropdownItem,
@@ -322,7 +319,7 @@ export const StoredCredentials = () => {
               </ToolbarItem>
             </ToolbarGroup>
             <ToolbarItem variant="separator" />
-            <ToolbarGroup variant="button-group">
+            <ToolbarGroup variant="action-group">
               {buttons.map((btn, idx) => (
                 <ToolbarItem key={idx}>{btn}</ToolbarItem>
               ))}
@@ -379,7 +376,7 @@ export const StoredCredentials = () => {
             <Icon iconSize="md">
               <ContainerNodeIcon />
             </Icon>
-            <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{credential?.targets?.length ?? 0}</span>
+            <span style={{ marginLeft: 'var(--pf-t--global--spacer--sm)' }}>{credential?.targets?.length ?? 0}</span>
           </Td>
         </Tr>
       );
@@ -405,13 +402,11 @@ export const StoredCredentials = () => {
     content = (
       <>
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText={<>{t('StoredCredentials.NO_CREDENTIAL_TITLE')}</>}
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState
+            headingLevel="h4"
+            icon={SearchIcon}
+            titleText={<>{t('StoredCredentials.NO_CREDENTIAL_TITLE')}</>}
+          ></EmptyState>
         </Bullseye>
       </>
     );
@@ -491,17 +486,15 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
       <MenuToggle
         ref={toggleRef}
         onClick={handleToggle}
-        splitButtonOptions={{
-          items: [
-            <MenuToggleCheckbox
-              id={'select-all-credentials'}
-              key={'select-all-credentials'}
-              aria-label={t('StoredCredentials.ARIA_LABELS.FILTER_CHECKBOX')}
-              isChecked={isSelectAll}
-              onChange={onSelectAll}
-            />,
-          ],
-        }}
+        splitButtonItems={[
+          <MenuToggleCheckbox
+            id={'select-all-credentials'}
+            key={'select-all-credentials'}
+            aria-label={t('StoredCredentials.ARIA_LABELS.FILTER_CHECKBOX')}
+            isChecked={isSelectAll}
+            onChange={onSelectAll}
+          />,
+        ]}
       />
     ),
     [handleToggle, isSelectAll, onSelectAll, t],
@@ -527,23 +520,21 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
 export const StoredCredentialsCard: SecurityCard = {
   key: 'credentials',
   title: (t: TFunction) => (
-    <Text>
+    <Content component="p">
       {t('StoredCredentials.CARD_TITLE')}
       <Popover
         maxWidth="40rem"
         headerContent={t('StoredCredentials.CARD_TITLE_POPOVER_HEADER')}
         bodyContent={<JmxAuthDescription />}
       >
-        <Button variant="plain">
-          <OutlinedQuestionCircleIcon />
-        </Button>
+        <Button icon={<OutlinedQuestionCircleIcon />} variant="plain" />
       </Popover>
-    </Text>
+    </Content>
   ),
   description: (t: TFunction) => (
-    <TextContent>
-      <Text component={TextVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Text>
-    </TextContent>
+    <Content>
+      <Content component={ContentVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Content>
+    </Content>
   ),
   content: StoredCredentials,
   isFilled: true,

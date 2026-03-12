@@ -26,7 +26,7 @@ import { MBeanMetrics } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@i18n/config';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { mockMediaQueryList, renderSnapshot } from '@test/utils';
+import { mockMediaQueryList, render } from '@test/utils';
 import { cleanup } from '@testing-library/react';
 import { from, of } from 'rxjs';
 
@@ -123,7 +123,7 @@ describe('<MBeanMetricsChartCard />', () => {
     jest.spyOn(mockMbeanController, 'attach').mockReturnValue(from(metrics));
     jest.spyOn(mockMbeanController, 'loading').mockReturnValue(of(false));
 
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -143,7 +143,7 @@ describe('<MBeanMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree?.toJSON()).toMatchSnapshot('with-content');
+    expect(container).toMatchSnapshot('with-content');
   });
 
   it('renders loading state correctly', async () => {
@@ -151,7 +151,7 @@ describe('<MBeanMetricsChartCard />', () => {
     jest.spyOn(mockMbeanController, 'attach').mockReturnValue(of(metrics));
     jest.spyOn(mockMbeanController, 'loading').mockReturnValue(of(true));
 
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -171,6 +171,6 @@ describe('<MBeanMetricsChartCard />', () => {
       },
       providers: [{ kind: ChartContext.Provider, instance: mockChartContext }],
     });
-    expect(tree?.toJSON()).toMatchSnapshot('loading-view');
+    expect(container).toMatchSnapshot('loading-view');
   });
 });
