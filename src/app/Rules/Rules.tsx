@@ -19,7 +19,7 @@ import { CryostatLink } from '@app/Shared/Components/CryostatLink';
 import { EmptyText } from '@app/Shared/Components/EmptyText';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { MatchExpressionDisplay } from '@app/Shared/Components/MatchExpression/MatchExpressionDisplay';
-import { modalPrefillSetIntent, store, RootState } from '@app/Shared/Redux/ReduxStore';
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { Rule, NotificationCategory, keyValueToString, KeyValue } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -99,12 +99,10 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [createRuleModalOpen, setCreateRuleModalOpen, handleCreateRuleModalClose] = useModalFromLocationState();
-  const modalPrefill = React.useMemo(() => store.getState().modalPrefill, [createRuleModalOpen]);
-
-  const isEditMode = React.useMemo(() => {
-    if (!createRuleModalOpen) return false;
-    return modalPrefill.data?.edit === true;
-  }, [createRuleModalOpen, modalPrefill.data]);
+  const isEditMode = React.useMemo(
+    () => createRuleModalOpen && store.getState().modalPrefill.data?.edit,
+    [createRuleModalOpen],
+  );
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
