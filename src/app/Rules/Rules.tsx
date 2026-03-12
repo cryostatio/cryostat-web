@@ -427,7 +427,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           <Td key={`automatic-rule-event-specifier-${index}`} dataLabel={tableColumns[4].title}>
             {r.eventSpecifier}
           </Td>
-          <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[5].title}>
+          <Td key={`automatic-rule-options-${index}`} dataLabel={tableColumns[5].title}>
             <LabelGroup isVertical style={{ padding: '0.2em' }}>
               {ruleOptions(r).length ? (
                 ruleOptions(r).map((options) => (
