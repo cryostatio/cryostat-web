@@ -194,7 +194,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           const matchIndex = old.findIndex((r) => r.name === msg.message.name);
           if (matchIndex >= 0) {
             const newArray = [...old];
-            newArray.splice(matchIndex, 1, { ...old[matchIndex], enabled: msg.message.enabled });
+            newArray.splice(matchIndex, 1, msg.message);
             return newArray;
           }
           return old;
