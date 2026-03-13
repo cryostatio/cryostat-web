@@ -80,7 +80,19 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   const matchExprService = useMatchExpressionSvc();
   const addSubscription = useSubscriptions();
   const [autoanalyze, setAutoanalyze] = React.useState(true);
-  const [isExistingEdit, setExistingEdit] = React.useState(false);
+
+  const isExistingEdit = React.useMemo(() => {
+    let isEdit = false;
+    if (location.state && typeof location.state === 'object' && Object.keys(location.state as object).length > 0) {
+      isEdit = (location.state as Record<string, unknown>).edit === true;
+    } else {
+      const { modalPrefill } = store.getState();
+      if (modalPrefill.data && Object.keys(modalPrefill.data).length > 0) {
+        isEdit = modalPrefill.data.edit === true;
+      }
+    }
+    return isEdit;
+  }, [location]);
 
   const [formData, setFormData] = React.useState<RuleFormData>({
     name: '',
@@ -105,10 +117,6 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
   const [sampleTarget, setSampleTarget] = React.useState<Target>();
 
   const matchedTargetsRef = React.useRef(new Subject<Target[]>());
-
-  React.useEffect(() => {
-    setExistingEdit(location?.state?.edit ?? false);
-  }, [location, setExistingEdit]);
 
   const eventSpecifierString = React.useMemo(() => {
     let str = '';

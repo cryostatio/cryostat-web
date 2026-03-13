@@ -99,6 +99,10 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [createRuleModalOpen, setCreateRuleModalOpen, handleCreateRuleModalClose] = useModalFromLocationState();
+  const isEditMode = React.useMemo(
+    () => createRuleModalOpen && store.getState().modalPrefill.data?.edit,
+    [createRuleModalOpen],
+  );
 
   const tableColumns: TableColumn[] = React.useMemo(
     () => [
@@ -188,7 +192,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           const matchIndex = old.findIndex((r) => r.name === msg.message.name);
           if (matchIndex >= 0) {
             const newArray = [...old];
-            newArray.splice(matchIndex, 1, { ...old[matchIndex], enabled: msg.message.enabled });
+            newArray.splice(matchIndex, 1, msg.message);
             return newArray;
           }
           return old;
@@ -421,7 +425,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
           <Td key={`automatic-rule-event-specifier-${index}`} dataLabel={tableColumns[4].title}>
             {r.eventSpecifier}
           </Td>
-          <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[5].title}>
+          <Td key={`automatic-rule-options-${index}`} dataLabel={tableColumns[5].title}>
             <LabelGroup isVertical style={{ padding: '0.2em' }}>
               {ruleOptions(r).length ? (
                 ruleOptions(r).map((options) => (
@@ -592,7 +596,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         isOpen={createRuleModalOpen}
         variant={ModalVariant.large}
         width="90vw"
-        title={t('CREATE')}
+        title={t(isEditMode ? 'UPDATE' : 'CREATE')}
         onClose={handleCreateRuleModalClose}
       >
         {createRuleModalOpen ? <CreateRule onClose={handleCreateRuleModalClose} /> : null}
