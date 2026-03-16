@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
-import { ArchivedRecording, NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
+import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { FeatureLevel } from '@app/Shared/Services/service.types';
@@ -93,16 +93,17 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     context.api.downloadRecording(recording);
   }, [context.api, recording]);
 
-  const handleViewInAnalytics = React.useCallback(() => {
-    const archivedRecording = recording as ArchivedRecording;
-    const jvmId = directory?.jvmId || archivedRecording.jvmId;
-    const state = {
-      jvmId,
-      filename: recording.name,
-    };
-    store.dispatch(modalPrefillSetIntent(toPath('/recording-analytics'), state as Record<string, unknown>));
-    navigate(toPath('/recording-analytics'), { state });
-  }, [recording, directory, navigate]);
+  const handleViewInAnalytics = React.useCallback(
+    (jvmId) => {
+      const state = {
+        jvmId,
+        filename: recording.name,
+      };
+      store.dispatch(modalPrefillSetIntent(toPath('/recording-analytics'), state as Record<string, unknown>));
+      navigate(toPath('/recording-analytics'), { state });
+    },
+    [recording, navigate],
+  );
 
   const actionItems = React.useMemo(() => {
     const actionItems = [
@@ -120,14 +121,12 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
       });
     }
 
-    const archivedRecording = recording as ArchivedRecording;
-    const jvmId = directory?.jvmId || archivedRecording.metadata.labels.find((v) => v.key === 'jvmId')?.value;
-    console.log({ directory, archivedRecording });
+    const jvmId = directory?.jvmId ?? recording.metadata.labels.find((v) => v.key === 'jvmId')?.value;
     if (jvmId && activeLevel <= FeatureLevel.BETA) {
       actionItems.push({
         title: 'View in Analytics ...',
         key: 'view-in-analytics',
-        onClick: handleViewInAnalytics,
+        onClick: () => handleViewInAnalytics(jvmId),
       });
     }
 
@@ -136,8 +135,8 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     handleDownloadRecording,
     grafanaEnabled,
     grafanaUpload,
-    recording,
     directory,
+    recording,
     activeLevel,
     handleViewInAnalytics,
   ]);
