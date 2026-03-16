@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
+import { ArchivedRecording, NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { Observable } from 'rxjs';
 import { concatMap, filter, first, tap } from 'rxjs/operators';
 
@@ -46,6 +51,8 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
   const context = React.useContext(ServiceContext);
   const capabilities = React.useContext(CapabilitiesContext);
   const notifications = React.useContext(NotificationsContext);
+  const navigate = useNavigate();
+  const activeLevel = useFeatureLevel();
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -85,6 +92,16 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     context.api.downloadRecording(recording);
   }, [context.api, recording]);
 
+  const handleViewInAnalytics = React.useCallback(() => {
+    const archivedRecording = recording as ArchivedRecording;
+    const state = {
+      jvmId: archivedRecording.jvmId,
+      filename: recording.name,
+    };
+    store.dispatch(modalPrefillSetIntent(toPath('/recording-analytics'), state as Record<string, unknown>));
+    navigate(toPath('/recording-analytics'), { state });
+  }, [recording, navigate]);
+
   const actionItems = React.useMemo(() => {
     const actionItems = [
       {
@@ -101,8 +118,17 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
       });
     }
 
+    const archivedRecording = recording as ArchivedRecording;
+    if (archivedRecording.jvmId && activeLevel <= FeatureLevel.BETA) {
+      actionItems.push({
+        title: 'View in Analytics',
+        key: 'view-in-analytics',
+        onClick: handleViewInAnalytics,
+      });
+    }
+
     return actionItems;
-  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload]);
+  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload, recording, activeLevel, handleViewInAnalytics]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {
