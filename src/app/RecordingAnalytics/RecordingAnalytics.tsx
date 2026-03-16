@@ -234,7 +234,12 @@ export const RecordingAnalytics: React.FC = () => {
                     isLanguageLabelVisible
                   />
                 </SplitItem>
-                <SplitItem>
+                <SplitItem
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                  }}
+                >
                   <Button
                     icon={<PlayIcon />}
                     onClick={handleExecute}
