@@ -27,14 +27,20 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
   Stack,
   StackItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Tooltip,
 } from '@patternfly/react-core';
-import { PlayIcon } from '@patternfly/react-icons';
+import { ListIcon, PlayIcon } from '@patternfly/react-icons';
 import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates';
 import * as monaco from 'monaco-editor';
 import * as React from 'react';
@@ -43,6 +49,63 @@ import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap } from 'rxjs';
 
 loader.config({ monaco });
+
+interface SampleQuery {
+  id: string;
+  description: string;
+  query: string;
+}
+
+const SAMPLE_QUERIES: SampleQuery[] = [
+  {
+    id: 'count-allocations',
+    description: 'Count object allocation sample events',
+    query: 'SELECT COUNT(*) FROM jfr."jdk.ObjectAllocationSample"',
+  },
+  {
+    id: 'top-allocating-stacktraces',
+    description: 'Top 10 allocating stacktraces',
+    query: `SELECT TRUNCATE_STACKTRACE("stackTrace", 40), SUM("weight")
+        FROM jfr."jdk.ObjectAllocationSample"
+        GROUP BY TRUNCATE_STACKTRACE("stackTrace", 40)
+        ORDER BY SUM("weight") DESC
+        LIMIT 10`,
+  },
+  {
+    id: 'top-classes-by-allocation',
+    description: 'Top 20 classes by allocation count',
+    query: `SELECT CLASS_NAME("objectClass") AS "class_name",
+        COUNT(*) AS "allocation_count"
+        FROM jfr."jdk.ObjectAllocationSample"
+        GROUP BY CLASS_NAME("objectClass")
+        ORDER BY COUNT(*) DESC
+        LIMIT 20`,
+  },
+  {
+    id: 'first-class-loaded-detailed',
+    description: 'First class loaded by JVM (detailed)',
+    query: `SELECT "startTime", "loadedClass", "initiatingClassLoader", "definingClassLoader"
+        FROM jfr."jdk.ClassLoad"
+        ORDER by "startTime"
+        LIMIT 1`,
+  },
+  {
+    id: 'first-class-name',
+    description: 'Name of first class loaded by JVM',
+    query: `SELECT CLASS_NAME("loadedClass") as className
+        FROM jfr."jdk.ClassLoad"
+        ORDER by "startTime"
+        LIMIT 1`,
+  },
+  {
+    id: 'terminated-threads',
+    description: 'Information about terminated threads',
+    query: `SELECT ts."parentThread"."javaName", ts."thread"."javaName", ts."thread"."javaThreadId", te."thread"."javaName", te."thread"."javaThreadId"
+        FROM jfr."jdk.ThreadStart" ts
+        LEFT JOIN jfr."jdk.ThreadEnd" te ON ts."thread"."javaThreadId" = te."thread"."javaThreadId"
+        ORDER BY ts."thread"."javaThreadId"`,
+  },
+];
 
 export const RecordingAnalytics: React.FC = () => {
   const context = React.useContext(ServiceContext);
@@ -60,6 +123,7 @@ export const RecordingAnalytics: React.FC = () => {
   const [query, setQuery] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [result, setResult] = React.useState('');
+  const [isSampleMenuOpen, setIsSampleMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(
@@ -169,6 +233,14 @@ export const RecordingAnalytics: React.FC = () => {
     monaco.editor.getModels()[0].updateOptions({ tabSize: 4 });
   }, []);
 
+  const handleSampleQuerySelect = React.useCallback(
+    (sampleQuery: string) => {
+      setQuery(sampleQuery);
+      setIsSampleMenuOpen(false);
+    },
+    [setQuery],
+  );
+
   const handleExecute = React.useCallback(() => {
     if (!jvmId || !filename || !query) {
       return;
@@ -196,6 +268,39 @@ export const RecordingAnalytics: React.FC = () => {
         }),
     );
   }, [addSubscription, context, setLoading, setResult, jvmId, filename, query]);
+
+  const sampleQueryControl = React.useMemo(() => {
+    return (
+      <Dropdown
+        isOpen={isSampleMenuOpen}
+        onSelect={() => setIsSampleMenuOpen(false)}
+        onOpenChange={(isOpen: boolean) => setIsSampleMenuOpen(isOpen)}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <Tooltip content="Insert sample query">
+            <MenuToggle
+              ref={toggleRef}
+              onClick={() => setIsSampleMenuOpen(!isSampleMenuOpen)}
+              isExpanded={isSampleMenuOpen}
+              variant="plain"
+              aria-label="Insert sample query"
+              isDisabled={loading}
+              className="pf-v6-c-code-editor__controls-item"
+            >
+              <ListIcon />
+            </MenuToggle>
+          </Tooltip>
+        )}
+      >
+        <DropdownList>
+          {SAMPLE_QUERIES.map((sample) => (
+            <DropdownItem key={sample.id} onClick={() => handleSampleQuerySelect(sample.query)}>
+              {sample.description}
+            </DropdownItem>
+          ))}
+        </DropdownList>
+      </Dropdown>
+    );
+  }, [isSampleMenuOpen, loading, handleSampleQuerySelect]);
 
   const executeControl = React.useMemo(() => {
     return (
@@ -242,7 +347,7 @@ export const RecordingAnalytics: React.FC = () => {
                 language={Language.sql}
                 isLineNumbersVisible
                 isLanguageLabelVisible
-                customControls={executeControl}
+                customControls={[executeControl, sampleQueryControl]}
               />
             </StackItem>
             <StackItem>
