@@ -115,7 +115,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     ] as RowAction[];
     if (grafanaEnabled) {
       actionItems.push({
-        title: 'View in Grafana ...',
+        title: t('RecordingActions.VIEW_IN_GRAFANA'),
         key: 'view-in-grafana',
         onClick: grafanaUpload,
       });
@@ -124,7 +124,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     const jvmId = directory?.jvmId ?? recording.metadata.labels.find((v) => v.key === 'jvmId')?.value;
     if (jvmId && activeLevel <= FeatureLevel.BETA) {
       actionItems.push({
-        title: 'View in Analytics ...',
+        title: t('RecordingActions.VIEW_IN_ANALYTICS'),
         key: 'view-in-analytics',
         onClick: () => handleViewInAnalytics(jvmId),
       });
