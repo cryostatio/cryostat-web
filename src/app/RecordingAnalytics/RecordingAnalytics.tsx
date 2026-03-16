@@ -16,6 +16,7 @@
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ThemeSetting } from '@app/Settings/types';
+import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { RecordingDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -37,11 +38,17 @@ import {
 } from '@patternfly/react-core';
 import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates';
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap } from 'rxjs';
 
 export const RecordingAnalytics: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const modalPrefill = useSelector((state: RootState) => state.modalPrefill);
 
   const [jvmId, setJvmId] = React.useState('');
   const [recordingDirectories, setRecordingDirectories] = React.useState([] as RecordingDirectory[]);
@@ -54,9 +61,44 @@ export const RecordingAnalytics: React.FC = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe((v) => setRecordingDirectories(v)),
+      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe((v) => {
+        setRecordingDirectories(v);
+      }),
     );
   }, [addSubscription, context, context.api, setRecordingDirectories]);
+
+  React.useEffect(() => {
+    const stateData = location.state as Record<string, unknown> | null;
+    const reduxData = modalPrefill.route === location.pathname ? (modalPrefill.data as Record<string, unknown>) : null;
+
+    const prefillJvmId = (stateData?.jvmId || reduxData?.jvmId) as string | undefined;
+    const prefillFilename = (stateData?.filename || reduxData?.filename) as string | undefined;
+
+    if (prefillJvmId && recordingDirectories.some((d) => d.jvmId === prefillJvmId)) {
+      setJvmId(prefillJvmId);
+
+      if (prefillFilename) {
+        const directory = recordingDirectories.find((d) => d.jvmId === prefillJvmId);
+        if (directory && directory.recordings.some((r) => r.name === prefillFilename)) {
+          setFilename(prefillFilename);
+        }
+      }
+
+      dispatch(modalPrefillClearIntent());
+      if (location.state) {
+        navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
+      }
+    }
+  }, [
+    recordingDirectories,
+    location.state,
+    location.pathname,
+    location.search,
+    location.hash,
+    modalPrefill,
+    dispatch,
+    navigate,
+  ]);
 
   const jvmIds = React.useMemo(() => recordingDirectories.map((e) => e.jvmId), [recordingDirectories]);
 
