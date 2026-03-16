@@ -58,6 +58,16 @@ interface SampleQuery {
 
 const SAMPLE_QUERIES: SampleQuery[] = [
   {
+    id: 'list-jfr-events',
+    description: 'List available JFR events (tables)',
+    query: 'tables',
+  },
+  {
+    id: 'list-jfr-event-fields',
+    description: 'List fields within a JFR event type',
+    query: 'columns $TABLE_NAME',
+  },
+  {
     id: 'count-allocations',
     description: 'Count object allocation sample events',
     query: 'SELECT COUNT(*) FROM jfr."jdk.ObjectAllocationSample"',
