@@ -1687,6 +1687,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@monaco-editor/loader@npm:^1.5.0":
+  version: 1.7.0
+  resolution: "@monaco-editor/loader@npm:1.7.0"
+  dependencies:
+    state-local: "npm:^1.0.6"
+  checksum: 10/7ee7406f0a7036e2638430d151c65593dcce88e3f344e2e19556c284c23c1b51d5edb08b8c15a6454aaa62f5af459a296db76b9543686e2ea5037c54723d2f2d
+  languageName: node
+  linkType: hard
+
+"@monaco-editor/react@npm:^4.6.0":
+  version: 4.7.0
+  resolution: "@monaco-editor/react@npm:4.7.0"
+  dependencies:
+    "@monaco-editor/loader": "npm:^1.5.0"
+  peerDependencies:
+    monaco-editor: ">= 0.25.0 < 1"
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/d72392c4ed6faf8d830ba43421461e1b767b5978edba0739457d7781aa9533c66982be7f59bb156a77a2b578eddfb4711f50e0d84f0f0d25d28b5ab11140f5cc
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^0.2.11":
   version: 0.2.12
   resolution: "@napi-rs/wasm-runtime@npm:0.2.12"
@@ -1848,6 +1870,23 @@ __metadata:
     victory-zoom-container:
       optional: true
   checksum: 10/0f12be739ccda52240738561bc8af310505af1a5e280329b793e225f84295b384d240d039815f45619abfdba1f109bfe720680bf258c790bd7ff8d7e35a6927b
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-code-editor@npm:^6.4.1":
+  version: 6.4.1
+  resolution: "@patternfly/react-code-editor@npm:6.4.1"
+  dependencies:
+    "@monaco-editor/react": "npm:^4.6.0"
+    "@patternfly/react-core": "npm:^6.4.1"
+    "@patternfly/react-icons": "npm:^6.4.0"
+    "@patternfly/react-styles": "npm:^6.4.0"
+    react-dropzone: "npm:14.3.5"
+    tslib: "npm:^2.8.1"
+  peerDependencies:
+    react: ^17 || ^18 || ^19
+    react-dom: ^17 || ^18 || ^19
+  checksum: 10/1416fe9ac7f5335aad05bd0bcb43d974f7c0b78f150f42cf5c4100561e88cebf11f7cccb1535af054090e2fe2d9e0ba7f8861458fce48ead46a6e59761b64eda
   languageName: node
   linkType: hard
 
@@ -5219,6 +5258,7 @@ __metadata:
     "@patternfly/quickstarts": "npm:^6.0.0"
     "@patternfly/react-catalog-view-extension": "npm:^6.0.0"
     "@patternfly/react-charts": "npm:^8.0.0"
+    "@patternfly/react-code-editor": "npm:^6.4.1"
     "@patternfly/react-core": "npm:^6.0.0"
     "@patternfly/react-icons": "npm:^6.0.0"
     "@patternfly/react-styles": "npm:^6.0.0"
@@ -12956,6 +12996,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dropzone@npm:14.3.5":
+  version: 14.3.5
+  resolution: "react-dropzone@npm:14.3.5"
+  dependencies:
+    attr-accept: "npm:^2.2.4"
+    file-selector: "npm:^2.1.0"
+    prop-types: "npm:^15.8.1"
+  peerDependencies:
+    react: ">= 16.8 || 18.0.0"
+  checksum: 10/6124bacd2138002d721c86c2b507a5c1889cfde73344fe474855a4e2e81fecb2c318edb0ab3333a75fd502fb6da44a6f8e9cdee317ec916331fd520d454e6297
+  languageName: node
+  linkType: hard
+
 "react-dropzone@npm:^14.3.5":
   version: 14.4.1
   resolution: "react-dropzone@npm:14.4.1"
@@ -14393,6 +14446,13 @@ __metadata:
   dependencies:
     escape-string-regexp: "npm:^2.0.0"
   checksum: 10/cdc988acbc99075b4b036ac6014e5f1e9afa7e564482b687da6384eee6a1909d7eaffde85b0a17ffbe186c5247faf6c2b7544e802109f63b72c7be69b13151bb
+  languageName: node
+  linkType: hard
+
+"state-local@npm:^1.0.6":
+  version: 1.0.7
+  resolution: "state-local@npm:1.0.7"
+  checksum: 10/1d956043e270861d40a639ff3457938cf61dbc7e25209d21b55060d8dfaf74742b8a1e525ed6fcb0c2d89b7d3e305bb8589bf27392012889456b3ad82a4b7d0a
   languageName: node
   linkType: hard
 
