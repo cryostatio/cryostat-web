@@ -248,9 +248,15 @@ export const RecordingAnalytics: React.FC = () => {
               />
             </StackItem>
             <StackItem>
-              <CodeBlock>
-                <CodeBlockCode>{result}</CodeBlockCode>
-              </CodeBlock>
+              <CodeEditor
+                isReadOnly
+                isDarkTheme={theme === ThemeSetting.DARK}
+                height="sizeToFit"
+                isLineNumbersVisible
+                isLanguageLabelVisible
+                language={Language.json}
+                code={result}
+              />
             </StackItem>
           </Stack>
         </CardBody>
