@@ -23,14 +23,11 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { CodeEditor, CodeEditorControl, Language } from '@patternfly/react-code-editor';
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
   CodeBlock,
   CodeBlockCode,
-  Split,
-  SplitItem,
   Stack,
   StackItem,
   Toolbar,
@@ -209,7 +206,7 @@ export const RecordingAnalytics: React.FC = () => {
         isDisabled={!jvmId || !filename || !query || loading}
       />
     );
-  }, [handleExecute]);
+  }, [handleExecute, jvmId, filename, query, loading]);
 
   return (
     <BreadcrumbPage pageTitle="Analytics">
