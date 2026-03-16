@@ -121,7 +121,8 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     }
 
     const archivedRecording = recording as ArchivedRecording;
-    if (archivedRecording.jvmId && activeLevel <= FeatureLevel.BETA) {
+    const jvmId = directory?.jvmId || archivedRecording.jvmId;
+    if (jvmId && activeLevel <= FeatureLevel.BETA) {
       actionItems.push({
         title: 'View in Analytics ...',
         key: 'view-in-analytics',
@@ -130,7 +131,15 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     }
 
     return actionItems;
-  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload, recording, activeLevel, handleViewInAnalytics]);
+  }, [
+    handleDownloadRecording,
+    grafanaEnabled,
+    grafanaUpload,
+    recording,
+    directory,
+    activeLevel,
+    handleViewInAnalytics,
+  ]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {
