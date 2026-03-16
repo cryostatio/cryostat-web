@@ -132,6 +132,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
 
     return actionItems;
   }, [
+    t,
     handleDownloadRecording,
     grafanaEnabled,
     grafanaUpload,
