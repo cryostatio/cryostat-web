@@ -30,6 +30,7 @@ import {
   KeyValue,
   keyValueToString,
 } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
@@ -165,6 +166,7 @@ jest
 
 jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
 jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
+jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
