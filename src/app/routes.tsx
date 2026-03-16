@@ -41,6 +41,7 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
+import { RecordingAnalytics } from './RecordingAnalytics/RecordingAnalytics';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
@@ -172,6 +173,16 @@ const flightRecorderRoutes: IAppRoute[] = [
     description: 'View Automated Analysis Reports across all target JVMs.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: ANALYZE,
+  },
+  {
+    component: RecordingAnalytics,
+    label: 'Analytics',
+    path: toPath('/recording-analytics'),
+    title: 'Analytics',
+    description: 'Perform advanced analytics queries on archived Flight Recordings.',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: ANALYZE,
+    featureLevel: FeatureLevel.BETA,
   },
 ];
 
