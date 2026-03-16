@@ -129,7 +129,7 @@ export const RecordingAnalytics: React.FC = () => {
           method: 'POST',
           body,
         })
-      .pipe(concatMap( r => r.json() ))
+        .pipe(concatMap((r) => r.json()))
         .subscribe({
           next: (v) => {
             setResult(JSON.stringify(v, null, 2));
