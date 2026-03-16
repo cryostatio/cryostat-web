@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const BG_IMAGES_DIRNAME = 'bgimages';
 
@@ -18,7 +19,8 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'index.html'),
         favicon: './src/app/assets/favicon.ico',
-      })
+      }),
+      new MonacoWebpackPlugin()
     ],
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
     optimization: {
@@ -144,7 +146,7 @@ module.exports = (env) => {
           generator: {
             filename: 'images/[name][ext]'
           },
-        }
+        },
       ]
     },
     output: {
