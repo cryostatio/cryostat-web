@@ -29,6 +29,8 @@ import {
   CardHeader,
   CodeBlock,
   CodeBlockCode,
+  Split,
+  SplitItem,
   Stack,
   StackItem,
   Toolbar,
@@ -36,6 +38,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { PlayIcon } from '@patternfly/react-icons';
 import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -219,20 +222,26 @@ export const RecordingAnalytics: React.FC = () => {
         <CardBody>
           <Stack hasGutter>
             <StackItem>
-              <CodeEditor
-                isDarkTheme={theme === ThemeSetting.DARK}
-                onChange={setQuery}
-                onEditorDidMount={onEditorDidMount}
-                height="sizeToFit"
-                language={Language.sql}
-                isLineNumbersVisible
-                isLanguageLabelVisible
-              />
-            </StackItem>
-            <StackItem>
-              <Button onClick={handleExecute} isDisabled={!jvmId || !filename || !query || loading}>
-                Execute
-              </Button>
+              <Split hasGutter>
+                <SplitItem isFilled>
+                  <CodeEditor
+                    isDarkTheme={theme === ThemeSetting.DARK}
+                    onChange={setQuery}
+                    onEditorDidMount={onEditorDidMount}
+                    height="sizeToFit"
+                    language={Language.sql}
+                    isLineNumbersVisible
+                    isLanguageLabelVisible
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <Button
+                    icon={<PlayIcon />}
+                    onClick={handleExecute}
+                    isDisabled={!jvmId || !filename || !query || loading}
+                  />
+                </SplitItem>
+              </Split>
             </StackItem>
             <StackItem>
               <CodeBlock>
