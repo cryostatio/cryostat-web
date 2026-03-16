@@ -886,6 +886,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             recording={recording}
             index={index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafanaFromPath(propsDirectory.jvmId, recording.name)}
+            directory={propsDirectory}
           />
         ) : (
           <RecordingActions
