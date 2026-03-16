@@ -404,6 +404,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <>
         <Toolbar isFullHeight isStatic>
           <ToolbarContent>
+            <ToolbarGroup variant="label-group" align={{ default: 'alignStart' }}>
+              <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
+            </ToolbarGroup>
             <ToolbarGroup variant="action-group-plain" align={{ default: 'alignEnd' }}>
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
                 <ToolbarItem>
@@ -537,7 +540,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </CryostatLink>
               </MastheadLogo>
             </MastheadBrand>
-            <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>
           <MastheadContent>{headerToolbar}</MastheadContent>
         </Masthead>
