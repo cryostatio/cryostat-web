@@ -27,8 +27,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CodeBlock,
-  CodeBlockCode,
   Stack,
   StackItem,
   Toolbar,
