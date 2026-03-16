@@ -499,6 +499,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       </>
     ),
     [
+      levelBadge,
       notificationsContext,
       unreadNotificationsCount,
       errorNotificationsCount,
@@ -546,7 +547,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
       </>
     ),
-    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, levelBadge, cryostatLogo, t],
+    [isNavOpen, aboutModalOpen, headerToolbar, handleCloseAboutModal, onNavToggle, cryostatLogo, t],
   );
 
   const isActiveRoute = React.useCallback(
