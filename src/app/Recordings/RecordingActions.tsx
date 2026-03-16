@@ -44,9 +44,10 @@ export interface RecordingActionsProps {
   recording: Recording;
   sourceTarget?: Observable<Target>;
   uploadFn: () => Observable<string>;
+  directory?: { jvmId: string };
 }
 
-export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
+export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, directory, ...props }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const capabilities = React.useContext(CapabilitiesContext);
@@ -94,13 +95,14 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
 
   const handleViewInAnalytics = React.useCallback(() => {
     const archivedRecording = recording as ArchivedRecording;
+    const jvmId = directory?.jvmId || archivedRecording.jvmId;
     const state = {
-      jvmId: archivedRecording.jvmId,
+      jvmId,
       filename: recording.name,
     };
     store.dispatch(modalPrefillSetIntent(toPath('/recording-analytics'), state as Record<string, unknown>));
     navigate(toPath('/recording-analytics'), { state });
-  }, [recording, navigate]);
+  }, [recording, directory, navigate]);
 
   const actionItems = React.useMemo(() => {
     const actionItems = [
