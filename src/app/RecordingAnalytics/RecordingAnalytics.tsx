@@ -341,6 +341,7 @@ export const RecordingAnalytics: React.FC = () => {
             <StackItem>
               <CodeEditor
                 isDarkTheme={theme === ThemeSetting.DARK}
+                code={query}
                 onChange={setQuery}
                 onEditorDidMount={onEditorDidMount}
                 height="sizeToFit"
