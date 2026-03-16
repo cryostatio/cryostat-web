@@ -21,6 +21,7 @@ import { RecordingDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
+import { loader } from '@monaco-editor/react';
 import { CodeEditor, CodeEditorControl, Language } from '@patternfly/react-code-editor';
 import {
   Card,
@@ -37,10 +38,13 @@ import {
 } from '@patternfly/react-core';
 import { PlayIcon } from '@patternfly/react-icons';
 import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates';
+import * as monaco from 'monaco-editor';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap } from 'rxjs';
+
+loader.config({ monaco });
 
 export const RecordingAnalytics: React.FC = () => {
   const context = React.useContext(ServiceContext);
