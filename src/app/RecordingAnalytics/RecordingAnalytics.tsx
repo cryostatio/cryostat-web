@@ -36,7 +36,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { SimpleDropdown } from '@patternfly/react-templates';
+import { SimpleDropdown, SimpleDropdownItem } from '@patternfly/react-templates';
 import * as React from 'react';
 import { concatMap } from 'rxjs';
 
@@ -67,41 +67,57 @@ export const RecordingAnalytics: React.FC = () => {
   }, [recordingDirectories, jvmId]);
 
   const jvmIdItems = React.useMemo(() => {
-    return jvmIds
-      .map((id) => ({
-        value: id,
-        onClick: () => {
-          setJvmId(id);
-          setFilename('');
-        },
-        content: <DropdownItem>{id}</DropdownItem>,
-      }))
+    const a: SimpleDropdownItem[] = jvmIds
+      .map(
+        (id) =>
+          ({
+            value: id,
+            onClick: () => {
+              setJvmId(id);
+              setFilename('');
+            },
+            content: id,
+          }) as SimpleDropdownItem,
+      )
       .concat([
         {
-          value: 'No Selection',
+          value: '',
+          isDivider: true,
+        },
+        {
+          value: 'Clear Selection',
           onClick: () => {
             setJvmId('');
             setFilename('');
           },
-          content: <DropdownItem>No Selection</DropdownItem>,
+          content: 'Clear Selection',
         },
       ]);
+    return a;
   }, [jvmIds]);
 
   const filenameItems = React.useMemo(() => {
-    return filenames
-      .map((f) => ({
-        value: f,
-        onClick: () => setFilename(f),
-        content: <DropdownItem>{f}</DropdownItem>,
-      }))
+    const a: SimpleDropdownItem[] = filenames
+      .map(
+        (f) =>
+          ({
+            value: f,
+            onClick: () => setFilename(f),
+            content: f,
+          }) as SimpleDropdownItem,
+      )
       .concat([
         {
-          value: 'No Selection',
+          value: '',
+          isDivider: true,
+        },
+        {
+          value: 'Clear Selection',
           onClick: () => setFilename(''),
-          content: <DropdownItem>No Selection</DropdownItem>,
+          content: 'Clear Selection',
         },
       ]);
+    return a;
   }, [filenames]);
 
   const onEditorDidMount = React.useCallback((editor, monaco) => {
@@ -146,10 +162,14 @@ export const RecordingAnalytics: React.FC = () => {
             <ToolbarContent>
               <ToolbarGroup>
                 <ToolbarItem>
-                  <SimpleDropdown toggleContent="JVM ID" initialItems={jvmIdItems} />
+                  <SimpleDropdown toggleContent={jvmId || 'JVM ID'} initialItems={jvmIdItems} />
                 </ToolbarItem>
                 <ToolbarItem>
-                  <SimpleDropdown toggleContent="Filename" isDisabled={!jvmId} initialItems={filenameItems} />
+                  <SimpleDropdown
+                    toggleContent={filename || 'Filename'}
+                    isDisabled={!jvmId}
+                    initialItems={filenameItems}
+                  />
                 </ToolbarItem>
               </ToolbarGroup>
             </ToolbarContent>
