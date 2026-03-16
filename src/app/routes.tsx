@@ -29,6 +29,7 @@ import Events from './Events/Events';
 import Instrumentation from './Instrumentation/Instrumentation';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
+import { RecordingAnalytics } from './RecordingAnalytics/RecordingAnalytics';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
 import RulesTable from './Rules/Rules';
@@ -43,7 +44,6 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import { RecordingAnalytics } from './RecordingAnalytics/RecordingAnalytics';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';

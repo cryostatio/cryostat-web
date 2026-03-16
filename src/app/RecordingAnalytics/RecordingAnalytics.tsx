@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { ThemeSetting } from '@app/Settings/types';
+import { RecordingDirectory } from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
-import { ThemeSetting } from '@app/Settings/types';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import {
   Button,
   Card,
@@ -33,12 +36,9 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { SimpleDropdown } from '@patternfly/react-templates';
-import { RecordingDirectory } from '@app/Shared/Services/api.types';
-import { concatMap, map } from 'rxjs';
 import * as React from 'react';
+import { concatMap, map } from 'rxjs';
 
 export const RecordingAnalytics: React.FC = () => {
   const context = React.useContext(ServiceContext);
@@ -141,7 +141,7 @@ export const RecordingAnalytics: React.FC = () => {
           },
         }),
     );
-  }, [addSubscription, context, context.api, setLoading, setResult, jvmId, filename, query]);
+  }, [addSubscription, context, setLoading, setResult, jvmId, filename, query]);
 
   return (
     <BreadcrumbPage pageTitle="Analytics">
