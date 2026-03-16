@@ -21,7 +21,7 @@ import { RecordingDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
-import { CodeEditor, Language } from '@patternfly/react-code-editor';
+import { CodeEditor, CodeEditorControl, Language } from '@patternfly/react-code-editor';
 import {
   Button,
   Card,
@@ -198,6 +198,19 @@ export const RecordingAnalytics: React.FC = () => {
     );
   }, [addSubscription, context, setLoading, setResult, jvmId, filename, query]);
 
+  const executeControl = React.useMemo(() => {
+    return (
+      <CodeEditorControl
+        icon={<PlayIcon />}
+        aria-label="Execute query"
+        tooltipProps={{ content: 'Execute query' }}
+        onClick={handleExecute}
+        isLoading={loading}
+        isDisabled={!jvmId || !filename || !query || loading}
+      />
+    );
+  }, [handleExecute]);
+
   return (
     <BreadcrumbPage pageTitle="Analytics">
       <Card isCompact>
@@ -222,31 +235,16 @@ export const RecordingAnalytics: React.FC = () => {
         <CardBody>
           <Stack hasGutter>
             <StackItem>
-              <Split hasGutter>
-                <SplitItem isFilled>
-                  <CodeEditor
-                    isDarkTheme={theme === ThemeSetting.DARK}
-                    onChange={setQuery}
-                    onEditorDidMount={onEditorDidMount}
-                    height="sizeToFit"
-                    language={Language.sql}
-                    isLineNumbersVisible
-                    isLanguageLabelVisible
-                  />
-                </SplitItem>
-                <SplitItem
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                  }}
-                >
-                  <Button
-                    icon={<PlayIcon />}
-                    onClick={handleExecute}
-                    isDisabled={!jvmId || !filename || !query || loading}
-                  />
-                </SplitItem>
-              </Split>
+              <CodeEditor
+                isDarkTheme={theme === ThemeSetting.DARK}
+                onChange={setQuery}
+                onEditorDidMount={onEditorDidMount}
+                height="sizeToFit"
+                language={Language.sql}
+                isLineNumbersVisible
+                isLanguageLabelVisible
+                customControls={executeControl}
+              />
             </StackItem>
             <StackItem>
               <CodeBlock>
