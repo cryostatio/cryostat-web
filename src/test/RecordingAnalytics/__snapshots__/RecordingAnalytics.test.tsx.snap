@@ -1,0 +1,241 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`<RecordingAnalytics /> renders correctly 1`] = `
+<div>
+  <div>
+    <h1>
+      Analytics
+    </h1>
+    <div
+      class="pf-v6-c-card pf-m-compact"
+      data-ouia-component-id="OUIA-Generated-Card-19"
+      data-ouia-component-type="PF6/Card"
+      data-ouia-safe="true"
+      id=""
+    >
+      <div
+        class="pf-v6-c-card__header"
+      >
+        <div
+          class="pf-v6-c-card__header-main"
+        >
+          <div
+            class="pf-v6-c-toolbar"
+            data-ouia-component-id="OUIA-Generated-Toolbar-19"
+            data-ouia-component-type="PF6/Toolbar"
+            data-ouia-safe="true"
+            id="pf-random-id-43"
+          >
+            <div
+              class="pf-v6-c-toolbar__content"
+            >
+              <div
+                class="pf-v6-c-toolbar__content-section"
+              >
+                <div
+                  class="pf-v6-c-toolbar__group"
+                >
+                  <div
+                    class="pf-v6-c-toolbar__item"
+                  >
+                    <div
+                      data-testid="simple-dropdown"
+                    >
+                      <button>
+                        JVM ID
+                      </button>
+                      <div
+                        data-testid="dropdown-items"
+                      >
+                        <div>
+                          <button
+                            data-value="jvm-1"
+                          >
+                            jvm-1
+                          </button>
+                        </div>
+                        <div>
+                          <button
+                            data-value="jvm-2"
+                          >
+                            jvm-2
+                          </button>
+                        </div>
+                        <div>
+                          <hr />
+                        </div>
+                        <div>
+                          <button
+                            data-value="Clear Selection"
+                          >
+                            Clear Selection
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="pf-v6-c-toolbar__item"
+                  >
+                    <div
+                      data-testid="simple-dropdown"
+                    >
+                      <button
+                        disabled=""
+                      >
+                        Filename
+                      </button>
+                      <div
+                        data-testid="dropdown-items"
+                      >
+                        <div>
+                          <hr />
+                        </div>
+                        <div>
+                          <button
+                            data-value="Clear Selection"
+                          >
+                            Clear Selection
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-toolbar__content pf-m-hidden"
+              hidden=""
+            >
+              <div
+                class="pf-v6-c-toolbar__group"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="pf-v6-c-card__body"
+      >
+        <div
+          class="pf-v6-l-stack pf-m-gutter"
+        >
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <div
+              data-testid="code-editor"
+            >
+              <div
+                data-testid="code-editor-language"
+              >
+                sql
+              </div>
+              <div
+                data-testid="code-editor-readonly"
+              >
+                false
+              </div>
+              <div
+                data-testid="code-editor-code"
+              />
+              <div
+                data-testid="code-editor-controls"
+              >
+                <div>
+                  <button
+                    aria-label="Execute query"
+                    data-testid="code-editor-control"
+                    disabled=""
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="pf-v6-svg"
+                      fill="currentColor"
+                      height="1em"
+                      role="img"
+                      viewBox="0 0 448 512"
+                      width="1em"
+                    >
+                      <path
+                        d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div>
+                  <div
+                    style="display: contents;"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-label="Insert sample query"
+                      class="pf-v6-c-menu-toggle pf-m-plain pf-v6-c-code-editor__controls-item"
+                      data-ouia-component-id="OUIA-Generated-MenuToggle-plain-19"
+                      data-ouia-component-type="PF6/MenuToggle"
+                      data-ouia-safe="true"
+                      type="button"
+                    >
+                      <span
+                        class="pf-v6-c-menu-toggle__text"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="pf-v6-svg"
+                          fill="currentColor"
+                          height="1em"
+                          role="img"
+                          viewBox="0 0 512 512"
+                          width="1em"
+                        >
+                          <path
+                            d="M80 368H16a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0-16-16zm0-320H16A16 16 0 0 0 0 64v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16zm0 160H16a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0-16-16zm416 176H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-320H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16zm0 160H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16z"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button>
+                Change Query
+              </button>
+              <button>
+                Mount Editor
+              </button>
+            </div>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <div
+              data-testid="code-editor"
+            >
+              <div
+                data-testid="code-editor-language"
+              >
+                json
+              </div>
+              <div
+                data-testid="code-editor-readonly"
+              >
+                true
+              </div>
+              <div
+                data-testid="code-editor-code"
+              />
+              <button>
+                Change Query
+              </button>
+              <button>
+                Mount Editor
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
