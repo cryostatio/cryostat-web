@@ -121,7 +121,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     const archivedRecording = recording as ArchivedRecording;
     if (archivedRecording.jvmId && activeLevel <= FeatureLevel.BETA) {
       actionItems.push({
-        title: 'View in Analytics',
+        title: 'View in Analytics ...',
         key: 'view-in-analytics',
         onClick: handleViewInAnalytics,
       });
