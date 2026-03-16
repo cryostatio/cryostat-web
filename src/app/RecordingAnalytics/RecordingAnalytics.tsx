@@ -223,7 +223,7 @@ export const RecordingAnalytics: React.FC = () => {
                 isDarkTheme={theme === ThemeSetting.DARK}
                 onChange={setQuery}
                 onEditorDidMount={onEditorDidMount}
-                height="120px"
+                height="sizeToFit"
                 language={Language.sql}
                 isLineNumbersVisible
                 isLanguageLabelVisible
