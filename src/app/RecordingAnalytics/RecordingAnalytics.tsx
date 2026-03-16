@@ -38,16 +38,15 @@ import {
 } from '@patternfly/react-core';
 import { SimpleDropdown } from '@patternfly/react-templates';
 import * as React from 'react';
-import { concatMap, map } from 'rxjs';
+import { concatMap } from 'rxjs';
 
 export const RecordingAnalytics: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
   const [jvmId, setJvmId] = React.useState('');
-  const [jvmIds, setJvmIds] = React.useState([] as string[]);
+  const [recordingDirectories, setRecordingDirectories] = React.useState([] as RecordingDirectory[]);
   const [filename, setFilename] = React.useState('');
-  const [filenames, setFilenames] = React.useState([] as string[]);
 
   const [theme] = useTheme();
   const [query, setQuery] = React.useState('');
@@ -56,42 +55,38 @@ export const RecordingAnalytics: React.FC = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api
-        .doGet<RecordingDirectory[]>('fs/recordings', 'beta')
-        .pipe(map((v) => v.map((e) => e.jvmId)))
-        .subscribe((v) => setJvmIds(v)),
+      context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe((v) => setRecordingDirectories(v)),
     );
-  }, [addSubscription, context, context.api, setJvmIds]);
+  }, [addSubscription, context, context.api, setRecordingDirectories]);
 
-  React.useEffect(() => {
-    // FIME the other GET /api/beta/fs/recordings call already returns this information, we don't need to query for it separately
-    addSubscription(
-      context.api
-        .doGet<RecordingDirectory[]>(`fs/recordings/${jvmId}`, 'beta')
-        .pipe(
-          map((v) => v[0]),
-          map((v) => v.recordings),
-          map((v) => v.map((e) => e.name)),
-        )
-        .subscribe((v) => setFilenames(v)),
-    );
-  }, [addSubscription, context, context.api, jvmId, setFilenames]);
+  const jvmIds = React.useMemo(() => recordingDirectories.map((e) => e.jvmId), [recordingDirectories]);
+
+  const filenames = React.useMemo(() => {
+    const directory = recordingDirectories.find((d) => d.jvmId === jvmId);
+    return directory ? directory.recordings.map((r) => r.name) : [];
+  }, [recordingDirectories, jvmId]);
 
   const jvmIdItems = React.useMemo(() => {
     return jvmIds
       .map((id) => ({
         value: id,
-        onClick: () => setJvmId(id),
+        onClick: () => {
+          setJvmId(id);
+          setFilename('');
+        },
         content: <DropdownItem>{id}</DropdownItem>,
       }))
       .concat([
         {
           value: 'No Selection',
-          onClick: () => setJvmId(''),
+          onClick: () => {
+            setJvmId('');
+            setFilename('');
+          },
           content: <DropdownItem>No Selection</DropdownItem>,
         },
       ]);
-  }, [jvmIds, setJvmId]);
+  }, [jvmIds]);
 
   const filenameItems = React.useMemo(() => {
     return filenames
@@ -107,7 +102,7 @@ export const RecordingAnalytics: React.FC = () => {
           content: <DropdownItem>No Selection</DropdownItem>,
         },
       ]);
-  }, [filenames, setFilename]);
+  }, [filenames]);
 
   const onEditorDidMount = React.useCallback((editor, monaco) => {
     editor.layout();
