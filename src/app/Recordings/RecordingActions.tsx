@@ -121,7 +121,8 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     }
 
     const archivedRecording = recording as ArchivedRecording;
-    const jvmId = directory?.jvmId || archivedRecording.jvmId;
+    const jvmId = directory?.jvmId || archivedRecording.metadata.labels.find((v) => v.key === 'jvmId')?.value;
+    console.log({ directory, archivedRecording });
     if (jvmId && activeLevel <= FeatureLevel.BETA) {
       actionItems.push({
         title: 'View in Analytics ...',
