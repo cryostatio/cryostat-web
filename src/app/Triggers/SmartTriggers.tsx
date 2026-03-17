@@ -810,6 +810,9 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
               <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
             ))}
         </FormSelect>
+        <HelperText>
+          <HelperTextItem>{`Selected Mbean has the name: ${mbeanSelectValue}, Use this to build your expression.`}</HelperTextItem>
+        </HelperText>
         <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
           <TextArea
             value={expressionInput}
