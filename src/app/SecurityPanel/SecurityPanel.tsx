@@ -18,7 +18,7 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { StoredCredentialsCard } from './Credentials/StoredCredentials';
-import { ListCertificates } from './ImportCertificate';
+import { ListCertificates } from './Certificates';
 
 export interface SecurityPanelProps {}
 
