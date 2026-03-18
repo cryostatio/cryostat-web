@@ -622,9 +622,10 @@
     "CAPTURE": "Capture",
     "NavGroups": {
       "CONSOLE": "Console",
+      "DIAGNOSTICS": "Diagnostics",
       "FLIGHT_RECORDER": "Flight Recorder",
       "OVERVIEW": "Overview",
-      "DIAGNOSTICS": "Diagnostics"
+      "SECURITY": "Security"
     }
   },
   "RuleDeleteWarningModal": {
