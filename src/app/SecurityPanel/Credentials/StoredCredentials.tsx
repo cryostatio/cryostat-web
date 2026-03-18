@@ -26,6 +26,9 @@ import { TableColumn, sortResources, portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
+  Card,
+  CardBody,
+  CardTitle,
   Checkbox,
   EmptyState,
   EmptyStateIcon,
@@ -50,12 +53,11 @@ import {
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, OutlinedQuestionCircleIcon, SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { concatMap, forkJoin, map } from 'rxjs';
-import { SecurityCard } from '../types';
 import { CreateCredentialModal } from './CreateCredentialModal';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 export const includesCredential = (credentials: MatchedCredential[], credential: MatchedCredential): boolean => {
   return credentials.some((cred) => cred.id === credential.id);
@@ -524,27 +526,35 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
   );
 };
 
-export const StoredCredentialsCard: SecurityCard = {
-  key: 'credentials',
-  title: (t: TFunction) => (
-    <Text>
-      {t('StoredCredentials.CARD_TITLE')}
-      <Popover
-        maxWidth="40rem"
-        headerContent={t('StoredCredentials.CARD_TITLE_POPOVER_HEADER')}
-        bodyContent={<JmxAuthDescription />}
-      >
-        <Button variant="plain">
-          <OutlinedQuestionCircleIcon />
-        </Button>
-      </Popover>
-    </Text>
-  ),
-  description: (t: TFunction) => (
-    <TextContent>
-      <Text component={TextVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Text>
-    </TextContent>
-  ),
-  content: StoredCredentials,
-  isFilled: true,
+export const StoredCredentialsView: React.FC = () => {
+  const { t } = useCryostatTranslation();
+
+  return (
+    <BreadcrumbPage pageTitle="Stored Credentials">
+      <Card>
+        <CardTitle>
+          <Text component={TextVariants.h1}>
+            <Text>
+              {t('StoredCredentials.CARD_TITLE')}
+              <Popover
+                maxWidth="40rem"
+                headerContent={t('StoredCredentials.CARD_TITLE_POPOVER_HEADER')}
+                bodyContent={<JmxAuthDescription />}
+              >
+                <Button variant="plain">
+                  <OutlinedQuestionCircleIcon />
+                </Button>
+              </Popover>
+            </Text>
+          </Text>
+          <TextContent>
+            <Text component={TextVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Text>
+          </TextContent>{' '}
+        </CardTitle>
+        <CardBody isFilled>
+          <StoredCredentials />
+        </CardBody>
+      </Card>
+    </BreadcrumbPage>
+  );
 };
