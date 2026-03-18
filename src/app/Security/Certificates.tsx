@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { JmxSslDescription } from '@app/Shared/Components/JmxSslDescription';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -41,7 +42,6 @@ import {
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { map, tap } from 'rxjs/operators';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 export const Certificates: React.FC = () => {
   const { t } = useCryostatTranslation();
