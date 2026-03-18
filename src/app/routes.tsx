@@ -42,6 +42,7 @@ import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
 import { Certificates } from './SecurityPanel/Certificates';
+import { StoredCredentialsView } from './SecurityPanel/Credentials/StoredCredentials';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
@@ -208,19 +209,19 @@ const diagnosticsRoutes: IAppRoute[] = [
 
 const securityRoutes: IAppRoute[] = [
   {
-    component: SecurityPanel,
-    label: 'Security',
-    path: toPath('/security'),
-    title: 'Security',
-    description: 'Upload SSL/TLS certificates for Cryostat to trust when communicating with target applications.',
-    navGroup: SECURITY,
-  },
-  {
     component: Certificates,
     label: 'Certificates',
     path: toPath('/certificates'),
     title: 'Certificates',
     description: 'View SSL/TLS certificates Cryostat trusts when communicating with target applications.',
+    navGroup: SECURITY,
+  },
+  {
+    component: StoredCredentialsView,
+    label: 'Credentials',
+    path: toPath('/credentials'),
+    title: 'Credentials',
+    description: 'Encrypted credentials keyring which Cryostat uses to authenticate to target applications.',
     navGroup: SECURITY,
   },
 ];
