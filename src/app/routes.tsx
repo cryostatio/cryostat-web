@@ -32,7 +32,8 @@ import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
 import RulesTable from './Rules/Rules';
-import SecurityPanel from './SecurityPanel/SecurityPanel';
+import { Certificates } from './Security/Certificates';
+import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
 import { FeatureLevel } from './Shared/Services/service.types';
@@ -41,8 +42,6 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import { Certificates } from './SecurityPanel/Certificates';
-import { StoredCredentialsView } from './SecurityPanel/Credentials/StoredCredentials';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
