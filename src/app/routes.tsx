@@ -41,6 +41,7 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
+import { Certificates } from './SecurityPanel/Certificates';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
@@ -212,6 +213,14 @@ const securityRoutes: IAppRoute[] = [
     path: toPath('/security'),
     title: 'Security',
     description: 'Upload SSL/TLS certificates for Cryostat to trust when communicating with target applications.',
+    navGroup: SECURITY,
+  },
+  {
+    component: Certificates,
+    label: 'Certificates',
+    path: toPath('/certificates'),
+    title: 'Certificates',
+    description: 'View SSL/TLS certificates Cryostat trusts when communicating with target applications.',
     navGroup: SECURITY,
   },
 ];
