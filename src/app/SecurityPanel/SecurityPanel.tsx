@@ -18,13 +18,12 @@ import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { StoredCredentialsCard } from './Credentials/StoredCredentials';
-import { ListCertificates } from './Certificates';
 
 export interface SecurityPanelProps {}
 
 export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
   const { t } = useCryostatTranslation();
-  const securityCards = [ListCertificates, StoredCredentialsCard].map((c) => ({
+  const securityCards = [StoredCredentialsCard].map((c) => ({
     key: c.key,
     title: c.title(t),
     description: c.description(t),

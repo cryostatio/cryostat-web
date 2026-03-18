@@ -20,6 +20,9 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Button,
+  Card,
+  CardBody,
+  CardTitle,
   EmptyState,
   EmptyStateBody,
   EmptyStateVariant,
@@ -36,12 +39,11 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
-import { TFunction } from 'i18next';
 import * as React from 'react';
 import { map, tap } from 'rxjs/operators';
-import { SecurityCard } from './types';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
-const TrustedCertificates: React.FC = () => {
+export const Certificates: React.FC = () => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -62,53 +64,54 @@ const TrustedCertificates: React.FC = () => {
   }, [setLoading, addSubscription, context.api, setCerts]);
 
   return (
-    <Panel isScrollable>
-      <PanelMain>
-        <PanelMainBody>
-          {loading ? (
-            <Spinner />
-          ) : certs.length ? (
-            <LabelGroup>
-              {certs.map((cert) => (
-                <Label key={cert} icon={<FileIcon />}>
-                  {cert}
-                </Label>
-              ))}
-            </LabelGroup>
-          ) : (
-            <EmptyState variant={EmptyStateVariant.xs}>
-              <Title headingLevel="h4" size="md">
-                {t('ImportCertificate.NO_CERTIFICATE_TITLE')}
-              </Title>
-              <EmptyStateBody>{t('ImportCertificate.NO_CERTIFICATE_BODY')}</EmptyStateBody>
-            </EmptyState>
-          )}
-        </PanelMainBody>
-      </PanelMain>
-    </Panel>
+    <BreadcrumbPage pageTitle="Certificates">
+      <Card>
+        <CardTitle>
+          <Text component={TextVariants.h1}>
+            <Text>
+              {t('ImportCertificate.CARD_TITLE')}
+              <Popover
+                maxWidth="40rem"
+                headerContent={t('ImportCertificate.CARD_TITLE_POPOVER_HEADER')}
+                bodyContent={<JmxSslDescription />}
+              >
+                <Button variant="plain">
+                  <OutlinedQuestionCircleIcon />
+                </Button>
+              </Popover>
+            </Text>
+          </Text>
+          <TextContent>
+            <Text component={TextVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Text>
+          </TextContent>{' '}
+        </CardTitle>
+        <CardBody isFilled>
+          <Panel isScrollable>
+            <PanelMain>
+              <PanelMainBody>
+                {loading ? (
+                  <Spinner />
+                ) : certs.length ? (
+                  <LabelGroup>
+                    {certs.map((cert) => (
+                      <Label key={cert} icon={<FileIcon />}>
+                        {cert}
+                      </Label>
+                    ))}
+                  </LabelGroup>
+                ) : (
+                  <EmptyState variant={EmptyStateVariant.xs}>
+                    <Title headingLevel="h4" size="md">
+                      {t('ImportCertificate.NO_CERTIFICATE_TITLE')}
+                    </Title>
+                    <EmptyStateBody>{t('ImportCertificate.NO_CERTIFICATE_BODY')}</EmptyStateBody>
+                  </EmptyState>
+                )}
+              </PanelMainBody>
+            </PanelMain>
+          </Panel>
+        </CardBody>
+      </Card>
+    </BreadcrumbPage>
   );
-};
-
-export const ListCertificates: SecurityCard = {
-  key: 'ssl',
-  title: (t: TFunction) => (
-    <Text>
-      {t('ImportCertificate.CARD_TITLE')}
-      <Popover
-        maxWidth="40rem"
-        headerContent={t('ImportCertificate.CARD_TITLE_POPOVER_HEADER')}
-        bodyContent={<JmxSslDescription />}
-      >
-        <Button variant="plain">
-          <OutlinedQuestionCircleIcon />
-        </Button>
-      </Popover>
-    </Text>
-  ),
-  description: (t: TFunction) => (
-    <TextContent>
-      <Text component={TextVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Text>
-    </TextContent>
-  ),
-  content: TrustedCertificates,
 };
