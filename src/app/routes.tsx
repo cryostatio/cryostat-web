@@ -45,9 +45,10 @@ import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
 const FLIGHT_RECORDER = 'Routes.NavGroups.FLIGHT_RECORDER';
-const CONSOLE = 'Routes.NavGroups.CONSOLE';
 const DIAGNOSTICS = 'Routes.NavGroups.DIAGNOSTICS';
-const navGroups = [OVERVIEW, FLIGHT_RECORDER, DIAGNOSTICS, CONSOLE];
+const SECURITY = 'Routes.NavGroups.SECURITY';
+const CONSOLE = 'Routes.NavGroups.CONSOLE';
+const navGroups = [OVERVIEW, FLIGHT_RECORDER, DIAGNOSTICS, SECURITY, CONSOLE];
 
 const ANALYZE = 'Routes.ANALYZE';
 const CAPTURE = 'Routes.CAPTURE';
@@ -204,15 +205,18 @@ const diagnosticsRoutes: IAppRoute[] = [
   },
 ];
 
-const consoleRoutes: IAppRoute[] = [
+const securityRoutes: IAppRoute[] = [
   {
     component: SecurityPanel,
     label: 'Security',
     path: toPath('/security'),
     title: 'Security',
     description: 'Upload SSL/TLS certificates for Cryostat to trust when communicating with target applications.',
-    navGroup: CONSOLE,
+    navGroup: SECURITY,
   },
+];
+
+const consoleRoutes: IAppRoute[] = [
   {
     component: About,
     label: 'About',
@@ -242,8 +246,9 @@ const nonNavRoutes: IAppRoute[] = [
 const routes: IAppRoute[] = [
   ...overviewRoutes,
   ...flightRecorderRoutes,
-  ...consoleRoutes,
   ...diagnosticsRoutes,
+  ...securityRoutes,
+  ...consoleRoutes,
   ...nonNavRoutes,
 ];
 
