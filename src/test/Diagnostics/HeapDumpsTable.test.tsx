@@ -177,7 +177,9 @@ describe('<HeapDumpsTable />', () => {
         routes: [
           {
             path: '/heapdumps',
-            element: <HeapDumpsTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />,
+            element: (
+              <HeapDumpsTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
           },
         ],
       },

@@ -81,7 +81,9 @@ jest.mock('@app/Diagnostics/Filters/ThreadDumpFilters', () => {
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
-const getTargetThreadDumps = jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockReturnValue(of([mockThreadDump])); // All other tests
+const getTargetThreadDumps = jest
+  .spyOn(defaultServices.api, 'getTargetThreadDumps')
+  .mockReturnValue(of([mockThreadDump])); // All other tests
 
 jest.spyOn(defaultServices.api, 'deleteThreadDump').mockReturnValue(of(true));
 
