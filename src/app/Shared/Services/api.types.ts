@@ -700,3 +700,100 @@ export interface NotificationMessageMapper {
   variant?: AlertVariant;
   hidden?: boolean;
 }
+
+// ======================================
+// Audit Log Resources
+// ======================================
+
+/**
+ * Revision information from REVINFO table
+ */
+export interface AuditRevision {
+  /** Revision number (primary key) */
+  rev: number;
+  /** Revision timestamp in milliseconds since epoch */
+  revtstmp: number;
+  /** Username of the user who made the change (optional) */
+  username?: string;
+}
+
+/**
+ * Revision type enum matching Hibernate Envers values
+ */
+export enum RevisionType {
+  /** Entity was added */
+  ADD = 0,
+  /** Entity was modified */
+  MODIFY = 1,
+  /** Entity was deleted */
+  DELETE = 2,
+}
+
+/**
+ * Generic audit entity structure
+ * All _AUD tables follow this pattern with additional entity-specific fields
+ */
+export interface AuditEntity {
+  /** Entity ID */
+  id: number;
+  /** Revision number when this change occurred */
+  rev: number;
+  /** Type of operation (ADD/MODIFY/DELETE) */
+  revtype: RevisionType;
+  /** Revision number when this entity version ended (optional) */
+  revend?: number;
+  /** Timestamp when this entity version ended (optional) */
+  revend_tstmp?: number;
+  /** Additional entity-specific fields */
+  [key: string]: any;
+}
+
+/**
+ * Revision with detailed entity changes
+ */
+export interface AuditRevisionDetail extends AuditRevision {
+  /** Map of entity type name to array of entities changed in this revision */
+  entities: {
+    [entityType: string]: AuditEntity[];
+  };
+}
+
+/**
+ * Query parameters for audit log search
+ */
+export interface AuditQueryParams {
+  /** Start of time range (timestamp in milliseconds) */
+  startTime: number;
+  /** End of time range (timestamp in milliseconds) */
+  endTime: number;
+  /** Page number for pagination (optional, 0-based) */
+  page?: number;
+  /** Number of results per page (optional, default 50) */
+  pageSize?: number;
+}
+
+/**
+ * Response from audit revisions query
+ */
+export interface AuditRevisionsResponse {
+  /** Array of revisions matching the query */
+  revisions: AuditRevision[];
+  /** Total count of revisions (for pagination) */
+  totalCount: number;
+}
+
+/**
+ * Helper function to get human-readable operation name
+ */
+export const getRevisionTypeName = (revtype: RevisionType): string => {
+  switch (revtype) {
+    case RevisionType.ADD:
+      return 'Add';
+    case RevisionType.MODIFY:
+      return 'Modify';
+    case RevisionType.DELETE:
+      return 'Delete';
+    default:
+      return 'Unknown';
+  }
+};

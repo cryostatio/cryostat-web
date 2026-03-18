@@ -73,6 +73,9 @@ import {
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
+  AuditQueryParams,
+  AuditRevisionsResponse,
+  AuditRevisionDetail,
 } from './api.types';
 import {
   isHttpError,
@@ -1643,6 +1646,37 @@ export class ApiService {
 
   getTargetLineage(jvmId: string): Observable<EnvironmentNode> {
     return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta', undefined, true);
+  }
+
+  /**
+   * Query audit log revisions by time range
+   * @param params Query parameters including time range and pagination
+   * @returns Observable of revisions response
+   */
+  getAuditRevisions(params: AuditQueryParams): Observable<AuditRevisionsResponse> {
+    const queryParams = new URLSearchParams({
+      startTime: params.startTime.toString(),
+      endTime: params.endTime.toString(),
+    });
+
+    if (params.page !== undefined) {
+      queryParams.append('page', params.page.toString());
+    }
+
+    if (params.pageSize !== undefined) {
+      queryParams.append('pageSize', params.pageSize.toString());
+    }
+
+    return this.doGet<AuditRevisionsResponse>(`audit/revisions?${queryParams}`, 'beta');
+  }
+
+  /**
+   * Get detailed information about a specific revision
+   * @param rev Revision number
+   * @returns Observable of revision detail with entity changes
+   */
+  getAuditRevisionDetail(rev: number): Observable<AuditRevisionDetail> {
+    return this.doGet<AuditRevisionDetail>(`audit/revisions/${rev}`, 'beta');
   }
 
   // Filter targets that the expression matches

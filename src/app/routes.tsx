@@ -32,6 +32,7 @@ import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
 import RulesTable from './Rules/Rules';
+import AuditLog from './Security/AuditLog';
 import { Certificates } from './Security/Certificates';
 import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
 import Settings from './Settings/Settings';
@@ -222,6 +223,15 @@ const securityRoutes: IAppRoute[] = [
     title: 'Credentials',
     description: 'Encrypted credentials keyring which Cryostat uses to authenticate to target applications.',
     navGroup: SECURITY,
+  },
+  {
+    component: AuditLog,
+    label: 'Audit Log',
+    path: toPath('/audit-log'),
+    title: 'Audit Log',
+    description: 'View audit log of changes to Cryostat entities.',
+    navGroup: SECURITY,
+    featureLevel: FeatureLevel.BETA,
   },
 ];
 
