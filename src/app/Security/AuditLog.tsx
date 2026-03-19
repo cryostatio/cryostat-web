@@ -109,6 +109,16 @@ export const AuditLog: React.FC = () => {
     });
   }, [startTime, endTime, handleQuerySubmit, t]);
 
+  const handleReset = React.useCallback(() => {
+    setStartTime(getDefaultStartTime());
+    setEndTime(getDefaultEndTime());
+    setValidationError('');
+    setQueryParams(null);
+    setRevisions([]);
+    setTotalCount(0);
+    setErrorMessage('');
+  }, [getDefaultStartTime, getDefaultEndTime]);
+
   const handlePageChange = React.useCallback(
     (page: number, pageSize: number) => {
       if (queryParams) {
@@ -150,6 +160,11 @@ export const AuditLog: React.FC = () => {
                 validated={validationError ? 'error' : 'default'}
               />
             </div>
+          </ToolbarItem>
+          <ToolbarItem style={{ marginLeft: '16px' }}>
+            <Button variant="secondary" onClick={handleReset} isDisabled={isLoading}>
+              {t('AuditLog.QUERY_FORM.RESET')}
+            </Button>
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarItem variant="separator" />
