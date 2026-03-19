@@ -1667,7 +1667,17 @@ export class ApiService {
       queryParams.append('pageSize', params.pageSize.toString());
     }
 
-    return this.doGet<AuditRevisionsResponse>(`audit/revisions?${queryParams}`, 'beta');
+    const headers = new Headers({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+    });
+
+    return this.sendRequest('beta', `audit/revisions`, { method: 'GET', headers }, queryParams).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first(),
+    );
   }
 
   /**
@@ -1676,7 +1686,17 @@ export class ApiService {
    * @returns Observable of revision detail with entity changes
    */
   getAuditRevisionDetail(rev: number): Observable<AuditRevisionDetail> {
-    return this.doGet<AuditRevisionDetail>(`audit/revisions/${rev}`, 'beta');
+    const headers = new Headers({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+    });
+
+    return this.sendRequest('beta', `audit/revisions/${rev}`, { method: 'GET', headers }).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first(),
+    );
   }
 
   // Filter targets that the expression matches
