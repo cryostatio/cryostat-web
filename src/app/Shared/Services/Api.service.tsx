@@ -73,6 +73,9 @@ import {
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
+  AuditQueryParams,
+  AuditRevisionsResponse,
+  AuditRevisionDetail,
 } from './api.types';
 import {
   isHttpError,
@@ -1643,6 +1646,74 @@ export class ApiService {
 
   getTargetLineage(jvmId: string): Observable<EnvironmentNode> {
     return this.doGet<EnvironmentNode>(`audit/target_lineage/${jvmId}`, 'beta', undefined, true);
+  }
+
+  /**
+   * Query audit log revisions by time range
+   * @param params Query parameters including time range and pagination
+   * @returns Observable of revisions response
+   */
+  getAuditRevisions(params: AuditQueryParams): Observable<AuditRevisionsResponse> {
+    const queryParams = new URLSearchParams({
+      startTime: params.startTime.toString(),
+      endTime: params.endTime.toString(),
+    });
+
+    if (params.page !== undefined) {
+      queryParams.append('page', params.page.toString());
+    }
+
+    if (params.pageSize !== undefined) {
+      queryParams.append('pageSize', params.pageSize.toString());
+    }
+
+    const headers = new Headers({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+    });
+
+    return this.sendRequest('beta', `audit/revisions`, { method: 'GET', headers }, queryParams).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first(),
+    );
+  }
+
+  /**
+   * Get detailed information about a specific revision
+   * @param rev Revision number
+   * @returns Observable of revision detail with entity changes
+   */
+  getAuditRevisionDetail(rev: number): Observable<AuditRevisionDetail> {
+    const headers = new Headers({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+    });
+
+    return this.sendRequest('beta', `audit/revisions/${rev}`, { method: 'GET', headers }).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first(),
+    );
+  }
+
+  /**
+   * Export audit log as JSON for a given time range
+   * @param startTime Start time in milliseconds
+   * @param endTime End time in milliseconds
+   */
+  exportAuditLog(startTime: number, endTime: number): void {
+    const queryParams = new URLSearchParams({
+      startTime: startTime.toString(),
+      endTime: endTime.toString(),
+    });
+
+    this.ctx.url(`/api/beta/audit/export?${queryParams.toString()}`).subscribe((resourceUrl) => {
+      const filename = `audit-log-${startTime}-${endTime}.json`;
+      this.downloadFile(resourceUrl, undefined, filename);
+    });
   }
 
   // Filter targets that the expression matches

@@ -622,9 +622,10 @@
     "CAPTURE": "Capture",
     "NavGroups": {
       "CONSOLE": "Console",
+      "DIAGNOSTICS": "Diagnostics",
       "FLIGHT_RECORDER": "Flight Recorder",
       "OVERVIEW": "Overview",
-      "DIAGNOSTICS": "Diagnostics"
+      "SECURITY": "Security"
     }
   },
   "RuleDeleteWarningModal": {
@@ -863,5 +864,59 @@
     "DEFINITION_HELPER_TEXT": "Enter a Smart Trigger definition. A custom trigger definition must consist of both an expression that defines the overall trigger condition and the name of an event template that is used for the JFR Recording. The expression is a <a>Common Expression Language (CEL)</a> code snippet that defines one or more constraints and a target duration.",
     "DEFINITION_HINT": "The set of constraints and target duration must be separated by a semicolon (;) character. Each constraint must include: the name of an MBean counter; a relational operator such as > (greater than), = (equal to), <(less than), and so on; and a specified value. The type of relational operator and value that you can specify depends on the associated MBean counter type. The constraint and duration must be enclosed in square brackets, followed by a tilde then the Recording Template name.",
     "DEFINITION_HINT_BODY": "For an example definition: [ProcessCpuLoad>0.2;TargetDuration>duration(\"30s\")]~Profiling"
+  },
+  "AuditLog": {
+    "TITLE": "Audit Log",
+    "DESCRIPTION": "View audit log of changes to Cryostat entities",
+    "QUERY_FORM": {
+      "TITLE": "Query Parameters",
+      "START_TIME": "Start Time",
+      "END_TIME": "End Time",
+      "EXECUTE": "Query",
+      "DOWNLOAD": "Download audit log as JSON",
+      "RESET": "Reset",
+      "VALIDATION": {
+        "INVALID_DATE_FORMAT": "Invalid date format",
+        "END_BEFORE_START": "End time must be after start time"
+      }
+    },
+    "TABLE": {
+      "TITLE": "Audit Revisions",
+      "REVISION": "Revision",
+      "TIMESTAMP": "Timestamp",
+      "USERNAME": "Username",
+      "UNKNOWN_USER": "Unknown",
+      "ENTITY_TYPE": "Entity Type",
+      "ENTITY_ID": "Entity ID",
+      "REVISION_TYPE": "Action",
+      "EMPTY_STATE": "No audit revisions found",
+      "EMPTY_STATE_DESCRIPTION": "No audit revisions match the selected time range. Try adjusting your query parameters.",
+      "NO_QUERY": "No query submitted",
+      "NO_QUERY_DESCRIPTION": "Submit a query to view audit revisions.",
+      "ERROR_TITLE": "Error loading audit revisions",
+      "FAILED_TO_FETCH": "Failed to fetch audit revisions",
+      "FAILED_TO_LOAD_DETAILS": "Failed to load revision details",
+      "ARIA_LABEL": "Audit revisions table"
+    },
+    "DETAIL": {
+      "TITLE": "Revision {{revision}} Details",
+      "METADATA": {
+        "REVISION": "Revision",
+        "TIMESTAMP": "Timestamp",
+        "USERNAME": "Username"
+      },
+      "ENTITIES_TITLE": "Entity Changes",
+      "ENTITY_TYPE": "Entity Type",
+      "ENTITY_ID": "ID",
+      "OPERATION": "Operation",
+      "REVISION_TYPE": "Revision Type",
+      "LOADING": "Loading revision details...",
+      "ERROR": "Failed to load revision details"
+    },
+    "REVISION_TYPES": {
+      "ADD": "Add",
+      "MODIFY": "Modify",
+      "DELETE": "Delete"
+    }
   }
 }
