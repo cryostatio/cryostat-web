@@ -33,7 +33,9 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Tooltip,
 } from '@patternfly/react-core';
+import { DownloadIcon, RedoIcon, SearchIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
 import * as React from 'react';
 import { of } from 'rxjs';
@@ -109,6 +111,12 @@ export const AuditLog: React.FC = () => {
     });
   }, [startTime, endTime, handleQuerySubmit, t]);
 
+  const handleDownload = React.useCallback(() => {
+    if (queryParams) {
+      context.api.exportAuditLog(queryParams.startTime, queryParams.endTime);
+    }
+  }, [queryParams, context.api]);
+
   const handleReset = React.useCallback(() => {
     setStartTime(getDefaultStartTime());
     setEndTime(getDefaultEndTime());
@@ -162,22 +170,41 @@ export const AuditLog: React.FC = () => {
             </div>
           </ToolbarItem>
           <ToolbarItem style={{ marginLeft: '16px' }}>
-            <Button variant="secondary" onClick={handleReset} isDisabled={isLoading}>
-              {t('AuditLog.QUERY_FORM.RESET')}
-            </Button>
+            <Tooltip content={t('AuditLog.QUERY_FORM.RESET')}>
+              <Button
+                variant="secondary"
+                onClick={handleReset}
+                isDisabled={isLoading}
+                icon={<RedoIcon />}
+                aria-label={t('AuditLog.QUERY_FORM.RESET')}
+              />
+            </Tooltip>
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarItem variant="separator" />
         <ToolbarGroup variant="button-group">
           <ToolbarItem>
-            <Button
-              variant="primary"
-              onClick={handleQuery}
-              isLoading={isLoading}
-              isDisabled={isLoading || !!validationError}
-            >
-              {t('AuditLog.QUERY_FORM.EXECUTE')}
-            </Button>
+            <Tooltip content={t('AuditLog.QUERY_FORM.EXECUTE')}>
+              <Button
+                variant="primary"
+                onClick={handleQuery}
+                isLoading={isLoading}
+                isDisabled={isLoading || !!validationError}
+                icon={<SearchIcon />}
+                aria-label={t('AuditLog.QUERY_FORM.EXECUTE')}
+              />
+            </Tooltip>
+          </ToolbarItem>
+          <ToolbarItem>
+            <Tooltip content={t('AuditLog.QUERY_FORM.DOWNLOAD')}>
+              <Button
+                variant="secondary"
+                onClick={handleDownload}
+                isDisabled={!queryParams || revisions.length === 0}
+                icon={<DownloadIcon />}
+                aria-label={t('AuditLog.QUERY_FORM.DOWNLOAD')}
+              />
+            </Tooltip>
           </ToolbarItem>
         </ToolbarGroup>
         {queryParams && totalCount > 0 && (
