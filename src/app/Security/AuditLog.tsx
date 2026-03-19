@@ -44,8 +44,11 @@ export const AuditLog: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [startTime, setStartTime] = React.useState<string>(dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm'));
-  const [endTime, setEndTime] = React.useState<string>(dayjs().format('YYYY-MM-DDTHH:mm'));
+  const getDefaultStartTime = React.useCallback(() => dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm'), []);
+  const getDefaultEndTime = React.useCallback(() => dayjs().add(1, 'minute').format('YYYY-MM-DDTHH:mm'), []);
+
+  const [startTime, setStartTime] = React.useState<string>(getDefaultStartTime());
+  const [endTime, setEndTime] = React.useState<string>(getDefaultEndTime());
   const [validationError, setValidationError] = React.useState('');
 
   const [queryParams, setQueryParams] = React.useState<AuditQueryParams | null>(null);
