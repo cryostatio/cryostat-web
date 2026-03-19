@@ -1699,6 +1699,23 @@ export class ApiService {
     );
   }
 
+  /**
+   * Export audit log as JSON for a given time range
+   * @param startTime Start time in milliseconds
+   * @param endTime End time in milliseconds
+   */
+  exportAuditLog(startTime: number, endTime: number): void {
+    const queryParams = new URLSearchParams({
+      startTime: startTime.toString(),
+      endTime: endTime.toString(),
+    });
+
+    this.ctx.url(`/api/beta/audit/export?${queryParams.toString()}`).subscribe((resourceUrl) => {
+      const filename = `audit-log-${startTime}-${endTime}.json`;
+      this.downloadFile(resourceUrl, undefined, filename);
+    });
+  }
+
   // Filter targets that the expression matches
   matchTargetsWithExpr(matchExpression: string, targets: Target[]): Observable<Target[]> {
     const body = JSON.stringify({
