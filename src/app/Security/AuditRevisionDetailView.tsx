@@ -23,7 +23,7 @@ import {
   keyValueToString,
 } from '@app/Shared/Services/api.types';
 import { useDayjs } from '@app/utils/hooks/useDayjs';
-import { formatDuration, LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
+import { formatBytes, formatDuration, LABEL_TEXT_MAXWIDTH } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Label, LabelGroup, Timestamp, TimestampTooltipVariant, Title } from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
@@ -51,8 +51,18 @@ export const AuditRevisionDetailView: React.FC<AuditRevisionDetailViewProps> = (
         return formatDuration(value);
       }
 
-      // Handle startTime fields (timestamps in milliseconds)
-      if (field === 'startTime' && typeof value === 'number') {
+      // Handle timestamp fields (in milliseconds)
+      const timestampFields = [
+        'startTime',
+        'triggeredAt',
+        'requestedAt',
+        'completedAt',
+        'uploadedAt',
+        'createdAt',
+        'startedAt',
+        'stoppedAt',
+      ];
+      if (timestampFields.includes(field) && typeof value === 'number') {
         return (
           <Timestamp
             tooltip={{
@@ -63,6 +73,11 @@ export const AuditRevisionDetailView: React.FC<AuditRevisionDetailViewProps> = (
             {dayjs(value).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>
         );
+      }
+
+      // Handle size field (in bytes)
+      if (field === 'size' && typeof value === 'number') {
+        return formatBytes(value);
       }
 
       // Handle labels field (simple KeyValue array)
