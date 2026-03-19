@@ -29,7 +29,7 @@ import {
   List,
   ListItem,
   Popover,
-  Text,
+  Content,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, FileIcon, UploadIcon } from '@patternfly/react-icons';
@@ -154,9 +154,9 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
                 headerIcon={<ExclamationCircleIcon />}
                 bodyContent={
                   <>
-                    <Text component="h4">
+                    <Content component="h4">
                       {t('RecordingLabelFields.INVALID_UPLOADS', { count: invalidUploads.length })}
-                    </Text>
+                    </Content>
                     <List>
                       {invalidUploads.map((uploadName) => (
                         <ListItem key={uploadName} icon={<FileIcon />}>
@@ -168,13 +168,12 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
                 }
               >
                 <Button
+                  icon={<UploadIcon />}
                   aria-label="Upload Labels"
                   onClick={openLabelFileBrowse}
                   variant="secondary"
                   isDisabled={isDisabled}
-                >
-                  <UploadIcon />
-                </Button>
+                ></Button>
               </Popover>
               <input
                 ref={inputRef}

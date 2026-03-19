@@ -24,10 +24,8 @@ import {
   DataListItemRow,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
   EmptyStateActions,
-  EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { WrenchIcon } from '@patternfly/react-icons';
@@ -80,12 +78,12 @@ export const ErrorCard: DashboardCardFC<ErrorCardProps> = ({
     >
       <CardBody>
         <Bullseye>
-          <EmptyState variant={EmptyStateVariant.full}>
-            <EmptyStateHeader
-              titleText={<>{t('Dashboard.INVALID_CARD_CONFIGURATIONS')}</>}
-              icon={<EmptyStateIcon icon={WrenchIcon} />}
-              headingLevel={'h4'}
-            />
+          <EmptyState
+            headingLevel={'h4'}
+            icon={WrenchIcon}
+            titleText={<>{t('Dashboard.INVALID_CARD_CONFIGURATIONS')}</>}
+            variant={EmptyStateVariant.full}
+          >
             <EmptyStateBody>{errorDescription}</EmptyStateBody>
             <EmptyStateFooter>
               {callForAction ? <EmptyStateActions>{callForAction}</EmptyStateActions> : null}

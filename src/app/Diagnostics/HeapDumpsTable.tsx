@@ -793,8 +793,8 @@ const HeapDumpsToolbar: React.FC<HeapDumpsTableToolbarProps> = (props) => {
           breakpoint={'xl'}
         />
         <ToolbarItem variant="separator" className="heap-dumps-toolbar-separator" />
-        <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem variant="overflow-menu">
+        <ToolbarGroup variant="action-group" style={{ alignSelf: 'start' }}>
+          <ToolbarItem>
             <OverflowMenu
               breakpoint="sm"
               breakpointReference={

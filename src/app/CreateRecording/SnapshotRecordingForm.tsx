@@ -19,7 +19,7 @@ import { LoadingProps } from '@app/Shared/Components/types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useExitForm } from '@app/utils/hooks/useExitForm';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { ActionGroup, Button, Form, Text, TextContent, TextVariants } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, Content, ContentVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { first } from 'rxjs';
 
@@ -110,14 +110,14 @@ export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = ({ on
   return (
     <>
       <Form isHorizontal>
-        <TextContent>
-          <Text component={TextVariants.p}>
+        <Content>
+          <Content component={ContentVariants.p}>
             A Snapshot Recording is one which contains all information about all events that have been captured in the
             current session by <i>other, non-Snapshot</i> Recordings. Snapshots do not themselves define which events
             are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the
             moment it is created.
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
         <ActionGroup>
           <Button variant="primary" onClick={handleCreateSnapshot} isDisabled={loading} {...createButtonLoadingProps}>
             {loading ? 'Creating' : 'Create'}

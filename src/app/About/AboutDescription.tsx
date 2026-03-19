@@ -20,7 +20,7 @@ import { NotificationsContext } from '@app/Shared/Services/Notifications.service
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core';
 import * as React from 'react';
 
 export const VERSION_REGEX = /^(v?[0-9]+\.[0-9]+\.[0-9]+)(?:[-_\.](.+))?$/;
@@ -56,8 +56,8 @@ export const AboutDescription: React.FC = () => {
   const versionComponent = React.useMemo(() => {
     if (build.releaseTagUrl) {
       return (
-        <Text
-          component={TextVariants.a}
+        <Content
+          component={ContentVariants.a}
           target="_blank"
           href={
             cryostatReleaseTag
@@ -66,73 +66,75 @@ export const AboutDescription: React.FC = () => {
           }
         >
           {cryostatVersion}
-        </Text>
+        </Content>
       );
     } else {
-      return <Text component={TextVariants.p}>{cryostatVersion}</Text>;
+      return <Content component={ContentVariants.p}>{cryostatVersion}</Content>;
     }
   }, [cryostatVersion, cryostatReleaseTag]);
 
   const buildInfoComponent = React.useMemo(() => {
     if (build.commitUrl) {
       return (
-        <Text
-          component={TextVariants.a}
+        <Content
+          component={ContentVariants.a}
           target="_blank"
           href={build.commitUrl.replace('__REPLACE_HASH__', buildInfo.git.hash)}
         >
           {t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}
-        </Text>
+        </Content>
       );
     } else {
-      return <Text component={TextVariants.p}>{t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}</Text>;
+      return (
+        <Content component={ContentVariants.p}>{t('AboutDescription.COMMIT', { hash: buildInfo.git.hash })}</Content>
+      );
     }
   }, [t, buildInfo]);
 
   return (
     <>
-      <TextContent>
-        <TextList component="dl">
-          <TextListItem component="dt">{t('AboutDescription.VERSION')}</TextListItem>
-          <TextListItem component="dd">{versionComponent}</TextListItem>
-          <TextListItem component="dt">{t('AboutDescription.BUILD_INFO')}</TextListItem>
-          <TextListItem component="dd">{buildInfoComponent}</TextListItem>
-          <TextListItem component="dt">{t('AboutDescription.HOMEPAGE')}</TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
+      <Content>
+        <Content component="dl">
+          <Content component="dt">{t('AboutDescription.VERSION')}</Content>
+          <Content component="dd">{versionComponent}</Content>
+          <Content component="dt">{t('AboutDescription.BUILD_INFO')}</Content>
+          <Content component="dd">{buildInfoComponent}</Content>
+          <Content component="dt">{t('AboutDescription.HOMEPAGE')}</Content>
+          <Content component="dd">
+            <Content component={ContentVariants.a} target="_blank" href={build.homePageUrl}>
               cryostat.io
-            </Text>
-          </TextListItem>
-          <TextListItem component="dt">{t('AboutDescription.BUGS')}</TextListItem>
-          <TextListItem component="dd">
-            <Text>
-              <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl}>
+            </Content>
+          </Content>
+          <Content component="dt">{t('AboutDescription.BUGS')}</Content>
+          <Content component="dd">
+            <Content component="p">
+              <Content component={ContentVariants.a} target="_blank" href={build.knownIssuesUrl}>
                 {t('AboutDescription.KNOWN_ISSUES')}
-              </Text>
+              </Content>
               &nbsp;|&nbsp;
-              <Text
-                component={TextVariants.a}
+              <Content
+                component={ContentVariants.a}
                 target="_blank"
                 href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
               >
                 {t('AboutDescription.FILE_A_REPORT')}
-              </Text>
-            </Text>
-          </TextListItem>
-          <TextListItem component="dt">{t('AboutDescription.MAILING_LIST')}</TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href={build.mailingListUrl}>
+              </Content>
+            </Content>
+          </Content>
+          <Content component="dt">{t('AboutDescription.MAILING_LIST')}</Content>
+          <Content component="dd">
+            <Content component={ContentVariants.a} target="_blank" href={build.mailingListUrl}>
               {build.mailingListName}
-            </Text>
-          </TextListItem>
-          <TextListItem component="dt">{t('AboutDescription.OPEN_SOURCE_LICENSE')}</TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
+            </Content>
+          </Content>
+          <Content component="dt">{t('AboutDescription.OPEN_SOURCE_LICENSE')}</Content>
+          <Content component="dd">
+            <Content component={ContentVariants.a} target="_blank" href={build.licenseUrl}>
               {t('AboutDescription.LICENSE')}
-            </Text>
-          </TextListItem>
-        </TextList>
-      </TextContent>
+            </Content>
+          </Content>
+        </Content>
+      </Content>
     </>
   );
 };

@@ -185,9 +185,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
         {validated === ValidatedOptions.error ? (
           <FlexItem>
             <HelperText>
-              <HelperTextItem variant="error" hasIcon>
-                {t('DurationFilter.HELPER_TEXT.INVALID_UPPER_BOUND')}
-              </HelperTextItem>
+              <HelperTextItem variant="error">{t('DurationFilter.HELPER_TEXT.INVALID_UPPER_BOUND')}</HelperTextItem>
             </HelperText>
           </FlexItem>
         ) : null}
@@ -195,13 +193,12 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({ durations, onDur
       </Flex>
       <FlexItem>
         <Button
+          icon={<SearchIcon />}
           variant={ButtonVariant.control}
           aria-label={t('DurationFilter.ARIA_LABELS.SEARCH_BUTTON')}
           onClick={handleSubmit}
           isDisabled={validated == ValidatedOptions.error || (fromDuration === undefined && toDuration === undefined)}
-        >
-          <SearchIcon />
-        </Button>
+        ></Button>
       </FlexItem>
     </Flex>
   );
