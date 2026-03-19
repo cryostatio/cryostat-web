@@ -23,7 +23,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, act } from '@testing-library/react';
+import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import { of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
@@ -55,6 +55,12 @@ const mockHeapDump: HeapDump = {
   metadata: { labels: [{ key: 'someLabel', value: 'someValue' }] },
 };
 
+const mockOtherHeapDump: HeapDump = {
+  ...mockHeapDump,
+  heapDumpId: 'otherUuid',
+  metadata: { labels: [{ key: 'otherLabel', value: 'otherValue' }] },
+};
+
 jest.mock('@app/Diagnostics/BulkEditHeapDumpLabels', () => {
   return {
     BulkEditHeapDumpLabels: (_) => <Text>Edit Heap Dump Labels</Text>,
@@ -72,7 +78,7 @@ jest.mock('@app/Diagnostics/Filters/HeapDumpFilters', () => {
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
-jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump])); // All other tests
+const getTargetHeapDumps = jest.spyOn(defaultServices.api, 'getTargetHeapDumps').mockReturnValue(of([mockHeapDump])); // All other tests
 
 jest.spyOn(defaultServices.api, 'deleteHeapDump').mockReturnValue(of(true));
 
@@ -161,6 +167,32 @@ describe('<HeapDumpsTable />', () => {
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     });
+  });
+
+  it('should filter Heap Dumps when a row label is clicked', async () => {
+    getTargetHeapDumps.mockReturnValueOnce(of([mockHeapDump, mockOtherHeapDump]));
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/heapdumps',
+            element: (
+              <HeapDumpsTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
+          },
+        ],
+      },
+      preloadedState: preloadedState,
+    });
+
+    expect(await screen.findByText(mockHeapDump.heapDumpId)).toBeInTheDocument();
+    expect(screen.getByText(mockOtherHeapDump.heapDumpId)).toBeInTheDocument();
+
+    await user.click(screen.getByText('someLabel=someValue'));
+
+    await waitFor(() => expect(screen.queryByText(mockOtherHeapDump.heapDumpId)).not.toBeInTheDocument());
+    expect(screen.getByText(mockHeapDump.heapDumpId)).toBeInTheDocument();
   });
 
   it('should display the toolbar buttons', async () => {

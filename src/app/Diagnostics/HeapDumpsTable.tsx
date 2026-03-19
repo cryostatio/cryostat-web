@@ -72,7 +72,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
-import { HeapDumpFilters, HeapDumpFiltersCategories } from './Filters/HeapDumpFilters';
+import { filterHeapDumps, HeapDumpFilters, HeapDumpFiltersCategories } from './Filters/HeapDumpFilters';
 import { HeapDumpLabelsPanel } from './HeapDumpLabelsPanel';
 
 const tableColumns: TableColumn[] = [
@@ -370,12 +370,10 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
   }, [context.settings, refreshHeapDumps]);
 
   React.useEffect(() => {
-    let filtered: HeapDump[];
-    if (!filterText) {
-      filtered = heapDumps;
-    } else {
+    let filtered = filterHeapDumps(heapDumps, targetHeapDumpFilters);
+    if (filterText) {
       const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-      filtered = heapDumps.filter((t: HeapDump) => reg.test(t.heapDumpId));
+      filtered = filtered.filter((t: HeapDump) => reg.test(t.heapDumpId));
     }
 
     setFilteredHeapDumps(
@@ -388,7 +386,7 @@ export const HeapDumpsTable: React.FC<HeapDumpsProps> = ({
         tableColumns,
       ),
     );
-  }, [filterText, heapDumps, sortBy, setFilteredHeapDumps]);
+  }, [filterText, heapDumps, targetHeapDumpFilters, sortBy, setFilteredHeapDumps]);
 
   const handleDownloadHeapDump = React.useCallback(
     (heapDump) => {
