@@ -287,21 +287,18 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
             ref={toggleRef}
             className="dashboard-layout-create-dropdown-toggle"
             onClick={() => setIsCreateDropdownOpen((open) => !open)}
-            splitButtonOptions={{
-              variant: 'action',
-              items: [
-                <MenuToggleAction
-                  onClick={(_e) => {
-                    createBlankLayout();
-                    setIsSelectorOpen(false);
-                  }}
-                  key="action"
-                >
-                  <PlusCircleIcon style={{ marginRight: 'var(--pf-v5-global--spacer--sm)' }} />
-                  {t('DashboardLayoutToolbar.NEW_LAYOUT')}
-                </MenuToggleAction>,
-              ],
-            }}
+            splitButtonItems={[
+              <MenuToggleAction
+                onClick={(_e) => {
+                  createBlankLayout();
+                  setIsSelectorOpen(false);
+                }}
+                key="action"
+              >
+                <PlusCircleIcon style={{ marginRight: 'var(--pf-t--global--spacer--sm)' }} />
+                {t('DashboardLayoutToolbar.NEW_LAYOUT')}
+              </MenuToggleAction>,
+            ]}
             variant="primary"
           />
         )}
@@ -529,10 +526,10 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
           <AddCard variant="icon-button" />
         </ToolbarItem>
         <ToolbarGroup>
-          <ToolbarItem spacer={{ default: 'spacerNone' }}>{menuDropdown}</ToolbarItem>
+          <ToolbarItem gap={{ default: 'gapNone' }}>{menuDropdown}</ToolbarItem>
           <ToolbarItem>{renameButton}</ToolbarItem>
         </ToolbarGroup>
-        <ToolbarGroup variant="button-group">
+        <ToolbarGroup variant="action-group">
           <ToolbarItem>{deleteButton}</ToolbarItem>
           <ToolbarItem>{kebabDropdown}</ToolbarItem>
         </ToolbarGroup>
@@ -572,7 +569,7 @@ export const DashboardLayoutToolbar: React.FC<DashboardLayoutToolbarProps> = (_p
         setIsUploadModalOpen: setIsUploadModalOpen,
       }}
     >
-      <Toolbar>
+      <Toolbar style={{ marginTop: 'var(--pf-t--global--spacer--md)' }}>
         {toolbarContent}
         <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
         <LayoutTemplateUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />

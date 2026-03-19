@@ -207,14 +207,15 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
       ) : null}
       <StackItem key={`${variant}-increment`}>
         <Button
+          icon={
+            <Icon size="lg">
+              <AngleUpIcon />
+            </Icon>
+          }
           className={css('datetime-picker__time-spin-box', 'up')}
           onClick={handleIncrement}
           aria-label={t(`TimeSpinner.INCREMENT_${variant.toUpperCase()}_VALUE`) || ''}
-        >
-          <Icon size="lg">
-            <AngleUpIcon />
-          </Icon>
-        </Button>
+        ></Button>
       </StackItem>
       <StackItem key={`${variant}-input`}>
         <TextInput
@@ -230,14 +231,15 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
       </StackItem>
       <StackItem key={`${variant}-decrement`}>
         <Button
+          icon={
+            <Icon size="lg">
+              <AngleDownIcon />
+            </Icon>
+          }
           className={css('datetime-picker__time-spin-box', 'down')}
           onClick={handleDecrement}
           aria-label={t(`TimeSpinner.DECREMENT_${variant.toUpperCase()}_VALUE`) || ''}
-        >
-          <Icon size="lg">
-            <AngleDownIcon />
-          </Icon>
-        </Button>
+        ></Button>
       </StackItem>
     </Stack>
   );

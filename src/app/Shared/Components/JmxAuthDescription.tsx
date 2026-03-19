@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
+import { Content, ContentVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { DescriptionProps } from './types';
 
 export const JmxAuthDescription: React.FC<React.PropsWithChildren<DescriptionProps>> = ({ children }) => {
   return (
-    <TextContent>
+    <Content>
       {children}
-      <Text component={TextVariants.p}>
+      <Content component={ContentVariants.p}>
         JVM applications can be configured to require clients, such as Cryostat, to pass a challenge based
         authentication before establishing a connection.
-      </Text>
-      <Text component={TextVariants.p}>
+      </Content>
+      <Content component={ContentVariants.p}>
         Check the deployment configuration of your JVM application for system properties such as:
-      </Text>
-      <TextList>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.authenticate</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.password.file</Text>
-        </TextListItem>
-        <TextListItem>
-          <Text component={TextVariants.pre}>com.sun.management.jmxremote.login.config</Text>
-        </TextListItem>
-      </TextList>
-      <Text component={TextVariants.p}>
+      </Content>
+      <Content component="ul">
+        <Content component="li">
+          <Content component={ContentVariants.pre}>com.sun.management.jmxremote.authenticate</Content>
+        </Content>
+        <Content component="li">
+          <Content component={ContentVariants.pre}>com.sun.management.jmxremote.password.file</Content>
+        </Content>
+        <Content component="li">
+          <Content component={ContentVariants.pre}>com.sun.management.jmxremote.login.config</Content>
+        </Content>
+      </Content>
+      <Content component={ContentVariants.p}>
         These authentication credentials are stored in encrypted storage managed by the Cryostat backend and used for
         manually managing Recordings and Event Templates on target JVMs, as well as for Automated Rules which run in the
         background and open unattended target connections.
-      </Text>
-    </TextContent>
+      </Content>
+    </Content>
   );
 };

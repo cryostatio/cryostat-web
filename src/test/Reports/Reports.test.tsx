@@ -20,7 +20,7 @@ import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/
 import '@testing-library/jest-dom';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 const mockFooTarget: Target = {
   id: 1,
@@ -115,7 +115,7 @@ describe('<Reports />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -125,7 +125,7 @@ describe('<Reports />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('renders empty state', async () => {

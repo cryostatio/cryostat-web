@@ -40,7 +40,7 @@ import {
   ChartLegend,
   ChartLine,
   ChartVoronoiContainer,
-} from '@patternfly/react-charts';
+} from '@patternfly/react-charts/victory';
 import { getResizeObserver, Button, CardBody, CardHeader, CardTitle, Tooltip } from '@patternfly/react-core';
 import { MonitoringIcon, SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
@@ -83,7 +83,7 @@ const SimpleChart: React.FC<{
   samples: Sample[];
   units: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
-}> = ({ cryostatTheme, themeColor, style, width, samples, units, interpolation }) => {
+}> = ({ themeColor, style, width, samples, units, interpolation }) => {
   const [dayjs, dateTimeFormat] = useDayjs();
 
   const data = React.useMemo(
@@ -122,10 +122,7 @@ const SimpleChart: React.FC<{
           labelComponent={
             <ChartLabel
               style={{
-                fill:
-                  cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-v5-global--palette--black-200)'
-                    : 'var(--pf-v5-chart-global--label--Fill, #151515)',
+                fill: 'var(--pf-t--global--text--color--regular)',
               }}
             />
           }
@@ -149,10 +146,7 @@ const SimpleChart: React.FC<{
         axisLabelComponent={
           <ChartLabel
             style={{
-              fill:
-                cryostatTheme === ThemeSetting.DARK
-                  ? 'var(--pf-v5-global--palette--black-200)'
-                  : 'var(--pf-v5-chart-global--label--Fill, #151515)',
+              fill: 'var(--pf-t--global--text--color--regular)',
             }}
           />
         }
@@ -295,10 +289,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
           titleComponent={
             <ChartLabel
               style={{
-                fill:
-                  cryostatTheme === ThemeSetting.DARK
-                    ? 'var(--pf-v5-global--palette--black-200)'
-                    : 'var(--pf-v5-chart-donut--label--title--Fill, #151515)',
+                fill: 'var(--pf-t--global--text--color--regular)',
                 fontSize: '24px',
               }}
             />

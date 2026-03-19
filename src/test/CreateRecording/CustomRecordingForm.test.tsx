@@ -20,7 +20,7 @@ import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 jest.mock('@patternfly/react-core', () => ({
   // Mock out tooltip for snapshot testing
@@ -75,10 +75,10 @@ describe('<CustomRecordingForm />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/recordings', element: <CustomRecordingForm /> }] },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should create Recording when form is filled and create is clicked', async () => {

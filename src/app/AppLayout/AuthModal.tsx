@@ -18,7 +18,8 @@ import { NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { toPath } from '@app/utils/utils';
-import { Modal, ModalVariant, Text } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { Observable, filter, first, map, mergeMap } from 'rxjs';
 import { CredentialAuthForm } from './CredentialAuthForm';
@@ -67,14 +68,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
       onClose={onDismiss}
       title="Authentication Required"
       description={
-        <Text>
+        <Content component="p">
           This Target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
           target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
           <CryostatLink onClick={onDismiss} to={toPath('/security')}>
             Security
           </CryostatLink>{' '}
           to add a credential matching multiple targets.
-        </Text>
+        </Content>
       }
     >
       <CredentialAuthForm onSave={onSave} onDismiss={onDismiss} focus={true} loading={loading} />

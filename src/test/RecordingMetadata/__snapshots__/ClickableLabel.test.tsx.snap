@@ -1,25 +1,22 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<ClickableLabel /> renders correctly 1`] = `
-<span
-  aria-label="someLabel=someValue"
-  className="pf-v5-c-label pf-m-blue"
->
-  <button
-    className="pf-v5-c-label__content"
-    onClick={[Function]}
-    type="button"
+<div>
+  <span
+    aria-label="someLabel=someValue"
+    class="pf-v6-c-label pf-m-blue pf-m-filled pf-m-clickable"
   >
-    <span
-      className="pf-v5-c-label__text"
-      style={
-        {
-          "--pf-v5-c-label__text--MaxWidth": "20ch",
-        }
-      }
+    <button
+      class="pf-v6-c-label__content pf-m-clickable"
+      type="button"
     >
-      someLabel=someValue
-    </span>
-  </button>
-</span>
+      <span
+        class="pf-v6-c-label__text"
+        style="--pf-v6-c-label__text--MaxWidth: 20ch;"
+      >
+        someLabel=someValue
+      </span>
+    </button>
+  </span>
+</div>
 `;

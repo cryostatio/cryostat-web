@@ -708,8 +708,8 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           breakpoint={'xl'}
         />
         <ToolbarItem variant="separator" className="recording-toolbar-separator" />
-        <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem variant="overflow-menu">
+        <ToolbarGroup variant="action-group" style={{ alignSelf: 'start' }}>
+          <ToolbarItem>
             <OverflowMenu
               breakpoint="sm"
               breakpointReference={
@@ -748,11 +748,14 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
         </ToolbarGroup>
         {deleteArchivedWarningModal}
         {props.isUploadsTable ? (
-          <ToolbarGroup variant="icon-button-group">
+          <ToolbarGroup variant="action-group-plain">
             <ToolbarItem>
-              <Button variant="secondary" aria-label="upload-recording" onClick={props.handleShowUploadModal}>
-                <UploadIcon />
-              </Button>
+              <Button
+                icon={<UploadIcon />}
+                variant="secondary"
+                aria-label="upload-recording"
+                onClick={props.handleShowUploadModal}
+              ></Button>
             </ToolbarItem>
           </ToolbarGroup>
         ) : null}
@@ -883,6 +886,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
             recording={recording}
             index={index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafanaFromPath(propsDirectory.jvmId, recording.name)}
+            directory={propsDirectory}
           />
         ) : (
           <RecordingActions
