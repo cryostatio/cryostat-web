@@ -873,6 +873,8 @@
       "START_TIME": "Start Time",
       "END_TIME": "End Time",
       "EXECUTE": "Query",
+      "DOWNLOAD": "Download audit log as JSON",
+      "RESET": "Reset",
       "VALIDATION": {
         "INVALID_DATE_FORMAT": "Invalid date format",
         "END_BEFORE_START": "End time must be after start time"
