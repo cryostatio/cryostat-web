@@ -21,11 +21,8 @@ limitations under the License.
   --cryostat-picton-blue: #5FA8D3;
   --cryostat-baby-blue: #95C9E9;
   --cryostat-white: #FFFFFF;
-}
 
-.cryostat-app html,
-.cryostat-app body,
-.cryostat-app #root {
+  /* Apply height to the scoped container itself */
   height: 100%;
 }
 
