@@ -18,7 +18,7 @@ limitations under the License.
 Below CSS rules only apply to Topology components
 */
 
-.sample-node-donut__node-wrapper {
+.cryostat-app .sample-node-donut__node-wrapper {
   position: relative;
   width: 12em;
   aspect-ratio: 1;
@@ -28,11 +28,11 @@ Below CSS rules only apply to Topology components
   margin: 1em;
 }
 
-:where(.pf-v6-theme-dark) .sample-node-donut__node-wrapper {
+:where(.pf-v6-theme-dark) .cryostat-app .sample-node-donut__node-wrapper {
   background-color: #ffffff;
 }
 
-.sample-node-donut__node-wrapper .sample-node-donut__node-icon {
+.cryostat-app .sample-node-donut__node-wrapper .sample-node-donut__node-icon {
   position: absolute;
   width: 90%;
   aspect-ratio: 1;
@@ -45,20 +45,20 @@ Below CSS rules only apply to Topology components
   border: 0.8em solid var(--pf-t--global--border--color--brand--default);
 }
 
-.sample-node-donut__node-wrapper.active:hover {
+.cryostat-app .sample-node-donut__node-wrapper.active:hover {
   cursor: pointer;
   box-shadow: 0 0.25rem 0.5rem 0rem rgba(3, 3, 3, 0.25), 0 0 0.25rem 0 rgba(3, 3, 3, 0.06);
 }
 
-.sample-node-donut__node-wrapper .sample-node-donut__node-icon.success {
+.cryostat-app .sample-node-donut__node-wrapper .sample-node-donut__node-icon.success {
   border: 0.8em solid var(--pf-t--global--icon--color--status--success--default);
 }
 
-.sample-node-donut__node-wrapper .sample-node-donut__node-icon.error {
+.cryostat-app .sample-node-donut__node-wrapper .sample-node-donut__node-icon.error {
   border: 0.8em solid var(--pf-t--global--icon--color--status--danger--default);
 }
 
-.sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
+.cryostat-app .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
   position: absolute;
   width: 25%;
   aspect-ratio: 1;
@@ -70,18 +70,18 @@ Below CSS rules only apply to Topology components
   background-color: #ffffff;
 }
 
-:where(.pf-v6-theme-dark) .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
+:where(.pf-v6-theme-dark) .cryostat-app .sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
   background-color: #ffffff;
 }
 
-.sample-node-donut__node-wrapper .sample-node-donut__status-indicator svg {
+.cryostat-app .sample-node-donut__node-wrapper .sample-node-donut__status-indicator svg {
   position: absolute;
   font-size: 1.8em;
   top: 18.35%;
   left: 18.35%;
 }
 
-.sample-node-donut__node-label {
+.cryostat-app .sample-node-donut__node-label {
   width: fit-content;
   padding: 8px;
   border-radius: 4px;
@@ -92,7 +92,7 @@ Below CSS rules only apply to Topology components
 }
 
 
-.sample-node-donut__node-label-badge {
+.cryostat-app .sample-node-donut__node-label-badge {
   position: relative;
   background-color: var(--pf-t--global--background--color--brand--default);
   color: var(--pf-t--global--text--color--on-brand--default);
@@ -102,56 +102,56 @@ Below CSS rules only apply to Topology components
   border-radius: 500px;
 }
 
-.empty-text {
+.cryostat-app .empty-text {
   color: var(--pf-t--global--text--color--subtle);
 }
 
-.entity-overview {
+.cryostat-app .entity-overview {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.entity-overview .pf-v6-c-tab-content {
+.cryostat-app .entity-overview .pf-v6-c-tab-content {
   flex: 1 1 0;
   overflow: auto;
 }
 
-.dashboard-card-preview .entity-overview .pf-v6-c-tab-content {
+.cryostat-app .dashboard-card-preview .entity-overview .pf-v6-c-tab-content {
   overflow: hidden;
 }
 
-.entity-overview__wrapper {
+.cryostat-app .entity-overview__wrapper {
   padding: 1.5em;
   padding-right: 0.5em;
 }
 
-.entity-overview .pf-v6-c-tabs__item-text {
+.cryostat-app .entity-overview .pf-v6-c-tabs__item-text {
   font-size: 1.1em;
 }
 
-.entity-overview .pf-v6-c-tabs__item.pf-m-current .pf-v6-c-tabs__item-text {
+.cryostat-app .entity-overview .pf-v6-c-tabs__item.pf-m-current .pf-v6-c-tabs__item-text {
   color: var(--pf-t--global--text--color--brand--default);
 }
 
-.entity-overview__displayed-keyvalues-wrapper {
+.cryostat-app .entity-overview__displayed-keyvalues-wrapper {
   border: 1px solid var(--pf-t--global--border--color--default);
   padding: 4px;
   width: fit-content;
 }
 
-.entity-overview__displayed-annotations {
+.cryostat-app .entity-overview__displayed-annotations {
   margin-bottom: 0.5em;
 }
 
-.entity-overview__entity-title-wrapper {
+.cryostat-app .entity-overview__entity-title-wrapper {
   font-weight: 700;
   font-size: 1.2em;
   color: var(--pf-t--global--text--color--brand--default);
 }
 
 
-.entity-overview__entity-title-badge {
+.cryostat-app .entity-overview__entity-title-badge {
   background-color: var(--pf-t--global--text--color--regular);
   color: var(--pf-t--global--background--color--primary--default);
   padding: 2px 12px 2px 12px;
@@ -160,38 +160,38 @@ Below CSS rules only apply to Topology components
   border-radius: 500px;
 }
 
-.entity-overview__entity-close-button {
+.cryostat-app .entity-overview__entity-close-button {
   margin-bottom: 0.6em;
 }
 
-.entity-overview__entity-close-button svg {
+.cryostat-app .entity-overview__entity-close-button svg {
   transform: translate(1em, 0);
 }
 
-.entity-overview__alert-banner {
+.cryostat-app .entity-overview__alert-banner {
   margin-top: 1em !important;
 }
 
-.entity-overview__header {
+.cryostat-app .entity-overview__header {
   margin: 0em 0em 1em 1em;
 }
 
-.topology-listview__realm-title {
+.cryostat-app .topology-listview__realm-title {
   font-size: 1.2em;
   color: var(--pf-t--global--text--color--brand--default);
   margin-right: 0.5em;
 }
 
 
-.topology__help-icon {
+.cryostat-app .topology__help-icon {
   color: var(--pf-t--global--text--color--link--default);
 }
 
-.topology__help-icon-button {
+.cryostat-app .topology__help-icon-button {
   margin-left: -1em;
 }
 
-.topology__shortcut-command {
+.cryostat-app .topology__shortcut-command {
   border: 1px solid var(--pf-t--global--border--color--default);
   padding: 2px 4px;
   border-radius: 4px;
@@ -199,51 +199,51 @@ Below CSS rules only apply to Topology components
 }
 
 
-.topology__shortcut-command-icon {
+.cryostat-app .topology__shortcut-command-icon {
   margin-right: 0.5em;
 }
 
-.topology__shortcut-command-plus {
+.cryostat-app .topology__shortcut-command-plus {
   margin: 0 0.5em
 }
 
 
 
-.topology__visualization-container.topology__main-container {
+.cryostat-app .topology__visualization-container.topology__main-container {
   padding: 1em;
 }
 
-.topology__main-container .topology__target-node {
+.cryostat-app .topology__main-container .topology__target-node {
   cursor: pointer;
 }
 
-.topology__main-container .topology__target-node.search-inactive {
+.cryostat-app .topology__main-container .topology__target-node.search-inactive {
   opacity: 0.4;
 }
 
-.topology__main-container .pf-topology__group {
+.cryostat-app .topology__main-container .pf-topology__group {
   cursor: pointer;
 }
 
-.topology__main-container .topology__realm-group path {
+.cryostat-app .topology__main-container .topology__realm-group path {
   fill: #d2d2d2;
   fill-opacity: 0.5;
 }
 
-.topology__toolbar-container {
+.cryostat-app .topology__toolbar-container {
   padding: 0.8em 1em 0.4em 1em !important;
 }
 
-.topology__toolbar-chip-content {
+.cryostat-app .topology__toolbar-chip-content {
   padding: 0 0.5em 0.4em 1em;
   /* Subtract 0.5em chip group right margin */
 }
 
-.topology__filter-chip-group {
+.cryostat-app .topology__filter-chip-group {
   margin-right: 0.5em;
 }
 
-.topology__quicksearch__tab-icon {
+.cryostat-app .topology__quicksearch__tab-icon {
   width: 2.5em;
   height: 2.5em;
   box-sizing: border-box;
@@ -253,91 +253,91 @@ Below CSS rules only apply to Topology components
 }
 
 
-.topology__quicksearch__tab-text {
+.cryostat-app .topology__quicksearch__tab-text {
   font-weight: 700;
 }
 
-.topology__quicksearch__tab {
+.cryostat-app .topology__quicksearch__tab {
   margin: 0 !important;
 }
 
 
-.topology__quicksearch__tab.pf-m-current {
+.cryostat-app .topology__quicksearch__tab.pf-m-current {
   background-color: var(--pf-t--global--background--color--secondary--default);
 }
 
 
-.topology__quicksearch__tab-content-title {
+.cryostat-app .topology__quicksearch__tab-content-title {
   margin-bottom: -1em;
   font-weight: 700;
   font-size: 1.5em;
 }
 
-.topology__quicksearch__tab-content-description-short {
+.cryostat-app .topology__quicksearch__tab-content-description-short {
   color: #737373;
   font-size: 1em;
 }
 
-.topology__quick-search__context-menu {
+.cryostat-app .topology__quick-search__context-menu {
   position: absolute;
   display: none;
   z-index: 9999;
 }
 
-.topology__quick-search-modal .quick-search-icon {
+.cryostat-app .topology__quick-search-modal .quick-search-icon {
   font-size: 0.8em !important;
 }
 
-.quick-search-icon {
+.cryostat-app .quick-search-icon {
   font-size: 1.1em !important;
 }
 
-.topology__list-view__entity-details {
+.cryostat-app .topology__list-view__entity-details {
   background-color: var(--pf-t--global--background--color--primary--default);
   padding: 1em;
   height: 25em !important;
 }
 
 
-.topology__treeview-container {
+.cryostat-app .topology__treeview-container {
   padding: 1em;
 }
 
 /* tree node container should span entire width */
-.topology__treeview-container .pf-v6-c-tree-view__node-content {
+.cryostat-app .topology__treeview-container .pf-v6-c-tree-view__node-content {
   width: 100%;
 }
 
-.target-details-modal {
+.cryostat-app .target-details-modal {
   min-height: 36em;
 }
 
-.target-details-modal .pf-v6-c-modal-box__body {
+.cryostat-app .target-details-modal .pf-v6-c-modal-box__body {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.target-details-modal .pf-v6-c-modal-box__body > div {
+.cryostat-app .target-details-modal .pf-v6-c-modal-box__body > div {
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
 }
 
-.topology__graph-view--full-height {
+.cryostat-app .topology__graph-view--full-height {
   height: 100%;
 }
 
-.topology__graph-view--full-height .topology__main-container {
+.cryostat-app .topology__graph-view--full-height .topology__main-container {
   height: 100%;
 }
 
-.topology__main-container {
+.cryostat-app .topology__main-container {
   height: 100%;
 }
 
 /* Main Topology page - ensure graph view has minimum height */
-#topology-card .topology__main-container {
+.cryostat-app #topology-card .topology__main-container {
   min-height: 72vh;
 }
 
@@ -369,18 +369,18 @@ Below CSS rules only apply to Topology components
   overflow: hidden;
 }
 
-#match-expression__visualization-container {
+.cryostat-app #match-expression__visualization-container {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 
-#match-expression__visualization-container > div {
+.cryostat-app #match-expression__visualization-container > div {
   flex: 1;
   min-height: 0;
 }
 
-#match-expression__visualization-container .topology__main-container {
+.cryostat-app #match-expression__visualization-container .topology__main-container {
   min-height: 0;
 }
