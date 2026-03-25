@@ -12,7 +12,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: r26d/ghcr-delete-image-action@v1.4.1
+      - uses: r26d/ghcr-delete-image-action@9039322147055f1ee3f6359826701390d6b297aa # v1.4.1
         with:
           owner: ${{ github.repository_owner }}
           name: cryostat-web
