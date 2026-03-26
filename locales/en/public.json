@@ -30,7 +30,7 @@
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
   "AllArchivedRecordingsTable": {
-    "SEARCH_PLACEHOLDER": "Find by JVM ID..."
+    "SEARCH_PLACEHOLDER": "Find by JVM ID, connection URL, or alias..."
   },
   "AllTargetsArchivedRecordingsTable": {
     "HIDE_TARGET_WITH_ZERO_RECORDING": "Hide targets with zero Recordings",
@@ -39,12 +39,12 @@
   },
   "AllTargetsThreadDumpsTable": {
     "HIDE_TARGET_WITH_ZERO_DUMPS": "Hide targets with zero Thread Dumps",
-    "SEARCH_PLACEHOLDER": "Find by JVM ID...",
+    "SEARCH_PLACEHOLDER": "Find by JVM ID or alias...",
     "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
   },
   "AllTargetsHeapDumpsTable": {
     "HIDE_TARGET_WITH_ZERO_DUMPS": "Hide targets with zero Heap Dumps",
-    "SEARCH_PLACEHOLDER": "Find by JVM ID...",
+    "SEARCH_PLACEHOLDER": "Find by JVM ID or alias...",
     "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
   },
   "DirectoryNameCell": {
