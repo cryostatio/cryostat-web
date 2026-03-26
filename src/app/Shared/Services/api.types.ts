@@ -275,6 +275,89 @@ export interface ThreadDump {
   metadata: Metadata;
 }
 
+export interface StackFrame {
+  className: string,
+  methodName: string,
+  fileName: string,
+  lineNumber: number,
+  nativeMethod: boolean
+}
+
+export interface LockInfo {
+  lockId: string,
+  className: string,
+  operation: string,
+  ownerThreadId : string
+}
+
+export interface AggregateThreadState {
+  data: string,
+  count: number
+}
+
+export interface AggregateLockInfo {
+  data: string;
+  count: number;
+}
+
+export interface AggregateStackTraces {
+  data: StackFrame[],
+  count: number;
+}
+
+export interface MethodCount {
+  method: string,
+  count: number;
+}
+
+export interface DeadlockInfo {
+  threadName: string,
+  waitingForMonitor: string,
+  waitingForObject: string,
+  waitingForObjectType: string,
+  heldBy: string,
+  stackTrace: StackFrame[],
+  locks: LockInfo[]
+}
+
+export interface ThreadInfo {
+  name: string,
+  threadId: number,
+  nativeId: number,
+  priority: number,
+  daemon: boolean,
+  state: string,
+  cpuTimeSec: number,
+  elapsedTimeSec: number,
+  stackTrace: StackFrame[],
+  locks: LockInfo[],
+  additionalInfo: string,
+  carryingVirtualThreadId: number
+}
+
+export interface AnalysisFinding {
+  resultName: string,
+  explanation: string,
+  score: number
+}
+      
+export interface ThreadDumpAnalysisResult {
+  aggregateThreadState: AggregateThreadState[],
+  aggregateLockInfo: AggregateLockInfo[],
+  aggregateStackTraces: AggregateStackTraces[],
+  runningMethods: MethodCount[],
+  deadlockInfos: DeadlockInfo[],
+  threadInfos: ThreadInfo[],
+  specificFindings: AnalysisFinding[],
+  jniInfo: {
+    globalRefs: number,
+    weakRefs: number,
+    globalRefsMemory: number,
+    weakRefsMemory: number
+  },
+  jvmInfo: string
+}
+
 export interface ArchivedRecording extends Recording {
   jvmId?: string;
   archivedTime: number;
