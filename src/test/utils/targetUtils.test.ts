@@ -36,7 +36,11 @@ describe('targetUtils', () => {
       },
     });
 
-    const createEnvironmentNode = (id: number, name: string, children: (EnvironmentNode | TargetNode)[]): EnvironmentNode => ({
+    const createEnvironmentNode = (
+      id: number,
+      name: string,
+      children: (EnvironmentNode | TargetNode)[],
+    ): EnvironmentNode => ({
       id,
       name,
       nodeType: NodeType.REALM,
@@ -53,7 +57,7 @@ describe('targetUtils', () => {
     it('should find target node in a simple hierarchy', () => {
       const targetNode = createTargetNode(2, 'nested-target');
       const envNode = createEnvironmentNode(1, 'Environment', [targetNode]);
-      
+
       const result = findInnermostTargetNode(envNode);
       expect(result).toBe(targetNode);
     });
@@ -63,7 +67,7 @@ describe('targetUtils', () => {
       const level3 = createEnvironmentNode(3, 'Level3', [targetNode]);
       const level2 = createEnvironmentNode(2, 'Level2', [level3]);
       const level1 = createEnvironmentNode(1, 'Level1', [level2]);
-      
+
       const result = findInnermostTargetNode(level1);
       expect(result).toBe(targetNode);
     });
@@ -72,14 +76,14 @@ describe('targetUtils', () => {
       const targetNode1 = createTargetNode(2, 'target-1');
       const targetNode2 = createTargetNode(3, 'target-2');
       const envNode = createEnvironmentNode(1, 'Environment', [targetNode1, targetNode2]);
-      
+
       const result = findInnermostTargetNode(envNode);
       expect(result).toBe(targetNode1);
     });
 
     it('should return undefined when no target node exists', () => {
       const emptyEnvNode = createEnvironmentNode(1, 'Empty', []);
-      
+
       const result = findInnermostTargetNode(emptyEnvNode);
       expect(result).toBeUndefined();
     });
@@ -87,7 +91,7 @@ describe('targetUtils', () => {
     it('should return undefined when hierarchy only contains environment nodes', () => {
       const level2 = createEnvironmentNode(2, 'Level2', []);
       const level1 = createEnvironmentNode(1, 'Level1', [level2]);
-      
+
       const result = findInnermostTargetNode(level1);
       expect(result).toBeUndefined();
     });
@@ -98,7 +102,7 @@ describe('targetUtils', () => {
       const branch1 = createEnvironmentNode(2, 'Branch1', [targetNode1]);
       const branch2 = createEnvironmentNode(3, 'Branch2', [targetNode2]);
       const root = createEnvironmentNode(1, 'Root', [branch1, branch2]);
-      
+
       const result = findInnermostTargetNode(root);
       // Should find the first target in depth-first traversal
       expect(result).toBeDefined();
@@ -107,12 +111,12 @@ describe('targetUtils', () => {
 
     it('should handle very deep hierarchies without stack overflow', () => {
       let current: EnvironmentNode | TargetNode = createTargetNode(101, 'deep-target');
-      
+
       // Create a hierarchy 50 levels deep
       for (let i = 100; i > 0; i--) {
         current = createEnvironmentNode(i, `Level-${i}`, [current]);
       }
-      
+
       const result = findInnermostTargetNode(current as EnvironmentNode);
       expect(result).toBeDefined();
       expect(result?.target.alias).toBe('deep-target');
@@ -121,12 +125,12 @@ describe('targetUtils', () => {
     it('should stop at MAX_DEPTH to prevent infinite loops', () => {
       // Create a hierarchy deeper than MAX_DEPTH (100)
       let current: EnvironmentNode | TargetNode = createTargetNode(151, 'very-deep-target');
-      
+
       // Create a hierarchy 150 levels deep
       for (let i = 150; i > 0; i--) {
         current = createEnvironmentNode(i, `Level-${i}`, [current]);
       }
-      
+
       const result = findInnermostTargetNode(current as EnvironmentNode);
       // Should return undefined because it exceeds MAX_DEPTH
       expect(result).toBeUndefined();
@@ -137,7 +141,7 @@ describe('targetUtils', () => {
       const emptyEnv = createEnvironmentNode(4, 'EmptyEnv', []);
       const parent = createEnvironmentNode(2, 'Parent', [emptyEnv, targetNode]);
       const root = createEnvironmentNode(1, 'Root', [parent]);
-      
+
       const result = findInnermostTargetNode(root);
       expect(result).toBe(targetNode);
     });

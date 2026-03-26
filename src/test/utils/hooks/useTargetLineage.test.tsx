@@ -30,7 +30,11 @@ const mockContext = {
 } as any;
 
 // Test component that uses the hook
-const TestComponent: React.FC<{ jvmId: string; connectUrl?: string; alias?: string }> = ({ jvmId, connectUrl, alias }) => {
+const TestComponent: React.FC<{ jvmId: string; connectUrl?: string; alias?: string }> = ({
+  jvmId,
+  connectUrl,
+  alias,
+}) => {
   const result = useTargetLineage(jvmId, connectUrl, alias);
   return (
     <div>
@@ -88,7 +92,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId="test-jvm-id" />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     // Wait for loading to complete
@@ -107,7 +111,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId="test-jvm-id" />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     await waitFor(() => {
@@ -127,7 +131,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId={jvmId} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     await waitFor(() => {
@@ -148,7 +152,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId={jvmId} connectUrl={connectUrl} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     await waitFor(() => {
@@ -168,7 +172,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId={jvmId} connectUrl={connectUrl} alias={alias} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     await waitFor(() => {
@@ -182,7 +186,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId="" />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(getByTestId('isLoading').textContent).toBe('false');
@@ -194,7 +198,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId="uploads" />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(getByTestId('isLoading').textContent).toBe('false');
@@ -207,7 +211,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId="uploads" connectUrl={connectUrl} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(getByTestId('isLoading').textContent).toBe('false');
@@ -229,7 +233,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId={jvmId} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     await waitFor(() => {
@@ -248,7 +252,7 @@ describe('useTargetLineage', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmId={jvmId} connectUrl={jvmId} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     await waitFor(() => {
