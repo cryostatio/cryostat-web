@@ -138,7 +138,10 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
       updatedSearchedDirectories = directories;
     } else {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter((d: _HeapDumpDirectory) => reg.test(d.jvmId));
+      updatedSearchedDirectories = directories.filter((d: _HeapDumpDirectory) => {
+        // Search by jvmId and alias (from target)
+        return reg.test(d.jvmId) || (d.targetAsObs && reg.test(getTargetFromDirectory(d).alias));
+      });
     }
     return sortResources(
       {
