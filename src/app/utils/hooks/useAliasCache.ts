@@ -19,62 +19,58 @@ import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { findInnermostTargetNode } from '@app/utils/targetUtils';
 import * as React from 'react';
 
+// Module-level cache that persists across component re-renders and remounts
+const globalAliasCache = new Map<string, string>();
+const globalFetchedIds = new Set<string>();
+const globalInFlightFetches = new Set<string>();
+
 /**
  * Hook to manage a cache of target aliases keyed by jvmId.
  * Fetches aliases from the audit log API on-demand and caches them.
- * The cache updates automatically when the jvmIds array changes (e.g., when parent components
- * receive websocket notifications and update their directories state).
+ * Uses a module-level cache that persists across component lifecycles.
  */
 export const useAliasCache = (jvmIds: string[]): Map<string, string> => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [aliasMap, setAliasMap] = React.useState<Map<string, string>>(new Map());
-  const fetchedIds = React.useRef<Set<string>>(new Set());
-  const prevJvmIdsRef = React.useRef<Set<string>>(new Set());
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
   const fetchAlias = React.useCallback(
     (jvmId: string) => {
-      if (!jvmId || jvmId === 'uploads' || fetchedIds.current.has(jvmId)) {
+      if (!jvmId || jvmId === 'uploads' || globalFetchedIds.has(jvmId) || globalInFlightFetches.has(jvmId)) {
         return;
       }
 
-      fetchedIds.current.add(jvmId);
+      globalInFlightFetches.add(jvmId);
 
       addSubscription(
         context.api.getTargetLineage(jvmId).subscribe({
           next: (lineageRoot) => {
             const target = findInnermostTargetNode(lineageRoot);
             if (target?.target?.alias) {
-              setAliasMap((prev) => {
-                const newMap = new Map(prev);
-                newMap.set(jvmId, target.target.alias);
-                return newMap;
-              });
+              globalAliasCache.set(jvmId, target.target.alias);
+              forceUpdate();
             }
+            globalFetchedIds.add(jvmId);
+            globalInFlightFetches.delete(jvmId);
           },
           error: () => {
             // Ignore errors - alias just won't be searchable
+            globalFetchedIds.add(jvmId);
+            globalInFlightFetches.delete(jvmId);
           },
         }),
       );
     },
-    [addSubscription, context.api],
+    [addSubscription, context.api, forceUpdate],
   );
 
   React.useEffect(() => {
-    // Only fetch aliases for jvmIds that are new (not in prevJvmIdsRef)
-    const currentJvmIds = new Set(jvmIds);
-    const newJvmIds = jvmIds.filter((jvmId) => !prevJvmIdsRef.current.has(jvmId));
-
-    newJvmIds.forEach((jvmId) => {
-      if (jvmId && jvmId !== 'uploads' && !fetchedIds.current.has(jvmId)) {
+    jvmIds.forEach((jvmId) => {
+      if (jvmId && jvmId !== 'uploads' && !globalFetchedIds.has(jvmId) && !globalInFlightFetches.has(jvmId)) {
         fetchAlias(jvmId);
       }
     });
-
-    // Update the previous jvmIds set
-    prevJvmIdsRef.current = currentJvmIds;
   }, [jvmIds, fetchAlias]);
 
-  return aliasMap;
+  return globalAliasCache;
 };
