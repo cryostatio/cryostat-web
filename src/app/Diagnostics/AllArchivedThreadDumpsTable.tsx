@@ -139,7 +139,10 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
       updatedSearchedDirectories = directories;
     } else {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter((d: _ThreadDumpDirectory) => reg.test(d.jvmId));
+      updatedSearchedDirectories = directories.filter((d: _ThreadDumpDirectory) => {
+        // Search by jvmId and alias (from target)
+        return reg.test(d.jvmId) || (d.targetAsObs && reg.test(getTargetFromDirectory(d).alias));
+      });
     }
     return sortResources(
       {

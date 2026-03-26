@@ -140,9 +140,12 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       updatedSearchedDirectories = directories;
     } else {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter(
-        (d: _RecordingDirectory) => reg.test(d.jvmId) || reg.test(d.connectUrl),
-      );
+      updatedSearchedDirectories = directories.filter((d: _RecordingDirectory) => {
+        // Search by jvmId, connectUrl, and alias (from target)
+        return (
+          reg.test(d.jvmId) || reg.test(d.connectUrl) || (d.targetAsObs && reg.test(getTargetFromDirectory(d).alias))
+        );
+      });
     }
     return sortResources(
       {
