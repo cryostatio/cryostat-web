@@ -30,6 +30,7 @@ import {
   Target,
   keyValueToString,
 } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices, ServiceContext, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
@@ -119,6 +120,7 @@ jest
   .mockReturnValue(true);
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
+jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')

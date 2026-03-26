@@ -16,15 +16,7 @@
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { TargetView } from '@app/TargetView/TargetView';
 import { toPath } from '@app/utils/utils';
-import {
-  Bullseye,
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStateHeader,
-  EmptyStateFooter,
-} from '@patternfly/react-core';
+import { Bullseye, Button, EmptyState, EmptyStateBody, EmptyStateFooter } from '@patternfly/react-core';
 import { MonitoringIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
@@ -60,12 +52,7 @@ const DashboardSolo: React.FC<DashboardSoloProps> = () => {
     if (!cardConfig) {
       return (
         <Bullseye>
-          <EmptyState variant="lg">
-            <EmptyStateHeader
-              titleText="Dashboard Card not found"
-              icon={<EmptyStateIcon icon={MonitoringIcon} />}
-              headingLevel="h3"
-            />
+          <EmptyState headingLevel="h3" icon={MonitoringIcon} titleText="Dashboard Card not found" variant="lg">
             <EmptyStateBody>
               Provide valid <code>layout</code> and <code>cardId</code> query parameters and try again.
             </EmptyStateBody>

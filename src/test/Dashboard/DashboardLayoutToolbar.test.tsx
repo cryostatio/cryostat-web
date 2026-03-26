@@ -15,7 +15,7 @@
  */
 import { DashboardLayoutToolbar } from '@app/Dashboard/DashboardLayoutToolbar';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { renderSnapshot } from '@test/utils';
+import { render } from '@test/utils';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 
@@ -26,9 +26,9 @@ jest.mock('@patternfly/react-core', () => ({
 
 describe('<DashboardLayoutToolbar />', () => {
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/', element: <DashboardLayoutToolbar /> }] },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 });

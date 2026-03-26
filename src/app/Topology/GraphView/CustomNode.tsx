@@ -42,7 +42,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { map } from 'rxjs';
 import { getStatusTargetNode, nodeTypeToAbbr, TOPOLOGY_GRAPH_ID } from '../Shared/utils';
-import { NODE_BADGE_COLOR, NODE_ICON_PADDING, RESOURCE_NAME_TRUNCATE_LENGTH } from './const';
+import { NODE_ICON_PADDING, RESOURCE_NAME_TRUNCATE_LENGTH } from './const';
 import { getNodeDecorators } from './NodeDecorator';
 
 export const renderNodeIcon = (graphic: string, _data: TargetNode, element: Node, useAlt: boolean): React.ReactNode => {
@@ -55,7 +55,7 @@ export const renderNodeIcon = (graphic: string, _data: TargetNode, element: Node
 
   return (
     <>
-      <circle cx={cx} cy={cy} r={contentSize / 2} fill="var(--pf-v5-global--palette--white)" />
+      <circle cx={cx} cy={cy} r={contentSize / 2} fill="#ffffff" />
       {useAlt ? (
         <g transform={`translate(${trueCx}, ${trueCy})`}>
           <ContainerNodeIcon width={mainContentSize} height={mainContentSize} />
@@ -126,8 +126,6 @@ const CustomNode: React.FC<CustomNodeProps> = ({
           onContextMenu={onContextMenu}
           scaleNode={(hover || contextMenuOpen) && detailsLevel !== ScaleDetailsLevel.high}
           badge={showBadge ? nodeTypeToAbbr(data.nodeType) : undefined}
-          badgeColor={NODE_BADGE_COLOR}
-          badgeClassName={css('topology__node-badge')}
           nodeStatus={showStatus ? nodeStatus : undefined}
           showStatusBackground={!hover && detailsLevel === ScaleDetailsLevel.low}
           truncateLength={RESOURCE_NAME_TRUNCATE_LENGTH}

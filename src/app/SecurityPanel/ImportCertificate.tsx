@@ -30,9 +30,8 @@ import {
   PanelMainBody,
   Popover,
   Spinner,
-  Text,
-  TextContent,
-  TextVariants,
+  Content,
+  ContentVariants,
   Title,
 } from '@patternfly/react-core';
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
@@ -76,10 +75,14 @@ const TrustedCertificates: React.FC = () => {
               ))}
             </LabelGroup>
           ) : (
-            <EmptyState variant={EmptyStateVariant.xs}>
-              <Title headingLevel="h4" size="md">
-                {t('ImportCertificate.NO_CERTIFICATE_TITLE')}
-              </Title>
+            <EmptyState
+              titleText={
+                <Title headingLevel="h4" size="md">
+                  {t('ImportCertificate.NO_CERTIFICATE_TITLE')}
+                </Title>
+              }
+              variant={EmptyStateVariant.xs}
+            >
               <EmptyStateBody>{t('ImportCertificate.NO_CERTIFICATE_BODY')}</EmptyStateBody>
             </EmptyState>
           )}
@@ -92,23 +95,21 @@ const TrustedCertificates: React.FC = () => {
 export const ListCertificates: SecurityCard = {
   key: 'ssl',
   title: (t: TFunction) => (
-    <Text>
+    <Content component="p">
       {t('ImportCertificate.CARD_TITLE')}
       <Popover
         maxWidth="40rem"
         headerContent={t('ImportCertificate.CARD_TITLE_POPOVER_HEADER')}
         bodyContent={<JmxSslDescription />}
       >
-        <Button variant="plain">
-          <OutlinedQuestionCircleIcon />
-        </Button>
+        <Button icon={<OutlinedQuestionCircleIcon />} variant="plain" />
       </Popover>
-    </Text>
+    </Content>
   ),
   description: (t: TFunction) => (
-    <TextContent>
-      <Text component={TextVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Text>
-    </TextContent>
+    <Content>
+      <Content component={ContentVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Content>
+    </Content>
   ),
   content: TrustedCertificates,
 };

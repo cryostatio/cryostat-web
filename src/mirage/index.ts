@@ -166,6 +166,19 @@ export const startMirage = ({ environment = 'development' } = {}) => {
             ]
           : [];
       });
+      this.get('api/beta/fs/recordings/:jvmId', (schema, request) => {
+        const target = schema.findBy(Resource.TARGET, { jvmId: request.params.jvmId });
+        const archives = schema.all(Resource.ARCHIVE).models;
+        return target
+          ? [
+              {
+                connectUrl: target.connectUrl,
+                jvmId: target.attrs.jvmId,
+                recordings: archives,
+              },
+            ]
+          : [];
+      });
       this.delete('api/beta/recordings/:targetId/:recordingName', (schema, request) => {
         const recordingName = request.params.recordingName;
         const recording = schema.findBy(Resource.ARCHIVE, { name: recordingName });

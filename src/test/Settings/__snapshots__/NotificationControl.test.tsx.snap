@@ -1,1956 +1,1554 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<NotificationControl/> renders correctly 1`] = `
-<div
-  className="pf-v5-l-stack pf-m-gutter"
->
+<div>
   <div
-    className="pf-v5-l-stack__item"
+    class="pf-v6-l-stack pf-m-gutter"
   >
     <div
-      className="pf-v5-c-form__group"
+      class="pf-v6-l-stack__item"
     >
       <div
-        className="pf-v5-c-form__group-control"
+        class="pf-v6-c-form__group"
       >
         <div
-          className="pf-v5-c-helper-text"
+          class="pf-v6-c-form__group-control"
         >
           <div
-            className="pf-v5-c-helper-text__item"
-          >
-            <span
-              className="pf-v5-c-helper-text__item-text"
-            >
-              Enable or disable all notifications.
-            </span>
-          </div>
-        </div>
-        <label
-          className="pf-v5-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-1"
-          data-ouia-component-type="PF5/Switch"
-          data-ouia-safe={true}
-          htmlFor="all-notifications"
-        >
-          <input
-            aria-label=""
-            aria-labelledby="all-notifications-on"
-            checked={true}
-            className="pf-v5-c-switch__input"
-            disabled={false}
-            id="all-notifications"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-v5-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-v5-c-switch__label pf-m-on"
-            id="all-notifications-on"
-          >
-            All notifications
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-v5-c-switch__label pf-m-off"
-            id="all-notifications-off"
-          >
-            All notifications
-          </span>
-        </label>
-      </div>
-    </div>
-  </div>
-  <div
-    className="pf-v5-l-stack__item"
-  >
-    <div
-      className="pf-v5-c-form__group"
-    >
-      <div
-        className="pf-v5-c-form__group-control"
-      >
-        <div
-          className="pf-v5-c-helper-text"
-        >
-          <div
-            className="pf-v5-c-helper-text__item"
-          >
-            <span
-              className="pf-v5-c-helper-text__item-text"
-            >
-              Control the maximum number of notification alerts that appear at once.
-            </span>
-          </div>
-        </div>
-        <div
-          className="pf-v5-c-number-input"
-        >
-          <div
-            className="pf-v5-c-input-group"
+            class="pf-v6-c-helper-text"
           >
             <div
-              className="pf-v5-c-input-group__item"
-            >
-              <button
-                aria-disabled={false}
-                aria-label="Minus"
-                className="pf-v5-c-button pf-m-control"
-                data-ouia-component-id="OUIA-Generated-Button-control-1"
-                data-ouia-component-type="PF5/Button"
-                data-ouia-safe={true}
-                disabled={false}
-                onClick={[Function]}
-                role={null}
-                type="button"
-              >
-                <span
-                  className="pf-v5-c-number-input__icon"
-                >
-                  <svg
-                    aria-hidden="true"
-                    aria-labelledby={null}
-                    className="pf-v5-svg"
-                    fill="currentColor"
-                    height="1em"
-                    role="img"
-                    viewBox="0 0 448 512"
-                    width="1em"
-                  >
-                    <path
-                      d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                    />
-                  </svg>
-                </span>
-              </button>
-            </div>
-            <div
-              className="pf-v5-c-input-group__item"
+              class="pf-v6-c-helper-text__item"
             >
               <span
-                className="pf-v5-c-form-control"
+                class="pf-v6-c-helper-text__item-text"
               >
-                <input
-                  aria-invalid={false}
-                  aria-label="Input"
-                  data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-                  data-ouia-component-type="PF5/TextInput"
-                  data-ouia-safe={true}
-                  disabled={false}
-                  name="alert count"
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  onKeyDown={[Function]}
-                  required={false}
-                  type="number"
-                  value={5}
-                />
+                Enable or disable all notifications.
               </span>
             </div>
-            <div
-              className="pf-v5-c-input-group__item"
+          </div>
+          <label
+            class="pf-v6-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-1"
+            data-ouia-component-type="PF6/Switch"
+            data-ouia-safe="true"
+            for="all-notifications"
+          >
+            <input
+              aria-labelledby="all-notifications-label"
+              checked=""
+              class="pf-v6-c-switch__input"
+              id="all-notifications"
+              role="switch"
+              type="checkbox"
+            />
+            <span
+              class="pf-v6-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              class="pf-v6-c-switch__label"
+              id="all-notifications-label"
             >
-              <button
-                aria-disabled={false}
-                aria-label="Plus"
-                className="pf-v5-c-button pf-m-control"
-                data-ouia-component-id="OUIA-Generated-Button-control-2"
-                data-ouia-component-type="PF5/Button"
-                data-ouia-safe={true}
-                disabled={false}
-                onClick={[Function]}
-                role={null}
-                type="button"
+              All notifications
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-v6-l-stack__item"
+    >
+      <div
+        class="pf-v6-c-form__group"
+      >
+        <div
+          class="pf-v6-c-form__group-control"
+        >
+          <div
+            class="pf-v6-c-helper-text"
+          >
+            <div
+              class="pf-v6-c-helper-text__item"
+            >
+              <span
+                class="pf-v6-c-helper-text__item-text"
+              >
+                Control the maximum number of notification alerts that appear at once.
+              </span>
+            </div>
+          </div>
+          <div
+            class="pf-v6-c-number-input"
+          >
+            <div
+              class="pf-v6-c-input-group"
+            >
+              <div
+                class="pf-v6-c-input-group__item"
+              >
+                <button
+                  aria-label="Minus"
+                  class="pf-v6-c-button pf-m-control"
+                  data-ouia-component-id="OUIA-Generated-Button-control-1"
+                  data-ouia-component-type="PF6/Button"
+                  data-ouia-safe="true"
+                  type="button"
+                >
+                  <span
+                    class="pf-v6-c-button__icon"
+                  >
+                    <span
+                      class="pf-v6-c-number-input__icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="pf-v6-svg"
+                        fill="currentColor"
+                        height="1em"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        width="1em"
+                      >
+                        <path
+                          d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                        />
+                      </svg>
+                    </span>
+                  </span>
+                </button>
+              </div>
+              <div
+                class="pf-v6-c-input-group__item"
               >
                 <span
-                  className="pf-v5-c-number-input__icon"
+                  class="pf-v6-c-form-control"
                 >
-                  <svg
-                    aria-hidden="true"
-                    aria-labelledby={null}
-                    className="pf-v5-svg"
-                    fill="currentColor"
-                    height="1em"
-                    role="img"
-                    viewBox="0 0 448 512"
-                    width="1em"
-                  >
-                    <path
-                      d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                    />
-                  </svg>
+                  <input
+                    aria-invalid="false"
+                    aria-label="Input"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+                    data-ouia-component-type="PF6/TextInput"
+                    data-ouia-safe="true"
+                    name="alert count"
+                    type="number"
+                    value="5"
+                  />
                 </span>
-              </button>
+              </div>
+              <div
+                class="pf-v6-c-input-group__item"
+              >
+                <button
+                  aria-label="Plus"
+                  class="pf-v6-c-button pf-m-control"
+                  data-ouia-component-id="OUIA-Generated-Button-control-2"
+                  data-ouia-component-type="PF6/Button"
+                  data-ouia-safe="true"
+                  type="button"
+                >
+                  <span
+                    class="pf-v6-c-button__icon"
+                  >
+                    <span
+                      class="pf-v6-c-number-input__icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="pf-v6-svg"
+                        fill="currentColor"
+                        height="1em"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        width="1em"
+                      >
+                        <path
+                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                        />
+                      </svg>
+                    </span>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    className="pf-v5-l-stack__item"
-  >
     <div
-      className="pf-v5-c-expandable-section"
+      class="pf-v6-l-stack__item"
     >
-      <button
-        aria-controls="notification-options"
-        aria-expanded={false}
-        className="pf-v5-c-expandable-section__toggle"
-        id="notification-options-toggle"
-        onClick={[Function]}
-        type="button"
-      >
-        <span
-          className="pf-v5-c-expandable-section__toggle-icon"
-        >
-          <svg
-            aria-hidden={true}
-            aria-labelledby={null}
-            className="pf-v5-svg"
-            fill="currentColor"
-            height="1em"
-            role="img"
-            viewBox="0 0 256 512"
-            width="1em"
-          >
-            <path
-              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-            />
-          </svg>
-        </span>
-        <span
-          className="pf-v5-c-expandable-section__toggle-text"
-        >
-          Show more
-        </span>
-      </button>
       <div
-        aria-labelledby="notification-options-toggle"
-        className="pf-v5-c-expandable-section__content"
-        hidden={true}
-        id="notification-options"
-        role="region"
+        class="pf-v6-c-expandable-section"
       >
         <div
-          className="pf-v5-l-stack__item"
+          class="pf-v6-c-expandable-section__toggle"
         >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-2"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="WsClientActivity"
+          <button
+            aria-controls="notification-options"
+            aria-expanded="false"
+            class="pf-v6-c-button pf-m-link"
+            data-ouia-component-id="OUIA-Generated-Button-link-1"
+            data-ouia-component-type="PF6/Button"
+            data-ouia-safe="true"
+            id="notification-options-toggle"
+            type="button"
           >
-            <input
-              aria-label=""
-              aria-labelledby="WsClientActivity-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="WsClientActivity"
-              onChange={[Function]}
-              type="checkbox"
-            />
             <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="WsClientActivity-on"
+              class="pf-v6-c-button__icon pf-m-start"
             >
-              WebSocket client activity
+              <span
+                class="pf-v6-c-expandable-section__toggle-icon"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="pf-v6-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 256 512"
+                  width="1em"
+                >
+                  <path
+                    d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                  />
+                </svg>
+              </span>
             </span>
             <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="WsClientActivity-off"
+              class="pf-v6-c-button__text"
             >
-              WebSocket client activity
+              Show more
             </span>
-          </label>
+          </button>
         </div>
         <div
-          className="pf-v5-l-stack__item"
+          aria-labelledby="notification-options-toggle"
+          class="pf-v6-c-expandable-section__content"
+          hidden=""
+          id="notification-options"
+          role="region"
         >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-3"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="TargetJvmDiscovery"
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="TargetJvmDiscovery-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="TargetJvmDiscovery"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="TargetJvmDiscovery-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-2"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="WsClientActivity"
             >
-              Target JVM discovery
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="TargetJvmDiscovery-off"
-            >
-              Target JVM discovery
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-4"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ActiveRecordingCreated"
+              <input
+                aria-labelledby="WsClientActivity-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="WsClientActivity"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="WsClientActivity-label"
+              >
+                WebSocket client activity
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ActiveRecordingCreated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ActiveRecordingCreated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ActiveRecordingCreated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-3"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="TargetJvmDiscovery"
             >
-              Recording created
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ActiveRecordingCreated-off"
-            >
-              Recording created
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-5"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ActiveRecordingStopped"
+              <input
+                aria-labelledby="TargetJvmDiscovery-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="TargetJvmDiscovery"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="TargetJvmDiscovery-label"
+              >
+                Target JVM discovery
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ActiveRecordingStopped-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ActiveRecordingStopped"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ActiveRecordingStopped-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-4"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ActiveRecordingCreated"
             >
-              Recording stopped
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ActiveRecordingStopped-off"
-            >
-              Recording stopped
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-6"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ActiveRecordingSaved"
+              <input
+                aria-labelledby="ActiveRecordingCreated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ActiveRecordingCreated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ActiveRecordingCreated-label"
+              >
+                Recording created
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ActiveRecordingSaved-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ActiveRecordingSaved"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ActiveRecordingSaved-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-5"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ActiveRecordingStopped"
             >
-              Recording saved
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ActiveRecordingSaved-off"
-            >
-              Recording saved
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-7"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ActiveRecordingDeleted"
+              <input
+                aria-labelledby="ActiveRecordingStopped-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ActiveRecordingStopped"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ActiveRecordingStopped-label"
+              >
+                Recording stopped
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ActiveRecordingDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ActiveRecordingDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ActiveRecordingDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-6"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ActiveRecordingSaved"
             >
-              Recording deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ActiveRecordingDeleted-off"
-            >
-              Recording deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-8"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ArchiveRecordingSuccess"
+              <input
+                aria-labelledby="ActiveRecordingSaved-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ActiveRecordingSaved"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ActiveRecordingSaved-label"
+              >
+                Recording saved
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ArchiveRecordingSuccess-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ArchiveRecordingSuccess"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ArchiveRecordingSuccess-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-7"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ActiveRecordingDeleted"
             >
-              Recording Archive Success
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ArchiveRecordingSuccess-off"
-            >
-              Recording Archive Success
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-9"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ArchiveRecordingFailure"
+              <input
+                aria-labelledby="ActiveRecordingDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ActiveRecordingDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ActiveRecordingDeleted-label"
+              >
+                Recording deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ArchiveRecordingFailure-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ArchiveRecordingFailure"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ArchiveRecordingFailure-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-8"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ArchiveRecordingSuccess"
             >
-              Recording Archive Failed
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ArchiveRecordingFailure-off"
-            >
-              Recording Archive Failed
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-10"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ArchivedRecordingCreated"
+              <input
+                aria-labelledby="ArchiveRecordingSuccess-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ArchiveRecordingSuccess"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ArchiveRecordingSuccess-label"
+              >
+                Recording Archive Success
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ArchivedRecordingCreated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ArchivedRecordingCreated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ArchivedRecordingCreated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-9"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ArchiveRecordingFailure"
             >
-              Archived Recording uploaded
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ArchivedRecordingCreated-off"
-            >
-              Archived Recording uploaded
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-11"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ArchivedRecordingDeleted"
+              <input
+                aria-labelledby="ArchiveRecordingFailure-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ArchiveRecordingFailure"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ArchiveRecordingFailure-label"
+              >
+                Recording Archive Failed
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ArchivedRecordingDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ArchivedRecordingDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ArchivedRecordingDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-10"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ArchivedRecordingCreated"
             >
-              Archived Recording deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ArchivedRecordingDeleted-off"
-            >
-              Archived Recording deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-12"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="TemplateUploaded"
+              <input
+                aria-labelledby="ArchivedRecordingCreated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ArchivedRecordingCreated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ArchivedRecordingCreated-label"
+              >
+                Archived Recording uploaded
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="TemplateUploaded-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="TemplateUploaded"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="TemplateUploaded-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-11"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ArchivedRecordingDeleted"
             >
-              Template created
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="TemplateUploaded-off"
-            >
-              Template created
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-13"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="TemplateDeleted"
+              <input
+                aria-labelledby="ArchivedRecordingDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ArchivedRecordingDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ArchivedRecordingDeleted-label"
+              >
+                Archived Recording deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="TemplateDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="TemplateDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="TemplateDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-12"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="TemplateUploaded"
             >
-              Template deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="TemplateDeleted-off"
-            >
-              Template deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-14"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ProbeTemplateUploaded"
+              <input
+                aria-labelledby="TemplateUploaded-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="TemplateUploaded"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="TemplateUploaded-label"
+              >
+                Template created
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ProbeTemplateUploaded-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ProbeTemplateUploaded"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ProbeTemplateUploaded-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-13"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="TemplateDeleted"
             >
-              Probe Template created
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ProbeTemplateUploaded-off"
-            >
-              Probe Template created
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-15"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ProbeTemplateDeleted"
+              <input
+                aria-labelledby="TemplateDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="TemplateDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="TemplateDeleted-label"
+              >
+                Template deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ProbeTemplateDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ProbeTemplateDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ProbeTemplateDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-14"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ProbeTemplateUploaded"
             >
-              Probe Template deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ProbeTemplateDeleted-off"
-            >
-              Probe Template deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-16"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ProbeTemplateApplied"
+              <input
+                aria-labelledby="ProbeTemplateUploaded-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ProbeTemplateUploaded"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ProbeTemplateUploaded-label"
+              >
+                Probe Template created
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ProbeTemplateApplied-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ProbeTemplateApplied"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ProbeTemplateApplied-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-15"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ProbeTemplateDeleted"
             >
-              Probe Template applied
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ProbeTemplateApplied-off"
-            >
-              Probe Template applied
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-17"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ProbesRemoved"
+              <input
+                aria-labelledby="ProbeTemplateDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ProbeTemplateDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ProbeTemplateDeleted-label"
+              >
+                Probe Template deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ProbesRemoved-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ProbesRemoved"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ProbesRemoved-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-16"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ProbeTemplateApplied"
             >
-              Probes removed from target
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ProbesRemoved-off"
-            >
-              Probes removed from target
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-18"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="RuleCreated"
+              <input
+                aria-labelledby="ProbeTemplateApplied-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ProbeTemplateApplied"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ProbeTemplateApplied-label"
+              >
+                Probe Template applied
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="RuleCreated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="RuleCreated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="RuleCreated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-17"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ProbesRemoved"
             >
-              Automated Rule created
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="RuleCreated-off"
-            >
-              Automated Rule created
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-19"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="RuleUpdated"
+              <input
+                aria-labelledby="ProbesRemoved-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ProbesRemoved"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ProbesRemoved-label"
+              >
+                Probes removed from target
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="RuleUpdated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="RuleUpdated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="RuleUpdated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-18"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="RuleCreated"
             >
-              Automated Rule updated
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="RuleUpdated-off"
-            >
-              Automated Rule updated
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-20"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="RuleDeleted"
+              <input
+                aria-labelledby="RuleCreated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="RuleCreated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="RuleCreated-label"
+              >
+                Automated Rule created
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="RuleDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="RuleDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="RuleDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-19"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="RuleUpdated"
             >
-              Automated Rule deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="RuleDeleted-off"
-            >
-              Automated Rule deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-21"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="RecordingMetadataUpdated"
+              <input
+                aria-labelledby="RuleUpdated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="RuleUpdated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="RuleUpdated-label"
+              >
+                Automated Rule updated
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="RecordingMetadataUpdated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="RecordingMetadataUpdated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="RecordingMetadataUpdated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-20"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="RuleDeleted"
             >
-              Recording metadata updated
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="RecordingMetadataUpdated-off"
-            >
-              Recording metadata updated
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-22"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="GrafanaUploadSuccess"
+              <input
+                aria-labelledby="RuleDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="RuleDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="RuleDeleted-label"
+              >
+                Automated Rule deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="GrafanaUploadSuccess-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="GrafanaUploadSuccess"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="GrafanaUploadSuccess-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-21"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="RecordingMetadataUpdated"
             >
-              Grafana Upload Success
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="GrafanaUploadSuccess-off"
-            >
-              Grafana Upload Success
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-23"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="GrafanaUploadFailure"
+              <input
+                aria-labelledby="RecordingMetadataUpdated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="RecordingMetadataUpdated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="RecordingMetadataUpdated-label"
+              >
+                Recording metadata updated
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="GrafanaUploadFailure-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="GrafanaUploadFailure"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="GrafanaUploadFailure-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-22"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="GrafanaUploadSuccess"
             >
-              Grafana Upload Failed
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="GrafanaUploadFailure-off"
-            >
-              Grafana Upload Failed
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-24"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="GrafanaConfiguration"
+              <input
+                aria-labelledby="GrafanaUploadSuccess-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="GrafanaUploadSuccess"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="GrafanaUploadSuccess-label"
+              >
+                Grafana Upload Success
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="GrafanaConfiguration-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="GrafanaConfiguration"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="GrafanaConfiguration-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-23"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="GrafanaUploadFailure"
             >
-              Grafana configuration
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="GrafanaConfiguration-off"
-            >
-              Grafana configuration
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-25"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="LayoutTemplateCreated"
+              <input
+                aria-labelledby="GrafanaUploadFailure-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="GrafanaUploadFailure"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="GrafanaUploadFailure-label"
+              >
+                Grafana Upload Failed
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="LayoutTemplateCreated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="LayoutTemplateCreated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="LayoutTemplateCreated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-24"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="GrafanaConfiguration"
             >
-              Layout Template created
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="LayoutTemplateCreated-off"
-            >
-              Layout Template created
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-26"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="TargetCredentialsStored"
+              <input
+                aria-labelledby="GrafanaConfiguration-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="GrafanaConfiguration"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="GrafanaConfiguration-label"
+              >
+                Grafana configuration
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="TargetCredentialsStored-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="TargetCredentialsStored"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="TargetCredentialsStored-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-25"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="LayoutTemplateCreated"
             >
-              Target Credentials stored
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="TargetCredentialsStored-off"
-            >
-              Target Credentials stored
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-27"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="TargetCredentialsDeleted"
+              <input
+                aria-labelledby="LayoutTemplateCreated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="LayoutTemplateCreated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="LayoutTemplateCreated-label"
+              >
+                Layout Template created
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="TargetCredentialsDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="TargetCredentialsDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="TargetCredentialsDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-26"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="TargetCredentialsStored"
             >
-              Target Credentials deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="TargetCredentialsDeleted-off"
-            >
-              Target Credentials deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-28"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="HeapDumpSuccess"
+              <input
+                aria-labelledby="TargetCredentialsStored-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="TargetCredentialsStored"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="TargetCredentialsStored-label"
+              >
+                Target Credentials stored
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="HeapDumpSuccess-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="HeapDumpSuccess"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="HeapDumpSuccess-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-27"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="TargetCredentialsDeleted"
             >
-              Heap Dump Succeeded
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="HeapDumpSuccess-off"
-            >
-              Heap Dump Succeeded
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-29"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="HeapDumpUploaded"
+              <input
+                aria-labelledby="TargetCredentialsDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="TargetCredentialsDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="TargetCredentialsDeleted-label"
+              >
+                Target Credentials deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="HeapDumpUploaded-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="HeapDumpUploaded"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="HeapDumpUploaded-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-28"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="HeapDumpSuccess"
             >
-              Heap Dump Uploaded
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="HeapDumpUploaded-off"
-            >
-              Heap Dump Uploaded
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-30"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="HeapDumpFailure"
+              <input
+                aria-labelledby="HeapDumpSuccess-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="HeapDumpSuccess"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="HeapDumpSuccess-label"
+              >
+                Heap Dump Succeeded
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="HeapDumpFailure-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="HeapDumpFailure"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="HeapDumpFailure-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-29"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="HeapDumpUploaded"
             >
-              Heap Dump Failed
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="HeapDumpFailure-off"
-            >
-              Heap Dump Failed
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-31"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="HeapDumpDeleted"
+              <input
+                aria-labelledby="HeapDumpUploaded-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="HeapDumpUploaded"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="HeapDumpUploaded-label"
+              >
+                Heap Dump Uploaded
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="HeapDumpDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="HeapDumpDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="HeapDumpDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-30"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="HeapDumpFailure"
             >
-              Heap Dump Deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="HeapDumpDeleted-off"
-            >
-              Heap Dump Deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-32"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="HeapDumpMetadataUpdated"
+              <input
+                aria-labelledby="HeapDumpFailure-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="HeapDumpFailure"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="HeapDumpFailure-label"
+              >
+                Heap Dump Failed
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="HeapDumpMetadataUpdated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="HeapDumpMetadataUpdated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="HeapDumpMetadataUpdated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-31"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="HeapDumpDeleted"
             >
-              Heap Dump metadata updated
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="HeapDumpMetadataUpdated-off"
-            >
-              Heap Dump metadata updated
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-33"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ThreadDumpSuccess"
+              <input
+                aria-labelledby="HeapDumpDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="HeapDumpDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="HeapDumpDeleted-label"
+              >
+                Heap Dump Deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ThreadDumpSuccess-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ThreadDumpSuccess"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ThreadDumpSuccess-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-32"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="HeapDumpMetadataUpdated"
             >
-              Thread Dump Succeeded
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ThreadDumpSuccess-off"
-            >
-              Thread Dump Succeeded
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-34"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ThreadDumpFailure"
+              <input
+                aria-labelledby="HeapDumpMetadataUpdated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="HeapDumpMetadataUpdated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="HeapDumpMetadataUpdated-label"
+              >
+                Heap Dump metadata updated
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ThreadDumpFailure-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ThreadDumpFailure"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ThreadDumpFailure-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-33"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ThreadDumpSuccess"
             >
-              Thread Dump Failed
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ThreadDumpFailure-off"
-            >
-              Thread Dump Failed
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-35"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ThreadDumpDeleted"
+              <input
+                aria-labelledby="ThreadDumpSuccess-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ThreadDumpSuccess"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ThreadDumpSuccess-label"
+              >
+                Thread Dump Succeeded
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ThreadDumpDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ThreadDumpDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ThreadDumpDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-34"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ThreadDumpFailure"
             >
-              Thread Dump Deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ThreadDumpDeleted-off"
-            >
-              Thread Dump Deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-36"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ThreadDumpMetadataUpdated"
+              <input
+                aria-labelledby="ThreadDumpFailure-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ThreadDumpFailure"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ThreadDumpFailure-label"
+              >
+                Thread Dump Failed
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ThreadDumpMetadataUpdated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ThreadDumpMetadataUpdated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ThreadDumpMetadataUpdated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-35"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ThreadDumpDeleted"
             >
-              Thread Dump metadata updated
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ThreadDumpMetadataUpdated-off"
-            >
-              Thread Dump metadata updated
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-37"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="TriggerCreated"
+              <input
+                aria-labelledby="ThreadDumpDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ThreadDumpDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ThreadDumpDeleted-label"
+              >
+                Thread Dump Deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="TriggerCreated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="TriggerCreated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="TriggerCreated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-36"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ThreadDumpMetadataUpdated"
             >
-              Smart Trigger created
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="TriggerCreated-off"
-            >
-              Smart Trigger created
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-38"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="TriggerDeleted"
+              <input
+                aria-labelledby="ThreadDumpMetadataUpdated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ThreadDumpMetadataUpdated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ThreadDumpMetadataUpdated-label"
+              >
+                Thread Dump metadata updated
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="TriggerDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="TriggerDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="TriggerDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-37"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="TriggerCreated"
             >
-              Smart Trigger deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="TriggerDeleted-off"
-            >
-              Smart Trigger deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-39"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="CredentialsStored"
+              <input
+                aria-labelledby="TriggerCreated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="TriggerCreated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="TriggerCreated-label"
+              >
+                Smart Trigger created
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="CredentialsStored-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="CredentialsStored"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="CredentialsStored-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-38"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="TriggerDeleted"
             >
-              Credentials stored
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="CredentialsStored-off"
-            >
-              Credentials stored
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-40"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="CredentialsDeleted"
+              <input
+                aria-labelledby="TriggerDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="TriggerDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="TriggerDeleted-label"
+              >
+                Smart Trigger deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="CredentialsDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="CredentialsDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="CredentialsDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-39"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="CredentialsStored"
             >
-              Credentials deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="CredentialsDeleted-off"
-            >
-              Credentials deleted
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-41"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ReportSuccess"
+              <input
+                aria-labelledby="CredentialsStored-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="CredentialsStored"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="CredentialsStored-label"
+              >
+                Credentials stored
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ReportSuccess-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ReportSuccess"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ReportSuccess-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-40"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="CredentialsDeleted"
             >
-              Report Success
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ReportSuccess-off"
-            >
-              Report Success
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-42"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="ReportFailure"
+              <input
+                aria-labelledby="CredentialsDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="CredentialsDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="CredentialsDeleted-label"
+              >
+                Credentials deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="ReportFailure-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="ReportFailure"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="ReportFailure-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-41"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ReportSuccess"
             >
-              Report Generation Failed
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="ReportFailure-off"
-            >
-              Report Generation Failed
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-43"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="AsyncProfilerCreated"
+              <input
+                aria-labelledby="ReportSuccess-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ReportSuccess"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ReportSuccess-label"
+              >
+                Report Success
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="AsyncProfilerCreated-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="AsyncProfilerCreated"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="AsyncProfilerCreated-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-42"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ReportFailure"
             >
-              async-profiler session started
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="AsyncProfilerCreated-off"
-            >
-              async-profiler session started
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-44"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="AsyncProfilerStopped"
+              <input
+                aria-labelledby="ReportFailure-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ReportFailure"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ReportFailure-label"
+              >
+                Report Generation Failed
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="AsyncProfilerStopped-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="AsyncProfilerStopped"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="AsyncProfilerStopped-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-43"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="AsyncProfilerCreated"
             >
-              async-profiler session stopped
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="AsyncProfilerStopped-off"
-            >
-              async-profiler session stopped
-            </span>
-          </label>
-        </div>
-        <div
-          className="pf-v5-l-stack__item"
-        >
-          <label
-            className="pf-v5-c-switch"
-            data-ouia-component-id="OUIA-Generated-Switch-45"
-            data-ouia-component-type="PF5/Switch"
-            data-ouia-safe={true}
-            htmlFor="AsyncProfilerDeleted"
+              <input
+                aria-labelledby="AsyncProfilerCreated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="AsyncProfilerCreated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="AsyncProfilerCreated-label"
+              >
+                async-profiler session started
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
           >
-            <input
-              aria-label=""
-              aria-labelledby="AsyncProfilerDeleted-on"
-              checked={true}
-              className="pf-v5-c-switch__input"
-              disabled={false}
-              id="AsyncProfilerDeleted"
-              onChange={[Function]}
-              type="checkbox"
-            />
-            <span
-              className="pf-v5-c-switch__toggle"
-            />
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-on"
-              id="AsyncProfilerDeleted-on"
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-44"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="AsyncProfilerStopped"
             >
-              async-profiler remote file deleted
-            </span>
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-switch__label pf-m-off"
-              id="AsyncProfilerDeleted-off"
+              <input
+                aria-labelledby="AsyncProfilerStopped-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="AsyncProfilerStopped"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="AsyncProfilerStopped-label"
+              >
+                async-profiler session stopped
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-45"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="AsyncProfilerDeleted"
             >
-              async-profiler remote file deleted
-            </span>
-          </label>
+              <input
+                aria-labelledby="AsyncProfilerDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="AsyncProfilerDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="AsyncProfilerDeleted-label"
+              >
+                async-profiler remote file deleted
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
