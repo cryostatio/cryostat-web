@@ -22,6 +22,7 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, NotificationCategory, HeapDumpDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
+import { useAliasCache } from '@app/utils/hooks/useAliasCache';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTargetDetailsModal } from '@app/utils/hooks/useTargetDetailsModal';
@@ -91,6 +92,9 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
   const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
     useTargetDetailsModal();
 
+  const jvmIds = React.useMemo(() => directories.map((d) => d.jvmId), [directories]);
+  const aliasMap = useAliasCache(jvmIds);
+
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: HeapDumpDirectory[]) => {
       setDirectories(directories.map((dir) => ({ ...dir, targetAsObs: of(getTargetFromDirectory(dir)) })));
@@ -139,8 +143,9 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
     } else {
       const reg = new RegExp(_.escape(searchText), 'i');
       updatedSearchedDirectories = directories.filter((d: _HeapDumpDirectory) => {
-        // Search by jvmId and alias (from target)
-        return reg.test(d.jvmId) || (d.targetAsObs && reg.test(getTargetFromDirectory(d).alias));
+        // Search by jvmId and alias (from audit log)
+        const alias = aliasMap.get(d.jvmId) || '';
+        return reg.test(d.jvmId) || reg.test(alias);
       });
     }
     return sortResources(
@@ -151,7 +156,7 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
       updatedSearchedDirectories,
       tableColumns,
     );
-  }, [directories, searchText, sortBy]);
+  }, [directories, searchText, sortBy, aliasMap]);
 
   React.useEffect(() => {
     addSubscription(
