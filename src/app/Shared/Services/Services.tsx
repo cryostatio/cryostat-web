@@ -22,6 +22,7 @@ import { NotificationsInstance } from './Notifications.service';
 import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
+import { TargetAliasService } from './TargetAlias.service';
 import { TargetsService } from './Targets.service';
 
 export interface Services {
@@ -32,6 +33,7 @@ export interface Services {
   notificationChannel: NotificationChannel;
   settings: SettingsService;
   login: LoginService;
+  targetAlias: TargetAliasService;
 }
 
 export interface CryostatContext {
@@ -52,6 +54,7 @@ const login = new LoginService(api, settings);
 const notificationChannel = new NotificationChannel(defaultContext, NotificationsInstance, login);
 const reports = new ReportService(defaultContext, NotificationsInstance, notificationChannel);
 const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
+const targetAlias = new TargetAliasService(api);
 
 const defaultServices: Services = {
   target,
@@ -61,6 +64,7 @@ const defaultServices: Services = {
   notificationChannel,
   reports,
   targets,
+  targetAlias,
 };
 
 const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
