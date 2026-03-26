@@ -30,7 +30,7 @@
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
   "AllArchivedRecordingsTable": {
-    "SEARCH_PLACEHOLDER": "Find by JVM ID, connection URL, or alias..."
+    "SEARCH_PLACEHOLDER": "Find by JVM ID, alias, or connection URL..."
   },
   "AllTargetsArchivedRecordingsTable": {
     "HIDE_TARGET_WITH_ZERO_RECORDING": "Hide targets with zero Recordings",
