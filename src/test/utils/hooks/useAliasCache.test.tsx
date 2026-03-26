@@ -53,7 +53,7 @@ describe('useAliasCache', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={['jvm-1']} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(getByTestId('mapSize').textContent).toBe('0');
@@ -68,7 +68,7 @@ describe('useAliasCache', () => {
     render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={jvmIds} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(mockTargetAliasService.fetchAliases).toHaveBeenCalledWith(jvmIds);
@@ -84,7 +84,7 @@ describe('useAliasCache', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={['jvm-1']} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(getByTestId('mapSize').textContent).toBe('0');
@@ -113,7 +113,7 @@ describe('useAliasCache', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={['jvm-1', 'jvm-2', 'jvm-3']} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     // Simulate multiple aliases being fetched
@@ -147,7 +147,7 @@ describe('useAliasCache', () => {
     render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={jvmIds} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     // Should be called with sorted array
@@ -162,7 +162,7 @@ describe('useAliasCache', () => {
     const { rerender } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={['jvm-1', 'jvm-2']} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(mockTargetAliasService.fetchAliases).toHaveBeenCalledTimes(1);
@@ -171,7 +171,7 @@ describe('useAliasCache', () => {
     rerender(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={['jvm-1', 'jvm-2']} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     // Should still only be called once due to memoization
@@ -186,7 +186,7 @@ describe('useAliasCache', () => {
     const { getByTestId } = render(
       <ServiceContext.Provider value={mockContext}>
         <TestComponent jvmIds={[]} />
-      </ServiceContext.Provider>
+      </ServiceContext.Provider>,
     );
 
     expect(getByTestId('mapSize').textContent).toBe('0');
