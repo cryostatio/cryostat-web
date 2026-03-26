@@ -35,9 +35,15 @@ export const useAliasCache = (jvmIds: string[]): Map<string, string> => {
     );
   }, [addSubscription, context.targetAlias]);
 
+  // Fetch aliases for the provided jvmIds
+  // Use a stable string representation to avoid re-fetching on array reference changes
+  const jvmIdsKey = React.useMemo(() => jvmIds.sort().join(','), [jvmIds]);
+
   React.useEffect(() => {
-    context.targetAlias.fetchAliases(jvmIds);
-  }, [jvmIds, context.targetAlias]);
+    if (jvmIdsKey) {
+      context.targetAlias.fetchAliases(jvmIdsKey.split(','));
+    }
+  }, [jvmIdsKey, context.targetAlias]);
 
   return aliasMap;
 };
