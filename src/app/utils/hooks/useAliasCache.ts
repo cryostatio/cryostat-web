@@ -30,6 +30,7 @@ export const useAliasCache = (jvmIds: string[]): Map<string, string> => {
   const addSubscription = useSubscriptions();
   const [aliasMap, setAliasMap] = React.useState<Map<string, string>>(new Map());
   const fetchedIds = React.useRef<Set<string>>(new Set());
+  const prevJvmIdsRef = React.useRef<Set<string>>(new Set());
 
   const fetchAlias = React.useCallback(
     (jvmId: string) => {
@@ -61,11 +62,18 @@ export const useAliasCache = (jvmIds: string[]): Map<string, string> => {
   );
 
   React.useEffect(() => {
-    jvmIds.forEach((jvmId) => {
+    // Only fetch aliases for jvmIds that are new (not in prevJvmIdsRef)
+    const currentJvmIds = new Set(jvmIds);
+    const newJvmIds = jvmIds.filter((jvmId) => !prevJvmIdsRef.current.has(jvmId));
+
+    newJvmIds.forEach((jvmId) => {
       if (jvmId && jvmId !== 'uploads' && !fetchedIds.current.has(jvmId)) {
         fetchAlias(jvmId);
       }
     });
+
+    // Update the previous jvmIds set
+    prevJvmIdsRef.current = currentJvmIds;
   }, [jvmIds, fetchAlias]);
 
   return aliasMap;
