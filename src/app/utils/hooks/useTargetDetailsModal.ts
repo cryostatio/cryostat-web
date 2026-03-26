@@ -17,6 +17,7 @@
 import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { findInnermostTargetNode } from '@app/utils/targetUtils';
 import * as React from 'react';
 
 interface UseTargetDetailsModalResult {
@@ -27,31 +28,6 @@ interface UseTargetDetailsModalResult {
   loadingLineage: boolean;
   wrappedTarget: { getData: () => TargetNode } | undefined;
 }
-
-const findInnermostTargetNode = (node: EnvironmentNode | TargetNode): TargetNode | undefined => {
-  const MAX_DEPTH = 100;
-  const stack: Array<{ node: EnvironmentNode | TargetNode; depth: number }> = [{ node, depth: 0 }];
-
-  while (stack.length > 0) {
-    const current = stack.pop();
-    if (!current || current.depth >= MAX_DEPTH) {
-      continue;
-    }
-
-    if ('target' in current.node) {
-      return current.node as TargetNode;
-    }
-
-    const envNode = current.node as EnvironmentNode;
-    if (envNode.children && envNode.children.length > 0) {
-      for (let i = envNode.children.length - 1; i >= 0; i--) {
-        stack.push({ node: envNode.children[i], depth: current.depth + 1 });
-      }
-    }
-  }
-
-  return undefined;
-};
 
 export const useTargetDetailsModal = (): UseTargetDetailsModalResult => {
   const context = React.useContext(ServiceContext);
