@@ -28,20 +28,16 @@ import {
   ActionGroup,
   Button,
   EmptyState,
-  EmptyStateIcon,
   Form,
   FormGroup,
-  Modal,
-  ModalVariant,
   Stack,
   StackItem,
-  Text,
-  TextVariants,
+  Content,
+  ContentVariants,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  EmptyStateHeader,
   Dropdown,
   DropdownItem,
   DropdownList,
@@ -49,8 +45,8 @@ import {
   MenuToggle,
   SearchInput,
   Divider,
-  TextContent,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { SearchIcon, EllipsisVIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ISortBy,
@@ -304,16 +300,16 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
       <>
         <Stack hasGutter style={{ marginTop: '1em' }}>
           <StackItem>
-            <TextContent>
-              <Text component={TextVariants.h5}>About the JMC Agent</Text>
-              <Text component={TextVariants.small}>
+            <Content>
+              <Content component={ContentVariants.h5}>About the JMC Agent</Content>
+              <Content component={ContentVariants.small}>
                 The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
                 use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
                 must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met, the
                 user can upload Probe Templates to Cryostat and insert them to the target, as well as view or remove
                 currently active probes.
-              </Text>
-            </TextContent>
+              </Content>
+            </Content>
           </StackItem>
           <StackItem>
             <Toolbar id="probe-templates-toolbar">
@@ -333,11 +329,15 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                   </ToolbarItem>
                 </ToolbarGroup>
                 <ToolbarItem variant="separator" />
-                <ToolbarGroup variant="icon-button-group">
+                <ToolbarGroup variant="action-group-plain">
                   <ToolbarItem>
-                    <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleTemplateUpload}>
-                      <UploadIcon />
-                    </Button>
+                    <Button
+                      icon={<UploadIcon />}
+                      key="upload"
+                      variant="secondary"
+                      aria-label="Upload"
+                      onClick={handleTemplateUpload}
+                    ></Button>
                   </ToolbarItem>
                 </ToolbarGroup>
                 <DeleteWarningModal
@@ -362,13 +362,7 @@ export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = ({ agentD
                 <Tbody>{templateRows}</Tbody>
               </Table>
             ) : (
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText="No Probe Templates"
-                  icon={<EmptyStateIcon icon={SearchIcon} />}
-                  headingLevel="h4"
-                />
-              </EmptyState>
+              <EmptyState headingLevel="h4" icon={SearchIcon} titleText="No Probe Templates"></EmptyState>
             )}
             <AgentProbeTemplateUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
           </StackItem>

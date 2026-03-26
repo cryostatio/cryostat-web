@@ -27,12 +27,11 @@ import {
   Form,
   FormGroup,
   Icon,
-  Modal,
-  ModalVariant,
-  Text,
+  Content,
   Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -152,18 +151,18 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
       onClose={handleClose}
       title="Re-Upload Archived Recording"
       description={
-        <Text>
+        <Content component="p">
           <span>
             Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming
             convention used by Cryostat when archiving Recordings
           </span>{' '}
           <Tooltip
             content={
-              <Text>
+              <Content component="p">
                 Archive naming conventions: <b>target-name_recordingName_timestamp.jfr</b>.
                 <br />
                 For example: io-cryostat-Cryostat_profiling_timestamp.jfr
-              </Text>
+              </Content>
             }
             appendTo={portalRoot}
           >
@@ -172,7 +171,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
             </sup>
           </Tooltip>
           <span>.</span>
-        </Text>
+        </Content>
       }
     >
       <Form>
@@ -193,9 +192,11 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
           <FormGroup
             label="Labels"
             fieldId="labels"
-            labelIcon={
+            labelHelp={
               <Tooltip
-                content={<Text>Unique key-value pairs containing information about the recording.</Text>}
+                content={
+                  <Content component="p">Unique key-value pairs containing information about the recording.</Content>
+                }
                 appendTo={portalRoot}
               >
                 <Icon>

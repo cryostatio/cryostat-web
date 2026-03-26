@@ -15,7 +15,7 @@
  */
 import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
 import { AnalysisResult, CategorizedRuleEvaluations } from '@app/Shared/Services/api.types';
-import { createMockForPFTableRef, renderSnapshot } from '@test/utils';
+import { render } from '@test/utils';
 
 const mockRuleEvaluation1: AnalysisResult = {
   name: 'rule1',
@@ -82,7 +82,7 @@ const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
 
 describe('<AutomatedAnalysisCardList />', () => {
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -91,8 +91,7 @@ describe('<AutomatedAnalysisCardList />', () => {
           },
         ],
       },
-      createNodeMock: createMockForPFTableRef,
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 });

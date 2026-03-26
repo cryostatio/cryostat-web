@@ -1,455 +1,392 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<TargetAnalysis /> renders correctly 1`] = `
-<div
-  className="pf-v5-l-stack pf-m-gutter"
->
+<div>
   <div
-    className="pf-v5-l-stack__item"
+    class="pf-v6-l-stack pf-m-gutter"
   >
     <div
-      style={
-        {
-          "display": "contents",
-        }
-      }
-    >
-      <p
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-2"
-        data-ouia-component-type="PF5/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        Last update: Wednesday, April 9, 2025 3:40 PM
-      </p>
-    </div>
-  </div>
-  <div
-    className="pf-v5-l-stack__item"
-  >
-    <div
-      aria-label="Automated analysis toolbar"
-      className="pf-v5-c-toolbar pf-m-full-height"
-      data-ouia-component-id="OUIA-Generated-Toolbar-1"
-      data-ouia-component-type="PF5/Toolbar"
-      data-ouia-safe={true}
-      id="automated-analysis-toolbar"
+      class="pf-v6-l-stack__item"
     >
       <div
-        className="pf-v5-c-toolbar__content"
+        style="display: contents;"
+      >
+        <p
+          class="pf-v6-c-content--p"
+          data-ouia-component-id="OUIA-Generated-Content-2"
+          data-ouia-component-type="PF6/Content"
+          data-ouia-safe="true"
+          data-pf-content="true"
+        >
+          Last update: Wednesday, April 9, 2025 3:40 PM
+        </p>
+      </div>
+    </div>
+    <div
+      class="pf-v6-l-stack__item"
+    >
+      <div
+        aria-label="Automated analysis toolbar"
+        class="pf-v6-c-toolbar pf-m-full-height"
+        data-ouia-component-id="OUIA-Generated-Toolbar-1"
+        data-ouia-component-type="PF6/Toolbar"
+        data-ouia-safe="true"
+        id="automated-analysis-toolbar"
       >
         <div
-          className="pf-v5-c-toolbar__content-section"
+          class="pf-v6-c-toolbar__content"
         >
-          <div>
-            AutomatedAnalysisFilters
-          </div>
           <div
-            className="pf-v5-c-toolbar__item"
+            class="pf-v6-c-toolbar__content-section"
           >
-            <div
-              className="pf-v5-c-check"
-            >
-              <input
-                aria-invalid={false}
-                checked={false}
-                className="pf-v5-c-check__input"
-                data-ouia-component-id="OUIA-Generated-Checkbox-1"
-                data-ouia-component-type="PF5/Checkbox"
-                data-ouia-safe={true}
-                disabled={false}
-                id="show-na-scores"
-                name="show-na-scores"
-                onChange={[Function]}
-                required={false}
-                style={
-                  {
-                    "alignSelf": "center",
-                  }
-                }
-                type="checkbox"
-              />
-              <label
-                className="pf-v5-c-check__label"
-                htmlFor="show-na-scores"
-              >
-                Show N/A scores
-              </label>
+            <div>
+              AutomatedAnalysisFilters
             </div>
-          </div>
-          <hr
-            className="pf-v5-c-divider pf-m-vertical"
-          />
-          <div
-            className="pf-v5-c-toolbar__item"
-          >
             <div
-              className="pf-v5-c-toggle-group"
-              role="group"
+              class="pf-v6-c-toolbar__item"
             >
               <div
-                className="pf-v5-c-toggle-group__item"
-                onClick={[Function]}
+                class="pf-v6-c-check"
               >
-                <button
-                  aria-label="grid-view"
-                  aria-pressed={true}
-                  className="pf-v5-c-toggle-group__button pf-m-selected"
-                  id="grid-view-btn"
-                  onClick={[Function]}
-                  type="button"
+                <input
+                  aria-invalid="false"
+                  class="pf-v6-c-check__input"
+                  data-ouia-component-id="OUIA-Generated-Checkbox-1"
+                  data-ouia-component-type="PF6/Checkbox"
+                  data-ouia-safe="true"
+                  id="show-na-scores"
+                  name="show-na-scores"
+                  style="align-self: center;"
+                  type="checkbox"
+                />
+                <label
+                  class="pf-v6-c-check__label"
+                  for="show-na-scores"
                 >
-                  <span
-                    className="pf-v5-c-toggle-group__text"
-                  >
-                    Grid view
-                  </span>
-                </button>
+                  Show N/A scores
+                </label>
               </div>
+            </div>
+            <hr
+              class="pf-v6-c-divider pf-m-vertical"
+            />
+            <div
+              class="pf-v6-c-toolbar__item"
+            >
               <div
-                className="pf-v5-c-toggle-group__item"
-                onClick={[Function]}
+                class="pf-v6-c-toggle-group"
+                role="group"
               >
-                <button
-                  aria-label="list-view"
-                  aria-pressed={false}
-                  className="pf-v5-c-toggle-group__button"
-                  id="list-view-btn"
-                  onClick={[Function]}
-                  type="button"
+                <div
+                  class="pf-v6-c-toggle-group__item"
                 >
-                  <span
-                    className="pf-v5-c-toggle-group__text"
+                  <button
+                    aria-label="grid-view"
+                    aria-pressed="true"
+                    class="pf-v6-c-toggle-group__button pf-m-selected"
+                    id="grid-view-btn"
+                    type="button"
                   >
-                    List view
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className="pf-v5-c-toolbar__content pf-m-hidden"
-        hidden={true}
-      >
-        <div
-          className="pf-v5-c-toolbar__group"
-        />
-      </div>
-    </div>
-  </div>
-  <div
-    className="pf-v5-l-stack__item"
-  >
-    <div
-      style={
-        {
-          "display": "contents",
-        }
-      }
-    >
-      <small
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-3"
-        data-ouia-component-type="PF5/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        Only showing analysis results with severity scores ≥ 0:
-      </small>
-    </div>
-    <div
-      className="pf-v5-c-slider automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok"
-      style={
-        {
-          "--pf-v5-c-slider--value": "0%",
-          "--pf-v5-c-slider__value--c-form-control--width-chars": 1,
-        }
-      }
-    >
-      <div
-        className="pf-v5-c-slider__actions"
-      >
-        <div
-          className="pf-v5-l-level pf-m-gutter"
-        >
-          <div>
-            <small
-              className=""
-              data-ouia-component-id="OUIA-Generated-Text-4"
-              data-ouia-component-type="PF5/Text"
-              data-ouia-safe={true}
-              data-pf-content={true}
-            >
-              Reset
-              :
-            </small>
-          </div>
-          <div>
-            <button
-              aria-disabled={false}
-              aria-label="Reset score to 0"
-              className="pf-v5-c-button pf-m-link pf-m-inline pf-m-small"
-              data-ouia-component-id="OUIA-Generated-Button-link-1"
-              data-ouia-component-type="PF5/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
-            >
-              0
-            </button>
-          </div>
-          <div>
-            <button
-              aria-disabled={false}
-              aria-label="Reset score to 100"
-              className="pf-v5-c-button pf-m-link pf-m-inline pf-m-small"
-              data-ouia-component-id="OUIA-Generated-Button-link-2"
-              data-ouia-component-type="PF5/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
-              type="button"
-            >
-              100
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        className="pf-v5-c-slider__main"
-      >
-        <div
-          className="pf-v5-c-slider__rail"
-          onClick={[Function]}
-        >
-          <div
-            className="pf-v5-c-slider__rail-track"
-          />
-        </div>
-        <div
-          aria-hidden="true"
-          className="pf-v5-c-slider__steps"
-        >
-          <div
-            className="pf-v5-c-slider__step pf-m-active"
-            style={
-              {
-                "--pf-v5-c-slider__step--Left": "0%",
-              }
-            }
-          >
-            <div
-              className="pf-v5-c-slider__step-tick"
-            />
-            <div
-              className="pf-v5-c-slider__step-label"
-            >
-              0
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-slider__step"
-            style={
-              {
-                "--pf-v5-c-slider__step--Left": "12.5%",
-              }
-            }
-          >
-            <div
-              className="pf-v5-c-slider__step-tick"
-            />
-            <div
-              className="pf-v5-c-slider__step-label"
-            >
-              OK
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-slider__step"
-            style={
-              {
-                "--pf-v5-c-slider__step--Left": "25%",
-              }
-            }
-          >
-            <div
-              className="pf-v5-c-slider__step-tick"
-            />
-            <div
-              className="pf-v5-c-slider__step-label"
-            >
-              25
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-slider__step"
-            style={
-              {
-                "--pf-v5-c-slider__step--Left": "50%",
-              }
-            }
-          >
-            <div
-              className="pf-v5-c-slider__step-tick"
-            />
-            <div
-              className="pf-v5-c-slider__step-label"
-            >
-              WARNING
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-slider__step"
-            style={
-              {
-                "--pf-v5-c-slider__step--Left": "75%",
-              }
-            }
-          >
-            <div
-              className="pf-v5-c-slider__step-tick"
-            />
-            <div
-              className="pf-v5-c-slider__step-label"
-            >
-              75
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-slider__step"
-            style={
-              {
-                "--pf-v5-c-slider__step--Left": "87.5%",
-              }
-            }
-          >
-            <div
-              className="pf-v5-c-slider__step-tick"
-            />
-            <div
-              className="pf-v5-c-slider__step-label"
-            >
-              CRITICAL
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-slider__step"
-            style={
-              {
-                "--pf-v5-c-slider__step--Left": "100%",
-              }
-            }
-          >
-            <div
-              className="pf-v5-c-slider__step-tick"
-            />
-            <div
-              className="pf-v5-c-slider__step-label"
-            >
-              100
-            </div>
-          </div>
-        </div>
-        <div
-          aria-disabled={false}
-          aria-label="Value"
-          aria-valuemax={100}
-          aria-valuemin={0}
-          aria-valuenow={0}
-          aria-valuetext="0"
-          className="pf-v5-c-slider__thumb"
-          onClick={[Function]}
-          onKeyDown={[Function]}
-          onMouseDown={[Function]}
-          onTouchStart={[Function]}
-          role="slider"
-          tabIndex={0}
-        />
-      </div>
-      <div
-        className="pf-v5-c-slider__value"
-      >
-        <div
-          className="pf-v5-c-input-group"
-        >
-          <div
-            className="pf-v5-c-input-group__item pf-m-fill"
-          >
-            <span
-              className="pf-v5-c-form-control"
-            >
-              <input
-                aria-invalid={false}
-                aria-label="Slider value input"
-                data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-                data-ouia-component-type="PF5/TextInput"
-                data-ouia-safe={true}
-                disabled={false}
-                onBlur={[Function]}
-                onChange={[Function]}
-                onClick={[Function]}
-                onFocus={[Function]}
-                onKeyDown={[Function]}
-                required={false}
-                type="number"
-                value={0}
-              />
-            </span>
-          </div>
-          <div
-            className="pf-v5-c-input-group__item pf-m-box"
-          >
-            <span
-              className="pf-v5-c-input-group__text"
-            >
-              Score
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    className="pf-v5-l-stack__item pf-m-fill"
-  >
-    <div
-      className="pf-v5-l-grid"
-    >
-      <div
-        className="pf-v5-l-grid__item pf-m-3-col automated-analysis-grid-item"
-      >
-        <div
-          className="pf-v5-c-label-group automated-analysis-topic-label-groups pf-m-category pf-m-vertical"
-        >
-          <div
-            className="pf-v5-c-label-group__main"
-          >
-            <span
-              aria-hidden="true"
-              className="pf-v5-c-label-group__label"
-              id="pf-random-id-0"
-            >
-              testsuite
-            </span>
-            <ul
-              aria-labelledby="pf-random-id-0"
-              className="pf-v5-c-label-group__list"
-              role="list"
-            >
-              <li
-                className="pf-v5-c-label-group__list-item"
-              >
-                <div>
-                  ClickableAutomatedAnalysisLabel
+                    <span
+                      class="pf-v6-c-toggle-group__text"
+                    >
+                      Grid view
+                    </span>
+                  </button>
                 </div>
-              </li>
-            </ul>
+                <div
+                  class="pf-v6-c-toggle-group__item"
+                >
+                  <button
+                    aria-label="list-view"
+                    aria-pressed="false"
+                    class="pf-v6-c-toggle-group__button"
+                    id="list-view-btn"
+                    type="button"
+                  >
+                    <span
+                      class="pf-v6-c-toggle-group__text"
+                    >
+                      List view
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="pf-v6-c-toolbar__content pf-m-hidden"
+          hidden=""
+        >
+          <div
+            class="pf-v6-c-toolbar__group"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-v6-l-stack__item"
+    >
+      <div
+        style="display: contents;"
+      >
+        <small
+          class="pf-v6-c-content--small"
+          data-ouia-component-id="OUIA-Generated-Content-3"
+          data-ouia-component-type="PF6/Content"
+          data-ouia-safe="true"
+          data-pf-content="true"
+        >
+          Only showing analysis results with severity scores ≥ 0:
+        </small>
+      </div>
+      <div
+        class="pf-v6-c-slider automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok"
+        style="--pf-v6-c-slider--value: 0%; --pf-v6-c-slider__value--c-form-control--width-chars: 1;"
+      >
+        <div
+          class="pf-v6-c-slider__actions"
+        >
+          <div
+            class="pf-v6-l-level pf-m-gutter"
+          >
+            <div>
+              <small
+                class="pf-v6-c-content--small"
+                data-ouia-component-id="OUIA-Generated-Content-4"
+                data-ouia-component-type="PF6/Content"
+                data-ouia-safe="true"
+                data-pf-content="true"
+              >
+                Reset
+                :
+              </small>
+            </div>
+            <div>
+              <button
+                aria-label="Reset score to 0"
+                class="pf-v6-c-button pf-m-link pf-m-inline pf-m-small"
+                data-ouia-component-id="OUIA-Generated-Button-link-1"
+                data-ouia-component-type="PF6/Button"
+                data-ouia-safe="true"
+                type="button"
+              >
+                <span
+                  class="pf-v6-c-button__text"
+                >
+                  0
+                </span>
+              </button>
+            </div>
+            <div>
+              <button
+                aria-label="Reset score to 100"
+                class="pf-v6-c-button pf-m-link pf-m-inline pf-m-small"
+                data-ouia-component-id="OUIA-Generated-Button-link-2"
+                data-ouia-component-type="PF6/Button"
+                data-ouia-safe="true"
+                type="button"
+              >
+                <span
+                  class="pf-v6-c-button__text"
+                >
+                  100
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="pf-v6-c-slider__main"
+        >
+          <div
+            class="pf-v6-c-slider__rail"
+          >
+            <div
+              class="pf-v6-c-slider__rail-track"
+            />
+          </div>
+          <div
+            aria-hidden="true"
+            class="pf-v6-c-slider__steps"
+          >
+            <div
+              class="pf-v6-c-slider__step pf-m-active"
+              style="--pf-v6-c-slider__step--InsetInlineStart: 0%;"
+            >
+              <div
+                class="pf-v6-c-slider__step-tick"
+              />
+              <div
+                class="pf-v6-c-slider__step-label"
+              >
+                0
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-slider__step"
+              style="--pf-v6-c-slider__step--InsetInlineStart: 12.5%;"
+            >
+              <div
+                class="pf-v6-c-slider__step-tick"
+              />
+              <div
+                class="pf-v6-c-slider__step-label"
+              >
+                OK
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-slider__step"
+              style="--pf-v6-c-slider__step--InsetInlineStart: 25%;"
+            >
+              <div
+                class="pf-v6-c-slider__step-tick"
+              />
+              <div
+                class="pf-v6-c-slider__step-label"
+              >
+                25
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-slider__step"
+              style="--pf-v6-c-slider__step--InsetInlineStart: 50%;"
+            >
+              <div
+                class="pf-v6-c-slider__step-tick"
+              />
+              <div
+                class="pf-v6-c-slider__step-label"
+              >
+                WARNING
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-slider__step"
+              style="--pf-v6-c-slider__step--InsetInlineStart: 75%;"
+            >
+              <div
+                class="pf-v6-c-slider__step-tick"
+              />
+              <div
+                class="pf-v6-c-slider__step-label"
+              >
+                75
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-slider__step"
+              style="--pf-v6-c-slider__step--InsetInlineStart: 87.5%;"
+            >
+              <div
+                class="pf-v6-c-slider__step-tick"
+              />
+              <div
+                class="pf-v6-c-slider__step-label"
+              >
+                CRITICAL
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-slider__step"
+              style="--pf-v6-c-slider__step--InsetInlineStart: 100%;"
+            >
+              <div
+                class="pf-v6-c-slider__step-tick"
+              />
+              <div
+                class="pf-v6-c-slider__step-label"
+              >
+                100
+              </div>
+            </div>
+          </div>
+          <div
+            aria-disabled="false"
+            aria-label="Value"
+            aria-valuemax="100"
+            aria-valuemin="0"
+            aria-valuenow="0"
+            aria-valuetext="0"
+            class="pf-v6-c-slider__thumb"
+            role="slider"
+            tabindex="0"
+          />
+        </div>
+        <div
+          class="pf-v6-c-slider__value"
+        >
+          <div
+            class="pf-v6-c-input-group"
+          >
+            <div
+              class="pf-v6-c-input-group__item pf-m-fill"
+            >
+              <span
+                class="pf-v6-c-form-control"
+              >
+                <input
+                  aria-invalid="false"
+                  aria-label="Slider value input"
+                  data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+                  data-ouia-component-type="PF6/TextInput"
+                  data-ouia-safe="true"
+                  type="number"
+                  value="0"
+                />
+              </span>
+            </div>
+            <div
+              class="pf-v6-c-input-group__item pf-m-box"
+            >
+              <span
+                class="pf-v6-c-input-group__text"
+              >
+                Score
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-v6-l-stack__item pf-m-fill"
+    >
+      <div
+        class="pf-v6-l-grid"
+      >
+        <div
+          class="pf-v6-l-grid__item pf-m-3-col automated-analysis-grid-item"
+        >
+          <div
+            class="pf-v6-c-label-group automated-analysis-topic-label-groups pf-m-category pf-m-vertical"
+          >
+            <div
+              class="pf-v6-c-label-group__main"
+            >
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-label-group__label"
+                id="pf-random-id-0"
+              >
+                testsuite
+              </span>
+              <ul
+                aria-labelledby="pf-random-id-0"
+                class="pf-v6-c-label-group__list"
+                role="list"
+              >
+                <li
+                  class="pf-v6-c-label-group__list-item"
+                >
+                  <div>
+                    ClickableAutomatedAnalysisLabel
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

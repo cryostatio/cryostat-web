@@ -2,19 +2,21 @@
 
 exports[`<Recordings /> renders correctly 1`] = `
 <div>
-  Recordings
-  <div
-    className="pf-v5-c-card pf-m-compact"
-    data-ouia-component-id="OUIA-Generated-Card-2"
-    data-ouia-component-type="PF5/Card"
-    data-ouia-safe={true}
-    id=""
-  >
+  <div>
+    Recordings
     <div
-      className="pf-v5-c-card__body"
+      class="pf-v6-c-card pf-m-compact"
+      data-ouia-component-id="OUIA-Generated-Card-2"
+      data-ouia-component-type="PF6/Card"
+      data-ouia-safe="true"
+      id=""
     >
-      <div>
-        Active Recordings Table
+      <div
+        class="pf-v6-c-card__body"
+      >
+        <div>
+          Active Recordings Table
+        </div>
       </div>
     </div>
   </div>

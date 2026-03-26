@@ -61,9 +61,7 @@ import {
   LabelGroup,
   Spinner,
   EmptyState,
-  EmptyStateHeader,
-  EmptyStateIcon,
-  Text,
+  Content,
   Stack,
   StackItem,
   Button,
@@ -219,13 +217,7 @@ export const TargetAnalysis: React.FC<TargetAnalysisProps> = ({ target, refreshR
   return (
     <>
       {!target ? (
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={t('TargetAnalysis.REPORT_UNAVAILABLE')}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
-        </EmptyState>
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('TargetAnalysis.REPORT_UNAVAILABLE')}></EmptyState>
       ) : undefined}
       {loading ? (
         <Bullseye>
@@ -393,12 +385,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
     const filtered = filteredCategorizedEvaluation.filter(([_, evaluations]) => evaluations.length > 0);
     if (filtered.length === 0) {
       return (
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={<>{t(`AutomatedAnalysisCard.NO_RESULTS`)}</>}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={<>{t(`AutomatedAnalysisCard.NO_RESULTS`)}</>}>
           <EmptyStateBody>{t('AutomatedAnalysisCard.NO_RESULTS_BODY')}</EmptyStateBody>
           <EmptyStateFooter>
             <EmptyStateActions>
@@ -454,14 +441,9 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
   return (
     <>
       {!analyses.length ? (
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={t('TargetAnalysis.REPORT_UNAVAILABLE')}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('TargetAnalysis.REPORT_UNAVAILABLE')}>
           {!hasSources ? (
-            <Text>
+            <Content component="p">
               <Trans
                 t={t}
                 components={[
@@ -487,7 +469,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
               >
                 TargetAnalysis.CREATE_RECORDING
               </Trans>
-            </Text>
+            </Content>
           ) : undefined}
         </EmptyState>
       ) : (
@@ -506,7 +488,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
                   </div>
                 }
               >
-                <Text>
+                <Content component="p">
                   {t('TargetAnalysis.LAST_UPDATE', {
                     datetime: timestamp
                       ? dayjs(new Date(timestamp * 1000))
@@ -514,7 +496,7 @@ export const AutomatedAnalysisResults: React.FC<AutomatedAnalysisResultsProps> =
                           .format('LLLL')
                       : 'unknown',
                   })}
-                </Text>
+                </Content>
               </Tooltip>
             </StackItem>
             <StackItem>{toolbar}</StackItem>

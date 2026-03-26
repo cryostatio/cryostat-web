@@ -22,7 +22,7 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultChartControllerConfig } from '@app/Shared/Services/service.utils';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { renderSnapshot } from '@test/utils';
+import { render } from '@test/utils';
 import { of } from 'rxjs';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
@@ -63,7 +63,7 @@ jest.spyOn(defaultServices.target, 'sslFailure').mockReturnValue(of());
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({ routerConfigs: { routes: [{ path: '/', element: <Dashboard /> }] } });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    const { container } = render({ routerConfigs: { routes: [{ path: '/', element: <Dashboard /> }] } });
+    expect(container).toMatchSnapshot();
   });
 });
