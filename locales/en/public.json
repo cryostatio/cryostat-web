@@ -47,6 +47,10 @@
     "SEARCH_PLACEHOLDER": "Find by JVM ID...",
     "TARGET_DISPLAY": "{{alias}} ({{connectUrl}})"
   },
+  "DirectoryNameCell": {
+    "LOADING_TARGET_INFO": "Loading target information",
+    "VIEW_TARGET_DETAILS": "View target details"
+  },
   "AppLayout": {
     "APP_LAUNCHER": {
       "ABOUT": "About",
