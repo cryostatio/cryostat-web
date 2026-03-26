@@ -16,61 +16,28 @@
 
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { findInnermostTargetNode } from '@app/utils/targetUtils';
 import * as React from 'react';
 
-// Module-level cache that persists across component re-renders and remounts
-const globalAliasCache = new Map<string, string>();
-const globalFetchedIds = new Set<string>();
-const globalInFlightFetches = new Set<string>();
-
 /**
- * Hook to manage a cache of target aliases keyed by jvmId.
- * Fetches aliases from the audit log API on-demand and caches them.
- * Uses a module-level cache that persists across component lifecycles.
+ * Hook to access the target alias cache service.
+ * Automatically fetches aliases for the provided jvmIds and returns the current cache.
  */
 export const useAliasCache = (jvmIds: string[]): Map<string, string> => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
-
-  const fetchAlias = React.useCallback(
-    (jvmId: string) => {
-      if (!jvmId || jvmId === 'uploads' || globalFetchedIds.has(jvmId) || globalInFlightFetches.has(jvmId)) {
-        return;
-      }
-
-      globalInFlightFetches.add(jvmId);
-
-      addSubscription(
-        context.api.getTargetLineage(jvmId).subscribe({
-          next: (lineageRoot) => {
-            const target = findInnermostTargetNode(lineageRoot);
-            if (target?.target?.alias) {
-              globalAliasCache.set(jvmId, target.target.alias);
-              forceUpdate();
-            }
-            globalFetchedIds.add(jvmId);
-            globalInFlightFetches.delete(jvmId);
-          },
-          error: () => {
-            // Ignore errors - alias just won't be searchable
-            globalFetchedIds.add(jvmId);
-            globalInFlightFetches.delete(jvmId);
-          },
-        }),
-      );
-    },
-    [addSubscription, context.api, forceUpdate],
-  );
+  const [aliasMap, setAliasMap] = React.useState<Map<string, string>>(new Map());
 
   React.useEffect(() => {
-    jvmIds.forEach((jvmId) => {
-      if (jvmId && jvmId !== 'uploads' && !globalFetchedIds.has(jvmId) && !globalInFlightFetches.has(jvmId)) {
-        fetchAlias(jvmId);
-      }
-    });
-  }, [jvmIds, fetchAlias]);
+    addSubscription(
+      context.targetAlias.aliasMap().subscribe((map) => {
+        setAliasMap(map);
+      }),
+    );
+  }, [addSubscription, context.targetAlias]);
 
-  return globalAliasCache;
+  React.useEffect(() => {
+    context.targetAlias.fetchAliases(jvmIds);
+  }, [jvmIds, context.targetAlias]);
+
+  return aliasMap;
 };
