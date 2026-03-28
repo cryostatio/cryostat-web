@@ -17,9 +17,10 @@ import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTabl
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { CEL_SPEC_HREF } from '@app/Rules/utils';
+import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
 
-import { NotificationCategory, NullableTarget, SmartTrigger } from '@app/Shared/Services/api.types';
+import { EventTemplate, NotificationCategory, NullableTarget, SmartTrigger, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, hashCode, portalRoot, sortResources } from '@app/utils/utils';
@@ -56,6 +57,8 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  FormSelect,
+  FormSelectOption,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
@@ -63,7 +66,9 @@ import { t } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { first, forkJoin, Observable } from 'rxjs';
+import { catchError, debounceTime, first, forkJoin, iif, map, Observable, of, Subject, switchMap } from 'rxjs';
+import { SmartTriggersFormData } from './types';
+import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 
 export const tableColumns: TableColumn[] = [
   {
@@ -644,10 +649,22 @@ export interface CreateSmartTriggersModalProps {
 export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, ...props }) => {
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
+  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
+  const matchedTargetsRef = React.useRef(new Subject<Target[]>());
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+  const [mbeanSelectValue, setMbeanSelectValue] = React.useState('');
+  const [formData, setFormData] = React.useState<SmartTriggersFormData>({
+    name: '',
+    nameValid: ValidatedOptions.default,
+    enabled: true,
+    expression: '', // Use this for displaying Match Expression input
+    expressionValid: ValidatedOptions.default,
+  });
 
   const [uploading, setUploading] = React.useState(false);
 
-  const expressionRegex = RegExp('\\[(.*(&&)*|(\\|\\|)*)\\]~([\\w\\-]+)(?:\\.jfc)?');
+  const expressionRegex = RegExp('\\[(.*(&&)*|(\\|\\|)*)\\]');
 
   const [expressionInput, setExpressionInput] = React.useState('');
   const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
@@ -668,7 +685,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    props.onAccept(expressionInput);
+    props.onAccept(expressionInput+"~"+formData.template?.name);
     setUploading(false);
     onClose();
     setExpressionInput('');
@@ -684,6 +701,95 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     [uploading],
   );
 
+  const selectedSpecifier = React.useMemo(() => {
+    const { template } = formData;
+      if (template && template.name && template.type) {
+        return `${template.name},${template.type}`;
+      }
+      return '';
+  }, [formData]);
+
+  const handleTemplateChange = React.useCallback(
+    (template: EventTemplateIdentifier) => setFormData((old) => ({ ...old, template })),
+    [setFormData],
+  );
+
+  const onMbeanChange = (_event: React.FormEvent<HTMLSelectElement>, value: string) => {
+    setMbeanSelectValue(value);
+  };
+
+  // TODO: Backend endpoint to determine available mbeans
+  const MbeanOptions = [
+    { value: 'available mbeans', label: 'Available Mbeans', disabled: true },
+    { value: 'daemonThreadCount', label: 'Daemon Thread Count', disabled: false },
+    { value: 'threadCount', label: 'Thread Count', disabled: false },
+    { value: 'name', label: 'OS Name', disabled: false },
+    { value: 'arch', label: 'OS Arch', disabled: false },
+    { value: 'availableProcessors', label: 'AvailableProcessors', disabled: false },
+    { value: 'version', label: 'OS Version', disabled: false },
+    { value: 'systemCpuLoad', label: 'System CPU Load', disabled: false },
+    { value: 'systemLoadAverage', label: 'System Load Average', disabled: false },
+    { value: 'processCpuLoad', label: 'Process CPU Load', disabled: false },
+    { value: 'totalPhyiscalMemorySize', label: 'Total Physical Memory Size', disabled: false },
+    { value: 'freePhysicalMemorySize', label: 'Free Physical Memory Size', disabled: false },
+    { value: 'totalSwapSpaceSize', label: 'Total Swap Space Size', disabled: false },
+    { value: 'heapMemoryUsage', label: 'Heap Memory Usage', disabled: false },
+    { value: 'nonHeapMemoryUsage', label: 'Non Heap Memory Usage', disabled: false },
+    { value: 'heapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', disabled: false },
+    { value: 'bootClassPath', label: 'Boot ClassPath', disabled: false },
+    { value: 'classPath', label: 'Class Path', disabled: false },
+    { value: 'inputArguments', label: 'Input Arguments', disabled: false },
+    { value: 'libraryPath', label: 'Library Path', disabled: false },
+    { value: 'managementSpecVersion', label: 'Management Specification Version', disabled: false },
+    { value: 'name', label: 'Runtime Name', disabled: false },
+    { value: 'specName', label: 'Runtime Specification Name', disabled: false },
+    { value: 'specVendor', label: 'Runtime Specification Vendor', disabled: false },
+    { value: 'startTime', label: 'VM Start Time', disabled: false },
+    { value: 'systemProperties', label: 'System Properties', disabled: false },
+    { value: 'uptime', label: 'VM Uptime', disabled: false },
+    { value: 'vmName', label: 'VM Name', disabled: false },
+    { value: 'vmVendor', label: 'VM Vendor', disabled: false },
+    { value: 'vmVersion', label: 'VM Version', disabled: false },
+    { value: 'bootClassPathSupported', label: 'Boot ClassPath Supported', disabled: false },
+  ];
+
+  React.useEffect(() => {
+    const matchedTargets = matchedTargetsRef.current;
+    addSubscription(
+      matchedTargets
+        .pipe(
+          debounceTime(100),
+          switchMap((targets) =>
+            iif(
+              () => targets.length > 0,
+              forkJoin(
+                targets.map((t) =>
+                  context.api.getTargetEventTemplates(t, true, true).pipe(
+                    catchError((_) => of<EventTemplate[]>([])), // Fail silently
+                  ),
+                ),
+              ).pipe(
+                map((allTemplates) => {
+                  const allFiltered = allTemplates.filter((ts) => ts.length);
+                  return allFiltered.length
+                    ? allFiltered.reduce((acc, curr) => _.intersectionWith(acc, curr, _.isEqual))
+                    : [];
+                }),
+              ),
+              context.api.getEventTemplates().pipe(catchError((_) => of<EventTemplate[]>([]))),
+            ),
+          ),
+        )
+        .subscribe((templates: EventTemplate[]) => {
+          setTemplates(templates);
+          setFormData((old) => {
+            const matched = templates.find((t) => t.name === old.template?.name && t.type === old.template?.type);
+            return { ...old, template: matched ? { name: matched.name, type: matched.type } : undefined };
+          });
+        }),
+    );
+  }, [addSubscription, context.api]);
+
   return (
     <Modal
       isOpen={props.isOpen}
@@ -694,6 +800,19 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       description="Create a customized Smart Trigger. This is a specialized tool available in the Cryostat Agent that listens for a condition to be met for a specified Mbean, after which a recording will be started with the specified template. This is only available for targets using the Cryostat Agent."
     >
       <Form>
+        <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{t('Triggers.AVAILABLE_MBEANS')}</HelperTextItem>
+            </HelperText>
+        </FormHelperText>
+        <FormSelect value={mbeanSelectValue} onChange={onMbeanChange} aria-label="FormSelect Input" ouiaId="BasicFormSelect">
+            {MbeanOptions.map((option, index) => (
+              <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
+            ))}
+        </FormSelect>
+        <HelperText>
+          <HelperTextItem>{`Selected Mbean has the name: ${mbeanSelectValue}, Use this to build your expression.`}</HelperTextItem>
+        </HelperText>
         <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
           <TextArea
             value={expressionInput}
@@ -730,6 +849,18 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('Triggers.TEMPLATE_SELECT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+          <SelectTemplateSelectorForm
+            selected={selectedSpecifier}
+            templates={templates}
+            validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
+            disabled={uploading}
+            onSelect={handleTemplateChange}
+          />
         <ActionGroup>
           <>
             <Button
