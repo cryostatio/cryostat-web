@@ -19,7 +19,7 @@ import { DeletionDialogControl } from '@app/Settings/Config/DeletionDialogContro
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import { render, renderSnapshot, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const defaults = new Map<DeleteOrDisableWarningType, boolean>();
 for (const cat in DeleteOrDisableWarningType) {
@@ -36,7 +36,7 @@ describe('<DeletionDialogControl/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -46,7 +46,7 @@ describe('<DeletionDialogControl/>', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should default to enable all deletion dialog', async () => {

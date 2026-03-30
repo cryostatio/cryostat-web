@@ -16,7 +16,7 @@
 
 import { NodeType, NullableTarget } from '@app/Shared/Services/api.types';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
-import { Modal, ModalVariant } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 
 export interface TargetDetailsModalProps {
@@ -47,6 +47,7 @@ export const TargetDetailsModal: React.FC<TargetDetailsModalProps> = ({ visible,
       showClose={true}
       className="target-details-modal"
       onClose={onDismiss}
+      title={target?.alias || 'Target Details'}
     >
       <EntityDetails entity={wrappedTarget} className={'target-details-modal'} />
     </Modal>

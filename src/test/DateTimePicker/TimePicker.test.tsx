@@ -17,7 +17,7 @@
 import { format2Digit } from '@i18n/datetimeUtils';
 import { cleanup, screen, within } from '@testing-library/react';
 import { TimePicker } from '../../app/DateTimePicker/TimePicker';
-import { render, renderSnapshot, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const onHourSelect = jest.fn((_) => undefined);
 const onMinuteSelect = jest.fn((_) => undefined);
@@ -46,7 +46,7 @@ describe('<TimePicker/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -63,7 +63,7 @@ describe('<TimePicker/>', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should show correctly in 12hr mode when switched', async () => {

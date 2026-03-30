@@ -26,7 +26,7 @@ export interface NotFoundCardProps {
 
 export const NotFoundCard: React.FC<NotFoundCardProps> = ({ title, bodyText, linkText, linkPath }) => {
   return (
-    <Card isFullHeight isCompact isFlat isRounded>
+    <Card isFullHeight isCompact>
       <CardTitle>{title}</CardTitle>
       <CardBody isFilled>{bodyText}</CardBody>
       <CardFooter>

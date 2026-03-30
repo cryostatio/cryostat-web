@@ -22,7 +22,6 @@ import {
   Bullseye,
   Button,
   EmptyState,
-  EmptyStateIcon,
   Flex,
   FlexItem,
   Label,
@@ -31,8 +30,6 @@ import {
   MenuContent,
   MenuItem,
   MenuList,
-  Modal,
-  ModalProps,
   SearchInput,
   Sidebar,
   SidebarContent,
@@ -42,8 +39,8 @@ import {
   Tab,
   Tabs,
   TabTitleText,
-  EmptyStateHeader,
 } from '@patternfly/react-core';
+import { Modal, ModalProps } from '@patternfly/react-core/deprecated';
 import { SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { useHover } from '@patternfly/react-topology';
@@ -204,9 +201,7 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
         </StackItem>
       ) : (
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader titleText="No Results" icon={<EmptyStateIcon icon={SearchIcon} />} headingLevel="h4" />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText="No Results"></EmptyState>
         </Bullseye>
       )}
     </Stack>

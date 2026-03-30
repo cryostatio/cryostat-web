@@ -32,19 +32,21 @@ import { JoyrideProvider } from './Joyride/JoyrideProvider';
 import { CapabilitiesContext, defaultCapabilities } from './Shared/Services/Capabilities';
 
 export const App: React.FC = () => (
-  <CapabilitiesContext.Provider value={defaultCapabilities}>
-    <ServiceContext.Provider value={defaultServices}>
-      <NotificationsContext.Provider value={NotificationsInstance}>
-        <Provider store={store}>
-          <Router>
-            <JoyrideProvider>
-              <AppLayout>
-                <AppRoutes />
-              </AppLayout>
-            </JoyrideProvider>
-          </Router>
-        </Provider>
-      </NotificationsContext.Provider>
-    </ServiceContext.Provider>
-  </CapabilitiesContext.Provider>
+  <div className="cryostat-app">
+    <CapabilitiesContext.Provider value={defaultCapabilities}>
+      <ServiceContext.Provider value={defaultServices}>
+        <NotificationsContext.Provider value={NotificationsInstance}>
+          <Provider store={store}>
+            <Router>
+              <JoyrideProvider>
+                <AppLayout>
+                  <AppRoutes />
+                </AppLayout>
+              </JoyrideProvider>
+            </Router>
+          </Provider>
+        </NotificationsContext.Provider>
+      </ServiceContext.Provider>
+    </CapabilitiesContext.Provider>
+  </div>
 );

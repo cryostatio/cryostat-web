@@ -27,11 +27,10 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
-  Modal,
-  ModalVariant,
   TextArea,
   TextInput,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { ValidatedOptions } from '@patternfly/react-core/dist/js/helpers';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';

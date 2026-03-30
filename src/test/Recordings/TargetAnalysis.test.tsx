@@ -22,7 +22,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { cleanup, screen } from '@testing-library/react';
 import { NEVER, of } from 'rxjs';
-import { render, renderSnapshot, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockJvmId = 'id';
@@ -149,7 +149,7 @@ describe('<TargetAnalysis />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -159,7 +159,7 @@ describe('<TargetAnalysis />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('renders loading state', async () => {

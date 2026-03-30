@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup } from '@testing-library/react';
 import React from 'react';
 import { of } from 'rxjs';
-import { renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(
   of([
@@ -54,7 +54,7 @@ describe('<TopologyConfig />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -64,6 +64,6 @@ describe('<TopologyConfig />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 });

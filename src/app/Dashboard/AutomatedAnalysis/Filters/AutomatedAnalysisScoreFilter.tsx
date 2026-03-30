@@ -24,8 +24,8 @@ import {
   LevelItem,
   Slider,
   SliderStepObject,
-  Text,
-  TextVariants,
+  Content,
+  ContentVariants,
   Tooltip,
 } from '@patternfly/react-core';
 import * as React from 'react';
@@ -96,15 +96,15 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
   return (
     <>
       <Tooltip content={t('AutomatedAnalysisScoreFilter.TOOLTIP.CONTENT')} appendTo={portalRoot}>
-        <Text component={TextVariants.small}>
+        <Content component={ContentVariants.small}>
           {t('AutomatedAnalysisScoreFilter.CURRENT_SCORE_TEXT', { val: currentScore })}
-        </Text>
+        </Content>
       </Tooltip>
       <Slider
         startActions={
           <Level hasGutter>
             <LevelItem>
-              <Text component={TextVariants.small}>{t('RESET')}:</Text>
+              <Content component={ContentVariants.small}>{t('RESET')}:</Content>
             </LevelItem>
             <LevelItem>
               <Button
