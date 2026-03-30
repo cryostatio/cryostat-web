@@ -15,7 +15,7 @@
  */
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
+import { Card, CardBody, CardTitle, Content, ContentVariants } from '@patternfly/react-core';
 import * as React from 'react';
 import { StoredCredentialsCard } from './Credentials/StoredCredentials';
 import { ListCertificates } from './ImportCertificate';
@@ -37,7 +37,7 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = (_) => {
       {securityCards.map((s) => (
         <Card key={s.key} isFullHeight={s.isFullHeight}>
           <CardTitle>
-            <Text component={TextVariants.h1}>{s.title}</Text>
+            <Content component={ContentVariants.h1}>{s.title}</Content>
             {s.description}
           </CardTitle>
           <CardBody isFilled>{s.element}</CardBody>

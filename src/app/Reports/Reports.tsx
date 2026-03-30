@@ -37,15 +37,13 @@ import {
   EmptyStateActions,
   EmptyStateBody,
   EmptyStateFooter,
-  EmptyStateHeader,
-  EmptyStateIcon,
   Pagination,
   Spinner,
   Split,
   SplitItem,
   Stack,
   StackItem,
-  TextContent,
+  Content,
   ToggleGroup,
   ToggleGroupItem,
   Toolbar,
@@ -332,13 +330,11 @@ export const Reports: React.FC = () => {
                   <ToolbarItem variant="separator" />
                   <ToolbarItem>
                     <Tooltip content={t('Reports.Tooltips.REFRESH')}>
-                      <Button variant="plain" onClick={() => doRefresh()}>
-                        <ProcessAutomationIcon />
-                      </Button>
+                      <Button icon={<ProcessAutomationIcon />} variant="plain" onClick={() => doRefresh()} />
                     </Tooltip>
                   </ToolbarItem>
                   <ToolbarItem variant="separator" />
-                  <ToolbarItem align={{ default: 'alignRight' }}>
+                  <ToolbarItem align={{ default: 'alignEnd' }}>
                     <Pagination
                       perPage={perPage}
                       itemCount={state.length}
@@ -373,7 +369,7 @@ export const Reports: React.FC = () => {
               </Toolbar>
             </StackItem>
             <StackItem>
-              <TextContent>
+              <Content>
                 <Trans
                   t={t}
                   components={[
@@ -383,7 +379,7 @@ export const Reports: React.FC = () => {
                 >
                   Reports.DESCRIPTION
                 </Trans>
-              </TextContent>
+              </Content>
             </StackItem>
           </Stack>
         </CardBody>
@@ -423,12 +419,7 @@ export const Reports: React.FC = () => {
                         />
                       ) : (
                         <Bullseye style={{ minHeight: '30ch' }}>
-                          <EmptyState>
-                            <EmptyStateHeader
-                              titleText={t('Reports.NoResults.TITLE')}
-                              icon={<EmptyStateIcon icon={SearchIcon} />}
-                              headingLevel="h4"
-                            />
+                          <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('Reports.NoResults.TITLE')}>
                             <EmptyStateBody>{t('Reports.NoResults.DESCRIPTION')}</EmptyStateBody>
                             <EmptyStateFooter>
                               <EmptyStateActions>
@@ -451,12 +442,7 @@ export const Reports: React.FC = () => {
         <Card>
           <CardBody>
             <Bullseye>
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText={t('Reports.NoReports.TITLE')}
-                  icon={<EmptyStateIcon icon={SearchIcon} />}
-                  headingLevel="h4"
-                />
+              <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('Reports.NoReports.TITLE')}>
                 <EmptyStateBody>{t('Reports.NoReports.DESCRIPTION')}</EmptyStateBody>
               </EmptyState>
             </Bullseye>

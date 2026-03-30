@@ -38,7 +38,6 @@ import {
   DrawerPanelContent,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
   Flex,
   FlexItem,
@@ -48,12 +47,11 @@ import {
   GridItem,
   Label,
   LabelGroup,
-  Modal,
   NumberInput,
   Stack,
   StackItem,
   Switch,
-  Text,
+  Content,
   TextArea,
   TextInput,
   Title,
@@ -63,7 +61,6 @@ import {
   WizardNav,
   WizardStep,
   WizardNavItem,
-  EmptyStateHeader,
   EmptyStateFooter,
   FormHelperText,
   HelperText,
@@ -76,6 +73,7 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from '@patternfly/react-core';
+import { Modal } from '@patternfly/react-core/deprecated';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import { nanoid } from 'nanoid';
@@ -168,15 +166,15 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
     switch (variant) {
       case 'card':
         return (
-          <Card isRounded isCompact isFullHeight>
+          <Card isCompact isFullHeight>
             <CardBody>
               <Bullseye>
-                <EmptyState variant={EmptyStateVariant.lg}>
-                  <EmptyStateHeader
-                    titleText="Add a new card"
-                    icon={<EmptyStateIcon icon={PlusCircleIcon} />}
-                    headingLevel="h2"
-                  />
+                <EmptyState
+                  headingLevel="h2"
+                  icon={PlusCircleIcon}
+                  titleText="Add a new card"
+                  variant={EmptyStateVariant.lg}
+                >
                   <EmptyStateBody>{t('Dashboard.CARD_CATALOG_DESCRIPTION')}</EmptyStateBody>
                   <EmptyStateFooter>
                     <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
@@ -195,6 +193,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
             appendTo={() => document.getElementById('dashboard-catalog-btn-wrapper') || document.body}
           >
             <Button
+              icon={<QuickSearchIcon />}
               id="dashboard-add-btn"
               aria-label="Add card"
               data-quickstart-id={'dashboard-add-btn'}
@@ -202,9 +201,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
               onClick={handleStart}
               style={{ padding: 0 }}
               ref={catalogRef}
-            >
-              <QuickSearchIcon />
-            </Button>
+            />
           </Tooltip>
         );
       default:
@@ -254,7 +251,7 @@ export const AddCard: React.FC<AddCardProps> = ({ variant }) => {
           >
             <Stack>
               <StackItem>
-                <Text>{t('Dashboard.ADD_CARD_HELPER_TEXT')}</Text>
+                <Content component="p">{t('Dashboard.ADD_CARD_HELPER_TEXT')}</Content>
               </StackItem>
               <StackItem isFilled style={{ overflow: 'auto' }}>
                 <CardGallery selection={selection} onSelect={handleSelect} />
@@ -485,9 +482,7 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
       let input: JSX.Element;
       switch (ctrl.kind) {
         case 'boolean':
-          input = (
-            <Switch label="On" labelOff="Off" isChecked={props.config[ctrl.key]} onChange={handleChange(ctrl.key)} />
-          );
+          input = <Switch label="On" isChecked={props.config[ctrl.key]} onChange={handleChange(ctrl.key)} />;
           break;
         case 'number':
           input = (
@@ -533,7 +528,7 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
           );
           break;
         default:
-          input = <Text>Bad config</Text>;
+          input = <Content component="p">Bad config</Content>;
           break;
       }
       return (
@@ -558,7 +553,7 @@ const PropsConfigForm: React.FC<PropsConfigFormProps> = ({ onChange, ...props })
           {props.controls.map((ctrl) => createControl(ctrl))}
         </Form>
       ) : (
-        <Text>No configuration required.</Text>
+        <Content component="p">No configuration required.</Content>
       )}
     </>
   );

@@ -19,12 +19,10 @@ import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   EmptyState,
-  EmptyStateIcon,
   EmptyStateBody,
   Button,
   Bullseye,
   EmptyStateActions,
-  EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
@@ -99,24 +97,13 @@ export const RecordingsTable: React.FC<RecordingsTableProps> = ({
   } else if (isEmpty) {
     view = (
       <Bullseye>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={<>No {tableTitle}</>}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
-        </EmptyState>
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={<>No {tableTitle}</>}></EmptyState>
       </Bullseye>
     );
   } else if (isEmptyFilterResult) {
     view = (
       <Bullseye>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={<>No {tableTitle} found</>}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={<>No {tableTitle} found</>}>
           <EmptyStateBody>
             No results match this filter criteria. Remove all filters or clear all filters to show results.
           </EmptyStateBody>

@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 jest.mock('@app/TargetView/TargetContextSelector', () => {
   return {
@@ -152,7 +152,7 @@ describe('<Archives />', () => {
   });
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    const { container } = render({ routerConfigs: { routes: [{ path: '/archives', element: <Archives /> }] } });
+    expect(container).toMatchSnapshot();
   });
 });

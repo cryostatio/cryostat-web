@@ -31,8 +31,6 @@ import {
   ToolbarGroup,
   ToolbarItem,
   EmptyState,
-  EmptyStateIcon,
-  EmptyStateHeader,
   SearchInput,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
@@ -325,7 +323,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
               </ToolbarItem>
             </ToolbarGroup>
             <ToolbarItem variant="separator" />
-            <ToolbarGroup variant="icon-button-group">
+            <ToolbarGroup variant="action-group-plain">
               <ToolbarItem>
                 <Button
                   key="delete"
@@ -360,13 +358,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = () => {
             <Tbody>{probeRows}</Tbody>
           </Table>
         ) : (
-          <EmptyState>
-            <EmptyStateHeader
-              titleText="No active probes"
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText="No active probes"></EmptyState>
         )}
       </>
     );

@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { act as doAct, cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import { BehaviorSubject } from 'rxjs';
-import { render, renderSnapshot, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const defaultNumOfNotifications = 5;
 const defaults = new Map<NotificationCategory, boolean>();
@@ -45,7 +45,7 @@ describe('<NotificationControl/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -55,7 +55,7 @@ describe('<NotificationControl/>', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should default to enable all notifications', async () => {

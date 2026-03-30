@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Divider, Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
 import { EllipsisVIcon } from '@patternfly/react-icons';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { Observable } from 'rxjs';
 import { concatMap, filter, first, tap } from 'rxjs/operators';
 
@@ -39,13 +44,16 @@ export interface RecordingActionsProps {
   recording: Recording;
   sourceTarget?: Observable<Target>;
   uploadFn: () => Observable<string>;
+  directory?: { jvmId: string };
 }
 
-export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, ...props }) => {
+export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, uploadFn, directory, ...props }) => {
   const { t } = useCryostatTranslation();
   const context = React.useContext(ServiceContext);
   const capabilities = React.useContext(CapabilitiesContext);
   const notifications = React.useContext(NotificationsContext);
+  const navigate = useNavigate();
+  const activeLevel = useFeatureLevel();
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -85,6 +93,18 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     context.api.downloadRecording(recording);
   }, [context.api, recording]);
 
+  const handleViewInAnalytics = React.useCallback(
+    (jvmId) => {
+      const state = {
+        jvmId,
+        filename: recording.name,
+      };
+      store.dispatch(modalPrefillSetIntent(toPath('/recording-analytics'), state as Record<string, unknown>));
+      navigate(toPath('/recording-analytics'), { state });
+    },
+    [recording, navigate],
+  );
+
   const actionItems = React.useMemo(() => {
     const actionItems = [
       {
@@ -95,14 +115,32 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     ] as RowAction[];
     if (grafanaEnabled) {
       actionItems.push({
-        title: 'View in Grafana ...',
+        title: t('RecordingActions.VIEW_IN_GRAFANA'),
         key: 'view-in-grafana',
         onClick: grafanaUpload,
       });
     }
 
+    const jvmId = directory?.jvmId ?? recording.metadata.labels.find((v) => v.key === 'jvmId')?.value;
+    if (jvmId && activeLevel <= FeatureLevel.BETA) {
+      actionItems.push({
+        title: t('RecordingActions.VIEW_IN_ANALYTICS'),
+        key: 'view-in-analytics',
+        onClick: () => handleViewInAnalytics(jvmId),
+      });
+    }
+
     return actionItems;
-  }, [handleDownloadRecording, grafanaEnabled, grafanaUpload]);
+  }, [
+    t,
+    handleDownloadRecording,
+    grafanaEnabled,
+    grafanaUpload,
+    directory,
+    recording,
+    activeLevel,
+    handleViewInAnalytics,
+  ]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {
