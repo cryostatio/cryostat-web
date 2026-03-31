@@ -72,7 +72,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
-import { ThreadDumpFilters, ThreadDumpFiltersCategories } from './Filters/ThreadDumpFilters';
+import { filterThreadDumps, ThreadDumpFilters, ThreadDumpFiltersCategories } from './Filters/ThreadDumpFilters';
 import { ThreadDumpLabelsPanel } from './ThreadDumpLabelsPanel';
 
 const tableColumns: TableColumn[] = [
@@ -373,12 +373,10 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
   }, [context.settings, refreshThreadDumps]);
 
   React.useEffect(() => {
-    let filtered: ThreadDump[];
-    if (!filterText) {
-      filtered = threadDumps;
-    } else {
+    let filtered = filterThreadDumps(threadDumps, targetThreadDumpFilters);
+    if (filterText) {
       const reg = new RegExp(_.escapeRegExp(filterText), 'i');
-      filtered = threadDumps.filter((t: ThreadDump) => reg.test(t.threadDumpId));
+      filtered = filtered.filter((t: ThreadDump) => reg.test(t.threadDumpId));
     }
 
     setFilteredThreadDumps(
@@ -391,7 +389,7 @@ export const ThreadDumpsTable: React.FC<ThreadDumpsProps> = ({
         tableColumns,
       ),
     );
-  }, [filterText, threadDumps, sortBy, setFilteredThreadDumps]);
+  }, [filterText, threadDumps, targetThreadDumpFilters, sortBy, setFilteredThreadDumps]);
 
   const handleDownloadThreadDump = React.useCallback(
     (threadDump) => {
