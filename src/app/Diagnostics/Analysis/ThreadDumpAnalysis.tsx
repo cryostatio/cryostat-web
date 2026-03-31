@@ -156,10 +156,10 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             {t.additionalInfo !== undefined ? t.additionalInfo : ''}
           </Td>
           <Td key={`thread-stack-trace-${index}`} dataLabel={threadColumns[10].title}>
-            {t.stackTrace !== undefined ? t.stackTrace : ''}
+            {t.stackTrace !== undefined ? t.stackTrace.toString : ''}
           </Td>
           <Td key={`thread-locks-${index}`} dataLabel={threadColumns[11].title}>
-            {t.locks !== undefined ? t.locks : ''}
+            {t.locks !== undefined ? t.locks.toString : ''}
           </Td>
         </Tr>
       )),
