@@ -41,6 +41,7 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
+import ThreadDumpAnalysis from './Diagnostics/Analysis/ThreadDumpAnalysis';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
@@ -190,6 +191,15 @@ const diagnosticsRoutes: IAppRoute[] = [
     path: toPath('/thread-dumps'),
     title: 'Thread Dumps',
     description: 'View thread dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+  },
+  {
+    component: ThreadDumpAnalysis,
+    label: 'Visualize Thread Dumps',
+    path: toPath('/visualize-thread-dumps'),
+    title: 'Visualize Thread Dumps',
+    description: 'Visualize Thread Dump Data',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
   },

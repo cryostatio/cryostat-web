@@ -73,6 +73,7 @@ import {
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
+  ThreadDumpAnalysisResult,
 } from './api.types';
 import {
   isHttpError,
@@ -798,6 +799,25 @@ export class ApiService {
           undefined,
           suppressNotifications,
         ).pipe(
+          concatMap((resp) => resp.json()),
+          first(),
+        ),
+      ),
+      first(),
+    );
+  }
+
+  analyzeThreadDump(
+    target: Target,
+    threadDumpId: string,
+    suppressNotifications = false,
+  ): Observable<ThreadDumpAnalysisResult> {
+    return this.target.target().pipe(
+      filter((t) => !!t),
+      concatMap((target) =>
+        this.sendRequest('beta', `diagnostics/targets/${target!.id}/threaddump/${threadDumpId}/analyze`, {
+          method: 'POST',
+        }).pipe(
           concatMap((resp) => resp.json()),
           first(),
         ),
