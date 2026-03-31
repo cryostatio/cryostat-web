@@ -1,4 +1,3 @@
-
 /*
  * Copyright The Cryostat Authors.
  *
@@ -48,11 +47,10 @@ export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({
       [
         {
           groupLabel: 'Thread Dumps',
-          options: threadDumps
-            .map((t) => ({
-              value: `${t.threadDumpId}`,
-              label: t.threadDumpId,
-            })),
+          options: threadDumps.map((t) => ({
+            value: `${t.threadDumpId}`,
+            label: t.threadDumpId,
+          })),
         },
       ] as ThreadDumpSelectionGroup[],
     [threadDumps],

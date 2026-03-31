@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import { AggregateLockInfo, AggregateStackTraces, AggregateThreadState } from "@app/Shared/Services/api.types";
-import { ChartPie } from "@patternfly/react-charts";
-import { Bullseye, CardBody } from "@patternfly/react-core";
+import { StackFrame, ThreadDumpAnalysisResult } from '@app/Shared/Services/api.types';
+import { ChartPie } from '@patternfly/react-charts';
+import { Bullseye, CardBody } from '@patternfly/react-core';
 
 export interface AggregateLegendData {
-  name: string
+  name: string;
 }
 
 export interface AggregateDataCardProps {
-  data : AggregateStackTraces[] | AggregateLockInfo[] | AggregateThreadState[] | undefined
-  title : string
-  description: string
+  data: { data: any; count: number }[] | undefined;
+  title: string;
+  description: string;
 }
 
 export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
-
   const legendData: AggregateLegendData[] | undefined = props.data?.map((t) => {
-    return { name: `${t.data}: ${t.count}` }
+    return { name: `${t.data}: ${t.count}` };
   });
 
   return (
@@ -53,11 +52,12 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
               bottom: 20,
               left: 20,
               right: 140, // Adjusted to accommodate legend
-              top: 20
+              top: 20,
             }}
             width={350}
           />
         </Bullseye>
       </CardBody>
-    </>);
+    </>
+  );
 };
