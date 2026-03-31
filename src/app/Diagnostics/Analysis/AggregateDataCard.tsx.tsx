@@ -18,6 +18,11 @@ import { StackFrame, ThreadDumpAnalysisResult } from '@app/Shared/Services/api.t
 import { ChartPie } from '@patternfly/react-charts';
 import { Bullseye, CardBody } from '@patternfly/react-core';
 
+export interface ChartData {
+  x?: any;
+  y?: number;
+  name?: string;
+}
 export interface AggregateLegendData {
   name: string;
 }
@@ -29,8 +34,12 @@ export interface AggregateDataCardProps {
 }
 
 export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
-  const legendData: AggregateLegendData[] | undefined = props.data?.map((t) => {
+  const legendData: ChartData[] | undefined = props.data?.map((t) => {
     return { name: `${t.data}: ${t.count}` };
+  });
+
+  const chartData: ChartData[] | undefined = props.data?.map((t) => {
+    return { x: t.data, y: t.count };
   });
 
   return (
@@ -41,7 +50,7 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
             ariaDesc={props.description}
             ariaTitle={props.title}
             constrainToVisibleArea
-            data={props.data}
+            data={chartData}
             height={230}
             labels={({ datum }) => `${datum.x}: ${datum.y}`}
             legendData={legendData}

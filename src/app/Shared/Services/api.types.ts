@@ -302,17 +302,17 @@ export interface DeadlockInfo {
 
 export interface ThreadInfo {
   name: string;
-  threadId: number;
+  threadId?: number;
   nativeId?: number;
-  priority: number;
-  daemon: boolean;
-  state: string;
+  priority?: number;
+  daemon?: boolean;
+  state?: string;
   cpuTimeSec: number;
   elapsedTimeSec: number;
-  stackTrace: StackFrame[];
-  locks: LockInfo[];
+  stackTrace?: StackFrame[];
+  locks?: LockInfo[];
   additionalInfo?: string;
-  carryingVirtualThreadId: number;
+  carryingVirtualThreadId?: number;
 }
 
 export interface AnalysisFinding {
