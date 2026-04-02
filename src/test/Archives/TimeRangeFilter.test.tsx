@@ -20,7 +20,6 @@ import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
 import { render, testT } from '../utils';
 
 jest.mock('@app/utils/hooks/useArchiveFilters');

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TimeRangeOption } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
+import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -32,7 +32,6 @@ import {
 } from '@patternfly/react-core';
 import { CalendarAltIcon } from '@patternfly/react-icons';
 import React from 'react';
-import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 
 export interface TimeRangeFilterProps {
   /** Optional CSS class name */

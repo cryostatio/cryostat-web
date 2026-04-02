@@ -16,9 +16,8 @@
 
 import { defaultArchiveFilters } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
 import { RootState, setupStore, Store } from '@app/Shared/Redux/ReduxStore';
-import { NodeType } from '@app/Shared/Services/api.types';
+import { LineageNode, NodeType } from '@app/Shared/Services/api.types';
 import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
-import { LineageNode } from '@app/utils/targetUtils';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as React from 'react';

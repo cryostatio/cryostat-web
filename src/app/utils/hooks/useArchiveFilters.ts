@@ -23,8 +23,8 @@ import {
   archiveSetTimeRangeIntent,
   TimeRangeOption,
 } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
-import { LineageNode } from '@app/Shared/Services/api.types';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { LineageNode } from '@app/Shared/Services/api.types';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
