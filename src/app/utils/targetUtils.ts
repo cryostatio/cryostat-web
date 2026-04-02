@@ -18,9 +18,10 @@ import { EnvironmentNode, NodeType, TargetNode } from '@app/Shared/Services/api.
 
 /**
  * Represents a node in a lineage path for filtering purposes.
+ * Uses <nodeType, name> as a logical unique identifier rather than the internal node ID.
+ * This allows filters to match logically equivalent nodes across different discovery cycles.
  */
 export interface LineageNode {
-  readonly id: number;
   readonly name: string;
   readonly nodeType: NodeType;
 }
@@ -81,7 +82,6 @@ export const extractLineagePath = (root: EnvironmentNode | TargetNode): LineageN
 
   // Helper to convert node to LineageNode
   const toLineageNode = (node: EnvironmentNode | TargetNode): LineageNode => ({
-    id: node.id,
     name: node.name,
     nodeType: node.nodeType,
   });
@@ -123,23 +123,27 @@ export const extractLineagePath = (root: EnvironmentNode | TargetNode): LineageN
 };
 
 /**
- * Extracts the filterable lineage path, excluding Universe, Realm, and target nodes.
+ * Extracts the filterable lineage path, excluding only Universe and Realm nodes.
  *
- * This function returns only the intermediate nodes in the lineage that are useful
- * for filtering. It excludes:
+ * This function returns nodes in the lineage that are useful for filtering, including
+ * the leaf node (Pod/target). It excludes only:
  * - Universe node (too generic)
  * - Realm node (too generic)
- * - Target node itself (unique, not useful for filtering)
+ *
+ * The leaf node is included because in Kubernetes deployments, Pods may have durable names
+ * (e.g., StatefulSets), and different physical targets (JVM processes with unique JVM hash IDs)
+ * may share the same Pod name over time. Including the leaf node allows users to filter by
+ * Pod name to find all archives from that logical deployment unit.
  *
  * For example, in a Kubernetes context, this would return nodes like:
- * Namespace → Deployment → ReplicaSet
+ * Namespace → Deployment → ReplicaSet → Pod
  *
  * @param root - The root node to start traversal from
  * @returns Array of LineageNode objects suitable for filtering, or empty array if none exist
  *
  * @example
  * // Input path: [Universe, Realm, Namespace, Deployment, ReplicaSet, Pod]
- * // Returns: [Namespace, Deployment, ReplicaSet]
+ * // Returns: [Namespace, Deployment, ReplicaSet, Pod]
  * const filterablePath = extractFilterableLineagePath(universeNode);
  */
 export const extractFilterableLineagePath = (root: EnvironmentNode | TargetNode): LineageNode[] => {
@@ -149,12 +153,8 @@ export const extractFilterableLineagePath = (root: EnvironmentNode | TargetNode)
     return [];
   }
 
-  // Filter out Universe, Realm, and the target node (last in path)
-  return fullPath.filter((node, index) => {
-    const isUniverseOrRealm = node.nodeType === NodeType.UNIVERSE || node.nodeType === NodeType.REALM;
-    const isTargetNode = index === fullPath.length - 1;
-
-    return !isUniverseOrRealm && !isTargetNode;
+  return fullPath.filter((node) => {
+    return node.nodeType !== NodeType.UNIVERSE && node.nodeType !== NodeType.REALM;
   });
 };
 
