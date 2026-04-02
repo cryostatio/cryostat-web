@@ -200,7 +200,6 @@ describe('targetUtils', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
-        id: 1,
         name: 'Target-1',
         nodeType: NodeType.POD,
       });
@@ -214,9 +213,9 @@ describe('targetUtils', () => {
       const result = extractLineagePath(realm);
 
       expect(result).toHaveLength(3);
-      expect(result[0]).toEqual({ id: 1, name: 'Kubernetes', nodeType: NodeType.REALM });
-      expect(result[1]).toEqual({ id: 2, name: 'my-namespace', nodeType: NodeType.NAMESPACE });
-      expect(result[2]).toEqual({ id: 3, name: 'my-pod', nodeType: NodeType.POD });
+      expect(result[0]).toEqual({ name: 'Kubernetes', nodeType: NodeType.REALM });
+      expect(result[1]).toEqual({ name: 'my-namespace', nodeType: NodeType.NAMESPACE });
+      expect(result[2]).toEqual({ name: 'my-pod', nodeType: NodeType.POD });
     });
 
     it('should extract full path for Kubernetes-like hierarchy', () => {
@@ -230,12 +229,12 @@ describe('targetUtils', () => {
       const result = extractLineagePath(universe);
 
       expect(result).toHaveLength(6);
-      expect(result[0]).toEqual({ id: 1, name: 'Universe', nodeType: NodeType.UNIVERSE });
-      expect(result[1]).toEqual({ id: 2, name: 'Kubernetes', nodeType: NodeType.REALM });
-      expect(result[2]).toEqual({ id: 3, name: 'production', nodeType: NodeType.NAMESPACE });
-      expect(result[3]).toEqual({ id: 4, name: 'my-app', nodeType: NodeType.DEPLOYMENT });
-      expect(result[4]).toEqual({ id: 5, name: 'my-app-abc', nodeType: NodeType.REPLICASET });
-      expect(result[5]).toEqual({ id: 6, name: 'my-app-abc-123', nodeType: NodeType.POD });
+      expect(result[0]).toEqual({ name: 'Universe', nodeType: NodeType.UNIVERSE });
+      expect(result[1]).toEqual({ name: 'Kubernetes', nodeType: NodeType.REALM });
+      expect(result[2]).toEqual({ name: 'production', nodeType: NodeType.NAMESPACE });
+      expect(result[3]).toEqual({ name: 'my-app', nodeType: NodeType.DEPLOYMENT });
+      expect(result[4]).toEqual({ name: 'my-app-abc', nodeType: NodeType.REPLICASET });
+      expect(result[5]).toEqual({ name: 'my-app-abc-123', nodeType: NodeType.POD });
     });
 
     it('should return empty array when environment node has no children (no target)', () => {
@@ -335,7 +334,9 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(0);
+      // Only the target node remains (Universe and Realm filtered out)
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({ name: 'target', nodeType: NodeType.JVM });
       expect(result.every((n) => n.nodeType !== NodeType.UNIVERSE)).toBe(true);
     });
 
@@ -346,11 +347,13 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(0);
+      // Only the target node remains (Universe and Realm filtered out)
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({ name: 'target', nodeType: NodeType.JVM });
       expect(result.every((n) => n.nodeType !== NodeType.REALM)).toBe(true);
     });
 
-    it('should filter out target node (last in path)', () => {
+    it('should include target node (leaf node)', () => {
       const target = createTargetNode(4, 'my-pod', NodeType.POD);
       const namespace = createEnvironmentNode(3, 'my-namespace', NodeType.NAMESPACE, [target]);
       const realm = createEnvironmentNode(2, 'Kubernetes', NodeType.REALM, [namespace]);
@@ -358,12 +361,13 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({ id: 3, name: 'my-namespace', nodeType: NodeType.NAMESPACE });
-      expect(result.every((n) => n.id !== 4)).toBe(true);
+      // Should include both namespace and pod (leaf node)
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({ name: 'my-namespace', nodeType: NodeType.NAMESPACE });
+      expect(result[1]).toEqual({ name: 'my-pod', nodeType: NodeType.POD });
     });
 
-    it('should return intermediate nodes for Kubernetes hierarchy', () => {
+    it('should return all intermediate nodes plus leaf for Kubernetes hierarchy', () => {
       const pod = createTargetNode(6, 'my-app-abc-123', NodeType.POD);
       const replicaset = createEnvironmentNode(5, 'my-app-abc', NodeType.REPLICASET, [pod]);
       const deployment = createEnvironmentNode(4, 'my-app', NodeType.DEPLOYMENT, [replicaset]);
@@ -373,20 +377,24 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(3);
-      expect(result[0]).toEqual({ id: 3, name: 'production', nodeType: NodeType.NAMESPACE });
-      expect(result[1]).toEqual({ id: 4, name: 'my-app', nodeType: NodeType.DEPLOYMENT });
-      expect(result[2]).toEqual({ id: 5, name: 'my-app-abc', nodeType: NodeType.REPLICASET });
+      // Should include namespace, deployment, replicaset, AND pod
+      expect(result).toHaveLength(4);
+      expect(result[0]).toEqual({ name: 'production', nodeType: NodeType.NAMESPACE });
+      expect(result[1]).toEqual({ name: 'my-app', nodeType: NodeType.DEPLOYMENT });
+      expect(result[2]).toEqual({ name: 'my-app-abc', nodeType: NodeType.REPLICASET });
+      expect(result[3]).toEqual({ name: 'my-app-abc-123', nodeType: NodeType.POD });
     });
 
-    it('should return empty array when only Universe, Realm, and Target exist', () => {
+    it('should return only target when only Universe, Realm, and Target exist', () => {
       const target = createTargetNode(3, 'target', NodeType.JVM);
       const realm = createEnvironmentNode(2, 'Realm', NodeType.REALM, [target]);
       const universe = createEnvironmentNode(1, 'Universe', NodeType.UNIVERSE, [realm]);
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toEqual([]);
+      // Should include the target node
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({ name: 'target', nodeType: NodeType.JVM });
     });
 
     it('should work with non-Kubernetes hierarchy', () => {
@@ -398,12 +406,14 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({ id: 3, name: 'CustomRealm', nodeType: NodeType.NODE });
-      expect(result[1]).toEqual({ id: 4, name: 'ApplicationGroup', nodeType: NodeType.NODE });
+      // Should include custom nodes AND the target
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual({ name: 'CustomRealm', nodeType: NodeType.NODE });
+      expect(result[1]).toEqual({ name: 'ApplicationGroup', nodeType: NodeType.NODE });
+      expect(result[2]).toEqual({ name: 'service-instance', nodeType: NodeType.JVM });
     });
 
-    it('should preserve node order', () => {
+    it('should preserve node order including leaf', () => {
       const pod = createTargetNode(5, 'pod', NodeType.POD);
       const deployment = createEnvironmentNode(4, 'deployment', NodeType.DEPLOYMENT, [pod]);
       const namespace = createEnvironmentNode(3, 'namespace', NodeType.NAMESPACE, [deployment]);
@@ -412,12 +422,14 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(2);
+      // Should include namespace, deployment, AND pod
+      expect(result).toHaveLength(3);
       expect(result[0].name).toBe('namespace');
       expect(result[1].name).toBe('deployment');
+      expect(result[2].name).toBe('pod');
     });
 
-    it('should handle StatefulSet hierarchy', () => {
+    it('should handle StatefulSet hierarchy with leaf', () => {
       const pod = createTargetNode(5, 'db-0', NodeType.POD);
       const statefulset = createEnvironmentNode(4, 'db', NodeType.STATEFULSET, [pod]);
       const namespace = createEnvironmentNode(3, 'database', NodeType.NAMESPACE, [statefulset]);
@@ -426,12 +438,14 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({ id: 3, name: 'database', nodeType: NodeType.NAMESPACE });
-      expect(result[1]).toEqual({ id: 4, name: 'db', nodeType: NodeType.STATEFULSET });
+      // Should include namespace, statefulset, AND pod
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual({ name: 'database', nodeType: NodeType.NAMESPACE });
+      expect(result[1]).toEqual({ name: 'db', nodeType: NodeType.STATEFULSET });
+      expect(result[2]).toEqual({ name: 'db-0', nodeType: NodeType.POD });
     });
 
-    it('should handle DaemonSet hierarchy', () => {
+    it('should handle DaemonSet hierarchy with leaf', () => {
       const pod = createTargetNode(5, 'logger-xyz', NodeType.POD);
       const daemonset = createEnvironmentNode(4, 'logger', NodeType.DAEMONSET, [pod]);
       const namespace = createEnvironmentNode(3, 'kube-system', NodeType.NAMESPACE, [daemonset]);
@@ -440,9 +454,11 @@ describe('targetUtils', () => {
 
       const result = extractFilterableLineagePath(universe);
 
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({ id: 3, name: 'kube-system', nodeType: NodeType.NAMESPACE });
-      expect(result[1]).toEqual({ id: 4, name: 'logger', nodeType: NodeType.DAEMONSET });
+      // Should include namespace, daemonset, AND pod
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual({ name: 'kube-system', nodeType: NodeType.NAMESPACE });
+      expect(result[1]).toEqual({ name: 'logger', nodeType: NodeType.DAEMONSET });
+      expect(result[2]).toEqual({ name: 'logger-xyz', nodeType: NodeType.POD });
     });
   });
 
