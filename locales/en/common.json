@@ -4,6 +4,12 @@
   "ARCHIVAL_PERIOD": "Archival Period",
   "ARCHIVE": "Archive",
   "ARCHIVING": "Archiving",
+  "ArchiveFilterBar": {
+    "CLEAR_ALL_FILTERS": "Clear all filters",
+    "LINEAGE": "Lineage",
+    "SEARCH": "Search",
+    "TIME_RANGE": "Time Range"
+  },
   "AriaLabels": {
     "MAXIMUM_AGE": "Maximum age value",
     "MAXIMUM_AGE_UNITS_INPUT": "Maximum age units input",
