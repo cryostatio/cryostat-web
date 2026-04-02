@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
+import { LineageNode } from '@app/Shared/Services/api.types';
 import { formatTimeRangeLabel } from '@app/utils/archiveFilters';
+import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
 import { getColorForNodeType } from '@app/utils/targetUtils';
-import { LineageNode, NodeType } from '@app/Shared/Services/api.types';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import { Button, Label, LabelGroup, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import * as React from 'react';

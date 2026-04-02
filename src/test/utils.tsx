@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { defaultArchiveFilters } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
 import { defaultHeapDumpFilters } from '@app/Shared/Redux/Filters/HeapDumpFilterSlice';
 import { defaultThreadDumpFilters } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
 import {
@@ -171,6 +172,7 @@ export const basePreloadedState: RootState = {
   heapDumpFilters: defaultHeapDumpFilters,
   threadDumpFilters: defaultThreadDumpFilters,
   automatedAnalysisFilters: defaultAutomatedAnalysisFilters,
+  archiveFilters: defaultArchiveFilters,
   topologyConfigs: defaultTopologyConfig,
   topologyFilters: defaultTopologyFilters,
   modalPrefill: { route: null, data: {} },

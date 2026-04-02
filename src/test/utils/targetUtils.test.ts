@@ -20,7 +20,6 @@ import {
   extractLineagePath,
   findInnermostTargetNode,
   getColorForNodeType,
-  LineageNode,
 } from '@app/utils/targetUtils';
 
 describe('targetUtils', () => {

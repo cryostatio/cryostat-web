@@ -18,9 +18,9 @@ import { ArchiveFilterBar } from '@app/Archives/ArchiveFilterBar';
 import { defaultArchiveFilters } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { LineageNode, NodeType } from '@app/Shared/Services/api.types';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { render, testT } from '../utils';
+import { render } from '../utils';
 
 const mockLineageNode1: LineageNode = {
   nodeType: NodeType.NAMESPACE,
