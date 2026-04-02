@@ -24,6 +24,13 @@
       "MENU_TOGGLE": "Time range filter menu"
     }
   },
+  "LineageLabelChain": {
+    "ARIA_LABELS": {
+      "CHAIN": "Lineage hierarchy chain",
+      "FILTERED_NODE": "Currently filtered node",
+      "FILTER_BY_NODE": "Filter by {{nodeType}}: {{name}}"
+    }
+  },
   "AriaLabels": {
     "MAXIMUM_AGE": "Maximum age value",
     "MAXIMUM_AGE_UNITS_INPUT": "Maximum age units input",
