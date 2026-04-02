@@ -10,6 +10,20 @@
     "SEARCH": "Search",
     "TIME_RANGE": "Time Range"
   },
+  "TimeRangeFilter": {
+    "ALL_TIME": "All Time",
+    "APPLY": "Apply",
+    "CUSTOM_RANGE": "Custom Range",
+    "CUSTOM_RANGE_TITLE": "Select Custom Time Range",
+    "END_TIME": "End Time",
+    "LAST_24_HOURS": "Last 24 Hours",
+    "LAST_7_DAYS": "Last 7 Days",
+    "LAST_30_DAYS": "Last 30 Days",
+    "START_TIME": "Start Time",
+    "ARIA_LABELS": {
+      "MENU_TOGGLE": "Time range filter menu"
+    }
+  },
   "AriaLabels": {
     "MAXIMUM_AGE": "Maximum age value",
     "MAXIMUM_AGE_UNITS_INPUT": "Maximum age units input",
