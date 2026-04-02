@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LineageNode } from '@app/utils/targetUtils';
+import { LineageNode } from '@app/Shared/Services/api.types';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
