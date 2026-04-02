@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import { EnvironmentNode, NodeType, TargetNode } from '@app/Shared/Services/api.types';
-
-/**
- * Represents a node in a lineage path for filtering purposes.
- * Uses <nodeType, name> as a logical unique identifier rather than the internal node ID.
- * This allows filters to match logically equivalent nodes across different discovery cycles.
- */
-export interface LineageNode {
-  readonly name: string;
-  readonly nodeType: NodeType;
-}
+import { EnvironmentNode, LineageNode, NodeType, TargetNode } from '@app/Shared/Services/api.types';
 
 /**
  * Finds the innermost TargetNode in a lineage tree using iterative traversal.

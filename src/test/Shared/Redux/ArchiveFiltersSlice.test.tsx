@@ -26,8 +26,7 @@ import {
   defaultArchiveFilters,
   sanitize,
 } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
-import { NodeType } from '@app/Shared/Services/api.types';
-import { LineageNode } from '@app/utils/targetUtils';
+import { LineageNode, NodeType } from '@app/Shared/Services/api.types';
 
 describe('ArchiveFiltersSlice', () => {
   const createLineageNode = (name: string, nodeType: NodeType): LineageNode => ({
