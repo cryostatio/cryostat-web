@@ -22,7 +22,12 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { EmptyState, EmptyStateBody, Timestamp, TimestampTooltipVariant } from '@patternfly/react-core';
+import {
+  EmptyState,
+  EmptyStateBody,
+  Timestamp,
+  TimestampTooltipVariant,
+} from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
@@ -102,7 +107,7 @@ export const AuditRevisionsTable: React.FC<AuditRevisionsTableProps> = ({
 
   if (!queryParams) {
     return (
-      <EmptyState titleText={t('AuditLog.TABLE.NO_QUERY')} icon={SearchIcon} headingLevel="h4">
+      <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('AuditLog.TABLE.NO_QUERY')}>
         <EmptyStateBody>{t('AuditLog.TABLE.NO_QUERY_DESCRIPTION')}</EmptyStateBody>
       </EmptyState>
     );
@@ -110,7 +115,7 @@ export const AuditRevisionsTable: React.FC<AuditRevisionsTableProps> = ({
 
   if (revisions.length === 0) {
     return (
-      <EmptyState titleText={t('AuditLog.TABLE.EMPTY_STATE')} icon={SearchIcon} headingLevel="h4">
+      <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('AuditLog.TABLE.EMPTY_STATE')}>
         <EmptyStateBody>{t('AuditLog.TABLE.EMPTY_STATE_DESCRIPTION')}</EmptyStateBody>
       </EmptyState>
     );
