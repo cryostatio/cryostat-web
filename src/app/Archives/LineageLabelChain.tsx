@@ -17,7 +17,7 @@
 import { LineageNode } from '@app/Shared/Services/api.types';
 import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Button, Flex, FlexItem } from '@patternfly/react-core';
+import { Label, LabelGroup } from '@patternfly/react-core';
 import React from 'react';
 
 export interface LineageLabelChainProps {
@@ -81,41 +81,35 @@ export const LineageLabelChain: React.FC<LineageLabelChainProps> = ({ lineagePat
   }
 
   return (
-    <Flex
+    <LabelGroup
       className={className}
-      direction={{ default: 'row' }}
-      spaceItems={{ default: 'spaceItemsSm' }}
-      alignItems={{ default: 'alignItemsCenter' }}
-      role="navigation"
+      numLabels={displayPath.length}
       aria-label={t('LineageLabelChain.ARIA_LABELS.CHAIN')}
     >
       {displayPath.map((node) => {
         const isFiltered = isNodeFiltered(node);
 
         return (
-          <FlexItem key={`${node.nodeType}-${node.name}`}>
-            {isFiltered ? (
-              <span aria-label={t('LineageLabelChain.ARIA_LABELS.FILTERED_NODE')}>
-                <strong>
-                  {node.nodeType}: {node.name}
-                </strong>
-              </span>
-            ) : (
-              <Button
-                variant="link"
-                isInline
-                onClick={() => handleNodeClick(node)}
-                aria-label={t('LineageLabelChain.ARIA_LABELS.FILTER_BY_NODE', {
-                  nodeType: node.nodeType,
-                  name: node.name,
-                })}
-              >
-                {node.nodeType}: {node.name}
-              </Button>
-            )}
-          </FlexItem>
+          <Label
+            key={`${node.nodeType}-${node.name}`}
+            color={isFiltered ? 'blue' : 'grey'}
+            isCompact
+            onClick={isFiltered ? undefined : () => handleNodeClick(node)}
+            onClose={isFiltered ? () => handleNodeClick(node) : undefined}
+            aria-label={
+              isFiltered
+                ? t('LineageLabelChain.ARIA_LABELS.FILTERED_NODE')
+                : t('LineageLabelChain.ARIA_LABELS.FILTER_BY_NODE', {
+                    nodeType: node.nodeType,
+                    name: node.name,
+                  })
+            }
+            style={isFiltered ? undefined : { cursor: 'pointer' }}
+          >
+            {node.nodeType}: {node.name}
+          </Label>
         );
       })}
-    </Flex>
+    </LabelGroup>
   );
 };
