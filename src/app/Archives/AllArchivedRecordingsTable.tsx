@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ArchiveFilterBar } from '@app/Archives/ArchiveFilterBar';
 import { DirectoryNameCell } from '@app/Archives/DirectoryNameCell';
+import { TimeRangeFilter } from '@app/Archives/TimeRangeFilter';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
@@ -22,6 +24,7 @@ import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } f
 import { ServiceContext } from '@app/Shared/Services/Services';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
 import { useAliasCache } from '@app/utils/hooks/useAliasCache';
+import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTargetDetailsModal } from '@app/utils/hooks/useTargetDetailsModal';
@@ -85,7 +88,6 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const { t } = useCryostatTranslation();
 
   const [directories, setDirectories] = React.useState<_RecordingDirectory[]>([]);
-  const [searchText, setSearchText] = React.useState('');
   const [expandedDirectories, setExpandedDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
@@ -93,6 +95,9 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const [sortBy, getSortParams] = useSort();
   const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
     useTargetDetailsModal();
+
+  // Use archive filters from Redux
+  const { searchText, setSearchText, timeRange, hasActiveFilters } = useArchiveFilters();
 
   const jvmIds = React.useMemo(() => directories.map((d) => d.jvmId), [directories]);
   const aliasMap = useAliasCache(jvmIds);
@@ -138,27 +143,53 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     refreshDirectoriesAndCounts();
   }, [refreshDirectoriesAndCounts]);
 
-  const searchedDirectories = React.useMemo(() => {
-    let updatedSearchedDirectories: _RecordingDirectory[];
-    if (!searchText) {
-      updatedSearchedDirectories = directories;
-    } else {
+  const filteredDirectories = React.useMemo(() => {
+    let filtered: _RecordingDirectory[] = directories;
+
+    // Apply text search filter
+    if (searchText) {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter((d: _RecordingDirectory) => {
+      filtered = filtered.filter((d: _RecordingDirectory) => {
         // Search by jvmId, connectUrl, and alias (from audit log)
         const alias = aliasMap.get(d.jvmId) || '';
         return reg.test(d.jvmId) || reg.test(d.connectUrl) || reg.test(alias);
       });
     }
+
+    // Apply time range filter to recordings within each directory
+    // and filter out directories with no matching recordings
+    if (timeRange) {
+      filtered = filtered
+        .map((dir) => {
+          const matchingRecordings = dir.recordings.filter((recording) => {
+            // archivedTime is in seconds, convert to milliseconds for comparison
+            const archivedTimeMs = recording.archivedTime * 1000;
+            return archivedTimeMs >= timeRange.startTime && archivedTimeMs <= timeRange.endTime;
+          });
+
+          return {
+            ...dir,
+            recordings: matchingRecordings,
+          };
+        })
+        .filter((dir) => dir.recordings.length > 0);
+    }
+
+    // Apply lineage filters (if any)
+    // Note: For now, lineage filtering is done in the DirectoryNameCell component
+    // which fetches lineage on-demand. Full filtering would require fetching
+    // lineage for all directories upfront, which we'll add in a future iteration.
+
+    // Sort the filtered results
     return sortResources(
       {
         index: sortBy.index ?? 0,
         direction: sortBy.direction ?? SortByDirection.asc,
       },
-      updatedSearchedDirectories,
+      filtered,
       tableColumns,
     );
-  }, [directories, searchText, sortBy, aliasMap]);
+  }, [directories, searchText, timeRange, sortBy, aliasMap]);
 
   React.useEffect(() => {
     addSubscription(
@@ -244,7 +275,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   );
 
   const directoryRows = React.useMemo(() => {
-    return searchedDirectories.map((dir, idx) => {
+    return filteredDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
       return (
@@ -283,10 +314,10 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         </Tr>
       );
     });
-  }, [toggleExpanded, searchedDirectories, expandedDirectories, handleInfoClick]);
+  }, [toggleExpanded, filteredDirectories, expandedDirectories, handleInfoClick]);
 
   const recordingRows = React.useMemo(() => {
-    return searchedDirectories.map((dir, idx) => {
+    return filteredDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
       return (
@@ -307,7 +338,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         </Tr>
       );
     });
-  }, [searchedDirectories, expandedDirectories]);
+  }, [filteredDirectories, expandedDirectories]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -338,7 +369,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     );
   } else if (isLoading) {
     view = <LoadingView />;
-  } else if (!searchedDirectories.length) {
+  } else if (!filteredDirectories.length) {
     view = (
       <>
         <Bullseye>
@@ -401,9 +432,13 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
                   onClear={handleSearchInputClear}
                 />
               </ToolbarItem>
+              <ToolbarItem>
+                <TimeRangeFilter />
+              </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>
+        {hasActiveFilters && <ArchiveFilterBar />}
         <InnerScrollContainer className="">{view}</InnerScrollContainer>
       </OuterScrollContainer>
     </>

@@ -18,6 +18,7 @@ import {
   archiveAddLineageFilterIntent,
   archiveClearAllFiltersIntent,
   archiveClearLineageFiltersIntent,
+  archiveClearTimeRangeIntent,
   archiveRemoveLineageFilterIntent,
   archiveSetSearchTextIntent,
   archiveSetTimeRangeIntent,
@@ -25,49 +26,28 @@ import {
 } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { LineageNode } from '@app/Shared/Services/api.types';
+
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 /**
- * Custom hook for accessing and managing archive filter state.
- *
- * Provides a clean API for components to interact with archive filters
- * without directly accessing Redux actions and selectors.
- *
- * @returns Object containing filter state and action dispatchers
- *
- * @example
- * const {
- *   lineageFilters,
- *   timeRange,
- *   searchText,
- *   hasActiveFilters,
- *   addLineageFilter,
- *   removeLineageFilter,
- *   clearLineageFilters,
- *   setTimeRange,
- *   setSearchText,
- *   clearAllFilters,
- * } = useArchiveFilters();
+ * Custom hook for managing archive filters.
+ * Provides access to filter state and actions.
  */
 export const useArchiveFilters = () => {
   const dispatch = useDispatch();
 
-  // Selectors
+  // Select filter state from Redux
   const lineageFilters = useSelector((state: RootState) => state.archiveFilters.lineageFilters);
   const timeRange = useSelector((state: RootState) => state.archiveFilters.timeRange);
   const searchText = useSelector((state: RootState) => state.archiveFilters.searchText);
 
-  // Computed value: check if any filters are active
+  // Compute whether any filters are active
   const hasActiveFilters = useMemo(() => {
-    const hasLineageFilters = lineageFilters.length > 0;
-    const hasTimeFilter = timeRange.type !== 'preset' || timeRange.preset !== 'all';
-    const hasSearchFilter = searchText.length > 0;
-
-    return hasLineageFilters || hasTimeFilter || hasSearchFilter;
+    return lineageFilters.length > 0 || timeRange !== null || searchText.trim().length > 0;
   }, [lineageFilters, timeRange, searchText]);
 
-  // Action dispatchers
+  // Action creators
   const addLineageFilter = useCallback(
     (node: LineageNode) => {
       dispatch(archiveAddLineageFilterIntent(node));
@@ -93,6 +73,10 @@ export const useArchiveFilters = () => {
     [dispatch],
   );
 
+  const clearTimeRange = useCallback(() => {
+    dispatch(archiveClearTimeRangeIntent());
+  }, [dispatch]);
+
   const setSearchText = useCallback(
     (text: string) => {
       dispatch(archiveSetSearchTextIntent(text));
@@ -116,6 +100,7 @@ export const useArchiveFilters = () => {
     removeLineageFilter,
     clearLineageFilters,
     setTimeRange,
+    clearTimeRange,
     setSearchText,
     clearAllFilters,
   };

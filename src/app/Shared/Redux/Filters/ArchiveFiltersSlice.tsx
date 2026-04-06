@@ -18,21 +18,23 @@ import { LineageNode } from '@app/Shared/Services/api.types';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-const _version = '1';
+const _version = '2'; // Incremented due to breaking change in TimeRangeOption
 
 /**
- * Time range filter options for archives.
+ * Time range filter for archives.
+ * Stores timestamps in milliseconds since epoch.
  */
-export type TimeRangeOption =
-  | { type: 'preset'; preset: 'last24h' | 'last7d' | 'last30d' | 'all' }
-  | { type: 'custom'; startTime: string; endTime: string }; // ISO strings for serialization
+export interface TimeRangeOption {
+  startTime: number;
+  endTime: number;
+}
 
 /**
  * Archive filters state structure.
  */
 export interface ArchiveFiltersState {
   lineageFilters: LineageNode[]; // Active lineage label filters
-  timeRange: TimeRangeOption; // Time range filter
+  timeRange: TimeRangeOption | null; // Time range filter (null = no filter)
   searchText: string; // Search text filter
   readonly _version: string;
 }
@@ -42,7 +44,7 @@ export interface ArchiveFiltersState {
  */
 export const defaultArchiveFilters: ArchiveFiltersState = {
   lineageFilters: [],
-  timeRange: { type: 'preset', preset: 'all' },
+  timeRange: null,
   searchText: '',
   _version: _version,
 };
@@ -55,6 +57,7 @@ export enum ArchiveFilterAction {
   LINEAGE_FILTER_REMOVE = 'archive-filter/lineage-remove',
   LINEAGE_FILTERS_CLEAR = 'archive-filter/lineage-clear',
   TIME_RANGE_SET = 'archive-filter/time-range-set',
+  TIME_RANGE_CLEAR = 'archive-filter/time-range-clear',
   SEARCH_TEXT_SET = 'archive-filter/search-text-set',
   FILTERS_CLEAR_ALL = 'archive-filter/clear-all',
 }
@@ -97,6 +100,11 @@ export const archiveSetTimeRangeIntent = createAction(
 );
 
 /**
+ * Clear the time range filter.
+ */
+export const archiveClearTimeRangeIntent = createAction(ArchiveFilterAction.TIME_RANGE_CLEAR);
+
+/**
  * Set the search text filter.
  */
 export const archiveSetSearchTextIntent = createAction(ArchiveFilterAction.SEARCH_TEXT_SET, (searchText: string) => ({
@@ -109,20 +117,27 @@ export const archiveSetSearchTextIntent = createAction(ArchiveFilterAction.SEARC
 export const archiveClearAllFiltersIntent = createAction(ArchiveFilterAction.FILTERS_CLEAR_ALL);
 
 /**
- * Sanitize the persisted state (e.g., convert ISO strings to Date objects if needed).
+ * Sanitize the persisted state.
  */
 export const sanitize = (initState: ArchiveFiltersState): ArchiveFiltersState => {
-  // Ensure time range dates are strings (for serialization)
-  if (initState.timeRange.type === 'custom') {
-    // Validate ISO strings - Date constructor doesn't throw, check for Invalid Date
-    const startDate = new Date(initState.timeRange.startTime);
-    const endDate = new Date(initState.timeRange.endTime);
+  // Validate time range if present
+  if (initState.timeRange) {
+    const { startTime, endTime } = initState.timeRange;
 
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-      // Invalid dates, reset to default
+    // Check if timestamps are valid numbers
+    if (
+      typeof startTime !== 'number' ||
+      typeof endTime !== 'number' ||
+      isNaN(startTime) ||
+      isNaN(endTime) ||
+      startTime < 0 ||
+      endTime < 0 ||
+      endTime <= startTime
+    ) {
+      // Invalid time range, reset to null
       return {
         ...initState,
-        timeRange: { type: 'preset', preset: 'all' },
+        timeRange: null,
       };
     }
   }
@@ -157,12 +172,15 @@ export const archiveFiltersReducer = createReducer(INITIAL_STATE, (builder) => {
     .addCase(archiveSetTimeRangeIntent, (state, { payload }) => {
       state.timeRange = payload;
     })
+    .addCase(archiveClearTimeRangeIntent, (state) => {
+      state.timeRange = null;
+    })
     .addCase(archiveSetSearchTextIntent, (state, { payload }) => {
       state.searchText = payload;
     })
     .addCase(archiveClearAllFiltersIntent, (state) => {
       state.lineageFilters = [];
-      state.timeRange = { type: 'preset', preset: 'all' };
+      state.timeRange = null;
       state.searchText = '';
     });
 });

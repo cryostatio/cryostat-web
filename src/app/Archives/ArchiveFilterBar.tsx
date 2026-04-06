@@ -39,7 +39,7 @@ export const ArchiveFilterBar: React.FC<ArchiveFilterBarProps> = ({ className, .
     searchText,
     hasActiveFilters,
     removeLineageFilter,
-    setTimeRange,
+    clearTimeRange,
     setSearchText,
     clearAllFilters,
   } = useArchiveFilters();
@@ -52,14 +52,12 @@ export const ArchiveFilterBar: React.FC<ArchiveFilterBarProps> = ({ className, .
   );
 
   const handleClearTimeRange = React.useCallback(() => {
-    setTimeRange({ type: 'preset', preset: 'all' });
-  }, [setTimeRange]);
+    clearTimeRange();
+  }, [clearTimeRange]);
 
   const handleClearSearchText = React.useCallback(() => {
     setSearchText('');
   }, [setSearchText]);
-
-  const hasTimeRangeFilter = timeRange.type !== 'preset' || timeRange.preset !== 'all';
 
   if (!hasActiveFilters) {
     return null;
@@ -88,7 +86,7 @@ export const ArchiveFilterBar: React.FC<ArchiveFilterBarProps> = ({ className, .
           </ToolbarItem>
         )}
 
-        {hasTimeRangeFilter && (
+        {timeRange && (
           <ToolbarItem>
             <LabelGroup categoryName={t('ArchiveFilterBar.TIME_RANGE')} isClosable onClick={handleClearTimeRange}>
               <Label color="blue" onClose={handleClearTimeRange}>

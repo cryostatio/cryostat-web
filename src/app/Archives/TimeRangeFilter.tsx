@@ -14,176 +14,116 @@
  * limitations under the License.
  */
 
-import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import {
-  ActionGroup,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownList,
-  Form,
-  FormGroup,
-  MenuToggle,
-  MenuToggleElement,
-  Modal,
-  ModalVariant,
-} from '@patternfly/react-core';
-import { CalendarAltIcon } from '@patternfly/react-icons';
-import React from 'react';
+import { Button, TextInput, Tooltip, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { RedoIcon } from '@patternfly/react-icons';
+import dayjs from 'dayjs';
+import * as React from 'react';
 
-export interface TimeRangeFilterProps {
-  /** Optional CSS class name */
-  className?: string;
-}
-
-/**
- * TimeRangeFilter component for selecting time ranges to filter archived recordings.
- *
- * Provides:
- * - Preset time ranges (Last 24 Hours, Last 7 Days, Last 30 Days, All Time)
- * - Custom time range picker with start and end date/time selection
- *
- * @example
- * <TimeRangeFilter />
- */
-export const TimeRangeFilter: React.FC<TimeRangeFilterProps> = ({ className }) => {
+export const TimeRangeFilter: React.FC = () => {
   const { t } = useCryostatTranslation();
-  const { timeRange, setTimeRange } = useArchiveFilters();
+  const { timeRange, setTimeRange, clearTimeRange } = useArchiveFilters();
 
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [isCustomModalOpen, setIsCustomModalOpen] = React.useState(false);
-  const [customStartTime, setCustomStartTime] = React.useState<string>('');
-  const [customEndTime, setCustomEndTime] = React.useState<string>('');
-
-  // Preset options
-  const presetOptions = React.useMemo(
-    () => [
-      { key: 'all', label: t('TimeRangeFilter.ALL_TIME') },
-      { key: 'last24h', label: t('TimeRangeFilter.LAST_24_HOURS') },
-      { key: 'last7d', label: t('TimeRangeFilter.LAST_7_DAYS') },
-      { key: 'last30d', label: t('TimeRangeFilter.LAST_30_DAYS') },
-    ],
-    [t],
-  );
-
-  // Get current selection label
-  const currentLabel = React.useMemo(() => {
-    if (timeRange.type === 'custom') {
-      return t('TimeRangeFilter.CUSTOM_RANGE');
+  const [startTime, setStartTime] = React.useState<string>(() => {
+    if (timeRange?.startTime) {
+      return dayjs(timeRange.startTime).format('YYYY-MM-DDTHH:mm');
     }
-    const option = presetOptions.find((opt) => opt.key === timeRange.preset);
-    return option?.label || t('TimeRangeFilter.ALL_TIME');
-  }, [timeRange, presetOptions, t]);
+    return '';
+  });
 
-  const handleToggle = React.useCallback(() => {
-    setIsOpen((prev) => !prev);
-  }, []);
-
-  const handleSelect = React.useCallback(
-    (_event: React.MouseEvent<Element, MouseEvent> | undefined, value: string | number | undefined) => {
-      if (value === 'custom') {
-        setIsOpen(false);
-        setIsCustomModalOpen(true);
-        // Initialize with current custom range if exists
-        if (timeRange.type === 'custom') {
-          setCustomStartTime(timeRange.startTime);
-          setCustomEndTime(timeRange.endTime);
-        } else {
-          // Default to last 24 hours
-          const now = new Date();
-          const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-          setCustomStartTime(yesterday.toISOString());
-          setCustomEndTime(now.toISOString());
-        }
-      } else if (typeof value === 'string') {
-        setTimeRange({ type: 'preset', preset: value as 'all' | 'last24h' | 'last7d' | 'last30d' });
-        setIsOpen(false);
-      }
-    },
-    [timeRange, setTimeRange],
-  );
-
-  const handleCustomRangeApply = React.useCallback(() => {
-    if (customStartTime && customEndTime) {
-      setTimeRange({
-        type: 'custom',
-        startTime: customStartTime,
-        endTime: customEndTime,
-      });
-      setIsCustomModalOpen(false);
+  const [endTime, setEndTime] = React.useState<string>(() => {
+    if (timeRange?.endTime) {
+      return dayjs(timeRange.endTime).format('YYYY-MM-DDTHH:mm');
     }
-  }, [customStartTime, customEndTime, setTimeRange]);
+    return '';
+  });
 
-  const handleCustomRangeCancel = React.useCallback(() => {
-    setIsCustomModalOpen(false);
-    setCustomStartTime('');
-    setCustomEndTime('');
-  }, []);
+  const [validationError, setValidationError] = React.useState('');
+
+  // Update Redux state when inputs change and are valid
+  React.useEffect(() => {
+    // Don't apply filter if inputs are empty
+    if (!startTime || !endTime) {
+      setValidationError('');
+      return;
+    }
+
+    // Parse datetime-local format (YYYY-MM-DDTHH:mm) as local time
+    // The datetime-local input gives us a string in the user's local timezone
+    const startDate = dayjs(startTime, 'YYYY-MM-DDTHH:mm');
+    const endDate = dayjs(endTime, 'YYYY-MM-DDTHH:mm');
+
+    if (!startDate.isValid() || !endDate.isValid()) {
+      setValidationError(t('TimeRangeFilter.VALIDATION.INVALID_DATE_FORMAT'));
+      return;
+    }
+
+    if (endDate.isBefore(startDate) || endDate.isSame(startDate)) {
+      setValidationError(t('TimeRangeFilter.VALIDATION.END_BEFORE_START'));
+      return;
+    }
+
+    setValidationError('');
+    // Convert local time to UTC timestamp (milliseconds since epoch)
+    const startTimestamp = startDate.valueOf();
+    const endTimestamp = endDate.valueOf();
+
+    setTimeRange({
+      startTime: startTimestamp,
+      endTime: endTimestamp,
+    });
+  }, [startTime, endTime, setTimeRange, t]);
+
+  const handleReset = React.useCallback(() => {
+    setStartTime('');
+    setEndTime('');
+    setValidationError('');
+    clearTimeRange();
+  }, [clearTimeRange]);
+
+  const hasCustomRange = React.useMemo(() => {
+    return timeRange !== null;
+  }, [timeRange]);
 
   return (
-    <>
-      <Dropdown
-        className={className}
-        isOpen={isOpen}
-        onSelect={handleSelect}
-        onOpenChange={setIsOpen}
-        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle
-            ref={toggleRef}
-            onClick={handleToggle}
-            isExpanded={isOpen}
-            icon={<CalendarAltIcon />}
-            aria-label={t('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE')}
-          >
-            {currentLabel}
-          </MenuToggle>
-        )}
-      >
-        <DropdownList>
-          {presetOptions.map((option) => (
-            <DropdownItem key={option.key} value={option.key}>
-              {option.label}
-            </DropdownItem>
-          ))}
-          <DropdownItem key="custom" value="custom">
-            {t('TimeRangeFilter.CUSTOM_RANGE')}
-          </DropdownItem>
-        </DropdownList>
-      </Dropdown>
-
-      <Modal
-        variant={ModalVariant.small}
-        title={t('TimeRangeFilter.CUSTOM_RANGE_TITLE')}
-        isOpen={isCustomModalOpen}
-        onClose={handleCustomRangeCancel}
-      >
-        <Form>
-          <FormGroup label={t('TimeRangeFilter.START_TIME')}>
-            <DateTimePicker
-              onSelect={(date) => setCustomStartTime(date.toISOString())}
-              onDismiss={() => {}}
-              prefilledDate={customStartTime ? new Date(customStartTime) : undefined}
+    <ToolbarGroup variant="filter-group">
+      <ToolbarItem>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>{t('TimeRangeFilter.START_TIME')}:</span>
+          <TextInput
+            type="datetime-local"
+            value={startTime}
+            onChange={(_event, value) => setStartTime(value)}
+            aria-label={t('TimeRangeFilter.START_TIME')}
+            validated={validationError ? 'error' : 'default'}
+          />
+        </div>
+      </ToolbarItem>
+      <ToolbarItem style={{ marginLeft: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>{t('TimeRangeFilter.END_TIME')}:</span>
+          <TextInput
+            type="datetime-local"
+            value={endTime}
+            onChange={(_event, value) => setEndTime(value)}
+            aria-label={t('TimeRangeFilter.END_TIME')}
+            validated={validationError ? 'error' : 'default'}
+          />
+        </div>
+      </ToolbarItem>
+      {hasCustomRange && (
+        <ToolbarItem style={{ marginLeft: '16px' }}>
+          <Tooltip content={t('TimeRangeFilter.RESET')}>
+            <Button
+              variant="secondary"
+              onClick={handleReset}
+              icon={<RedoIcon />}
+              aria-label={t('TimeRangeFilter.RESET')}
             />
-          </FormGroup>
-          <FormGroup label={t('TimeRangeFilter.END_TIME')}>
-            <DateTimePicker
-              onSelect={(date) => setCustomEndTime(date.toISOString())}
-              onDismiss={() => {}}
-              prefilledDate={customEndTime ? new Date(customEndTime) : undefined}
-            />
-          </FormGroup>
-          <ActionGroup>
-            <Button variant="primary" onClick={handleCustomRangeApply}>
-              {t('TimeRangeFilter.APPLY')}
-            </Button>
-            <Button variant="link" onClick={handleCustomRangeCancel}>
-              {t('CANCEL')}
-            </Button>
-          </ActionGroup>
-        </Form>
-      </Modal>
-    </>
+          </Tooltip>
+        </ToolbarItem>
+      )}
+    </ToolbarGroup>
   );
 };

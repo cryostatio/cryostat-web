@@ -18,6 +18,7 @@ import {
   archiveAddLineageFilterIntent,
   archiveClearAllFiltersIntent,
   archiveClearLineageFiltersIntent,
+  archiveClearTimeRangeIntent,
   archiveFiltersReducer,
   archiveRemoveLineageFilterIntent,
   archiveSetSearchTextIntent,
@@ -38,31 +39,30 @@ describe('ArchiveFiltersSlice', () => {
     it('should have correct default values', () => {
       expect(defaultArchiveFilters).toEqual({
         lineageFilters: [],
-        timeRange: { type: 'preset', preset: 'all' },
+        timeRange: null,
         searchText: '',
-        _version: '1',
+        _version: '2',
       });
     });
   });
 
   describe('sanitize', () => {
-    it('should return state unchanged for valid preset time range', () => {
+    it('should return state unchanged for null time range', () => {
       const state: ArchiveFiltersState = {
         ...defaultArchiveFilters,
-        timeRange: { type: 'preset', preset: 'last24h' },
+        timeRange: null,
       };
 
       const result = sanitize(state);
       expect(result).toEqual(state);
     });
 
-    it('should return state unchanged for valid custom time range', () => {
+    it('should return state unchanged for valid time range', () => {
       const state: ArchiveFiltersState = {
         ...defaultArchiveFilters,
         timeRange: {
-          type: 'custom',
-          startTime: '2024-01-01T00:00:00Z',
-          endTime: '2024-01-31T23:59:59Z',
+          startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+          endTime: new Date('2024-01-31T23:59:59Z').getTime(),
         },
       };
 
@@ -70,18 +70,43 @@ describe('ArchiveFiltersSlice', () => {
       expect(result).toEqual(state);
     });
 
-    it('should reset to default for invalid custom time range', () => {
+    it('should reset to null for invalid time range (negative timestamps)', () => {
       const state: ArchiveFiltersState = {
         ...defaultArchiveFilters,
         timeRange: {
-          type: 'custom',
-          startTime: 'invalid-date',
-          endTime: 'invalid-date',
+          startTime: -1,
+          endTime: 1000,
         },
       };
 
       const result = sanitize(state);
-      expect(result.timeRange).toEqual({ type: 'preset', preset: 'all' });
+      expect(result.timeRange).toBeNull();
+    });
+
+    it('should reset to null for invalid time range (end before start)', () => {
+      const state: ArchiveFiltersState = {
+        ...defaultArchiveFilters,
+        timeRange: {
+          startTime: 2000,
+          endTime: 1000,
+        },
+      };
+
+      const result = sanitize(state);
+      expect(result.timeRange).toBeNull();
+    });
+
+    it('should reset to null for invalid time range (NaN values)', () => {
+      const state: ArchiveFiltersState = {
+        ...defaultArchiveFilters,
+        timeRange: {
+          startTime: NaN,
+          endTime: NaN,
+        },
+      };
+
+      const result = sanitize(state);
+      expect(result.timeRange).toBeNull();
     });
   });
 
@@ -172,31 +197,27 @@ describe('ArchiveFiltersSlice', () => {
 
     it('should not affect other filter state', () => {
       const node = createLineageNode('my-namespace', NodeType.NAMESPACE);
+      const timeRange = {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      };
 
       let state = archiveFiltersReducer(defaultArchiveFilters, archiveAddLineageFilterIntent(node));
       state = archiveFiltersReducer(state, archiveSetSearchTextIntent('test'));
-      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent({ type: 'preset', preset: 'last24h' }));
+      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent(timeRange));
       state = archiveFiltersReducer(state, archiveClearLineageFiltersIntent());
 
       expect(state.lineageFilters).toHaveLength(0);
       expect(state.searchText).toBe('test');
-      expect(state.timeRange).toEqual({ type: 'preset', preset: 'last24h' });
+      expect(state.timeRange).toEqual(timeRange);
     });
   });
 
   describe('archiveSetTimeRangeIntent', () => {
-    it('should set preset time range', () => {
-      const timeRange = { type: 'preset' as const, preset: 'last24h' as const };
-      const state = archiveFiltersReducer(defaultArchiveFilters, archiveSetTimeRangeIntent(timeRange));
-
-      expect(state.timeRange).toEqual(timeRange);
-    });
-
-    it('should set custom time range', () => {
+    it('should set time range', () => {
       const timeRange = {
-        type: 'custom' as const,
-        startTime: '2024-01-01T00:00:00Z',
-        endTime: '2024-01-31T23:59:59Z',
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
       };
       const state = archiveFiltersReducer(defaultArchiveFilters, archiveSetTimeRangeIntent(timeRange));
 
@@ -204,13 +225,50 @@ describe('ArchiveFiltersSlice', () => {
     });
 
     it('should update existing time range', () => {
-      let state = archiveFiltersReducer(
-        defaultArchiveFilters,
-        archiveSetTimeRangeIntent({ type: 'preset', preset: 'last24h' }),
-      );
-      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent({ type: 'preset', preset: 'last7d' }));
+      const timeRange1 = {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      };
+      const timeRange2 = {
+        startTime: new Date('2024-02-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-02-28T23:59:59Z').getTime(),
+      };
 
-      expect(state.timeRange).toEqual({ type: 'preset', preset: 'last7d' });
+      let state = archiveFiltersReducer(defaultArchiveFilters, archiveSetTimeRangeIntent(timeRange1));
+      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent(timeRange2));
+
+      expect(state.timeRange).toEqual(timeRange2);
+    });
+  });
+
+  describe('archiveClearTimeRangeIntent', () => {
+    it('should clear time range', () => {
+      const timeRange = {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      };
+
+      let state = archiveFiltersReducer(defaultArchiveFilters, archiveSetTimeRangeIntent(timeRange));
+      state = archiveFiltersReducer(state, archiveClearTimeRangeIntent());
+
+      expect(state.timeRange).toBeNull();
+    });
+
+    it('should not affect other filter state', () => {
+      const node = createLineageNode('my-namespace', NodeType.NAMESPACE);
+      const timeRange = {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      };
+
+      let state = archiveFiltersReducer(defaultArchiveFilters, archiveAddLineageFilterIntent(node));
+      state = archiveFiltersReducer(state, archiveSetSearchTextIntent('test'));
+      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent(timeRange));
+      state = archiveFiltersReducer(state, archiveClearTimeRangeIntent());
+
+      expect(state.lineageFilters).toHaveLength(1);
+      expect(state.searchText).toBe('test');
+      expect(state.timeRange).toBeNull();
     });
   });
 
@@ -239,15 +297,19 @@ describe('ArchiveFiltersSlice', () => {
   describe('archiveClearAllFiltersIntent', () => {
     it('should clear all filters', () => {
       const node = createLineageNode('my-namespace', NodeType.NAMESPACE);
+      const timeRange = {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      };
 
       let state = archiveFiltersReducer(defaultArchiveFilters, archiveAddLineageFilterIntent(node));
       state = archiveFiltersReducer(state, archiveSetSearchTextIntent('test'));
-      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent({ type: 'preset', preset: 'last24h' }));
+      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent(timeRange));
       state = archiveFiltersReducer(state, archiveClearAllFiltersIntent());
 
       expect(state.lineageFilters).toHaveLength(0);
       expect(state.searchText).toBe('');
-      expect(state.timeRange).toEqual({ type: 'preset', preset: 'all' });
+      expect(state.timeRange).toBeNull();
     });
 
     it('should reset to default state', () => {
@@ -267,6 +329,10 @@ describe('ArchiveFiltersSlice', () => {
       const node1 = createLineageNode('namespace', NodeType.NAMESPACE);
       const node2 = createLineageNode('deployment', NodeType.DEPLOYMENT);
       const node3 = createLineageNode('replicaset', NodeType.REPLICASET);
+      const timeRange = {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-07T23:59:59Z').getTime(),
+      };
 
       let state = defaultArchiveFilters;
 
@@ -275,11 +341,11 @@ describe('ArchiveFiltersSlice', () => {
       state = archiveFiltersReducer(state, archiveAddLineageFilterIntent(node2));
       state = archiveFiltersReducer(state, archiveAddLineageFilterIntent(node3));
       state = archiveFiltersReducer(state, archiveSetSearchTextIntent('my-app'));
-      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent({ type: 'preset', preset: 'last7d' }));
+      state = archiveFiltersReducer(state, archiveSetTimeRangeIntent(timeRange));
 
       expect(state.lineageFilters).toHaveLength(3);
       expect(state.searchText).toBe('my-app');
-      expect(state.timeRange).toEqual({ type: 'preset', preset: 'last7d' });
+      expect(state.timeRange).toEqual(timeRange);
 
       // Remove one filter
       state = archiveFiltersReducer(
@@ -295,7 +361,7 @@ describe('ArchiveFiltersSlice', () => {
       state = archiveFiltersReducer(state, archiveClearLineageFiltersIntent());
       expect(state.lineageFilters).toHaveLength(0);
       expect(state.searchText).toBe('my-app');
-      expect(state.timeRange).toEqual({ type: 'preset', preset: 'last7d' });
+      expect(state.timeRange).toEqual(timeRange);
     });
 
     it('should maintain state immutability', () => {

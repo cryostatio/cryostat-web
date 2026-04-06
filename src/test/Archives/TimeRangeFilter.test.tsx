@@ -17,7 +17,7 @@
 import { TimeRangeFilter } from '@app/Archives/TimeRangeFilter';
 import { TimeRangeOption } from '@app/Shared/Redux/Filters/ArchiveFiltersSlice';
 import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { render, testT } from '../utils';
@@ -25,25 +25,18 @@ import { render, testT } from '../utils';
 jest.mock('@app/utils/hooks/useArchiveFilters');
 const mockUseArchiveFilters = useArchiveFilters as jest.MockedFunction<typeof useArchiveFilters>;
 
-jest.mock('@app/DateTimePicker/DateTimePicker', () => ({
-  DateTimePicker: ({ onSelect, prefilledDate }: any) => (
-    <div data-testid="datetime-picker">
-      <button onClick={() => onSelect(new Date('2024-01-15T10:30:00Z'))}>Select Date</button>
-      <span>Prefilled: {prefilledDate?.toISOString() || 'none'}</span>
-    </div>
-  ),
-}));
-
 const mockSetTimeRange = jest.fn();
+const mockClearTimeRange = jest.fn();
 
 describe('<TimeRangeFilter />', () => {
-  let mockTimeRange: TimeRangeOption;
+  let mockTimeRange: TimeRangeOption | null;
 
   beforeEach(() => {
-    mockTimeRange = { type: 'preset', preset: 'all' };
+    mockTimeRange = null;
     mockUseArchiveFilters.mockReturnValue({
       timeRange: mockTimeRange,
       setTimeRange: mockSetTimeRange,
+      clearTimeRange: mockClearTimeRange,
       lineageFilters: [],
       searchText: '',
       hasActiveFilters: false,
@@ -60,7 +53,7 @@ describe('<TimeRangeFilter />', () => {
     jest.clearAllMocks();
   });
 
-  it('renders with default "All Time" selection', async () => {
+  it('renders start and end time inputs', () => {
     render({
       routerConfigs: {
         routes: [
@@ -72,26 +65,11 @@ describe('<TimeRangeFilter />', () => {
       },
     });
 
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    expect(toggle).toBeInTheDocument();
-    expect(toggle).toHaveTextContent(testT('TimeRangeFilter.ALL_TIME'));
+    expect(screen.getByLabelText(testT('TimeRangeFilter.START_TIME'))).toBeInTheDocument();
+    expect(screen.getByLabelText(testT('TimeRangeFilter.END_TIME'))).toBeInTheDocument();
   });
 
-  it('displays "Last 24 Hours" when selected', async () => {
-    mockTimeRange = { type: 'preset', preset: 'last24h' };
-    mockUseArchiveFilters.mockReturnValue({
-      timeRange: mockTimeRange,
-      setTimeRange: mockSetTimeRange,
-      lineageFilters: [],
-      searchText: '',
-      hasActiveFilters: true,
-      addLineageFilter: jest.fn(),
-      removeLineageFilter: jest.fn(),
-      clearLineageFilters: jest.fn(),
-      setSearchText: jest.fn(),
-      clearAllFilters: jest.fn(),
-    });
-
+  it('does not show reset button when no time range is set', () => {
     render({
       routerConfigs: {
         routes: [
@@ -103,203 +81,18 @@ describe('<TimeRangeFilter />', () => {
       },
     });
 
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    expect(toggle).toHaveTextContent(testT('TimeRangeFilter.LAST_24_HOURS'));
+    expect(screen.queryByRole('button', { name: testT('TimeRangeFilter.RESET') })).not.toBeInTheDocument();
   });
 
-  it('opens dropdown menu when toggle is clicked', async () => {
-    const user = userEvent.setup();
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <TimeRangeFilter />,
-          },
-        ],
-      },
-    });
-
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-
-    // Use getAllByText since "All Time" appears in both toggle and menu
-    const allTimeOptions = screen.getAllByText(testT('TimeRangeFilter.ALL_TIME'));
-    expect(allTimeOptions.length).toBeGreaterThan(0);
-    expect(screen.getByText(testT('TimeRangeFilter.LAST_24_HOURS'))).toBeInTheDocument();
-    expect(screen.getByText(testT('TimeRangeFilter.LAST_7_DAYS'))).toBeInTheDocument();
-    expect(screen.getByText(testT('TimeRangeFilter.LAST_30_DAYS'))).toBeInTheDocument();
-    expect(screen.getByText(testT('TimeRangeFilter.CUSTOM_RANGE'))).toBeInTheDocument();
-  });
-
-  it('selects "Last 7 Days" preset', async () => {
-    const user = userEvent.setup();
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <TimeRangeFilter />,
-          },
-        ],
-      },
-    });
-
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-
-    const last7DaysOption = screen.getByText(testT('TimeRangeFilter.LAST_7_DAYS'));
-    await user.click(last7DaysOption);
-
-    expect(mockSetTimeRange).toHaveBeenCalledWith({ type: 'preset', preset: 'last7d' });
-  });
-
-  it('selects "Last 30 Days" preset', async () => {
-    const user = userEvent.setup();
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <TimeRangeFilter />,
-          },
-        ],
-      },
-    });
-
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-
-    const last30DaysOption = screen.getByText(testT('TimeRangeFilter.LAST_30_DAYS'));
-    await user.click(last30DaysOption);
-
-    expect(mockSetTimeRange).toHaveBeenCalledWith({ type: 'preset', preset: 'last30d' });
-  });
-
-  it('opens custom range modal when "Custom Range" is selected', async () => {
-    const user = userEvent.setup();
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <TimeRangeFilter />,
-          },
-        ],
-      },
-    });
-
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-
-    const customRangeOption = screen.getByText(testT('TimeRangeFilter.CUSTOM_RANGE'));
-    await user.click(customRangeOption);
-
-    const modal = await screen.findByRole('dialog');
-    expect(modal).toBeInTheDocument();
-    expect(modal).toHaveAttribute('title', testT('TimeRangeFilter.CUSTOM_RANGE_TITLE'));
-  });
-
-  it('displays start and end time pickers in custom range modal', async () => {
-    const user = userEvent.setup();
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <TimeRangeFilter />,
-          },
-        ],
-      },
-    });
-
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-
-    const customRangeOption = screen.getByText(testT('TimeRangeFilter.CUSTOM_RANGE'));
-    await user.click(customRangeOption);
-
-    const modal = await screen.findByRole('dialog');
-    expect(within(modal).getByText(testT('TimeRangeFilter.START_TIME'))).toBeInTheDocument();
-    expect(within(modal).getByText(testT('TimeRangeFilter.END_TIME'))).toBeInTheDocument();
-
-    const pickers = within(modal).getAllByTestId('datetime-picker');
-    expect(pickers).toHaveLength(2);
-  });
-
-  it('applies custom time range when Apply button is clicked', async () => {
-    const user = userEvent.setup();
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <TimeRangeFilter />,
-          },
-        ],
-      },
-    });
-
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-
-    const customRangeOption = screen.getByText(testT('TimeRangeFilter.CUSTOM_RANGE'));
-    await user.click(customRangeOption);
-
-    const modal = await screen.findByRole('dialog');
-    const selectButtons = within(modal).getAllByText('Select Date');
-
-    // Select start time
-    await user.click(selectButtons[0]);
-
-    // Select end time
-    await user.click(selectButtons[1]);
-
-    const applyButton = within(modal).getByRole('button', { name: testT('TimeRangeFilter.APPLY') });
-    await user.click(applyButton);
-
-    expect(mockSetTimeRange).toHaveBeenCalledWith({
-      type: 'custom',
-      startTime: expect.any(String),
-      endTime: expect.any(String),
-    });
-  });
-
-  it('closes custom range modal when Cancel button is clicked', async () => {
-    const user = userEvent.setup();
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <TimeRangeFilter />,
-          },
-        ],
-      },
-    });
-
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-
-    const customRangeOption = screen.getByText(testT('TimeRangeFilter.CUSTOM_RANGE'));
-    await user.click(customRangeOption);
-
-    const modal = await screen.findByRole('dialog');
-    const cancelButton = within(modal).getByRole('button', { name: testT('CANCEL') });
-    await user.click(cancelButton);
-
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  });
-
-  it('displays "Custom Range" label when custom range is active', async () => {
+  it('shows reset button when time range is set', () => {
     mockTimeRange = {
-      type: 'custom',
-      startTime: '2024-01-01T00:00:00Z',
-      endTime: '2024-01-31T23:59:59Z',
+      startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+      endTime: new Date('2024-01-31T23:59:59Z').getTime(),
     };
     mockUseArchiveFilters.mockReturnValue({
       timeRange: mockTimeRange,
       setTimeRange: mockSetTimeRange,
+      clearTimeRange: mockClearTimeRange,
       lineageFilters: [],
       searchText: '',
       hasActiveFilters: true,
@@ -321,28 +114,47 @@ describe('<TimeRangeFilter />', () => {
       },
     });
 
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    expect(toggle).toHaveTextContent(testT('TimeRangeFilter.CUSTOM_RANGE'));
+    expect(screen.getByRole('button', { name: testT('TimeRangeFilter.RESET') })).toBeInTheDocument();
   });
 
-  it('renders with custom CSS class when provided', async () => {
+  it('calls clearTimeRange when reset button is clicked', async () => {
+    const user = userEvent.setup();
+    mockTimeRange = {
+      startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+      endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+    };
+    mockUseArchiveFilters.mockReturnValue({
+      timeRange: mockTimeRange,
+      setTimeRange: mockSetTimeRange,
+      clearTimeRange: mockClearTimeRange,
+      lineageFilters: [],
+      searchText: '',
+      hasActiveFilters: true,
+      addLineageFilter: jest.fn(),
+      removeLineageFilter: jest.fn(),
+      clearLineageFilters: jest.fn(),
+      setSearchText: jest.fn(),
+      clearAllFilters: jest.fn(),
+    });
+
     render({
       routerConfigs: {
         routes: [
           {
             path: '/archives',
-            element: <TimeRangeFilter className="custom-class" />,
+            element: <TimeRangeFilter />,
           },
         ],
       },
     });
 
-    // Verify component renders successfully with className prop
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    expect(toggle).toBeInTheDocument();
+    const resetButton = screen.getByRole('button', { name: testT('TimeRangeFilter.RESET') });
+    await user.click(resetButton);
+
+    expect(mockClearTimeRange).toHaveBeenCalledTimes(1);
   });
 
-  it('resets custom time inputs when modal is cancelled', async () => {
+  it('updates Redux state when both valid times are entered', async () => {
     const user = userEvent.setup();
     render({
       routerConfigs: {
@@ -355,33 +167,164 @@ describe('<TimeRangeFilter />', () => {
       },
     });
 
-    // Open custom range modal
-    const toggle = screen.getByRole('button', { name: testT('TimeRangeFilter.ARIA_LABELS.MENU_TOGGLE') });
-    await user.click(toggle);
-    const customRangeOption = screen.getByText(testT('TimeRangeFilter.CUSTOM_RANGE'));
-    await user.click(customRangeOption);
+    const startInput = screen.getByLabelText(testT('TimeRangeFilter.START_TIME'));
+    const endInput = screen.getByLabelText(testT('TimeRangeFilter.END_TIME'));
 
-    let modal = await screen.findByRole('dialog');
-    const selectButtons = within(modal).getAllByText('Select Date');
-    await user.click(selectButtons[0]);
+    await user.clear(startInput);
+    await user.type(startInput, '2024-01-01T00:00');
+    await user.clear(endInput);
+    await user.type(endInput, '2024-01-31T23:59');
 
-    // Cancel
-    const cancelButton = within(modal).getByRole('button', { name: testT('CANCEL') });
-    await user.click(cancelButton);
+    // Wait for debounce/validation
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Verify modal is closed
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(mockSetTimeRange).toHaveBeenCalledWith({
+      startTime: expect.any(Number),
+      endTime: expect.any(Number),
+    });
+  });
 
-    // Reopen modal - should initialize with default 24h range again
-    await user.click(toggle);
-    await user.click(screen.getByText(testT('TimeRangeFilter.CUSTOM_RANGE')));
+  it('does not update Redux state when only start time is entered', async () => {
+    const user = userEvent.setup();
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/archives',
+            element: <TimeRangeFilter />,
+          },
+        ],
+      },
+    });
 
-    modal = await screen.findByRole('dialog');
-    const pickers = within(modal).getAllByTestId('datetime-picker');
+    const startInput = screen.getByLabelText(testT('TimeRangeFilter.START_TIME'));
+    await user.clear(startInput);
+    await user.type(startInput, '2024-01-01T00:00');
 
-    // Check that prefilled dates are initialized (not the previously selected date)
-    // The component initializes with yesterday and today when opening custom modal
-    expect(pickers[0]).toHaveTextContent('Prefilled:');
-    expect(pickers[1]).toHaveTextContent('Prefilled:');
+    // Wait for debounce/validation
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Should not call setTimeRange when only one input is filled
+    expect(mockSetTimeRange).not.toHaveBeenCalled();
+  });
+
+  it('shows error state when end time is before start time', async () => {
+    const user = userEvent.setup();
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/archives',
+            element: <TimeRangeFilter />,
+          },
+        ],
+      },
+    });
+
+    const startInput = screen.getByLabelText(testT('TimeRangeFilter.START_TIME')) as HTMLInputElement;
+    const endInput = screen.getByLabelText(testT('TimeRangeFilter.END_TIME')) as HTMLInputElement;
+
+    await user.clear(startInput);
+    await user.type(startInput, '2024-01-31T23:59');
+    await user.clear(endInput);
+    await user.type(endInput, '2024-01-01T00:00');
+
+    // Wait for validation
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Check that inputs have error state (aria-invalid attribute)
+    expect(startInput).toHaveAttribute('aria-invalid', 'true');
+    expect(endInput).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('populates inputs with existing time range values', () => {
+    mockTimeRange = {
+      startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+      endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+    };
+    mockUseArchiveFilters.mockReturnValue({
+      timeRange: mockTimeRange,
+      setTimeRange: mockSetTimeRange,
+      clearTimeRange: mockClearTimeRange,
+      lineageFilters: [],
+      searchText: '',
+      hasActiveFilters: true,
+      addLineageFilter: jest.fn(),
+      removeLineageFilter: jest.fn(),
+      clearLineageFilters: jest.fn(),
+      setSearchText: jest.fn(),
+      clearAllFilters: jest.fn(),
+    });
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/archives',
+            element: <TimeRangeFilter />,
+          },
+        ],
+      },
+    });
+
+    const startInput = screen.getByLabelText(testT('TimeRangeFilter.START_TIME')) as HTMLInputElement;
+    const endInput = screen.getByLabelText(testT('TimeRangeFilter.END_TIME')) as HTMLInputElement;
+
+    // Inputs should have values (exact format depends on browser/timezone)
+    expect(startInput.value).toBeTruthy();
+    expect(endInput.value).toBeTruthy();
+  });
+
+  it('does not show error state when inputs are empty', async () => {
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/archives',
+            element: <TimeRangeFilter />,
+          },
+        ],
+      },
+    });
+
+    const startInput = screen.getByLabelText(testT('TimeRangeFilter.START_TIME')) as HTMLInputElement;
+    const endInput = screen.getByLabelText(testT('TimeRangeFilter.END_TIME')) as HTMLInputElement;
+
+    // Inputs start empty, should not show error
+    expect(startInput).toHaveAttribute('aria-invalid', 'false');
+    expect(endInput).toHaveAttribute('aria-invalid', 'false');
+    expect(startInput.value).toBe('');
+    expect(endInput.value).toBe('');
+  });
+
+  it('updates both inputs independently', async () => {
+    const user = userEvent.setup();
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/archives',
+            element: <TimeRangeFilter />,
+          },
+        ],
+      },
+    });
+
+    const startInput = screen.getByLabelText(testT('TimeRangeFilter.START_TIME'));
+    const endInput = screen.getByLabelText(testT('TimeRangeFilter.END_TIME'));
+
+    // Set start time
+    await user.clear(startInput);
+    await user.type(startInput, '2024-01-01T00:00');
+
+    // Set end time
+    await user.clear(endInput);
+    await user.type(endInput, '2024-01-31T23:59');
+
+    // Wait for validation
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Should have called setTimeRange with valid range
+    expect(mockSetTimeRange).toHaveBeenCalled();
   });
 });

@@ -34,6 +34,7 @@ const TestComponent: React.FC = () => {
     removeLineageFilter,
     clearLineageFilters,
     setTimeRange,
+    clearTimeRange,
     setSearchText,
     clearAllFilters,
   } = useArchiveFilters();
@@ -66,23 +67,19 @@ const TestComponent: React.FC = () => {
       <button data-testid="clearLineageFilters" onClick={() => clearLineageFilters()}>
         Clear Lineage Filters
       </button>
-      <button data-testid="setTimeRangePreset" onClick={() => setTimeRange({ type: 'preset', preset: 'last24h' })}>
-        Set Time Range Preset
-      </button>
       <button
-        data-testid="setTimeRangeCustom"
+        data-testid="setTimeRange"
         onClick={() =>
           setTimeRange({
-            type: 'custom',
-            startTime: '2024-01-01T00:00:00Z',
-            endTime: '2024-01-31T23:59:59Z',
+            startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+            endTime: new Date('2024-01-31T23:59:59Z').getTime(),
           })
         }
       >
-        Set Time Range Custom
+        Set Time Range
       </button>
-      <button data-testid="setTimeRangeAll" onClick={() => setTimeRange({ type: 'preset', preset: 'all' })}>
-        Set Time Range All
+      <button data-testid="clearTimeRange" onClick={() => clearTimeRange()}>
+        Clear Time Range
       </button>
       <button data-testid="setSearchText" onClick={() => setSearchText('my-search')}>
         Set Search Text
@@ -118,7 +115,7 @@ describe('useArchiveFilters', () => {
       );
 
       expect(screen.getByTestId('lineageFiltersCount').textContent).toBe('0');
-      expect(screen.getByTestId('timeRange').textContent).toBe('{"type":"preset","preset":"all"}');
+      expect(screen.getByTestId('timeRange').textContent).toBe('null');
       expect(screen.getByTestId('searchText').textContent).toBe('');
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('false');
     });
@@ -207,19 +204,19 @@ describe('useArchiveFilters', () => {
 
       await user.click(screen.getByTestId('addLineageFilter'));
       await user.click(screen.getByTestId('setSearchText'));
-      await user.click(screen.getByTestId('setTimeRangePreset'));
+      await user.click(screen.getByTestId('setTimeRange'));
 
       await user.click(screen.getByTestId('clearLineageFilters'));
 
       expect(screen.getByTestId('lineageFiltersCount').textContent).toBe('0');
       expect(screen.getByTestId('searchText').textContent).toBe('my-search');
-      expect(screen.getByTestId('timeRange').textContent).toBe('{"type":"preset","preset":"last24h"}');
+      expect(screen.getByTestId('timeRange').textContent).toContain('startTime');
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
     });
   });
 
   describe('setTimeRange', () => {
-    it('should set preset time range', async () => {
+    it('should set time range', async () => {
       const user = userEvent.setup();
       render(
         <Provider store={store}>
@@ -227,25 +224,11 @@ describe('useArchiveFilters', () => {
         </Provider>,
       );
 
-      await user.click(screen.getByTestId('setTimeRangePreset'));
+      await user.click(screen.getByTestId('setTimeRange'));
 
-      expect(screen.getByTestId('timeRange').textContent).toBe('{"type":"preset","preset":"last24h"}');
-      expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
-    });
-
-    it('should set custom time range', async () => {
-      const user = userEvent.setup();
-      render(
-        <Provider store={store}>
-          <TestComponent />
-        </Provider>,
-      );
-
-      await user.click(screen.getByTestId('setTimeRangeCustom'));
-
-      expect(screen.getByTestId('timeRange').textContent).toBe(
-        '{"type":"custom","startTime":"2024-01-01T00:00:00Z","endTime":"2024-01-31T23:59:59Z"}',
-      );
+      const timeRangeText = screen.getByTestId('timeRange').textContent || '';
+      expect(timeRangeText).toContain('startTime');
+      expect(timeRangeText).toContain('endTime');
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
     });
 
@@ -257,11 +240,50 @@ describe('useArchiveFilters', () => {
         </Provider>,
       );
 
-      await user.click(screen.getByTestId('setTimeRangePreset'));
-      expect(screen.getByTestId('timeRange').textContent).toBe('{"type":"preset","preset":"last24h"}');
+      await user.click(screen.getByTestId('setTimeRange'));
+      const firstTimeRange = screen.getByTestId('timeRange').textContent;
 
-      await user.click(screen.getByTestId('setTimeRangeAll'));
-      expect(screen.getByTestId('timeRange').textContent).toBe('{"type":"preset","preset":"all"}');
+      await user.click(screen.getByTestId('setTimeRange'));
+      const secondTimeRange = screen.getByTestId('timeRange').textContent;
+
+      expect(firstTimeRange).toBe(secondTimeRange);
+    });
+  });
+
+  describe('clearTimeRange', () => {
+    it('should clear time range', async () => {
+      const user = userEvent.setup();
+      render(
+        <Provider store={store}>
+          <TestComponent />
+        </Provider>,
+      );
+
+      await user.click(screen.getByTestId('setTimeRange'));
+      expect(screen.getByTestId('timeRange').textContent).toContain('startTime');
+
+      await user.click(screen.getByTestId('clearTimeRange'));
+      expect(screen.getByTestId('timeRange').textContent).toBe('null');
+    });
+
+    it('should not affect other filters', async () => {
+      const user = userEvent.setup();
+      render(
+        <Provider store={store}>
+          <TestComponent />
+        </Provider>,
+      );
+
+      await user.click(screen.getByTestId('addLineageFilter'));
+      await user.click(screen.getByTestId('setSearchText'));
+      await user.click(screen.getByTestId('setTimeRange'));
+
+      await user.click(screen.getByTestId('clearTimeRange'));
+
+      expect(screen.getByTestId('lineageFiltersCount').textContent).toBe('1');
+      expect(screen.getByTestId('searchText').textContent).toBe('my-search');
+      expect(screen.getByTestId('timeRange').textContent).toBe('null');
+      expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
     });
   });
 
@@ -309,7 +331,7 @@ describe('useArchiveFilters', () => {
 
       await user.click(screen.getByTestId('addLineageFilter'));
       await user.click(screen.getByTestId('setSearchText'));
-      await user.click(screen.getByTestId('setTimeRangePreset'));
+      await user.click(screen.getByTestId('setTimeRange'));
 
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
 
@@ -317,7 +339,7 @@ describe('useArchiveFilters', () => {
 
       expect(screen.getByTestId('lineageFiltersCount').textContent).toBe('0');
       expect(screen.getByTestId('searchText').textContent).toBe('');
-      expect(screen.getByTestId('timeRange').textContent).toBe('{"type":"preset","preset":"all"}');
+      expect(screen.getByTestId('timeRange').textContent).toBe('null');
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('false');
     });
   });
@@ -346,7 +368,7 @@ describe('useArchiveFilters', () => {
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
     });
 
-    it('should return true when time range is not "all"', async () => {
+    it('should return true when time range is set', async () => {
       const user = userEvent.setup();
       render(
         <Provider store={store}>
@@ -354,7 +376,7 @@ describe('useArchiveFilters', () => {
         </Provider>,
       );
 
-      await user.click(screen.getByTestId('setTimeRangePreset'));
+      await user.click(screen.getByTestId('setTimeRange'));
 
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
     });
@@ -386,7 +408,7 @@ describe('useArchiveFilters', () => {
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
     });
 
-    it('should return false when time range is "all" preset', async () => {
+    it('should return false when time range is cleared', async () => {
       const user = userEvent.setup();
       render(
         <Provider store={store}>
@@ -394,10 +416,10 @@ describe('useArchiveFilters', () => {
         </Provider>,
       );
 
-      await user.click(screen.getByTestId('setTimeRangePreset'));
+      await user.click(screen.getByTestId('setTimeRange'));
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
 
-      await user.click(screen.getByTestId('setTimeRangeAll'));
+      await user.click(screen.getByTestId('clearTimeRange'));
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('false');
     });
   });
@@ -410,7 +432,10 @@ describe('useArchiveFilters', () => {
           ...defaultArchiveFilters,
           lineageFilters: [node],
           searchText: 'preloaded',
-          timeRange: { type: 'preset', preset: 'last7d' },
+          timeRange: {
+            startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+            endTime: new Date('2024-01-07T23:59:59Z').getTime(),
+          },
         },
       };
 
@@ -425,7 +450,7 @@ describe('useArchiveFilters', () => {
       const filters = JSON.parse(screen.getByTestId('lineageFilters').textContent || '[]');
       expect(filters[0]).toEqual(node);
       expect(screen.getByTestId('searchText').textContent).toBe('preloaded');
-      expect(screen.getByTestId('timeRange').textContent).toBe('{"type":"preset","preset":"last7d"}');
+      expect(screen.getByTestId('timeRange').textContent).toContain('startTime');
       expect(screen.getByTestId('hasActiveFilters').textContent).toBe('true');
     });
   });
