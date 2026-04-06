@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { EnvironmentNode, NodeType, TargetNode } from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useTargetLineage } from '@app/utils/hooks/useTargetLineage';
 import { render, waitFor } from '@testing-library/react';
 import * as React from 'react';

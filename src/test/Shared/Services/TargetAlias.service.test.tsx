@@ -15,8 +15,8 @@
  */
 
 import { ApiService } from '@app/Shared/Services/Api.service';
-import { TargetAliasService } from '@app/Shared/Services/TargetAlias.service';
 import { EnvironmentNode, NodeType, TargetNode } from '@app/Shared/Services/api.types';
+import { TargetAliasService } from '@app/Shared/Services/TargetAlias.service';
 import { of, throwError } from 'rxjs';
 
 jest.mock('@app/Shared/Services/Api.service');
