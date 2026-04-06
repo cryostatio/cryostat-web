@@ -48,13 +48,20 @@ export interface LineageLabelChainProps {
  */
 export const LineageLabelChain: React.FC<LineageLabelChainProps> = ({ lineagePath, className }) => {
   const { t, i18n } = useCryostatTranslation();
-  const { addLineageFilter, lineageFilters } = useArchiveFilters();
+  const { addLineageFilter, removeLineageFilter, lineageFilters } = useArchiveFilters();
 
   const handleNodeClick = React.useCallback(
     (node: LineageNode) => {
       addLineageFilter(node);
     },
     [addLineageFilter],
+  );
+
+  const handleNodeRemove = React.useCallback(
+    (node: LineageNode) => {
+      removeLineageFilter(node);
+    },
+    [removeLineageFilter],
   );
 
   // Check if a node is already in the active filters
@@ -95,7 +102,7 @@ export const LineageLabelChain: React.FC<LineageLabelChainProps> = ({ lineagePat
             color={isFiltered ? 'blue' : 'grey'}
             isCompact
             onClick={isFiltered ? undefined : () => handleNodeClick(node)}
-            onClose={isFiltered ? () => handleNodeClick(node) : undefined}
+            onClose={isFiltered ? () => handleNodeRemove(node) : undefined}
             aria-label={
               isFiltered
                 ? t('LineageLabelChain.ARIA_LABELS.FILTERED_NODE')

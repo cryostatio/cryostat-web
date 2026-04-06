@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { ArchiveFilterBar } from '@app/Archives/ArchiveFilterBar';
 import { DirectoryNameCell } from '@app/Archives/DirectoryNameCell';
+import { TimeRangeFilter } from '@app/Archives/TimeRangeFilter';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from '@app/Archives/utils';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
@@ -23,12 +25,15 @@ import { Target, NotificationCategory, HeapDumpDirectory } from '@app/Shared/Ser
 import { ServiceContext } from '@app/Shared/Services/Services';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
 import { useAliasCache } from '@app/utils/hooks/useAliasCache';
+import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
+import { useLineageFiltering } from '@app/utils/hooks/useLineageFiltering';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTargetDetailsModal } from '@app/utils/hooks/useTargetDetailsModal';
 import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+  Alert,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -83,7 +88,6 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
   const { t } = useCryostatTranslation();
 
   const [directories, setDirectories] = React.useState<_HeapDumpDirectory[]>([]);
-  const [searchText, setSearchText] = React.useState('');
   const [expandedDirectories, setExpandedDirectories] = React.useState<_HeapDumpDirectory[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
@@ -91,6 +95,12 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
   const [sortBy, getSortParams] = useSort();
   const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
     useTargetDetailsModal();
+
+  // Use archive filters from Redux (shared with JFR archives)
+  const { searchText, setSearchText, timeRange, hasActiveFilters } = useArchiveFilters();
+
+  // Use lineage filtering hook
+  const { filteredItems: lineageFilteredDirectories, lineageLoading } = useLineageFiltering(directories);
 
   const jvmIds = React.useMemo(() => directories.map((d) => d.jvmId), [directories]);
   const aliasMap = useAliasCache(jvmIds);
@@ -137,17 +147,40 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
   }, [refreshDirectoriesAndCounts]);
 
   const searchedDirectories = React.useMemo(() => {
-    let updatedSearchedDirectories: _HeapDumpDirectory[];
-    if (!searchText) {
-      updatedSearchedDirectories = directories;
-    } else {
+    // Start with lineage-filtered directories from the hook
+    let updatedSearchedDirectories: _HeapDumpDirectory[] = lineageFilteredDirectories;
+
+    if (searchText) {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter((d: _HeapDumpDirectory) => {
+      updatedSearchedDirectories = updatedSearchedDirectories.filter((d: _HeapDumpDirectory) => {
         // Search by jvmId and alias (from audit log)
         const alias = aliasMap.get(d.jvmId) || '';
         return reg.test(d.jvmId) || reg.test(alias);
       });
     }
+
+    // Apply time range filter to heap dumps within each directory
+    // and filter out directories with no matching dumps
+    if (timeRange) {
+      updatedSearchedDirectories = updatedSearchedDirectories
+        .map((dir) => {
+          const matchingDumps = dir.heapDumps.filter((dump) => {
+            // lastModified is in seconds, convert to milliseconds for comparison
+            if (!dump.lastModified) {
+              return false;
+            }
+            const lastModifiedMs = dump.lastModified * 1000;
+            return lastModifiedMs >= timeRange.startTime && lastModifiedMs <= timeRange.endTime;
+          });
+
+          return {
+            ...dir,
+            heapDumps: matchingDumps,
+          };
+        })
+        .filter((dir) => dir.heapDumps.length > 0);
+    }
+
     return sortResources(
       {
         index: sortBy.index ?? 0,
@@ -156,7 +189,7 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
       updatedSearchedDirectories,
       tableColumns,
     );
-  }, [directories, searchText, sortBy, aliasMap]);
+  }, [lineageFilteredDirectories, searchText, timeRange, sortBy, aliasMap]);
 
   React.useEffect(() => {
     addSubscription(
@@ -394,9 +427,18 @@ export const AllArchivedHeapDumpsTable: React.FC<AllArchivedHeapDumpsTableProps>
                   onClear={handleSearchInputClear}
                 />
               </ToolbarItem>
+              <ToolbarItem>
+                <TimeRangeFilter />
+              </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>
+        {hasActiveFilters && <ArchiveFilterBar />}
+        {lineageLoading && (
+          <Alert variant="info" isInline title={t('AllArchivedHeapDumpsTable.LOADING_LINEAGE_TITLE')}>
+            <Spinner size="sm" /> {t('AllArchivedHeapDumpsTable.LOADING_LINEAGE_MESSAGE')}
+          </Alert>
+        )}
         <InnerScrollContainer className="">{view}</InnerScrollContainer>
       </OuterScrollContainer>
     </>
