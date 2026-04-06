@@ -22,12 +22,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import {
-  EmptyState,
-  EmptyStateBody,
-  Timestamp,
-  TimestampTooltipVariant,
-} from '@patternfly/react-core';
+import { EmptyState, EmptyStateBody, Timestamp, TimestampTooltipVariant } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { Table, Thead, Tr, Th, Tbody, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
