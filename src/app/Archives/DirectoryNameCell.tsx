@@ -15,6 +15,7 @@
  */
 
 import { LineageLabelChain } from '@app/Archives/LineageLabelChain';
+import { TargetNode } from '@app/Shared/Services/api.types';
 import { useTargetLineage } from '@app/utils/hooks/useTargetLineage';
 import { extractFilterableLineagePath } from '@app/utils/targetUtils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -26,6 +27,7 @@ export interface DirectoryNameCellProps {
   jvmId: string;
   connectUrl?: string;
   alias?: string;
+  targetNode?: TargetNode | null; // Optional pre-fetched lineage
   onInfoClick?: () => void;
   showInfoButton?: boolean;
 }
@@ -34,11 +36,21 @@ export const DirectoryNameCell: React.FC<DirectoryNameCellProps> = ({
   jvmId,
   connectUrl,
   alias,
+  targetNode: preFetchedTargetNode,
   onInfoClick,
   showInfoButton = true,
 }) => {
-  const { displayName, isLoading, targetNode } = useTargetLineage(jvmId, connectUrl, alias);
+  // Only fetch lineage if not provided (optimization)
+  const shouldFetchLineage = !preFetchedTargetNode && jvmId && jvmId !== 'uploads';
+  const {
+    displayName,
+    isLoading,
+    targetNode: fetchedTargetNode,
+  } = useTargetLineage(shouldFetchLineage ? jvmId : '', connectUrl, alias);
   const { t } = useCryostatTranslation();
+
+  // Use pre-fetched lineage if available, otherwise use fetched lineage
+  const targetNode = preFetchedTargetNode || fetchedTargetNode;
 
   // Extract lineage path from target node if available
   const lineagePath = React.useMemo(() => {
