@@ -20,7 +20,13 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } from '@app/Shared/Services/api.types';
+import {
+  ArchivedRecording,
+  RecordingDirectory,
+  Target,
+  TargetNode,
+  NotificationCategory,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
 import { useAliasCache } from '@app/utils/hooks/useAliasCache';
@@ -28,9 +34,11 @@ import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTargetDetailsModal } from '@app/utils/hooks/useTargetDetailsModal';
+import { extractFilterableLineagePath, findInnermostTargetNode } from '@app/utils/targetUtils';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+  Alert,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -96,8 +104,12 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
     useTargetDetailsModal();
 
+  // Lineage data for filtering
+  const [lineageMap, setLineageMap] = React.useState<Map<string, TargetNode | null>>(new Map());
+  const [lineageLoading, setLineageLoading] = React.useState(false);
+
   // Use archive filters from Redux
-  const { searchText, setSearchText, timeRange, hasActiveFilters } = useArchiveFilters();
+  const { searchText, setSearchText, timeRange, lineageFilters, hasActiveFilters } = useArchiveFilters();
 
   const jvmIds = React.useMemo(() => directories.map((d) => d.jvmId), [directories]);
   const aliasMap = useAliasCache(jvmIds);
@@ -139,9 +151,47 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     setSearchText('');
   }, [setSearchText]);
 
+  // Fetch lineage for all directories (eager loading for filtering)
+  const fetchAllLineage = React.useCallback(() => {
+    if (directories.length === 0) {
+      return;
+    }
+
+    setLineageLoading(true);
+
+    // Fetch lineage for each directory in parallel
+    const lineagePromises = directories.map((dir) =>
+      context.api
+        .getTargetLineage(dir.jvmId)
+        .toPromise()
+        .then((lineageRoot) => {
+          if (!lineageRoot) {
+            return { jvmId: dir.jvmId, targetNode: null };
+          }
+          const target = findInnermostTargetNode(lineageRoot);
+          return { jvmId: dir.jvmId, targetNode: target || null };
+        })
+        .catch(() => {
+          // If lineage fetch fails, store null (graceful degradation)
+          return { jvmId: dir.jvmId, targetNode: null };
+        }),
+    );
+
+    Promise.all(lineagePromises).then((results) => {
+      const newMap = new Map(results.map((r) => [r.jvmId, r.targetNode]));
+      setLineageMap(newMap);
+      setLineageLoading(false);
+    });
+  }, [directories, context.api]);
+
   React.useEffect(() => {
     refreshDirectoriesAndCounts();
   }, [refreshDirectoriesAndCounts]);
+
+  // Fetch lineage when directories change
+  React.useEffect(() => {
+    fetchAllLineage();
+  }, [fetchAllLineage]);
 
   const filteredDirectories = React.useMemo(() => {
     let filtered: _RecordingDirectory[] = directories;
@@ -175,10 +225,25 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         .filter((dir) => dir.recordings.length > 0);
     }
 
-    // Apply lineage filters (if any)
-    // Note: For now, lineage filtering is done in the DirectoryNameCell component
-    // which fetches lineage on-demand. Full filtering would require fetching
-    // lineage for all directories upfront, which we'll add in a future iteration.
+    // Apply lineage filters (AND logic: all filters must match)
+    if (lineageFilters.length > 0 && !lineageLoading) {
+      filtered = filtered.filter((dir) => {
+        const targetNode = lineageMap.get(dir.jvmId);
+        if (!targetNode) {
+          // No lineage data available for this directory - can't match filters
+          return false;
+        }
+
+        const lineagePath = extractFilterableLineagePath(targetNode);
+
+        // Directory matches if its lineage contains ALL active filter nodes
+        return lineageFilters.every((filterNode) =>
+          lineagePath.some(
+            (pathNode) => pathNode.nodeType === filterNode.nodeType && pathNode.name === filterNode.name,
+          ),
+        );
+      });
+    }
 
     // Sort the filtered results
     return sortResources(
@@ -189,7 +254,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       filtered,
       tableColumns,
     );
-  }, [directories, searchText, timeRange, sortBy, aliasMap]);
+  }, [directories, searchText, timeRange, lineageFilters, lineageLoading, lineageMap, sortBy, aliasMap]);
 
   React.useEffect(() => {
     addSubscription(
@@ -294,6 +359,8 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
             <DirectoryNameCell
               jvmId={dir.jvmId}
               connectUrl={dir.connectUrl}
+              alias={aliasMap.get(dir.jvmId)}
+              targetNode={lineageMap.get(dir.jvmId)}
               onInfoClick={() => handleInfoClick(dir.jvmId)}
             />
           </Td>
@@ -314,7 +381,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         </Tr>
       );
     });
-  }, [toggleExpanded, filteredDirectories, expandedDirectories, handleInfoClick]);
+  }, [toggleExpanded, filteredDirectories, expandedDirectories, aliasMap, lineageMap, handleInfoClick]);
 
   const recordingRows = React.useMemo(() => {
     return filteredDirectories.map((dir, idx) => {
@@ -439,6 +506,11 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
           </ToolbarContent>
         </Toolbar>
         {hasActiveFilters && <ArchiveFilterBar />}
+        {lineageLoading && (
+          <Alert variant="info" isInline title={t('AllArchivedRecordingsTable.LOADING_LINEAGE_TITLE')}>
+            <Spinner size="sm" /> {t('AllArchivedRecordingsTable.LOADING_LINEAGE_MESSAGE')}
+          </Alert>
+        )}
         <InnerScrollContainer className="">{view}</InnerScrollContainer>
       </OuterScrollContainer>
     </>
