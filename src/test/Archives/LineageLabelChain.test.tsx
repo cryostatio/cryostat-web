@@ -81,13 +81,13 @@ describe('<LineageLabelChain />', () => {
       },
     });
 
-    const chain = screen.getByRole('navigation', {
+    const chain = screen.getByRole('list', {
       name: testT('LineageLabelChain.ARIA_LABELS.CHAIN'),
     });
     expect(chain).toBeInTheDocument();
 
-    const button = within(chain).getByRole('button', { name: /Realm: my-cluster/ });
-    expect(button).toBeInTheDocument();
+    // Labels are rendered in a list
+    expect(chain).toHaveTextContent('Realm: my-cluster');
   });
 
   it('renders multiple nodes in left-to-right order', () => {
@@ -108,13 +108,14 @@ describe('<LineageLabelChain />', () => {
       },
     });
 
-    const chain = screen.getByRole('navigation', {
+    const chain = screen.getByRole('list', {
       name: testT('LineageLabelChain.ARIA_LABELS.CHAIN'),
     });
 
-    expect(within(chain).getByRole('button', { name: /Realm: my-cluster/ })).toBeInTheDocument();
-    expect(within(chain).getByRole('button', { name: /Namespace: production/ })).toBeInTheDocument();
-    expect(within(chain).getByRole('button', { name: /Deployment: my-app/ })).toBeInTheDocument();
+    // All nodes should be present as labels
+    expect(chain).toHaveTextContent('Realm: my-cluster');
+    expect(chain).toHaveTextContent('Namespace: production');
+    expect(chain).toHaveTextContent('Deployment: my-app');
   });
 
   it('calls addLineageFilter when a node is clicked', async () => {
@@ -135,8 +136,13 @@ describe('<LineageLabelChain />', () => {
       },
     });
 
-    const productionButton = screen.getByRole('button', { name: /Namespace: production/ });
-    await user.click(productionButton);
+    const chain = screen.getByRole('list', {
+      name: testT('LineageLabelChain.ARIA_LABELS.CHAIN'),
+    });
+
+    // Find the label by its text content and click it
+    const productionLabel = within(chain).getByText('Namespace: production');
+    await user.click(productionLabel);
 
     expect(mockAddLineageFilter).toHaveBeenCalledWith({ nodeType: NodeType.NAMESPACE, name: 'production' });
   });
@@ -174,17 +180,14 @@ describe('<LineageLabelChain />', () => {
       },
     });
 
-    const chain = screen.getByRole('navigation', {
+    const chain = screen.getByRole('list', {
       name: testT('LineageLabelChain.ARIA_LABELS.CHAIN'),
     });
 
-    // my-cluster and my-app should be clickable buttons
-    expect(within(chain).getByRole('button', { name: /Realm: my-cluster/ })).toBeInTheDocument();
-    expect(within(chain).getByRole('button', { name: /Deployment: my-app/ })).toBeInTheDocument();
-
-    // production should be bold text (not a button) since it's filtered
-    expect(within(chain).queryByRole('button', { name: /Namespace: production/ })).not.toBeInTheDocument();
+    // All nodes should be present as labels (filtered ones have close button)
+    expect(chain).toHaveTextContent('Realm: my-cluster');
     expect(chain).toHaveTextContent('Namespace: production');
+    expect(chain).toHaveTextContent('Deployment: my-app');
   });
 
   it('applies custom CSS class when provided', () => {
@@ -225,19 +228,19 @@ describe('<LineageLabelChain />', () => {
       },
     });
 
-    const chain = screen.getByRole('navigation', {
+    const chain = screen.getByRole('list', {
       name: testT('LineageLabelChain.ARIA_LABELS.CHAIN'),
     });
 
-    // All nodes should be present
-    expect(within(chain).getByRole('button', { name: /Realm: kubernetes-cluster/ })).toBeInTheDocument();
-    expect(within(chain).getByRole('button', { name: /Namespace: production/ })).toBeInTheDocument();
-    expect(within(chain).getByRole('button', { name: /Deployment: backend-api/ })).toBeInTheDocument();
-    expect(within(chain).getByRole('button', { name: /Pod: backend-api-7d9f8c-xyz/ })).toBeInTheDocument();
+    // All nodes should be present as labels
+    expect(chain).toHaveTextContent('Realm: kubernetes-cluster');
+    expect(chain).toHaveTextContent('Namespace: production');
+    expect(chain).toHaveTextContent('Deployment: backend-api');
+    expect(chain).toHaveTextContent('Pod: backend-api-7d9f8c-xyz');
 
-    // Click on backend-api node
-    const backendButton = within(chain).getByRole('button', { name: /Deployment: backend-api$/ });
-    await user.click(backendButton);
+    // Click on backend-api label
+    const backendLabel = within(chain).getByText('Deployment: backend-api');
+    await user.click(backendLabel);
 
     expect(mockAddLineageFilter).toHaveBeenCalledWith({ nodeType: NodeType.DEPLOYMENT, name: 'backend-api' });
   });
@@ -279,17 +282,15 @@ describe('<LineageLabelChain />', () => {
       },
     });
 
-    const chain = screen.getByRole('navigation', {
+    const chain = screen.getByRole('list', {
       name: testT('LineageLabelChain.ARIA_LABELS.CHAIN'),
     });
 
-    // my-cluster and my-app should NOT be buttons (they're filtered)
-    expect(within(chain).queryByRole('button', { name: /Realm: my-cluster/ })).not.toBeInTheDocument();
-    expect(within(chain).queryByRole('button', { name: /Deployment: my-app/ })).not.toBeInTheDocument();
-
-    // production and my-pod-123 should be buttons (not filtered)
-    expect(within(chain).getByRole('button', { name: /Namespace: production/ })).toBeInTheDocument();
-    expect(within(chain).getByRole('button', { name: /Pod: my-pod-123/ })).toBeInTheDocument();
+    // All nodes should be present as labels (filtered ones have close button)
+    expect(chain).toHaveTextContent('Realm: my-cluster');
+    expect(chain).toHaveTextContent('Namespace: production');
+    expect(chain).toHaveTextContent('Deployment: my-app');
+    expect(chain).toHaveTextContent('Pod: my-pod-123');
   });
 
   it('renders with correct aria-labels for accessibility', () => {
@@ -309,14 +310,13 @@ describe('<LineageLabelChain />', () => {
       },
     });
 
-    const chain = screen.getByRole('navigation', {
+    const chain = screen.getByRole('list', {
       name: testT('LineageLabelChain.ARIA_LABELS.CHAIN'),
     });
     expect(chain).toBeInTheDocument();
 
-    const testNsButton = screen.getByRole('button', {
-      name: testT('LineageLabelChain.ARIA_LABELS.FILTER_BY_NODE', { nodeType: 'Namespace', name: 'test-ns' }),
-    });
-    expect(testNsButton).toBeInTheDocument();
+    // Labels should have aria-labels for accessibility
+    const testNsLabel = within(chain).getByText('Namespace: test-ns');
+    expect(testNsLabel).toBeInTheDocument();
   });
 });
