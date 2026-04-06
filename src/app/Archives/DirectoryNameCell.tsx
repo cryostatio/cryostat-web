@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { LineageLabelChain } from '@app/Archives/LineageLabelChain';
 import { useTargetLineage } from '@app/utils/hooks/useTargetLineage';
+import { extractFilterableLineagePath } from '@app/utils/targetUtils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Button, Content, Skeleton, Split, SplitItem } from '@patternfly/react-core';
+import { Button, Content, Skeleton, Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
@@ -35,8 +37,16 @@ export const DirectoryNameCell: React.FC<DirectoryNameCellProps> = ({
   onInfoClick,
   showInfoButton = true,
 }) => {
-  const { displayName, isLoading } = useTargetLineage(jvmId, connectUrl, alias);
+  const { displayName, isLoading, targetNode } = useTargetLineage(jvmId, connectUrl, alias);
   const { t } = useCryostatTranslation();
+
+  // Extract lineage path from target node if available
+  const lineagePath = React.useMemo(() => {
+    if (!targetNode) return [];
+    return extractFilterableLineagePath(targetNode);
+  }, [targetNode]);
+
+  const showLineage = lineagePath.length > 0;
 
   return (
     <Split hasGutter>
@@ -44,7 +54,16 @@ export const DirectoryNameCell: React.FC<DirectoryNameCellProps> = ({
         {isLoading ? (
           <Skeleton width="30ch" screenreaderText={t('DirectoryNameCell.LOADING_TARGET_INFO')} />
         ) : (
-          <Content>{displayName}</Content>
+          <Stack>
+            <StackItem>
+              <Content>{displayName}</Content>
+            </StackItem>
+            {showLineage && (
+              <StackItem>
+                <LineageLabelChain lineagePath={lineagePath} />
+              </StackItem>
+            )}
+          </Stack>
         )}
       </SplitItem>
       {showInfoButton && (

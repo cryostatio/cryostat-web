@@ -35,12 +35,13 @@ describe('<LineageLabelChain />', () => {
     mockUseArchiveFilters.mockReturnValue({
       lineageFilters: mockLineageFilters,
       addLineageFilter: mockAddLineageFilter,
-      timeRange: { type: 'preset', preset: 'all' },
+      timeRange: null,
       searchText: '',
       hasActiveFilters: false,
       removeLineageFilter: jest.fn(),
       clearLineageFilters: jest.fn(),
       setTimeRange: jest.fn(),
+      clearTimeRange: jest.fn(),
       setSearchText: jest.fn(),
       clearAllFilters: jest.fn(),
     });
@@ -151,12 +152,13 @@ describe('<LineageLabelChain />', () => {
     mockUseArchiveFilters.mockReturnValue({
       lineageFilters: mockLineageFilters,
       addLineageFilter: mockAddLineageFilter,
-      timeRange: { type: 'preset', preset: 'all' },
+      timeRange: null,
       searchText: '',
       hasActiveFilters: true,
       removeLineageFilter: jest.fn(),
       clearLineageFilters: jest.fn(),
       setTimeRange: jest.fn(),
+      clearTimeRange: jest.fn(),
       setSearchText: jest.fn(),
       clearAllFilters: jest.fn(),
     });
@@ -255,12 +257,13 @@ describe('<LineageLabelChain />', () => {
     mockUseArchiveFilters.mockReturnValue({
       lineageFilters: mockLineageFilters,
       addLineageFilter: mockAddLineageFilter,
-      timeRange: { type: 'preset', preset: 'all' },
+      timeRange: null,
       searchText: '',
       hasActiveFilters: true,
       removeLineageFilter: jest.fn(),
       clearLineageFilters: jest.fn(),
       setTimeRange: jest.fn(),
+      clearTimeRange: jest.fn(),
       setSearchText: jest.fn(),
       clearAllFilters: jest.fn(),
     });

@@ -21,8 +21,6 @@ import {
   filterArchivesByTimeRange,
   filterDirectoriesByLineage,
   formatTimeRangeLabel,
-  getTimeRangeBounds,
-  TIME_RANGE_PRESETS,
 } from '@app/utils/archiveFilters';
 
 describe('archiveFilters', () => {
@@ -67,53 +65,11 @@ describe('archiveFilters', () => {
       expect(result).toEqual(mockArchives);
     });
 
-    it('should filter by last24h preset', () => {
-      const result = filterArchivesByTimeRange(mockArchives, {
-        type: 'preset',
-        preset: 'last24h',
-      });
-
-      // Should include archives from the last 24 hours
-      expect(result.length).toBeGreaterThanOrEqual(1);
-      expect(result[0].name).toBe('recent.jfr');
-      // yesterday.jfr might be just outside 24h depending on exact timing
-    });
-
-    it('should filter by last7d preset', () => {
-      const result = filterArchivesByTimeRange(mockArchives, {
-        type: 'preset',
-        preset: 'last7d',
-      });
-
-      // Should include archives from the last 7 days
-      expect(result.length).toBeGreaterThanOrEqual(2);
-      expect(result.length).toBeLessThanOrEqual(3);
-    });
-
-    it('should filter by last30d preset', () => {
-      const result = filterArchivesByTimeRange(mockArchives, {
-        type: 'preset',
-        preset: 'last30d',
-      });
-
-      expect(result).toHaveLength(3);
-    });
-
-    it('should return all archives for "all" preset', () => {
-      const result = filterArchivesByTimeRange(mockArchives, {
-        type: 'preset',
-        preset: 'all',
-      });
-
-      expect(result).toHaveLength(3);
-    });
-
-    it('should filter by custom time range', () => {
-      const startTime = new Date(oneDayAgo - 1000).toISOString();
-      const endTime = new Date(oneHourAgo + 1000).toISOString();
+    it('should filter by timestamp range', () => {
+      const startTime = oneDayAgo - 1000;
+      const endTime = oneHourAgo + 1000;
 
       const result = filterArchivesByTimeRange(mockArchives, {
-        type: 'custom',
         startTime,
         endTime,
       });
@@ -124,11 +80,10 @@ describe('archiveFilters', () => {
     });
 
     it('should return empty array when no archives match time range', () => {
-      const futureStart = new Date(now + 1000).toISOString();
-      const futureEnd = new Date(now + 2000).toISOString();
+      const futureStart = now + 1000;
+      const futureEnd = now + 2000;
 
       const result = filterArchivesByTimeRange(mockArchives, {
-        type: 'custom',
         startTime: futureStart,
         endTime: futureEnd,
       });
@@ -138,8 +93,8 @@ describe('archiveFilters', () => {
 
     it('should handle empty archives array', () => {
       const result = filterArchivesByTimeRange([], {
-        type: 'preset',
-        preset: 'last24h',
+        startTime: oneDayAgo,
+        endTime: now,
       });
 
       expect(result).toEqual([]);
@@ -160,12 +115,35 @@ describe('archiveFilters', () => {
       ];
 
       const result = filterArchivesByTimeRange(archives, {
-        type: 'custom',
-        startTime: new Date(exactTime).toISOString(),
-        endTime: new Date(exactTime).toISOString(),
+        startTime: exactTime,
+        endTime: exactTime,
       });
 
       expect(result).toHaveLength(1);
+    });
+
+    it('should filter archives within a week range', () => {
+      const startTime = oneWeekAgo - 1000;
+      const endTime = now;
+
+      const result = filterArchivesByTimeRange(mockArchives, {
+        startTime,
+        endTime,
+      });
+
+      expect(result).toHaveLength(3);
+    });
+
+    it('should filter archives within a day range', () => {
+      const startTime = oneDayAgo - 1000;
+      const endTime = now;
+
+      const result = filterArchivesByTimeRange(mockArchives, {
+        startTime,
+        endTime,
+      });
+
+      expect(result.length).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -274,126 +252,17 @@ describe('archiveFilters', () => {
     });
   });
 
-  describe('getTimeRangeBounds', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-      jest.setSystemTime(new Date('2024-01-15T12:00:00Z'));
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-
-    it('should calculate bounds for last24h preset', () => {
-      const { start, end } = getTimeRangeBounds({
-        type: 'preset',
-        preset: 'last24h',
-      });
-
-      expect(end.getTime()).toBe(new Date('2024-01-15T12:00:00Z').getTime());
-      expect(start.getTime()).toBe(new Date('2024-01-14T12:00:00Z').getTime());
-    });
-
-    it('should calculate bounds for last7d preset', () => {
-      const { start, end } = getTimeRangeBounds({
-        type: 'preset',
-        preset: 'last7d',
-      });
-
-      expect(end.getTime()).toBe(new Date('2024-01-15T12:00:00Z').getTime());
-      expect(start.getTime()).toBe(new Date('2024-01-08T12:00:00Z').getTime());
-    });
-
-    it('should calculate bounds for last30d preset', () => {
-      const { start, end } = getTimeRangeBounds({
-        type: 'preset',
-        preset: 'last30d',
-      });
-
-      expect(end.getTime()).toBe(new Date('2024-01-15T12:00:00Z').getTime());
-      expect(start.getTime()).toBe(new Date('2023-12-16T12:00:00Z').getTime());
-    });
-
-    it('should calculate bounds for all preset', () => {
-      const { start, end } = getTimeRangeBounds({
-        type: 'preset',
-        preset: 'all',
-      });
-
-      expect(end.getTime()).toBe(new Date('2024-01-15T12:00:00Z').getTime());
-      expect(start.getTime()).toBe(0); // Unix epoch (1970-01-01)
-    });
-
-    it('should parse custom time range', () => {
-      const { start, end } = getTimeRangeBounds({
-        type: 'custom',
-        startTime: '2024-01-01T00:00:00Z',
-        endTime: '2024-01-31T23:59:59Z',
-      });
-
-      expect(start.toISOString()).toBe('2024-01-01T00:00:00.000Z');
-      expect(end.toISOString()).toBe('2024-01-31T23:59:59.000Z');
-    });
-
-    it('should handle custom range with same start and end', () => {
-      const { start, end } = getTimeRangeBounds({
-        type: 'custom',
-        startTime: '2024-01-15T12:00:00Z',
-        endTime: '2024-01-15T12:00:00Z',
-      });
-
-      expect(start.getTime()).toBe(end.getTime());
-    });
-  });
-
   describe('formatTimeRangeLabel', () => {
-    it('should format last24h preset', () => {
+    it('should format timestamp range with default formatter', () => {
       const label = formatTimeRangeLabel({
-        type: 'preset',
-        preset: 'last24h',
-      });
-
-      expect(label).toBe('Last 24 Hours');
-    });
-
-    it('should format last7d preset', () => {
-      const label = formatTimeRangeLabel({
-        type: 'preset',
-        preset: 'last7d',
-      });
-
-      expect(label).toBe('Last 7 Days');
-    });
-
-    it('should format last30d preset', () => {
-      const label = formatTimeRangeLabel({
-        type: 'preset',
-        preset: 'last30d',
-      });
-
-      expect(label).toBe('Last 30 Days');
-    });
-
-    it('should format all preset', () => {
-      const label = formatTimeRangeLabel({
-        type: 'preset',
-        preset: 'all',
-      });
-
-      expect(label).toBe('All Time');
-    });
-
-    it('should format custom range with default formatter', () => {
-      const label = formatTimeRangeLabel({
-        type: 'custom',
-        startTime: '2024-01-01T00:00:00Z',
-        endTime: '2024-01-31T23:59:59Z',
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
       });
 
       expect(label).toBe('2024-01-01 - 2024-01-31');
     });
 
-    it('should format custom range with custom formatter', () => {
+    it('should format timestamp range with custom formatter', () => {
       const customFormatter = (date: Date) => {
         return date.toLocaleDateString('en-US', {
           month: 'short',
@@ -405,9 +274,8 @@ describe('archiveFilters', () => {
 
       const label = formatTimeRangeLabel(
         {
-          type: 'custom',
-          startTime: '2024-01-01T00:00:00Z',
-          endTime: '2024-01-31T23:59:59Z',
+          startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+          endTime: new Date('2024-01-31T23:59:59Z').getTime(),
         },
         customFormatter,
       );
@@ -417,30 +285,21 @@ describe('archiveFilters', () => {
 
     it('should handle same start and end date', () => {
       const label = formatTimeRangeLabel({
-        type: 'custom',
-        startTime: '2024-01-15T00:00:00Z',
-        endTime: '2024-01-15T23:59:59Z',
+        startTime: new Date('2024-01-15T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-15T23:59:59Z').getTime(),
       });
 
       expect(label).toBe('2024-01-15 - 2024-01-15');
     });
-  });
 
-  describe('TIME_RANGE_PRESETS', () => {
-    it('should have correct duration for last24h', () => {
-      expect(TIME_RANGE_PRESETS.last24h).toBe(24 * 60 * 60 * 1000);
-    });
+    it('should handle timestamps at exact same moment', () => {
+      const timestamp = new Date('2024-01-15T12:00:00Z').getTime();
+      const label = formatTimeRangeLabel({
+        startTime: timestamp,
+        endTime: timestamp,
+      });
 
-    it('should have correct duration for last7d', () => {
-      expect(TIME_RANGE_PRESETS.last7d).toBe(7 * 24 * 60 * 60 * 1000);
-    });
-
-    it('should have correct duration for last30d', () => {
-      expect(TIME_RANGE_PRESETS.last30d).toBe(30 * 24 * 60 * 60 * 1000);
-    });
-
-    it('should have very large duration for all', () => {
-      expect(TIME_RANGE_PRESETS.all).toBe(Number.MAX_SAFE_INTEGER);
+      expect(label).toBe('2024-01-15 - 2024-01-15');
     });
   });
 });

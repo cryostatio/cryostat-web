@@ -35,27 +35,17 @@ export type { ArchivedRecording };
 export type ArchiveDirectory = RecordingDirectory;
 
 /**
- * Preset time range durations in milliseconds.
- */
-export const TIME_RANGE_PRESETS = {
-  last24h: 24 * 60 * 60 * 1000, // 24 hours
-  last7d: 7 * 24 * 60 * 60 * 1000, // 7 days
-  last30d: 30 * 24 * 60 * 60 * 1000, // 30 days
-  all: Number.MAX_SAFE_INTEGER, // All time
-} as const;
-
-/**
  * Filters archived recordings by time range.
  *
  * @param archives - Array of archived recordings to filter
- * @param timeRange - Time range filter option (preset or custom)
+ * @param timeRange - Time range filter option with start/end timestamps
  * @returns Filtered array of archived recordings
  *
  * @example
  * ```typescript
  * const filtered = filterArchivesByTimeRange(archives, {
- *   type: 'preset',
- *   preset: 'last24h'
+ *   startTime: Date.now() - 24 * 60 * 60 * 1000, // 24 hours ago
+ *   endTime: Date.now()
  * });
  * ```
  */
@@ -67,11 +57,11 @@ export const filterArchivesByTimeRange = (
     return archives;
   }
 
-  const { start, end } = getTimeRangeBounds(timeRange);
+  const { startTime, endTime } = timeRange;
 
   return archives.filter((archive) => {
     const archivedTime = archive.archivedTime;
-    return archivedTime >= start.getTime() && archivedTime <= end.getTime();
+    return archivedTime >= startTime && archivedTime <= endTime;
   });
 };
 
@@ -116,38 +106,38 @@ export const filterDirectoriesByLineage = (
 };
 
 /**
- * Converts a TimeRangeOption to start and end Date objects.
+ * Checks if a lineage path matches all specified lineage filters using AND logic.
  *
- * @param timeRange - Time range option (preset or custom)
- * @returns Object containing start and end Date objects
+ * @param lineagePath - Array of lineage nodes representing the full path
+ * @param lineageFilters - Array of lineage nodes to match against
+ * @returns true if lineagePath contains all filter nodes, false otherwise
  *
  * @example
  * ```typescript
- * const { start, end } = getTimeRangeBounds({
- *   type: 'preset',
- *   preset: 'last24h'
- * });
- * // start = 24 hours ago, end = now
+ * const lineage = [
+ *   { nodeType: NodeType.NAMESPACE, name: 'my-app' },
+ *   { nodeType: NodeType.DEPLOYMENT, name: 'backend' },
+ *   { nodeType: NodeType.POD, name: 'backend-0' }
+ * ];
+ *
+ * matchesLineageFilters(lineage, [
+ *   { nodeType: NodeType.NAMESPACE, name: 'my-app' }
+ * ]); // Returns: true
+ *
+ * matchesLineageFilters(lineage, [
+ *   { nodeType: NodeType.NAMESPACE, name: 'other-app' }
+ * ]); // Returns: false
  * ```
  */
-export const getTimeRangeBounds = (timeRange: TimeRangeOption): { start: Date; end: Date } => {
-  const now = new Date();
-
-  if (timeRange.type === 'preset') {
-    const duration = TIME_RANGE_PRESETS[timeRange.preset];
-    // For "all" preset, use a very old date instead of negative time
-    if (timeRange.preset === 'all') {
-      return { start: new Date(0), end: now }; // Start from Unix epoch
-    }
-    const start = new Date(now.getTime() - duration);
-    return { start, end: now };
-  } else {
-    // Custom range - parse ISO strings
-    return {
-      start: new Date(timeRange.startTime),
-      end: new Date(timeRange.endTime),
-    };
+export const matchesLineageFilters = (lineagePath: LineageNode[], lineageFilters: LineageNode[]): boolean => {
+  if (lineageFilters.length === 0) {
+    return true; // No filters means everything matches
   }
+
+  // AND logic: lineage must contain ALL filter nodes
+  return lineageFilters.every((filter) =>
+    lineagePath.some((node) => node.nodeType === filter.nodeType && node.name === filter.name),
+  );
 };
 
 /**
@@ -159,39 +149,23 @@ export const getTimeRangeBounds = (timeRange: TimeRangeOption): { start: Date; e
  *
  * @example
  * ```typescript
- * formatTimeRangeLabel({ type: 'preset', preset: 'last24h' })
- * // Returns: "Last 24 Hours"
- *
  * formatTimeRangeLabel({
- *   type: 'custom',
- *   startTime: '2024-01-01T00:00:00Z',
- *   endTime: '2024-01-31T23:59:59Z'
+ *   startTime: new Date('2024-01-01').getTime(),
+ *   endTime: new Date('2024-01-31').getTime()
  * })
  * // Returns: "2024-01-01 - 2024-01-31"
  * ```
  */
 export const formatTimeRangeLabel = (timeRange: TimeRangeOption, formatDate?: (date: Date) => string): string => {
-  if (timeRange.type === 'preset') {
-    // Map preset values to human-readable labels
-    const labels: Record<typeof timeRange.preset, string> = {
-      last24h: 'Last 24 Hours',
-      last7d: 'Last 7 Days',
-      last30d: 'Last 30 Days',
-      all: 'All Time',
-    };
-    return labels[timeRange.preset];
-  } else {
-    // Custom range - format dates
-    const start = new Date(timeRange.startTime);
-    const end = new Date(timeRange.endTime);
+  const start = new Date(timeRange.startTime);
+  const end = new Date(timeRange.endTime);
 
-    const defaultFormat = (date: Date): string => {
-      return date.toISOString().split('T')[0]; // YYYY-MM-DD
-    };
+  const defaultFormat = (date: Date): string => {
+    return date.toISOString().split('T')[0]; // YYYY-MM-DD
+  };
 
-    const formatter = formatDate || defaultFormat;
-    return `${formatter(start)} - ${formatter(end)}`;
-  }
+  const formatter = formatDate || defaultFormat;
+  return `${formatter(start)} - ${formatter(end)}`;
 };
 
 /**

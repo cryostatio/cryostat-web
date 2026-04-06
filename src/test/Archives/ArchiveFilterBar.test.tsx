@@ -82,10 +82,13 @@ describe('<ArchiveFilterBar />', () => {
     expect(screen.getByText(/Deployment: my-app/i)).toBeInTheDocument();
   });
 
-  it('should render time range filter when not "all"', () => {
+  it('should render time range filter when set', () => {
     preloadedState.archiveFilters = {
       ...defaultArchiveFilters,
-      timeRange: { type: 'preset', preset: 'last24h' },
+      timeRange: {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      },
     };
 
     render({
@@ -101,13 +104,14 @@ describe('<ArchiveFilterBar />', () => {
     });
 
     // Verify time range filter is visible
-    expect(screen.getByText('Last 24 Hours')).toBeInTheDocument();
+    expect(screen.getByText('Time Range')).toBeInTheDocument();
+    expect(screen.getByText('2024-01-01 - 2024-01-31')).toBeInTheDocument();
   });
 
-  it('should not render time range filter when set to "all"', () => {
+  it('should not render time range filter when null', () => {
     preloadedState.archiveFilters = {
       ...defaultArchiveFilters,
-      timeRange: { type: 'preset', preset: 'all' },
+      timeRange: null,
     };
 
     render({
@@ -123,32 +127,6 @@ describe('<ArchiveFilterBar />', () => {
     });
 
     expect(screen.queryByText('Time Range')).not.toBeInTheDocument();
-  });
-
-  it('should render custom time range filter', () => {
-    preloadedState.archiveFilters = {
-      ...defaultArchiveFilters,
-      timeRange: {
-        type: 'custom',
-        startTime: '2024-01-01T00:00:00Z',
-        endTime: '2024-01-31T23:59:59Z',
-      },
-    };
-
-    render({
-      routerConfigs: {
-        routes: [
-          {
-            path: '/archives',
-            element: <ArchiveFilterBar />,
-          },
-        ],
-      },
-      preloadedState,
-    });
-
-    expect(screen.getByText('Time Range')).toBeInTheDocument();
-    expect(screen.getByText('2024-01-01 - 2024-01-31')).toBeInTheDocument();
   });
 
   it('should render search text filter', () => {
@@ -198,7 +176,10 @@ describe('<ArchiveFilterBar />', () => {
     preloadedState.archiveFilters = {
       ...defaultArchiveFilters,
       lineageFilters: [mockLineageNode1, mockLineageNode2],
-      timeRange: { type: 'preset', preset: 'last7d' },
+      timeRange: {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-07T23:59:59Z').getTime(),
+      },
       searchText: 'test-search',
     };
 
@@ -217,7 +198,8 @@ describe('<ArchiveFilterBar />', () => {
     // Verify all filter values are visible
     expect(screen.getByText(/Namespace: my-namespace/i)).toBeInTheDocument();
     expect(screen.getByText(/Deployment: my-app/i)).toBeInTheDocument();
-    expect(screen.getByText('Last 7 Days')).toBeInTheDocument();
+    expect(screen.getByText('Time Range')).toBeInTheDocument();
+    expect(screen.getByText('2024-01-01 - 2024-01-07')).toBeInTheDocument();
     expect(screen.getByText('test-search')).toBeInTheDocument();
 
     // Verify clear all button is present
@@ -290,7 +272,10 @@ describe('<ArchiveFilterBar />', () => {
   it('should handle clearing time range filter', async () => {
     preloadedState.archiveFilters = {
       ...defaultArchiveFilters,
-      timeRange: { type: 'preset', preset: 'last24h' },
+      timeRange: {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      },
     };
 
     const { user, store } = render({
@@ -306,15 +291,15 @@ describe('<ArchiveFilterBar />', () => {
     });
 
     // Verify time range is initially visible
-    expect(screen.getByText('Last 24 Hours')).toBeInTheDocument();
+    expect(screen.getByText('2024-01-01 - 2024-01-31')).toBeInTheDocument();
 
     // Find and click the close button for time range filter
-    const closeButton = screen.getByRole('button', { name: /Close Last 24 Hours/i });
+    const closeButton = screen.getByRole('button', { name: /Close 2024-01-01 - 2024-01-31/i });
     await user.click(closeButton);
 
-    // Verify time range was reset to "all"
+    // Verify time range was cleared
     const state = store.getState();
-    expect(state.archiveFilters.timeRange).toEqual({ type: 'preset', preset: 'all' });
+    expect(state.archiveFilters.timeRange).toBeNull();
   });
 
   it('should handle clearing search text filter', async () => {
@@ -351,7 +336,10 @@ describe('<ArchiveFilterBar />', () => {
     preloadedState.archiveFilters = {
       ...defaultArchiveFilters,
       lineageFilters: [mockLineageNode1],
-      timeRange: { type: 'preset', preset: 'last24h' },
+      timeRange: {
+        startTime: new Date('2024-01-01T00:00:00Z').getTime(),
+        endTime: new Date('2024-01-31T23:59:59Z').getTime(),
+      },
       searchText: 'test',
     };
 
