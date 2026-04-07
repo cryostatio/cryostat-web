@@ -18,6 +18,7 @@ import {
   DeadlockInfo,
   NotificationCategory,
   NullableTarget,
+  StackFrame,
   Target,
   ThreadDump,
   ThreadDumpAnalysisResult,
@@ -26,9 +27,10 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn } from '@app/utils/utils';
+import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Card,
+  CardBody,
   CardTitle,
   EmptyState,
   EmptyStateHeader,
@@ -40,13 +42,21 @@ import {
   TextListItem,
 } from '@patternfly/react-core';
 import { SearchIcon, TopologyIcon } from '@patternfly/react-icons';
-import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, ISortBy, SortByDirection, Table, TableVariant, Tbody, Td, Th, Thead, ThProps, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { concatMap, first, of } from 'rxjs';
 import { AggregateDataCard } from './AggregateDataCard.tsx';
 import { ThreadDumpSelector } from './ThreadDumpSelector';
+import { useSort } from '@app/utils/hooks/useSort';
 
 export interface ThreadDumpAnalysisProps {}
+
+interface ThreadRowData {
+  threadInfo: ThreadInfo;
+  isExpanded: boolean;
+  cellContents: React.ReactNode[];
+  children?: React.ReactNode;
+}
 
 export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props }) => {
   const context = React.useContext(ServiceContext);
@@ -56,6 +66,8 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const [analysisResult, setAnalysisResult] = React.useState<ThreadDumpAnalysisResult>();
   const [selectedThreadDump, setSelectedThreadDump] = React.useState('');
   const [target, setTarget] = React.useState(undefined as NullableTarget);
+  const [openRows, setOpenRows] = React.useState<number[]>([]);
+  const [sortBy, getSortParams] = useSort();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
   
@@ -118,61 +130,165 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
       keyPaths: ['additionalInfo'],
       sortable: true,
     },
-    {
-      title: 'Stack Trace',
-      keyPaths: ['stackTrace'],
-      sortable: true,
-    },
-    {
-      title: 'Locks Held',
-      keyPaths: ['locks'],
-      sortable: true,
-    },
   ];
 
+  const stackTraceColumns: TableColumn[] = [
+    {
+      title: 'File Name',
+      keyPaths: ['fileName'],
+      sortable: false,
+    },
+    {
+      title: 'Class Name',
+      keyPaths: ['className'],
+      sortable: false,
+    },
+        {
+      title: 'Method Name',
+      keyPaths: ['methodName'],
+      sortable: false,
+    },
+        {
+      title: 'Line Number',
+      keyPaths: ['lineNumber'],
+      sortable: false,
+    },
+        {
+      title: 'Native Method',
+      keyPaths: ['nativeMethod'],
+      sortable: false,
+    },
+  ]
+
+  const displayedRowData = React.useMemo(() => {
+    const rows: ThreadRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+        analysisResult?.threads ? analysisResult.threads : [],
+        threadColumns,
+      );
+    if (analysisResult) {
+    sorted.forEach((t : ThreadInfo) => {
+      rows.push({
+        threadInfo: t,
+        cellContents: [t.name, t.threadId, t.nativeId, t.carryingVirtualThreadId, t.priority, t.daemon, t.state, t.cpuTimeSec, t.elapsedTimeSec, t.additionalInfo],
+        isExpanded: openRows.some((id) => id === hashCode(t.name)),
+        children: 
+          t.stackTrace?.length ? (
+        <Card>
+          <CardTitle>Stack Trace</CardTitle>
+            <Table aria-label="Stack Trace" variant={TableVariant.compact}>
+              <Thead>
+                <Tr>
+                  {stackTraceColumns.map(({ title, sortable }, index) => (
+                    <Th key={`thread-header-${title}`}>{title}</Th>
+                  ))}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {t.stackTrace?.map((s: StackFrame) => (
+                  <Tr key={`stack-trace`}>
+                    <Td key={`file-name`} dataLabel={stackTraceColumns[0].title}>
+                      {s.fileName ? s.fileName : 'N/A'}
+                    </Td>
+                    <Td key={`finding-name`} dataLabel={stackTraceColumns[1].title}>
+                      {s.className ? s.className : 'N/A'}
+                    </Td>
+                    <Td key={`finding-explanation`} dataLabel={stackTraceColumns[2].title}>
+                      {s.methodName ? s.methodName : 'N/A'}
+                    </Td>
+                    <Td key={`finding-score`} dataLabel={stackTraceColumns[3].title}>
+                      {s.lineNumber ? s.lineNumber : 'N/A'}
+                    </Td>
+                    <Td key={`finding-score`} dataLabel={stackTraceColumns[4].title}>
+                      {s.nativeMethod ? `${s.nativeMethod}` : 'false'}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Card>) : 
+          (<EmptyState>
+              <EmptyStateHeader
+                titleText="No Stack Trace Available"
+                icon={<EmptyStateIcon icon={TopologyIcon} />}
+                headingLevel="h4"
+                />
+            </EmptyState>)
+      });
+    })
+  }
+    return rows;
+  }, [openRows, sortBy, analysisResult]);
+
   const threadRows = React.useMemo(
-    () =>
-      analysisResult?.threads.map((t: ThreadInfo, index) => (
-        <Tr key={`threads-${index}`}>
-          <Td key={`thread-name-${index}`} dataLabel={threadColumns[0].title}>
-            {t.name !== undefined ? t.name : ''}
+    () => {
+      if (displayedRowData) {
+      return displayedRowData.map((t: ThreadRowData, index) => (
+      <Tbody key={`thread-row-pair-${index}`} isExpanded={t.isExpanded}>
+        <Tr key={`thread-row-${index}`}>
+          <Td
+            key={`thread-row-expandable`}
+            expand={{
+              rowIndex: index,
+              isExpanded: t.isExpanded,
+              expandId: `expandable-thread-row-${index}`,
+              onToggle: () => onToggle(t.threadInfo),
+            }}
+            />
+          <Td key={`thread-name-${index}`} colSpan={1} dataLabel={threadColumns[0].title}>
+            {t.threadInfo.name !== undefined ? t.threadInfo.name : 'N/A'}
           </Td>
-          <Td key={`thread-id-${index}`} dataLabel={threadColumns[1].title}>
-            {t.threadId !== undefined ? t.threadId : ''}
+          <Td key={`thread-id-${index}`} colSpan={1} dataLabel={threadColumns[1].title}>
+            {t.threadInfo.threadId !== undefined ? t.threadInfo.threadId : 'N/A'}
           </Td>
-          <Td key={`thread-native-id-${index}`} dataLabel={threadColumns[2].title}>
-            {t.nativeId !== undefined ? t.nativeId : ''}
+          <Td key={`thread-native-id-${index}`} colSpan={1} dataLabel={threadColumns[2].title}>
+            {t.threadInfo.nativeId !== undefined ? t.threadInfo.nativeId : 'N/A'}
           </Td>
-          <Td key={`thread-virtual-id-${index}`} dataLabel={threadColumns[3].title}>
-            {t.carryingVirtualThreadId != null ? t.carryingVirtualThreadId : ''}
+          <Td key={`thread-virtual-id-${index}`} colSpan={1} dataLabel={threadColumns[3].title}>
+            {t.threadInfo.carryingVirtualThreadId != null ? t.threadInfo.carryingVirtualThreadId : 'N/A'}
           </Td>
-          <Td key={`thread-priority-${index}`} dataLabel={threadColumns[4].title}>
-            {t.priority !== undefined ? t.priority : ''}
+          <Td key={`thread-priority-${index}`} colSpan={1} dataLabel={threadColumns[4].title}>
+            {t.threadInfo.priority !== undefined ? t.threadInfo.priority : 'N/A'}
           </Td>
-          <Td key={`thread-daemon-${index}`} dataLabel={threadColumns[5].title}>
-            {t.daemon !== undefined ? t.daemon : ''}
+          <Td key={`thread-daemon-${index}`} colSpan={1} dataLabel={threadColumns[5].title}>
+            {t.threadInfo.daemon !== undefined ? `${t.threadInfo.daemon}` : 'N/A'}
           </Td>
-          <Td key={`thread-state-${index}`} dataLabel={threadColumns[6].title}>
-            {t.state !== undefined ? t.state : ''}
+          <Td key={`thread-state-${index}`} colSpan={1} dataLabel={threadColumns[6].title}>
+            {t.threadInfo.state !== undefined ? t.threadInfo.state : 'N/A'}
           </Td>
-          <Td key={`thread-cpu-time-${index}`} dataLabel={threadColumns[7].title}>
-            {t.cpuTimeSec !== undefined ? t.cpuTimeSec : ''}
+          <Td key={`thread-cpu-time-${index}`} colSpan={1} dataLabel={threadColumns[7].title}>
+            {t.threadInfo.cpuTimeSec !== undefined ? t.threadInfo.cpuTimeSec : 'N/A'}
           </Td>
-          <Td key={`thread-elapsed-${index}`} dataLabel={threadColumns[8].title}>
-            {t.elapsedTimeSec !== undefined ? t.elapsedTimeSec : ''}
+          <Td key={`thread-elapsed-${index}`} colSpan={1} dataLabel={threadColumns[8].title}>
+            {t.threadInfo.elapsedTimeSec !== undefined ? t.threadInfo.elapsedTimeSec : 'N/A'}
           </Td>
-          <Td key={`thread-additional-info-${index}`} dataLabel={threadColumns[9].title}>
-            {t.additionalInfo !== undefined ? t.additionalInfo : ''}
-          </Td>
-          <Td key={`thread-stack-trace-${index}`} dataLabel={threadColumns[10].title}>
-            {t.stackTrace !== undefined ? t.stackTrace.toString : ''}
-          </Td>
-          <Td key={`thread-locks-${index}`} dataLabel={threadColumns[11].title}>
-            {t.locks !== undefined ? t.locks.toString : ''}
+          <Td key={`thread-additional-info-${index}`} colSpan={1} dataLabel={threadColumns[9].title}>
+            {t.threadInfo.additionalInfo !== undefined ? t.threadInfo.additionalInfo : 'N/A'}
           </Td>
         </Tr>
-      )),
-    [analysisResult, threadColumns],
+          <Tr key={`thread-row-${index}-expandable-child`} isExpanded={t.isExpanded}>
+            <Td dataLabel="thread-details" colSpan={threadColumns.length}>
+              <ExpandableRowContent>{t.children}</ExpandableRowContent>
+            </Td>
+          </Tr>
+      </Tbody>
+      )) } else {
+        return (
+          <EmptyState>
+              <EmptyStateHeader
+                titleText="No Threads"
+                icon={<EmptyStateIcon icon={TopologyIcon} />}
+                headingLevel="h4"
+                />
+            </EmptyState>
+        )
+      }
+    },
+    [displayedRowData, threadColumns],
   );
 
   const findingsColumns: TableColumn[] = [
@@ -279,12 +395,18 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     [analysisResult, deadlockColumns],
   );
 
-  const findingsTable = React.useMemo(
-    () => {
-      
-    }, 
-    [findingsColumns, findingsRows]
-  )
+  const onToggle = React.useCallback(
+    (t: ThreadInfo) => {
+      setOpenRows((old) => {
+        const typeId = hashCode(t.name);
+        if (old.some((id) => id === typeId)) {
+          return old.filter((id) => id !== typeId);
+        }
+        return [...old, typeId];
+      });
+    },
+    [setOpenRows],
+  );
 
   const queryTargetThreadDumps = React.useCallback(
     (target: Target) => context.api.getTargetThreadDumps(target),
@@ -387,8 +509,9 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     view = (
       <Grid hasGutter>
         <GridItem span={3}>
-          <Card>
+          <Card isLarge>
             <CardTitle>JVM Information</CardTitle>
+            <CardBody>
             <Text>{analysisResult.jvmInfo}</Text>
             <TextList isPlain>
               JNI Information
@@ -397,29 +520,34 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
               <TextListItem> Weak References: {analysisResult.jniInfo.weakRefs ? analysisResult.jniInfo.weakRefs : "N/A"}</TextListItem>
               <TextListItem> Weak References Memory: {analysisResult.jniInfo.weakRefsMemory ? analysisResult.jniInfo.weakRefsMemory : "N/A"}</TextListItem>
             </TextList>
+            </CardBody>
           </Card>
         </GridItem>
-        <GridItem span={5}>
+        <GridItem span={7}>
           <Card>
             <CardTitle>Lock Instances</CardTitle>
+            <CardBody>
             <AggregateDataCard
               data={analysisResult?.aggregateLockInfo}
               title="Lock Instances"
               description="Aggregate Lock Info"
             />
+            </CardBody>
           </Card>
         </GridItem>
-        <GridItem span={3}>
+        <GridItem span={6}>
           <Card>
             <CardTitle>Thread States</CardTitle>
+            <CardBody>
             <AggregateDataCard
               data={analysisResult?.aggregateThreadStates}
               title="Thread States"
               description="Aggregate Thread States"
             />
+            </CardBody>
           </Card>
         </GridItem>
-        <GridItem span={3}>
+        <GridItem span={6}>
           <Card>
             <CardTitle>Running Methods</CardTitle>
             <AggregateDataCard
@@ -429,7 +557,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             />
           </Card>
         </GridItem>
-        <GridItem span={9}>
+        <GridItem>
           <Card>
             <CardTitle>Specific Findings</CardTitle>
             {findingsRows?.length ? (
@@ -446,13 +574,13 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             (<EmptyState>
               <EmptyStateHeader
                 titleText="No Specific Findings"
-                icon={<EmptyStateIcon icon={TopologyIcon} />}
+                icon={<EmptyStateIcon icon={TopologyIcon}/>}
                 headingLevel="h4"
                 />
             </EmptyState>)}
           </Card>
         </GridItem>
-        <GridItem span={12}>
+        <GridItem>
           <Card>
             <CardTitle>Deadlock Detection</CardTitle>
             {deadlockRows?.length ? (
@@ -476,18 +604,19 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             }
           </Card>
         </GridItem>
-        <GridItem span={12}>
+        <GridItem>
           <Card>
             <CardTitle>Thread Information</CardTitle>
-            <Table aria-label="Threads" variant={TableVariant.compact}>
+            <Table aria-label="Threads Table" variant={TableVariant.compact}>
               <Thead>
                 <Tr>
+                  <Th/>
                   {threadColumns.map(({ title, sortable }, index) => (
-                    <Th key={`thread-header-${title}`}>{title}</Th>
+                    <Th key={`thread-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>{title}</Th>
                   ))}
                 </Tr>
               </Thead>
-              <Tbody>{threadRows}</Tbody>
+              {threadRows}
             </Table>
           </Card>
         </GridItem>
