@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { StackFrame, ThreadDumpAnalysisResult } from '@app/Shared/Services/api.types';
 import { ChartPie } from '@patternfly/react-charts';
 import { Bullseye, CardBody } from '@patternfly/react-core';
 

@@ -13,8 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiagnosticsCard } from '@app/Dashboard/Diagnostics/DiagnosticsCard';
+import {
+  AnalysisFinding,
+  DeadlockInfo,
+  NotificationCategory,
+  NullableTarget,
+  Target,
+  ThreadDump,
+  ThreadDumpAnalysisResult,
+  ThreadInfo,
+} from '@app/Shared/Services/api.types';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
+import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { TableColumn } from '@app/utils/utils';
 import {
   Card,
   CardTitle,
@@ -27,24 +39,12 @@ import {
   TextList,
   TextListItem,
 } from '@patternfly/react-core';
-import * as React from 'react';
-import { ThreadDumpSelector } from './ThreadDumpSelector';
-import {
-  AnalysisFinding,
-  DeadlockInfo,
-  NotificationCategory,
-  Target,
-  ThreadDump,
-  ThreadDumpAnalysisResult,
-  ThreadInfo,
-} from '@app/Shared/Services/api.types';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { concatMap, first, of } from 'rxjs';
-import { AggregateDataCard } from './AggregateDataCard.tsx';
 import { SearchIcon } from '@patternfly/react-icons';
 import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import { TableColumn } from '@app/utils/utils';
+import * as React from 'react';
+import { concatMap, first, of } from 'rxjs';
+import { AggregateDataCard } from './AggregateDataCard.tsx';
+import { ThreadDumpSelector } from './ThreadDumpSelector';
 
 export interface ThreadDumpAnalysisProps {}
 
@@ -54,9 +54,18 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
   const [analysisResult, setAnalysisResult] = React.useState<ThreadDumpAnalysisResult>();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
   const [selectedThreadDump, setSelectedThreadDump] = React.useState('');
+  const [target, setTarget] = React.useState(undefined as NullableTarget);
+
+  const targetAsObs = React.useMemo(() => of(target), [target]);
+  
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe((t) => {
+      setTarget(t)
+      setAnalysisResult(undefined);
+      setSelectedThreadDump('');
+    }));
+  }, [addSubscription, context.target, setTarget]);
 
   const threadColumns: TableColumn[] = [
     {
@@ -163,7 +172,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           </Td>
         </Tr>
       )),
-    [analysisResult],
+    [analysisResult, threadColumns],
   );
 
   const findingsColumns: TableColumn[] = [
@@ -199,7 +208,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           </Td>
         </Tr>
       )),
-    [analysisResult],
+    [analysisResult, findingsColumns],
   );
 
   const deadlockColumns: TableColumn[] = [
@@ -267,7 +276,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           </Td>
         </Tr>
       )),
-    [analysisResult],
+    [analysisResult, deadlockColumns],
   );
 
   const queryTargetThreadDumps = React.useCallback(
@@ -278,8 +287,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const queryThreadDumpAnalysis = React.useCallback(
     (threadDump: string) => {
       addSubscription(
-        context.target
-          .target()
+        targetAsObs
           .pipe(
             first(),
             concatMap((target: Target | undefined) => {
@@ -292,17 +300,15 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           )
           .subscribe({
             next: handleThreadDumpAnalysis,
-            error: handleError,
           }),
       );
     },
-    [addSubscription, context.target],
+    [addSubscription, targetAsObs],
   );
 
   React.useEffect(() => {
     addSubscription(
-      context.target
-        .target()
+      targetAsObs
         .pipe(
           first(),
           concatMap((target: Target | undefined) => {
@@ -315,33 +321,22 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
         )
         .subscribe({
           next: handleThreadDumps,
-          error: handleError,
         }),
     );
-  }, [addSubscription, context.api]);
+  }, [addSubscription, targetAsObs]);
 
   const handleThreadDumps = React.useCallback(
     (threadDumps: ThreadDump[]) => {
       setThreadDumps(threadDumps);
-      setErrorMessage('');
     },
-    [setThreadDumps, setIsLoading, setErrorMessage],
+    [setThreadDumps],
   );
 
   const handleThreadDumpAnalysis = React.useCallback(
     (result: ThreadDumpAnalysisResult) => {
       setAnalysisResult(result);
-      setErrorMessage('');
     },
-    [setAnalysisResult, setIsLoading, setErrorMessage],
-  );
-
-  const handleError = React.useCallback(
-    (error) => {
-      setIsLoading(false);
-      setErrorMessage(error.message);
-    },
-    [setIsLoading, setErrorMessage],
+    [setAnalysisResult],
   );
 
   React.useEffect(() => {
@@ -351,6 +346,12 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
       }),
     );
   }, [addSubscription, context.notificationChannel]);
+
+  React.useEffect(() => {
+    addSubscription(context.api.getThreadDumps().subscribe((dumps) => {
+      setThreadDumps(dumps);
+    }));
+  }, [addSubscription, context.api, setThreadDumps])
 
   React.useEffect(() => {
     addSubscription(
@@ -476,7 +477,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   }
 
   return (
-    <TargetView {...props} pageTitle="Diagnostics">
+    <TargetView {...props} pageTitle="Visualize Thread Dumps">
       <ThreadDumpSelector selected={selectedThreadDump} threadDumps={threadDumps} onSelect={handleThreadDumpChange} />
       {view}
     </TargetView>
