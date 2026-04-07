@@ -39,7 +39,7 @@ import {
   TextList,
   TextListItem,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import { Table, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { concatMap, first, of } from 'rxjs';
@@ -279,6 +279,13 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     [analysisResult, deadlockColumns],
   );
 
+  const findingsTable = React.useMemo(
+    () => {
+      
+    }, 
+    [findingsColumns, findingsRows]
+  )
+
   const queryTargetThreadDumps = React.useCallback(
     (target: Target) => context.api.getTargetThreadDumps(target),
     [context.api],
@@ -383,17 +390,12 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           <Card>
             <CardTitle>JVM Information</CardTitle>
             <Text>{analysisResult.jvmInfo}</Text>
-          </Card>
-        </GridItem>
-        <GridItem span={3}>
-          <Card>
-            <CardTitle>JNI Information</CardTitle>
             <TextList isPlain>
               JNI Information
-              <TextListItem> Global References: {analysisResult.jniInfo.globalRefs}</TextListItem>
-              <TextListItem> Global References Memory: {analysisResult.jniInfo.globalRefsMemory}</TextListItem>
-              <TextListItem> Weak References: {analysisResult.jniInfo.weakRefs}</TextListItem>
-              <TextListItem> Weak References Memory: {analysisResult.jniInfo.weakRefsMemory}</TextListItem>
+              <TextListItem> Global References: {analysisResult.jniInfo.globalRefs ? analysisResult.jniInfo.globalRefs : "N/A"}</TextListItem>
+              <TextListItem> Global References Memory: {analysisResult.jniInfo.globalRefsMemory ? analysisResult.jniInfo.globalRefsMemory : "N/A"}</TextListItem>
+              <TextListItem> Weak References: {analysisResult.jniInfo.weakRefs ? analysisResult.jniInfo.weakRefs : "N/A"}</TextListItem>
+              <TextListItem> Weak References Memory: {analysisResult.jniInfo.weakRefsMemory ? analysisResult.jniInfo.weakRefsMemory : "N/A"}</TextListItem>
             </TextList>
           </Card>
         </GridItem>
@@ -430,21 +432,30 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
         <GridItem span={9}>
           <Card>
             <CardTitle>Specific Findings</CardTitle>
+            {findingsRows?.length ? (
             <Table aria-label="Specific Findings" variant={TableVariant.compact}>
               <Thead>
                 <Tr>
                   {findingsColumns.map(({ title, sortable }, index) => (
-                    <Th key={`findings-${title}`}>{title}</Th>
-                  ))}
+                <Th key={`findings-${title}`}>{title}</Th>
+                ))}
                 </Tr>
               </Thead>
               <Tbody>{findingsRows}</Tbody>
-            </Table>
+            </Table>) :
+            (<EmptyState>
+              <EmptyStateHeader
+                titleText="No Specific Findings"
+                icon={<EmptyStateIcon icon={TopologyIcon} />}
+                headingLevel="h4"
+                />
+            </EmptyState>)}
           </Card>
         </GridItem>
         <GridItem span={12}>
           <Card>
             <CardTitle>Deadlock Detection</CardTitle>
+            {deadlockRows?.length ? (
             <Table aria-label="Deadlocks" variant={TableVariant.compact}>
               <Thead>
                 <Tr>
@@ -454,7 +465,15 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
                 </Tr>
               </Thead>
               <Tbody>{deadlockRows}</Tbody>
-            </Table>
+            </Table>) : 
+            (<EmptyState>
+              <EmptyStateHeader
+                titleText="No Deadlocks Detected"
+                icon={<EmptyStateIcon icon={TopologyIcon} />}
+                headingLevel="h4"
+                />
+            </EmptyState>)
+            }
           </Card>
         </GridItem>
         <GridItem span={12}>
