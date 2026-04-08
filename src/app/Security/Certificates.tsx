@@ -24,6 +24,8 @@ import {
   Card,
   CardBody,
   CardTitle,
+  Content,
+  ContentVariants,
   EmptyState,
   EmptyStateBody,
   EmptyStateVariant,
@@ -34,9 +36,6 @@ import {
   PanelMainBody,
   Popover,
   Spinner,
-  Text,
-  TextContent,
-  TextVariants,
   Title,
 } from '@patternfly/react-core';
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
@@ -67,8 +66,8 @@ export const Certificates: React.FC = () => {
     <BreadcrumbPage pageTitle="Certificates">
       <Card>
         <CardTitle>
-          <Text component={TextVariants.h1}>
-            <Text>
+          <Content component="h1">
+            <Content component="p">
               {t('ImportCertificate.CARD_TITLE')}
               <Popover
                 maxWidth="40rem"
@@ -79,11 +78,11 @@ export const Certificates: React.FC = () => {
                   <OutlinedQuestionCircleIcon />
                 </Button>
               </Popover>
-            </Text>
-          </Text>
-          <TextContent>
-            <Text component={TextVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Text>
-          </TextContent>{' '}
+            </Content>
+          </Content>
+          <Content>
+            <Content component={ContentVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Content>
+          </Content>{' '}
         </CardTitle>
         <CardBody isFilled>
           <Panel isScrollable>
