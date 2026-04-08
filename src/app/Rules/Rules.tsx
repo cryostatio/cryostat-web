@@ -137,6 +137,16 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         keyPaths: ['options'],
         sortable: false,
       },
+      {
+        title: t('THREAD_DUMP'),
+        keyPaths: ['threaddump'],
+        sortable: false,
+      },
+      {
+        title: t('HEAP_DUMP'),
+        keyPaths: ['dump'],
+        sortable: false,
+      },
     ],
     [t],
   );
@@ -437,6 +447,12 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
                 <EmptyText text="No options" />
               )}
             </LabelGroup>
+          </Td>
+          <Td key={`automatic-rule-threaddump-${index}`} dataLabel={tableColumns[6].title}>
+            {`${r.threadDump}`}
+          </Td>
+          <Td key={`automatic-rule-heapdump-${index}`} dataLabel={tableColumns[7].title}>
+            {`${r.heapDump}`}
           </Td>
           <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
             <ActionsColumn

@@ -233,6 +233,7 @@
     "ENABLE_SWITCH_HELPER_TEXT": "Rules take effect when created if enabled and will be matched against all discovered target applications immediately. When new target applications appear they are checked against all enabled rules. Disabled rules have no effect but are available to be enabled in the future.",
     "EVALUATING_EXPRESSION": "Evaluating Match Expression...",
     "FAILING_EVALUATION": "The expression matching failed.",
+    "HEAP_DUMP_SWITCH_HELPER_TEXT": "Trigger a heap dump in all matching targets.",
     "INITIAL_DELAY_HELPER_TEXT": "Initial delay before archiving starts. The first archived copy will be made this long after the Recording is started. The second archived copy will occur one Archival period later.",
     "MATCH_EXPRESSION_HELPER_TEXT": "Enter a Match Expression. This is a <a>Common Expression Language (CEL)</a> code snippet that is evaluated against each target application to determine whether the rule should be applied.",
     "MATCH_EXPRESSION_HINT_BODY": "Try an expression like:",
@@ -244,6 +245,7 @@
     "PRESERVED_ARCHIVES_HELPER_TEXT": "The number of Archived Recording copies to preserve in archives for each target application affected by this rule.",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied by this Rule against matching target applications.",
     "TEMPLATE_HINT": "A Template must be selected.",
+    "THREAD_DUMP_SWITCH_HELPER_TEXT": "Trigger a thread dump in all matching targets",
     "WARNING_NO_MATCH": "Warning: Match Expression matches no targets."
   },
   "CredentialTestTable": {
