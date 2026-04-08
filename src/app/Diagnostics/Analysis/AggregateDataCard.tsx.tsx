@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ChartPie } from '@patternfly/react-charts';
+import { ThemeSetting, ThemeType } from '@app/Settings/types';
+import { useTheme } from '@app/utils/hooks/useTheme';
+import { ChartContainer, ChartLabel, ChartLegend, ChartPie } from '@patternfly/react-charts';
 import { Bullseye, CardBody } from '@patternfly/react-core';
 
 export interface ChartData {
@@ -41,31 +43,47 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
     return { x: t.data, y: t.count };
   });
 
+  const [theme] = useTheme();
+
   return (
     <>
-      <CardBody>
-        <Bullseye>
+    <Bullseye>
+      <CardBody isFilled>
           <ChartPie
             ariaDesc={props.description}
             ariaTitle={props.title}
             constrainToVisibleArea
             data={chartData}
-            height={230}
             labels={({ datum }) => `${datum.x}: ${datum.y}`}
             legendData={legendData}
             legendOrientation="vertical"
             legendPosition="right"
-            name="chart1"
+            legendComponent={
+              <ChartLegend
+                labelComponent={
+                  <ChartLabel
+                    style={{
+                      fill:
+                        theme == ThemeSetting.DARK
+                          ? 'var(--pf-v5-global--palette--black-200)'
+                          : 'var(--pf-v5-chart-global--label--Fill, #151515)',
+                    }}
+                  />
+                }
+              />
+            }
+            height={350}
+            width={900}
             padding={{
               bottom: 20,
               left: 20,
               right: 140, // Adjusted to accommodate legend
               top: 20,
             }}
-            width={350}
+            name="chart1"
           />
-        </Bullseye>
       </CardBody>
+    </Bullseye>
     </>
   );
 };
