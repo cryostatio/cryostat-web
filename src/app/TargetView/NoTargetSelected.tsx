@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
+import { Card, CardBody, CardTitle, Content, ContentVariants } from '@patternfly/react-core';
 import { DisconnectedIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
@@ -31,7 +31,7 @@ export const NoTargetSelected: React.FC = () => {
           </Trans>
         </CardTitle>
         <CardBody>
-          <Text component={TextVariants.p}>{t('NoTargetSelected.BODY')}</Text>
+          <Content component={ContentVariants.p}>{t('NoTargetSelected.BODY')}</Content>
         </CardBody>
       </Card>
     </>

@@ -27,7 +27,6 @@ import {
   Button,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
   Label,
   LabelProps,
@@ -39,7 +38,6 @@ import {
   ToolbarItem,
   Tooltip,
   ValidatedOptions,
-  EmptyStateHeader,
   Select,
   SelectOption,
   SelectList,
@@ -157,12 +155,12 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
     </OuterScrollContainer>
   ) : (
     <Bullseye>
-      <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateHeader
-          titleText={t('CredentialTestTable.NO_TARGET_MATCHED')}
-          icon={<EmptyStateIcon icon={SearchIcon} />}
-          headingLevel="h4"
-        />
+      <EmptyState
+        headingLevel="h4"
+        icon={SearchIcon}
+        titleText={t('CredentialTestTable.NO_TARGET_MATCHED')}
+        variant={EmptyStateVariant.full}
+      >
         <EmptyStateBody>{`${
           matchedExpr === '' ? t('CredentialTestTable.ENTER_ANOTHER') : t('CredentialTestTable.CLEAR_AND_TRY_AGAIN')
         }`}</EmptyStateBody>
@@ -351,7 +349,7 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
       aria-label={t('CredentialTestTable.ARIA_LABELS.TOOLBAR')}
     >
       <ToolbarContent>
-        <ToolbarItem variant="search-filter">
+        <ToolbarItem>
           <SearchInput
             onChange={(_, value: string) => onSearch(value)}
             placeholder={t('CredentialTestTable.SEARCH_PLACEHOLDER')}

@@ -4,6 +4,28 @@
   "ARCHIVAL_PERIOD": "Archival Period",
   "ARCHIVE": "Archive",
   "ARCHIVING": "Archiving",
+  "ArchiveFilterBar": {
+    "CLEAR_ALL_FILTERS": "Clear all filters",
+    "LINEAGE": "Lineage",
+    "SEARCH": "Search",
+    "TIME_RANGE": "Time Range"
+  },
+  "TimeRangeFilter": {
+    "END_TIME": "End Time",
+    "RESET": "Reset time range",
+    "START_TIME": "Start Time",
+    "VALIDATION": {
+      "END_BEFORE_START": "End time must be after start time",
+      "INVALID_DATE_FORMAT": "Invalid date format"
+    }
+  },
+  "LineageLabelChain": {
+    "ARIA_LABELS": {
+      "CHAIN": "Lineage hierarchy chain",
+      "FILTERED_NODE": "Currently filtered node",
+      "FILTER_BY_NODE": "Filter by {{nodeType}}: {{name}}"
+    }
+  },
   "AriaLabels": {
     "MAXIMUM_AGE": "Maximum age value",
     "MAXIMUM_AGE_UNITS_INPUT": "Maximum age units input",

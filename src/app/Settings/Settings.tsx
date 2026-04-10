@@ -178,7 +178,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                                     marginLeft: '1ch',
                                     textTransform: 'capitalize',
                                   }}
-                                  color={s.featureLevel === FeatureLevel.BETA ? 'cyan' : 'red'}
+                                  color={s.featureLevel === FeatureLevel.BETA ? 'teal' : 'red'}
                                 >
                                   {FeatureLevel[s.featureLevel].toLowerCase()}
                                 </Label>

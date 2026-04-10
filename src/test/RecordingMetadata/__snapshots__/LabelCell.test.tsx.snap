@@ -1,69 +1,61 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<LabelCell /> renders correctly 1`] = `
-<div
-  className="pf-v5-c-label-group"
->
+<div>
   <div
-    className="pf-v5-c-label-group__main"
+    class="pf-v6-c-label-group"
   >
-    
-    <ul
-      aria-label="Label group category"
-      className="pf-v5-c-label-group__list"
-      role="list"
+    <div
+      class="pf-v6-c-label-group__main"
     >
-      <li
-        className="pf-v5-c-label-group__list-item"
+      
+      <ul
+        aria-label="Label group category"
+        class="pf-v6-c-label-group__list"
+        role="list"
       >
-        <span
-          aria-label="someLabel=someValue"
-          className="pf-v5-c-label"
+        <li
+          class="pf-v6-c-label-group__list-item"
         >
-          <button
-            className="pf-v5-c-label__content"
-            onClick={[Function]}
-            type="button"
+          <span
+            aria-label="someLabel=someValue"
+            class="pf-v6-c-label pf-m-filled pf-m-clickable"
           >
-            <span
-              className="pf-v5-c-label__text"
-              style={
-                {
-                  "--pf-v5-c-label__text--MaxWidth": "20ch",
-                }
-              }
+            <button
+              class="pf-v6-c-label__content pf-m-clickable"
+              type="button"
             >
-              someLabel=someValue
-            </span>
-          </button>
-        </span>
-      </li>
-      <li
-        className="pf-v5-c-label-group__list-item"
-      >
-        <span
-          aria-label="anotherLabel=anotherValue"
-          className="pf-v5-c-label"
+              <span
+                class="pf-v6-c-label__text"
+                style="--pf-v6-c-label__text--MaxWidth: 20ch;"
+              >
+                someLabel=someValue
+              </span>
+            </button>
+          </span>
+        </li>
+        <li
+          class="pf-v6-c-label-group__list-item"
         >
-          <button
-            className="pf-v5-c-label__content"
-            onClick={[Function]}
-            type="button"
+          <span
+            aria-label="anotherLabel=anotherValue"
+            class="pf-v6-c-label pf-m-filled pf-m-clickable"
           >
-            <span
-              className="pf-v5-c-label__text"
-              style={
-                {
-                  "--pf-v5-c-label__text--MaxWidth": "20ch",
-                }
-              }
+            <button
+              class="pf-v6-c-label__content pf-m-clickable"
+              type="button"
             >
-              anotherLabel=anotherValue
-            </span>
-          </button>
-        </span>
-      </li>
-    </ul>
+              <span
+                class="pf-v6-c-label__text"
+                style="--pf-v6-c-label__text--MaxWidth: 20ch;"
+              >
+                anotherLabel=anotherValue
+              </span>
+            </button>
+          </span>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 `;

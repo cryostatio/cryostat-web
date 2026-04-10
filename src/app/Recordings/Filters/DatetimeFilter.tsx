@@ -148,13 +148,12 @@ export const DateTimeFilter: React.FC<DateTimeFilterProps> = ({ onSubmit }) => {
         </FlexItem>
         <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
           <Button
+            icon={<SearchIcon />}
             variant={ButtonVariant.control}
             aria-label={t('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON')}
             onClick={handleSubmit}
             isDisabled={submitDisabled}
-          >
-            <SearchIcon />
-          </Button>
+          ></Button>
         </FlexItem>
       </Flex>
       {invalidErr ? (
@@ -253,12 +252,11 @@ export const DateTimeInput: React.FC<DateTimeInputProps> = ({ selectedDateTime, 
       </InputGroupItem>
       <InputGroupItem>
         <Button
+          icon={<OutlinedCalendarAltIcon />}
           variant="control"
           aria-label={t('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR')}
           onClick={onToggleCalendar}
-        >
-          <OutlinedCalendarAltIcon />
-        </Button>
+        ></Button>
       </InputGroupItem>
     </>
   );
