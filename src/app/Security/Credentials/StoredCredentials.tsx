@@ -31,13 +31,10 @@ import {
   CardBody,
   CardTitle,
   Checkbox,
+  Content,
+  ContentVariants,
   EmptyState,
-  EmptyStateIcon,
   Popover,
-  Text,
-  TextContent,
-  TextVariants,
-  EmptyStateHeader,
   Dropdown,
   DropdownList,
   DropdownItem,
@@ -324,7 +321,7 @@ export const StoredCredentials = () => {
               </ToolbarItem>
             </ToolbarGroup>
             <ToolbarItem variant="separator" />
-            <ToolbarGroup variant="button-group">
+            <ToolbarGroup variant="action-group">
               {buttons.map((btn, idx) => (
                 <ToolbarItem key={idx}>{btn}</ToolbarItem>
               ))}
@@ -407,13 +404,11 @@ export const StoredCredentials = () => {
     content = (
       <>
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText={<>{t('StoredCredentials.NO_CREDENTIAL_TITLE')}</>}
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState
+            titleText={<>{t('StoredCredentials.NO_CREDENTIAL_TITLE')}</>}
+            icon={SearchIcon}
+            headingLevel="h4"
+          />
         </Bullseye>
       </>
     );
@@ -493,17 +488,15 @@ export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
       <MenuToggle
         ref={toggleRef}
         onClick={handleToggle}
-        splitButtonOptions={{
-          items: [
-            <MenuToggleCheckbox
-              id={'select-all-credentials'}
-              key={'select-all-credentials'}
-              aria-label={t('StoredCredentials.ARIA_LABELS.FILTER_CHECKBOX')}
-              isChecked={isSelectAll}
-              onChange={onSelectAll}
-            />,
-          ],
-        }}
+        splitButtonItems={[
+          <MenuToggleCheckbox
+            id={'select-all-credentials'}
+            key={'select-all-credentials'}
+            aria-label={t('StoredCredentials.ARIA_LABELS.FILTER_CHECKBOX')}
+            isChecked={isSelectAll}
+            onChange={onSelectAll}
+          />,
+        ]}
       />
     ),
     [handleToggle, isSelectAll, onSelectAll, t],
@@ -533,8 +526,8 @@ export const StoredCredentialsView: React.FC = () => {
     <BreadcrumbPage pageTitle="Stored Credentials">
       <Card>
         <CardTitle>
-          <Text component={TextVariants.h1}>
-            <Text>
+          <Content component="h1">
+            <Content component="p">
               {t('StoredCredentials.CARD_TITLE')}
               <Popover
                 maxWidth="40rem"
@@ -545,11 +538,11 @@ export const StoredCredentialsView: React.FC = () => {
                   <OutlinedQuestionCircleIcon />
                 </Button>
               </Popover>
-            </Text>
-          </Text>
-          <TextContent>
-            <Text component={TextVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Text>
-          </TextContent>{' '}
+            </Content>
+          </Content>
+          <Content>
+            <Content component={ContentVariants.small}>{t('StoredCredentials.CARD_DESCRIPTION')}</Content>
+          </Content>{' '}
         </CardTitle>
         <CardBody isFilled>
           <StoredCredentials />

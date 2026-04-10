@@ -359,11 +359,10 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }
               </FormGroup>
               <FormGroup>
                 <Accordion asDefinitionList={false} data-quickstart-id="ct-credential-expand">
-                  <AccordionItem>
+                  <AccordionItem isExpanded={expandedSections.includes('jmx-credential-option')}>
                     <AccordionToggle
                       className="expandable-form__accordion-toggle-block"
                       id={'jmx-credential-option'}
-                      isExpanded={expandedSections.includes('jmx-credential-option')}
                       onClick={() => toggleCredentialForm('jmx-credential-option')}
                       type={'button'}
                     >
@@ -372,10 +371,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ onClose, prefilled }
                     <div className="expandable-form__help-block " id={'jmx-credential-option-description'}>
                       Creates credentials that Cryostat uses to connect to target JVMs over JMX.
                     </div>
-                    <AccordionContent
-                      isHidden={!expandedSections.includes('jmx-credential-option')}
-                      id={'expanded-jmx-credential-option'}
-                    >
+                    <AccordionContent id={'expanded-jmx-credential-option'}>
                       <FormGroup label={'Username'} fieldId="username" className="expandable-form__form-group">
                         <TextInput
                           aria-label={'Username'}
@@ -474,12 +470,12 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
     }
     return validation.option === ValidatedOptions.success
       ? {
-          icon: <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />,
+          icon: <CheckCircleIcon color="var(--pf-t--global--icon--color--status--success--default)" />,
           message: 'Target definition is valid.',
         }
       : validation.option === ValidatedOptions.error
         ? {
-            icon: <ExclamationCircleIcon color="var(--pf-v5-global--danger-color--100)" />,
+            icon: <ExclamationCircleIcon color="var(--pf-t--global--icon--color--status--danger--default)" />,
             message: validation.errorMessage,
           }
         : { icon: <PendingIcon />, message: '' };

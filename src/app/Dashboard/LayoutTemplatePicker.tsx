@@ -41,7 +41,6 @@ import {
   DrawerPanelContent,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
   Grid,
   GridItem,
@@ -57,7 +56,6 @@ import {
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
-  EmptyStateHeader,
   SelectList,
   Select,
   SelectOption,
@@ -217,14 +215,13 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
   const uploadButton = React.useMemo(
     () => (
       <Button
+        icon={<UploadIcon />}
         key="upload"
         variant="secondary"
         aria-label={t('DashboardLayoutToolbar.UPLOAD.LABEL')}
         onClick={handleUploadButton}
         data-quickstart-id="dashboard-upload-btn"
-      >
-        <UploadIcon />
-      </Button>
+      ></Button>
     ),
     [t, handleUploadButton],
   );
@@ -423,13 +420,12 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
             </DescriptionList>
           ) : (
             <Bullseye>
-              <EmptyState variant={EmptyStateVariant.full}>
-                <EmptyStateHeader
-                  titleText="No template selected"
-                  icon={<EmptyStateIcon icon={InfoCircleIcon} />}
-                  headingLevel="h5"
-                />
-              </EmptyState>
+              <EmptyState
+                headingLevel="h5"
+                icon={InfoCircleIcon}
+                titleText="No template selected"
+                variant={EmptyStateVariant.full}
+              ></EmptyState>
             </Bullseye>
           )}
         </DrawerPanelBody>
@@ -523,14 +519,14 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
             <ToolbarContent>
               <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={'md'}>
                 <ToolbarGroup variant="filter-group">
-                  <ToolbarItem variant="search-filter">
+                  <ToolbarItem>
                     <SearchAutocomplete
                       values={allTemplates.map((t) => t.name)}
                       onChange={onSearchChange}
                       placeholder={t('LayoutTemplatePicker.SEARCH_PLACEHOLDER')}
                     />
                   </ToolbarItem>
-                  <ToolbarFilter chips={selectedFilters} deleteChip={onDeleteChip} categoryName="Category">
+                  <ToolbarFilter labels={selectedFilters} deleteLabel={onDeleteChip} categoryName="Category">
                     <Select
                       toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
                         <MenuToggle
@@ -607,17 +603,16 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 </ToolbarItem>
                 <ToolbarItem>
                   <Button
+                    icon={sortArrowIcon}
                     variant="plain"
                     aria-label="Sort"
                     onClick={onSortDirectionChange}
                     isAriaDisabled={!selectedSort}
-                  >
-                    {sortArrowIcon}
-                  </Button>
+                  />
                 </ToolbarItem>
               </ToolbarGroup>
               <ToolbarItem variant="separator" />
-              <ToolbarGroup variant="icon-button-group">
+              <ToolbarGroup variant="action-group-plain">
                 <ToolbarItem>{uploadButton}</ToolbarItem>
               </ToolbarGroup>
             </ToolbarContent>
@@ -636,12 +631,7 @@ export const LayoutTemplatePicker: React.FC<LayoutTemplatePickerProps> = ({ onTe
                 </>
               ) : (
                 <StackItem>
-                  <EmptyState>
-                    <EmptyStateHeader
-                      titleText="No templates found"
-                      icon={<EmptyStateIcon icon={PficonTemplateIcon} />}
-                      headingLevel="h4"
-                    />
+                  <EmptyState headingLevel="h4" icon={PficonTemplateIcon} titleText="No templates found">
                     <EmptyStateBody>Upload a template and try again.</EmptyStateBody>
                   </EmptyState>
                 </StackItem>

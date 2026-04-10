@@ -30,8 +30,9 @@ import {
   KeyValue,
   keyValueToString,
 } from '@app/Shared/Services/api.types';
+import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { Text } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import * as tlr from '@testing-library/react';
 import { screen, within, cleanup, act } from '@testing-library/react';
@@ -130,7 +131,7 @@ const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFile
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
-    BulkEditLabels: (_) => <Text>Edit Recording Labels</Text>,
+    BulkEditLabels: (_) => <Content component="p">Edit Recording Labels</Content>,
   };
 });
 
@@ -165,6 +166,7 @@ jest
 
 jest.spyOn(defaultServices.settings, 'palette').mockReturnValue(of(Palette.DEFAULT));
 jest.spyOn(defaultServices.settings, 'largeUi').mockReturnValue(of(false));
+jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
