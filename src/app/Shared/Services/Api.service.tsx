@@ -808,20 +808,14 @@ export class ApiService {
   }
 
   analyzeThreadDump(
-    target: Target,
+    jvmId: string,
     threadDumpId: string,
     suppressNotifications = false,
   ): Observable<ThreadDumpAnalysisResult> {
-    return this.target.target().pipe(
-      filter((t) => !!t),
-      concatMap((target) =>
-        this.sendRequest('beta', `diagnostics/targets/${target!.id}/threaddump/${threadDumpId}/analyze`, {
-          method: 'POST',
-        }).pipe(
-          concatMap((resp) => resp.json()),
-          first(),
-        ),
-      ),
+    return this.sendRequest('beta', `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`, {
+      method: 'POST',
+    }, undefined, suppressNotifications).pipe(
+      concatMap((resp) => resp.json()),
       first(),
     );
   }

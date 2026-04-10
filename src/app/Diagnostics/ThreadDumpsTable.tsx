@@ -27,7 +27,7 @@ import {
   ThreadDumpDeleteFilterIntent,
   TargetThreadDumpFilters,
 } from '@app/Shared/Redux/Filters/ThreadDumpFilterSlice';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { modalPrefillSetIntent, store, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import {
   NotificationCategory,
   NullableTarget,
@@ -38,7 +38,7 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import useDayjs from '@app/utils/hooks/useDayjs';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { TableColumn, formatBytes, hashCode, portalRoot, sortResources } from '@app/utils/utils';
+import { TableColumn, formatBytes, hashCode, portalRoot, sortResources, toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Toolbar,
@@ -70,6 +70,7 @@ import { ISortBy, SortByDirection, Table, Tbody, Td, ThProps, Tr } from '@patter
 import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
 import { filterThreadDumps, ThreadDumpFilters, ThreadDumpFiltersCategories } from './Filters/ThreadDumpFilters';
@@ -518,6 +519,20 @@ export interface ThreadDumpActionProps {
 export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, onDownload, ...props }) => {
   const { t } = useCryostatTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleViewInAnalysis = React.useCallback(
+    (jvmId) => {
+      var id = threadDump.threadDumpId;
+      const state = {
+        jvmId,
+        id,
+      };
+      store.dispatch(modalPrefillSetIntent(toPath('/analyze-thread-dumps'), state as Record<string, unknown>));
+      navigate(toPath('/analyze-thread-dumps'), { state });
+    },
+    [threadDump, navigate],
+  );
 
   const actionItems = React.useMemo(() => {
     return [
@@ -526,8 +541,13 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
         key: 'download-threaddump',
         onClick: () => onDownload(threadDump),
       },
+      {
+        title: 'Analyze Thread Dump',
+        key: 'analyze-threaddump',
+        onClick: () => handleViewInAnalysis(threadDump.jvmId),
+      },
     ] as RowAction[];
-  }, [onDownload, threadDump]);
+  }, [onDownload, handleViewInAnalysis, threadDump]);
 
   const toggle = React.useCallback(
     (toggleRef: React.Ref<MenuToggleElement>) => (

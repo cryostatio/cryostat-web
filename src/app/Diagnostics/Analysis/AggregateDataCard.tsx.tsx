@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ThemeSetting, ThemeType } from '@app/Settings/types';
+import { ThemeSetting } from '@app/Settings/types';
 import { useTheme } from '@app/utils/hooks/useTheme';
-import { ChartContainer, ChartLabel, ChartLegend, ChartPie } from '@patternfly/react-charts';
+import { ChartLabel, ChartLegend, ChartPie } from '@patternfly/react-charts';
 import { Bullseye, CardBody } from '@patternfly/react-core';
 
 export interface ChartData {
@@ -47,8 +47,8 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
 
   return (
     <>
-    <Bullseye>
-      <CardBody isFilled>
+      <Bullseye>
+        <CardBody isFilled>
           <ChartPie
             ariaDesc={props.description}
             ariaTitle={props.title}
@@ -82,8 +82,8 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
             }}
             name="chart1"
           />
-      </CardBody>
-    </Bullseye>
+        </CardBody>
+      </Bullseye>
     </>
   );
 };
