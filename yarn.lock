@@ -13832,14 +13832,14 @@ __metadata:
   linkType: hard
 
 "selenium-webdriver@npm:^4.40.0":
-  version: 4.42.0
-  resolution: "selenium-webdriver@npm:4.42.0"
+  version: 4.43.0
+  resolution: "selenium-webdriver@npm:4.43.0"
   dependencies:
     "@bazel/runfiles": "npm:^6.5.0"
     jszip: "npm:^3.10.1"
     tmp: "npm:^0.2.5"
     ws: "npm:^8.20.0"
-  checksum: 10/5e4d26b9091e8d6cd99e23f5017a7030b49f66209dfaaea9518c7fb6f0ecc2acceb61fd92a54536135cb7d0cfe6a759734e52c8a2502faceddf34b5757610052
+  checksum: 10/00861e3768143e1dcfe313a0996be2a1571c6b5718c1179b3509625eaec1f040057ab53b8f66ddb26183fb3ce9c9aa15b399e73802054835fadddfcee81d9034
   languageName: node
   linkType: hard
 
