@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DirectoryNameCell } from '@app/Archives/DirectoryNameCell';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import {
-  ArchivedRecording,
-  RecordingDirectory,
-  Target,
-  NotificationCategory,
-  EnvironmentNode,
-  TargetNode,
-} from '@app/Shared/Services/api.types';
+import { ArchivedRecording, RecordingDirectory, Target, NotificationCategory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
+import { useAliasCache } from '@app/utils/hooks/useAliasCache';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useTargetDetailsModal } from '@app/utils/hooks/useTargetDetailsModal';
 import { TableColumn, portalRoot, sortResources } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -38,19 +34,13 @@ import {
   ToolbarItem,
   SearchInput,
   EmptyState,
-  EmptyStateIcon,
-  Text,
-  Split,
-  SplitItem,
-  EmptyStateHeader,
   Button,
   Icon,
   Bullseye,
-  Modal,
-  ModalVariant,
   Spinner,
 } from '@patternfly/react-core';
-import { FileIcon, InfoCircleIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { FileIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import {
   Table,
   Th,
@@ -99,63 +89,13 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   const [expandedDirectories, setExpandedDirectories] = React.useState<_RecordingDirectory[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
-  const [showDetailsModal, setShowDetailsModal] = React.useState(false);
-  const [selectedJvmId, setSelectedJvmId] = React.useState<string>('');
-  const [lineageRoot, setLineageRoot] = React.useState<EnvironmentNode | undefined>(undefined);
-  const [loadingLineage, setLoadingLineage] = React.useState(false);
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
+  const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
+    useTargetDetailsModal();
 
-  const findInnermostTargetNode = React.useCallback((node: EnvironmentNode | TargetNode): TargetNode | undefined => {
-    if ('target' in node) {
-      // This is a TargetNode
-      return node as TargetNode;
-    }
-    // This is an EnvironmentNode, recurse through children
-    const envNode = node as EnvironmentNode;
-    if (envNode.children && envNode.children.length > 0) {
-      // Try to find a TargetNode in children, preferring the last child (innermost)
-      for (let i = envNode.children.length - 1; i >= 0; i--) {
-        const result = findInnermostTargetNode(envNode.children[i]);
-        if (result) return result;
-      }
-    }
-    return undefined;
-  }, []);
-
-  // Fetch lineage data when modal opens
-  React.useEffect(() => {
-    if (!showDetailsModal || !selectedJvmId) {
-      return;
-    }
-    setLoadingLineage(true);
-    setLineageRoot(undefined);
-    addSubscription(
-      context.api.getTargetLineage(selectedJvmId).subscribe({
-        next: (root) => {
-          setLineageRoot(root);
-          setLoadingLineage(false);
-        },
-        error: (_) => {
-          setLineageRoot(undefined);
-          setLoadingLineage(false);
-        },
-      }),
-    );
-  }, [showDetailsModal, selectedJvmId, addSubscription, context.api]);
-
-  const wrappedTarget = React.useMemo(() => {
-    if (!lineageRoot) {
-      return undefined;
-    }
-    const targetNode = findInnermostTargetNode(lineageRoot);
-    if (!targetNode) {
-      return undefined;
-    }
-    return {
-      getData: () => targetNode,
-    };
-  }, [lineageRoot, findInnermostTargetNode]);
+  const jvmIds = React.useMemo(() => directories.map((d) => d.jvmId), [directories]);
+  const aliasMap = useAliasCache(jvmIds);
 
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: RecordingDirectory[]) => {
@@ -204,9 +144,11 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       updatedSearchedDirectories = directories;
     } else {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter(
-        (d: _RecordingDirectory) => reg.test(d.jvmId) || reg.test(d.connectUrl),
-      );
+      updatedSearchedDirectories = directories.filter((d: _RecordingDirectory) => {
+        // Search by jvmId, connectUrl, and alias (from audit log)
+        const alias = aliasMap.get(d.jvmId) || '';
+        return reg.test(d.jvmId) || reg.test(d.connectUrl) || reg.test(alias);
+      });
     }
     return sortResources(
       {
@@ -216,7 +158,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
       updatedSearchedDirectories,
       tableColumns,
     );
-  }, [directories, searchText, sortBy]);
+  }, [directories, searchText, sortBy, aliasMap]);
 
   React.useEffect(() => {
     addSubscription(
@@ -293,6 +235,14 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     [expandedDirectories, setExpandedDirectories],
   );
 
+  const handleInfoClick = React.useCallback(
+    (jvmId: string) => {
+      setSelectedJvmId(jvmId);
+      setShowDetailsModal(true);
+    },
+    [setSelectedJvmId, setShowDetailsModal],
+  );
+
   const directoryRows = React.useMemo(() => {
     return searchedDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
@@ -310,37 +260,30 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
             }}
           />
           <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
-            <Split hasGutter>
-              <SplitItem>
-                <Text>{dir.connectUrl}</Text>
-              </SplitItem>
-              <SplitItem>
-                <Button
-                  variant="plain"
-                  onClick={() => {
-                    setSelectedJvmId(dir.jvmId);
-                    setShowDetailsModal(true);
-                  }}
-                  isDisabled={!dir.jvmId || dir.jvmId === 'uploads'}
-                  aria-label="View target details"
-                >
-                  <InfoCircleIcon />
-                </Button>
-              </SplitItem>
-            </Split>
+            <DirectoryNameCell
+              jvmId={dir.jvmId}
+              connectUrl={dir.connectUrl}
+              onInfoClick={() => handleInfoClick(dir.jvmId)}
+            />
           </Td>
           <Td key={`directory-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Button variant="plain" onClick={() => toggleExpanded(dir)}>
-              <Icon iconSize="md">
-                <FileIcon />
-              </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{dir.recordings.length || 0}</span>
-            </Button>
+            <Button
+              icon={
+                <>
+                  <Icon iconSize="md">
+                    <FileIcon />
+                  </Icon>
+                  <span style={{ marginLeft: 'var(--pf-t--global--spacer--sm)' }}>{dir.recordings.length || 0}</span>
+                </>
+              }
+              variant="plain"
+              onClick={() => toggleExpanded(dir)}
+            />
           </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, searchedDirectories, expandedDirectories]);
+  }, [toggleExpanded, searchedDirectories, expandedDirectories, handleInfoClick]);
 
   const recordingRows = React.useMemo(() => {
     return searchedDirectories.map((dir, idx) => {
@@ -399,13 +342,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
     view = (
       <>
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText={t('RecordingsTable.NO_ARCHIVES')}
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('RecordingsTable.NO_ARCHIVES')}></EmptyState>
         </Bullseye>
       </>
     );
@@ -448,13 +385,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         ) : wrappedTarget ? (
           <EntityDetails entity={wrappedTarget} className="target-details-modal" hideActions={true} />
         ) : (
-          <EmptyState>
-            <EmptyStateHeader
-              titleText="Target Details Unavailable"
-              icon={<EmptyStateIcon icon={TopologyIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Details Unavailable"></EmptyState>
         )}
       </Modal>
       <OuterScrollContainer className="archive-table-outer-container">

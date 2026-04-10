@@ -1,1099 +1,1066 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<CustomRecordingForm /> renders correctly 1`] = `
-<form
-  className="pf-v5-c-form pf-m-horizontal"
-  noValidate={true}
->
-  <div
-    className="pf-v5-c-content"
-  >
-    <p
-      className=""
-      data-ouia-component-id="OUIA-Generated-Text-1"
-      data-ouia-component-type="PF5/Text"
-      data-ouia-safe={true}
-      data-pf-content={true}
-    >
-      JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event types are built in to the JVM itself, while others are user defined.
-    </p>
-  </div>
-  <div
-    className="pf-v5-c-form__group"
+<div>
+  <form
+    class="pf-v6-c-form pf-m-horizontal"
+    novalidate=""
   >
     <div
-      className="pf-v5-c-form__group-label"
+      class="pf-v6-c-content"
+      data-ouia-component-id="OUIA-Generated-Content-1"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe="true"
+      data-pf-content="true"
     >
-      <label
-        className="pf-v5-c-form__label"
-        htmlFor="recording-name"
+      <p
+        class="pf-v6-c-content--p"
+        data-ouia-component-id="OUIA-Generated-Content-2"
+        data-ouia-component-type="PF6/Content"
+        data-ouia-safe="true"
+        data-pf-content="true"
       >
-        <span
-          className="pf-v5-c-form__label-text"
-        >
-          Name
-        </span>
-        <span
-          aria-hidden="true"
-          className="pf-v5-c-form__label-required"
-        >
-           
-          *
-        </span>
-      </label>
-       
+        JDK Flight Recordings are compact records of events which have occurred within the Target JVM. Many event types are built in to the JVM itself, while others are user defined.
+      </p>
     </div>
     <div
-      className="pf-v5-c-form__group-control"
+      class="pf-v6-c-form__group"
     >
-      <span
-        className="pf-v5-c-form-control"
-      >
-        <input
-          aria-describedby="recording-name-helper"
-          aria-invalid={false}
-          aria-label={null}
-          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-          data-ouia-component-type="PF5/TextInput"
-          data-ouia-safe={true}
-          data-quickstart-id="crf-name"
-          disabled={false}
-          id="recording-name"
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          required={true}
-          type="text"
-          value=""
-        />
-      </span>
       <div
-        className="pf-v5-c-check"
+        class="pf-v6-c-form__group-label"
       >
-        <input
-          aria-invalid={false}
-          aria-label="restartExisting checkbox"
-          checked={false}
-          className="pf-v5-c-check__input"
-          data-ouia-component-id="OUIA-Generated-Checkbox-1"
-          data-ouia-component-type="PF5/Checkbox"
-          data-ouia-safe={true}
-          disabled={false}
-          id="recording-restart-existing"
-          name="recording-restart-existing"
-          onChange={[Function]}
-          required={false}
-          type="checkbox"
-        />
         <label
-          className="pf-v5-c-check__label"
-          htmlFor="recording-restart-existing"
-        >
-          Restart if Recording already exists
-        </label>
-      </div>
-      <div
-        className="pf-v5-c-form__helper-text"
-      >
-        <div
-          className="pf-v5-c-helper-text"
-        >
-          <div
-            className="pf-v5-c-helper-text__item"
-          >
-            <span
-              className="pf-v5-c-helper-text__item-text"
-            >
-              Enter a Recording name. This will be unique within the target JVM.
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    className="pf-v5-c-form__group"
-    data-quickstart-id="crf-duration"
-  >
-    <div
-      className="pf-v5-c-form__group-label"
-    >
-      <label
-        className="pf-v5-c-form__label"
-        htmlFor="recording-duration"
-      >
-        <span
-          className="pf-v5-c-form__label-text"
-        >
-          Duration
-        </span>
-        <span
-          aria-hidden="true"
-          className="pf-v5-c-form__label-required"
-        >
-           
-          *
-        </span>
-      </label>
-       
-    </div>
-    <div
-      className="pf-v5-c-form__group-control"
-    >
-      <div
-        className="pf-v5-l-split pf-m-gutter"
-      >
-        <div
-          className="pf-v5-l-split__item"
-        >
-          <div
-            className="pf-v5-c-check"
-          >
-            <input
-              aria-invalid={false}
-              aria-label="Continuous checkbox"
-              checked={true}
-              className="pf-v5-c-check__input"
-              data-ouia-component-id="OUIA-Generated-Checkbox-2"
-              data-ouia-component-type="PF5/Checkbox"
-              data-ouia-safe={true}
-              disabled={false}
-              id="recording-continuous"
-              name="recording-continuous"
-              onChange={[Function]}
-              required={false}
-              type="checkbox"
-            />
-            <label
-              className="pf-v5-c-check__label"
-              htmlFor="recording-continuous"
-            >
-              Continuous
-            </label>
-            <span
-              className="pf-v5-c-check__description"
-            >
-              Record with unlimited duration until manually stopped
-            </span>
-          </div>
-        </div>
-        <div
-          className="pf-v5-l-split__item"
-        >
-          <div
-            className="pf-v5-c-check"
-          >
-            <input
-              aria-invalid={false}
-              aria-label="ArchiveOnStop checkbox"
-              checked={true}
-              className="pf-v5-c-check__input"
-              data-ouia-component-id="OUIA-Generated-Checkbox-3"
-              data-ouia-component-type="PF5/Checkbox"
-              data-ouia-safe={true}
-              disabled={false}
-              id="recording-archive-on-stop"
-              name="recording-archive-on-stop"
-              onChange={[Function]}
-              required={false}
-              type="checkbox"
-            />
-            <label
-              className="pf-v5-c-check__label"
-              htmlFor="recording-archive-on-stop"
-            >
-              Archive on Stop
-            </label>
-            <span
-              className="pf-v5-c-check__description"
-            >
-              Copy data to Archives automatically when duration elapses or recording is manually stopped
-            </span>
-          </div>
-        </div>
-      </div>
-      <div
-        className="pf-v5-l-split pf-m-gutter"
-      >
-        <div
-          className="pf-v5-l-split__item pf-m-fill"
+          class="pf-v6-c-form__label"
+          for="recording-name"
         >
           <span
-            className="pf-v5-c-form-control pf-m-disabled"
+            class="pf-v6-c-form__label-text"
           >
-            <input
-              aria-invalid={false}
-              aria-label="Duration Picker Period Input"
-              data-ouia-component-id="OUIA-Generated-TextInputBase-2"
-              data-ouia-component-type="PF5/TextInput"
-              data-ouia-safe={true}
-              disabled={true}
-              id="duration-picker-period"
-              min="0"
-              onBlur={[Function]}
-              onChange={[Function]}
-              onFocus={[Function]}
-              required={true}
-              type="number"
-              value={5}
-            />
+            Name
           </span>
+          <span
+            aria-hidden="true"
+            class="pf-v6-c-form__label-required"
+          >
+             
+            *
+          </span>
+        </label>
+          
+      </div>
+      <div
+        class="pf-v6-c-form__group-control"
+      >
+        <span
+          class="pf-v6-c-form-control"
+        >
+          <input
+            aria-describedby="recording-name-helper"
+            aria-invalid="false"
+            data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+            data-ouia-component-type="PF6/TextInput"
+            data-ouia-safe="true"
+            data-quickstart-id="crf-name"
+            id="recording-name"
+            required=""
+            type="text"
+            value=""
+          />
+        </span>
+        <div
+          class="pf-v6-c-check"
+        >
+          <input
+            aria-invalid="false"
+            aria-label="restartExisting checkbox"
+            class="pf-v6-c-check__input"
+            data-ouia-component-id="OUIA-Generated-Checkbox-1"
+            data-ouia-component-type="PF6/Checkbox"
+            data-ouia-safe="true"
+            id="recording-restart-existing"
+            name="recording-restart-existing"
+            type="checkbox"
+          />
+          <label
+            class="pf-v6-c-check__label"
+            for="recording-restart-existing"
+          >
+            Restart if Recording already exists
+          </label>
         </div>
         <div
-          className="pf-v5-l-split__item"
+          class="pf-v6-c-form__helper-text"
         >
-          <span
-            className="pf-v5-c-form-control pf-m-disabled duration-picker__form_select"
+          <div
+            class="pf-v6-c-helper-text"
           >
-            <select
-              aria-invalid={false}
-              aria-label="Duration Picker Units Input"
-              data-ouia-component-id="OUIA-Generated-FormSelect-default-1"
-              data-ouia-component-type="PF5/FormSelect"
-              data-ouia-safe={true}
-              disabled={true}
-              onBlur={[Function]}
-              onChange={[Function]}
-              onFocus={[Function]}
-              required={false}
-              value={60000}
-            >
-              <option
-                className=""
-                disabled={false}
-                value={1000}
-              >
-                Seconds
-              </option>
-              <option
-                className=""
-                disabled={false}
-                value={60000}
-              >
-                Minutes
-              </option>
-              <option
-                className=""
-                disabled={false}
-                value={3600000}
-              >
-                Hours
-              </option>
-            </select>
-            <span
-              className="pf-v5-c-form-control__utilities"
+            <div
+              class="pf-v6-c-helper-text__item"
             >
               <span
-                className="pf-v5-c-form-control__toggle-icon"
+                class="pf-v6-c-helper-text__item-text"
+              >
+                Enter a Recording name. This will be unique within the target JVM.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-v6-c-form__group"
+      data-quickstart-id="crf-duration"
+    >
+      <div
+        class="pf-v6-c-form__group-label"
+      >
+        <label
+          class="pf-v6-c-form__label"
+          for="recording-duration"
+        >
+          <span
+            class="pf-v6-c-form__label-text"
+          >
+            Duration
+          </span>
+          <span
+            aria-hidden="true"
+            class="pf-v6-c-form__label-required"
+          >
+             
+            *
+          </span>
+        </label>
+          
+      </div>
+      <div
+        class="pf-v6-c-form__group-control"
+      >
+        <div
+          class="pf-v6-l-split pf-m-gutter"
+        >
+          <div
+            class="pf-v6-l-split__item"
+          >
+            <div
+              class="pf-v6-c-check"
+            >
+              <input
+                aria-invalid="false"
+                aria-label="Continuous checkbox"
+                checked=""
+                class="pf-v6-c-check__input"
+                data-ouia-component-id="OUIA-Generated-Checkbox-2"
+                data-ouia-component-type="PF6/Checkbox"
+                data-ouia-safe="true"
+                id="recording-continuous"
+                name="recording-continuous"
+                type="checkbox"
+              />
+              <label
+                class="pf-v6-c-check__label"
+                for="recording-continuous"
+              >
+                Continuous
+              </label>
+              <span
+                class="pf-v6-c-check__description"
+              >
+                Record with unlimited duration until manually stopped
+              </span>
+            </div>
+          </div>
+          <div
+            class="pf-v6-l-split__item"
+          >
+            <div
+              class="pf-v6-c-check"
+            >
+              <input
+                aria-invalid="false"
+                aria-label="ArchiveOnStop checkbox"
+                checked=""
+                class="pf-v6-c-check__input"
+                data-ouia-component-id="OUIA-Generated-Checkbox-3"
+                data-ouia-component-type="PF6/Checkbox"
+                data-ouia-safe="true"
+                id="recording-archive-on-stop"
+                name="recording-archive-on-stop"
+                type="checkbox"
+              />
+              <label
+                class="pf-v6-c-check__label"
+                for="recording-archive-on-stop"
+              >
+                Archive on Stop
+              </label>
+              <span
+                class="pf-v6-c-check__description"
+              >
+                Copy data to Archives automatically when duration elapses or recording is manually stopped
+              </span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="pf-v6-l-split pf-m-gutter"
+        >
+          <div
+            class="pf-v6-l-split__item pf-m-fill"
+          >
+            <span
+              class="pf-v6-c-form-control pf-m-disabled"
+            >
+              <input
+                aria-invalid="false"
+                aria-label="Duration Picker Period Input"
+                data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+                data-ouia-component-type="PF6/TextInput"
+                data-ouia-safe="true"
+                disabled=""
+                id="duration-picker-period"
+                min="0"
+                required=""
+                type="number"
+                value="5"
+              />
+            </span>
+          </div>
+          <div
+            class="pf-v6-l-split__item"
+          >
+            <span
+              class="pf-v6-c-form-control pf-m-disabled duration-picker__form_select"
+            >
+              <select
+                aria-invalid="false"
+                aria-label="Duration Picker Units Input"
+                data-ouia-component-id="OUIA-Generated-FormSelect-default-1"
+                data-ouia-component-type="PF6/FormSelect"
+                data-ouia-safe="true"
+                disabled=""
+              >
+                <option
+                  class=""
+                  value="1000"
+                >
+                  Seconds
+                </option>
+                <option
+                  class=""
+                  value="60000"
+                >
+                  Minutes
+                </option>
+                <option
+                  class=""
+                  value="3600000"
+                >
+                  Hours
+                </option>
+              </select>
+              <span
+                class="pf-v6-c-form-control__utilities"
+              >
+                <span
+                  class="pf-v6-c-form-control__toggle-icon"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="pf-v6-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 320 512"
+                    width="1em"
+                  >
+                    <path
+                      d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+        <div
+          class="pf-v6-c-form__helper-text"
+        >
+          <div
+            class="pf-v6-c-helper-text"
+          >
+            <div
+              class="pf-v6-c-helper-text__item pf-m-success"
+            >
+              <span
+                class="pf-v6-c-helper-text__item-icon"
               >
                 <svg
-                  aria-hidden={true}
-                  aria-labelledby={null}
-                  className="pf-v5-svg"
+                  aria-hidden="true"
+                  class="pf-v6-svg"
                   fill="currentColor"
                   height="1em"
                   role="img"
-                  viewBox="0 0 320 512"
+                  viewBox="0 0 512 512"
                   width="1em"
                 >
                   <path
-                    d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                    d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
                   />
                 </svg>
               </span>
-            </span>
-          </span>
-        </div>
-      </div>
-      <div
-        className="pf-v5-c-form__helper-text"
-      >
-        <div
-          className="pf-v5-c-helper-text"
-        >
-          <div
-            className="pf-v5-c-helper-text__item pf-m-success"
-          >
-            <span
-              className="pf-v5-c-helper-text__item-text"
-            >
-              A continuous recording will never be automatically stopped.
-            </span>
+              <span
+                class="pf-v6-c-helper-text__item-text"
+              >
+                A continuous recording will never be automatically stopped.
+                <span
+                  class="pf-v6-screen-reader"
+                >
+                  : 
+                  success status
+                  ;
+                </span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    className="pf-v5-c-form__group"
-  >
     <div
-      className="pf-v5-c-form__group-label"
+      class="pf-v6-c-form__group"
     >
-      <label
-        className="pf-v5-c-form__label"
-        htmlFor="recording-template"
+      <div
+        class="pf-v6-c-form__group-label"
       >
-        <span
-          className="pf-v5-c-form__label-text"
-        >
-          Template
-        </span>
-        <span
-          aria-hidden="true"
-          className="pf-v5-c-form__label-required"
-        >
-           
-          *
-        </span>
-      </label>
-       
-    </div>
-    <div
-      className="pf-v5-c-form__group-control"
-    >
-      <span
-        className="pf-v5-c-form-control"
-      >
-        <select
-          aria-invalid={false}
-          aria-label="Event Template Input"
-          data-ouia-component-id="OUIA-Generated-FormSelect-default-2"
-          data-ouia-component-type="PF5/FormSelect"
-          data-ouia-safe={true}
-          data-quickstart-id="template-selector"
-          disabled={false}
-          id="recording-template"
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          required={false}
-          value=""
-        >
-          <option
-            className=""
-            disabled={true}
-            value=""
-          >
-            Select a Template
-          </option>
-          <optgroup
-            className=""
-            disabled={false}
-            label="Target templates"
-          >
-            <option
-              className=""
-              disabled={true}
-              value=""
-            >
-              No templates
-            </option>
-          </optgroup>
-          <optgroup
-            className=""
-            disabled={false}
-            label="Custom templates"
-          >
-            <option
-              className=""
-              disabled={false}
-              value="someEventTemplate,CUSTOM"
-            >
-              someEventTemplate
-            </option>
-          </optgroup>
-          <optgroup
-            className=""
-            disabled={false}
-            label="Preset templates"
-          >
-            <option
-              className=""
-              disabled={true}
-              value=""
-            >
-              No templates
-            </option>
-          </optgroup>
-        </select>
-        <span
-          className="pf-v5-c-form-control__utilities"
+        <label
+          class="pf-v6-c-form__label"
+          for="recording-template"
         >
           <span
-            className="pf-v5-c-form-control__toggle-icon"
+            class="pf-v6-c-form__label-text"
           >
-            <svg
-              aria-hidden={true}
-              aria-labelledby={null}
-              className="pf-v5-svg"
-              fill="currentColor"
-              height="1em"
-              role="img"
-              viewBox="0 0 320 512"
-              width="1em"
-            >
-              <path
-                d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-              />
-            </svg>
+            Template
           </span>
-        </span>
-      </span>
-      <div
-        className="pf-v5-c-form__helper-text"
-      >
-        <div
-          className="pf-v5-c-helper-text"
-        >
-          <div
-            className="pf-v5-c-helper-text__item"
-          >
-            <span
-              className="pf-v5-c-helper-text__item-text"
-            >
-              A Template must be selected.
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    className="pf-v5-c-expandable-section"
-    data-quickstart-id="crf-metadata-opt"
-  >
-    <button
-      aria-controls="metadata-options"
-      aria-expanded={false}
-      className="pf-v5-c-expandable-section__toggle"
-      id="metadata-option-toggle"
-      onClick={[Function]}
-      type="button"
-    >
-      <span
-        className="pf-v5-c-expandable-section__toggle-icon"
-      >
-        <svg
-          aria-hidden={true}
-          aria-labelledby={null}
-          className="pf-v5-svg"
-          fill="currentColor"
-          height="1em"
-          role="img"
-          viewBox="0 0 256 512"
-          width="1em"
-        >
-          <path
-            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-          />
-        </svg>
-      </span>
-      <span
-        className="pf-v5-c-expandable-section__toggle-text"
-      >
-        Show metadata options
-      </span>
-    </button>
-    <div
-      aria-labelledby="metadata-option-toggle"
-      className="pf-v5-c-expandable-section__content"
-      hidden={true}
-      id="metadata-options"
-      role="region"
-    >
-      <div
-        className="pf-v5-c-form__group"
-      >
-        <div
-          className="pf-v5-c-form__group-label"
-        >
-          <label
-            className="pf-v5-c-form__label"
-            htmlFor="labels"
-          >
-            <span
-              className="pf-v5-c-form__label-text"
-            >
-              Labels
-            </span>
-          </label>
-           
           <span
-            className="pf-v5-c-icon"
+            aria-hidden="true"
+            class="pf-v6-c-form__label-required"
+          >
+             
+            *
+          </span>
+        </label>
+          
+      </div>
+      <div
+        class="pf-v6-c-form__group-control"
+      >
+        <span
+          class="pf-v6-c-form-control"
+        >
+          <select
+            aria-invalid="false"
+            aria-label="Event Template Input"
+            data-ouia-component-id="OUIA-Generated-FormSelect-default-2"
+            data-ouia-component-type="PF6/FormSelect"
+            data-ouia-safe="true"
+            data-quickstart-id="template-selector"
+            id="recording-template"
+          >
+            <option
+              class=""
+              disabled=""
+              value=""
+            >
+              Select a Template
+            </option>
+            <optgroup
+              class=""
+              label="Target templates"
+            >
+              <option
+                class=""
+                disabled=""
+                value=""
+              >
+                No templates
+              </option>
+            </optgroup>
+            <optgroup
+              class=""
+              label="Custom templates"
+            >
+              <option
+                class=""
+                value="someEventTemplate,CUSTOM"
+              >
+                someEventTemplate
+              </option>
+            </optgroup>
+            <optgroup
+              class=""
+              label="Preset templates"
+            >
+              <option
+                class=""
+                disabled=""
+                value=""
+              >
+                No templates
+              </option>
+            </optgroup>
+          </select>
+          <span
+            class="pf-v6-c-form-control__utilities"
           >
             <span
-              className="pf-v5-c-icon__content"
+              class="pf-v6-c-form-control__toggle-icon"
             >
               <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                className="pf-v5-svg"
+                aria-hidden="true"
+                class="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                viewBox="0 0 1024 1024"
+                viewBox="0 0 320 512"
                 width="1em"
               >
                 <path
-                  d="M521.3,576 C627.5,576 713.7,502 713.7,413.7 C713.7,325.4 627.6,253.6 521.3,253.6 C366,253.6 334.5,337.7 329.2,407.2 C329.2,414.3 335.2,416 343.5,416 L445,416 C450.5,416 458,415.5 460.8,406.5 C460.8,362.6 582.9,357.1 582.9,413.6 C582.9,441.9 556.2,470.9 521.3,473 C486.4,475.1 447.3,479.8 447.3,521.7 L447.3,553.8 C447.3,570.8 456.1,576 472,576 C487.9,576 521.3,576 521.3,576 M575.3,751.3 L575.3,655.3 C575.313862,651.055109 573.620137,646.982962 570.6,644 C567.638831,640.947672 563.552355,639.247987 559.3,639.29884 L463.3,639.29884 C459.055109,639.286138 454.982962,640.979863 452,644 C448.947672,646.961169 447.247987,651.047645 447.29884,655.3 L447.29884,751.3 C447.286138,755.544891 448.979863,759.617038 452,762.6 C454.961169,765.652328 459.047645,767.352013 463.3,767.30116 L559.3,767.30116 C563.544891,767.313862 567.617038,765.620137 570.6,762.6 C573.659349,759.643612 575.360354,755.553963 575.3,751.3 M512,896 C300.2,896 128,723.9 128,512 C128,300.3 300.2,128 512,128 C723.8,128 896,300.2 896,512 C896,723.8 723.7,896 512,896 M512.1,0 C229.7,0 0,229.8 0,512 C0,794.2 229.8,1024 512.1,1024 C794.4,1024 1024,794.3 1024,512 C1024,229.7 794.4,0 512.1,0"
+                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
                 />
               </svg>
             </span>
           </span>
-        </div>
+        </span>
         <div
-          className="pf-v5-c-form__group-control"
+          class="pf-v6-c-form__helper-text"
         >
           <div
-            className="pf-v5-c-check"
-          >
-            <input
-              aria-invalid={false}
-              aria-label="Autoanalyze checkbox"
-              checked={true}
-              className="pf-v5-c-check__input"
-              data-ouia-component-id="OUIA-Generated-Checkbox-4"
-              data-ouia-component-type="PF5/Checkbox"
-              data-ouia-safe={true}
-              disabled={false}
-              id="autoanalyze"
-              name="autoanalyze"
-              onChange={[Function]}
-              required={false}
-              type="checkbox"
-            />
-            <label
-              className="pf-v5-c-check__label"
-              htmlFor="autoanalyze"
-            >
-              Automatically analyze
-            </label>
-            <span
-              className="pf-v5-c-check__description"
-            >
-              Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.
-            </span>
-          </div>
-          <div
-            className="pf-v5-c-label-group pf-m-category pf-m-editable"
+            class="pf-v6-c-helper-text"
           >
             <div
-              className="pf-v5-c-label-group__main"
+              class="pf-v6-c-helper-text__item"
             >
               <span
+                class="pf-v6-c-helper-text__item-text"
+              >
+                A Template must be selected.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-v6-c-expandable-section"
+      data-quickstart-id="crf-metadata-opt"
+    >
+      <div
+        class="pf-v6-c-expandable-section__toggle"
+      >
+        <button
+          aria-controls="metadata-options"
+          class="pf-v6-c-button pf-m-link"
+          data-ouia-component-id="OUIA-Generated-Button-link-1"
+          data-ouia-component-type="PF6/Button"
+          data-ouia-safe="true"
+          id="metadata-option-toggle"
+          type="button"
+        >
+          <span
+            class="pf-v6-c-button__icon pf-m-start"
+          >
+            <span
+              class="pf-v6-c-expandable-section__toggle-icon"
+            >
+              <svg
                 aria-hidden="true"
-                className="pf-v5-c-label-group__label"
-                id="pf-random-id-4"
+                class="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 256 512"
+                width="1em"
+              >
+                <path
+                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                />
+              </svg>
+            </span>
+          </span>
+          <span
+            class="pf-v6-c-button__text"
+          >
+            Show metadata options
+          </span>
+        </button>
+      </div>
+      <div
+        aria-labelledby="metadata-option-toggle"
+        class="pf-v6-c-expandable-section__content"
+        hidden=""
+        id="metadata-options"
+        role="region"
+      >
+        <div
+          class="pf-v6-c-form__group"
+        >
+          <div
+            class="pf-v6-c-form__group-label"
+          >
+            <label
+              class="pf-v6-c-form__label"
+              for="labels"
+            >
+              <span
+                class="pf-v6-c-form__label-text"
               >
                 Labels
               </span>
-              <ul
-                aria-labelledby="pf-random-id-4"
-                className="pf-v5-c-label-group__list"
-                role="list"
-              >
-                <li
-                  className="pf-v5-c-label-group__list-item"
-                >
-                  <span
-                    className="pf-v5-c-label pf-m-blue pf-m-outline"
-                  >
-                    <button
-                      className="pf-v5-c-label__content"
-                      onClick={[Function]}
-                      type="button"
-                    >
-                      <span
-                        className="pf-v5-c-label__text"
-                      >
-                        Add label
-                      </span>
-                    </button>
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-form__helper-text"
-          >
-            <div
-              className="pf-v5-c-helper-text"
-            >
-              <div
-                className="pf-v5-c-helper-text__item pf-m-dynamic"
-              >
-                <span
-                  className="pf-v5-c-helper-text__item-text"
-                >
-                  Labels with key 
-                  <span
-                    className="pf-v5-c-label pf-m-compact"
-                  >
-                    <span
-                      className="pf-v5-c-label__content"
-                    >
-                      <span
-                        className="pf-v5-c-label__text"
-                      >
-                        template.name
-                      </span>
-                    </span>
-                  </span>
-                  , 
-                  <span
-                    className="pf-v5-c-label pf-m-compact"
-                  >
-                    <span
-                      className="pf-v5-c-label__content"
-                    >
-                      <span
-                        className="pf-v5-c-label__text"
-                      >
-                        template.type
-                      </span>
-                    </span>
-                  </span>
-                  , and 
-                  <span
-                    className="pf-v5-c-label pf-m-compact"
-                  >
-                    <span
-                      className="pf-v5-c-label__content"
-                    >
-                      <span
-                        className="pf-v5-c-label__text"
-                      >
-                        autoanalyze
-                      </span>
-                    </span>
-                  </span>
-                   are set by Cryostat and will be overwritten if specifed.
-                  <span
-                    className="pf-v5-screen-reader"
-                  >
-                    : 
-                    default status
-                    ;
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    className="pf-v5-c-expandable-section"
-    data-quickstart-id="crf-advanced-opt"
-  >
-    <button
-      aria-controls="advanced-options"
-      aria-expanded={false}
-      className="pf-v5-c-expandable-section__toggle"
-      id="advanced-option-toggle"
-      onClick={[Function]}
-      type="button"
-    >
-      <span
-        className="pf-v5-c-expandable-section__toggle-icon"
-      >
-        <svg
-          aria-hidden={true}
-          aria-labelledby={null}
-          className="pf-v5-svg"
-          fill="currentColor"
-          height="1em"
-          role="img"
-          viewBox="0 0 256 512"
-          width="1em"
-        >
-          <path
-            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-          />
-        </svg>
-      </span>
-      <span
-        className="pf-v5-c-expandable-section__toggle-text"
-      >
-        Show advanced options
-      </span>
-    </button>
-    <div
-      aria-labelledby="advanced-option-toggle"
-      className="pf-v5-c-expandable-section__content"
-      hidden={true}
-      id="advanced-options"
-      role="region"
-    >
-      <small
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-2"
-        data-ouia-component-type="PF5/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        A value of 0 for maximum size or age means unbounded.
-      </small>
-      <div
-        className="pf-v5-c-form__group"
-      >
-        <div
-          className="pf-v5-c-form__group-control"
-        >
-          <div
-            className="pf-v5-c-check"
-          >
-            <input
-              aria-invalid={false}
-              checked={true}
-              className="pf-v5-c-check__input"
-              data-ouia-component-id="OUIA-Generated-Checkbox-5"
-              data-ouia-component-type="PF5/Checkbox"
-              data-ouia-safe={true}
-              disabled={false}
-              id="toDisk-checkbox"
-              onChange={[Function]}
-              required={false}
-              type="checkbox"
-            />
-            <label
-              className="pf-v5-c-check__label"
-              htmlFor="toDisk-checkbox"
-            >
-              To Disk
             </label>
-          </div>
-          <div
-            className="pf-v5-c-form__helper-text"
-          >
-            <div
-              className="pf-v5-c-helper-text"
+              
+            <span
+              class="pf-v6-c-form__group-label-help"
             >
-              <div
-                className="pf-v5-c-helper-text__item"
+              <span
+                class="pf-v6-c-icon"
               >
                 <span
-                  className="pf-v5-c-helper-text__item-text"
+                  class="pf-v6-c-icon__content"
                 >
-                  Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information
+                  <svg
+                    aria-hidden="true"
+                    class="pf-v6-svg"
+                    fill="currentColor"
+                    height="1em"
+                    role="img"
+                    viewBox="0 0 1024 1024"
+                    width="1em"
+                  >
+                    <path
+                      d="M521.3,576 C627.5,576 713.7,502 713.7,413.7 C713.7,325.4 627.6,253.6 521.3,253.6 C366,253.6 334.5,337.7 329.2,407.2 C329.2,414.3 335.2,416 343.5,416 L445,416 C450.5,416 458,415.5 460.8,406.5 C460.8,362.6 582.9,357.1 582.9,413.6 C582.9,441.9 556.2,470.9 521.3,473 C486.4,475.1 447.3,479.8 447.3,521.7 L447.3,553.8 C447.3,570.8 456.1,576 472,576 C487.9,576 521.3,576 521.3,576 M575.3,751.3 L575.3,655.3 C575.313862,651.055109 573.620137,646.982962 570.6,644 C567.638831,640.947672 563.552355,639.247987 559.3,639.29884 L463.3,639.29884 C459.055109,639.286138 454.982962,640.979863 452,644 C448.947672,646.961169 447.247987,651.047645 447.29884,655.3 L447.29884,751.3 C447.286138,755.544891 448.979863,759.617038 452,762.6 C454.961169,765.652328 459.047645,767.352013 463.3,767.30116 L559.3,767.30116 C563.544891,767.313862 567.617038,765.620137 570.6,762.6 C573.659349,759.643612 575.360354,755.553963 575.3,751.3 M512,896 C300.2,896 128,723.9 128,512 C128,300.3 300.2,128 512,128 C723.8,128 896,300.2 896,512 C896,723.8 723.7,896 512,896 M512.1,0 C229.7,0 0,229.8 0,512 C0,794.2 229.8,1024 512.1,1024 C794.4,1024 1024,794.3 1024,512 C1024,229.7 794.4,0 512.1,0"
+                    />
+                  </svg>
                 </span>
+              </span>
+            </span>
+          </div>
+          <div
+            class="pf-v6-c-form__group-control"
+          >
+            <div
+              class="pf-v6-c-check"
+            >
+              <input
+                aria-invalid="false"
+                aria-label="Autoanalyze checkbox"
+                checked=""
+                class="pf-v6-c-check__input"
+                data-ouia-component-id="OUIA-Generated-Checkbox-4"
+                data-ouia-component-type="PF6/Checkbox"
+                data-ouia-safe="true"
+                id="autoanalyze"
+                name="autoanalyze"
+                type="checkbox"
+              />
+              <label
+                class="pf-v6-c-check__label"
+                for="autoanalyze"
+              >
+                Automatically analyze
+              </label>
+              <span
+                class="pf-v6-c-check__description"
+              >
+                Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.
+              </span>
+            </div>
+            <div
+              class="pf-v6-c-label-group pf-m-category pf-m-editable"
+            >
+              <div
+                class="pf-v6-c-label-group__main"
+              >
+                <span
+                  aria-hidden="true"
+                  class="pf-v6-c-label-group__label"
+                  id="pf-random-id-4"
+                >
+                  Labels
+                </span>
+                <ul
+                  aria-labelledby="pf-random-id-4"
+                  class="pf-v6-c-label-group__list"
+                  role="list"
+                >
+                  <li
+                    class="pf-v6-c-label-group__list-item"
+                  >
+                    <span
+                      class="pf-v6-c-label pf-m-blue pf-m-outline pf-m-clickable"
+                    >
+                      <button
+                        class="pf-v6-c-label__content pf-m-clickable"
+                        type="button"
+                      >
+                        <span
+                          class="pf-v6-c-label__text"
+                        >
+                          Add label
+                        </span>
+                      </button>
+                    </span>
+                  </li>
+                </ul>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className="pf-v5-c-form__group"
-      >
-        <div
-          className="pf-v5-c-form__group-label"
-        >
-          <label
-            className="pf-v5-c-form__label"
-            htmlFor="maxSize"
-          >
-            <span
-              className="pf-v5-c-form__label-text"
-            >
-              Maximum size
-            </span>
-          </label>
-           
-        </div>
-        <div
-          className="pf-v5-c-form__group-control"
-        >
-          <div
-            className="pf-v5-l-split pf-m-gutter"
-          >
             <div
-              className="pf-v5-l-split__item pf-m-fill"
-            >
-              <span
-                className="pf-v5-c-form-control"
-              >
-                <input
-                  aria-invalid={false}
-                  aria-label="max size value"
-                  data-ouia-component-id="OUIA-Generated-TextInputBase-3"
-                  data-ouia-component-type="PF5/TextInput"
-                  data-ouia-safe={true}
-                  disabled={false}
-                  id="maxSize"
-                  min="0"
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  required={true}
-                  type="number"
-                  value={50}
-                />
-              </span>
-            </div>
-            <div
-              className="pf-v5-l-split__item"
-            >
-              <span
-                className="pf-v5-c-form-control"
-              >
-                <select
-                  aria-invalid={false}
-                  aria-label="Max size units input"
-                  data-ouia-component-id="OUIA-Generated-FormSelect-default-3"
-                  data-ouia-component-type="PF5/FormSelect"
-                  data-ouia-safe={true}
-                  disabled={false}
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  required={false}
-                  value={1048576}
-                >
-                  <option
-                    className=""
-                    disabled={false}
-                    value="1"
-                  >
-                    B
-                  </option>
-                  <option
-                    className=""
-                    disabled={false}
-                    value={1024}
-                  >
-                    KiB
-                  </option>
-                  <option
-                    className=""
-                    disabled={false}
-                    value={1048576}
-                  >
-                    MiB
-                  </option>
-                </select>
-                <span
-                  className="pf-v5-c-form-control__utilities"
-                >
-                  <span
-                    className="pf-v5-c-form-control__toggle-icon"
-                  >
-                    <svg
-                      aria-hidden={true}
-                      aria-labelledby={null}
-                      className="pf-v5-svg"
-                      fill="currentColor"
-                      height="1em"
-                      role="img"
-                      viewBox="0 0 320 512"
-                      width="1em"
-                    >
-                      <path
-                        d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                      />
-                    </svg>
-                  </span>
-                </span>
-              </span>
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-form__helper-text"
-          >
-            <div
-              className="pf-v5-c-helper-text"
+              class="pf-v6-c-form__helper-text"
             >
               <div
-                className="pf-v5-c-helper-text__item"
+                class="pf-v6-c-helper-text"
               >
-                <span
-                  className="pf-v5-c-helper-text__item-text"
-                >
-                  The maximum size of Recording data saved to disk
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className="pf-v5-c-form__group"
-      >
-        <div
-          className="pf-v5-c-form__group-label"
-        >
-          <label
-            className="pf-v5-c-form__label"
-            htmlFor="maxAge"
-          >
-            <span
-              className="pf-v5-c-form__label-text"
-            >
-              Maximum age
-            </span>
-          </label>
-           
-        </div>
-        <div
-          className="pf-v5-c-form__group-control"
-        >
-          <div
-            className="pf-v5-l-split pf-m-gutter"
-          >
-            <div
-              className="pf-v5-l-split__item pf-m-fill"
-            >
-              <span
-                className="pf-v5-c-form-control"
-              >
-                <input
-                  aria-invalid={false}
-                  aria-label="Max age duration"
-                  data-ouia-component-id="OUIA-Generated-TextInputBase-4"
-                  data-ouia-component-type="PF5/TextInput"
-                  data-ouia-safe={true}
-                  disabled={false}
-                  id="maxAgeDuration"
-                  min="0"
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  required={true}
-                  type="number"
-                  value={0}
-                />
-              </span>
-            </div>
-            <div
-              className="pf-v5-l-split__item"
-            >
-              <span
-                className="pf-v5-c-form-control recording-create__form_select"
-              >
-                <select
-                  aria-invalid={false}
-                  aria-label="Max Age units Input"
-                  data-ouia-component-id="OUIA-Generated-FormSelect-default-4"
-                  data-ouia-component-type="PF5/FormSelect"
-                  data-ouia-safe={true}
-                  disabled={false}
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  required={false}
-                  value={1}
-                >
-                  <option
-                    className=""
-                    disabled={false}
-                    value="1"
-                  >
-                    Seconds
-                  </option>
-                  <option
-                    className=""
-                    disabled={false}
-                    value={60}
-                  >
-                    Minutes
-                  </option>
-                  <option
-                    className=""
-                    disabled={false}
-                    value={3600}
-                  >
-                    Hours
-                  </option>
-                </select>
-                <span
-                  className="pf-v5-c-form-control__utilities"
+                <div
+                  class="pf-v6-c-helper-text__item"
                 >
                   <span
-                    className="pf-v5-c-form-control__toggle-icon"
+                    class="pf-v6-c-helper-text__item-text"
                   >
-                    <svg
-                      aria-hidden={true}
-                      aria-labelledby={null}
-                      className="pf-v5-svg"
-                      fill="currentColor"
-                      height="1em"
-                      role="img"
-                      viewBox="0 0 320 512"
-                      width="1em"
+                    Labels with key 
+                    <span
+                      class="pf-v6-c-label pf-m-filled pf-m-compact"
                     >
-                      <path
-                        d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                      />
-                    </svg>
+                      <span
+                        class="pf-v6-c-label__content"
+                      >
+                        <span
+                          class="pf-v6-c-label__text"
+                        >
+                          template.name
+                        </span>
+                      </span>
+                    </span>
+                    , 
+                    <span
+                      class="pf-v6-c-label pf-m-filled pf-m-compact"
+                    >
+                      <span
+                        class="pf-v6-c-label__content"
+                      >
+                        <span
+                          class="pf-v6-c-label__text"
+                        >
+                          template.type
+                        </span>
+                      </span>
+                    </span>
+                    , and 
+                    <span
+                      class="pf-v6-c-label pf-m-filled pf-m-compact"
+                    >
+                      <span
+                        class="pf-v6-c-label__content"
+                      >
+                        <span
+                          class="pf-v6-c-label__text"
+                        >
+                          autoanalyze
+                        </span>
+                      </span>
+                    </span>
+                     are set by Cryostat and will be overwritten if specifed.
                   </span>
-                </span>
-              </span>
-            </div>
-          </div>
-          <div
-            className="pf-v5-c-form__helper-text"
-          >
-            <div
-              className="pf-v5-c-helper-text"
-            >
-              <div
-                className="pf-v5-c-helper-text__item"
-              >
-                <span
-                  className="pf-v5-c-helper-text__item-text"
-                >
-                  The maximum age of Recording data stored to disk
-                </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    className="pf-v5-c-form__group pf-m-action"
-  >
     <div
-      className="pf-v5-c-form__group-control"
+      class="pf-v6-c-expandable-section"
+      data-quickstart-id="crf-advanced-opt"
     >
       <div
-        className="pf-v5-c-form__actions"
+        class="pf-v6-c-expandable-section__toggle"
       >
         <button
-          aria-disabled={true}
-          aria-label={null}
-          className="pf-v5-c-button pf-m-primary pf-m-disabled pf-m-progress"
-          data-ouia-component-id="OUIA-Generated-Button-primary-1"
-          data-ouia-component-type="PF5/Button"
-          data-ouia-safe={true}
-          data-quickstart-id="crf-create-btn"
-          disabled={true}
-          onClick={[Function]}
-          role={null}
-          tabIndex={null}
+          aria-controls="advanced-options"
+          class="pf-v6-c-button pf-m-link"
+          data-ouia-component-id="OUIA-Generated-Button-link-2"
+          data-ouia-component-type="PF6/Button"
+          data-ouia-safe="true"
+          id="advanced-option-toggle"
           type="button"
         >
-          Create
-        </button>
-        <button
-          aria-disabled={false}
-          aria-label={null}
-          className="pf-v5-c-button pf-m-secondary"
-          data-ouia-component-id="OUIA-Generated-Button-secondary-1"
-          data-ouia-component-type="PF5/Button"
-          data-ouia-safe={true}
-          disabled={false}
-          onClick={[Function]}
-          role={null}
-          type="button"
-        >
-          Cancel
+          <span
+            class="pf-v6-c-button__icon pf-m-start"
+          >
+            <span
+              class="pf-v6-c-expandable-section__toggle-icon"
+            >
+              <svg
+                aria-hidden="true"
+                class="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 256 512"
+                width="1em"
+              >
+                <path
+                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                />
+              </svg>
+            </span>
+          </span>
+          <span
+            class="pf-v6-c-button__text"
+          >
+            Show advanced options
+          </span>
         </button>
       </div>
+      <div
+        aria-labelledby="advanced-option-toggle"
+        class="pf-v6-c-expandable-section__content"
+        hidden=""
+        id="advanced-options"
+        role="region"
+      >
+        <small
+          class="pf-v6-c-content--small"
+          data-ouia-component-id="OUIA-Generated-Content-3"
+          data-ouia-component-type="PF6/Content"
+          data-ouia-safe="true"
+          data-pf-content="true"
+        >
+          A value of 0 for maximum size or age means unbounded.
+        </small>
+        <div
+          class="pf-v6-c-form__group"
+        >
+          <div
+            class="pf-v6-c-form__group-control"
+          >
+            <div
+              class="pf-v6-c-check"
+            >
+              <input
+                aria-invalid="false"
+                checked=""
+                class="pf-v6-c-check__input"
+                data-ouia-component-id="OUIA-Generated-Checkbox-5"
+                data-ouia-component-type="PF6/Checkbox"
+                data-ouia-safe="true"
+                id="toDisk-checkbox"
+                type="checkbox"
+              />
+              <label
+                class="pf-v6-c-check__label"
+                for="toDisk-checkbox"
+              >
+                To Disk
+              </label>
+            </div>
+            <div
+              class="pf-v6-c-form__helper-text"
+            >
+              <div
+                class="pf-v6-c-helper-text"
+              >
+                <div
+                  class="pf-v6-c-helper-text__item"
+                >
+                  <span
+                    class="pf-v6-c-helper-text__item-text"
+                  >
+                    Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent Recording information
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="pf-v6-c-form__group"
+        >
+          <div
+            class="pf-v6-c-form__group-label"
+          >
+            <label
+              class="pf-v6-c-form__label"
+              for="maxSize"
+            >
+              <span
+                class="pf-v6-c-form__label-text"
+              >
+                Maximum size
+              </span>
+            </label>
+              
+          </div>
+          <div
+            class="pf-v6-c-form__group-control"
+          >
+            <div
+              class="pf-v6-l-split pf-m-gutter"
+            >
+              <div
+                class="pf-v6-l-split__item pf-m-fill"
+              >
+                <span
+                  class="pf-v6-c-form-control"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-label="max size value"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-3"
+                    data-ouia-component-type="PF6/TextInput"
+                    data-ouia-safe="true"
+                    id="maxSize"
+                    min="0"
+                    required=""
+                    type="number"
+                    value="50"
+                  />
+                </span>
+              </div>
+              <div
+                class="pf-v6-l-split__item"
+              >
+                <span
+                  class="pf-v6-c-form-control"
+                >
+                  <select
+                    aria-invalid="false"
+                    aria-label="Max size units input"
+                    data-ouia-component-id="OUIA-Generated-FormSelect-default-3"
+                    data-ouia-component-type="PF6/FormSelect"
+                    data-ouia-safe="true"
+                  >
+                    <option
+                      class=""
+                      value="1"
+                    >
+                      B
+                    </option>
+                    <option
+                      class=""
+                      value="1024"
+                    >
+                      KiB
+                    </option>
+                    <option
+                      class=""
+                      value="1048576"
+                    >
+                      MiB
+                    </option>
+                  </select>
+                  <span
+                    class="pf-v6-c-form-control__utilities"
+                  >
+                    <span
+                      class="pf-v6-c-form-control__toggle-icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="pf-v6-svg"
+                        fill="currentColor"
+                        height="1em"
+                        role="img"
+                        viewBox="0 0 320 512"
+                        width="1em"
+                      >
+                        <path
+                          d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                        />
+                      </svg>
+                    </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-form__helper-text"
+            >
+              <div
+                class="pf-v6-c-helper-text"
+              >
+                <div
+                  class="pf-v6-c-helper-text__item"
+                >
+                  <span
+                    class="pf-v6-c-helper-text__item-text"
+                  >
+                    The maximum size of Recording data saved to disk
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="pf-v6-c-form__group"
+        >
+          <div
+            class="pf-v6-c-form__group-label"
+          >
+            <label
+              class="pf-v6-c-form__label"
+              for="maxAge"
+            >
+              <span
+                class="pf-v6-c-form__label-text"
+              >
+                Maximum age
+              </span>
+            </label>
+              
+          </div>
+          <div
+            class="pf-v6-c-form__group-control"
+          >
+            <div
+              class="pf-v6-l-split pf-m-gutter"
+            >
+              <div
+                class="pf-v6-l-split__item pf-m-fill"
+              >
+                <span
+                  class="pf-v6-c-form-control"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-label="Max age duration"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-4"
+                    data-ouia-component-type="PF6/TextInput"
+                    data-ouia-safe="true"
+                    id="maxAgeDuration"
+                    min="0"
+                    required=""
+                    type="number"
+                    value="0"
+                  />
+                </span>
+              </div>
+              <div
+                class="pf-v6-l-split__item"
+              >
+                <span
+                  class="pf-v6-c-form-control recording-create__form_select"
+                >
+                  <select
+                    aria-invalid="false"
+                    aria-label="Max Age units Input"
+                    data-ouia-component-id="OUIA-Generated-FormSelect-default-4"
+                    data-ouia-component-type="PF6/FormSelect"
+                    data-ouia-safe="true"
+                  >
+                    <option
+                      class=""
+                      value="1"
+                    >
+                      Seconds
+                    </option>
+                    <option
+                      class=""
+                      value="60"
+                    >
+                      Minutes
+                    </option>
+                    <option
+                      class=""
+                      value="3600"
+                    >
+                      Hours
+                    </option>
+                  </select>
+                  <span
+                    class="pf-v6-c-form-control__utilities"
+                  >
+                    <span
+                      class="pf-v6-c-form-control__toggle-icon"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="pf-v6-svg"
+                        fill="currentColor"
+                        height="1em"
+                        role="img"
+                        viewBox="0 0 320 512"
+                        width="1em"
+                      >
+                        <path
+                          d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                        />
+                      </svg>
+                    </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div
+              class="pf-v6-c-form__helper-text"
+            >
+              <div
+                class="pf-v6-c-helper-text"
+              >
+                <div
+                  class="pf-v6-c-helper-text__item"
+                >
+                  <span
+                    class="pf-v6-c-helper-text__item-text"
+                  >
+                    The maximum age of Recording data stored to disk
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</form>
+    <div
+      class="pf-v6-c-form__group pf-m-action"
+    >
+      <div
+        class="pf-v6-c-form__group-control"
+      >
+        <div
+          class="pf-v6-c-form__actions"
+        >
+          <button
+            class="pf-v6-c-button pf-m-primary pf-m-progress"
+            data-ouia-component-id="OUIA-Generated-Button-primary-1"
+            data-ouia-component-type="PF6/Button"
+            data-ouia-safe="true"
+            data-quickstart-id="crf-create-btn"
+            disabled=""
+            type="button"
+          >
+            <span
+              class="pf-v6-c-button__text"
+            >
+              Create
+            </span>
+          </button>
+          <button
+            class="pf-v6-c-button pf-m-secondary"
+            data-ouia-component-id="OUIA-Generated-Button-secondary-1"
+            data-ouia-component-type="PF6/Button"
+            data-ouia-safe="true"
+            type="button"
+          >
+            <span
+              class="pf-v6-c-button__text"
+            >
+              Cancel
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
 `;

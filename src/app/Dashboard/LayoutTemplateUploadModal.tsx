@@ -20,7 +20,8 @@ import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover, Text } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, Popover, Content } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -161,10 +162,10 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
                 if (cardLevel <= FeatureLevel.BETA) {
                   onSingleSuccess(
                     fileUpload.file.name,
-                    <Text component="p" style={{ color: 'var(--pf-global--warning-color--200)' }}>
+                    <Content component="p" style={{ color: 'var(--pf-global--warning-color--200)' }}>
                       Warning: To see this template in the template picker, make sure the Cryostat feature level is set
                       to BETA.
-                    </Text>,
+                    </Content>,
                   );
                 } else {
                   onSingleSuccess(fileUpload.file.name);
@@ -243,9 +244,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
           bodyContent={<div>{t(`LayoutTemplateUploadModal.HELP.CONTENT`)}</div>}
           appendTo={portalRoot}
         >
-          <Button variant="plain" aria-label={t('HELP')}>
-            <HelpIcon />
-          </Button>
+          <Button icon={<HelpIcon />} variant="plain" aria-label={t('HELP')} />
         </Popover>
       }
     >

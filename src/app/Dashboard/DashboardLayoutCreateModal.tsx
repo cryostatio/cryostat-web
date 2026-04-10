@@ -31,12 +31,12 @@ import {
   FormSection,
   HelperText,
   HelperTextItem,
-  Modal,
   TextInput,
   Title,
   TitleSizes,
   ValidatedOptions,
 } from '@patternfly/react-core';
+import { Modal } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DEFAULT_DASHBOARD_NAME } from './const';
@@ -146,7 +146,12 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       <FormSection>
         {isCreateModal && (
           <FormGroup label={'Template'} fieldId="template" isRequired>
-            <div style={{ border: '1px solid var(--pf-v5-global--BorderColor--100)', height: '50vh' }}>
+            <div
+              style={{
+                border: 'var(--pf-t--global--border--color--default)',
+                height: '50vh',
+              }}
+            >
               <LayoutTemplatePicker onTemplateSelect={onTemplateSelect} />
             </div>
           </FormGroup>

@@ -19,8 +19,8 @@ import { NotificationMessage, ArchivedRecording, RecordingDirectory } from '@app
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within, waitFor } from '@testing-library/react';
-import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { of, Observable } from 'rxjs';
+import { render } from '../utils';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockJvmId1 = 'fooJvmId1';
@@ -130,6 +130,14 @@ jest
   .mockReturnValueOnce(of([mockRecordingDirectory1, mockRecordingDirectory2, mockRecordingDirectory3])) // decrements the count when an archived recording is deleted
   .mockReturnValueOnce(of([mockRecordingDirectory1, mockRecordingDirectory2, mockRecordingDirectory3Removed]));
 
+// Mock getTargetLineage to throw error (simulates audit log disabled/unavailable)
+// This causes the hook to fall back to displaying connectUrl/jvmId
+jest.spyOn(defaultServices.api, 'getTargetLineage').mockImplementation(() => {
+  return new Observable((subscriber) => {
+    subscriber.error(new Error('Audit log unavailable'));
+  });
+});
+
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly  // NotificationCategory.RecordingMetadataUpdated
@@ -164,10 +172,10 @@ describe('<AllArchivedRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('shows no Recordings when empty', async () => {
@@ -182,7 +190,8 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(screen.getByLabelText('all-archives-table')).toBeInTheDocument();
     expect(screen.getByText('Directory')).toBeInTheDocument();
     expect(screen.getByText('Archives')).toBeInTheDocument();
-    expect(screen.getByText(`${mockConnectUrl1}`)).toBeInTheDocument();
+    // Now displays "connectUrl (jvmId)" format when both are available
+    expect(screen.getByText(`${mockConnectUrl1} (${mockJvmId1})`)).toBeInTheDocument();
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
@@ -202,7 +211,8 @@ describe('<AllArchivedRecordingsTable />', () => {
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(1);
     const firstTarget = rows[0];
-    expect(within(firstTarget).getByText(`${mockConnectUrl1}`)).toBeTruthy();
+    // Now displays "connectUrl (jvmId)" format when both are available
+    expect(within(firstTarget).getByText(`${mockConnectUrl1} (${mockJvmId1})`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
 
     await user.type(search, 'asdasdjhj');
@@ -252,7 +262,8 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(rows).toHaveLength(3);
 
     const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
+    // Now displays "connectUrl (jvmId)" format when both are available
+    expect(within(thirdTarget).getByText(`${mockConnectUrl3} (${mockJvmId3})`)).toBeTruthy();
     await waitFor(() => {
       expect(within(thirdTarget).getByText('4')).toBeInTheDocument();
     });
@@ -265,7 +276,8 @@ describe('<AllArchivedRecordingsTable />', () => {
     const rows = within(tableBody).getAllByRole('row');
 
     const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
+    // Now displays "connectUrl (jvmId)" format when both are available
+    expect(within(thirdTarget).getByText(`${mockConnectUrl3} (${mockJvmId3})`)).toBeTruthy();
     expect(within(thirdTarget).getByText(2)).toBeTruthy();
   });
 });

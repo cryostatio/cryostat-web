@@ -19,8 +19,8 @@ import { HeapDump, NotificationMessage, Target } from '@app/Shared/Services/api.
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
-import { of } from 'rxjs';
-import { createMockForPFTableRef, render, renderSnapshot } from '../utils';
+import { of, Observable } from 'rxjs';
+import { render } from '../utils';
 
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
 const mockNewAlias = 'newTarget';
@@ -232,6 +232,14 @@ jest
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // removes a target upon receiving a notification)
   .mockReturnValue(of(mockTargetsAndCountsResponse)); // remaining tests
 
+// Mock getTargetLineage to throw error (simulates audit log disabled/unavailable)
+// This causes the hook to fall back to displaying connectUrl/jvmId
+jest.spyOn(defaultServices.api, 'getTargetLineage').mockImplementation(() => {
+  return new Observable((subscriber) => {
+    subscriber.error(new Error('Audit log unavailable'));
+  });
+});
+
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
@@ -277,11 +285,10 @@ describe('<AllTargetsHeapDumpsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/heapdumps', element: <AllTargetsHeapDumpsTable /> }] },
-      createNodeMock: createMockForPFTableRef,
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('has the correct table elements', async () => {

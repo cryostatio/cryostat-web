@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+import { DirectoryNameCell } from '@app/Archives/DirectoryNameCell';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from '@app/Archives/utils';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, NotificationCategory, ThreadDumpDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import EntityDetails from '@app/Topology/Entity/EntityDetails';
+import { useAliasCache } from '@app/utils/hooks/useAliasCache';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useTargetDetailsModal } from '@app/utils/hooks/useTargetDetailsModal';
 import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
@@ -31,17 +35,13 @@ import {
   ToolbarItem,
   SearchInput,
   EmptyState,
-  EmptyStateIcon,
-  EmptyStateHeader,
   Button,
   Icon,
   Bullseye,
-  Split,
-  SplitItem,
-  Text,
-  Tooltip,
+  Spinner,
 } from '@patternfly/react-core';
-import { FileIcon, HelpIcon, SearchIcon } from '@patternfly/react-icons';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { FileIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import {
   Table,
   Th,
@@ -90,6 +90,12 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
 
+  const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
+    useTargetDetailsModal();
+
+  const jvmIds = React.useMemo(() => directories.map((d) => d.jvmId), [directories]);
+  const aliasMap = useAliasCache(jvmIds);
+
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: ThreadDumpDirectory[]) => {
       setDirectories(directories.map((dir) => ({ ...dir, targetAsObs: of(getTargetFromDirectory(dir)) })));
@@ -137,7 +143,11 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
       updatedSearchedDirectories = directories;
     } else {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter((d: _ThreadDumpDirectory) => reg.test(d.jvmId));
+      updatedSearchedDirectories = directories.filter((d: _ThreadDumpDirectory) => {
+        // Search by jvmId and alias (from audit log)
+        const alias = aliasMap.get(d.jvmId) || '';
+        return reg.test(d.jvmId) || reg.test(alias);
+      });
     }
     return sortResources(
       {
@@ -147,7 +157,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
       updatedSearchedDirectories,
       tableColumns,
     );
-  }, [directories, searchText, sortBy]);
+  }, [directories, searchText, sortBy, aliasMap]);
 
   React.useEffect(() => {
     addSubscription(
@@ -224,6 +234,14 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
     [expandedDirectories, setExpandedDirectories],
   );
 
+  const handleInfoClick = React.useCallback(
+    (jvmId: string) => {
+      setSelectedJvmId(jvmId);
+      setShowDetailsModal(true);
+    },
+    [setSelectedJvmId, setShowDetailsModal],
+  );
+
   const directoryRows = React.useMemo(() => {
     return searchedDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
@@ -241,29 +259,26 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
             }}
           />
           <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
-            <Split hasGutter>
-              <SplitItem>
-                <Text>{dir.jvmId}</Text>
-              </SplitItem>
-              <SplitItem>
-                <Tooltip hidden={!dir.jvmId} content={`JVM hash ID: ${dir.jvmId}`} appendTo={portalRoot}>
-                  <HelpIcon />
-                </Tooltip>
-              </SplitItem>
-            </Split>
+            <DirectoryNameCell jvmId={dir.jvmId} onInfoClick={() => handleInfoClick(dir.jvmId)} />
           </Td>
           <Td key={`directory-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
-            <Button variant="plain" onClick={() => toggleExpanded(dir)}>
-              <Icon iconSize="md">
-                <FileIcon />
-              </Icon>
-              <span style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>{dir.threadDumps.length || 0}</span>
-            </Button>
+            <Button
+              icon={
+                <>
+                  <Icon iconSize="md">
+                    <FileIcon />
+                  </Icon>
+                  <span style={{ marginLeft: 'var(--pf-t--global--spacer--sm)' }}>{dir.threadDumps.length || 0}</span>
+                </>
+              }
+              variant="plain"
+              onClick={() => toggleExpanded(dir)}
+            />
           </Td>
         </Tr>
       );
     });
-  }, [toggleExpanded, searchedDirectories, expandedDirectories]);
+  }, [toggleExpanded, searchedDirectories, expandedDirectories, handleInfoClick]);
 
   const threadDumpRows = React.useMemo(() => {
     return searchedDirectories.map((dir, idx) => {
@@ -321,13 +336,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
     view = (
       <>
         <Bullseye>
-          <EmptyState>
-            <EmptyStateHeader
-              titleText={t('ThreadDumps.NO_ARCHIVES')}
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('ThreadDumps.NO_ARCHIVES')}></EmptyState>
         </Bullseye>
       </>
     );
@@ -354,23 +363,43 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
   }
 
   return (
-    <OuterScrollContainer className="archive-table-outer-container">
-      <Toolbar id="all-archives-toolbar">
-        <ToolbarContent>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <SearchInput
-                style={{ minWidth: '30ch' }}
-                placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
-                value={searchText}
-                onChange={handleSearchInput}
-                onClear={handleSearchInputClear}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-      <InnerScrollContainer className="">{view}</InnerScrollContainer>
-    </OuterScrollContainer>
+    <>
+      <Modal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        title="Target Details"
+        variant={ModalVariant.large}
+        className="target-details-modal"
+        appendTo={portalRoot}
+      >
+        {loadingLineage ? (
+          <Bullseye>
+            <Spinner />
+          </Bullseye>
+        ) : wrappedTarget ? (
+          <EntityDetails entity={wrappedTarget} className="target-details-modal" hideActions={true} />
+        ) : (
+          <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Details Unavailable"></EmptyState>
+        )}
+      </Modal>
+      <OuterScrollContainer className="archive-table-outer-container">
+        <Toolbar id="all-archives-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  style={{ minWidth: '30ch' }}
+                  placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
+                  value={searchText}
+                  onChange={handleSearchInput}
+                  onClear={handleSearchInputClear}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        <InnerScrollContainer className="">{view}</InnerScrollContainer>
+      </OuterScrollContainer>
+    </>
   );
 };

@@ -24,8 +24,7 @@ import {
   CardTitle,
   Split,
   SplitItem,
-  Text,
-  TextContent,
+  Content,
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { TooltipRenderProps } from 'react-joyride';
@@ -51,13 +50,13 @@ const JoyrideTooltip: React.FC<TooltipRenderProps> = ({
       <Split hasGutter style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
         {!isFirstStep && !isLastStep && (
           <SplitItem isFilled>
-            <TextContent>
-              <Text component="small">
+            <Content>
+              <Content component="small">
                 {
                   `Step ${index - 1}/${size - 3}` // Index starts at 0, tour starts at 2, there are 3 steps that don't need a footer
                 }
-              </Text>
-            </TextContent>
+              </Content>
+            </Content>
           </SplitItem>
         )}
         <SplitItem>

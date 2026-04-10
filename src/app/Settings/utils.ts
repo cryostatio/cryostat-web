@@ -48,4 +48,4 @@ export const getGroupFeatureLevel = (settings: _TransformedUserSetting[]): Featu
 
 export const isDevNodeEnv = () => (process.env.NODE_ENV ?? '').toLowerCase() === 'development';
 
-export const DARK_THEME_CLASS = 'pf-v5-theme-dark';
+export const DARK_THEME_CLASS = 'pf-v6-theme-dark';

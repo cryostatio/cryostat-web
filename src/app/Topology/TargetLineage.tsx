@@ -17,7 +17,7 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { EnvironmentNode } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { EmptyState, EmptyStateHeader, EmptyStateIcon } from '@patternfly/react-core';
+import { EmptyState } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
@@ -59,15 +59,7 @@ export const TargetLineage: React.FC<TargetLineageProps> = ({ jvmId, hideActions
   }, [jvmId, context, context.api, addSubscription]);
 
   if (hasError) {
-    return (
-      <EmptyState>
-        <EmptyStateHeader
-          titleText="Target Lineage Unavailable"
-          icon={<EmptyStateIcon icon={TopologyIcon} />}
-          headingLevel="h4"
-        />
-      </EmptyState>
-    );
+    return <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Lineage Unavailable"></EmptyState>;
   }
 
   return root ? (
