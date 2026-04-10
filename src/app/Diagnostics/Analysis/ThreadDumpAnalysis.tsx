@@ -17,6 +17,7 @@ import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore
 import {
   AnalysisFinding,
   DeadlockInfo,
+  LockInfo,
   NotificationCategory,
   NullableTarget,
   StackFrame,
@@ -71,23 +72,30 @@ interface ThreadRowData {
   children?: React.ReactNode;
 }
 
+interface DeadlockRowData {
+  deadlockInfo: DeadlockInfo;
+  isExpanded: boolean;
+  cellContents: React.ReactNode[];
+  children?: React.ReactNode;
+}
+
 const findingsColumns: TableColumn[] = [
-    {
-      title: 'Result',
-      keyPaths: ['resultName'],
-      sortable: true,
-    },
-    {
-      title: 'Explanation',
-      keyPaths: ['explanation'],
-      sortable: true,
-    },
-    {
-      title: 'Score',
-      keyPaths: ['score'],
-      sortable: true,
-    },
-  ];
+  {
+    title: 'Result',
+    keyPaths: ['resultName'],
+    sortable: true,
+  },
+  {
+    title: 'Explanation',
+    keyPaths: ['explanation'],
+    sortable: true,
+  },
+  {
+    title: 'Score',
+    keyPaths: ['score'],
+    sortable: true,
+  },
+];
 
 const threadColumns: TableColumn[] = [
   {
@@ -208,6 +216,29 @@ const deadlockColumns: TableColumn[] = [
   },
 ];
 
+const lockInstancesColumns: TableColumn[] = [
+  {
+    title: 'Lock ID',
+    keyPaths: ['lockId'],
+    sortable: true,
+  },
+  {
+    title: 'Class Name',
+    keyPaths: ['className'],
+    sortable: true,
+  },
+  {
+    title: 'Operation',
+    keyPaths: ['operation'],
+    sortable: true,
+  },
+  {
+    title: 'Owner Thread Id',
+    keyPaths: ['ownerThreadId'],
+    sortable: true,
+  },
+];
+
 export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -221,6 +252,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   const [selectedThreadDump, setSelectedThreadDump] = React.useState('');
   const [target, setTarget] = React.useState(undefined as NullableTarget);
   const [openRows, setOpenRows] = React.useState<number[]>([]);
+  const [openDeadlockRows, setOpenDeadlockRows] = React.useState<number[]>([]);
   const [sortBy, getSortParams] = useSort();
 
   const targetAsObs = React.useMemo(() => of(target), [target]);
@@ -247,6 +279,137 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     },
     [setOpenRows],
   );
+
+  const onDeadlockRowToggle = React.useCallback(
+    (d: DeadlockInfo) => {
+      setOpenDeadlockRows((old) => {
+        const typeId = hashCode(d.threadName);
+        if (old.some((id) => id === typeId)) {
+          return old.filter((id) => id !== typeId);
+        }
+        return [...old, typeId];
+      });
+    },
+    [setOpenDeadlockRows],
+  );
+
+  const emptyTableState = React.useCallback((title: string) => {
+    return (
+      <EmptyState>
+        <EmptyStateHeader titleText={title} icon={<EmptyStateIcon icon={TopologyIcon} />} headingLevel="h4" />
+      </EmptyState>
+    );
+  }, []);
+
+  const stackTraceTable = React.useCallback((trace: StackFrame[]) => {
+    return (
+      <Card>
+        <CardTitle>Stack Trace</CardTitle>
+        <Table aria-label="Stack Trace" variant={TableVariant.compact}>
+          <Thead>
+            <Tr>
+              {stackTraceColumns.map(({ title }) => (
+                <Th key={`thread-header-${title}`}>{title}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {trace.map((s: StackFrame) => (
+              <Tr key={`stack-trace`}>
+                <Td key={`file-name`} dataLabel={stackTraceColumns[0].title}>
+                  {s.fileName ? s.fileName : 'N/A'}
+                </Td>
+                <Td key={`finding-name`} dataLabel={stackTraceColumns[1].title}>
+                  {s.className ? s.className : 'N/A'}
+                </Td>
+                <Td key={`finding-explanation`} dataLabel={stackTraceColumns[2].title}>
+                  {s.methodName ? s.methodName : 'N/A'}
+                </Td>
+                <Td key={`finding-score`} dataLabel={stackTraceColumns[3].title}>
+                  {s.lineNumber ? s.lineNumber : 'N/A'}
+                </Td>
+                <Td key={`finding-score`} dataLabel={stackTraceColumns[4].title}>
+                  {s.nativeMethod ? `${s.nativeMethod}` : 'false'}
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Card>
+    );
+  }, []);
+
+  const locksTable = React.useCallback((locks: LockInfo[]) => {
+    return (
+      <Card>
+        <CardTitle>Lock Instances</CardTitle>
+        <Table aria-label="Lock Instances" variant={TableVariant.compact}>
+          <Thead>
+            <Tr>
+              {lockInstancesColumns.map(({ title }) => (
+                <Th key={`thread-header-${title}`}>{title}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {locks.map((l: LockInfo) => (
+              <Tr key={`lock-infos`}>
+                <Td key={`lock-id`} dataLabel={lockInstancesColumns[0].title}>
+                  {l.lockId ? l.lockId : 'N/A'}
+                </Td>
+                <Td key={`lock-class-name`} dataLabel={lockInstancesColumns[1].title}>
+                  {l.className ? l.className : 'N/A'}
+                </Td>
+                <Td key={`lock-operation`} dataLabel={lockInstancesColumns[2].title}>
+                  {l.operation ? l.operation : 'N/A'}
+                </Td>
+                <Td key={`lock-owner-id`} dataLabel={lockInstancesColumns[3].title}>
+                  {l.ownerThreadId ? l.ownerThreadId : 'N/A'}
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Card>
+    );
+  }, []);
+
+  const threadSubTable = React.useCallback(
+    (t: ThreadInfo | DeadlockInfo) => {
+      var stackTraceExists = t.stackTrace && t.stackTrace.length;
+      var locksExists = t.locks && t.locks.length;
+      return (
+        <>
+          {stackTraceExists ? stackTraceTable(t.stackTrace!) : emptyTableState('No Stack Trace Available')}
+          {locksExists ? locksTable(t.locks!) : emptyTableState('No Lock Instances Available')}
+        </>
+      );
+    },
+    [locksTable, stackTraceTable, emptyTableState],
+  );
+
+  const displayedDeadlockRowData = React.useMemo(() => {
+    const rows: DeadlockRowData[] = [];
+    const sorted = sortResources(
+      {
+        index: sortBy.index ?? 1,
+        direction: sortBy.direction ?? SortByDirection.asc,
+      },
+      analysisResult?.deadlockInfos ? analysisResult.deadlockInfos : [],
+      threadColumns,
+    );
+    if (analysisResult) {
+      sorted.forEach((d: DeadlockInfo) => {
+        rows.push({
+          deadlockInfo: d,
+          cellContents: [d.threadName, d.waitingForMonitor, d.waitingForObject, d.waitingForObjectType, d.heldBy],
+          isExpanded: openDeadlockRows.some((id) => id === hashCode(d.threadName)),
+          children: threadSubTable(d),
+        });
+      });
+    }
+    return rows;
+  }, [openDeadlockRows, sortBy, threadSubTable, analysisResult]);
 
   const displayedRowData = React.useMemo(() => {
     const rows: ThreadRowData[] = [];
@@ -275,54 +438,12 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
             t.additionalInfo,
           ],
           isExpanded: openRows.some((id) => id === hashCode(t.name)),
-          children: t.stackTrace?.length ? (
-            <Card>
-              <CardTitle>Stack Trace</CardTitle>
-              <Table aria-label="Stack Trace" variant={TableVariant.compact}>
-                <Thead>
-                  <Tr>
-                    {stackTraceColumns.map(({ title }) => (
-                      <Th key={`thread-header-${title}`}>{title}</Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {t.stackTrace?.map((s: StackFrame) => (
-                    <Tr key={`stack-trace`}>
-                      <Td key={`file-name`} dataLabel={stackTraceColumns[0].title}>
-                        {s.fileName ? s.fileName : 'N/A'}
-                      </Td>
-                      <Td key={`finding-name`} dataLabel={stackTraceColumns[1].title}>
-                        {s.className ? s.className : 'N/A'}
-                      </Td>
-                      <Td key={`finding-explanation`} dataLabel={stackTraceColumns[2].title}>
-                        {s.methodName ? s.methodName : 'N/A'}
-                      </Td>
-                      <Td key={`finding-score`} dataLabel={stackTraceColumns[3].title}>
-                        {s.lineNumber ? s.lineNumber : 'N/A'}
-                      </Td>
-                      <Td key={`finding-score`} dataLabel={stackTraceColumns[4].title}>
-                        {s.nativeMethod ? `${s.nativeMethod}` : 'false'}
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Card>
-          ) : (
-            <EmptyState>
-              <EmptyStateHeader
-                titleText="No Stack Trace Available"
-                icon={<EmptyStateIcon icon={TopologyIcon} />}
-                headingLevel="h4"
-              />
-            </EmptyState>
-          ),
+          children: threadSubTable(t),
         });
       });
     }
     return rows;
-  }, [openRows, sortBy, analysisResult]);
+  }, [openRows, sortBy, threadSubTable, analysisResult]);
 
   const threadRows = React.useMemo(() => {
     if (displayedRowData) {
@@ -377,13 +498,9 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
         </Tbody>
       ));
     } else {
-      return (
-        <EmptyState>
-          <EmptyStateHeader titleText="No Threads" icon={<EmptyStateIcon icon={TopologyIcon} />} headingLevel="h4" />
-        </EmptyState>
-      );
+      return emptyTableState('No Threads Available');
     }
-  }, [displayedRowData, onToggle]);
+  }, [displayedRowData, emptyTableState, onToggle]);
 
   const findingsRows = React.useMemo(
     () =>
@@ -403,35 +520,40 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     [analysisResult],
   );
 
-  const deadlockRows = React.useMemo(
-    () =>
-      analysisResult?.deadlockInfos.map((d: DeadlockInfo) => (
+  const deadlockRows = React.useMemo(() => {
+    if (displayedDeadlockRowData.length) {
+      return displayedDeadlockRowData.map((d: DeadlockRowData, index) => (
         <Tr key={`deadlocks`}>
+          <Td
+            key={`deadlock-row-expandable`}
+            expand={{
+              rowIndex: index,
+              isExpanded: d.isExpanded,
+              expandId: `expandable-deadlock-row-${index}`,
+              onToggle: () => onDeadlockRowToggle(d.deadlockInfo),
+            }}
+          />
           <Td key={`deadlock-thread`} dataLabel={deadlockColumns[0].title}>
-            {d.threadName}
+            {d.deadlockInfo.threadName ? d.deadlockInfo.threadName : 'N/A'}
           </Td>
           <Td key={`deadlock-monitor`} dataLabel={deadlockColumns[1].title}>
-            {d.waitingForMonitor}
+            {d.deadlockInfo.waitingForMonitor ? d.deadlockInfo.waitingForMonitor : 'N/A'}
           </Td>
           <Td key={`deadlock-object`} dataLabel={deadlockColumns[2].title}>
-            {d.waitingForObject}
+            {d.deadlockInfo.waitingForObject ? d.deadlockInfo.waitingForObject : 'N/A'}
           </Td>
           <Td key={`deadlock-type`} dataLabel={deadlockColumns[3].title}>
-            {d.waitingForObjectType}
+            {d.deadlockInfo.waitingForObjectType ? d.deadlockInfo.waitingForObjectType : 'N/A'}
           </Td>
           <Td key={`deadlock-held`} dataLabel={deadlockColumns[4].title}>
-            {d.heldBy}
-          </Td>
-          <Td key={`deadlock-stack-trace`} dataLabel={deadlockColumns[5].title}>
-            {d.stackTrace}
-          </Td>
-          <Td key={`deadlock-locks`} dataLabel={deadlockColumns[6].title}>
-            {d.locks}
+            {d.deadlockInfo.heldBy ? d.deadlockInfo.heldBy : 'N/A'}
           </Td>
         </Tr>
-      )),
-    [analysisResult],
-  );
+      ));
+    } else {
+      return emptyTableState('No Deadlocks Detected');
+    }
+  }, [displayedDeadlockRowData, emptyTableState, onDeadlockRowToggle]);
 
   const queryTargetThreadDumps = React.useCallback(
     (target: Target) => context.api.getTargetThreadDumps(target),
@@ -543,7 +665,18 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     if (location.state) {
       navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
     }
-  }, [context.api, location.state, location.search, location.hash, location.pathname, modalPrefill, dispatch, navigate, handleThreadDumpAnalysis, setSelectedThreadDump]);
+  }, [
+    context.api,
+    location.state,
+    location.search,
+    location.hash,
+    location.pathname,
+    modalPrefill,
+    dispatch,
+    navigate,
+    handleThreadDumpAnalysis,
+    setSelectedThreadDump,
+  ]);
 
   var view;
   if (analysisResult == null) {
@@ -633,39 +766,14 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
                 <Tbody>{findingsRows}</Tbody>
               </Table>
             ) : (
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText="No Specific Findings"
-                  icon={<EmptyStateIcon icon={TopologyIcon} />}
-                  headingLevel="h4"
-                />
-              </EmptyState>
+              emptyTableState('No Specific Findings')
             )}
           </Card>
         </GridItem>
         <GridItem>
           <Card>
             <CardTitle>Deadlock Detection</CardTitle>
-            {deadlockRows?.length ? (
-              <Table aria-label="Deadlocks" variant={TableVariant.compact}>
-                <Thead>
-                  <Tr>
-                    {deadlockColumns.map(({ title }) => (
-                      <Th key={`deadlock-header-${title}`}>{title}</Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody>{deadlockRows}</Tbody>
-              </Table>
-            ) : (
-              <EmptyState>
-                <EmptyStateHeader
-                  titleText="No Deadlocks Detected"
-                  icon={<EmptyStateIcon icon={TopologyIcon} />}
-                  headingLevel="h4"
-                />
-              </EmptyState>
-            )}
+            {deadlockRows}
           </Card>
         </GridItem>
         <GridItem>

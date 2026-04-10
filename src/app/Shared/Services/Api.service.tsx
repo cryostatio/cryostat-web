@@ -812,9 +812,15 @@ export class ApiService {
     threadDumpId: string,
     suppressNotifications = false,
   ): Observable<ThreadDumpAnalysisResult> {
-    return this.sendRequest('beta', `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`, {
-      method: 'POST',
-    }, undefined, suppressNotifications).pipe(
+    return this.sendRequest(
+      'beta',
+      `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`,
+      {
+        method: 'POST',
+      },
+      undefined,
+      suppressNotifications,
+    ).pipe(
       concatMap((resp) => resp.json()),
       first(),
     );

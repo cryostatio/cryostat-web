@@ -284,10 +284,10 @@ export interface StackFrame {
 }
 
 export interface LockInfo {
-  lockId: string;
-  className: string;
-  operation: string;
-  ownerThreadId: string;
+  lockId?: string;
+  className?: string;
+  operation?: string;
+  ownerThreadId?: string;
 }
 
 export interface DeadlockInfo {
