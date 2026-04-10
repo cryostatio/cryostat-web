@@ -110,6 +110,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     initialDelay: 0,
     initialDelayUnit: 1,
     preservedArchives: 0,
+    threaddump: false,
+    heapdump: false,
   });
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -238,6 +240,16 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
     [setFormData],
   );
 
+  const handleThreadDumpChange = React.useCallback(
+    (_, threaddump: boolean) => setFormData((old) => ({ ...old, threaddump })),
+    [setFormData],
+  );
+
+  const handleHeapDumpChange = React.useCallback(
+    (_, heapdump: boolean) => setFormData((old) => ({ ...old, heapdump })),
+    [setFormData],
+  );
+
   const handleAutoAnalyzeChange = React.useCallback(
     (_, autoanalyze: boolean) => setAutoanalyze(autoanalyze),
     [setAutoanalyze],
@@ -308,6 +320,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
       maxAgeUnit,
       maxSize,
       maxSizeUnit,
+      threaddump,
+      heapdump,
     } = formData;
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Rule name ${name} is invalid`);
@@ -337,6 +351,8 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
       maxAgeSeconds: maxAge * maxAgeUnit,
       maxSizeBytes: maxSize * maxSizeUnit,
       metadata,
+      threadDump: threaddump,
+      heapDump: heapdump,
     };
     setLoading(true);
     addSubscription(
@@ -544,6 +560,34 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
         <FormHelperText>
           <HelperText>
             <HelperTextItem>{t('CreateRule.ENABLE_SWITCH_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      </FormGroup>
+      <FormGroup label={t('THREAD_DUMP')} isRequired fieldId="rule-thread-dump">
+        <Switch
+          id="rule-thread-dump"
+          isDisabled={loading}
+          aria-label="Trigger a thread dump in matching targets"
+          isChecked={formData.threaddump}
+          onChange={handleThreadDumpChange}
+        />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.THREAD_DUMP_SWITCH_HELPER_TEXT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      </FormGroup>
+      <FormGroup label={t('HEAP_DUMP')} isRequired fieldId="rule-heap-dump">
+        <Switch
+          id="rule-heap-dump"
+          isDisabled={loading}
+          aria-label="Trigger a heap dump in matching targets"
+          isChecked={formData.heapdump}
+          onChange={handleHeapDumpChange}
+        />
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('CreateRule.HEAP_DUMP_SWITCH_HELPER_TEXT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
       </FormGroup>
