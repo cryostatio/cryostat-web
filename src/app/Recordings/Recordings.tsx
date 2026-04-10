@@ -19,7 +19,8 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import { Card, CardBody, Modal, ModalVariant } from '@patternfly/react-core';
+import { Card, CardBody } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 

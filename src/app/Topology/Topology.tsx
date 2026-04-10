@@ -27,7 +27,8 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useModalFromLocationState } from '@app/utils/hooks/useModalFromLocationState';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
-import { Bullseye, Card, CardBody, Modal, ModalVariant } from '@patternfly/react-core';
+import { Bullseye, Card, CardBody } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { debounceTime } from 'rxjs';
@@ -156,7 +157,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
     <>
       <BreadcrumbPage pageTitle={'Topology'} {..._props}>
         <Card isFullHeight id="topology-card">
-          <CardBody style={{ padding: 0 }}>
+          <CardBody isFilled style={{ padding: 0 }}>
             <DiscoveryTreeContext.Provider value={discoveryTree}>{content}</DiscoveryTreeContext.Provider>
           </CardBody>
         </Card>

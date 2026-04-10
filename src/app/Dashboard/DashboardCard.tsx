@@ -23,7 +23,7 @@ import { DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
 import { DashboardCardSizes } from './types';
 
-export interface DashboardCardProps extends CardProps {
+export interface DashboardCardProps extends Omit<CardProps, 'ref'> {
   dashboardId: number;
   cardSizes: DashboardCardSizes;
   cardHeader: React.ReactNode;
@@ -64,7 +64,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
       isDraggable ? (
         <DraggableRef dashboardId={dashboardId}>
           <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
-            <Card className="dashboard-card" isRounded {...props}>
+            <Card className="dashboard-card" {...props}>
               <div
                 className={css(`${DRAGGABLE_REF_KLAZZ}__grip`)}
                 onMouseEnter={onMouseEnter}
@@ -81,7 +81,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
         </DraggableRef>
       ) : (
         <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
-          <Card className="dashboard-card" isRounded {...props}>
+          <Card className="dashboard-card" {...props}>
             {cardHeader}
             {children}
           </Card>

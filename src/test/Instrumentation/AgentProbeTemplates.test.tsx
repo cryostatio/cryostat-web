@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within, act } from '@testing-library/react';
 import { of, Subject } from 'rxjs';
-import { createMockForPFTableRef, render, renderSnapshot, testT } from '../utils';
+import { render, testT } from '../utils';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -99,12 +99,10 @@ describe('<AgentProbeTemplates />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/events', element: <AgentProbeTemplates agentDetected={true} /> }] },
-      createNodeMock: createMockForPFTableRef,
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
-    tree?.unmount();
+    expect(container).toMatchSnapshot();
   });
 
   it('should add a Probe Template after receiving a notification', async () => {

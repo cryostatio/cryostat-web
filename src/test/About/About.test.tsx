@@ -19,7 +19,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { mockMediaQueryList, render, renderSnapshot, testT } from '../utils';
+import { mockMediaQueryList, render, testT } from '../utils';
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
     BreadcrumbPage: jest.fn((props) => {
@@ -49,10 +49,10 @@ describe('<About />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/about', element: <About /> }] },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('contains the correct information', async () => {
@@ -62,7 +62,7 @@ describe('<About />', () => {
 
     expect(screen.getByText('About')).toBeInTheDocument();
     const logo = screen.getByRole('img');
-    expect(logo).toHaveClass('pf-v5-c-brand cryostat-logo');
+    expect(logo).toHaveClass('pf-v6-c-brand cryostat-logo');
     expect(logo).toHaveAttribute('alt', 'Cryostat');
     expect(logo).toHaveAttribute('src', 'test-file-stub');
     expect(screen.getByText(testT('CRYOSTAT_TRADEMARK'))).toBeInTheDocument();

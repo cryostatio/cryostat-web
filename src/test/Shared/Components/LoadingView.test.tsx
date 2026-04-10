@@ -15,14 +15,14 @@
  */
 
 import { LoadingView } from '@app/Shared/Components/LoadingView';
-import { render, renderSnapshot } from '@test/utils';
+import { render } from '@test/utils';
 import { cleanup, screen } from '@testing-library/react';
 
 describe('<LoadingView />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -32,7 +32,7 @@ describe('<LoadingView />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should show spinner and title', async () => {

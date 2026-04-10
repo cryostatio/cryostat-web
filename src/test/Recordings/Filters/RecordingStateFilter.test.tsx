@@ -17,7 +17,7 @@
 import { RecordingStateFilter } from '@app/Recordings/Filters/RecordingStateFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
-import { render, renderSnapshot, testT } from '../../utils';
+import { render, testT } from '../../utils';
 
 const mockRecordingLabels = [
   {
@@ -63,7 +63,7 @@ describe('<RecordingStateFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -73,7 +73,7 @@ describe('<RecordingStateFilter />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should display state selections when dropdown is clicked', async () => {

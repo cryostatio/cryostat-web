@@ -30,9 +30,7 @@ import {
   ToolbarItemVariant,
   Pagination,
   EmptyState,
-  EmptyStateIcon,
-  Text,
-  EmptyStateHeader,
+  Content,
   SearchInput,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
@@ -177,7 +175,7 @@ export const EventTypes: React.FC<EventTypesProps> = () => {
         eventType: t,
         cellContents: [t.name, t.typeId, t.description, getCategoryString(t)],
         isExpanded: openRows.some((id) => id === hashCode(t.typeId)),
-        children: <Text>{child}</Text>,
+        children: <Content component="p">{child}</Content>,
       });
     });
 
@@ -310,13 +308,7 @@ export const EventTypes: React.FC<EventTypesProps> = () => {
             {typeRowPairs}
           </Table>
         ) : (
-          <EmptyState>
-            <EmptyStateHeader
-              titleText="No Event types"
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText="No Event types"></EmptyState>
         )}
       </>
     );
