@@ -21,25 +21,12 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
-  ValidatedOptions,
 } from '@patternfly/react-core';
 import * as React from 'react';
-
-export interface ThreadDumpSelectionGroup {
-  groupLabel: string;
-  disabled?: boolean;
-  options: {
-    value: string;
-    label: string;
-    disabled?: boolean;
-  }[];
-}
 
 export interface ThreadDumpSelectorProps {
   selected: string;
   threadDumps: ThreadDump[];
-  disabled?: boolean;
-  validated?: ValidatedOptions;
   onSelect: (threadDump?: string) => void;
 }
 
