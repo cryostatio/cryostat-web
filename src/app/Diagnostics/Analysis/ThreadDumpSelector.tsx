@@ -15,13 +15,7 @@
  */
 import { ThreadDump } from '@app/Shared/Services/api.types';
 import { portalRoot } from '@app/utils/utils';
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownList,
-  MenuToggle,
-  MenuToggleElement,
-} from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownList, MenuToggle, MenuToggleElement } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface ThreadDumpSelectorProps {
