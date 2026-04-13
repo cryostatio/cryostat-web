@@ -678,6 +678,12 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     setSelectedThreadDump,
   ]);
 
+  const selector = React.useMemo(() => {
+    return (
+      <ThreadDumpSelector selected={selectedThreadDump} threadDumps={threadDumps} onSelect={handleThreadDumpChange} />
+    );
+  }, [selectedThreadDump, threadDumps, handleThreadDumpChange]);
+
   var view;
   if (analysisResult == null) {
     view = (
@@ -800,7 +806,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
   return (
     <TargetView {...props} pageTitle="Visualize Thread Dumps">
-      <ThreadDumpSelector selected={selectedThreadDump} threadDumps={threadDumps} onSelect={handleThreadDumpChange} />
+      {selector}
       {view}
     </TargetView>
   );

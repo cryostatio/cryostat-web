@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 import { ThreadDump } from '@app/Shared/Services/api.types';
-import { FormSelect, FormSelectOption, FormSelectOptionGroup, ValidatedOptions } from '@patternfly/react-core';
+import { portalRoot } from '@app/utils/utils';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface ThreadDumpSelectionGroup {
@@ -35,68 +43,62 @@ export interface ThreadDumpSelectorProps {
   onSelect: (threadDump?: string) => void;
 }
 
-export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({
-  selected,
-  threadDumps,
-  disabled,
-  validated,
-  onSelect,
-}) => {
-  const groups = React.useMemo(
-    () =>
-      [
-        {
-          groupLabel: 'Thread Dumps',
-          options: threadDumps.map((t) => ({
-            value: `${t.threadDumpId}`,
-            label: t.threadDumpId,
-          })),
-        },
-      ] as ThreadDumpSelectionGroup[],
-    [threadDumps],
-  );
+export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({ selected, threadDumps, onSelect }) => {
+  const [selectedThreadDump, setSelectedThreadDump] = React.useState<string>(selected);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const handleThreadDumpSelect = React.useCallback(
     (_, selected: string) => {
       if (!selected.length) {
         onSelect(undefined);
+        setSelectedThreadDump('');
+        setIsOpen(false);
       } else {
         onSelect(selected);
+        setSelectedThreadDump(selected);
+        setIsOpen(false);
       }
     },
-    [onSelect],
+    [onSelect, setSelectedThreadDump],
+  );
+
+  const onToggle = React.useCallback(() => setIsOpen((isOpen) => !isOpen), [setIsOpen]);
+
+  const toggle = React.useCallback(
+    (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        placeholder={'Select a Thread Dump'}
+        ref={toggleRef}
+        aria-label="thread dump selector toggle"
+        onClick={onToggle}
+        isExpanded={isOpen}
+      >
+        {selectedThreadDump == '' ? 'Select a Thread Dump' : selectedThreadDump}
+      </MenuToggle>
+    ),
+    [onToggle, isOpen, selectedThreadDump],
   );
 
   return (
-    <>
-      <FormSelect
-        isDisabled={disabled}
-        value={selected}
-        validated={validated || ValidatedOptions.default}
-        onChange={handleThreadDumpSelect}
-        aria-label="Thread Dump Input"
-        id="thread-dump"
-        data-quickstart-id="thread-dump-selector"
-      >
-        <FormSelectOption key="placeholder" label="Select a Thread Dump" isPlaceholder isDisabled />
-
-        {groups.map((group, index) => (
-          <FormSelectOptionGroup isDisabled={group.disabled} key={index} label={group.groupLabel}>
-            {group.options.length > 0 ? (
-              group.options.map((option) => (
-                <FormSelectOption
-                  key={option.label}
-                  label={option.label}
-                  value={option.value}
-                  isDisabled={option.disabled}
-                />
-              ))
-            ) : (
-              <FormSelectOption key="no-thread-dump" label="No thread dumps" isDisabled />
-            )}
-          </FormSelectOptionGroup>
+    <Dropdown
+      popperProps={{
+        enableFlip: true,
+        appendTo: portalRoot,
+        position: 'left',
+      }}
+      isOpen={isOpen}
+      onSelect={handleThreadDumpSelect}
+      toggle={toggle}
+      onOpenChange={setIsOpen}
+      onOpenChangeKeys={['Escape']}
+    >
+      <DropdownList>
+        {threadDumps.map((t: ThreadDump) => (
+          <DropdownItem key={t.threadDumpId} label={t.threadDumpId} value={t.threadDumpId}>
+            {t.threadDumpId}
+          </DropdownItem>
         ))}
-      </FormSelect>
-    </>
+      </DropdownList>
+    </Dropdown>
   );
 };
