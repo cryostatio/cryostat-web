@@ -1113,6 +1113,120 @@ export const startMirage = ({ environment = 'development' } = {}) => {
         );
         return new Response(200);
       });
+      this.get('api/beta/audit/revisions', (schema, request) => {
+        const { startTime, endTime, page = '0', pageSize = '20' } = request.queryParams;
+
+        const mockRevisions: any[] = [];
+        const pageNum = parseInt(Array.isArray(page) ? page[0] : page || '0');
+        const size = parseInt(Array.isArray(pageSize) ? pageSize[0] : pageSize || '20');
+        const totalCount = 150; // Mock total
+
+        const start = startTime ? parseInt(Array.isArray(startTime) ? startTime[0] : startTime) : Date.now() - 86400000; // Default 24h ago
+        const end = endTime ? parseInt(Array.isArray(endTime) ? endTime[0] : endTime) : Date.now();
+
+        for (let i = 0; i < Math.min(size, totalCount - pageNum * size); i++) {
+          const revNum = totalCount - (pageNum * size + i);
+          const timeOffset = ((end - start) / totalCount) * (totalCount - revNum);
+          mockRevisions.push({
+            rev: revNum,
+            revtstmp: start + timeOffset,
+            username: i % 3 === 0 ? 'admin' : i % 3 === 1 ? 'user1' : 'user2',
+          });
+        }
+
+        return {
+          revisions: mockRevisions,
+          totalCount,
+        };
+      });
+
+      this.get('api/beta/audit/revisions/:rev', (schema, request) => {
+        const rev = parseInt(request.params.rev);
+
+        const entities: any = {};
+
+        // Add Target changes for some revisions
+        if (rev % 3 === 0) {
+          entities.Target = [
+            {
+              id: Math.floor(rev / 3),
+              rev,
+              revtype: rev % 2 === 0 ? 1 : 0, // MODIFY or ADD
+              connectUrl: `service:jmx:rmi:///jndi/rmi://example-${rev}:9091/jmxrmi`,
+              alias: `example-app-${rev}`,
+              jvmId: `jvmId-${rev}-${Math.random().toString(36).substring(7)}`,
+              labels: { env: 'prod', team: 'platform', revision: rev.toString() },
+              annotations: {
+                cryostat: [],
+                platform: [
+                  { key: 'namespace', value: 'my-namespace' },
+                  { key: 'pod', value: `pod-${rev}` },
+                ],
+              },
+            },
+          ];
+        }
+
+        // Add Rule changes for some revisions
+        if (rev % 5 === 0) {
+          entities.Rule = [
+            {
+              id: Math.floor(rev / 5),
+              rev,
+              revtype: rev % 10 === 0 ? 2 : 0, // DELETE or ADD
+              name: `auto-rule-${rev}`,
+              matchExpression: `target.alias == 'example-${rev}'`,
+              eventSpecifier: 'template=Continuous',
+              archivalPeriodSeconds: 300,
+              initialDelaySeconds: 0,
+              preservedArchives: 5,
+              maxAgeSeconds: 3600,
+              maxSizeBytes: 1048576,
+            },
+          ];
+        }
+
+        // Add ActiveRecording changes for some revisions
+        if (rev % 7 === 0) {
+          entities.ActiveRecording = [
+            {
+              id: Math.floor(rev / 7),
+              rev,
+              revtype: 1, // MODIFY
+              name: `recording-${rev}`,
+              state: 'RUNNING',
+              duration: 60000,
+              startTime: Date.now() - 30000,
+              continuous: false,
+              toDisk: true,
+              maxSize: 0,
+              maxAge: 0,
+            },
+          ];
+        }
+
+        // Add Credential changes for some revisions (with redacted password)
+        if (rev % 11 === 0) {
+          entities.Credential = [
+            {
+              id: Math.floor(rev / 11),
+              rev,
+              revtype: 0, // ADD
+              matchExpression: `target.alias == 'secure-app-${rev}'`,
+              username: `user-${rev}`,
+              password: '***REDACTED***',
+            },
+          ];
+        }
+
+        return {
+          rev,
+          revtstmp: Date.now() - (150 - rev) * 3600000, // 1 hour apart
+          username: rev % 2 === 0 ? 'admin' : 'user1',
+          entities,
+        };
+      });
+
       this.get('api/beta/audit/targets/:jvmId', () => new Response(404));
       this.get('api/beta/audit/target_lineage/:jvmId', () => new Response(404));
     },

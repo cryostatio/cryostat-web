@@ -33,7 +33,9 @@ import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
 import RulesTable from './Rules/Rules';
-import SecurityPanel from './SecurityPanel/SecurityPanel';
+import AuditLog from './Security/AuditLog';
+import { Certificates } from './Security/Certificates';
+import { StoredCredentialsView } from './Security/Credentials/StoredCredentials';
 import Settings from './Settings/Settings';
 import { DefaultFallBack, ErrorBoundary } from './Shared/Components/ErrorBoundary';
 import { FeatureLevel } from './Shared/Services/service.types';
@@ -46,9 +48,10 @@ import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
 const FLIGHT_RECORDER = 'Routes.NavGroups.FLIGHT_RECORDER';
-const CONSOLE = 'Routes.NavGroups.CONSOLE';
 const DIAGNOSTICS = 'Routes.NavGroups.DIAGNOSTICS';
-const navGroups = [OVERVIEW, FLIGHT_RECORDER, DIAGNOSTICS, CONSOLE];
+const SECURITY = 'Routes.NavGroups.SECURITY';
+const CONSOLE = 'Routes.NavGroups.CONSOLE';
+const navGroups = [OVERVIEW, FLIGHT_RECORDER, DIAGNOSTICS, SECURITY, CONSOLE];
 
 const ANALYZE = 'Routes.ANALYZE';
 const CAPTURE = 'Routes.CAPTURE';
@@ -214,15 +217,35 @@ const diagnosticsRoutes: IAppRoute[] = [
   },
 ];
 
-const consoleRoutes: IAppRoute[] = [
+const securityRoutes: IAppRoute[] = [
   {
-    component: SecurityPanel,
-    label: 'Security',
-    path: toPath('/security'),
-    title: 'Security',
-    description: 'Upload SSL/TLS certificates for Cryostat to trust when communicating with target applications.',
-    navGroup: CONSOLE,
+    component: Certificates,
+    label: 'Certificates',
+    path: toPath('/certificates'),
+    title: 'Certificates',
+    description: 'View SSL/TLS certificates Cryostat trusts when communicating with target applications.',
+    navGroup: SECURITY,
   },
+  {
+    component: StoredCredentialsView,
+    label: 'Credentials',
+    path: toPath('/credentials'),
+    title: 'Credentials',
+    description: 'Encrypted credentials keyring which Cryostat uses to authenticate to target applications.',
+    navGroup: SECURITY,
+  },
+  {
+    component: AuditLog,
+    label: 'Audit Log',
+    path: toPath('/audit-log'),
+    title: 'Audit Log',
+    description: 'View audit log of changes to Cryostat entities.',
+    navGroup: SECURITY,
+    featureLevel: FeatureLevel.BETA,
+  },
+];
+
+const consoleRoutes: IAppRoute[] = [
   {
     component: About,
     label: 'About',
@@ -252,8 +275,9 @@ const nonNavRoutes: IAppRoute[] = [
 const routes: IAppRoute[] = [
   ...overviewRoutes,
   ...flightRecorderRoutes,
-  ...consoleRoutes,
   ...diagnosticsRoutes,
+  ...securityRoutes,
+  ...consoleRoutes,
   ...nonNavRoutes,
 ];
 

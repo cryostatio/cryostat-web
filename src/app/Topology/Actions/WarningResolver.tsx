@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CreateCredentialModal } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
+import { CreateCredentialModal } from '@app/Security/Credentials/CreateCredentialModal';
 import { TargetNode } from '@app/Shared/Services/api.types';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
