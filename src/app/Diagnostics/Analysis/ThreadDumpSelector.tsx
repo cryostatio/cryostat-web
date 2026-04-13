@@ -94,7 +94,7 @@ export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({ selected
     >
       <DropdownList>
         {threadDumps.map((t: ThreadDump) => (
-          <DropdownItem key={t.threadDumpId} label={t.threadDumpId} value={t.threadDumpId}>
+          <DropdownItem name={t.threadDumpId} key={t.threadDumpId} label={t.threadDumpId} value={t.threadDumpId}>
             {t.threadDumpId}
           </DropdownItem>
         ))}
