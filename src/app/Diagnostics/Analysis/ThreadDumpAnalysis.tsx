@@ -510,47 +510,59 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
     [analysisResult],
   );
 
-  const deadlockRows = React.useMemo(() => {
+  const deadlockTable = React.useMemo(() => {
     if (displayedDeadlockRowData.length) {
       return displayedDeadlockRowData.map((d: DeadlockRowData, index) => (
-        <Tbody key={`deadlock-row-pair-${index}`} isExpanded={d.isExpanded}>
-          <Tr key={`deadlocks`}>
-            <Td
-              key={`deadlock-row-expandable`}
-              expand={{
-                rowIndex: index,
-                isExpanded: d.isExpanded,
-                expandId: `expandable-deadlock-row-${index}`,
-                onToggle: () => onDeadlockRowToggle(d.deadlockInfo),
-              }}
-            />
-            <Td key={`deadlock-thread`} dataLabel={deadlockColumns[0].title}>
-              {d.deadlockInfo.threadName ? d.deadlockInfo.threadName : 'N/A'}
-            </Td>
-            <Td key={`deadlock-monitor`} dataLabel={deadlockColumns[1].title}>
-              {d.deadlockInfo.waitingForMonitor ? d.deadlockInfo.waitingForMonitor : 'N/A'}
-            </Td>
-            <Td key={`deadlock-object`} dataLabel={deadlockColumns[2].title}>
-              {d.deadlockInfo.waitingForObject ? d.deadlockInfo.waitingForObject : 'N/A'}
-            </Td>
-            <Td key={`deadlock-type`} dataLabel={deadlockColumns[3].title}>
-              {d.deadlockInfo.waitingForObjectType ? d.deadlockInfo.waitingForObjectType : 'N/A'}
-            </Td>
-            <Td key={`deadlock-held`} dataLabel={deadlockColumns[4].title}>
-              {d.deadlockInfo.heldBy ? d.deadlockInfo.heldBy : 'N/A'}
-            </Td>
-          </Tr>
-          <Tr key={`deadlock-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
-            <Td dataLabel="deadlock-details" colSpan={deadlockColumns.length}>
-              <ExpandableRowContent>{d.children}</ExpandableRowContent>
-            </Td>
-          </Tr>
-        </Tbody>
+        <Table aria-label="Deadlock Table" variant={TableVariant.compact}>
+          <Thead>
+            <Tr>
+              <Th />
+              {deadlockColumns.map(({ title, sortable }, index) => (
+                <Th key={`deadlock-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
+                  {title}
+                </Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody key={`deadlock-row-pair-${index}`} isExpanded={d.isExpanded}>
+            <Tr key={`deadlocks`}>
+              <Td
+                key={`deadlock-row-expandable`}
+                expand={{
+                  rowIndex: index,
+                  isExpanded: d.isExpanded,
+                  expandId: `expandable-deadlock-row-${index}`,
+                  onToggle: () => onDeadlockRowToggle(d.deadlockInfo),
+                }}
+              />
+              <Td key={`deadlock-thread`} dataLabel={deadlockColumns[0].title}>
+                {d.deadlockInfo.threadName ? d.deadlockInfo.threadName : 'N/A'}
+              </Td>
+              <Td key={`deadlock-monitor`} dataLabel={deadlockColumns[1].title}>
+                {d.deadlockInfo.waitingForMonitor ? d.deadlockInfo.waitingForMonitor : 'N/A'}
+              </Td>
+              <Td key={`deadlock-object`} dataLabel={deadlockColumns[2].title}>
+                {d.deadlockInfo.waitingForObject ? d.deadlockInfo.waitingForObject : 'N/A'}
+              </Td>
+              <Td key={`deadlock-type`} dataLabel={deadlockColumns[3].title}>
+                {d.deadlockInfo.waitingForObjectType ? d.deadlockInfo.waitingForObjectType : 'N/A'}
+              </Td>
+              <Td key={`deadlock-held`} dataLabel={deadlockColumns[4].title}>
+                {d.deadlockInfo.heldBy ? d.deadlockInfo.heldBy : 'N/A'}
+              </Td>
+            </Tr>
+            <Tr key={`deadlock-row-${index}-expandable-child`} isExpanded={d.isExpanded}>
+              <Td dataLabel="deadlock-details" colSpan={deadlockColumns.length}>
+                <ExpandableRowContent>{d.children}</ExpandableRowContent>
+              </Td>
+            </Tr>
+          </Tbody>
+        </Table>
       ));
     } else {
       return emptyTableState('No Deadlocks Detected');
     }
-  }, [displayedDeadlockRowData, emptyTableState, onDeadlockRowToggle]);
+  }, [displayedDeadlockRowData, getSortParams, emptyTableState, onDeadlockRowToggle]);
 
   const queryTargetThreadDumps = React.useCallback(
     (target: Target) => context.api.getTargetThreadDumps(target),
@@ -777,19 +789,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
         <GridItem>
           <Card>
             <CardTitle>Deadlock Detection</CardTitle>
-            <Table aria-label="Deadlock Table" variant={TableVariant.compact}>
-              <Thead>
-                <Tr>
-                  <Th />
-                  {deadlockColumns.map(({ title, sortable }, index) => (
-                    <Th key={`deadlock-header-${title}`} sort={sortable ? getSortParams(index) : undefined}>
-                      {title}
-                    </Th>
-                  ))}
-                </Tr>
-              </Thead>
-              {deadlockRows}
-            </Table>
+            {deadlockTable}
           </Card>
         </GridItem>
         <GridItem>
