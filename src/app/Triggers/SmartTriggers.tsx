@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTable';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
@@ -20,7 +21,13 @@ import { CEL_SPEC_HREF } from '@app/Rules/utils';
 import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
 
-import { EventTemplate, NotificationCategory, NullableTarget, SmartTrigger, Target } from '@app/Shared/Services/api.types';
+import {
+  EventTemplate,
+  NotificationCategory,
+  NullableTarget,
+  SmartTrigger,
+  Target,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, hashCode, portalRoot, sortResources } from '@app/utils/utils';
@@ -57,8 +64,6 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
-  FormSelect,
-  FormSelectOption,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
@@ -66,9 +71,8 @@ import { t } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
-import { catchError, debounceTime, first, forkJoin, iif, map, Observable, of, Subject, switchMap } from 'rxjs';
+import { first, forkJoin, Observable } from 'rxjs';
 import { SmartTriggersFormData } from './types';
-import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 
 export const tableColumns: TableColumn[] = [
   {
@@ -652,7 +656,6 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [mbeanSelectValue, setMbeanSelectValue] = React.useState('');
   const [formData, setFormData] = React.useState<SmartTriggersFormData>({
     name: '',
     nameValid: ValidatedOptions.default,
@@ -684,11 +687,11 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    props.onAccept(expressionInput+"~"+formData.template?.name);
+    props.onAccept(expressionInput + '~' + formData.template?.name);
     setUploading(false);
     onClose();
     setExpressionInput('');
-  }, [props, onClose, expressionInput, submitRef]);
+  }, [props, onClose, expressionInput, submitRef, formData.template?.name]);
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
@@ -707,11 +710,12 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       }
       addSubscription(
         context.api.getTargetEventTemplates(target).subscribe({
-          next: setTemplates
-        })
+          next: setTemplates,
+        }),
       );
     },
-  [addSubscription, context.api, setTemplates])
+    [addSubscription, context.api, setTemplates],
+  );
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshFormOptions));
@@ -719,10 +723,10 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const selectedSpecifier = React.useMemo(() => {
     const { template } = formData;
-      if (template && template.name && template.type) {
-        return `${template.name},${template.type}`;
-      }
-      return '';
+    if (template && template.name && template.type) {
+      return `${template.name},${template.type}`;
+    }
+    return '';
   }, [formData]);
 
   const handleTemplateChange = React.useCallback(
@@ -781,13 +785,13 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
             <HelperTextItem>{t('Triggers.TEMPLATE_SELECT')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
-          <SelectTemplateSelectorForm
-            selected={selectedSpecifier}
-            templates={templates}
-            validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
-            disabled={uploading}
-            onSelect={handleTemplateChange}
-          />
+        <SelectTemplateSelectorForm
+          selected={selectedSpecifier}
+          templates={templates}
+          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
+          disabled={uploading}
+          onSelect={handleTemplateChange}
+        />
         <ActionGroup>
           <>
             <Button
