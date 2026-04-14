@@ -19,7 +19,7 @@ import { Drawer, DrawerContent } from '@patternfly/react-core';
 import { screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
@@ -75,7 +75,7 @@ describe('<RecordingLabelsPanel />', () => {
   };
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -89,7 +89,7 @@ describe('<RecordingLabelsPanel />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('displays the bulk Labels editor within the resizeable drawer panel', async () => {

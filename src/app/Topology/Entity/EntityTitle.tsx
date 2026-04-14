@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { portalRoot } from '@app/utils/utils';
-import { Tooltip } from '@patternfly/react-core';
+import { Badge, Tooltip } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 
@@ -27,7 +27,7 @@ export const EntityTitle: React.FC<{
     <div className={css('entity-overview__entity-title-wrapper')} {...props}>
       {badge ? (
         <Tooltip content={badgeTooltipContent} appendTo={portalRoot}>
-          <span className="entity-overview__entity-title-badge">{badge}</span>
+          <Badge style={{ marginRight: '0.5em' }}>{badge}</Badge>
         </Tooltip>
       ) : (
         <></>

@@ -74,9 +74,12 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
         aria-live="polite"
         appendTo={portalRoot}
       >
-        <Button aria-label="Clipboard" variant="plain" onClick={toggleView}>
-          <Icon size="lg">{isGraphView ? <ListIcon /> : <TopologyIcon />}</Icon>
-        </Button>
+        <Button
+          icon={<Icon size="lg">{isGraphView ? <ListIcon /> : <TopologyIcon />}</Icon>}
+          aria-label="Clipboard"
+          variant="plain"
+          onClick={toggleView}
+        />
       </Tooltip>
     ),
     [isGraphView, toggleView, t],
@@ -171,8 +174,8 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
               <HelpButton visualization={visualization} />
             </ToolbarItem>
           ) : null}
-          {!isDisabled ? <ToolbarItem align={{ default: 'alignRight' }}>{shortcuts}</ToolbarItem> : null}
-          <ToolbarItem align={isDisabled ? { default: 'alignRight' } : undefined}>{modeIcon}</ToolbarItem>
+          {!isDisabled ? <ToolbarItem align={{ default: 'alignEnd' }}>{shortcuts}</ToolbarItem> : null}
+          <ToolbarItem align={isDisabled ? { default: 'alignEnd' } : undefined}>{modeIcon}</ToolbarItem>
         </ToolbarContent>
       </Toolbar>
       <TopologyFilterChips className="topology__toolbar-chip-content" />
