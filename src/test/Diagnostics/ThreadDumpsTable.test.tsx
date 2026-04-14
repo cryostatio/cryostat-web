@@ -26,7 +26,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within, act } from '@testing-library/react';
+import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import { of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, render, resize, testT } from '../utils';
@@ -58,6 +58,12 @@ const mockThreadDump: ThreadDump = {
   metadata: { labels: [{ key: 'someLabel', value: 'someValue' }] },
 };
 
+const mockOtherThreadDump: ThreadDump = {
+  ...mockThreadDump,
+  threadDumpId: 'otherUuid',
+  metadata: { labels: [{ key: 'otherLabel', value: 'otherValue' }] },
+};
+
 jest.mock('@app/Diagnostics/BulkEditThreadDumpLabels', () => {
   return {
     BulkEditThreadDumpLabels: (_) => <Text>Edit Thread Dump Labels</Text>,
@@ -75,7 +81,9 @@ jest.mock('@app/Diagnostics/Filters/ThreadDumpFilters', () => {
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
-jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockReturnValue(of([mockThreadDump])); // All other tests
+const getTargetThreadDumps = jest
+  .spyOn(defaultServices.api, 'getTargetThreadDumps')
+  .mockReturnValue(of([mockThreadDump])); // All other tests
 
 jest.spyOn(defaultServices.api, 'deleteThreadDump').mockReturnValue(of(true));
 
@@ -164,6 +172,32 @@ describe('<ThreadDumpsTable />', () => {
       expect(label).toBeInTheDocument();
       expect(label).toBeVisible();
     });
+  });
+
+  it('should filter Thread Dumps when a row label is clicked', async () => {
+    getTargetThreadDumps.mockReturnValueOnce(of([mockThreadDump, mockOtherThreadDump]));
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/thread-dumps',
+            element: (
+              <ThreadDumpsTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
+          },
+        ],
+      },
+      preloadedState: preloadedState,
+    });
+
+    expect(await screen.findByText(mockThreadDump.threadDumpId)).toBeInTheDocument();
+    expect(screen.getByText(mockOtherThreadDump.threadDumpId)).toBeInTheDocument();
+
+    await user.click(screen.getByText('someLabel=someValue'));
+
+    await waitFor(() => expect(screen.queryByText(mockOtherThreadDump.threadDumpId)).not.toBeInTheDocument());
+    expect(screen.getByText(mockThreadDump.threadDumpId)).toBeInTheDocument();
   });
 
   it('should display the toolbar buttons', async () => {
