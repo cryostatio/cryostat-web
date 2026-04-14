@@ -23,6 +23,7 @@ import { cleanDataId, getActiveTab, hashCode, switchTab } from '@app/utils/utils
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Card,
+  CardBody,
   Form,
   FormGroup,
   FormHelperText,
@@ -136,11 +137,11 @@ export const Settings: React.FC<SettingsProps> = (_) => {
   }, [settings, t]);
 
   return (
-    <>
-      <BreadcrumbPage pageTitle="Settings">
-        <Card isFullHeight>
+    <BreadcrumbPage pageTitle="Settings">
+      <Card isFullHeight>
+        <CardBody>
           <Sidebar tabIndex={0}>
-            <SidebarPanel>
+            <SidebarPanel variant="sticky">
               <Tabs
                 isVertical
                 isExpanded
@@ -200,14 +201,9 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                 ))}
             </SidebarContent>
           </Sidebar>
-        </Card>
-        <>
-          {
-            // Need this fragment to correct bottom margin.
-          }
-        </>
-      </BreadcrumbPage>
-    </>
+        </CardBody>
+      </Card>
+    </BreadcrumbPage>
   );
 };
 
