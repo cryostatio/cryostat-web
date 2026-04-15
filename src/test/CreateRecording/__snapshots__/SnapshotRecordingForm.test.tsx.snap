@@ -1,66 +1,70 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<SnapshotRecordingForm /> renders correctly 1`] = `
-<form
-  className="pf-v5-c-form pf-m-horizontal"
-  noValidate={true}
->
-  <div
-    className="pf-v5-c-content"
-  >
-    <p
-      className=""
-      data-ouia-component-id="OUIA-Generated-Text-1"
-      data-ouia-component-type="PF5/Text"
-      data-ouia-safe={true}
-      data-pf-content={true}
-    >
-      A Snapshot Recording is one which contains all information about all events that have been captured in the current session by 
-      <i>
-        other, non-Snapshot
-      </i>
-       Recordings. Snapshots do not themselves define which events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the moment it is created.
-    </p>
-  </div>
-  <div
-    className="pf-v5-c-form__group pf-m-action"
+<div>
+  <form
+    class="pf-v6-c-form pf-m-horizontal"
+    novalidate=""
   >
     <div
-      className="pf-v5-c-form__group-control"
+      class="pf-v6-c-content"
+      data-ouia-component-id="OUIA-Generated-Content-1"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe="true"
+      data-pf-content="true"
+    >
+      <p
+        class="pf-v6-c-content--p"
+        data-ouia-component-id="OUIA-Generated-Content-2"
+        data-ouia-component-type="PF6/Content"
+        data-ouia-safe="true"
+        data-pf-content="true"
+      >
+        A Snapshot Recording is one which contains all information about all events that have been captured in the current session by 
+        <i>
+          other, non-Snapshot
+        </i>
+         Recordings. Snapshots do not themselves define which events are enabled, their thresholds, or any other options. A Snapshot is only ever in the STOPPED state from the moment it is created.
+      </p>
+    </div>
+    <div
+      class="pf-v6-c-form__group pf-m-action"
     >
       <div
-        className="pf-v5-c-form__actions"
+        class="pf-v6-c-form__group-control"
       >
-        <button
-          aria-disabled={false}
-          aria-label={null}
-          className="pf-v5-c-button pf-m-primary pf-m-progress"
-          data-ouia-component-id="OUIA-Generated-Button-primary-1"
-          data-ouia-component-type="PF5/Button"
-          data-ouia-safe={true}
-          disabled={false}
-          onClick={[Function]}
-          role={null}
-          type="button"
+        <div
+          class="pf-v6-c-form__actions"
         >
-          Create
-        </button>
-        <button
-          aria-disabled={false}
-          aria-label={null}
-          className="pf-v5-c-button pf-m-secondary"
-          data-ouia-component-id="OUIA-Generated-Button-secondary-1"
-          data-ouia-component-type="PF5/Button"
-          data-ouia-safe={true}
-          disabled={false}
-          onClick={[Function]}
-          role={null}
-          type="button"
-        >
-          Cancel
-        </button>
+          <button
+            class="pf-v6-c-button pf-m-primary pf-m-progress"
+            data-ouia-component-id="OUIA-Generated-Button-primary-1"
+            data-ouia-component-type="PF6/Button"
+            data-ouia-safe="true"
+            type="button"
+          >
+            <span
+              class="pf-v6-c-button__text"
+            >
+              Create
+            </span>
+          </button>
+          <button
+            class="pf-v6-c-button pf-m-secondary"
+            data-ouia-component-id="OUIA-Generated-Button-secondary-1"
+            data-ouia-component-type="PF6/Button"
+            data-ouia-safe="true"
+            type="button"
+          >
+            <span
+              class="pf-v6-c-button__text"
+            >
+              Cancel
+            </span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-</form>
+  </form>
+</div>
 `;

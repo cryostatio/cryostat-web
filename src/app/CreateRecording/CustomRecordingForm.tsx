@@ -49,10 +49,9 @@ import {
   Label,
   Split,
   SplitItem,
-  Text,
-  TextContent,
+  Content,
   TextInput,
-  TextVariants,
+  ContentVariants,
   Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
@@ -429,9 +428,9 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
   return (
     <>
       <Form isHorizontal>
-        <TextContent>
-          <Text component={TextVariants.p}>{t('CustomRecordingForm.DESCRIPTION')}</Text>
-        </TextContent>
+        <Content>
+          <Content component={ContentVariants.p}>{t('CustomRecordingForm.DESCRIPTION')}</Content>
+        </Content>
         <FormGroup label={t('CustomRecordingForm.NAME')} isRequired fieldId="recording-name">
           <TextInput
             value={formData.name}
@@ -544,8 +543,11 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
           <FormGroup
             label={t('CustomRecordingForm.LABELS')}
             fieldId="labels"
-            labelIcon={
-              <Tooltip content={<Text>{t('CustomRecordingForm.LABELS_TOOLTIP')}</Text>} appendTo={portalRoot}>
+            labelHelp={
+              <Tooltip
+                content={<Content component="p">{t('CustomRecordingForm.LABELS_TOOLTIP')}</Content>}
+                appendTo={portalRoot}
+              >
                 <Icon>
                   <HelpIcon />
                 </Icon>
@@ -570,11 +572,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
             />
             <FormHelperText>
               <HelperText>
-                <HelperTextItem
-                  isDynamic
-                  variant={hasReservedLabels ? 'warning' : undefined}
-                  hasIcon={hasReservedLabels}
-                >
+                <HelperTextItem variant={hasReservedLabels ? 'warning' : undefined}>
                   <Trans t={t} components={[<Label isCompact />]}>
                     CustomRecordingForm.LABELS_DESCRIPTION
                   </Trans>
@@ -590,7 +588,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
           toggleId="advanced-option-toggle"
           contentId="advanced-options"
         >
-          <Text component={TextVariants.small}>{t('CustomRecordingForm.UNBOUNDED')}</Text>
+          <Content component={ContentVariants.small}>{t('CustomRecordingForm.UNBOUNDED')}</Content>
           <FormGroup fieldId={t('CustomRecordingForm.TO_DISK')}>
             <Checkbox
               label={t('CustomRecordingForm.TO_DISK')}

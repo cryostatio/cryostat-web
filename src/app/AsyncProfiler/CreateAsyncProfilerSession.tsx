@@ -27,15 +27,14 @@ import {
   Button,
   Card,
   CardBody,
-  DualListSelector,
   DualListSelectorTreeItemData,
   Form,
   FormGroup,
   Spinner,
-  Text,
-  TextContent,
-  TextVariants,
+  Content,
+  ContentVariants,
 } from '@patternfly/react-core';
+import { DualListSelector } from '@patternfly/react-core/deprecated';
 import _ from 'lodash';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom-v5-compat';
@@ -159,9 +158,9 @@ export const CreateAsyncProfilerSession: React.FC = () => {
             </Bullseye>
           ) : (
             <Form isHorizontal>
-              <TextContent>
-                <Text component={TextVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Text>
-              </TextContent>
+              <Content>
+                <Content component={ContentVariants.p}>{t('CreateAsyncProfilerSession.DESCRIPTION')}</Content>
+              </Content>
               <FormGroup label={t('CreateAsyncProfilerSession.EVENTS')} fieldId="events" isRequired>
                 <DualListSelector
                   isSearchable

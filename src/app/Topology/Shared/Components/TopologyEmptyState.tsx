@@ -22,10 +22,8 @@ import {
   Button,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
   EmptyStateActions,
-  EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
@@ -73,12 +71,7 @@ export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props
 
   return (
     <Bullseye {...props}>
-      <EmptyState variant={EmptyStateVariant.full}>
-        <EmptyStateHeader
-          titleText="No Targets Found"
-          icon={<EmptyStateIcon icon={TopologyIcon} />}
-          headingLevel="h3"
-        />
+      <EmptyState headingLevel="h3" icon={TopologyIcon} titleText="No Targets Found" variant={EmptyStateVariant.full}>
         <EmptyStateFooter>{emptyStateContent}</EmptyStateFooter>
       </EmptyState>
     </Bullseye>

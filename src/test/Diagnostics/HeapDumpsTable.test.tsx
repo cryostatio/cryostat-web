@@ -21,7 +21,7 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { HeapDump, KeyValue, keyValueToString } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
-import { Text } from '@patternfly/react-core';
+import { Content } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
@@ -63,7 +63,7 @@ const mockOtherHeapDump: HeapDump = {
 
 jest.mock('@app/Diagnostics/BulkEditHeapDumpLabels', () => {
   return {
-    BulkEditHeapDumpLabels: (_) => <Text>Edit Heap Dump Labels</Text>,
+    BulkEditHeapDumpLabels: (_) => <Content component="p">Edit Heap Dump Labels</Content>,
   };
 });
 

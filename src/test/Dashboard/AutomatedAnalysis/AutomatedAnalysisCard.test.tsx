@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import { of, throwError } from 'rxjs';
-import { basePreloadedState, render, renderSnapshot, testT } from '../../utils';
+import { basePreloadedState, render, testT } from '../../utils';
 
 jest.mock('@app/Recordings/TargetAnalysis', () => {
   return {
@@ -119,7 +119,7 @@ describe('<AutomatedAnalysisCard />', () => {
 
   it('renders correctly', async () => {
     jest.spyOn(defaultServices.api, 'getCurrentReportForTarget').mockReturnValueOnce(of(mockReport));
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -129,7 +129,7 @@ describe('<AutomatedAnalysisCard />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('renders report generation error view correctly', async () => {
@@ -149,7 +149,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
     expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TEXT'))).toBeInTheDocument(); // Error details
     expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
-    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', 'false');
+    expect(screen.getByRole('button', { name: 'refresh' })).not.toBeDisabled();
   });
 
   it('renders Active Recording analysis', async () => {
@@ -170,7 +170,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByText(testT('AutomatedAnalysisCard.WARNING_RESULTS_one', { count: 1 }))).toBeInTheDocument(); // Card header
     expect(screen.getByText('TargetAnalysis')).toBeInTheDocument(); // Card body
-    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', 'false');
+    expect(screen.getByRole('button', { name: 'refresh' })).not.toBeDisabled();
   });
 
   it('renders with disabled refresh button if no source recordings available', async () => {
@@ -193,6 +193,6 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByText('TargetAnalysis')).toBeInTheDocument(); // Card body
-    expect(screen.getByRole('button', { name: 'refresh' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('button', { name: 'refresh' })).toBeDisabled();
   });
 });

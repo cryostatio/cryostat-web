@@ -20,7 +20,8 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { portalRoot } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, Popover } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { HelpIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
 import * as React from 'react';
@@ -153,9 +154,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
           headerContent={<div>{t('RulesUploadModal.HEADER_CONTENT')}</div>}
           bodyContent={<div>{t('CreateRule.ABOUT')}</div>}
         >
-          <Button variant="plain" aria-label="Help">
-            <HelpIcon />
-          </Button>
+          <Button icon={<HelpIcon />} variant="plain" aria-label="Help" />
         </Popover>
       }
     >

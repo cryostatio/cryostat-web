@@ -21,18 +21,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetContextSelector } from '@app/TargetView/TargetContextSelector';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getActiveTab, switchTab } from '@app/utils/utils';
-import {
-  Card,
-  CardBody,
-  EmptyState,
-  EmptyStateIcon,
-  Tab,
-  Tabs,
-  TabTitleText,
-  EmptyStateHeader,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
+import { Card, CardBody, EmptyState, Tab, Tabs, TabTitleText, Stack, StackItem } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
@@ -157,13 +146,7 @@ export const Archives: React.FC<ArchivesProps> = ({ ...props }) => {
         {tabs}
       </Tabs>
     ) : (
-      <EmptyState>
-        <EmptyStateHeader
-          titleText="Archives Unavailable"
-          icon={<EmptyStateIcon icon={SearchIcon} />}
-          headingLevel="h4"
-        />
-      </EmptyState>
+      <EmptyState headingLevel="h4" icon={SearchIcon} titleText="Archives Unavailable"></EmptyState>
     );
   }, [tabs, activeTab, onTabSelect]);
 
