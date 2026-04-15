@@ -35,14 +35,11 @@ import {
   Card,
   CardBody,
   CardTitle,
+  Content,
+  ContentVariants,
   EmptyState,
-  EmptyStateHeader,
-  EmptyStateIcon,
   Grid,
   GridItem,
-  Text,
-  TextList,
-  TextListItem,
 } from '@patternfly/react-core';
 import { SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import {
@@ -284,11 +281,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   );
 
   const emptyTableState = React.useCallback((title: string) => {
-    return (
-      <EmptyState>
-        <EmptyStateHeader titleText={title} icon={<EmptyStateIcon icon={TopologyIcon} />} headingLevel="h4" />
-      </EmptyState>
-    );
+    return <EmptyState titleText={title} icon={TopologyIcon} headingLevel="h4" />;
   }, []);
 
   const stackTraceTable = React.useCallback((trace: StackFrame[]) => {
@@ -692,15 +685,7 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
   var view;
   if (analysisResult == null) {
-    view = (
-      <EmptyState>
-        <EmptyStateHeader
-          titleText={'Select a Thread Dump to Analyze'}
-          icon={<EmptyStateIcon icon={SearchIcon} />}
-          headingLevel="h4"
-        />
-      </EmptyState>
-    );
+    view = <EmptyState titleText={'Select a Thread Dump to Analyze'} icon={SearchIcon} headingLevel="h4" />;
   } else {
     view = (
       <Grid hasGutter>
@@ -708,28 +693,28 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
           <Card isLarge>
             <CardTitle>JVM Information</CardTitle>
             <CardBody>
-              <Text>{analysisResult.jvmInfo}</Text>
-              <TextList isPlain>
+              <Content>{analysisResult.jvmInfo}</Content>
+              <Content component={ContentVariants.h6}>
                 JNI Information
-                <TextListItem>
+                <Content component={ContentVariants.dl}>
                   {' '}
                   Global References: {analysisResult.jniInfo.globalRefs ? analysisResult.jniInfo.globalRefs : 'N/A'}
-                </TextListItem>
-                <TextListItem>
+                </Content>
+                <Content component={ContentVariants.dl}>
                   {' '}
                   Global References Memory:{' '}
                   {analysisResult.jniInfo.globalRefsMemory ? analysisResult.jniInfo.globalRefsMemory : 'N/A'}
-                </TextListItem>
-                <TextListItem>
+                </Content>
+                <Content component={ContentVariants.dl}>
                   {' '}
                   Weak References: {analysisResult.jniInfo.weakRefs ? analysisResult.jniInfo.weakRefs : 'N/A'}
-                </TextListItem>
-                <TextListItem>
+                </Content>
+                <Content component={ContentVariants.dl}>
                   {' '}
                   Weak References Memory:{' '}
                   {analysisResult.jniInfo.weakRefsMemory ? analysisResult.jniInfo.weakRefsMemory : 'N/A'}
-                </TextListItem>
-              </TextList>
+                </Content>
+              </Content>
             </CardBody>
           </Card>
         </GridItem>

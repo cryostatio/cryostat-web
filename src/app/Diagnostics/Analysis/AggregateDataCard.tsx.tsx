@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { ThemeSetting } from '@app/Settings/types';
-import { useTheme } from '@app/utils/hooks/useTheme';
-import { ChartLabel, ChartLegend, ChartPie } from '@patternfly/react-charts';
+import { ChartLabel, ChartLegend, ChartPie } from '@patternfly/react-charts/victory';
 import { Bullseye, CardBody } from '@patternfly/react-core';
 
 export interface ChartData {
@@ -43,8 +41,6 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
     return { x: t.data, y: t.count };
   });
 
-  const [theme] = useTheme();
-
   return (
     <>
       <Bullseye>
@@ -63,10 +59,7 @@ export const AggregateDataCard: React.FC<AggregateDataCardProps> = (props) => {
                 labelComponent={
                   <ChartLabel
                     style={{
-                      fill:
-                        theme == ThemeSetting.DARK
-                          ? 'var(--pf-v5-global--palette--black-200)'
-                          : 'var(--pf-v5-chart-global--label--Fill, #151515)',
+                      fill: 'var(--pf-t--global--text--color--regular)',
                     }}
                   />
                 }
