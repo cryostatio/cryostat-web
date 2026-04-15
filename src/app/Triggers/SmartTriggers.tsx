@@ -23,6 +23,8 @@ import { LoadingProps } from '@app/Shared/Components/types';
 
 import {
   EventTemplate,
+  MBeanAttributeInfo,
+  MbeanAttributeMap,
   NotificationCategory,
   NullableTarget,
   SmartTrigger,
@@ -64,6 +66,8 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  FormSelect,
+  FormSelectOption,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
@@ -650,10 +654,18 @@ export interface CreateSmartTriggersModalProps {
   onAccept: (s: string) => void;
 }
 
+export interface MbeanSelectorOption {
+  value: string;
+  label: string;
+  disabled: boolean;
+}
+
 export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, ...props }) => {
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
   const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
+  const [mbeans, setMbeans] = React.useState<MbeanAttributeMap[]>([]);
+  const [mbeanSelectValue, setMbeanSelectValue] = React.useState<string>();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [formData, setFormData] = React.useState<SmartTriggersFormData>({
@@ -663,6 +675,38 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     expression: '', // Use this for displaying Match Expression input
     expressionValid: ValidatedOptions.default,
   });
+
+  // FIXME Triggers currently rely on MbeanMetrics. We can query all
+  // registered mbeans/attributes but we need to filter the supported ones.
+  const supportedTriggerAttributes: string[] = [
+    'ThreadCount',
+    'DaemonThreadCount',
+    'Arch',
+    'AvailableProcessors',
+    'Version',
+    'SystemCpuLoad',
+    'SystemLoadAverage',
+    'ProcessCpuLoad',
+    'TotalPhysicalMemorySize',
+    'FreePhyiscalMemorySize',
+    'TotalSwapSpaceSize',
+    'HeapMemoryUsage',
+    'HeapMemoryUsagePercent',
+    'BootClassPath',
+    'ClassPath',
+    'InputArguments',
+    'LibraryPath',
+    'ManagementSpecVersion',
+    'SpecName',
+    'SpecVendor',
+    'StartTime',
+    'SystemProperties',
+    'Uptime',
+    'VmName',
+    'VmVendor',
+    'VmVersion',
+    'BootClassPathSupported',
+  ];
 
   const [uploading, setUploading] = React.useState(false);
 
@@ -709,8 +753,14 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         return;
       }
       addSubscription(
-        context.api.getTargetEventTemplates(target).subscribe({
-          next: setTemplates,
+        forkJoin({
+          templates: context.api.getTargetEventTemplates(target),
+          mbeans: context.api.getTargetMbeans(target),
+        }).subscribe({
+          next: ({ templates, mbeans }) => {
+            setTemplates(templates);
+            setMbeans(mbeans);
+          },
         }),
       );
     },
@@ -729,10 +779,30 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     return '';
   }, [formData]);
 
+  const MbeanOptions = React.useMemo(() => {
+    var attributes: MbeanSelectorOption[] = [];
+    mbeans.forEach((m: MbeanAttributeMap) => {
+      m.attributes.forEach((i: MBeanAttributeInfo) => {
+        if (supportedTriggerAttributes.includes(i.name)) {
+          attributes.push({
+            value: i.name,
+            label: `${i.parentBean} - ${i.name} (${i.type})`,
+            disabled: false,
+          });
+        }
+      });
+    });
+    return attributes;
+  }, [mbeans, supportedTriggerAttributes]);
+
   const handleTemplateChange = React.useCallback(
     (template: EventTemplateIdentifier) => setFormData((old) => ({ ...old, template })),
     [setFormData],
   );
+
+  const onMbeanChange = (_event: React.FormEvent<HTMLSelectElement>, value: string) => {
+    setMbeanSelectValue(value);
+  };
 
   return (
     <Modal
@@ -744,6 +814,24 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       description="Create a customized Smart Trigger. This is a specialized tool available in the Cryostat Agent that listens for a condition to be met for a specified Mbean, after which a recording will be started with the specified template. This is only available for targets using the Cryostat Agent."
     >
       <Form>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('Triggers.AVAILABLE_MBEANS')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+        <FormSelect
+          value={mbeanSelectValue}
+          onChange={onMbeanChange}
+          aria-label="FormSelect Input"
+          ouiaId="BasicFormSelect"
+        >
+          {MbeanOptions.map((option, index) => (
+            <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
+          ))}
+        </FormSelect>
+        <HelperText>
+          <HelperTextItem>{`Selected Mbean has the name: ${mbeanSelectValue}, Use this to build your expression.`}</HelperTextItem>
+        </HelperText>
         <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
           <TextArea
             value={expressionInput}

@@ -76,6 +76,7 @@ import {
   AuditQueryParams,
   AuditRevisionsResponse,
   AuditRevisionDetail,
+  MbeanAttributeMap,
 } from './api.types';
 import {
   isHttpError,
@@ -2076,6 +2077,20 @@ export class ApiService {
     return this.doGet<EventTemplate[]>(
       `targets/${target.id}/event_templates`,
       'v4',
+      undefined,
+      suppressNotifications,
+      skipStatusCheck,
+    );
+  }
+
+  getTargetMbeans(
+    target: TargetStub,
+    suppressNotifications = false,
+    skipStatusCheck = false,
+  ): Observable<MbeanAttributeMap[]> {
+    return this.doGet<MbeanAttributeMap[]>(
+      `targets/${target.id}/mbean-query`,
+      'beta',
       undefined,
       suppressNotifications,
       skipStatusCheck,

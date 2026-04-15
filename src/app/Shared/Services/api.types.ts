@@ -445,6 +445,21 @@ export interface SmartTrigger {
   timeConditionFirstMet: string;
 }
 
+export interface MBeanAttributeInfo {
+  name: string;
+  type: string;
+  description: string;
+  parentBean: string;
+  isReadable: boolean;
+  isWritable: boolean;
+  isIs: boolean;
+}
+
+export interface MbeanAttributeMap {
+  mBeanName: string;
+  attributes: MBeanAttributeInfo[];
+}
+
 // ======================================
 // Template resources
 // ======================================
