@@ -100,9 +100,12 @@ export const ThreadDumpLabelFilter: React.FC<LabelFilterProps> = ({ threadDumps,
           />
           <TextInputGroupUtilities>
             {filterValue ? (
-              <Button variant="plain" onClick={() => setFilterValue('')} aria-label="Clear input value">
-                <TimesIcon aria-hidden />
-              </Button>
+              <Button
+                icon={<TimesIcon aria-hidden />}
+                variant="plain"
+                onClick={() => setFilterValue('')}
+                aria-label="Clear input value"
+              />
             ) : null}
           </TextInputGroupUtilities>
         </TextInputGroup>

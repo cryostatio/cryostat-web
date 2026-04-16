@@ -182,7 +182,7 @@ export const AuditLog: React.FC = () => {
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarItem variant="separator" />
-        <ToolbarGroup variant="button-group">
+        <ToolbarGroup variant="action-group">
           <ToolbarItem>
             <Tooltip content={t('AuditLog.QUERY_FORM.EXECUTE')}>
               <Button
@@ -208,7 +208,7 @@ export const AuditLog: React.FC = () => {
           </ToolbarItem>
         </ToolbarGroup>
         {queryParams && totalCount > 0 && (
-          <ToolbarItem variant="pagination" align={{ default: 'alignRight' }}>
+          <ToolbarItem variant="pagination" align={{ default: 'alignEnd' }}>
             <Pagination
               itemCount={totalCount}
               perPage={queryParams.pageSize || 20}

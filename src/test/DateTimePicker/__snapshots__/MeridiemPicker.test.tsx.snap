@@ -1,22 +1,22 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<MeridiemPicker/> renders correctly 1`] = `
-<div
-  aria-label="Select AM or PM"
-  className="datetime-picker__meridiem-title-stack"
-  role="listbox"
->
+<div>
   <div
-    className="datetime-picker__meridiem-tile selected"
-    onClick={[Function]}
+    aria-label="Select AM or PM"
+    class="datetime-picker__meridiem-title-stack"
+    role="listbox"
   >
-    AM
-  </div>
-  <div
-    className="datetime-picker__meridiem-tile unselected"
-    onClick={[Function]}
-  >
-    PM
+    <div
+      class="datetime-picker__meridiem-tile selected"
+    >
+      AM
+    </div>
+    <div
+      class="datetime-picker__meridiem-tile unselected"
+    >
+      PM
+    </div>
   </div>
 </div>
 `;

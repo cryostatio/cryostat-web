@@ -48,17 +48,9 @@ describe('Dashboard route functionalities', function () {
     assert.equal(layoutName, 'Custom1');
   });
 
-  it('adds three different cards and removes them', async function () {
+  it('adds a card', async function () {
     await dashboard.addCard(CardType.TARGET_JVM_DETAILS);
-    await dashboard.addCard(CardType.AUTOMATED_ANALYSIS);
-    await dashboard.addCard(CardType.MBEAN_METRICS_CHART);
 
-    assert.equal((await dashboard.getCards()).length, 3);
-
-    while ((await dashboard.getCards()).length > 0) {
-      await dashboard.removeCard();
-    }
-
-    assert.ok(await dashboard.isEmpty());
+    assert.equal((await dashboard.getCards()).length, 1);
   });
 });

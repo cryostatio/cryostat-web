@@ -1,50 +1,44 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`<EventTemplates /> renders correctly 1`] = `
-[
+<div>
   <div
-    className="pf-v5-c-toolbar"
+    class="pf-v6-c-toolbar"
     data-ouia-component-id="OUIA-Generated-Toolbar-1"
-    data-ouia-component-type="PF5/Toolbar"
-    data-ouia-safe={true}
+    data-ouia-component-type="PF6/Toolbar"
+    data-ouia-safe="true"
     id="event-templates-toolbar"
   >
     <div
-      className="pf-v5-c-toolbar__content"
+      class="pf-v6-c-toolbar__content"
     >
       <div
-        className="pf-v5-c-toolbar__content-section"
+        class="pf-v6-c-toolbar__content-section"
       >
         <div
-          className="pf-v5-c-toolbar__group pf-m-filter-group"
+          class="pf-v6-c-toolbar__group pf-m-filter-group"
         >
           <div
-            className="pf-v5-c-toolbar__item"
+            class="pf-v6-c-toolbar__item"
           >
             <div
-              className="pf-v5-c-text-input-group"
+              class="pf-v6-c-text-input-group"
               id="templateFilter"
-              style={
-                {
-                  "minWidth": "30ch",
-                }
-              }
+              style="min-width: 30ch;"
               type="search"
             >
               <div
-                className="pf-v5-c-text-input-group__main pf-m-icon"
-                onKeyDown={[Function]}
+                class="pf-v6-c-text-input-group__main pf-m-icon"
               >
                 <span
-                  className="pf-v5-c-text-input-group__text"
+                  class="pf-v6-c-text-input-group__text"
                 >
                   <span
-                    className="pf-v5-c-text-input-group__icon"
+                    class="pf-v6-c-text-input-group__icon"
                   >
                     <svg
-                      aria-hidden={true}
-                      aria-labelledby={null}
-                      className="pf-v5-svg"
+                      aria-hidden="true"
+                      class="pf-v6-svg"
                       fill="currentColor"
                       height="1em"
                       role="img"
@@ -58,10 +52,8 @@ exports[`<EventTemplates /> renders correctly 1`] = `
                   </span>
                   <input
                     aria-label="event-template-search-input"
-                    className="pf-v5-c-text-input-group__text-input"
-                    disabled={false}
+                    class="pf-v6-c-text-input-group__text-input"
                     name="templateFilter"
-                    onChange={[Function]}
                     placeholder="Find by name, description, or provider..."
                     type="text"
                     value=""
@@ -72,103 +64,93 @@ exports[`<EventTemplates /> renders correctly 1`] = `
           </div>
         </div>
         <hr
-          className="pf-v5-c-divider pf-m-vertical"
+          class="pf-v6-c-divider pf-m-vertical"
         />
         <div
-          className="pf-v5-c-toolbar__group pf-m-icon-button-group"
+          class="pf-v6-c-toolbar__group pf-m-action-group-plain"
         >
           <div
-            className="pf-v5-c-toolbar__item"
+            class="pf-v6-c-toolbar__item"
           >
             <button
-              aria-disabled={false}
               aria-label="Upload"
-              className="pf-v5-c-button pf-m-secondary"
+              class="pf-v6-c-button pf-m-secondary"
               data-ouia-component-id="OUIA-Generated-Button-secondary-1"
-              data-ouia-component-type="PF5/Button"
-              data-ouia-safe={true}
-              disabled={false}
-              onClick={[Function]}
-              role={null}
+              data-ouia-component-type="PF6/Button"
+              data-ouia-safe="true"
               type="button"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                className="pf-v5-svg"
-                fill="currentColor"
-                height="1em"
-                role="img"
-                viewBox="0 0 512 512"
-                width="1em"
+              <span
+                class="pf-v6-c-button__icon"
               >
-                <path
-                  d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
-                />
-              </svg>
+                <svg
+                  aria-hidden="true"
+                  class="pf-v6-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  width="1em"
+                >
+                  <path
+                    d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                  />
+                </svg>
+              </span>
             </button>
           </div>
         </div>
       </div>
     </div>
     <div
-      className="pf-v5-c-toolbar__content pf-m-hidden"
-      hidden={true}
+      class="pf-v6-c-toolbar__content pf-m-hidden"
+      hidden=""
     >
       <div
-        className="pf-v5-c-toolbar__group"
+        class="pf-v6-c-toolbar__group"
       />
     </div>
-  </div>,
+  </div>
   <table
     aria-label="Event Templates Table"
-    className="pf-v5-c-table pf-m-grid-md pf-m-compact"
+    class="pf-v6-c-table pf-m-grid-md pf-m-compact"
     data-ouia-component-id="OUIA-Generated-Table-1"
-    data-ouia-component-type="PF5/Table"
-    data-ouia-safe={true}
+    data-ouia-component-type="PF6/Table"
+    data-ouia-safe="true"
     role="grid"
   >
     <thead
-      className="pf-v5-c-table__thead"
+      class="pf-v6-c-table__thead"
     >
       <tr
-        className="pf-v5-c-table__tr"
+        class="pf-v6-c-table__tr"
         data-ouia-component-id="OUIA-Generated-TableRow-1"
-        data-ouia-component-type="PF5/TableRow"
-        data-ouia-safe={true}
-        hidden={false}
+        data-ouia-component-type="PF6/TableRow"
+        data-ouia-safe="true"
       >
         <th
-          className="pf-v5-c-table__th pf-v5-c-table__sort"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
+          class="pf-v6-c-table__th pf-v6-c-table__sort"
           scope="col"
-          tabIndex={-1}
+          tabindex="-1"
         >
           <button
-            className="pf-v5-c-table__button"
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
+            class="pf-v6-c-table__button"
             type="button"
           >
             <div
-              className="pf-v5-c-table__button-content"
+              class="pf-v6-c-table__button-content"
             >
               <span
-                className="pf-v5-c-table__text"
-                onMouseEnter={[Function]}
+                class="pf-v6-c-table__text"
               >
                 Name
               </span>
               <span
-                className="pf-v5-c-table__sort-indicator"
+                class="pf-v6-c-table__sort-indicator"
               >
                 <svg
-                  aria-hidden={true}
-                  aria-labelledby={null}
-                  className="pf-v5-svg"
+                  aria-hidden="true"
+                  class="pf-v6-svg"
                   fill="currentColor"
                   height="1em"
                   role="img"
@@ -184,36 +166,28 @@ exports[`<EventTemplates /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          className="pf-v5-c-table__th pf-v5-c-table__sort"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
+          class="pf-v6-c-table__th pf-v6-c-table__sort"
           scope="col"
-          tabIndex={-1}
+          tabindex="-1"
         >
           <button
-            className="pf-v5-c-table__button"
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
+            class="pf-v6-c-table__button"
             type="button"
           >
             <div
-              className="pf-v5-c-table__button-content"
+              class="pf-v6-c-table__button-content"
             >
               <span
-                className="pf-v5-c-table__text"
-                onMouseEnter={[Function]}
+                class="pf-v6-c-table__text"
               >
                 Description
               </span>
               <span
-                className="pf-v5-c-table__sort-indicator"
+                class="pf-v6-c-table__sort-indicator"
               >
                 <svg
-                  aria-hidden={true}
-                  aria-labelledby={null}
-                  className="pf-v5-svg"
+                  aria-hidden="true"
+                  class="pf-v6-svg"
                   fill="currentColor"
                   height="1em"
                   role="img"
@@ -229,36 +203,28 @@ exports[`<EventTemplates /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          className="pf-v5-c-table__th pf-v5-c-table__sort"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
+          class="pf-v6-c-table__th pf-v6-c-table__sort"
           scope="col"
-          tabIndex={-1}
+          tabindex="-1"
         >
           <button
-            className="pf-v5-c-table__button"
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
+            class="pf-v6-c-table__button"
             type="button"
           >
             <div
-              className="pf-v5-c-table__button-content"
+              class="pf-v6-c-table__button-content"
             >
               <span
-                className="pf-v5-c-table__text"
-                onMouseEnter={[Function]}
+                class="pf-v6-c-table__text"
               >
                 Provider
               </span>
               <span
-                className="pf-v5-c-table__sort-indicator"
+                class="pf-v6-c-table__sort-indicator"
               >
                 <svg
-                  aria-hidden={true}
-                  aria-labelledby={null}
-                  className="pf-v5-svg"
+                  aria-hidden="true"
+                  class="pf-v6-svg"
                   fill="currentColor"
                   height="1em"
                   role="img"
@@ -274,36 +240,28 @@ exports[`<EventTemplates /> renders correctly 1`] = `
           </button>
         </th>
         <th
-          className="pf-v5-c-table__th pf-v5-c-table__sort"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
+          class="pf-v6-c-table__th pf-v6-c-table__sort"
           scope="col"
-          tabIndex={-1}
+          tabindex="-1"
         >
           <button
-            className="pf-v5-c-table__button"
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
+            class="pf-v6-c-table__button"
             type="button"
           >
             <div
-              className="pf-v5-c-table__button-content"
+              class="pf-v6-c-table__button-content"
             >
               <span
-                className="pf-v5-c-table__text"
-                onMouseEnter={[Function]}
+                class="pf-v6-c-table__text"
               >
                 Type
               </span>
               <span
-                className="pf-v5-c-table__sort-indicator"
+                class="pf-v6-c-table__sort-indicator"
               >
                 <svg
-                  aria-hidden={true}
-                  aria-labelledby={null}
-                  className="pf-v5-svg"
+                  aria-hidden="true"
+                  class="pf-v6-svg"
                   fill="currentColor"
                   height="1em"
                   role="img"
@@ -321,97 +279,78 @@ exports[`<EventTemplates /> renders correctly 1`] = `
       </tr>
     </thead>
     <tbody
-      className="pf-v5-c-table__tbody"
+      class="pf-v6-c-table__tbody"
       role="rowgroup"
     >
       <tr
-        className="pf-v5-c-table__tr"
+        class="pf-v6-c-table__tr"
         data-ouia-component-id="OUIA-Generated-TableRow-2"
-        data-ouia-component-type="PF5/TableRow"
-        data-ouia-safe={true}
-        hidden={false}
+        data-ouia-component-type="PF6/TableRow"
+        data-ouia-safe="true"
       >
         <td
-          className="pf-v5-c-table__td"
+          class="pf-v6-c-table__td"
           data-label="Name"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
-          tabIndex={-1}
+          tabindex="-1"
         >
           someEventTemplate
         </td>
         <td
-          className="pf-v5-c-table__td"
+          class="pf-v6-c-table__td"
           data-label="Description"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
-          tabIndex={-1}
+          tabindex="-1"
         >
           Some Description
         </td>
         <td
-          className="pf-v5-c-table__td"
+          class="pf-v6-c-table__td"
           data-label="Provider"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
-          tabIndex={-1}
+          tabindex="-1"
         >
           Cryostat
         </td>
         <td
-          className="pf-v5-c-table__td"
+          class="pf-v6-c-table__td"
           data-label="Type"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
-          tabIndex={-1}
+          tabindex="-1"
         >
           Custom
         </td>
         <td
-          className="pf-v5-c-table__td pf-v5-c-table__action"
-          onBlur={[Function]}
-          onFocus={[Function]}
-          onMouseEnter={[Function]}
-          style={
-            {
-              "paddingRight": "0",
-            }
-          }
-          tabIndex={-1}
+          class="pf-v6-c-table__td pf-v6-c-table__action"
+          style="padding-right: 0px;"
+          tabindex="-1"
         >
           <button
-            aria-expanded={false}
+            aria-expanded="false"
             aria-label="Kebab toggle"
-            className="pf-v5-c-menu-toggle pf-m-plain"
+            class="pf-v6-c-menu-toggle pf-m-plain"
             data-ouia-component-id="OUIA-Generated-MenuToggle-plain-1"
-            data-ouia-component-type="PF5/MenuToggle"
-            data-ouia-safe={true}
-            disabled={false}
-            onClick={[Function]}
+            data-ouia-component-type="PF6/MenuToggle"
+            data-ouia-safe="true"
             type="button"
           >
-            <svg
-              aria-hidden={true}
-              aria-labelledby={null}
-              className="pf-v5-svg"
-              fill="currentColor"
-              height="1em"
-              role="img"
-              viewBox="0 0 192 512"
-              width="1em"
+            <span
+              class="pf-v6-c-menu-toggle__icon"
             >
-              <path
-                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-              />
-            </svg>
+              <svg
+                aria-hidden="true"
+                class="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 192 512"
+                width="1em"
+              >
+                <path
+                  d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                />
+              </svg>
+            </span>
           </button>
         </td>
       </tr>
     </tbody>
-  </table>,
-]
+  </table>
+</div>
 `;

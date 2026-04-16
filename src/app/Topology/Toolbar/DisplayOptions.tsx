@@ -69,7 +69,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({ isDisabled = fal
 
   const switchContents = React.useMemo(() => {
     return groupingOptions.map(([option, key]) => (
-      <div key={key} className={css('pf-v5-c-menu__item')}>
+      <div key={key} className={css('pf-v6-c-menu__item')}>
         <Switch
           id={`${option.toLowerCase()}-mode`}
           label={option}

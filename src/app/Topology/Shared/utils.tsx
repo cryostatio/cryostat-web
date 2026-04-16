@@ -22,8 +22,8 @@ import { DEFAULT_EMPTY_UNIVERSE, isTargetNode } from '@app/Shared/Services/api.u
 import { toPath } from '@app/utils/utils';
 import {
   Button,
-  Text,
-  TextVariants,
+  Content,
+  ContentVariants,
   DescriptionListTermHelpText,
   DescriptionListTermHelpTextButton,
   Popover,
@@ -54,11 +54,11 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
             title: 'Failed to generate the JVM identifier',
             description: (
               <>
-                <Text component={TextVariants.p}>Check the target authentication settings:</Text>
+                <Content component={ContentVariants.p}>Check the target authentication settings:</Content>
               </>
             ),
             callForAction: [
-              <Text key="jmx-auth" component={TextVariants.p}>
+              <Content key="jmx-auth" component={ContentVariants.p}>
                 If{' '}
                 <DescriptionListTermHelpText>
                   <Popover maxWidth="40rem" headerContent="JMX Authentication" bodyContent={<JmxAuthDescription />}>
@@ -72,8 +72,8 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                   </Button>
                   .
                 </WarningResolverAsCredModal>
-              </Text>,
-              <Text key="jmx-ssl" component={TextVariants.p}>
+              </Content>,
+              <Content key="jmx-ssl" component={ContentVariants.p}>
                 If{' '}
                 <DescriptionListTermHelpText>
                   <Popover maxWidth="40rem" headerContent="JMX over SSL/TLS" bodyContent={<JmxSslDescription />}>
@@ -88,7 +88,7 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
                   check if the SSL/TLS certificate is loaded.
                 </WarningResolverAsLink>
                 .
-              </Text>,
+              </Content>,
             ],
           },
         ];

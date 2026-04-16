@@ -182,6 +182,7 @@ export const AutomatedAnalysisCard: DashboardCardFC<AutomatedAnalysisCardProps> 
       dashboardId={props.dashboardId}
       cardSizes={AutomatedAnalysisCardSizes}
       id="automated-analysis-card"
+      className="automated-analysis-card"
       isCompact
       isDraggable={props.isDraggable}
       isResizable={props.isResizable}

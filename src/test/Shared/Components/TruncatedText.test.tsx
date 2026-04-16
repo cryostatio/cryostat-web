@@ -80,5 +80,3 @@ describe('<TruncatedText />', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 });
-
-// Made with Bob

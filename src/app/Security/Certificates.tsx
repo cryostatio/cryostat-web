@@ -24,6 +24,8 @@ import {
   Card,
   CardBody,
   CardTitle,
+  Content,
+  ContentVariants,
   EmptyState,
   EmptyStateBody,
   EmptyStateVariant,
@@ -34,10 +36,6 @@ import {
   PanelMainBody,
   Popover,
   Spinner,
-  Text,
-  TextContent,
-  TextVariants,
-  Title,
 } from '@patternfly/react-core';
 import { FileIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -67,23 +65,19 @@ export const Certificates: React.FC = () => {
     <BreadcrumbPage pageTitle="Certificates">
       <Card>
         <CardTitle>
-          <Text component={TextVariants.h1}>
-            <Text>
-              {t('ImportCertificate.CARD_TITLE')}
-              <Popover
-                maxWidth="40rem"
-                headerContent={t('ImportCertificate.CARD_TITLE_POPOVER_HEADER')}
-                bodyContent={<JmxSslDescription />}
-              >
-                <Button variant="plain">
-                  <OutlinedQuestionCircleIcon />
-                </Button>
-              </Popover>
-            </Text>
-          </Text>
-          <TextContent>
-            <Text component={TextVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Text>
-          </TextContent>{' '}
+          <Content component="p">
+            {t('ImportCertificate.CARD_TITLE')}
+            <Popover
+              maxWidth="40rem"
+              headerContent={t('ImportCertificate.CARD_TITLE_POPOVER_HEADER')}
+              bodyContent={<JmxSslDescription />}
+            >
+              <Button icon={<OutlinedQuestionCircleIcon />} variant="plain" />
+            </Popover>
+          </Content>
+          <Content>
+            <Content component={ContentVariants.small}>{t('ImportCertificate.CARD_DESCRIPTION')}</Content>
+          </Content>
         </CardTitle>
         <CardBody isFilled>
           <Panel isScrollable>
@@ -100,10 +94,11 @@ export const Certificates: React.FC = () => {
                     ))}
                   </LabelGroup>
                 ) : (
-                  <EmptyState variant={EmptyStateVariant.xs}>
-                    <Title headingLevel="h4" size="md">
-                      {t('ImportCertificate.NO_CERTIFICATE_TITLE')}
-                    </Title>
+                  <EmptyState
+                    variant={EmptyStateVariant.xs}
+                    headingLevel="h4"
+                    titleText={t('ImportCertificate.NO_CERTIFICATE_TITLE')}
+                  >
                     <EmptyStateBody>{t('ImportCertificate.NO_CERTIFICATE_BODY')}</EmptyStateBody>
                   </EmptyState>
                 )}

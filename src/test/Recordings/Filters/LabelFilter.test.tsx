@@ -17,7 +17,7 @@
 import { LabelFilter } from '@app/Recordings/Filters/LabelFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/api.types';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
-import { render, renderSnapshot } from '../../utils';
+import { render } from '../../utils';
 
 const mockRecordingLabels = [
   {
@@ -77,7 +77,7 @@ describe('<LabelFilter />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -93,7 +93,7 @@ describe('<LabelFilter />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should display label selections when text input is clicked', async () => {

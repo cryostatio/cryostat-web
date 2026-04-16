@@ -553,7 +553,9 @@
   "RecordingActions": {
     "ARIA_LABELS": {
       "MENU_TOGGLE": "recording-action-toggle"
-    }
+    },
+    "VIEW_IN_ANALYTICS": "View in Analytics ...",
+    "VIEW_IN_GRAFANA": "View in Grafana ..."
   },
   "RecordingFilters": {
     "ARIA_LABELS": {

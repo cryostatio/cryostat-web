@@ -49,8 +49,6 @@ import {
   OverflowMenuItem,
   OverflowMenuControl,
   ValidatedOptions,
-  Modal,
-  ModalVariant,
   Form,
   FormGroup,
   TextArea,
@@ -58,13 +56,12 @@ import {
   SearchInput,
   Bullseye,
   EmptyState,
-  EmptyStateHeader,
-  EmptyStateIcon,
   EmptyStateBody,
   FormHelperText,
   HelperText,
   HelperTextItem,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
 import { t } from 'i18next';
@@ -392,12 +389,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
   } else {
     return (
       <Bullseye>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={<>Smart Triggers not supported</>}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={<>Smart Triggers not supported</>}>
           <EmptyStateBody>
             Smart Triggers are not supported for the selected target. Only Cryostat agent targets support use of Smart
             Triggers.
@@ -599,8 +591,8 @@ const SmartTriggersToolbar: React.FC<SmartTriggersTableToolbarProps> = (props) =
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarItem variant="separator" className="smart-triggers-toolbar-separator" />
-        <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem variant="overflow-menu">
+        <ToolbarGroup variant="action-group" style={{ alignSelf: 'start' }}>
+          <ToolbarItem>
             <OverflowMenu
               breakpoint="sm"
               breakpointReference={

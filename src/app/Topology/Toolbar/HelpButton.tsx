@@ -44,11 +44,15 @@ export const HelpButton: React.FC<HelpButtonProps> = ({ visualization, ...props 
 
   return (
     <Popover bodyContent={content} position={'left'} {...props}>
-      <Button variant="plain" className="topology__help-icon-button">
-        <Icon>
-          <InfoCircleIcon className="topology__help-icon" />
-        </Icon>
-      </Button>
+      <Button
+        icon={
+          <Icon>
+            <InfoCircleIcon className="topology__help-icon" />
+          </Icon>
+        }
+        variant="plain"
+        className="topology__help-icon-button"
+      />
     </Popover>
   );
 };
