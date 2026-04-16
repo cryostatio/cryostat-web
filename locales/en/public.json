@@ -30,7 +30,17 @@
     "SEARCH_PLACEHOLDER": "Find by name or XML content..."
   },
   "AllArchivedRecordingsTable": {
+    "LOADING_LINEAGE_MESSAGE": "Fetching target lineage for filtering...",
+    "LOADING_LINEAGE_TITLE": "Loading lineage data",
     "SEARCH_PLACEHOLDER": "Find by JVM ID, alias, or connection URL..."
+  },
+  "AllArchivedThreadDumpsTable": {
+    "LOADING_LINEAGE_MESSAGE": "Fetching target lineage for filtering...",
+    "LOADING_LINEAGE_TITLE": "Loading lineage data"
+  },
+  "AllArchivedHeapDumpsTable": {
+    "LOADING_LINEAGE_MESSAGE": "Fetching target lineage for filtering...",
+    "LOADING_LINEAGE_TITLE": "Loading lineage data"
   },
   "AllTargetsArchivedRecordingsTable": {
     "HIDE_TARGET_WITH_ZERO_RECORDING": "Hide targets with zero Recordings",

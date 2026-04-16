@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { LineageLabelChain } from '@app/Archives/LineageLabelChain';
+import { TargetNode } from '@app/Shared/Services/api.types';
 import { useTargetLineage } from '@app/utils/hooks/useTargetLineage';
+import { extractFilterableLineagePath } from '@app/utils/targetUtils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
-import { Button, Content, Skeleton, Split, SplitItem } from '@patternfly/react-core';
+import { Button, Content, Skeleton, Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
@@ -24,6 +27,7 @@ export interface DirectoryNameCellProps {
   jvmId: string;
   connectUrl?: string;
   alias?: string;
+  targetNode?: TargetNode | null; // Optional pre-fetched lineage
   onInfoClick?: () => void;
   showInfoButton?: boolean;
 }
@@ -32,11 +36,29 @@ export const DirectoryNameCell: React.FC<DirectoryNameCellProps> = ({
   jvmId,
   connectUrl,
   alias,
+  targetNode: preFetchedTargetNode,
   onInfoClick,
   showInfoButton = true,
 }) => {
-  const { displayName, isLoading } = useTargetLineage(jvmId, connectUrl, alias);
+  // Only fetch lineage if not provided (optimization)
+  const shouldFetchLineage = !preFetchedTargetNode && jvmId && jvmId !== 'uploads';
+  const {
+    displayName,
+    isLoading,
+    targetNode: fetchedTargetNode,
+  } = useTargetLineage(shouldFetchLineage ? jvmId : '', connectUrl, alias);
   const { t } = useCryostatTranslation();
+
+  // Use pre-fetched lineage if available, otherwise use fetched lineage
+  const targetNode = preFetchedTargetNode || fetchedTargetNode;
+
+  // Extract lineage path from target node if available
+  const lineagePath = React.useMemo(() => {
+    if (!targetNode) return [];
+    return extractFilterableLineagePath(targetNode);
+  }, [targetNode]);
+
+  const showLineage = lineagePath.length > 0;
 
   return (
     <Split hasGutter>
@@ -44,7 +66,16 @@ export const DirectoryNameCell: React.FC<DirectoryNameCellProps> = ({
         {isLoading ? (
           <Skeleton width="30ch" screenreaderText={t('DirectoryNameCell.LOADING_TARGET_INFO')} />
         ) : (
-          <Content>{displayName}</Content>
+          <Stack>
+            <StackItem>
+              <Content>{displayName}</Content>
+            </StackItem>
+            {showLineage && (
+              <StackItem>
+                <LineageLabelChain lineagePath={lineagePath} />
+              </StackItem>
+            )}
+          </Stack>
         )}
       </SplitItem>
       {showInfoButton && (
