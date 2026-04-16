@@ -134,6 +134,7 @@ export const RecordingAnalytics: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const [result, setResult] = React.useState('');
   const [isSampleMenuOpen, setIsSampleMenuOpen] = React.useState(false);
+  const editorRef = React.useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   React.useEffect(() => {
     addSubscription(
@@ -238,10 +239,52 @@ export const RecordingAnalytics: React.FC = () => {
   }, [filenames]);
 
   const onEditorDidMount = React.useCallback((editor, monaco) => {
+    editorRef.current = editor;
     editor.layout();
     editor.focus();
     monaco.editor.getModels()[0].updateOptions({ tabSize: 4 });
   }, []);
+
+  React.useEffect(() => {
+    if (editorRef.current && query) {
+      const timer = setTimeout(() => {
+        const editor = editorRef.current;
+        if (editor) {
+          const model = editor.getModel();
+          if (model) {
+            const position = editor.getPosition();
+            const endPosition = model.getFullModelRange().getEndPosition();
+            editor.executeEdits('', [
+              {
+                range: new monaco.Range(
+                  endPosition.lineNumber,
+                  endPosition.column,
+                  endPosition.lineNumber,
+                  endPosition.column,
+                ),
+                text: ' ',
+              },
+            ]);
+            editor.executeEdits('', [
+              {
+                range: new monaco.Range(
+                  endPosition.lineNumber,
+                  endPosition.column,
+                  endPosition.lineNumber,
+                  endPosition.column + 1,
+                ),
+                text: '',
+              },
+            ]);
+            if (position) {
+              editor.setPosition(position);
+            }
+          }
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [query]);
 
   const handleSampleQuerySelect = React.useCallback(
     (sampleQuery: string) => {
