@@ -17,7 +17,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ThemeSetting } from '@app/Settings/types';
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
-import { RecordingDirectory } from '@app/Shared/Services/api.types';
+import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { useTheme } from '@app/utils/hooks/useTheme';
@@ -136,13 +136,33 @@ export const RecordingAnalytics: React.FC = () => {
   const [isSampleMenuOpen, setIsSampleMenuOpen] = React.useState(false);
   const editorRef = React.useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  React.useEffect(() => {
+  const refreshRecordingDirectories = React.useCallback(() => {
     addSubscription(
       context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta').subscribe((v) => {
         setRecordingDirectories(v);
       }),
     );
-  }, [addSubscription, context, context.api, setRecordingDirectories]);
+  }, [addSubscription, context.api, setRecordingDirectories]);
+
+  React.useEffect(() => {
+    refreshRecordingDirectories();
+  }, [refreshRecordingDirectories]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe(() => {
+        refreshRecordingDirectories();
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, refreshRecordingDirectories]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe(() => {
+        refreshRecordingDirectories();
+      }),
+    );
+  }, [addSubscription, context.notificationChannel, refreshRecordingDirectories]);
 
   React.useEffect(() => {
     const stateData = location.state as Record<string, unknown> | null;
