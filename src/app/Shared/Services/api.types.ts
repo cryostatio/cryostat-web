@@ -623,10 +623,13 @@ export enum NodeType {
   NODE = 'Node', // Default/fallback for unknown
 }
 
-interface _AbstractNode {
-  readonly id: number;
+export interface LineageNode {
   readonly name: string;
   readonly nodeType: NodeType;
+}
+
+interface _AbstractNode extends LineageNode {
+  readonly id: number;
   readonly labels: KeyValue[];
 }
 

@@ -54,7 +54,7 @@ exports[`<AllTargetsHeapDumpsTable /> renders correctly 1`] = `
                     <input
                       aria-label="Search input"
                       class="pf-v6-c-text-input-group__text-input"
-                      placeholder="Find by JVM ID..."
+                      placeholder="Find by JVM ID or alias..."
                       type="text"
                       value=""
                     />

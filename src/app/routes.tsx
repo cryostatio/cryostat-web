@@ -30,6 +30,7 @@ import Events from './Events/Events';
 import Instrumentation from './Instrumentation/Instrumentation';
 import NotFound from './NotFound/NotFound';
 import QuickStarts from './QuickStarts/QuickStartsCatalogPage';
+import { RecordingAnalytics } from './RecordingAnalytics/RecordingAnalytics';
 import Recordings from './Recordings/Recordings';
 import Reports from './Reports/Reports';
 import RulesTable from './Rules/Rules';
@@ -176,6 +177,16 @@ const flightRecorderRoutes: IAppRoute[] = [
     description: 'View Automated Analysis Reports across all target JVMs.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: ANALYZE,
+  },
+  {
+    component: RecordingAnalytics,
+    label: 'Analytics',
+    path: toPath('/recording-analytics'),
+    title: 'Analytics',
+    description: 'Perform advanced analytics queries on archived Flight Recordings.',
+    navGroup: FLIGHT_RECORDER,
+    navSubgroup: ANALYZE,
+    featureLevel: FeatureLevel.BETA,
   },
 ];
 

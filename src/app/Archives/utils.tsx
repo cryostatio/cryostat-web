@@ -20,22 +20,14 @@ export function includesDirectory<T extends RecordingDirectory | ThreadDumpDirec
   arr: T[],
   dir: T,
 ): boolean {
-  return arr.some((t) => (t['connectUrl'] && t['connectUrl'] === dir['connectUrl']) || t.jvmId === dir.jvmId);
+  return arr.some((t) => t.jvmId === dir.jvmId);
 }
 
 export function indexOfDirectory<T extends RecordingDirectory | ThreadDumpDirectory | HeapDumpDirectory>(
   arr: T[],
   dir: T,
 ): number {
-  let index = -1;
-  arr.forEach((d, idx) => {
-    if (d['connectUrl'] && d['connectUrl'] === dir['connectUrl']) {
-      index = idx;
-    } else if (d.jvmId === dir.jvmId) {
-      index = idx;
-    }
-  });
-  return index;
+  return arr.findIndex((d) => d.jvmId === dir.jvmId);
 }
 
 export const getTargetFromDirectory = (dir: RecordingDirectory | ThreadDumpDirectory | HeapDumpDirectory): Target => {

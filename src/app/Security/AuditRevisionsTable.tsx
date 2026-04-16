@@ -102,7 +102,7 @@ export const AuditRevisionsTable: React.FC<AuditRevisionsTableProps> = ({
 
   if (!queryParams) {
     return (
-      <EmptyState titleText={t('AuditLog.TABLE.NO_QUERY')} icon={SearchIcon} headingLevel="h4">
+      <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('AuditLog.TABLE.NO_QUERY')}>
         <EmptyStateBody>{t('AuditLog.TABLE.NO_QUERY_DESCRIPTION')}</EmptyStateBody>
       </EmptyState>
     );
@@ -110,7 +110,7 @@ export const AuditRevisionsTable: React.FC<AuditRevisionsTableProps> = ({
 
   if (revisions.length === 0) {
     return (
-      <EmptyState titleText={t('AuditLog.TABLE.EMPTY_STATE')} icon={SearchIcon} headingLevel="h4">
+      <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('AuditLog.TABLE.EMPTY_STATE')}>
         <EmptyStateBody>{t('AuditLog.TABLE.EMPTY_STATE_DESCRIPTION')}</EmptyStateBody>
       </EmptyState>
     );

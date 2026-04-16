@@ -19,7 +19,7 @@ import { HeapDump, NotificationMessage, Target } from '@app/Shared/Services/api.
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within } from '@testing-library/react';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { render } from '../utils';
 
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
@@ -231,6 +231,14 @@ jest
   .mockReturnValueOnce(of(mockNewTargetCountResponse)) // adds a target upon receiving a notification (on notification)
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // removes a target upon receiving a notification)
   .mockReturnValue(of(mockTargetsAndCountsResponse)); // remaining tests
+
+// Mock getTargetLineage to throw error (simulates audit log disabled/unavailable)
+// This causes the hook to fall back to displaying connectUrl/jvmId
+jest.spyOn(defaultServices.api, 'getTargetLineage').mockImplementation(() => {
+  return new Observable((subscriber) => {
+    subscriber.error(new Error('Audit log unavailable'));
+  });
+});
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')

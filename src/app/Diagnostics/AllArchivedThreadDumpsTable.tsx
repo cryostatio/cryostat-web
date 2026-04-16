@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
+import { ArchiveFilterBar } from '@app/Archives/ArchiveFilterBar';
+import { DirectoryNameCell } from '@app/Archives/DirectoryNameCell';
+import { TimeRangeFilter } from '@app/Archives/TimeRangeFilter';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from '@app/Archives/utils';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { authFailMessage, isAuthFail } from '@app/ErrorView/types';
 import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { Target, NotificationCategory, ThreadDumpDirectory } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import EntityDetails from '@app/Topology/Entity/EntityDetails';
+import { useAliasCache } from '@app/utils/hooks/useAliasCache';
+import { useArchiveFilters } from '@app/utils/hooks/useArchiveFilters';
+import { useLineageFiltering } from '@app/utils/hooks/useLineageFiltering';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { useTargetDetailsModal } from '@app/utils/hooks/useTargetDetailsModal';
 import { portalRoot, sortResources, TableColumn } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
+  Alert,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -34,12 +43,10 @@ import {
   Button,
   Icon,
   Bullseye,
-  Split,
-  SplitItem,
-  Content,
-  Tooltip,
+  Spinner,
 } from '@patternfly/react-core';
-import { FileIcon, HelpIcon, SearchIcon } from '@patternfly/react-icons';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
+import { FileIcon, SearchIcon, TopologyIcon } from '@patternfly/react-icons';
 import {
   Table,
   Th,
@@ -81,12 +88,23 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
   const { t } = useCryostatTranslation();
 
   const [directories, setDirectories] = React.useState<_ThreadDumpDirectory[]>([]);
-  const [searchText, setSearchText] = React.useState('');
   const [expandedDirectories, setExpandedDirectories] = React.useState<_ThreadDumpDirectory[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
   const [sortBy, getSortParams] = useSort();
+
+  const { showDetailsModal, setShowDetailsModal, setSelectedJvmId, loadingLineage, wrappedTarget } =
+    useTargetDetailsModal();
+
+  // Use archive filters from Redux (shared with JFR archives)
+  const { searchText, setSearchText, timeRange, hasActiveFilters } = useArchiveFilters();
+
+  // Use lineage filtering hook
+  const { filteredItems: lineageFilteredDirectories, lineageLoading } = useLineageFiltering(directories);
+
+  const jvmIds = React.useMemo(() => directories.map((d) => d.jvmId), [directories]);
+  const aliasMap = useAliasCache(jvmIds);
 
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: ThreadDumpDirectory[]) => {
@@ -130,13 +148,40 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
   }, [refreshDirectoriesAndCounts]);
 
   const searchedDirectories = React.useMemo(() => {
-    let updatedSearchedDirectories: _ThreadDumpDirectory[];
-    if (!searchText) {
-      updatedSearchedDirectories = directories;
-    } else {
+    // Start with lineage-filtered directories from the hook
+    let updatedSearchedDirectories: _ThreadDumpDirectory[] = lineageFilteredDirectories;
+
+    if (searchText) {
       const reg = new RegExp(_.escape(searchText), 'i');
-      updatedSearchedDirectories = directories.filter((d: _ThreadDumpDirectory) => reg.test(d.jvmId));
+      updatedSearchedDirectories = updatedSearchedDirectories.filter((d: _ThreadDumpDirectory) => {
+        // Search by jvmId and alias (from audit log)
+        const alias = aliasMap.get(d.jvmId) || '';
+        return reg.test(d.jvmId) || reg.test(alias);
+      });
     }
+
+    // Apply time range filter to thread dumps within each directory
+    // and filter out directories with no matching dumps
+    if (timeRange) {
+      updatedSearchedDirectories = updatedSearchedDirectories
+        .map((dir) => {
+          const matchingDumps = dir.threadDumps.filter((dump) => {
+            // lastModified is in seconds, convert to milliseconds for comparison
+            if (!dump.lastModified) {
+              return false;
+            }
+            const lastModifiedMs = dump.lastModified * 1000;
+            return lastModifiedMs >= timeRange.startTime && lastModifiedMs <= timeRange.endTime;
+          });
+
+          return {
+            ...dir,
+            threadDumps: matchingDumps,
+          };
+        })
+        .filter((dir) => dir.threadDumps.length > 0);
+    }
+
     return sortResources(
       {
         index: sortBy.index ?? 0,
@@ -145,7 +190,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
       updatedSearchedDirectories,
       tableColumns,
     );
-  }, [directories, searchText, sortBy]);
+  }, [lineageFilteredDirectories, searchText, timeRange, sortBy, aliasMap]);
 
   React.useEffect(() => {
     addSubscription(
@@ -222,6 +267,14 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
     [expandedDirectories, setExpandedDirectories],
   );
 
+  const handleInfoClick = React.useCallback(
+    (jvmId: string) => {
+      setSelectedJvmId(jvmId);
+      setShowDetailsModal(true);
+    },
+    [setSelectedJvmId, setShowDetailsModal],
+  );
+
   const directoryRows = React.useMemo(() => {
     return searchedDirectories.map((dir, idx) => {
       const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
@@ -239,16 +292,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
             }}
           />
           <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0].title}>
-            <Split hasGutter>
-              <SplitItem>
-                <Content component="p">{dir.jvmId}</Content>
-              </SplitItem>
-              <SplitItem>
-                <Tooltip hidden={!dir.jvmId} content={`JVM hash ID: ${dir.jvmId}`} appendTo={portalRoot}>
-                  <HelpIcon />
-                </Tooltip>
-              </SplitItem>
-            </Split>
+            <DirectoryNameCell jvmId={dir.jvmId} onInfoClick={() => handleInfoClick(dir.jvmId)} />
           </Td>
           <Td key={`directory-table-row-${idx}_3`} dataLabel={tableColumns[1].title}>
             <Button
@@ -267,7 +311,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
         </Tr>
       );
     });
-  }, [toggleExpanded, searchedDirectories, expandedDirectories]);
+  }, [toggleExpanded, searchedDirectories, expandedDirectories, handleInfoClick]);
 
   const threadDumpRows = React.useMemo(() => {
     return searchedDirectories.map((dir, idx) => {
@@ -352,23 +396,52 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
   }
 
   return (
-    <OuterScrollContainer className="archive-table-outer-container">
-      <Toolbar id="all-archives-toolbar">
-        <ToolbarContent>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <SearchInput
-                style={{ minWidth: '30ch' }}
-                placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
-                value={searchText}
-                onChange={handleSearchInput}
-                onClear={handleSearchInputClear}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-      <InnerScrollContainer className="">{view}</InnerScrollContainer>
-    </OuterScrollContainer>
+    <>
+      <Modal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        title="Target Details"
+        variant={ModalVariant.large}
+        className="target-details-modal"
+        appendTo={portalRoot}
+      >
+        {loadingLineage ? (
+          <Bullseye>
+            <Spinner />
+          </Bullseye>
+        ) : wrappedTarget ? (
+          <EntityDetails entity={wrappedTarget} className="target-details-modal" hideActions={true} />
+        ) : (
+          <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Details Unavailable"></EmptyState>
+        )}
+      </Modal>
+      <OuterScrollContainer className="archive-table-outer-container">
+        <Toolbar id="all-archives-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  style={{ minWidth: '30ch' }}
+                  placeholder={t('AllArchivedRecordingsTable.SEARCH_PLACEHOLDER')}
+                  value={searchText}
+                  onChange={handleSearchInput}
+                  onClear={handleSearchInputClear}
+                />
+              </ToolbarItem>
+              <ToolbarItem>
+                <TimeRangeFilter />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        {hasActiveFilters && <ArchiveFilterBar />}
+        {lineageLoading && (
+          <Alert variant="info" isInline title={t('AllArchivedThreadDumpsTable.LOADING_LINEAGE_TITLE')}>
+            <Spinner size="sm" /> {t('AllArchivedThreadDumpsTable.LOADING_LINEAGE_MESSAGE')}
+          </Alert>
+        )}
+        <InnerScrollContainer className="">{view}</InnerScrollContainer>
+      </OuterScrollContainer>
+    </>
   );
 };
