@@ -25,6 +25,7 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   UPLOADS_SUBDIRECTORY,
   ArchivedRecording,
+  AnalysisResult,
   NotificationMessage,
   Target,
   KeyValue,
@@ -96,6 +97,20 @@ const mockRecording: ArchivedRecording = {
   archivedTime: 2048,
 };
 
+const mockAnalysisResults: AnalysisResult[] = [
+  {
+    evaluation: {
+      explanation: 'because of test',
+      solution: 'nothing',
+      suggestions: [],
+      summary: 'we found something',
+    },
+    name: 'tests',
+    topic: 'testsuite',
+    score: 50.0,
+  },
+];
+
 const mockAllArchivedRecordingsResponse = {
   data: {
     archivedRecordings: {
@@ -150,6 +165,7 @@ jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/dat
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'getTargetArchivedRecordings').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'getUploadedRecordings').mockReturnValue(of([mockRecording]));
+jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValue(of(mockAnalysisResults));
 jest.spyOn(defaultServices.api, 'graphql').mockImplementation((query: string) => {
   if (query.includes('AllTargetsArchives')) {
     return of(mockAllArchivedRecordingsResponse);
@@ -895,6 +911,55 @@ describe('<ArchivedRecordingsTable />', () => {
       expect(invalidFileText).toBeInTheDocument();
       expect(invalidFileText).toBeVisible();
     });
+  });
+
+  it('should show automated analysis filter controls and list view when an archived recording is expanded', async () => {
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/recordings',
+            element: (
+              <ArchivedRecordingsTable
+                target={of(mockTarget)}
+                isUploadsTable={false}
+                isNestedTable={false}
+                toolbarBreakReference={document.body}
+              />
+            ),
+          },
+        ],
+      },
+      preloadedState: preloadedState,
+    });
+
+    const recordingRow = screen.getAllByRole('row').find((row) => within(row).queryByText(mockRecording.name) !== null);
+    expect(recordingRow).toBeDefined();
+
+    await act(async () => {
+      await user.click(within(recordingRow!).getByLabelText('Details'));
+    });
+
+    const expandedRow = await screen.findByText('Automated analysis');
+    const analysisPanel = within(expandedRow.closest('tr')!);
+
+    expect(await analysisPanel.findByRole('button', { name: testT('FILTER_NAME') })).toBeInTheDocument();
+    expect(analysisPanel.getByLabelText(testT('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL'))).toBeInTheDocument();
+    expect(
+      analysisPanel.getByRole('button', {
+        name: testT('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.GRID_VIEW'),
+      }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      await user.click(
+        analysisPanel.getByRole('button', {
+          name: testT('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.LIST_VIEW'),
+        }),
+      );
+    });
+
+    expect(analysisPanel.getByRole('grid', { name: 'Automated analysis data list' })).toBeInTheDocument();
   });
 
   it('should show error view if failing to retrieve Recordings', async () => {

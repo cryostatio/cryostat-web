@@ -15,16 +15,33 @@
  */
 
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
+import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
+import {
+  AutomatedAnalysisFilters,
+  AutomatedAnalysisFiltersCategories,
+  AutomatedAnalysisGlobalFiltersCategories,
+  filterAutomatedAnalysis,
+} from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
 import {
   ClickableAutomatedAnalysisLabel,
   clickableAutomatedAnalysisKey,
 } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
+import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingProps } from '@app/Shared/Components/types';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import {
+  emptyAutomatedAnalysisFilters,
+  TargetAutomatedAnalysisFilters,
+} from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 import { emptyArchivedRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
+  automatedAnalysisAddFilterIntent,
+  automatedAnalysisAddGlobalFilterIntent,
+  automatedAnalysisDeleteAllFiltersIntent,
+  automatedAnalysisDeleteCategoryFiltersIntent,
+  automatedAnalysisDeleteFilterIntent,
   recordingAddFilterIntent,
   recordingDeleteFilterIntent,
   recordingAddTargetIntent,
@@ -46,13 +63,19 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { formatBytes, hashCode, portalRoot, sortResources, TableColumn } from '@app/utils/utils';
+import { useCryostatTranslation } from '@i18n/i18nextUtil';
 import {
   Bullseye,
   Button,
   Checkbox,
+  Content,
   Drawer,
   DrawerContent,
   DrawerContentBody,
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateBody,
+  EmptyStateFooter,
   Grid,
   GridItem,
   LabelGroup,
@@ -77,8 +100,12 @@ import {
   Panel,
   PanelMain,
   PanelMainBody,
+  Stack,
+  StackItem,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@patternfly/react-core';
-import { UploadIcon, EllipsisVIcon } from '@patternfly/react-icons';
+import { UploadIcon, EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent, Table, SortByDirection } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -778,6 +805,238 @@ export interface ArchivedRecordingRowProps {
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
 
+interface ArchivedRecordingAnalysisProps {
+  analysisTarget: string;
+  analyses: CategorizedRuleEvaluations[];
+  loadingAnalysis: boolean;
+  useCompactLabels: boolean;
+  idPrefix: string;
+}
+
+const ArchivedRecordingAnalysis: React.FC<ArchivedRecordingAnalysisProps> = ({
+  analysisTarget,
+  analyses,
+  loadingAnalysis,
+  useCompactLabels,
+  idPrefix,
+}) => {
+  const dispatch = useDispatch<StateDispatch>();
+  const { t } = useCryostatTranslation();
+  const [showListView, setShowListView] = React.useState(false);
+  const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
+  const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
+    CategorizedRuleEvaluations[]
+  >([]);
+
+  const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
+    const filters = state.automatedAnalysisFilters.targetFilters.filter(
+      (targetFilter: TargetAutomatedAnalysisFilters) => targetFilter.target === analysisTarget,
+    );
+    return filters.length > 0 ? filters[0].filters : emptyAutomatedAnalysisFilters;
+  }) as AutomatedAnalysisFiltersCategories;
+
+  const targetAutomatedAnalysisGlobalFilters = useSelector((state: RootState) => {
+    return state.automatedAnalysisFilters.globalFilters.filters;
+  }) as AutomatedAnalysisGlobalFiltersCategories;
+
+  const updateAutomatedAnalysisFilters = React.useCallback(
+    (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
+      if (deleted) {
+        if (deleteOptions?.all) {
+          dispatch(automatedAnalysisDeleteCategoryFiltersIntent(target, filterKey));
+        } else {
+          dispatch(automatedAnalysisDeleteFilterIntent(target, filterKey, filterValue));
+        }
+      } else {
+        dispatch(automatedAnalysisAddFilterIntent(target, filterKey, filterValue));
+      }
+    },
+    [dispatch],
+  );
+
+  const handleClearFilters = React.useCallback(() => {
+    dispatch(automatedAnalysisDeleteAllFiltersIntent(analysisTarget));
+  }, [dispatch, analysisTarget]);
+
+  const handleResetScoreFilter = React.useCallback(() => {
+    dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 0));
+  }, [dispatch]);
+
+  const showUnavailableScores = React.useCallback(() => {
+    setShowNAScores(true);
+  }, []);
+
+  React.useEffect(() => {
+    setFilteredCategorizedEvaluation(
+      filterAutomatedAnalysis(
+        analyses,
+        targetAutomatedAnalysisFilters,
+        targetAutomatedAnalysisGlobalFilters,
+        showNAScores,
+      ),
+    );
+  }, [
+    analyses,
+    targetAutomatedAnalysisFilters,
+    targetAutomatedAnalysisGlobalFilters,
+    showNAScores,
+    setFilteredCategorizedEvaluation,
+  ]);
+
+  const toolbar = React.useMemo(() => {
+    return (
+      <Toolbar
+        id={`${idPrefix}-automated-analysis-toolbar`}
+        aria-label={t('AutomatedAnalysisCard.TOOLBAR.LABEL')}
+        clearAllFilters={handleClearFilters}
+        clearFiltersButtonText={t('CLEAR_FILTERS')}
+        isFullHeight
+      >
+        <ToolbarContent>
+          <AutomatedAnalysisFilters
+            target={analysisTarget}
+            evaluations={analyses}
+            filters={targetAutomatedAnalysisFilters}
+            updateFilters={updateAutomatedAnalysisFilters}
+          />
+          <ToolbarItem>
+            <Checkbox
+              label={t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+              isChecked={showNAScores}
+              onChange={(_, checked: boolean) => setShowNAScores(checked)}
+              id={`${idPrefix}-show-na-scores`}
+              name={`${idPrefix}-show-na-scores`}
+              style={{ alignSelf: 'center' }}
+            />
+          </ToolbarItem>
+          <ToolbarItem variant="separator" />
+          <ToolbarItem>
+            <ToggleGroup>
+              <ToggleGroupItem
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.GRID_VIEW')}
+                text="Grid view"
+                buttonId={`${idPrefix}-grid-view-btn`}
+                isSelected={!showListView}
+                onClick={() => setShowListView(false)}
+              />
+              <ToggleGroupItem
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.ARIA_LABELS.LIST_VIEW')}
+                text="List view"
+                buttonId={`${idPrefix}-list-view-btn`}
+                isSelected={showListView}
+                onClick={() => setShowListView(true)}
+              />
+            </ToggleGroup>
+          </ToolbarItem>
+        </ToolbarContent>
+      </Toolbar>
+    );
+  }, [
+    t,
+    idPrefix,
+    handleClearFilters,
+    analysisTarget,
+    analyses,
+    targetAutomatedAnalysisFilters,
+    updateAutomatedAnalysisFilters,
+    showNAScores,
+    showListView,
+  ]);
+
+  const filteredCategorizedLabels = React.useMemo(() => {
+    const filtered = filteredCategorizedEvaluation.filter(([_, evaluations]) => evaluations.length > 0);
+
+    if (filtered.length === 0) {
+      return (
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={<>{t('AutomatedAnalysisCard.NO_RESULTS')}</>}>
+          <EmptyStateBody>{t('AutomatedAnalysisCard.NO_RESULTS_BODY')}</EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateActions>
+              <Button variant="link" onClick={handleClearFilters}>
+                {t('CLEAR_FILTERS')}
+              </Button>
+              <Button variant="link" onClick={showUnavailableScores}>
+                {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+              </Button>
+              <Button variant="link" onClick={handleResetScoreFilter}>
+                {t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
+              </Button>
+            </EmptyStateActions>
+          </EmptyStateFooter>
+        </EmptyState>
+      );
+    }
+
+    if (showListView) {
+      return <AutomatedAnalysisCardList evaluations={filtered} />;
+    }
+
+    return (
+      <Grid>
+        {filtered.map(([topic, evaluations]) => {
+          return (
+            <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
+              <LabelGroup
+                className="automated-analysis-topic-label-groups"
+                categoryName={topic}
+                isVertical
+                numLabels={2}
+                isCompact={useCompactLabels}
+                key={topic}
+              >
+                {evaluations.map((evaluation) => {
+                  return (
+                    <ClickableAutomatedAnalysisLabel
+                      result={evaluation}
+                      key={`${clickableAutomatedAnalysisKey}-${topic}-${evaluation.name}-${evaluation.score}`}
+                    />
+                  );
+                })}
+              </LabelGroup>
+            </GridItem>
+          );
+        })}
+      </Grid>
+    );
+  }, [
+    t,
+    handleClearFilters,
+    showUnavailableScores,
+    handleResetScoreFilter,
+    filteredCategorizedEvaluation,
+    showListView,
+    useCompactLabels,
+  ]);
+
+  if (loadingAnalysis) {
+    return (
+      <Bullseye>
+        <Spinner />
+      </Bullseye>
+    );
+  }
+
+  if (!analyses.length) {
+    return (
+      <EmptyState headingLevel="h4" icon={SearchIcon} titleText={t('TargetAnalysis.REPORT_UNAVAILABLE')}>
+        <EmptyStateBody>
+          <Content component="p">{t('AutomatedAnalysisCard.NO_RESULTS_BODY')}</Content>
+        </EmptyStateBody>
+      </EmptyState>
+    );
+  }
+
+  return (
+    <Stack hasGutter>
+      <StackItem>{toolbar}</StackItem>
+      <StackItem>
+        <AutomatedAnalysisScoreFilter />
+      </StackItem>
+      <StackItem isFilled>{filteredCategorizedLabels}</StackItem>
+    </Stack>
+  );
+};
+
 export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   recording,
   index,
@@ -798,6 +1057,10 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
   const [useCompactLabels, setUseCompactLabels] = React.useState(true);
 
   const expandedRowId = React.useMemo(() => `archived-table-row-${index}-exp`, [index]);
+  const analysisTarget = React.useMemo(
+    () => `${currentSelectedTargetURL}:archived-recording-analysis:${recording.name}`,
+    [currentSelectedTargetURL, recording.name],
+  );
 
   React.useEffect(() => {
     addSubscription(context.settings.largeUi().subscribe((v) => setUseCompactLabels(!v)));
@@ -924,37 +1187,13 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
               <Divider />
               <PanelMain>
                 <PanelMainBody>
-                  <Grid>
-                    {loadingAnalysis ? (
-                      <Bullseye>
-                        <Spinner />
-                      </Bullseye>
-                    ) : (
-                      analyses.map(([topic, evaluations]) => {
-                        return (
-                          <GridItem className="automated-analysis-grid-item" span={2} key={`gridItem-${topic}`}>
-                            <LabelGroup
-                              className="automated-analysis-topic-label-groups"
-                              categoryName={topic}
-                              isVertical
-                              numLabels={2}
-                              isCompact={useCompactLabels}
-                              key={topic}
-                            >
-                              {evaluations.map((evaluation) => {
-                                return (
-                                  <ClickableAutomatedAnalysisLabel
-                                    result={evaluation}
-                                    key={clickableAutomatedAnalysisKey}
-                                  />
-                                );
-                              })}
-                            </LabelGroup>
-                          </GridItem>
-                        );
-                      })
-                    )}
-                  </Grid>
+                  <ArchivedRecordingAnalysis
+                    analysisTarget={analysisTarget}
+                    analyses={analyses}
+                    loadingAnalysis={loadingAnalysis}
+                    useCompactLabels={useCompactLabels}
+                    idPrefix={`archived-recording-analysis-${index}`}
+                  />
                 </PanelMainBody>
               </PanelMain>
             </Panel>
@@ -962,7 +1201,7 @@ export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
         </Td>
       </Tr>
     );
-  }, [index, isExpanded, analyses, loadingAnalysis, useCompactLabels]);
+  }, [index, isExpanded, analyses, loadingAnalysis, useCompactLabels, analysisTarget]);
 
   return (
     <Tbody key={index} isExpanded={isExpanded}>
