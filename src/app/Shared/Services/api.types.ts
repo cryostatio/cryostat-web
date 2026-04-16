@@ -275,6 +275,69 @@ export interface ThreadDump {
   metadata: Metadata;
 }
 
+export interface StackFrame {
+  className: string;
+  methodName: string;
+  fileName: string;
+  lineNumber: number;
+  nativeMethod: boolean;
+}
+
+export interface LockInfo {
+  lockId?: string;
+  className?: string;
+  operation?: string;
+  ownerThreadId?: string;
+}
+
+export interface DeadlockInfo {
+  threadName: string;
+  waitingForMonitor: string;
+  waitingForObject: string;
+  waitingForObjectType: string;
+  heldBy: string;
+  stackTrace: StackFrame[];
+  locks: LockInfo[];
+}
+
+export interface ThreadInfo {
+  name: string;
+  threadId?: number;
+  nativeId?: number;
+  priority?: number;
+  daemon?: boolean;
+  state?: string;
+  cpuTimeSec: number;
+  elapsedTimeSec: number;
+  stackTrace?: StackFrame[];
+  locks?: LockInfo[];
+  additionalInfo?: string;
+  carryingVirtualThreadId?: number;
+}
+
+export interface AnalysisFinding {
+  resultName: string;
+  explanation: string;
+  score: number;
+}
+
+export interface ThreadDumpAnalysisResult {
+  aggregateThreadStates: { data: string; count: number }[];
+  aggregateLockInfo: { data: string; count: number }[];
+  aggregateStackTraces: { data: StackFrame[]; count: number }[];
+  runningMethods: { data: string; count: number }[];
+  deadlockInfos: DeadlockInfo[];
+  threads: ThreadInfo[];
+  specificFindings: AnalysisFinding[];
+  jniInfo: {
+    globalRefs?: number;
+    weakRefs?: number;
+    globalRefsMemory?: number;
+    weakRefsMemory?: number;
+  };
+  jvmInfo: string;
+}
+
 export interface ArchivedRecording extends Recording {
   jvmId?: string;
   archivedTime: number;
@@ -560,10 +623,13 @@ export enum NodeType {
   NODE = 'Node', // Default/fallback for unknown
 }
 
-interface _AbstractNode {
-  readonly id: number;
+export interface LineageNode {
   readonly name: string;
   readonly nodeType: NodeType;
+}
+
+interface _AbstractNode extends LineageNode {
+  readonly id: number;
   readonly labels: KeyValue[];
 }
 

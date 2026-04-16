@@ -18,6 +18,7 @@ import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolki
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
 import navMenuConfigReducer, * as navMenuConfigSlice from './Configurations/NavMenuConfigSlice';
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
+import archiveFiltersReducer, * as archiveFiltersSlice from './Filters/ArchiveFiltersSlice';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import HeapDumpFilterReducer from './Filters/HeapDumpFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
@@ -84,12 +85,23 @@ export const {
 
 export const { modalPrefillSetIntent, modalPrefillClearIntent } = modalPrefillSlice;
 
+export const {
+  archiveAddLineageFilterIntent,
+  archiveRemoveLineageFilterIntent,
+  archiveClearLineageFiltersIntent,
+  archiveSetTimeRangeIntent,
+  archiveSetSearchTextIntent,
+  archiveClearAllFiltersIntent,
+  defaultArchiveFilters,
+} = archiveFiltersSlice;
+
 export const rootReducer = combineReducers({
   navMenuConfigs: navMenuConfigReducer,
   dashboardConfigs: dashboardConfigReducer,
   recordingFilters: recordingFilterReducer,
   heapDumpFilters: HeapDumpFilterReducer,
   threadDumpFilters: ThreadDumpFilterReducer,
+  archiveFilters: archiveFiltersReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
   topologyConfigs: topologyConfigReducer,
   topologyFilters: topologyFilterReducer,

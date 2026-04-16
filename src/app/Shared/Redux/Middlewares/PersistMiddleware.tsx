@@ -18,6 +18,7 @@ import { Middleware } from '@reduxjs/toolkit';
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlice';
 import { enumValues as NavMenuConfigActions } from '../Configurations/NavMenuConfigSlice';
 import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlice';
+import { enumValues as ArchiveFilterActions } from '../Filters/ArchiveFiltersSlice';
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
 import { enumValues as HeapDumpFilterActions } from '../Filters/HeapDumpFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
@@ -33,7 +34,9 @@ export const persistMiddleware: Middleware<{}, RootState> =
     const result = next(action);
     // Extract new state here
     const rootState = getState();
-    if (AutomatedAnalysisFilterActions.has(action.type)) {
+    if (ArchiveFilterActions.has(action.type)) {
+      saveToLocalStorage('ARCHIVE_FILTERS', rootState.archiveFilters);
+    } else if (AutomatedAnalysisFilterActions.has(action.type)) {
       saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', rootState.automatedAnalysisFilters);
     } else if (RecordingFilterActions.has(action.type)) {
       saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);

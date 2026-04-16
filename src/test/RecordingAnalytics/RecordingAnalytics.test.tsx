@@ -768,5 +768,3 @@ describe('<RecordingAnalytics />', () => {
     expect(container).toMatchSnapshot();
   });
 });
-
-// Made with Bob

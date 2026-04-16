@@ -768,7 +768,7 @@ export const CreateRule: React.FC<CreateRuleProps> = ({ onClose }) => {
   const gridStyles: React.CSSProperties = React.useMemo(
     () => ({
       // viewportHeight - modalHeader - modalPadding - margin
-      height: 'calc(100vh - 12rem)',
+      height: 'calc(100vh - 16rem)',
     }),
     [],
   );
@@ -776,9 +776,9 @@ export const CreateRule: React.FC<CreateRuleProps> = ({ onClose }) => {
   return (
     <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
       <Grid hasGutter style={gridStyles}>
-        <GridItem xl={5} order={{ xl: '0', default: '1' }}>
-          <Card isFullHeight>
-            <CardBody className="overflow-auto">
+        <GridItem xl={5} order={{ xl: '0', default: '1' }} style={{ height: '100%', overflow: 'auto' }}>
+          <Card>
+            <CardBody>
               <CreateRuleForm onExit={onClose} />
             </CardBody>
           </Card>
