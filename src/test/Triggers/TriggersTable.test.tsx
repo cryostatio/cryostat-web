@@ -15,13 +15,13 @@
  */
 
 import { DeleteSmartTrigger, DeleteOrDisableWarningType } from '@app/Modal/types';
-import { SmartTrigger } from '@app/Shared/Services/api.types';
+import { EventTemplate, SmartTrigger } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { SmartTriggersTable } from '@app/Triggers/SmartTriggers';
 import { cleanup, screen, within, act } from '@testing-library/react';
 import { of } from 'rxjs';
-import { DEFAULT_DIMENSIONS, escapeKeyboardInput, render, resize } from '../utils';
+import { DEFAULT_DIMENSIONS, escapeKeyboardInput, render, resize, testT } from '../utils';
 
 const mockConnectUrl = 'http://someUrl';
 
@@ -44,6 +44,15 @@ const mockSmartTrigger: SmartTrigger = {
   simple: false,
   timeConditionFirstMet: '',
 };
+
+const mockEventTemplate: EventTemplate = {
+  name: 'Profiling',
+  type: 'TARGET',
+  provider: 'some provider',
+  description: 'some description',
+};
+
+jest.spyOn(defaultServices.api, 'getTargetEventTemplates').mockReturnValue(of([mockEventTemplate]));
 
 jest.spyOn(defaultServices.api, 'getTargetTriggers').mockReturnValue(of([mockSmartTrigger])); // All other tests
 
@@ -238,13 +247,30 @@ describe('<SmartTriggerTable />', () => {
       expect(expressionInput).toBeInTheDocument();
       expect(expressionInput).toBeVisible();
 
-      await user.type(expressionInput, escapeKeyboardInput('[foo]~bar'));
+      await user.type(expressionInput, escapeKeyboardInput('[foo]'));
+
+      const templates = screen.getByText(testT('Triggers.TEMPLATE_SELECT'));
+      expect(templates).toBeInTheDocument();
+      expect(templates).toBeVisible();
+
+      const templateSelector = within(modal).getByRole('combobox');
+      expect(templateSelector).toBeInTheDocument();
+      expect(templateSelector).toBeVisible();
+
+      await user.click(templateSelector);
+
+      const option = screen.getByText('Profiling');
+      expect(option).toBeInTheDocument();
+      expect(option).toBeVisible();
+
+      await user.selectOptions(templateSelector, 'Profiling');
+
       expect(submitButton).toBeEnabled();
       await user.click(submitButton);
 
       const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
       expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-      expect(uploadRequestSpy).toHaveBeenCalledWith('[foo]~bar', mockTarget);
+      expect(uploadRequestSpy).toHaveBeenCalledWith('[foo]~Profiling', mockTarget);
     });
   });
 });

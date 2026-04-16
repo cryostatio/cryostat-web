@@ -33,18 +33,15 @@ import {
   ActionGroup,
   Button,
   EmptyState,
-  EmptyStateIcon,
   Form,
   FormGroup,
-  Modal,
-  ModalVariant,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  EmptyStateHeader,
   SearchInput,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   ActionsColumn,
@@ -374,17 +371,16 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
             {capabilities.fileUploads ? (
               <>
                 <ToolbarItem variant="separator" />
-                <ToolbarGroup variant="icon-button-group">
+                <ToolbarGroup variant="action-group-plain">
                   <ToolbarItem>
                     <Button
+                      icon={<UploadIcon />}
                       key="upload"
                       aria-label="Upload"
                       variant="secondary"
                       onClick={handleUploadModalOpen}
                       isDisabled={errorMessage != ''}
-                    >
-                      <UploadIcon />
-                    </Button>
+                    ></Button>
                   </ToolbarItem>
                 </ToolbarGroup>
               </>
@@ -413,13 +409,7 @@ export const EventTemplates: React.FC<EventTemplatesProps> = () => {
             <Tbody>{templateRows}</Tbody>
           </Table>
         ) : (
-          <EmptyState>
-            <EmptyStateHeader
-              titleText="No Event Templates"
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h4"
-            />
-          </EmptyState>
+          <EmptyState headingLevel="h4" icon={SearchIcon} titleText="No Event Templates"></EmptyState>
         )}
         <EventTemplatesUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
       </>

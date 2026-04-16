@@ -20,7 +20,7 @@ import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen, within, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockJvmId1 = 'fooJvmId1';
@@ -164,10 +164,10 @@ describe('<AllArchivedRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: { routes: [{ path: '/archives', element: <AllArchivedRecordingsTable /> }] },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('shows no Recordings when empty', async () => {

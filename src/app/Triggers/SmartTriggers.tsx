@@ -51,8 +51,6 @@ import {
   OverflowMenuItem,
   OverflowMenuControl,
   ValidatedOptions,
-  Modal,
-  ModalVariant,
   Form,
   FormGroup,
   TextArea,
@@ -60,8 +58,6 @@ import {
   SearchInput,
   Bullseye,
   EmptyState,
-  EmptyStateHeader,
-  EmptyStateIcon,
   EmptyStateBody,
   FormHelperText,
   HelperText,
@@ -69,6 +65,7 @@ import {
   FormSelect,
   FormSelectOption,
 } from '@patternfly/react-core';
+import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
 import { ISortBy, SortByDirection, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
 import { t } from 'i18next';
@@ -396,12 +393,7 @@ export const SmartTriggersTable: React.FC<SmartTriggersProps> = ({
   } else {
     return (
       <Bullseye>
-        <EmptyState>
-          <EmptyStateHeader
-            titleText={<>Smart Triggers not supported</>}
-            icon={<EmptyStateIcon icon={SearchIcon} />}
-            headingLevel="h4"
-          />
+        <EmptyState headingLevel="h4" icon={SearchIcon} titleText={<>Smart Triggers not supported</>}>
           <EmptyStateBody>
             Smart Triggers are not supported for the selected target. Only Cryostat agent targets support use of Smart
             Triggers.
@@ -603,8 +595,8 @@ const SmartTriggersToolbar: React.FC<SmartTriggersTableToolbarProps> = (props) =
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarItem variant="separator" className="smart-triggers-toolbar-separator" />
-        <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem variant="overflow-menu">
+        <ToolbarGroup variant="action-group" style={{ alignSelf: 'start' }}>
+          <ToolbarItem>
             <OverflowMenu
               breakpoint="sm"
               breakpointReference={
@@ -714,6 +706,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const [expressionInput, setExpressionInput] = React.useState('');
   const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
+  const [templateValid, setTemplateValid] = React.useState(ValidatedOptions.default);
 
   const reset = React.useCallback(() => {
     setUploading(false);
@@ -796,7 +789,10 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   }, [mbeans, supportedTriggerAttributes]);
 
   const handleTemplateChange = React.useCallback(
-    (template: EventTemplateIdentifier) => setFormData((old) => ({ ...old, template })),
+    (template: EventTemplateIdentifier) => {
+      setFormData((old) => ({ ...old, template }));
+      setTemplateValid(ValidatedOptions.success);
+    },
     [setFormData],
   );
 
@@ -876,7 +872,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           templates={templates}
-          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
+          validated={templateValid}
           disabled={uploading}
           onSelect={handleTemplateChange}
         />
@@ -886,7 +882,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
               aria-label="submit-button"
               variant="primary"
               onClick={handleSubmit}
-              isDisabled={expressionValid != ValidatedOptions.success}
+              isDisabled={expressionValid != ValidatedOptions.success || templateValid != ValidatedOptions.success}
               {...submitButtonLoadingProps}
             >
               {uploading ? 'Submitting' : 'Submit'}

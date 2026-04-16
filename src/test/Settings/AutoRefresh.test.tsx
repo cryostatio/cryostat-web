@@ -18,7 +18,7 @@ import { AutoRefresh } from '@app/Settings/Config/AutoRefresh';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import { render, renderSnapshot, testT } from '../utils';
+import { render, testT } from '../utils';
 
 jest.spyOn(defaultServices.settings, 'autoRefreshEnabled').mockReturnValue(false);
 jest.spyOn(defaultServices.settings, 'autoRefreshPeriod').mockReturnValue(30);
@@ -34,7 +34,7 @@ describe('<AutoRefresh/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -44,7 +44,7 @@ describe('<AutoRefresh/>', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should default to have auto-refresh disabled', async () => {

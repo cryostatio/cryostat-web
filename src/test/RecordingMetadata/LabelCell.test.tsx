@@ -20,7 +20,7 @@ import { KeyValue, Target } from '@app/Shared/Services/api.types';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { render, renderSnapshot } from '../utils';
+import { render } from '../utils';
 
 const mockFooTarget: Target = {
   agent: false,
@@ -52,7 +52,7 @@ describe('<LabelCell />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    const tree = await renderSnapshot({
+    const { container } = render({
       routerConfigs: {
         routes: [
           {
@@ -68,7 +68,7 @@ describe('<LabelCell />', () => {
         ],
       },
     });
-    expect(tree?.toJSON()).toMatchSnapshot();
+    expect(container).toMatchSnapshot();
   });
 
   it('should display read-only Labels', async () => {

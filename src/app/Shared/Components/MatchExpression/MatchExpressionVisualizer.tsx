@@ -38,7 +38,6 @@ import {
   DataListToggle,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
   Flex,
   FlexItem,
@@ -46,7 +45,6 @@ import {
   Stack,
   StackItem,
   EmptyStateActions,
-  EmptyStateHeader,
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, SearchIcon } from '@patternfly/react-icons';
@@ -352,12 +350,12 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
     if (!matchedTargets || !matchedTargets.length) {
       return (
         <Bullseye>
-          <EmptyState variant={EmptyStateVariant.full}>
-            <EmptyStateHeader
-              titleText="No Targets Matched"
-              icon={<EmptyStateIcon icon={SearchIcon} />}
-              headingLevel="h3"
-            />
+          <EmptyState
+            headingLevel="h3"
+            icon={SearchIcon}
+            titleText="No Targets Matched"
+            variant={EmptyStateVariant.full}
+          >
             <EmptyStateFooter>
               <EmptyStateActions>
                 <EmptyStateBody>{`${
