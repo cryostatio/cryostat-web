@@ -662,6 +662,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const [expressionInput, setExpressionInput] = React.useState('');
   const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
+  const [templateValid, setTemplateValid] = React.useState(ValidatedOptions.default);
 
   const reset = React.useCallback(() => {
     setUploading(false);
@@ -722,7 +723,10 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   }, [formData]);
 
   const handleTemplateChange = React.useCallback(
-    (template: EventTemplateIdentifier) => setFormData((old) => ({ ...old, template })),
+    (template: EventTemplateIdentifier) => {
+      setFormData((old) => ({ ...old, template }));
+      setTemplateValid(ValidatedOptions.success);
+    },
     [setFormData],
   );
 
@@ -780,7 +784,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
           templates={templates}
-          validated={!formData.template?.name ? ValidatedOptions.default : ValidatedOptions.success}
+          validated={templateValid}
           disabled={uploading}
           onSelect={handleTemplateChange}
         />
@@ -790,7 +794,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
               aria-label="submit-button"
               variant="primary"
               onClick={handleSubmit}
-              isDisabled={expressionValid != ValidatedOptions.success}
+              isDisabled={expressionValid != ValidatedOptions.success || templateValid != ValidatedOptions.success}
               {...submitButtonLoadingProps}
             >
               {uploading ? 'Submitting' : 'Submit'}
