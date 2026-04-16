@@ -25,6 +25,21 @@ import { DEFAULT_DIMENSIONS, escapeKeyboardInput, render, resize, testT } from '
 
 const mockConnectUrl = 'http://someUrl';
 
+const mockMbeanResponse = {
+  mBeanName: 'bean',
+  attributes: [
+    {
+      name: 'someBeanAttribute',
+      type: 'java.lang.String',
+      description: 'Some Bean Attribute',
+      parentBean: 'bean',
+      isReadable: true,
+      isWritable: true,
+      isIs: true,
+    },
+  ],
+};
+
 const mockTarget = {
   agent: true,
   connectUrl: mockConnectUrl,
@@ -63,6 +78,8 @@ jest.spyOn(defaultServices.api, 'addTriggers').mockReturnValue(of(true));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+
+jest.spyOn(defaultServices.api, 'getTargetMbeans').mockReturnValue(of([mockMbeanResponse]));
 
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
@@ -249,13 +266,17 @@ describe('<SmartTriggerTable />', () => {
 
       await user.type(expressionInput, escapeKeyboardInput('[foo]'));
 
+      const templateSelector = within(modal).getByRole('combobox', { name: 'Event Template Input' });
+      expect(templateSelector).toBeInTheDocument();
+      expect(templateSelector).toBeVisible();
+
       const templates = screen.getByText(testT('Triggers.TEMPLATE_SELECT'));
       expect(templates).toBeInTheDocument();
       expect(templates).toBeVisible();
 
-      const templateSelector = within(modal).getByRole('combobox');
-      expect(templateSelector).toBeInTheDocument();
-      expect(templateSelector).toBeVisible();
+      const mbeanSelector = within(modal).getByRole('combobox', { name: 'MBean Input' });
+      expect(mbeanSelector).toBeInTheDocument();
+      expect(mbeanSelector).toBeVisible();
 
       await user.click(templateSelector);
 

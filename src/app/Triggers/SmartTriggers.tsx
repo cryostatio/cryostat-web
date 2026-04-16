@@ -670,35 +670,38 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   // FIXME Triggers currently rely on MbeanMetrics. We can query all
   // registered mbeans/attributes but we need to filter the supported ones.
-  const supportedTriggerAttributes: string[] = [
-    'ThreadCount',
-    'DaemonThreadCount',
-    'Arch',
-    'AvailableProcessors',
-    'Version',
-    'SystemCpuLoad',
-    'SystemLoadAverage',
-    'ProcessCpuLoad',
-    'TotalPhysicalMemorySize',
-    'FreePhyiscalMemorySize',
-    'TotalSwapSpaceSize',
-    'HeapMemoryUsage',
-    'HeapMemoryUsagePercent',
-    'BootClassPath',
-    'ClassPath',
-    'InputArguments',
-    'LibraryPath',
-    'ManagementSpecVersion',
-    'SpecName',
-    'SpecVendor',
-    'StartTime',
-    'SystemProperties',
-    'Uptime',
-    'VmName',
-    'VmVendor',
-    'VmVersion',
-    'BootClassPathSupported',
-  ];
+  const supportedTriggerAttributes: string[] = React.useMemo(
+    () => [
+      'ThreadCount',
+      'DaemonThreadCount',
+      'Arch',
+      'AvailableProcessors',
+      'Version',
+      'SystemCpuLoad',
+      'SystemLoadAverage',
+      'ProcessCpuLoad',
+      'TotalPhysicalMemorySize',
+      'FreePhyiscalMemorySize',
+      'TotalSwapSpaceSize',
+      'HeapMemoryUsage',
+      'HeapMemoryUsagePercent',
+      'BootClassPath',
+      'ClassPath',
+      'InputArguments',
+      'LibraryPath',
+      'ManagementSpecVersion',
+      'SpecName',
+      'SpecVendor',
+      'StartTime',
+      'SystemProperties',
+      'Uptime',
+      'VmName',
+      'VmVendor',
+      'VmVersion',
+      'BootClassPathSupported',
+    ],
+    [],
+  );
 
   const [uploading, setUploading] = React.useState(false);
 
@@ -815,18 +818,20 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
             <HelperTextItem>{t('Triggers.AVAILABLE_MBEANS')}</HelperTextItem>
           </HelperText>
         </FormHelperText>
-        <FormSelect
-          value={mbeanSelectValue}
-          onChange={onMbeanChange}
-          aria-label="FormSelect Input"
-          ouiaId="BasicFormSelect"
-        >
+        <FormSelect value={mbeanSelectValue} onChange={onMbeanChange} aria-label="MBean Input" ouiaId="BasicFormSelect">
+          <FormSelectOption
+            isDisabled={true}
+            key={-1}
+            value={''}
+            label={'Select an MBean Attribute'}
+            isPlaceholder={true}
+          />
           {MbeanOptions.map((option, index) => (
             <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
           ))}
         </FormSelect>
         <HelperText>
-          <HelperTextItem>{`Selected Mbean has the name: ${mbeanSelectValue}, Use this to build your expression.`}</HelperTextItem>
+          <HelperTextItem>{`Selected MBean attribute has the name: ${mbeanSelectValue}, Use this to build your expression.`}</HelperTextItem>
         </HelperText>
         <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
           <TextArea

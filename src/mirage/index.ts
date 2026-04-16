@@ -1072,6 +1072,7 @@ export const startMirage = ({ environment = 'development' } = {}) => {
       this.post('api/beta/diagnostics/targets/:targetId/gc', () => {
         return new Response(204);
       });
+      this.get('api/beta/targets/:targetId/mbean-query', () => []);
       this.get('api/beta/targets/:targetId/smart_triggers', (schema) => schema.all(Resource.SMART_TRIGGER).models);
       this.delete('api/beta/targets/:targetId/smart_triggers/:uuid', (schema, request) => {
         const smartTriggerId = request.params.uuid;
