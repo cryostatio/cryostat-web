@@ -284,6 +284,7 @@ export const RecordingAnalytics: React.FC = () => {
       }, 50);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [query]);
 
   const handleSampleQuerySelect = React.useCallback(
