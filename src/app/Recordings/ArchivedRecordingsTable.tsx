@@ -30,11 +30,11 @@ import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/F
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
 import { LoadingProps } from '@app/Shared/Components/types';
-import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   emptyAutomatedAnalysisFilters,
   TargetAutomatedAnalysisFilters,
 } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyArchivedRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
   automatedAnalysisAddFilterIntent,
