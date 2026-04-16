@@ -70,6 +70,7 @@ import {
   AggregateReport,
   HeapDump,
   ThreadDump,
+  ThreadDumpAnalysisResult,
   SmartTrigger,
   AsyncProfilerStatus,
   AsyncProfile,
@@ -805,6 +806,25 @@ export class ApiService {
           first(),
         ),
       ),
+      first(),
+    );
+  }
+
+  analyzeThreadDump(
+    jvmId: string,
+    threadDumpId: string,
+    suppressNotifications = false,
+  ): Observable<ThreadDumpAnalysisResult> {
+    return this.sendRequest(
+      'beta',
+      `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`,
+      {
+        method: 'POST',
+      },
+      undefined,
+      suppressNotifications,
+    ).pipe(
+      concatMap((resp) => resp.json()),
       first(),
     );
   }

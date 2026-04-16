@@ -22,6 +22,7 @@ import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
 import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import ThreadDumpAnalysis from './Diagnostics/Analysis/ThreadDumpAnalysis';
 import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
 import CaptureDiagnostics from './Diagnostics/CaptureDiagnostics';
@@ -200,10 +201,19 @@ const diagnosticsRoutes: IAppRoute[] = [
   },
   {
     component: AnalyzeThreadDumps,
-    label: 'Thread Dumps',
+    label: 'Thread Dump Archives',
     path: toPath('/thread-dumps'),
-    title: 'Thread Dumps',
+    title: 'Thread Dump Archives',
     description: 'View thread dumps on single target JVMs.',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+  },
+  {
+    component: ThreadDumpAnalysis,
+    label: 'Analyze Thread Dumps',
+    path: toPath('/analyze-thread-dumps'),
+    title: 'Analyze Thread Dumps',
+    description: 'Analyze Thread Dump Data',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
   },
