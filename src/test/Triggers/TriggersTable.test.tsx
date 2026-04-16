@@ -249,11 +249,15 @@ describe('<SmartTriggerTable />', () => {
 
       await user.type(expressionInput, escapeKeyboardInput('[foo]'));
 
+      const mbeanSelector = within(modal).getByRole('combobox', { name: 'MBean Input' });
+      expect(mbeanSelector).toBeInTheDocument();
+      expect(mbeanSelector).toBeVisible();
+
       const templates = screen.getByText(testT('Triggers.TEMPLATE_SELECT'));
       expect(templates).toBeInTheDocument();
       expect(templates).toBeVisible();
 
-      const templateSelector = within(modal).getByRole('combobox');
+      const templateSelector = within(modal).getByRole('combobox', { name: 'Event Template Input' });
       expect(templateSelector).toBeInTheDocument();
       expect(templateSelector).toBeVisible();
 
@@ -264,6 +268,7 @@ describe('<SmartTriggerTable />', () => {
       expect(option).toBeVisible();
 
       await user.selectOptions(templateSelector, 'Profiling');
+      await user.selectOptions(mbeanSelector, 'Process CPU Load');
 
       expect(submitButton).toBeEnabled();
       await user.click(submitButton);

@@ -60,6 +60,8 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  FormSelect,
+  FormSelectOption,
 } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
@@ -663,6 +665,42 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   const [expressionInput, setExpressionInput] = React.useState('');
   const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
   const [templateValid, setTemplateValid] = React.useState(ValidatedOptions.default);
+  const [mbeanSelectValue, setMbeanSelectValue] = React.useState('');
+
+  // FIXME: Hardcoding until we support pulling live data from the
+  // agent
+  const MbeanOptions = [
+    { value: 'DaemonThreadCount', label: 'Daemon Thread Count', disabled: false },
+    { value: 'ThreadCount', label: 'Thread Count', disabled: false },
+    { value: 'Name', label: 'OS Name', disabled: false },
+    { value: 'Arch', label: 'OS Arch', disabled: false },
+    { value: 'AvailableProcessors', label: 'AvailableProcessors', disabled: false },
+    { value: 'Version', label: 'OS Version', disabled: false },
+    { value: 'SystemCpuLoad', label: 'System CPU Load', disabled: false },
+    { value: 'SystemLoadAverage', label: 'System Load Average', disabled: false },
+    { value: 'ProcessCpuLoad', label: 'Process CPU Load', disabled: false },
+    { value: 'TotalPhyiscalMemorySize', label: 'Total Physical Memory Size', disabled: false },
+    { value: 'FreePhysicalMemorySize', label: 'Free Physical Memory Size', disabled: false },
+    { value: 'TotalSwapSpaceSize', label: 'Total Swap Space Size', disabled: false },
+    { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', disabled: false },
+    { value: 'NonHeapMemoryUsage', label: 'Non Heap Memory Usage', disabled: false },
+    { value: 'HeapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', disabled: false },
+    { value: 'BootClassPath', label: 'Boot ClassPath', disabled: false },
+    { value: 'ClassPath', label: 'Class Path', disabled: false },
+    { value: 'InputArguments', label: 'Input Arguments', disabled: false },
+    { value: 'LibraryPath', label: 'Library Path', disabled: false },
+    { value: 'ManagementSpecVersion', label: 'Management Specification Version', disabled: false },
+    { value: 'Name', label: 'Runtime Name', disabled: false },
+    { value: 'SpecName', label: 'Runtime Specification Name', disabled: false },
+    { value: 'SpecVendor', label: 'Runtime Specification Vendor', disabled: false },
+    { value: 'StartTime', label: 'VM Start Time', disabled: false },
+    { value: 'SystemProperties', label: 'System Properties', disabled: false },
+    { value: 'Uptime', label: 'VM Uptime', disabled: false },
+    { value: 'VmName', label: 'VM Name', disabled: false },
+    { value: 'VmVendor', label: 'VM Vendor', disabled: false },
+    { value: 'VmVersion', label: 'VM Version', disabled: false },
+    { value: 'BootClassPathSupported', label: 'Boot ClassPath Supported', disabled: false },
+  ];
 
   const reset = React.useCallback(() => {
     setUploading(false);
@@ -714,6 +752,10 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     addSubscription(context.target.target().subscribe(refreshFormOptions));
   }, [addSubscription, context.target, refreshFormOptions]);
 
+  const onMbeanChange = (_event: React.FormEvent<HTMLSelectElement>, value: string) => {
+    setMbeanSelectValue(value);
+  };
+
   const selectedSpecifier = React.useMemo(() => {
     const { template } = formData;
     if (template && template.name && template.type) {
@@ -740,6 +782,19 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       description="Create a customized Smart Trigger. This is a specialized tool available in the Cryostat Agent that listens for a condition to be met for a specified Mbean, after which a recording will be started with the specified template. This is only available for targets using the Cryostat Agent."
     >
       <Form>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('Triggers.AVAILABLE_MBEANS')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+        <FormSelect value={mbeanSelectValue} onChange={onMbeanChange} aria-label="MBean Input" ouiaId="BasicFormSelect">
+          {MbeanOptions.map((option, index) => (
+            <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
+          ))}
+        </FormSelect>
+        <HelperText>
+          <HelperTextItem>{`Selected MBean Attribute has the name: ${mbeanSelectValue}, Use this to build your expression.`}</HelperTextItem>
+        </HelperText>
         <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
           <TextArea
             value={expressionInput}
