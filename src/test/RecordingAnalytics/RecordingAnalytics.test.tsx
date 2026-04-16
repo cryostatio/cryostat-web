@@ -16,11 +16,11 @@
 
 import { RecordingAnalytics } from '@app/RecordingAnalytics/RecordingAnalytics';
 import { ThemeSetting } from '@app/Settings/types';
-import { RecordingDirectory } from '@app/Shared/Services/api.types';
+import { NotificationCategory, RecordingDirectory } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { basePreloadedState, render } from '../utils';
 
 jest.mock('monaco-editor', () => ({
@@ -159,12 +159,27 @@ const createMockResponse = (data: any) => ({
 describe('<RecordingAnalytics />', () => {
   let mockDoGet: jest.SpyInstance;
   let mockSendRequest: jest.SpyInstance;
+  let archivedRecordingCreatedSubject: Subject<any>;
+  let archivedRecordingDeletedSubject: Subject<any>;
 
   beforeEach(() => {
+    archivedRecordingCreatedSubject = new Subject();
+    archivedRecordingDeletedSubject = new Subject();
+
     mockDoGet = jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockRecordingDirectories));
     mockSendRequest = jest
       .spyOn(defaultServices.api, 'sendRequest')
       .mockReturnValue(of(createMockResponse(mockApiResponse) as any));
+    jest.spyOn(defaultServices.notificationChannel, 'messages').mockImplementation((category) => {
+      switch (category) {
+        case NotificationCategory.ArchivedRecordingCreated:
+          return archivedRecordingCreatedSubject.asObservable();
+        case NotificationCategory.ArchivedRecordingDeleted:
+          return archivedRecordingDeletedSubject.asObservable();
+        default:
+          return of();
+      }
+    });
     jest.spyOn(defaultServices.settings, 'themeSetting').mockReturnValue(of(ThemeSetting.LIGHT));
     jest.spyOn(defaultServices.settings, 'media').mockReturnValue(
       of({
@@ -766,5 +781,122 @@ describe('<RecordingAnalytics />', () => {
     });
 
     expect(container).toMatchSnapshot();
+  });
+
+  it('refreshes recording directories when ArchivedRecordingCreated notification is received', async () => {
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analytics',
+            element: <RecordingAnalytics />,
+          },
+        ],
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
+    });
+
+    expect(mockDoGet).toHaveBeenCalledTimes(1);
+
+    const updatedDirectories: RecordingDirectory[] = [
+      ...mockRecordingDirectories,
+      {
+        connectUrl: 'service:jmx:rmi://jvm-3',
+        jvmId: 'jvm-3',
+        recordings: [
+          {
+            name: 'new-recording.jfr',
+            downloadUrl: 'http://example.com/new-recording.jfr',
+            reportUrl: '',
+            archivedTime: 1234567893,
+            size: 8192,
+            metadata: { labels: [] },
+          },
+        ],
+      },
+    ];
+
+    mockDoGet.mockReturnValue(of(updatedDirectories));
+
+    archivedRecordingCreatedSubject.next({
+      message: {
+        jvmId: 'jvm-3',
+        recording: {
+          name: 'new-recording.jfr',
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockDoGet).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      const dropdowns = screen.getAllByTestId('simple-dropdown');
+      const jvmDropdown = dropdowns[0];
+      expect(within(jvmDropdown).getByText('jvm-3')).toBeInTheDocument();
+    });
+  });
+
+  it('refreshes recording directories when ArchivedRecordingDeleted notification is received', async () => {
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analytics',
+            element: <RecordingAnalytics />,
+          },
+        ],
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockDoGet).toHaveBeenCalledWith('fs/recordings', 'beta');
+    });
+
+    expect(mockDoGet).toHaveBeenCalledTimes(1);
+
+    const updatedDirectories: RecordingDirectory[] = [
+      {
+        connectUrl: 'service:jmx:rmi://jvm-1',
+        jvmId: 'jvm-1',
+        recordings: [
+          {
+            name: 'recording1.jfr',
+            downloadUrl: 'http://example.com/recording1.jfr',
+            reportUrl: '',
+            archivedTime: 1234567890,
+            size: 1024,
+            metadata: { labels: [] },
+          },
+        ],
+      },
+      mockRecordingDirectories[1],
+    ];
+
+    mockDoGet.mockReturnValue(of(updatedDirectories));
+
+    archivedRecordingDeletedSubject.next({
+      message: {
+        jvmId: 'jvm-1',
+        recording: {
+          name: 'recording2.jfr',
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockDoGet).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      const dropdowns = screen.getAllByTestId('simple-dropdown');
+      const jvmDropdown = dropdowns[0];
+      const jvmItems = within(jvmDropdown).getByTestId('dropdown-items');
+      expect(within(jvmItems).queryByText('recording2.jfr')).not.toBeInTheDocument();
+    });
   });
 });
