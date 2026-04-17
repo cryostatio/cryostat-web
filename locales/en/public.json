@@ -877,6 +877,7 @@
     "ARIA_LABELS": {
       "SEARCH_INPUT": "smart-trigger-filter"
     },
+    "DEFINITION_HINT_BODY": "Enter a numerical value.",
     "DEFINITION_HELPER_TEXT": "Enter a value to check the selected MBean Attribute against. When this condition is met for a specified duration a recording will be started with the specified template.",
     "TEMPLATE_SELECT": "Select an Event Template for starting a recording when the Trigger Condition is met.",
     "DURATION": "Target Duration",
