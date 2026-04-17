@@ -684,22 +684,25 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   // FIXME: Hardcoding until we support pulling live data from the
   // agent.
-  const MBeanOptions: MBeanOption[] = React.useMemo(() => [
-    { value: 'DaemonThreadCount', label: 'Daemon Thread Count', type: 'int' },
-    { value: 'ThreadCount', label: 'Thread Count', type: 'int' },
-    { value: 'AvailableProcessors', label: 'AvailableProcessors', type: 'int' },
-    { value: 'SystemCpuLoad', label: 'System CPU Load', type: 'double' },
-    { value: 'SystemLoadAverage', label: 'System Load Average', type: 'double' },
-    { value: 'ProcessCpuLoad', label: 'Process CPU Load', type: 'double' },
-    { value: 'TotalPhyiscalMemorySize', label: 'Total Physical Memory Size', type: 'long' },
-    { value: 'FreePhysicalMemorySize', label: 'Free Physical Memory Size', type: 'long' },
-    { value: 'TotalSwapSpaceSize', label: 'Total Swap Space Size', type: 'long' },
-    { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', type: 'long' },
-    { value: 'NonHeapMemoryUsage', label: 'Non Heap Memory Usage', type: 'long' },
-    { value: 'HeapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', type: 'double' },
-    { value: 'StartTime', label: 'VM Start Time', type: 'long' },
-    { value: 'Uptime', label: 'VM Uptime', type: 'long' },
-  ], []);
+  const MBeanOptions: MBeanOption[] = React.useMemo(
+    () => [
+      { value: 'DaemonThreadCount', label: 'Daemon Thread Count', type: 'int' },
+      { value: 'ThreadCount', label: 'Thread Count', type: 'int' },
+      { value: 'AvailableProcessors', label: 'AvailableProcessors', type: 'int' },
+      { value: 'SystemCpuLoad', label: 'System CPU Load', type: 'double' },
+      { value: 'SystemLoadAverage', label: 'System Load Average', type: 'double' },
+      { value: 'ProcessCpuLoad', label: 'Process CPU Load', type: 'double' },
+      { value: 'TotalPhyiscalMemorySize', label: 'Total Physical Memory Size', type: 'long' },
+      { value: 'FreePhysicalMemorySize', label: 'Free Physical Memory Size', type: 'long' },
+      { value: 'TotalSwapSpaceSize', label: 'Total Swap Space Size', type: 'long' },
+      { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', type: 'long' },
+      { value: 'NonHeapMemoryUsage', label: 'Non Heap Memory Usage', type: 'long' },
+      { value: 'HeapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', type: 'double' },
+      { value: 'StartTime', label: 'VM Start Time', type: 'long' },
+      { value: 'Uptime', label: 'VM Uptime', type: 'long' },
+    ],
+    [],
+  );
 
   const comparatorsOptions = [
     { value: '>', label: 'Greater Than (>)' },
