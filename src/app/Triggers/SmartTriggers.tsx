@@ -869,7 +869,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         >
           <FormSelectOption key={-1} value={''} label={'Select an MBean Attribute'} isDisabled />
           {MBeanOptions.map((option, index) => (
-            <FormSelectOption isDisabled={false} key={index} value={option.value} label={option.label} />
+            <FormSelectOption key={index} value={option.value} label={option.label} />
           ))}
         </FormSelect>
         <FormSelect
@@ -881,7 +881,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         >
           <FormSelectOption key={-1} value={''} label={'Select a Comparator'} isDisabled />
           {comparatorsOptions.map((option, index) => (
-            <FormSelectOption isDisabled={false} key={index} value={option.value} label={option.label} />
+            <FormSelectOption key={index} value={option.value} label={option.label} />
           ))}
         </FormSelect>
         <FormGroup label="Attribute Value" isRequired fieldId="definition">
