@@ -308,20 +308,13 @@ Below CSS rules only apply to Topology components
   width: 100%;
 }
 
-.cryostat-app .target-details-modal {
-  min-height: 36em;
+.pf-v6-c-modal-box.target-details-modal .lineage-tab-wrapper {
+  height: 500px !important;
 }
 
-.cryostat-app .target-details-modal .pf-v6-c-modal-box__body {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.cryostat-app .target-details-modal .pf-v6-c-modal-box__body > div {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
+.pf-v6-c-modal-box.target-details-modal .entity-overview__wrapper {
+  padding: 1.5em;
+  padding-right: 0.5em;
 }
 
 .cryostat-app .topology__graph-view--full-height {

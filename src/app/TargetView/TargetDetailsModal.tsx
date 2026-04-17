@@ -16,6 +16,7 @@
 
 import { NodeType, NullableTarget } from '@app/Shared/Services/api.types';
 import EntityDetails from '@app/Topology/Entity/EntityDetails';
+import { portalRoot } from '@app/utils/utils';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import * as React from 'react';
 
@@ -48,8 +49,13 @@ export const TargetDetailsModal: React.FC<TargetDetailsModalProps> = ({ visible,
       className="target-details-modal"
       onClose={onDismiss}
       title={target?.alias || 'Target Details'}
+      appendTo={portalRoot}
     >
-      <EntityDetails entity={wrappedTarget} className={'target-details-modal'} />
+      <EntityDetails
+        entity={wrappedTarget}
+        className={'target-details-modal'}
+        lineageClassNames="lineage-tab-wrapper"
+      />
     </Modal>
   );
 };
