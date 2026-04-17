@@ -159,6 +159,7 @@ export const RecordingAnalytics: React.FC = () => {
   const [result, setResult] = React.useState('');
   const [isSampleMenuOpen, setIsSampleMenuOpen] = React.useState(false);
   const editorRef = React.useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const sampleQueryInsertedRef = React.useRef(false);
 
   const refreshRecordingDirectories = React.useCallback(() => {
     addSubscription(
@@ -290,7 +291,8 @@ export const RecordingAnalytics: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
-    if (editorRef.current && query) {
+    if (editorRef.current && query && sampleQueryInsertedRef.current) {
+      sampleQueryInsertedRef.current = false;
       const timer = setTimeout(() => {
         const editor = editorRef.current;
         if (editor) {
@@ -333,6 +335,7 @@ export const RecordingAnalytics: React.FC = () => {
 
   const handleSampleQuerySelect = React.useCallback(
     (sampleQuery: string) => {
+      sampleQueryInsertedRef.current = true;
       setQuery(sampleQuery);
       setIsSampleMenuOpen(false);
     },
