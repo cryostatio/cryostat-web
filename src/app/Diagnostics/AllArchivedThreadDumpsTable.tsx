@@ -410,7 +410,12 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
             <Spinner />
           </Bullseye>
         ) : wrappedTarget ? (
-          <EntityDetails entity={wrappedTarget} className="target-details-modal" hideActions={true} />
+          <EntityDetails
+            entity={wrappedTarget}
+            className="target-details-modal"
+            lineageClassNames="lineage-tab-wrapper"
+            hideActions={true}
+          />
         ) : (
           <EmptyState headingLevel="h4" icon={TopologyIcon} titleText="Target Details Unavailable"></EmptyState>
         )}
