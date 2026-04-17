@@ -665,8 +665,8 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   const [uploading, setUploading] = React.useState(false);
 
-  const expressionRegex = RegExp('[0-9]+\.?[0-9]*');
-  const durationRegex = RegExp('[0-9]+');
+  const expressionRegex = RegExp('\^[0-9]+\.?[0-9]*\$');
+  const durationRegex = RegExp('\^[0-9]+\$');
 
   const [expressionInput, setExpressionInput] = React.useState('');
   const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
@@ -713,6 +713,9 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     } else {
       setExpressionInput('');
       setComparatorSelectValue('');
+      setDisableDuration(false);
+      setDurationValid(ValidatedOptions.default);
+      setExpressionValid(ValidatedOptions.default);
       reset();
       onClose();
     }
@@ -721,11 +724,21 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
     var durationExpr = '';
+    var formattedExpr = expressionInput;
     if (formData.duration != 0) {
       durationExpr = ';TargetDuration>duration("' + formData.duration + formData.durationUnit + '")';
     }
+    if (
+      mbeanSelectValue == 'ProcessCpuLoad' ||
+      mbeanSelectValue == 'SystemCpuLoad' ||
+      mbeanSelectValue == 'SystemLoadAverage'
+    ) {
+      if (!expressionInput.includes('.')) {
+        formattedExpr = expressionInput + '.0';
+      }
+    }
     props.onAccept(
-      '[' + mbeanSelectValue + comparatorSelectValue + expressionInput + durationExpr + ']~' + formData.template?.name,
+      '[' + mbeanSelectValue + comparatorSelectValue + formattedExpr + durationExpr + ']~' + formData.template?.name,
     );
     setUploading(false);
     onClose();
