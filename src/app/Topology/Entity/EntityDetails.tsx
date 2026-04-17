@@ -87,6 +87,7 @@ export interface EntityDetailsProps {
   actionFilter?: (_: NodeAction) => boolean;
   hideLineageTab?: boolean;
   hideActions?: boolean;
+  lineageClassNames?: string;
 }
 
 enum EntityTab {
@@ -103,6 +104,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   alertOptions,
   hideLineageTab = false,
   hideActions = false,
+  lineageClassNames,
   ...props
 }) => {
   const [activeTab, setActiveTab] = React.useState(EntityTab.DETAIL);
@@ -142,7 +144,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             </Tab>
             {isTarget && !hideLineageTab && data.target.jvmId ? (
               <Tab eventKey={EntityTab.LINEAGE} title={<TabTitleText>Lineage</TabTitleText>}>
-                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }} className={lineageClassNames}>
                   <TargetLineage jvmId={data.target.jvmId} />
                 </div>
               </Tab>
@@ -152,7 +154,17 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, columnModifier, actionFilter, alertOptions, hideActions, hideLineageTab]);
+  }, [
+    entity,
+    setActiveTab,
+    activeTab,
+    columnModifier,
+    actionFilter,
+    alertOptions,
+    hideActions,
+    hideLineageTab,
+    lineageClassNames,
+  ]);
   return (
     <div {...props} className={css('entity-overview', className)}>
       {viewContent}
