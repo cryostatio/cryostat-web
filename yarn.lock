@@ -7256,8 +7256,8 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-react-hooks@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "eslint-plugin-react-hooks@npm:7.0.1"
+  version: 7.1.0
+  resolution: "eslint-plugin-react-hooks@npm:7.1.0"
   dependencies:
     "@babel/core": "npm:^7.24.4"
     "@babel/parser": "npm:^7.24.4"
@@ -7265,8 +7265,8 @@ __metadata:
     zod: "npm:^3.25.0 || ^4.0.0"
     zod-validation-error: "npm:^3.5.0 || ^4.0.0"
   peerDependencies:
-    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
-  checksum: 10/12e96c68d58c6588305fd17d660524a1ef1e872650ec591d5b138f059431290831c373d4b1c9ae8991fb25f96c43935497d2149678c027e65d0417d3d99ecc85
+    eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0 || ^10.0.0
+  checksum: 10/b91814a9edb05a603850b339382c3d4007e515d230cefc8b9f6dceadadab1335f1fb303637fbeac9fb4d82389df7b448dc5ef38582129b28ce05d8d3bf0b61e0
   languageName: node
   linkType: hard
 
