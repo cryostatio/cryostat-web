@@ -728,6 +728,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     if (formData.duration != 0) {
       durationExpr = ';TargetDuration>duration("' + formData.duration + formData.durationUnit + '")';
     }
+    // These 3 attributes require a double, make sure it gets formatted correctly
     if (
       mbeanSelectValue == 'ProcessCpuLoad' ||
       mbeanSelectValue == 'SystemCpuLoad' ||
