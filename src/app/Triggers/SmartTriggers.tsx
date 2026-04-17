@@ -646,6 +646,12 @@ export interface CreateSmartTriggersModalProps {
   onAccept: (s: string) => void;
 }
 
+interface MBeanOption {
+  value: string,
+  label: string,
+  type: string,
+}
+
 export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, ...props }) => {
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
@@ -678,29 +684,29 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   // FIXME: Hardcoding until we support pulling live data from the
   // agent.
-  const MbeanOptions = [
-    { value: 'DaemonThreadCount', label: 'Daemon Thread Count', disabled: false, type: 'int' },
-    { value: 'ThreadCount', label: 'Thread Count', disabled: false, type: '' },
-    { value: 'AvailableProcessors', label: 'AvailableProcessors', disabled: false },
-    { value: 'SystemCpuLoad', label: 'System CPU Load', disabled: false },
-    { value: 'SystemLoadAverage', label: 'System Load Average', disabled: false },
-    { value: 'ProcessCpuLoad', label: 'Process CPU Load', disabled: false },
-    { value: 'TotalPhyiscalMemorySize', label: 'Total Physical Memory Size', disabled: false },
-    { value: 'FreePhysicalMemorySize', label: 'Free Physical Memory Size', disabled: false },
-    { value: 'TotalSwapSpaceSize', label: 'Total Swap Space Size', disabled: false },
-    { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', disabled: false },
-    { value: 'NonHeapMemoryUsage', label: 'Non Heap Memory Usage', disabled: false },
-    { value: 'HeapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', disabled: false },
-    { value: 'StartTime', label: 'VM Start Time', disabled: false },
-    { value: 'Uptime', label: 'VM Uptime', disabled: false },
+  const MBeanOptions : MBeanOption[] = [
+    { value: 'DaemonThreadCount', label: 'Daemon Thread Count', type: 'int' },
+    { value: 'ThreadCount', label: 'Thread Count', type: 'int' },
+    { value: 'AvailableProcessors', label: 'AvailableProcessors', type: 'int' },
+    { value: 'SystemCpuLoad', label: 'System CPU Load', type: 'double' },
+    { value: 'SystemLoadAverage', label: 'System Load Average', type: 'double' },
+    { value: 'ProcessCpuLoad', label: 'Process CPU Load', type: 'double' },
+    { value: 'TotalPhyiscalMemorySize', label: 'Total Physical Memory Size', type: 'long' },
+    { value: 'FreePhysicalMemorySize', label: 'Free Physical Memory Size', type: 'long' },
+    { value: 'TotalSwapSpaceSize', label: 'Total Swap Space Size', type: 'long' },
+    { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', type: 'long' },
+    { value: 'NonHeapMemoryUsage', label: 'Non Heap Memory Usage', type: 'long' },
+    { value: 'HeapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', type: 'double' },
+    { value: 'StartTime', label: 'VM Start Time', type: 'long'},
+    { value: 'Uptime', label: 'VM Uptime', type: 'long' },
   ];
 
   const comparatorsOptions = [
-    { value: '>', label: 'Greater Than (>)', disabled: false },
-    { value: '>=', label: 'Greater Than/Equal To (>=)', disabled: false },
-    { value: '==', label: 'Equal To', disabled: false },
-    { value: '<=', label: 'Less Than/Equal To (>)', disabled: false },
-    { value: '<', label: 'Less Than (>)', disabled: false },
+    { value: '>', label: 'Greater Than (>)'},
+    { value: '>=', label: 'Greater Than/Equal To (>=)'},
+    { value: '==', label: 'Equal To'},
+    { value: '<=', label: 'Less Than/Equal To (>)'},
+    { value: '<', label: 'Less Than (>)'},
   ];
 
   const reset = React.useCallback(() => {
@@ -721,6 +727,16 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     }
   }, [uploading, abortRef, reset, onClose]);
 
+  const getOptionByName = React.useCallback((s: string) => {
+    var option;
+    MBeanOptions.forEach((opt : MBeanOption) => {
+      if (opt.value == s) {
+        option = opt
+      }
+    })
+    return option;
+  },[MBeanOptions])
+
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
     var durationExpr = '';
@@ -728,12 +744,8 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     if (formData.duration != 0) {
       durationExpr = ';TargetDuration>duration("' + formData.duration + formData.durationUnit + '")';
     }
-    // These 3 attributes require a double, make sure it gets formatted correctly
-    if (
-      mbeanSelectValue == 'ProcessCpuLoad' ||
-      mbeanSelectValue == 'SystemCpuLoad' ||
-      mbeanSelectValue == 'SystemLoadAverage'
-    ) {
+    var opt = getOptionByName(mbeanSelectValue);
+    if (opt.type == 'double'){
       if (!expressionInput.includes('.')) {
         formattedExpr = expressionInput + '.0';
       }
@@ -747,6 +759,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
   }, [
     props,
     onClose,
+    getOptionByName,
     comparatorSelectValue,
     formData.duration,
     formData.durationUnit,
@@ -852,8 +865,8 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
           placeholder="Select an MBean Attribute"
         >
           <FormSelectOption key={-1} value={''} label={'Select an MBean Attribute'} isDisabled />
-          {MbeanOptions.map((option, index) => (
-            <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
+          {MBeanOptions.map((option, index) => (
+            <FormSelectOption isDisabled={false} key={index} value={option.value} label={option.label} />
           ))}
         </FormSelect>
         <FormSelect
@@ -865,7 +878,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         >
           <FormSelectOption key={-1} value={''} label={'Select a Comparator'} isDisabled />
           {comparatorsOptions.map((option, index) => (
-            <FormSelectOption isDisabled={option.disabled} key={index} value={option.value} label={option.label} />
+            <FormSelectOption isDisabled={false} key={index} value={option.value} label={option.label} />
           ))}
         </FormSelect>
         <FormGroup label="Attribute Value" isRequired fieldId="definition">
