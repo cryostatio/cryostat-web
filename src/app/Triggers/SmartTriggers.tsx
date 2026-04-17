@@ -647,9 +647,9 @@ export interface CreateSmartTriggersModalProps {
 }
 
 interface MBeanOption {
-  value: string,
-  label: string,
-  type: string,
+  value: string;
+  label: string;
+  type: string;
 }
 
 export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, ...props }) => {
@@ -684,7 +684,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
 
   // FIXME: Hardcoding until we support pulling live data from the
   // agent.
-  const MBeanOptions : MBeanOption[] = [
+  const MBeanOptions: MBeanOption[] = React.useMemo(() => [
     { value: 'DaemonThreadCount', label: 'Daemon Thread Count', type: 'int' },
     { value: 'ThreadCount', label: 'Thread Count', type: 'int' },
     { value: 'AvailableProcessors', label: 'AvailableProcessors', type: 'int' },
@@ -697,16 +697,16 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', type: 'long' },
     { value: 'NonHeapMemoryUsage', label: 'Non Heap Memory Usage', type: 'long' },
     { value: 'HeapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', type: 'double' },
-    { value: 'StartTime', label: 'VM Start Time', type: 'long'},
+    { value: 'StartTime', label: 'VM Start Time', type: 'long' },
     { value: 'Uptime', label: 'VM Uptime', type: 'long' },
-  ];
+  ], []);
 
   const comparatorsOptions = [
-    { value: '>', label: 'Greater Than (>)'},
-    { value: '>=', label: 'Greater Than/Equal To (>=)'},
-    { value: '==', label: 'Equal To'},
-    { value: '<=', label: 'Less Than/Equal To (>)'},
-    { value: '<', label: 'Less Than (>)'},
+    { value: '>', label: 'Greater Than (>)' },
+    { value: '>=', label: 'Greater Than/Equal To (>=)' },
+    { value: '==', label: 'Equal To' },
+    { value: '<=', label: 'Less Than/Equal To (>)' },
+    { value: '<', label: 'Less Than (>)' },
   ];
 
   const reset = React.useCallback(() => {
@@ -727,15 +727,18 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     }
   }, [uploading, abortRef, reset, onClose]);
 
-  const getOptionByName = React.useCallback((s: string) => {
-    var option;
-    MBeanOptions.forEach((opt : MBeanOption) => {
-      if (opt.value == s) {
-        option = opt
-      }
-    })
-    return option;
-  },[MBeanOptions])
+  const getOptionByName = React.useCallback(
+    (s: string) => {
+      var option;
+      MBeanOptions.forEach((opt: MBeanOption) => {
+        if (opt.value == s) {
+          option = opt;
+        }
+      });
+      return option;
+    },
+    [MBeanOptions],
+  );
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
@@ -745,7 +748,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       durationExpr = ';TargetDuration>duration("' + formData.duration + formData.durationUnit + '")';
     }
     var opt = getOptionByName(mbeanSelectValue);
-    if (opt.type == 'double'){
+    if (opt.type == 'double') {
       if (!expressionInput.includes('.')) {
         formattedExpr = expressionInput + '.0';
       }
