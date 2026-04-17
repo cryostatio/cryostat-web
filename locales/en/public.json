@@ -877,9 +877,13 @@
     "ARIA_LABELS": {
       "SEARCH_INPUT": "smart-trigger-filter"
     },
-    "DEFINITION_HELPER_TEXT": "Enter a Smart Trigger definition. A custom trigger definition must consist of both an expression that defines the overall trigger condition and the name of an event template that is used for the JFR Recording. The expression is a <a>Common Expression Language (CEL)</a> code snippet that defines one or more constraints and a target duration.",
-    "DEFINITION_HINT": "The set of constraints and target duration must be separated by a semicolon (;) character. Each constraint must include: the name of an MBean counter; a relational operator such as > (greater than), = (equal to), <(less than), and so on; and a specified value. The type of relational operator and value that you can specify depends on the associated MBean counter type. The constraint and duration must be enclosed in square brackets, followed by a tilde then the Recording Template name.",
-    "DEFINITION_HINT_BODY": "For an example definition: [ProcessCpuLoad>0.2;TargetDuration>duration(\"30s\")]~Profiling"
+    "DEFINITION_HINT_BODY": "Enter a numerical value.",
+    "DEFINITION_HELPER_TEXT": "Enter a value to check the selected MBean Attribute against. When this condition is met for a specified duration a recording will be started with the specified template.",
+    "TEMPLATE_SELECT": "Select an Event Template for starting a recording when the Trigger Condition is met.",
+    "DURATION": "Target Duration",
+    "DURATION_HINT": "Check the box and set the conditions for the Target Duration. This is the period of time that must pass with the MBean Attribute condition met before the Smart Trigger will start a recording.",
+    "DISABLE_DURATION": "Trigger Immediately when Condition is met.",
+    "AVAILABLE_MBEANS": "Select an MBean to check the value of."
   },
   "AuditLog": {
     "TITLE": "Audit Log",

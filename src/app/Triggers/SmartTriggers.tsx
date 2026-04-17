@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { EventTemplateIdentifier } from '@app/CreateRecording/types';
 import { ColumnConfig, DiagnosticsTable } from '@app/Diagnostics/DiagnosticsTable';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteOrDisableWarningType } from '@app/Modal/types';
-import { CEL_SPEC_HREF } from '@app/Rules/utils';
+import { SelectTemplateSelectorForm } from '@app/Shared/Components/SelectTemplateSelectorForm';
 import { LoadingProps } from '@app/Shared/Components/types';
 
-import { NotificationCategory, NullableTarget, SmartTrigger } from '@app/Shared/Services/api.types';
+import {
+  EventTemplate,
+  NotificationCategory,
+  NullableTarget,
+  SmartTrigger,
+  Target,
+} from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { TableColumn, hashCode, portalRoot, sortResources } from '@app/utils/utils';
@@ -52,6 +59,11 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  FormSelect,
+  FormSelectOption,
+  Split,
+  SplitItem,
+  TextInput,
 } from '@patternfly/react-core';
 import { Modal, ModalVariant } from '@patternfly/react-core/deprecated';
 import { EllipsisVIcon, SearchIcon } from '@patternfly/react-icons';
@@ -61,6 +73,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
 import { first, forkJoin, Observable } from 'rxjs';
+import { SmartTriggersFormData } from './types';
 
 export const tableColumns: TableColumn[] = [
   {
@@ -633,16 +646,71 @@ export interface CreateSmartTriggersModalProps {
   onAccept: (s: string) => void;
 }
 
+interface MBeanOption {
+  value: string;
+  label: string;
+  type: string;
+}
+
 export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> = ({ onClose, ...props }) => {
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
+  const [templates, setTemplates] = React.useState<EventTemplate[]>([]);
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+  const [formData, setFormData] = React.useState<SmartTriggersFormData>({
+    name: '',
+    nameValid: ValidatedOptions.default,
+    enabled: true,
+    expression: '', // Use this for displaying Match Expression input
+    expressionValid: ValidatedOptions.default,
+    duration: 0,
+    durationUnit: 's',
+    durationValid: ValidatedOptions.default,
+  });
 
   const [uploading, setUploading] = React.useState(false);
 
-  const expressionRegex = RegExp('\\[(.*(&&)*|(\\|\\|)*)\\]~([\\w\\-]+)(?:\\.jfc)?');
+  const expressionRegex = RegExp('\^[0-9]+\.?[0-9]*\$');
+  const durationRegex = RegExp('\^[0-9]+\$');
 
   const [expressionInput, setExpressionInput] = React.useState('');
   const [expressionValid, setExpressionValid] = React.useState(ValidatedOptions.default);
+  const [templateValid, setTemplateValid] = React.useState(ValidatedOptions.default);
+  const [mbeanSelectValue, setMbeanSelectValue] = React.useState('');
+  const [comparatorSelectValue, setComparatorSelectValue] = React.useState('');
+  const [durationValid, setDurationValid] = React.useState(ValidatedOptions.default);
+  const [disableDuration, setDisableDuration] = React.useState(false);
+
+  // FIXME: Hardcoding until we support pulling live data from the
+  // agent.
+  const MBeanOptions: MBeanOption[] = React.useMemo(
+    () => [
+      { value: 'DaemonThreadCount', label: 'Daemon Thread Count', type: 'int' },
+      { value: 'ThreadCount', label: 'Thread Count', type: 'int' },
+      { value: 'AvailableProcessors', label: 'AvailableProcessors', type: 'int' },
+      { value: 'SystemCpuLoad', label: 'System CPU Load', type: 'double' },
+      { value: 'SystemLoadAverage', label: 'System Load Average', type: 'double' },
+      { value: 'ProcessCpuLoad', label: 'Process CPU Load', type: 'double' },
+      { value: 'TotalPhyiscalMemorySize', label: 'Total Physical Memory Size', type: 'long' },
+      { value: 'FreePhysicalMemorySize', label: 'Free Physical Memory Size', type: 'long' },
+      { value: 'TotalSwapSpaceSize', label: 'Total Swap Space Size', type: 'long' },
+      { value: 'HeapMemoryUsage', label: 'Heap Memory Usage', type: 'long' },
+      { value: 'NonHeapMemoryUsage', label: 'Non Heap Memory Usage', type: 'long' },
+      { value: 'HeapMemoryUsagePercent', label: 'Heap Memory Usage Percentage', type: 'double' },
+      { value: 'StartTime', label: 'VM Start Time', type: 'long' },
+      { value: 'Uptime', label: 'VM Uptime', type: 'long' },
+    ],
+    [],
+  );
+
+  const comparatorsOptions = [
+    { value: '>', label: 'Greater Than (>)' },
+    { value: '>=', label: 'Greater Than/Equal To (>=)' },
+    { value: '==', label: 'Equal To' },
+    { value: '<=', label: 'Less Than/Equal To (>)' },
+    { value: '<', label: 'Less Than (>)' },
+  ];
 
   const reset = React.useCallback(() => {
     setUploading(false);
@@ -653,18 +721,59 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       abortRef.current && abortRef.current.click();
     } else {
       setExpressionInput('');
+      setComparatorSelectValue('');
+      setDisableDuration(false);
+      setDurationValid(ValidatedOptions.default);
+      setExpressionValid(ValidatedOptions.default);
       reset();
       onClose();
     }
   }, [uploading, abortRef, reset, onClose]);
 
+  const getOptionByName = React.useCallback(
+    (s: string) => {
+      var option;
+      MBeanOptions.forEach((opt: MBeanOption) => {
+        if (opt.value == s) {
+          option = opt;
+        }
+      });
+      return option;
+    },
+    [MBeanOptions],
+  );
+
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-    props.onAccept(expressionInput);
+    var durationExpr = '';
+    var formattedExpr = expressionInput;
+    if (formData.duration != 0) {
+      durationExpr = ';TargetDuration>duration("' + formData.duration + formData.durationUnit + '")';
+    }
+    var opt = getOptionByName(mbeanSelectValue);
+    if (opt.type == 'double') {
+      if (!expressionInput.includes('.')) {
+        formattedExpr = expressionInput + '.0';
+      }
+    }
+    props.onAccept(
+      '[' + mbeanSelectValue + comparatorSelectValue + formattedExpr + durationExpr + ']~' + formData.template?.name,
+    );
     setUploading(false);
     onClose();
     setExpressionInput('');
-  }, [props, onClose, expressionInput, submitRef]);
+  }, [
+    props,
+    onClose,
+    getOptionByName,
+    comparatorSelectValue,
+    formData.duration,
+    formData.durationUnit,
+    mbeanSelectValue,
+    expressionInput,
+    submitRef,
+    formData.template?.name,
+  ]);
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
@@ -674,6 +783,69 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
         isLoading: uploading,
       }) as LoadingProps,
     [uploading],
+  );
+
+  const refreshFormOptions = React.useCallback(
+    (target: Target) => {
+      if (!target) {
+        return;
+      }
+      addSubscription(
+        context.api.getTargetEventTemplates(target).subscribe({
+          next: setTemplates,
+        }),
+      );
+    },
+    [addSubscription, context.api, setTemplates],
+  );
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(refreshFormOptions));
+  }, [addSubscription, context.target, refreshFormOptions]);
+
+  const onMbeanChange = (_event: React.FormEvent<HTMLSelectElement>, value: string) => {
+    setMbeanSelectValue(value);
+  };
+
+  const onComparatorChange = (_event: React.FormEvent<HTMLSelectElement>, value: string) => {
+    setComparatorSelectValue(value);
+  };
+
+  const handleDurationChange = React.useCallback(
+    (_, value: string) => {
+      setFormData((old) => ({ ...old, duration: Number(value) }));
+      setDurationValid(durationRegex.test(value) ? ValidatedOptions.success : ValidatedOptions.error);
+    },
+    [durationRegex, setFormData],
+  );
+
+  const handleDisableDuration = React.useCallback(
+    (_, hide: boolean) => {
+      setDisableDuration(hide);
+      setFormData((old) => ({ ...old, duration: 0 }));
+    },
+    [setDisableDuration],
+  );
+
+  const handleDurationUnitChange = React.useCallback(
+    (_, unit: string) => setFormData((old) => ({ ...old, durationUnit: unit })),
+    [setFormData],
+  );
+
+  const selectedSpecifier = React.useMemo(() => {
+    const { template } = formData;
+    if (template && template.name && template.type) {
+      return `${template.name},${template.type}`;
+    }
+    return '';
+  }, [formData]);
+
+  const handleTemplateChange = React.useCallback(
+    (template: EventTemplateIdentifier) => {
+      setFormData((old) => ({ ...old, template }));
+      setTemplateValid(ValidatedOptions.success);
+    },
+    [setFormData],
   );
 
   return (
@@ -686,12 +858,42 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
       description="Create a customized Smart Trigger. This is a specialized tool available in the Cryostat Agent that listens for a condition to be met for a specified Mbean, after which a recording will be started with the specified template. This is only available for targets using the Cryostat Agent."
     >
       <Form>
-        <FormGroup label="Smart Trigger definition" isRequired fieldId="definition">
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('Triggers.AVAILABLE_MBEANS')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+        <FormSelect
+          value={mbeanSelectValue}
+          onChange={onMbeanChange}
+          aria-label="MBean Input"
+          ouiaId="BasicFormSelect"
+          placeholder="Select an MBean Attribute"
+        >
+          <FormSelectOption key={-1} value={''} label={'Select an MBean Attribute'} isDisabled />
+          {MBeanOptions.map((option, index) => (
+            <FormSelectOption key={index} value={option.value} label={option.label} />
+          ))}
+        </FormSelect>
+        <FormSelect
+          value={comparatorSelectValue}
+          onChange={onComparatorChange}
+          aria-label="Comparator Input"
+          ouiaId="BasicFormSelect"
+          placeholder="Select a Comparator"
+        >
+          <FormSelectOption key={-1} value={''} label={'Select a Comparator'} isDisabled />
+          {comparatorsOptions.map((option, index) => (
+            <FormSelectOption key={index} value={option.value} label={option.label} />
+          ))}
+        </FormSelect>
+        <FormGroup label="Attribute Value" isRequired fieldId="definition">
           <TextArea
             value={expressionInput}
             isRequired
             type="text"
             id="expr"
+            aria-label="Expression Input"
             aria-describedby="expr-helper"
             onChange={(_event, v) => {
               setExpressionInput(v);
@@ -706,14 +908,7 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
           />
         </FormGroup>
         <FormHelperText>
-          <Trans t={t} components={{ a: <a target="_blank" href={CEL_SPEC_HREF} /> }}>
-            Triggers.DEFINITION_HELPER_TEXT
-          </Trans>
-        </FormHelperText>
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem>{t('Triggers.DEFINITION_HINT')}</HelperTextItem>
-          </HelperText>
+          <Trans t={t}>Triggers.DEFINITION_HELPER_TEXT</Trans>
         </FormHelperText>
         <FormHelperText>
           <HelperText>
@@ -722,13 +917,71 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
             </HelperTextItem>
           </HelperText>
         </FormHelperText>
+        <FormGroup label={t('Triggers.DURATION')} fieldId="maxAge">
+          <Split hasGutter={true}>
+            <SplitItem>
+              <Checkbox
+                name={`duration-check`}
+                label={t('Triggers.DISABLE_DURATION')}
+                onChange={handleDisableDuration}
+                isChecked={disableDuration}
+                id={`duration-check`}
+                aria-label={`duration-check`}
+              />
+            </SplitItem>
+            <SplitItem isFilled>
+              <TextInput
+                value={formData.duration}
+                isRequired
+                type="number"
+                id="duration"
+                aria-label="Trigger Duration"
+                onChange={handleDurationChange}
+                validated={durationValid}
+                min="0"
+                isDisabled={disableDuration}
+              />
+            </SplitItem>
+            <SplitItem>
+              <FormSelect
+                className="trigger-create__form_select"
+                value={formData.durationUnit}
+                onChange={handleDurationUnitChange}
+                aria-label="Duration units Input"
+                isDisabled={disableDuration}
+              >
+                <FormSelectOption key="0" value="" label="Select a duration" isDisabled />
+                <FormSelectOption key="1" value="s" label="Seconds" />
+                <FormSelectOption key="2" value="m" label="Minutes" />
+                <FormSelectOption key="3" value="h" label="Hours" />
+              </FormSelect>
+            </SplitItem>
+          </Split>
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>{t('Triggers.DURATION_HINT')}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        </FormGroup>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>{t('Triggers.TEMPLATE_SELECT')}</HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+        <SelectTemplateSelectorForm
+          selected={selectedSpecifier}
+          templates={templates}
+          validated={templateValid}
+          disabled={uploading}
+          onSelect={handleTemplateChange}
+        />
         <ActionGroup>
           <>
             <Button
               aria-label="submit-button"
               variant="primary"
               onClick={handleSubmit}
-              isDisabled={expressionValid != ValidatedOptions.success}
+              isDisabled={expressionValid != ValidatedOptions.success || templateValid != ValidatedOptions.success}
               {...submitButtonLoadingProps}
             >
               {uploading ? 'Submitting' : 'Submit'}
