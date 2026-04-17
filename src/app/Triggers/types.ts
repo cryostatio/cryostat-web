@@ -23,11 +23,14 @@ interface _FormBaseData {
   enabled: boolean;
   expression: string;
   template?: EventTemplateIdentifier;
+  duration: number;
+  durationUnit: string;
 }
 
 interface _FormValidationData {
   nameValid: ValidatedOptions;
   expressionValid: ValidatedOptions;
+  durationValid: ValidatedOptions;
 }
 
 export type SmartTriggersFormData = _FormBaseData & _FormValidationData;

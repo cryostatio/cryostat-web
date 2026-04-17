@@ -243,11 +243,11 @@ describe('<SmartTriggerTable />', () => {
       expect(submitButton).toBeInTheDocument();
       expect(submitButton).toBeVisible();
 
-      const expressionInput = within(modal).getByRole('textbox');
+      const expressionInput = within(modal).getByRole('textbox', { name: 'Expression Input' });
       expect(expressionInput).toBeInTheDocument();
       expect(expressionInput).toBeVisible();
 
-      await user.type(expressionInput, escapeKeyboardInput('[foo]'));
+      await user.type(expressionInput, escapeKeyboardInput('0.0'));
 
       const mbeanSelector = within(modal).getByRole('combobox', { name: 'MBean Input' });
       expect(mbeanSelector).toBeInTheDocument();
@@ -261,6 +261,20 @@ describe('<SmartTriggerTable />', () => {
       expect(templateSelector).toBeInTheDocument();
       expect(templateSelector).toBeVisible();
 
+      const comparatorSelector = within(modal).getByRole('combobox', { name: 'Comparator Input' });
+      expect(comparatorSelector).toBeInTheDocument();
+      expect(comparatorSelector).toBeVisible();
+
+      const durationSelector = within(modal).getByRole('combobox', { name: 'Duration units Input' });
+      expect(durationSelector).toBeInTheDocument();
+      expect(durationSelector).toBeVisible();
+
+      const durationInput = within(modal).getByLabelText('Trigger Duration');
+      expect(durationInput).toBeInTheDocument();
+      expect(durationInput).toBeVisible();
+
+      await user.type(durationInput, escapeKeyboardInput('30'));
+
       await user.click(templateSelector);
 
       const option = screen.getByText('Profiling');
@@ -269,13 +283,109 @@ describe('<SmartTriggerTable />', () => {
 
       await user.selectOptions(templateSelector, 'Profiling');
       await user.selectOptions(mbeanSelector, 'Process CPU Load');
+      await user.selectOptions(comparatorSelector, 'Greater Than (&gt;)');
+      await user.selectOptions(durationSelector, 'Seconds');
 
       expect(submitButton).toBeEnabled();
       await user.click(submitButton);
 
       const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
       expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-      expect(uploadRequestSpy).toHaveBeenCalledWith('[foo]~Profiling', mockTarget);
+      expect(uploadRequestSpy).toHaveBeenCalledWith(
+        '[ProcessCpuLoad>0.0;TargetDuration>duration("30s")]~Profiling',
+        mockTarget,
+      );
+    });
+  });
+
+  it('should upload Smart Triggers when submit button is clicked and no duration is specified', async () => {
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/triggers',
+            element: (
+              <SmartTriggersTable target={of(mockTarget)} isNestedTable={false} toolbarBreakReference={document.body} />
+            ),
+          },
+        ],
+      },
+    });
+
+    await act(async () => {
+      const uploadButton = screen.getByRole('button', { name: 'Create' });
+      expect(uploadButton).toBeInTheDocument();
+      expect(uploadButton).toBeVisible();
+
+      await user.click(uploadButton);
+
+      const modal = await screen.findByRole('dialog');
+      expect(modal).toBeInTheDocument();
+      expect(modal).toBeVisible();
+
+      const modalTitle = await within(modal).findByText('Create custom Smart Trigger');
+      expect(modalTitle).toBeInTheDocument();
+      expect(modalTitle).toBeVisible();
+
+      const submitButton = within(modal).getByLabelText('submit-button');
+      expect(submitButton).toBeInTheDocument();
+      expect(submitButton).toBeVisible();
+
+      const expressionInput = within(modal).getByRole('textbox', { name: 'Expression Input' });
+      expect(expressionInput).toBeInTheDocument();
+      expect(expressionInput).toBeVisible();
+
+      await user.type(expressionInput, escapeKeyboardInput('0.0'));
+
+      const mbeanSelector = within(modal).getByRole('combobox', { name: 'MBean Input' });
+      expect(mbeanSelector).toBeInTheDocument();
+      expect(mbeanSelector).toBeVisible();
+
+      const templates = screen.getByText(testT('Triggers.TEMPLATE_SELECT'));
+      expect(templates).toBeInTheDocument();
+      expect(templates).toBeVisible();
+
+      const templateSelector = within(modal).getByRole('combobox', { name: 'Event Template Input' });
+      expect(templateSelector).toBeInTheDocument();
+      expect(templateSelector).toBeVisible();
+
+      const comparatorSelector = within(modal).getByRole('combobox', { name: 'Comparator Input' });
+      expect(comparatorSelector).toBeInTheDocument();
+      expect(comparatorSelector).toBeVisible();
+
+      const durationSelector = within(modal).getByRole('combobox', { name: 'Duration units Input' });
+      expect(durationSelector).toBeInTheDocument();
+      expect(durationSelector).toBeVisible();
+
+      const durationInput = within(modal).getByLabelText('Trigger Duration');
+      expect(durationInput).toBeInTheDocument();
+      expect(durationInput).toBeVisible();
+
+      const durationToggle = within(modal).getByRole('checkbox');
+      expect(durationToggle).toBeInTheDocument();
+      expect(durationToggle).toBeVisible();
+
+      await user.click(durationToggle);
+
+      expect(durationSelector).toBeDisabled();
+      expect(durationInput).toBeDisabled();
+
+      await user.click(templateSelector);
+
+      const option = screen.getByText('Profiling');
+      expect(option).toBeInTheDocument();
+      expect(option).toBeVisible();
+
+      await user.selectOptions(templateSelector, 'Profiling');
+      await user.selectOptions(mbeanSelector, 'Process CPU Load');
+      await user.selectOptions(comparatorSelector, 'Greater Than (&gt;)');
+
+      expect(submitButton).toBeEnabled();
+      await user.click(submitButton);
+
+      const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addTriggers');
+      expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
+      expect(uploadRequestSpy).toHaveBeenCalledWith('[ProcessCpuLoad>0.0]~Profiling', mockTarget);
     });
   });
 });
