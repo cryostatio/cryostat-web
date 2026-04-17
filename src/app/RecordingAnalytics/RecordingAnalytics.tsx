@@ -92,6 +92,30 @@ const SAMPLE_QUERIES: SampleQuery[] = [
         LIMIT 20`,
   },
   {
+    id: 'cpu-load-statistics',
+    description: 'CPU load statistics (min/max/avg for JVM and machine)',
+    query: `SELECT
+        MIN("jvmUser") as "min_jvm_user",
+        MAX("jvmUser") as "max_jvm_user",
+        AVG("jvmUser") as "avg_jvm_user",
+        MIN("machineTotal") as "min_machine_total",
+        MAX("machineTotal") as "max_machine_total",
+        AVG("machineTotal") as "avg_machine_total"
+        FROM jfr."jdk.CPULoad"`,
+  },
+  {
+    id: 'cpu-load-p95',
+    description: 'CPU load 95th percentile (jvmUser)',
+    query: `SELECT "jvmUser"
+            FROM (
+                SELECT "jvmUser",
+                      ROW_NUMBER() OVER (ORDER BY "jvmUser" DESC) as rn,
+                      COUNT(*) OVER () as total
+                FROM jfr."jdk.CPULoad"
+            )
+            WHERE rn = CAST(total * 0.05 AS INTEGER)`,
+  },
+  {
     id: 'first-class-loaded-detailed',
     description: 'First class loaded by JVM (detailed)',
     query: `SELECT "startTime", "loadedClass", "initiatingClassLoader", "definingClassLoader"
