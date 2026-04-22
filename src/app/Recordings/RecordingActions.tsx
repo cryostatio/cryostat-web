@@ -18,7 +18,6 @@ import { NotificationCategory, Recording, Target } from '@app/Shared/Services/ap
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { toPath } from '@app/utils/utils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -52,7 +51,6 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
   const capabilities = React.useContext(CapabilitiesContext);
   const notifications = React.useContext(NotificationsContext);
   const navigate = useNavigate();
-  const activeLevel = useFeatureLevel();
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
 
