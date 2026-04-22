@@ -122,7 +122,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     }
 
     const jvmId = directory?.jvmId ?? recording.metadata.labels.find((v) => v.key === 'jvmId')?.value;
-    if (jvmId && activeLevel <= FeatureLevel.BETA) {
+    if (jvmId) {
       actionItems.push({
         title: t('RecordingActions.VIEW_IN_ANALYTICS'),
         key: 'view-in-analytics',

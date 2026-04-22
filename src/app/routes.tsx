@@ -186,7 +186,6 @@ const flightRecorderRoutes: IAppRoute[] = [
     description: 'Perform advanced analytics queries on archived Flight Recordings.',
     navGroup: FLIGHT_RECORDER,
     navSubgroup: ANALYZE,
-    featureLevel: FeatureLevel.BETA,
   },
 ];
 
@@ -252,7 +251,6 @@ const securityRoutes: IAppRoute[] = [
     title: 'Audit Log',
     description: 'View audit log of changes to Cryostat entities.',
     navGroup: SECURITY,
-    featureLevel: FeatureLevel.BETA,
   },
 ];
 
