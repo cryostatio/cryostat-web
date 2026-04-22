@@ -17,7 +17,6 @@ import { modalPrefillSetIntent, store } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory, Recording, Target } from '@app/Shared/Services/api.types';
 import { CapabilitiesContext } from '@app/Shared/Services/Capabilities';
 import { NotificationsContext } from '@app/Shared/Services/Notifications.service';
-import { FeatureLevel } from '@app/Shared/Services/service.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useFeatureLevel } from '@app/utils/hooks/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
@@ -131,16 +130,7 @@ export const RecordingActions: React.FC<RecordingActionsProps> = ({ recording, u
     }
 
     return actionItems;
-  }, [
-    t,
-    handleDownloadRecording,
-    grafanaEnabled,
-    grafanaUpload,
-    directory,
-    recording,
-    activeLevel,
-    handleViewInAnalytics,
-  ]);
+  }, [t, handleDownloadRecording, grafanaEnabled, grafanaUpload, directory, recording, handleViewInAnalytics]);
 
   const onSelect = React.useCallback(
     (action: RowAction) => {
