@@ -15,7 +15,7 @@
  */
 
 import { LineageLabelChain } from '@app/Archives/LineageLabelChain';
-import { TargetNode } from '@app/Shared/Services/api.types';
+import { EnvironmentNode, TargetNode } from '@app/Shared/Services/api.types';
 import { useTargetLineage } from '@app/utils/hooks/useTargetLineage';
 import { extractFilterableLineagePath } from '@app/utils/targetUtils';
 import { useCryostatTranslation } from '@i18n/i18nextUtil';
@@ -27,7 +27,7 @@ export interface DirectoryNameCellProps {
   jvmId: string;
   connectUrl?: string;
   alias?: string;
-  targetNode?: TargetNode | null; // Optional pre-fetched lineage
+  targetNode?: EnvironmentNode | TargetNode | null; // Optional pre-fetched lineage root
   onInfoClick?: () => void;
   showInfoButton?: boolean;
 }
@@ -49,14 +49,14 @@ export const DirectoryNameCell: React.FC<DirectoryNameCellProps> = ({
   } = useTargetLineage(shouldFetchLineage ? jvmId : '', connectUrl, alias);
   const { t } = useCryostatTranslation();
 
-  // Use pre-fetched lineage if available, otherwise use fetched lineage
-  const targetNode = preFetchedTargetNode || fetchedTargetNode;
+  // Use pre-fetched lineage root if available, otherwise use fetched lineage
+  const lineageRoot = preFetchedTargetNode || fetchedTargetNode;
 
-  // Extract lineage path from target node if available
+  // Extract lineage path from lineage root if available
   const lineagePath = React.useMemo(() => {
-    if (!targetNode) return [];
-    return extractFilterableLineagePath(targetNode);
-  }, [targetNode]);
+    if (!lineageRoot) return [];
+    return extractFilterableLineagePath(lineageRoot);
+  }, [lineageRoot]);
 
   const showLineage = lineagePath.length > 0;
 

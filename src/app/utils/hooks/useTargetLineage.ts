@@ -24,7 +24,7 @@ interface UseTargetLineageResult {
   displayName: string;
   isLoading: boolean;
   error: Error | null;
-  targetNode: TargetNode | null;
+  targetNode: EnvironmentNode | TargetNode | null;
 }
 
 const formatFallbackDisplayName = (connectUrl: string | undefined, jvmId: string, alias?: string): string => {
@@ -47,7 +47,7 @@ export const useTargetLineage = (jvmId: string, connectUrl?: string, alias?: str
   const [displayName, setDisplayName] = React.useState<string>('');
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<Error | null>(null);
-  const [targetNode, setTargetNode] = React.useState<TargetNode | null>(null);
+  const [targetNode, setTargetNode] = React.useState<EnvironmentNode | TargetNode | null>(null);
 
   const findInnermostTargetNode = React.useCallback((node: EnvironmentNode | TargetNode): TargetNode | undefined => {
     const MAX_DEPTH = 100;
@@ -89,7 +89,8 @@ export const useTargetLineage = (jvmId: string, connectUrl?: string, alias?: str
         next: (lineageRoot) => {
           const target = findInnermostTargetNode(lineageRoot);
           if (target?.target) {
-            setTargetNode(target);
+            // Store the full lineage root (not just the target) for extractFilterableLineagePath
+            setTargetNode(lineageRoot);
             setDisplayName(getTargetRepresentation(target.target));
           } else {
             setDisplayName(formatFallbackDisplayName(connectUrl, jvmId, alias));
