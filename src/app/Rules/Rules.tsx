@@ -31,7 +31,6 @@ import {
   formatDuration,
   sortResources,
   portalRoot,
-  appRoot,
   LABEL_TEXT_MAXWIDTH,
   toPath,
 } from '@app/utils/utils';
