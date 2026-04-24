@@ -210,7 +210,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     <Modal
       aria-label={t('DashboardLayoutCreateModal.LABEL')}
       width={isCreateModal ? '80%' : '40%'}
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={props.visible}
       showClose={false}
       header={header}

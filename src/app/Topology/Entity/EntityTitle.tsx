@@ -26,7 +26,7 @@ export const EntityTitle: React.FC<{
   return (
     <div className={css('entity-overview__entity-title-wrapper')} {...props}>
       {badge ? (
-        <Tooltip content={badgeTooltipContent} appendTo={portalRoot}>
+        <Tooltip content={badgeTooltipContent} appendTo={portalRoot()}>
           <Badge style={{ marginRight: '0.5em' }}>{badge}</Badge>
         </Tooltip>
       ) : (

@@ -84,6 +84,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
       variant={ModalVariant.large}
       showClose={!inProgress}
       className="add-credential-modal"
+      appendTo={portalRoot()}
       onClose={onDismiss}
       title={t('CreateCredentialModal.MODAL_TITLE')}
       description={t('CreateCredentialModal.MODAL_DESCRIPTION')}
@@ -227,7 +228,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
         label={t('MATCH_EXPRESSION')}
         labelHelp={
           <Popover
-            appendTo={portalRoot}
+            appendTo={portalRoot()}
             headerContent={t('CreateCredentialModal.MATCH_EXPRESSION_HINT_MODAL_HEADER')}
             bodyContent={
               <>

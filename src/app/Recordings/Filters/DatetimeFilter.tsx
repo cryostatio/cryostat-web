@@ -225,7 +225,7 @@ export const DateTimeInput: React.FC<DateTimeInputProps> = ({ selectedDateTime, 
     <>
       <InputGroupItem isFill>
         <Popover
-          appendTo={portalRoot}
+          appendTo={portalRoot()}
           bodyContent={
             <DateTimePicker
               onSelect={handleDatetimeSelect}

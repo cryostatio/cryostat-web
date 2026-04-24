@@ -114,7 +114,7 @@ export const ReportDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
   }, [t, dayjs, dateTimeFormat, error, loading, report, palette]);
 
   return iconConfig ? (
-    <Tooltip content={iconConfig.tooltip} triggerRef={decoratorRef} appendTo={portalRoot}>
+    <Tooltip content={iconConfig.tooltip} triggerRef={decoratorRef} appendTo={portalRoot()}>
       <Decorator
         innerRef={decoratorRef}
         {...props}
@@ -162,7 +162,7 @@ export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, qu
   }, [error, loading, runningRecs, palette]);
 
   return iconConfig ? (
-    <Tooltip content={iconConfig.tooltip} triggerRef={decoratorRef} appendTo={portalRoot}>
+    <Tooltip content={iconConfig.tooltip} triggerRef={decoratorRef} appendTo={portalRoot()}>
       <Decorator
         innerRef={decoratorRef}
         {...props}
@@ -182,7 +182,7 @@ export const ConnectionStatusDecorator: React.FC<DecoratorProps> = ({ element, q
   const [nodeStatus, extra] = getStatusTargetNode(data);
   const { x, y } = getDefaultShapeDecoratorCenter(quadrant, element);
   return nodeStatus ? (
-    <Tooltip content={extra?.title} triggerRef={decoratorRef} appendTo={portalRoot}>
+    <Tooltip content={extra?.title} triggerRef={decoratorRef} appendTo={portalRoot()}>
       <Decorator
         {...props}
         innerRef={decoratorRef}

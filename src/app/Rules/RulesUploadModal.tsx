@@ -141,7 +141,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
@@ -150,7 +150,7 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
       description={t('RulesUploadModal.DESCRIPTION')}
       help={
         <Popover
-          appendTo={portalRoot}
+          appendTo={portalRoot()}
           headerContent={<div>{t('RulesUploadModal.HEADER_CONTENT')}</div>}
           bodyContent={<div>{t('CreateRule.ABOUT')}</div>}
         >

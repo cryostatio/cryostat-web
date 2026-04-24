@@ -27,6 +27,7 @@ import { useMatchExpressionSvc } from '@app/utils/hooks/useMatchExpressionSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { hashCode } from '@app/utils/utils';
+import { css } from '@patternfly/react-styles';
 import {
   Bullseye,
   DataList,
@@ -48,7 +49,6 @@ import {
   EmptyStateFooter,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, SearchIcon } from '@patternfly/react-icons';
-import { css } from '@patternfly/react-styles';
 import {
   action,
   GraphElement,

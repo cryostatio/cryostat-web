@@ -589,7 +589,7 @@ export const TargetResourceItem: React.FC<{
               <LinearDotSpinner />
             </Bullseye>
           ) : error ? (
-            <Tooltip content={error.message} appendTo={portalRoot}>
+            <Tooltip content={error.message} appendTo={portalRoot()}>
               <WarningTriangleIcon color="var(--pf-global--warning-color--100)" />
             </Tooltip>
           ) : (
@@ -619,7 +619,7 @@ export const GroupResources: React.FC<{ envNode: EnvironmentNode }> = ({ envNode
           <CardBody>
             <Flex>
               <FlexItem flex={{ default: 'flex_1' }}>
-                <Tooltip content={isTarget ? child.target.connectUrl : child.name} appendTo={portalRoot}>
+                <Tooltip content={isTarget ? child.target.connectUrl : child.name} appendTo={portalRoot()}>
                   <div>
                     <Badge>{nodeTypeToAbbr(child.nodeType)}</Badge>
                     <span style={{ marginLeft: '0.5em' }}>{isTarget ? child.target.alias : child.name}</span>
@@ -628,7 +628,7 @@ export const GroupResources: React.FC<{ envNode: EnvironmentNode }> = ({ envNode
               </FlexItem>
               {status === NodeStatus.warning ? (
                 <FlexItem>
-                  <Tooltip content={extra?.title} appendTo={portalRoot}>
+                  <Tooltip content={extra?.title} appendTo={portalRoot()}>
                     <WarningTriangleIcon color="var(--pf-global--warning-color--100)" />
                   </Tooltip>
                 </FlexItem>

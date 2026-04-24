@@ -466,7 +466,7 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={isOpen}
       variant={ModalVariant.large}
       showClose={true}

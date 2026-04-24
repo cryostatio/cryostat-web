@@ -546,7 +546,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ onExit
             labelHelp={
               <Tooltip
                 content={<Content component="p">{t('CustomRecordingForm.LABELS_TOOLTIP')}</Content>}
-                appendTo={portalRoot}
+                appendTo={portalRoot()}
               >
                 <Icon>
                   <HelpIcon />

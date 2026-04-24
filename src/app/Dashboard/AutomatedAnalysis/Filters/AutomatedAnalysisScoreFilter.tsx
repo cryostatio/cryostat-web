@@ -95,7 +95,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
 
   return (
     <>
-      <Tooltip content={t('AutomatedAnalysisScoreFilter.TOOLTIP.CONTENT')} appendTo={portalRoot}>
+      <Tooltip content={t('AutomatedAnalysisScoreFilter.TOOLTIP.CONTENT')} appendTo={portalRoot()}>
         <Content component={ContentVariants.small}>
           {t('AutomatedAnalysisScoreFilter.CURRENT_SCORE_TEXT', { val: currentScore })}
         </Content>

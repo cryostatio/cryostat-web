@@ -31,6 +31,7 @@ import {
   formatDuration,
   sortResources,
   portalRoot,
+  appRoot,
   LABEL_TEXT_MAXWIDTH,
   toPath,
 } from '@app/utils/utils';
@@ -580,7 +581,7 @@ export const RulesTable: React.FC<RulesTableProps> = () => {
         <></>
       </BreadcrumbPage>
       <Modal
-        appendTo={portalRoot}
+        appendTo={portalRoot()}
         isOpen={createRuleModalOpen}
         variant={ModalVariant.large}
         width="90vw"

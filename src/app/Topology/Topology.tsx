@@ -164,7 +164,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         <></>
       </BreadcrumbPage>
       <Modal
-        appendTo={portalRoot}
+        appendTo={portalRoot()}
         isOpen={createTargetModalOpen}
         variant={ModalVariant.large}
         title="Create Custom Target"

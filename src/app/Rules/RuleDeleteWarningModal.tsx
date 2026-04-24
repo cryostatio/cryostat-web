@@ -54,7 +54,7 @@ export const RuleDeleteWarningModal = ({
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       title={warningContents?.title}
       description={warningContents?.description}
       aria-label={warningContents?.ariaLabel}

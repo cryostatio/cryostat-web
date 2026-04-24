@@ -72,7 +72,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
         content={isGraphView ? t('Topology.LIST_VIEW') : t('Topology.GRAPH_VIEW')}
         aria="none"
         aria-live="polite"
-        appendTo={portalRoot}
+        appendTo={portalRoot()}
       >
         <Button
           icon={<Icon size="lg">{isGraphView ? <ListIcon /> : <TopologyIcon />}</Icon>}

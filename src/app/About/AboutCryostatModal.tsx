@@ -31,7 +31,7 @@ export const AboutCryostatModal: React.FC<AboutCryostatModalProps> = ({ isOpen, 
   const { t } = useCryostatTranslation();
   return (
     <AboutModal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       productName={`${build.productName} ${build.version}`}
       brandImageSrc={cryostatLogo}
       brandImageAlt="Cryostat Logo"

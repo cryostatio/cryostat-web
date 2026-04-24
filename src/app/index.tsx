@@ -48,5 +48,6 @@ export const App: React.FC = () => (
         </NotificationsContext.Provider>
       </ServiceContext.Provider>
     </CapabilitiesContext.Provider>
+    <div id="portal-root"></div>
   </div>
 );

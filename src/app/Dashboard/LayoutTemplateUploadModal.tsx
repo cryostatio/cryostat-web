@@ -231,7 +231,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
@@ -242,7 +242,7 @@ export const LayoutTemplateUploadModal: React.FC<LayoutTemplateUploadModalProps>
         <Popover
           headerContent={<div>{t('WHATS_THIS')}</div>}
           bodyContent={<div>{t(`LayoutTemplateUploadModal.HELP.CONTENT`)}</div>}
-          appendTo={portalRoot}
+          appendTo={portalRoot()}
         >
           <Button icon={<HelpIcon />} variant="plain" aria-label={t('HELP')} />
         </Popover>

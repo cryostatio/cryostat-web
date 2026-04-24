@@ -480,7 +480,7 @@ export const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ onExit }) => {
         label={t('MATCH_EXPRESSION')}
         labelHelp={
           <Popover
-            appendTo={portalRoot}
+            appendTo={portalRoot()}
             headerContent={t('CreateRule.MATCH_EXPRESSION_HINT_MODAL_HEADER')}
             bodyContent={
               <>

@@ -279,7 +279,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
               </div>
             }
             bodyContent={<div>{status.error?.message || t('UNKNOWN_ERROR')}</div>}
-            appendTo={portalRoot}
+            appendTo={portalRoot()}
           >
             <Label style={{ cursor: 'pointer' }} color={getColor(status.state)}>
               {status.state}
@@ -362,7 +362,7 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({
         </ToolbarGroup>
         <ToolbarItem variant="separator" />
         <ToolbarItem>
-          <Tooltip content={t('CredentialTestTable.TEST_ALL_TOOLTIP')} appendTo={portalRoot}>
+          <Tooltip content={t('CredentialTestTable.TEST_ALL_TOOLTIP')} appendTo={portalRoot()}>
             <Button variant="primary" onClick={handleTestAll} isAriaDisabled={disableTest}>
               {t('CredentialTestTable.TEST_ALL')}
             </Button>

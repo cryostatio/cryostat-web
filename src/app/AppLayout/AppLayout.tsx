@@ -688,7 +688,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <GlobalQuickStartDrawer>
       <CryostatJoyride>
         <AlertGroup
-          appendTo={portalRoot}
+          appendTo={portalRoot()}
           isToast
           isLiveRegion
           overflowMessage={overflowMessage}

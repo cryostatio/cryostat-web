@@ -510,7 +510,7 @@ export const EventTemplatesUploadModal: React.FC<EventTemplatesUploadModalProps>
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={props.isOpen}
       variant={ModalVariant.large}
       showClose={true}

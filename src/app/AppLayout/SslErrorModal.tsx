@@ -34,7 +34,7 @@ export const SslErrorModal: React.FC<SslErrorModalProps> = ({ visible, onDismiss
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={visible}
       variant={ModalVariant.medium}
       showClose={true}

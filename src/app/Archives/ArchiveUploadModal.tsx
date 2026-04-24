@@ -164,7 +164,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
                 For example: io-cryostat-Cryostat_profiling_timestamp.jfr
               </Content>
             }
-            appendTo={portalRoot}
+            appendTo={portalRoot()}
           >
             <sup style={{ cursor: 'pointer' }}>
               <b>[?]</b>
@@ -197,7 +197,7 @@ export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose,
                 content={
                   <Content component="p">Unique key-value pairs containing information about the recording.</Content>
                 }
-                appendTo={portalRoot}
+                appendTo={portalRoot()}
               >
                 <Icon>
                   <HelpIcon />

@@ -42,7 +42,7 @@ export const Recordings: React.FC = () => {
         </CardBody>
       </Card>
       <Modal
-        appendTo={portalRoot}
+        appendTo={portalRoot()}
         isOpen={createRecordingModalOpen}
         variant={ModalVariant.large}
         title="Create Recording"

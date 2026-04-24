@@ -410,7 +410,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
         title="Target Details"
         variant={ModalVariant.large}
         className="target-details-modal"
-        appendTo={portalRoot}
+        appendTo={portalRoot()}
       >
         {loadingLineage ? (
           <Bullseye>

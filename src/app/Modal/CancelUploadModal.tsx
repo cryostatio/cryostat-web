@@ -30,7 +30,7 @@ export interface CancelUploadModalProps {
 export const CancelUploadModal: React.FC<CancelUploadModalProps> = ({ visible, onYes, onNo, title, message }) => {
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       width={'40%'}
       isOpen={visible}
       showClose={true}

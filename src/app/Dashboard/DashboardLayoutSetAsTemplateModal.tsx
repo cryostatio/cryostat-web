@@ -147,7 +147,7 @@ export const DashboardLayoutSetAsTemplateModal: React.FC<DashboardLayoutSetAsTem
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={props.visible}
       variant={ModalVariant.medium}
       showClose={true}

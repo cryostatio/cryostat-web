@@ -222,7 +222,7 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({ isOpen, onCl
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       isOpen={isOpen}
       onClose={onClose}
       variant={variant}

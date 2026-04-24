@@ -144,7 +144,7 @@ export const RecordingLabelFields: React.FC<RecordingLabelFieldsProps> = ({
           <ActionList style={{ marginBottom: '1em' }}>
             <ActionListItem>
               <Popover
-                appendTo={portalRoot}
+                appendTo={portalRoot()}
                 isVisible={!!invalidUploads.length}
                 aria-label="uploading warning"
                 alertSeverityVariant="danger"

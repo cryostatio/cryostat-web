@@ -403,7 +403,7 @@ export const AllArchivedThreadDumpsTable: React.FC<AllArchivedThreadDumpsTablePr
         title="Target Details"
         variant={ModalVariant.large}
         className="target-details-modal"
-        appendTo={portalRoot}
+        appendTo={portalRoot()}
       >
         {loadingLineage ? (
           <Bullseye>

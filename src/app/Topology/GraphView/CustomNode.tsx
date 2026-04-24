@@ -21,8 +21,8 @@ import { TargetNode } from '@app/Shared/Services/api.types';
 import { includesTarget } from '@app/Shared/Services/api.utils';
 import { useMatchedTargetsSvc } from '@app/utils/hooks/useMatchedTargetsSvc';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
-import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
+import { ContainerNodeIcon } from '@patternfly/react-icons';
 import {
   DefaultNode,
   DEFAULT_LAYER,
@@ -42,6 +42,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { map } from 'rxjs';
 import { getStatusTargetNode, nodeTypeToAbbr, TOPOLOGY_GRAPH_ID } from '../Shared/utils';
+import { MATCH_EXPRES_VIS_GRAPH_ID } from '@app/Shared/Components/MatchExpression/MatchExpressionVisualizer';
 import { NODE_ICON_PADDING, RESOURCE_NAME_TRUNCATE_LENGTH } from './const';
 import { getNodeDecorators } from './NodeDecorator';
 
@@ -101,14 +102,23 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 
   const graphId = React.useMemo(() => element.getGraph().getId(), [element]);
 
-  const classNames = React.useMemo(() => css('topology__target-node', matched ? '' : 'search-inactive'), [matched]);
+  const classNames = React.useMemo(
+    () => css('topology__target-node', !matched && 'search-inactive'),
+    [matched],
+  );
 
   const nodeDecorators = React.useMemo(() => (showStatus ? getNodeDecorators(element) : null), [element, showStatus]);
 
   React.useEffect(() => {
     addSubscription(
       matchedTargetSvc
-        .pipe(map((ts) => (ts ? includesTarget(ts, data.target) : graphId === TOPOLOGY_GRAPH_ID)))
+        .pipe(
+          map((ts) =>
+            ts
+              ? includesTarget(ts, data.target)
+              : graphId === TOPOLOGY_GRAPH_ID || graphId === MATCH_EXPRES_VIS_GRAPH_ID,
+          ),
+        )
         .subscribe(setMatched),
     );
   }, [graphId, addSubscription, setMatched, matchedTargetSvc, data.target]);

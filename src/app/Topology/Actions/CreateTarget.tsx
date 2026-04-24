@@ -498,7 +498,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
         >
           <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
             <Tooltip
-              appendTo={portalRoot}
+              appendTo={portalRoot()}
               content={
                 _actionEnabled
                   ? `Click to test${validation.option !== ValidatedOptions.default ? ' again' : ''}.`
@@ -524,7 +524,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
           </FlexItem>
           <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
             <div className={css('sample-node-donut__node-label')}>
-              <Tooltip content={'Custom Target'} appendTo={portalRoot}>
+              <Tooltip content={'Custom Target'} appendTo={portalRoot()}>
                 <span className="sample-node-donut__node-label-badge">{'CT'}</span>
               </Tooltip>
               {_transformedTarget.alias || '<Name>'}

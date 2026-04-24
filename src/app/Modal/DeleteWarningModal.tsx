@@ -64,7 +64,7 @@ export const DeleteWarningModal: React.FC<DeleteWarningProps> = ({
 
   return (
     <Modal
-      appendTo={portalRoot}
+      appendTo={portalRoot()}
       title={`${realWarningType?.title}`}
       description={realWarningType?.description}
       aria-label={realWarningType?.ariaLabel}
