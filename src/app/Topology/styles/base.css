@@ -89,17 +89,22 @@ Below CSS rules only apply to Topology components
   font-weight: 700;
   word-break: break-all;
   background-color: var(--pf-t--global--background--color--primary--default);
+  color: var(--pf-t--global--text--color--regular);
 }
 
 
 .cryostat-app .sample-node-donut__node-label-badge {
   position: relative;
   background-color: var(--pf-t--global--background--color--brand--default);
-  color: var(--pf-t--global--text--color--on-brand--default);
+  color: #000000;
   padding: 2px 12px 2px 12px;
   margin-right: 8px;
   text-align: center;
   border-radius: 500px;
+}
+
+:where(.pf-v6-theme-dark) .cryostat-app .sample-node-donut__node-label-badge {
+  color: #ffffff;
 }
 
 .cryostat-app .empty-text {
