@@ -123,7 +123,7 @@ export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterPr
       aria-label="Filter by name"
       popperProps={{
         enableFlip: true,
-        appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
+        appendTo: () => document.getElementById('dashboard-grid') || portalRoot(),
       }}
       onOpenChange={setIsExpanded}
       onOpenChangeKeys={['Escape']}

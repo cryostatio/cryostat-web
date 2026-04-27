@@ -53,7 +53,7 @@ export const DashboardCardActionMenu: React.FC<DashboardCardActionProps> = ({ on
     <Dropdown
       popperProps={{
         enableFlip: true,
-        appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
+        appendTo: () => document.getElementById('dashboard-grid') || portalRoot(),
         position: 'right',
       }}
       isOpen={isOpen}

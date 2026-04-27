@@ -181,7 +181,7 @@ export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({ onChange
       isVisible={isAutocompleteOpen}
       enableFlip={false}
       // append the autocomplete menu to the search input in the DOM for the sake of the keyboard navigation experience
-      appendTo={() => document.querySelector('#cryostat-autocomplete-search') || portalRoot}
+      appendTo={() => document.querySelector('#cryostat-autocomplete-search') || portalRoot()}
     />
   );
 };

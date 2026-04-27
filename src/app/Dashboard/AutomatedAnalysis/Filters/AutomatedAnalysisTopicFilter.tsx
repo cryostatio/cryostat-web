@@ -112,7 +112,7 @@ export const AutomatedAnalysisTopicFilter: React.FC<AutomatedAnalysisTopicFilter
       isOpen={isExpanded}
       aria-label="Filter by topic"
       popperProps={{
-        appendTo: () => document.getElementById('dashboard-grid') || portalRoot,
+        appendTo: () => document.getElementById('dashboard-grid') || portalRoot(),
       }}
       onOpenChange={setIsExpanded}
       onOpenChangeKeys={['Escape']}
