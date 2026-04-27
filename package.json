@@ -145,9 +145,7 @@
   },
   "resolutions": {
     "@types/react": "^17.0.69",
-    "lodash": "^4.17.23",
-    "redux": "4.0.1",
-    "redux-thunk": "2.4.0"
+    "lodash": "^4.17.23"
   },
   "packageManager": "yarn@4.13.0"
 }
