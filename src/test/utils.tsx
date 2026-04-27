@@ -30,7 +30,6 @@ import {
 import { NotificationsContext, NotificationsInstance } from '@app/Shared/Services/Notifications.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { toPath } from '@app/utils/utils';
-import { PreloadedState } from '@reduxjs/toolkit';
 import { render as tlrRender } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { t, TOptions } from 'i18next';
@@ -50,7 +49,7 @@ export interface RenderOptions {
     options?: Parameters<typeof createMemoryRouter>[1];
   };
   userConfigs?: Parameters<typeof userEvent.setup>[0];
-  preloadedState?: PreloadedState<RootState>;
+  preloadedState?: Partial<RootState>;
   providers?: ProviderInstance<unknown>[];
 }
 
