@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
 import navMenuConfigReducer, * as navMenuConfigSlice from './Configurations/NavMenuConfigSlice';
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
@@ -108,7 +108,7 @@ export const rootReducer = combineReducers({
   modalPrefill: modalPrefillReducer,
 });
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
+export const setupStore = (preloadedState?: Partial<RootState>) =>
   configureStore({
     reducer: rootReducer,
     preloadedState,
