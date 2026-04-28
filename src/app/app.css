@@ -441,7 +441,7 @@ limitations under the License.
   opacity: 1;
 }
 
-.draggable-ref-wrapper:active {
+.cryostat-app .draggable-ref-wrapper:active {
   box-shadow: 0 0.5rem 1rem 0 rgba(3, 3, 3, 0.25);
 }
 
@@ -510,12 +510,12 @@ limitations under the License.
   border-width: 0 0.10rem 0.10rem 0.10rem;
 }
 
-.datetime-picker__meridiem-tile:first-child {
+.cryostat-app .datetime-picker__meridiem-tile:first-child {
   border-top-width: 0.10rem;
   border-radius: 0.25rem 0.25rem 0 0;
 }
 
-.datetime-picker__meridiem-tile:last-child {
+.cryostat-app .datetime-picker__meridiem-tile:last-child {
   border-radius: 0 0 0.25rem 0.25rem;
 }
 
@@ -533,7 +533,7 @@ limitations under the License.
   color: var(--pf-t--global--text--color--subtle);
 }
 
-.datetime-picker__meridiem-tile:hover {
+.cryostat-app .datetime-picker__meridiem-tile:hover {
   cursor: pointer;
 }
 
@@ -619,7 +619,7 @@ limitations under the License.
   padding-left: 0 !important;
 }
 
-.expandable-form__accordion-toggle-block.pf-v6-c-accordion__toggle.pf-m-expanded::after {
+.cryostat-app .expandable-form__accordion-toggle-block.pf-v6-c-accordion__toggle.pf-m-expanded::after {
   background-color: transparent;
 }
 
@@ -643,11 +643,11 @@ limitations under the License.
   margin: 2vh 0 2vh 0;
 }
 
-.console-form-group .pf-v6-c-form__group:first-child {
+.cryostat-app .console-form-group .pf-v6-c-form__group:first-child {
   margin: 0 0 2vh 0;
 }
 
-.console-form-group .pf-v6-c-form__group:last-child {
+.cryostat-app .console-form-group .pf-v6-c-form__group:last-child {
   margin: 2vh 0 0 0;
 }
 

@@ -313,11 +313,20 @@ Below CSS rules only apply to Topology components
   width: 100%;
 }
 
-.pf-v6-c-modal-box.target-details-modal .lineage-tab-wrapper {
+.cryostat-app .pf-v6-c-modal-box.target-details-modal .pf-v6-c-modal-box__body {
+  min-height: 400px;
+}
+
+.cryostat-app .pf-v6-c-modal-box.target-details-modal .lineage-tab-wrapper {
   height: 500px !important;
 }
 
-.pf-v6-c-modal-box.target-details-modal .entity-overview__wrapper {
+.cryostat-app .pf-v6-c-modal-box.target-details-modal .entity-overview {
+  height: auto;
+  min-height: 400px;
+}
+
+.cryostat-app .pf-v6-c-modal-box.target-details-modal .entity-overview__wrapper {
   padding: 1.5em;
   padding-right: 0.5em;
 }
@@ -340,12 +349,12 @@ Below CSS rules only apply to Topology components
 }
 
 /* Match Expression Visualizer modal - make graph view fill container */
-.pf-v6-c-modal-box:has(#match-expression__visualization-container) {
+.cryostat-app .pf-v6-c-modal-box:has(#match-expression__visualization-container) {
   height: 80vh;
   max-height: 80vh;
 }
 
-.pf-v6-c-modal-box:has(#match-expression__visualization-container) .pf-v6-c-modal-box__body {
+.cryostat-app .pf-v6-c-modal-box:has(#match-expression__visualization-container) .pf-v6-c-modal-box__body {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -353,13 +362,13 @@ Below CSS rules only apply to Topology components
   overflow: hidden;
 }
 
-.pf-v6-c-modal-box:has(#match-expression__visualization-container) .pf-v6-c-stack {
+.cryostat-app .pf-v6-c-modal-box:has(#match-expression__visualization-container) .pf-v6-c-stack {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.pf-v6-c-modal-box:has(#match-expression__visualization-container) .pf-v6-c-stack__item.pf-m-fill {
+.cryostat-app .pf-v6-c-modal-box:has(#match-expression__visualization-container) .pf-v6-c-stack__item.pf-m-fill {
   flex: 1;
   min-height: 0;
   display: flex;

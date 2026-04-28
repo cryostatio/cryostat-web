@@ -82,6 +82,7 @@ export const CreateCredentialModal: React.FC<CreateCredentialModalProps> = ({
       isOpen={visible}
       tabIndex={0} // enable keyboard-accessible scrolling
       variant={ModalVariant.large}
+      width="90vw"
       showClose={!inProgress}
       className="add-credential-modal"
       appendTo={portalRoot()}
