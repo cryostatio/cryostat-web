@@ -85,10 +85,8 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: 'maven'
-    - name: Add CRIU PPA
-      run: sudo add-apt-repository ppa:criu/ppa && sudo apt update
-    - name: Ensure podman 4+ and podman-docker installed
-      run: sudo apt update && sudo apt -y satisfy "podman (>= 4.0), podman-docker"
+    - name: Ensure podman-docker installed
+      run: sudo apt update && sudo apt -y install "podman-docker"
     - name: Start Podman API
       run: systemctl --user enable --now podman.socket
     - name: Set DOCKER_HOST environment variable
