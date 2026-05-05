@@ -322,7 +322,7 @@ describe('<ThreadDumpAnalysis />', () => {
     setTargetSpy = jest.spyOn(defaultServices.target, 'setTarget').mockImplementation((target) => target$.next(target));
     jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget, mockOtherTarget]));
     jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockImplementation((target) => {
-      return of(target.jvmId === mockOtherTarget.jvmId ? [mockOtherThreadDump] : [mockThreadDump]);
+      return of(target.connectUrl === mockOtherTarget.connectUrl ? [mockOtherThreadDump] : [mockThreadDump]);
     });
 
     const { user } = render({
