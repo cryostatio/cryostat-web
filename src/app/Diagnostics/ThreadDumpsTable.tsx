@@ -523,13 +523,16 @@ export const ThreadDumpAction: React.FC<ThreadDumpActionProps> = ({ threadDump, 
 
   const handleViewInAnalysis = React.useCallback(
     (jvmId) => {
-      var id = threadDump.threadDumpId;
+      const id = threadDump.threadDumpId;
+      const analysisPath = toPath('/analyze-thread-dumps');
+      const params = new URLSearchParams({ jvmId, threadDumpId: id });
       const state = {
         jvmId,
         id,
+        threadDumpId: id,
       };
-      store.dispatch(modalPrefillSetIntent(toPath('/analyze-thread-dumps'), state as Record<string, unknown>));
-      navigate(toPath('/analyze-thread-dumps'), { state });
+      store.dispatch(modalPrefillSetIntent(analysisPath, state as Record<string, unknown>));
+      navigate(`${analysisPath}?${params.toString()}`, { state });
     },
     [threadDump, navigate],
   );

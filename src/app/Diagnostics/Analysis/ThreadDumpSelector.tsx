@@ -25,22 +25,19 @@ export interface ThreadDumpSelectorProps {
 }
 
 export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({ selected, threadDumps, onSelect }) => {
-  const [selectedThreadDump, setSelectedThreadDump] = React.useState<string>(selected);
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleThreadDumpSelect = React.useCallback(
     (_, selected: string) => {
       if (!selected.length) {
         onSelect(undefined);
-        setSelectedThreadDump('');
         setIsOpen(false);
       } else {
         onSelect(selected);
-        setSelectedThreadDump(selected);
         setIsOpen(false);
       }
     },
-    [onSelect, setSelectedThreadDump],
+    [onSelect],
   );
 
   const onToggle = React.useCallback(() => setIsOpen((isOpen) => !isOpen), [setIsOpen]);
@@ -54,10 +51,10 @@ export const ThreadDumpSelector: React.FC<ThreadDumpSelectorProps> = ({ selected
         onClick={onToggle}
         isExpanded={isOpen}
       >
-        {selectedThreadDump == '' ? 'Select a Thread Dump' : selectedThreadDump}
+        {selected == '' ? 'Select a Thread Dump' : selected}
       </MenuToggle>
     ),
-    [onToggle, isOpen, selectedThreadDump],
+    [onToggle, isOpen, selected],
   );
 
   return (

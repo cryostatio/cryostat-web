@@ -19,7 +19,7 @@ import { ThemeSetting } from '@app/Settings/types';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { Target, ThreadDump, ThreadDumpAnalysisResult } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, within, act } from '@testing-library/react';
+import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, mockMediaQueryList, render, resize } from '../utils';
 
@@ -223,6 +223,67 @@ describe('<ThreadDumpAnalysis />', () => {
     });
 
     expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
+  });
+
+  it('prefills the selected thread dump from location state', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analyze-thread-dumps',
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: {
+          initialEntries: [
+            {
+              pathname: '/analyze-thread-dumps',
+              state: { jvmId: mockTarget.jvmId, id: mockThreadDump.threadDumpId },
+            },
+          ],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
+      expect(screen.getByRole('button', { name: 'thread dump selector toggle' })).toHaveTextContent(
+        mockThreadDump.threadDumpId,
+      );
+    });
+    expect(screen.getByText('JVM Information')).toBeInTheDocument();
+  });
+
+  it('prefills the selected thread dump from query params', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analyze-thread-dumps',
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: {
+          initialEntries: [
+            `/analyze-thread-dumps?jvmId=${mockTarget.jvmId}&threadDumpId=${mockThreadDump.threadDumpId}`,
+          ],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
+      expect(screen.getByRole('button', { name: 'thread dump selector toggle' })).toHaveTextContent(
+        mockThreadDump.threadDumpId,
+      );
+    });
+    expect(screen.getByText('JVM Information')).toBeInTheDocument();
   });
 
   it('should render the page correctly', async () => {
