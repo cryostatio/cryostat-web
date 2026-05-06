@@ -326,4 +326,41 @@ describe('<ThreadDumpsTable />', () => {
     expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
     expect(downloadRequestSpy).toHaveBeenCalledWith(mockThreadDump);
   });
+
+  it('navigates to analysis with the selected thread dump prefill data', async () => {
+    const { user, router } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/thread-dumps',
+            element: <ThreadDumpsTable target={of(mockTarget)} isNestedTable={false} />,
+          },
+          {
+            path: '/analyze-thread-dumps',
+            element: <>Analysis</>,
+          },
+        ],
+        options: {
+          initialEntries: ['/thread-dumps'],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await tlr.act(async () => {
+      await user.click(screen.getByLabelText(testT('ThreadDumpActions.ARIA_LABELS.MENU_TOGGLE')));
+      await user.click(screen.getByText('Analyze Thread Dump'));
+    });
+
+    const state = {
+      jvmId: mockTarget.jvmId,
+      id: mockThreadDump.threadDumpId,
+      threadDumpId: mockThreadDump.threadDumpId,
+    };
+    expect(router.state.location.pathname).toEqual('/analyze-thread-dumps');
+    expect(router.state.location.search).toEqual(
+      `?jvmId=${mockTarget.jvmId}&threadDumpId=${mockThreadDump.threadDumpId}`,
+    );
+    expect(router.state.location.state).toEqual(state);
+  });
 });

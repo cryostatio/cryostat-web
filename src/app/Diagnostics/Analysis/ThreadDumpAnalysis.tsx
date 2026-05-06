@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   AnalysisFinding,
@@ -56,11 +57,54 @@ import {
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
-import { concatMap, first, of } from 'rxjs';
+import { EMPTY, concatMap, finalize, first, map, of } from 'rxjs';
 import { AggregateDataCard } from './AggregateDataCard.tsx';
 import { ThreadDumpSelector } from './ThreadDumpSelector';
 
 export interface ThreadDumpAnalysisProps {}
+
+const isSameTarget = (a: NullableTarget, b: NullableTarget): boolean =>
+  a?.connectUrl === b?.connectUrl && a?.jvmId === b?.jvmId;
+
+interface ThreadDumpPrefillLocation {
+  state: unknown;
+  search: string;
+  pathname: string;
+}
+
+interface ThreadDumpPrefillStore {
+  route: string | null;
+  data: unknown;
+}
+
+interface ThreadDumpPrefill {
+  jvmId?: string;
+  threadDumpId?: string;
+}
+
+const firstString = (...values: unknown[]): string | undefined =>
+  values.find((value): value is string => typeof value === 'string' && value.length > 0);
+
+const readThreadDumpPrefill = (
+  location: ThreadDumpPrefillLocation,
+  modalPrefill: ThreadDumpPrefillStore,
+): ThreadDumpPrefill => {
+  const stateData = location.state as Record<string, unknown> | null;
+  const reduxData = modalPrefill.route === location.pathname ? (modalPrefill.data as Record<string, unknown>) : null;
+  const params = new URLSearchParams(location.search);
+
+  return {
+    jvmId: firstString(stateData?.jvmId, reduxData?.jvmId, params.get('jvmId')),
+    threadDumpId: firstString(
+      stateData?.id,
+      stateData?.threadDumpId,
+      reduxData?.id,
+      reduxData?.threadDumpId,
+      params.get('threadDumpId'),
+      params.get('id'),
+    ),
+  };
+};
 
 interface ThreadRowData {
   threadInfo: ThreadInfo;
@@ -236,20 +280,43 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
   const [threadDumps, setThreadDumps] = React.useState<ThreadDump[]>([]);
   const [analysisResult, setAnalysisResult] = React.useState<ThreadDumpAnalysisResult>();
+  const [isAnalysisLoading, setIsAnalysisLoading] = React.useState(false);
   const [selectedThreadDump, setSelectedThreadDump] = React.useState('');
   const [target, setTarget] = React.useState(undefined as NullableTarget);
   const [openRows, setOpenRows] = React.useState<number[]>([]);
   const [openDeadlockRows, setOpenDeadlockRows] = React.useState<number[]>([]);
   const [sortBy, getSortParams] = useSort();
+  const selectedThreadDumpJvmIdRef = React.useRef<string>();
 
+  const prefill = React.useMemo(
+    () =>
+      readThreadDumpPrefill(
+        {
+          pathname: location.pathname,
+          search: location.search,
+          state: location.state,
+        },
+        modalPrefill,
+      ),
+    [location.pathname, location.search, location.state, modalPrefill],
+  );
+  const hasPendingPrefill = !!prefill.jvmId && !!prefill.threadDumpId;
   const targetAsObs = React.useMemo(() => of(target), [target]);
 
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe((t) => {
-        setTarget(t);
-        setAnalysisResult(undefined);
-        setSelectedThreadDump('');
+        setTarget((currentTarget) => {
+          if (currentTarget && !isSameTarget(currentTarget, t)) {
+            const selectedThreadDumpJvmId = selectedThreadDumpJvmIdRef.current;
+            if (!selectedThreadDumpJvmId || selectedThreadDumpJvmId !== t?.jvmId) {
+              selectedThreadDumpJvmIdRef.current = undefined;
+              setAnalysisResult(undefined);
+              setSelectedThreadDump('');
+            }
+          }
+          return t;
+        });
       }),
     );
   }, [addSubscription, context.target, setTarget]);
@@ -577,25 +644,59 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   );
 
   const queryThreadDumpAnalysis = React.useCallback(
-    (threadDump: string) => {
+    (threadDump: string, jvmId?: string) => {
+      const selectedJvmId = jvmId || threadDumps.find((t) => t.threadDumpId === threadDump)?.jvmId;
+      selectedThreadDumpJvmIdRef.current = selectedJvmId;
+      setIsAnalysisLoading(true);
+      if (selectedJvmId) {
+        addSubscription(
+          context.api
+            .analyzeThreadDump(selectedJvmId, threadDump)
+            .pipe(finalize(() => setIsAnalysisLoading(false)))
+            .subscribe({
+              next: handleThreadDumpAnalysis,
+            }),
+        );
+        return;
+      }
+
       addSubscription(
         targetAsObs
           .pipe(
             first(),
             concatMap((target: Target | undefined) => {
               if (target) {
+                selectedThreadDumpJvmIdRef.current = target.jvmId;
                 return context.api.analyzeThreadDump(target.jvmId ? target.jvmId : '', threadDump);
-              } else {
-                return of([]);
               }
+              return EMPTY;
             }),
+            finalize(() => setIsAnalysisLoading(false)),
           )
           .subscribe({
             next: handleThreadDumpAnalysis,
           }),
       );
     },
-    [addSubscription, context.api, handleThreadDumpAnalysis, targetAsObs],
+    [addSubscription, context.api, handleThreadDumpAnalysis, targetAsObs, threadDumps],
+  );
+
+  const findTargetByJvmId = React.useCallback(
+    (jvmId: string) =>
+      context.targets.targets().pipe(
+        first(),
+        concatMap((targets) => {
+          const matchedTarget = targets.find((target) => target.jvmId === jvmId);
+          if (matchedTarget) {
+            return of(matchedTarget);
+          }
+          return context.targets.queryForTargets().pipe(
+            concatMap(() => context.targets.targets().pipe(first())),
+            map((targets) => targets.find((target) => target.jvmId === jvmId)),
+          );
+        }),
+      ),
+    [context.targets],
   );
 
   React.useEffect(() => {
@@ -627,14 +728,6 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
 
   React.useEffect(() => {
     addSubscription(
-      context.api.getThreadDumps().subscribe((dumps) => {
-        setThreadDumps(dumps);
-      }),
-    );
-  }, [addSubscription, context.api, setThreadDumps]);
-
-  React.useEffect(() => {
-    addSubscription(
       context.notificationChannel.messages(NotificationCategory.ThreadDumpSuccess).subscribe((msg) => {
         setThreadDumps((old) => old.filter((t) => t.threadDumpId !== msg.message.threadDump.threadDumpId));
       }),
@@ -642,38 +735,53 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   }, [addSubscription, context.notificationChannel]);
 
   const handleThreadDumpChange = React.useCallback(
-    (threadDump: string) => {
-      setSelectedThreadDump(threadDump);
-      queryThreadDumpAnalysis(threadDump);
+    (threadDump?: string) => {
+      setSelectedThreadDump(threadDump || '');
+      setAnalysisResult(undefined);
+      selectedThreadDumpJvmIdRef.current = threadDump
+        ? threadDumps.find((t) => t.threadDumpId === threadDump)?.jvmId || target?.jvmId
+        : undefined;
+      if (threadDump) {
+        queryThreadDumpAnalysis(threadDump, selectedThreadDumpJvmIdRef.current);
+      }
     },
-    [setSelectedThreadDump, queryThreadDumpAnalysis],
+    [setSelectedThreadDump, setAnalysisResult, threadDumps, target, queryThreadDumpAnalysis],
   );
 
   React.useEffect(() => {
-    const stateData = location.state as Record<string, unknown> | null;
-    const reduxData = modalPrefill.route === location.pathname ? (modalPrefill.data as Record<string, unknown>) : null;
-
-    const prefillJvmId = (stateData?.jvmId || reduxData?.jvmId) as string | undefined;
-    const prefillThreadDump = (stateData?.id || reduxData?.id) as string | undefined;
-
-    var jvmId = prefillJvmId ? prefillJvmId : '';
-    var threadDumpId = prefillThreadDump ? prefillThreadDump : '';
-
-    setSelectedThreadDump(threadDumpId);
-    if (jvmId != '' && threadDumpId != '') {
-      context.api.analyzeThreadDump(jvmId, threadDumpId).subscribe({ next: handleThreadDumpAnalysis });
+    if (!prefill.jvmId || !prefill.threadDumpId) {
+      return;
     }
-    dispatch(modalPrefillClearIntent());
+
+    addSubscription(
+      findTargetByJvmId(prefill.jvmId).subscribe((target) => {
+        setAnalysisResult(undefined);
+        selectedThreadDumpJvmIdRef.current = prefill.jvmId;
+        setSelectedThreadDump(prefill.threadDumpId!);
+        if (target) {
+          context.target.setTarget(target);
+        }
+        queryThreadDumpAnalysis(prefill.threadDumpId!, prefill.jvmId);
+        dispatch(modalPrefillClearIntent());
+        if (location.state || location.search) {
+          navigate(`${location.pathname}${location.hash}`, { replace: true, state: null });
+        }
+      }),
+    );
   }, [
-    context.api,
+    addSubscription,
+    context.target,
     location.state,
     location.search,
     location.hash,
     location.pathname,
-    modalPrefill,
+    prefill.jvmId,
+    prefill.threadDumpId,
     dispatch,
+    findTargetByJvmId,
     navigate,
-    handleThreadDumpAnalysis,
+    queryThreadDumpAnalysis,
+    setAnalysisResult,
     setSelectedThreadDump,
   ]);
 
@@ -684,7 +792,9 @@ export const ThreadDumpAnalysis: React.FC<ThreadDumpAnalysisProps> = ({ ...props
   }, [selectedThreadDump, threadDumps, handleThreadDumpChange]);
 
   var view;
-  if (analysisResult == null) {
+  if (isAnalysisLoading || (analysisResult == null && hasPendingPrefill)) {
+    view = <LoadingView />;
+  } else if (analysisResult == null) {
     view = <EmptyState titleText={'Select a Thread Dump to Analyze'} icon={SearchIcon} headingLevel="h4" />;
   } else {
     view = (
