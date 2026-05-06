@@ -19,8 +19,8 @@ import { ThemeSetting } from '@app/Settings/types';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { Target, ThreadDump, ThreadDumpAnalysisResult } from '@app/Shared/Services/api.types';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { cleanup, screen, within, act } from '@testing-library/react';
-import { of } from 'rxjs';
+import { cleanup, screen, within, act, waitFor } from '@testing-library/react';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 import { basePreloadedState, DEFAULT_DIMENSIONS, mockMediaQueryList, render, resize } from '../utils';
 
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
@@ -37,12 +37,32 @@ const mockTarget: Target = {
   },
 };
 
+const mockOtherTarget: Target = {
+  agent: false,
+  jvmId: 'otherTarget',
+  connectUrl: 'service:jmx:rmi://someOtherUrl',
+  alias: 'other target',
+  labels: [],
+  annotations: {
+    cryostat: [],
+    platform: [],
+  },
+};
+
 const mockThreadDump: ThreadDump = {
   downloadUrl: 'someDownloadUrl',
   threadDumpId: 'someUuid',
   jvmId: mockTarget.jvmId,
   size: 1,
   metadata: { labels: [{ key: 'someLabel', value: 'someUpdatedValue' }] },
+};
+
+const mockOtherThreadDump: ThreadDump = {
+  downloadUrl: 'someOtherDownloadUrl',
+  threadDumpId: 'someOtherUuid',
+  jvmId: mockOtherTarget.jvmId,
+  size: 1,
+  metadata: { labels: [{ key: 'someLabel', value: 'someOtherValue' }] },
 };
 
 const mockThreadDumpAnalysis: ThreadDumpAnalysisResult = {
@@ -188,6 +208,7 @@ jest.spyOn(defaultServices.settings, 'media').mockReturnValue(of(mockMediaQueryL
 
 describe('<ThreadDumpAnalysis />', () => {
   let preloadedState: RootState;
+  let setTargetSpy: jest.SpyInstance | undefined;
 
   beforeAll(async () => {
     await act(async () => {
@@ -196,12 +217,20 @@ describe('<ThreadDumpAnalysis />', () => {
   });
 
   beforeEach(() => {
+    jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockReturnValue(of([mockThreadDump]));
+    jest.spyOn(defaultServices.api, 'getThreadDumps').mockReturnValue(of([mockThreadDump]));
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+    jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
     preloadedState = {
       ...basePreloadedState,
     };
   });
 
-  afterEach(cleanup);
+  afterEach(() => {
+    setTargetSpy?.mockRestore();
+    setTargetSpy = undefined;
+    cleanup();
+  });
 
   afterAll(() => {
     resize(DEFAULT_DIMENSIONS[0], DEFAULT_DIMENSIONS[1]);
@@ -223,6 +252,148 @@ describe('<ThreadDumpAnalysis />', () => {
     });
 
     expect(screen.getByRole('heading', { name: 'Select a Thread Dump to Analyze' })).toBeInTheDocument();
+  });
+
+  it('prefills the selected thread dump from location state', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analyze-thread-dumps',
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: {
+          initialEntries: [
+            {
+              pathname: '/analyze-thread-dumps',
+              state: { jvmId: mockTarget.jvmId, id: mockThreadDump.threadDumpId },
+            },
+          ],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
+      expect(screen.getByRole('button', { name: 'thread dump selector toggle' })).toHaveTextContent(
+        mockThreadDump.threadDumpId,
+      );
+    });
+    expect(screen.getByText('JVM Information')).toBeInTheDocument();
+  });
+
+  it('prefills the selected thread dump from query params', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analyze-thread-dumps',
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: {
+          initialEntries: [
+            `/analyze-thread-dumps?jvmId=${mockTarget.jvmId}&threadDumpId=${mockThreadDump.threadDumpId}`,
+          ],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await waitFor(() => {
+      expect(analyzeSpy).toHaveBeenCalledWith(mockTarget.jvmId, mockThreadDump.threadDumpId);
+      expect(screen.getByRole('button', { name: 'thread dump selector toggle' })).toHaveTextContent(
+        mockThreadDump.threadDumpId,
+      );
+    });
+    expect(screen.getByText('JVM Information')).toBeInTheDocument();
+  });
+
+  it('updates the target context for a prefilled archived thread dump from another target', async () => {
+    const analyzeSpy = jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(of(mockThreadDumpAnalysis));
+    const target$ = new BehaviorSubject<Target | undefined>(mockTarget);
+    jest.spyOn(defaultServices.target, 'target').mockReturnValue(target$);
+    setTargetSpy = jest.spyOn(defaultServices.target, 'setTarget').mockImplementation((target) => target$.next(target));
+    jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget, mockOtherTarget]));
+    jest.spyOn(defaultServices.api, 'getTargetThreadDumps').mockImplementation((target) => {
+      return of(target.connectUrl === mockOtherTarget.connectUrl ? [mockOtherThreadDump] : [mockThreadDump]);
+    });
+
+    const { user } = render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analyze-thread-dumps',
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: {
+          initialEntries: [
+            {
+              pathname: '/analyze-thread-dumps',
+              state: { jvmId: mockOtherTarget.jvmId, id: mockOtherThreadDump.threadDumpId },
+            },
+          ],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    await waitFor(() => {
+      expect(setTargetSpy).toHaveBeenCalledWith(mockOtherTarget);
+      expect(analyzeSpy).toHaveBeenCalledWith(mockOtherTarget.jvmId, mockOtherThreadDump.threadDumpId);
+      expect(screen.getByRole('button', { name: 'thread dump selector toggle' })).toHaveTextContent(
+        mockOtherThreadDump.threadDumpId,
+      );
+    });
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'thread dump selector toggle' }));
+    });
+    expect(within(await screen.findByRole('menu')).getByText(mockOtherThreadDump.threadDumpId)).toBeInTheDocument();
+  });
+
+  it('shows a loading state while prefilled thread dump analysis is pending', async () => {
+    const analysis$ = new Subject<ThreadDumpAnalysisResult>();
+    jest.spyOn(defaultServices.api, 'analyzeThreadDump').mockReturnValue(analysis$);
+
+    render({
+      routerConfigs: {
+        routes: [
+          {
+            path: '/analyze-thread-dumps',
+            element: <ThreadDumpAnalysis />,
+          },
+        ],
+        options: {
+          initialEntries: [
+            {
+              pathname: '/analyze-thread-dumps',
+              state: { jvmId: mockTarget.jvmId, id: mockThreadDump.threadDumpId },
+            },
+          ],
+        },
+      },
+      preloadedState: preloadedState,
+    });
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Select a Thread Dump to Analyze' })).not.toBeInTheDocument();
+
+    await act(async () => {
+      analysis$.next(mockThreadDumpAnalysis);
+      analysis$.complete();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('JVM Information')).toBeInTheDocument();
+    });
   });
 
   it('should render the page correctly', async () => {
