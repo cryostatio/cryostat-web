@@ -5344,7 +5344,7 @@ __metadata:
     showdown: "npm:^2.1.0"
     style-loader: "npm:^4.0.0"
     svg-url-loader: "npm:^8.0.0"
-    terser-webpack-plugin: "npm:^5.3.16"
+    terser-webpack-plugin: "npm:5.6.0"
     ts-jest: "npm:^29.4.6"
     ts-loader: "npm:^9.5.4"
     tsconfig-paths-webpack-plugin: "npm:^4.2.0"
@@ -14968,7 +14968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:^5.3.16, terser-webpack-plugin@npm:^5.3.17":
+"terser-webpack-plugin@npm:5.6.0, terser-webpack-plugin@npm:^5.3.17":
   version: 5.6.0
   resolution: "terser-webpack-plugin@npm:5.6.0"
   dependencies:
