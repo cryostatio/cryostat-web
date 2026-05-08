@@ -5340,7 +5340,7 @@ __metadata:
     rimraf: "npm:^6.1.2"
     rxjs: "npm:^7.8.2"
     selenium-webdriver: "npm:^4.40.0"
-    semver: "npm:^7.7.3"
+    semver: "npm:7.8.0"
     showdown: "npm:^2.1.0"
     style-loader: "npm:^4.0.0"
     svg-url-loader: "npm:^8.0.0"
@@ -13961,21 +13961,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:7.8.0, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.5.4, semver@npm:^7.6.3, semver@npm:^7.7.2, semver@npm:^7.7.3, semver@npm:^7.7.4":
+  version: 7.8.0
+  resolution: "semver@npm:7.8.0"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/039a8f68a581c03c1ac17c990316da57a79a93af9b109b712739c50cd4d464079f7e3fee31c008b472e390c7ba48a11ed2b86e91d8602bf06059d4a266db1426
+  languageName: node
+  linkType: hard
+
 "semver@npm:^6.0.0, semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
   bin:
     semver: bin/semver.js
   checksum: 10/1ef3a85bd02a760c6ef76a45b8c1ce18226de40831e02a00bad78485390b98b6ccaa31046245fc63bba4a47a6a592b6c7eedc65cc47126e60489f9cc1ce3ed7e
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.5.4, semver@npm:^7.6.3, semver@npm:^7.7.2, semver@npm:^7.7.3, semver@npm:^7.7.4":
-  version: 7.8.0
-  resolution: "semver@npm:7.8.0"
-  bin:
-    semver: bin/semver.js
-  checksum: 10/039a8f68a581c03c1ac17c990316da57a79a93af9b109b712739c50cd4d464079f7e3fee31c008b472e390c7ba48a11ed2b86e91d8602bf06059d4a266db1426
   languageName: node
   linkType: hard
 
