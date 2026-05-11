@@ -16289,8 +16289,8 @@ __metadata:
   linkType: hard
 
 "wait-on@npm:^9.0.3":
-  version: 9.0.6
-  resolution: "wait-on@npm:9.0.6"
+  version: 9.0.10
+  resolution: "wait-on@npm:9.0.10"
   dependencies:
     axios: "npm:^1.16.0"
     joi: "npm:^18.2.1"
@@ -16299,7 +16299,7 @@ __metadata:
     rxjs: "npm:^7.8.2"
   bin:
     wait-on: bin/wait-on
-  checksum: 10/9ee7af967faaad2349fb7751b0e89cb897f34ae7969d3db1750f6e1cf3b0cdaa7469f22afe42774a440cdcbe3d8ec0b862dbde0c6ba42c84a55d095967f675e8
+  checksum: 10/948c17eef62155b33e1d2194e897b0a90a033096d53928299993fc3c184d2fc365fb30bcef2a31129812c678759336b2f5078ad7905c262f30312097cadb6d25
   languageName: node
   linkType: hard
 
