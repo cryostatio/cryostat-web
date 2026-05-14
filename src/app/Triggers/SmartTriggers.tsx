@@ -708,8 +708,8 @@ export const CreateSmartTriggersModal: React.FC<CreateSmartTriggersModalProps> =
     { value: '>', label: 'Greater Than (>)' },
     { value: '>=', label: 'Greater Than/Equal To (>=)' },
     { value: '==', label: 'Equal To' },
-    { value: '<=', label: 'Less Than/Equal To (>)' },
-    { value: '<', label: 'Less Than (>)' },
+    { value: '<=', label: 'Less Than/Equal To (<=)' },
+    { value: '<', label: 'Less Than (<)' },
   ];
 
   const reset = React.useCallback(() => {
