@@ -3051,12 +3051,12 @@ __metadata:
   linkType: hard
 
 "@types/selenium-webdriver@npm:^4.35.5":
-  version: 4.35.5
-  resolution: "@types/selenium-webdriver@npm:4.35.5"
+  version: 4.35.6
+  resolution: "@types/selenium-webdriver@npm:4.35.6"
   dependencies:
     "@types/node": "npm:*"
     "@types/ws": "npm:*"
-  checksum: 10/87bfc4948739ab2b69d6c133dfbe7cbd3134191e5c618c571b6976bf4f3cb74ec5b493a17f53c6a80acff5f6aafb22c5e5b6a12dcf7b42486a0831316207bf85
+  checksum: 10/9b698c7d88eaaa2892a6d3a95d08ec6991ed43ed3cbdd669da1639836d3d0eed97843dd8ac052de7ce1ca610992e92ba198c1ecf066f9690470501cf71664a15
   languageName: node
   linkType: hard
 
