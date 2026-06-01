@@ -103,7 +103,7 @@
     "@patternfly/react-table": "^6.0.0",
     "@patternfly/react-templates": "^6.4.1",
     "@patternfly/react-topology": "^6.0.0",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@reduxjs/toolkit": "1.9.7",
     "@types/lodash": "4.17.24",
     "@types/react": "^17.0.69",
     "dayjs": "1.11.21",
