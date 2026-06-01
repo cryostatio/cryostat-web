@@ -5265,7 +5265,7 @@ __metadata:
     showdown: "npm:2.1.0"
     style-loader: "npm:4.0.0"
     svg-url-loader: "npm:8.0.0"
-    terser-webpack-plugin: "npm:5.5.0"
+    terser-webpack-plugin: "npm:5.6.1"
     ts-jest: "npm:29.4.11"
     ts-loader: "npm:9.6.0"
     tsconfig-paths-webpack-plugin: "npm:4.2.0"
@@ -14822,9 +14822,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:5.5.0":
-  version: 5.5.0
-  resolution: "terser-webpack-plugin@npm:5.5.0"
+"terser-webpack-plugin@npm:5.6.1":
+  version: 5.6.1
+  resolution: "terser-webpack-plugin@npm:5.6.1"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     jest-worker: "npm:^27.4.5"
@@ -14833,13 +14833,31 @@ __metadata:
   peerDependencies:
     webpack: ^5.1.0
   peerDependenciesMeta:
+    "@minify-html/node":
+      optional: true
     "@swc/core":
+      optional: true
+    "@swc/css":
+      optional: true
+    "@swc/html":
+      optional: true
+    clean-css:
+      optional: true
+    cssnano:
+      optional: true
+    csso:
       optional: true
     esbuild:
       optional: true
+    html-minifier-terser:
+      optional: true
+    lightningcss:
+      optional: true
+    postcss:
+      optional: true
     uglify-js:
       optional: true
-  checksum: 10/b6628967580a1e700bf2709c1900132a7d26ce3594f1d896cef48ac32a958d9e6a90914ce2c001b4e566002d9cf8a80d52e125fe5134997dda31f856a80b7dad
+  checksum: 10/75e5ebb6759ccd85f34a5af04c2f1693f61d7691a4a1614f0892a1d2caf29c12395d1d04d4f4014d4c4a77b63f9f7f36ac9241fcbcc24085a7575d4a4310d70f
   languageName: node
   linkType: hard
 
