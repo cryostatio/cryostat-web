@@ -14,7 +14,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: yashhy/pr-label-check-and-comment-action@v1.0.1
+      - uses: yashhy/pr-label-check-and-comment-action@135ccb75611ae2838bb58c842dd0e797ca35424c # 1.0.1
         with:
           # This list is duplicated from release-drafter.yml
           required_labels: 'chore,ci,cleanup,docs,feat,fix,perf,refactor,style,test'

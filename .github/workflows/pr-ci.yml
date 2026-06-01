@@ -23,7 +23,7 @@ jobs:
       if: |
         !(github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER')
         && (!contains(github.event.issue.labels.*.name, 'safe-to-test') || github.event.issue.user.login != github.event.comment.user.login)
-      uses: thollander/actions-comment-pull-request@v3
+      uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # 3.0.1
       with:
         message: |-
           You do not have permission to run the /build_test command. Please ask @cryostatio/reviewers
@@ -34,7 +34,7 @@ jobs:
         && (!contains(github.event.issue.labels.*.name, 'safe-to-test') || github.event.issue.user.login != github.event.comment.user.login)
       run: exit 1
     - name: React to comment
-      uses: actions/github-script@v9
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # 9.0.0
       with:
         script: |
             const {owner, repo} = context.issue
@@ -54,7 +54,7 @@ jobs:
       PR_head_sha: ${{ fromJSON(steps.comment-branch.outputs.result).head_sha }}
       PR_num: ${{ fromJSON(steps.comment-branch.outputs.result).num }}
     steps:
-    - uses: actions/github-script@v9
+    - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # 9.0.0
       id: comment-branch
       with:
         script: |
@@ -75,12 +75,12 @@ jobs:
       PR_num: ${{ needs.checkout-branch.outputs.PR_num }}
       head_sha: ${{ needs.checkout-branch.outputs.PR_head_sha }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
       with:
         repository: cryostatio/cryostat
         submodules: true
         fetch-depth: 0
-    - uses: actions/setup-java@v5
+    - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # 5.2.0
       with:
         java-version: '21'
         distribution: 'temurin'
@@ -118,7 +118,7 @@ jobs:
         username: ${{ github.event.comment.user.login }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Comment test image link
-      uses: thollander/actions-comment-pull-request@v3
+      uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # 3.0.1
       with:
         message: |-
           Test image available:
