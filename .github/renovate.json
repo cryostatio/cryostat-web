@@ -4,6 +4,7 @@
   "reviewersFromCodeOwners": true,
   "labels": ["dependencies", "chore", "safe-to-test"],
   "semanticCommits": "enabled",
+  "rangeStrategy": "pin",
   "major": {
     "dependencyDashboardApproval": true
   },
