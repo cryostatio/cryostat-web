@@ -1754,7 +1754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/quickstarts@npm:^6.0.0":
+"@patternfly/quickstarts@npm:6.4.0":
   version: 6.4.0
   resolution: "@patternfly/quickstarts@npm:6.4.0"
   dependencies:
@@ -1769,7 +1769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-catalog-view-extension@npm:^6.0.0":
+"@patternfly/react-catalog-view-extension@npm:6.3.0":
   version: 6.3.0
   resolution: "@patternfly/react-catalog-view-extension@npm:6.3.0"
   dependencies:
@@ -1782,7 +1782,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-charts@npm:^8.0.0":
+"@patternfly/react-charts@npm:8.4.1":
   version: 8.4.1
   resolution: "@patternfly/react-charts@npm:8.4.1"
   dependencies:
@@ -1853,7 +1853,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-code-editor@npm:^6.4.1":
+"@patternfly/react-code-editor@npm:6.4.1":
   version: 6.4.1
   resolution: "@patternfly/react-code-editor@npm:6.4.1"
   dependencies:
@@ -1870,7 +1870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^6.0.0, @patternfly/react-core@npm:^6.1.0, @patternfly/react-core@npm:^6.4.1":
+"@patternfly/react-core@npm:6.4.1, @patternfly/react-core@npm:^6.0.0, @patternfly/react-core@npm:^6.1.0, @patternfly/react-core@npm:^6.4.1":
   version: 6.4.1
   resolution: "@patternfly/react-core@npm:6.4.1"
   dependencies:
@@ -1887,7 +1887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-icons@npm:^6.0.0, @patternfly/react-icons@npm:^6.4.0":
+"@patternfly/react-icons@npm:6.4.0, @patternfly/react-icons@npm:^6.0.0, @patternfly/react-icons@npm:^6.4.0":
   version: 6.4.0
   resolution: "@patternfly/react-icons@npm:6.4.0"
   peerDependencies:
@@ -1897,14 +1897,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^6.0.0, @patternfly/react-styles@npm:^6.1.0, @patternfly/react-styles@npm:^6.4.0":
+"@patternfly/react-styles@npm:6.4.0, @patternfly/react-styles@npm:^6.0.0, @patternfly/react-styles@npm:^6.1.0, @patternfly/react-styles@npm:^6.4.0":
   version: 6.4.0
   resolution: "@patternfly/react-styles@npm:6.4.0"
   checksum: 10/fcd90c905ba749845efe8edb3dd35f05a151973ba4fe26847cf41863954b925a10b93a9a8821fc78a93d411ca1fae7b01d57b92b7fa690bbf1b98f13318f5d36
   languageName: node
   linkType: hard
 
-"@patternfly/react-table@npm:^6.0.0":
+"@patternfly/react-table@npm:6.4.1":
   version: 6.4.1
   resolution: "@patternfly/react-table@npm:6.4.1"
   dependencies:
@@ -1921,7 +1921,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-templates@npm:^6.4.1":
+"@patternfly/react-templates@npm:6.4.1":
   version: 6.4.1
   resolution: "@patternfly/react-templates@npm:6.4.1"
   dependencies:
@@ -1944,7 +1944,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-topology@npm:^6.0.0":
+"@patternfly/react-topology@npm:6.4.0":
   version: 6.4.0
   resolution: "@patternfly/react-topology@npm:6.4.0"
   dependencies:
@@ -5191,16 +5191,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cryostat-web@workspace:."
   dependencies:
-    "@patternfly/quickstarts": "npm:^6.0.0"
-    "@patternfly/react-catalog-view-extension": "npm:^6.0.0"
-    "@patternfly/react-charts": "npm:^8.0.0"
-    "@patternfly/react-code-editor": "npm:^6.4.1"
-    "@patternfly/react-core": "npm:^6.0.0"
-    "@patternfly/react-icons": "npm:^6.0.0"
-    "@patternfly/react-styles": "npm:^6.0.0"
-    "@patternfly/react-table": "npm:^6.0.0"
-    "@patternfly/react-templates": "npm:^6.4.1"
-    "@patternfly/react-topology": "npm:^6.0.0"
+    "@patternfly/quickstarts": "npm:6.4.0"
+    "@patternfly/react-catalog-view-extension": "npm:6.3.0"
+    "@patternfly/react-charts": "npm:8.4.1"
+    "@patternfly/react-code-editor": "npm:6.4.1"
+    "@patternfly/react-core": "npm:6.4.1"
+    "@patternfly/react-icons": "npm:6.4.0"
+    "@patternfly/react-styles": "npm:6.4.0"
+    "@patternfly/react-table": "npm:6.4.1"
+    "@patternfly/react-templates": "npm:6.4.1"
+    "@patternfly/react-topology": "npm:6.4.0"
     "@reduxjs/toolkit": "npm:1.9.7"
     "@testing-library/dom": "npm:10.4.1"
     "@testing-library/jest-dom": "npm:6.9.1"
