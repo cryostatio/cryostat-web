@@ -42,7 +42,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             aria-hidden="true"
             class="pf-v6-c-form__label-required"
           >
-             
+             
             *
           </span>
         </label>
@@ -57,7 +57,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           <input
             aria-describedby="recording-name-helper"
             aria-invalid="false"
-            data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+            data-ouia-component-id="OUIA-Generated-TextInputBase-5"
             data-ouia-component-type="PF6/TextInput"
             data-ouia-safe="true"
             data-quickstart-id="crf-name"
@@ -74,7 +74,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             aria-invalid="false"
             aria-label="restartExisting checkbox"
             class="pf-v6-c-check__input"
-            data-ouia-component-id="OUIA-Generated-Checkbox-1"
+            data-ouia-component-id="OUIA-Generated-Checkbox-7"
             data-ouia-component-type="PF6/Checkbox"
             data-ouia-safe="true"
             id="recording-restart-existing"
@@ -127,7 +127,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             aria-hidden="true"
             class="pf-v6-c-form__label-required"
           >
-             
+             
             *
           </span>
         </label>
@@ -146,11 +146,12 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               class="pf-v6-c-check"
             >
               <input
+                aria-describedby="pf-checkbox-description-9"
                 aria-invalid="false"
                 aria-label="Continuous checkbox"
                 checked=""
                 class="pf-v6-c-check__input"
-                data-ouia-component-id="OUIA-Generated-Checkbox-2"
+                data-ouia-component-id="OUIA-Generated-Checkbox-10"
                 data-ouia-component-type="PF6/Checkbox"
                 data-ouia-safe="true"
                 id="recording-continuous"
@@ -165,6 +166,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               </label>
               <span
                 class="pf-v6-c-check__description"
+                id="pf-checkbox-description-9"
               >
                 Record with unlimited duration until manually stopped
               </span>
@@ -177,11 +179,12 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               class="pf-v6-c-check"
             >
               <input
+                aria-describedby="pf-checkbox-description-11"
                 aria-invalid="false"
                 aria-label="ArchiveOnStop checkbox"
                 checked=""
                 class="pf-v6-c-check__input"
-                data-ouia-component-id="OUIA-Generated-Checkbox-3"
+                data-ouia-component-id="OUIA-Generated-Checkbox-12"
                 data-ouia-component-type="PF6/Checkbox"
                 data-ouia-safe="true"
                 id="recording-archive-on-stop"
@@ -196,6 +199,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               </label>
               <span
                 class="pf-v6-c-check__description"
+                id="pf-checkbox-description-11"
               >
                 Copy data to Archives automatically when duration elapses or recording is manually stopped
               </span>
@@ -214,7 +218,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               <input
                 aria-invalid="false"
                 aria-label="Duration Picker Period Input"
-                data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+                data-ouia-component-id="OUIA-Generated-TextInputBase-14"
                 data-ouia-component-type="PF6/TextInput"
                 data-ouia-safe="true"
                 disabled=""
@@ -235,7 +239,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               <select
                 aria-invalid="false"
                 aria-label="Duration Picker Units Input"
-                data-ouia-component-id="OUIA-Generated-FormSelect-default-1"
+                data-ouia-component-id="OUIA-Generated-FormSelect-16"
                 data-ouia-component-type="PF6/FormSelect"
                 data-ouia-safe="true"
                 disabled=""
@@ -271,12 +275,24 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                     fill="currentColor"
                     height="1em"
                     role="img"
-                    viewBox="0 0 320 512"
                     width="1em"
                   >
-                    <path
-                      d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                    />
+                    <svg
+                      class="pf-v6-icon-default"
+                      viewBox="0 0 320 512"
+                    >
+                      <path
+                        d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                      />
+                    </svg>
+                    <svg
+                      class="pf-v6-icon-rh-ui"
+                      viewBox="0 0 32 32"
+                    >
+                      <path
+                        d="M16 24.792c-.384 0-.769-.146-1.061-.438L2.293 11.707a.999.999 0 1 1 1.414-1.414L16 22.586l12.293-12.293a.999.999 0 1 1 1.414 1.414L17.061 24.353a1.497 1.497 0 0 1-1.061.438Z"
+                      />
+                    </svg>
                   </svg>
                 </span>
               </span>
@@ -301,11 +317,11 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   fill="currentColor"
                   height="1em"
                   role="img"
-                  viewBox="0 0 512 512"
+                  viewBox="0 0 32 32"
                   width="1em"
                 >
                   <path
-                    d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
+                    d="M16 1C7.729 1 1 7.729 1 16s6.729 15 15 15 15-6.729 15-15S24.271 1 16 1Zm7.795 11.795-8.646 8.646c-.317.317-.733.475-1.149.475s-.832-.158-1.149-.475l-4.646-4.646a1.126 1.126 0 0 1 1.591-1.591l4.205 4.205 8.205-8.205a1.126 1.126 0 0 1 1.591 1.591Z"
                   />
                 </svg>
               </span>
@@ -345,7 +361,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
             aria-hidden="true"
             class="pf-v6-c-form__label-required"
           >
-             
+             
             *
           </span>
         </label>
@@ -360,7 +376,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           <select
             aria-invalid="false"
             aria-label="Event Template Input"
-            data-ouia-component-id="OUIA-Generated-FormSelect-default-2"
+            data-ouia-component-id="OUIA-Generated-FormSelect-19"
             data-ouia-component-type="PF6/FormSelect"
             data-ouia-safe="true"
             data-quickstart-id="template-selector"
@@ -421,12 +437,24 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                 fill="currentColor"
                 height="1em"
                 role="img"
-                viewBox="0 0 320 512"
                 width="1em"
               >
-                <path
-                  d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                />
+                <svg
+                  class="pf-v6-icon-default"
+                  viewBox="0 0 320 512"
+                >
+                  <path
+                    d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                  />
+                </svg>
+                <svg
+                  class="pf-v6-icon-rh-ui"
+                  viewBox="0 0 32 32"
+                >
+                  <path
+                    d="M16 24.792c-.384 0-.769-.146-1.061-.438L2.293 11.707a.999.999 0 1 1 1.414-1.414L16 22.586l12.293-12.293a.999.999 0 1 1 1.414 1.414L17.061 24.353a1.497 1.497 0 0 1-1.061.438Z"
+                  />
+                </svg>
               </svg>
             </span>
           </span>
@@ -460,7 +488,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
         <button
           aria-controls="metadata-options"
           class="pf-v6-c-button pf-m-link"
-          data-ouia-component-id="OUIA-Generated-Button-link-1"
+          data-ouia-component-id="OUIA-Generated-Button-link-22"
           data-ouia-component-type="PF6/Button"
           data-ouia-safe="true"
           id="metadata-option-toggle"
@@ -478,11 +506,11 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                 fill="currentColor"
                 height="1em"
                 role="img"
-                viewBox="0 0 256 512"
+                viewBox="0 0 20 20"
                 width="1em"
               >
                 <path
-                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                  d="M18.71 5.29a.996.996 0 0 0-1.41 0l-7.29 7.29-7.3-7.29a.987.987 0 0 0-1.41-.02.987.987 0 0 0-.02 1.41l.02.02 7.65 7.65c.29.29.68.44 1.06.44s.77-.15 1.06-.44l7.65-7.65a.996.996 0 0 0 0-1.41Z"
                 />
               </svg>
             </span>
@@ -551,11 +579,12 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               class="pf-v6-c-check"
             >
               <input
+                aria-describedby="pf-checkbox-description-24"
                 aria-invalid="false"
                 aria-label="Autoanalyze checkbox"
                 checked=""
                 class="pf-v6-c-check__input"
-                data-ouia-component-id="OUIA-Generated-Checkbox-4"
+                data-ouia-component-id="OUIA-Generated-Checkbox-25"
                 data-ouia-component-type="PF6/Checkbox"
                 data-ouia-safe="true"
                 id="autoanalyze"
@@ -570,6 +599,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
               </label>
               <span
                 class="pf-v6-c-check__description"
+                id="pf-checkbox-description-24"
               >
                 Perform batch processing of Automated Analysis on archived copies of recordings collected by this rule.
               </span>
@@ -583,12 +613,12 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                 <span
                   aria-hidden="true"
                   class="pf-v6-c-label-group__label"
-                  id="pf-random-id-4"
+                  id="pf-random-id-26"
                 >
                   Labels
                 </span>
                 <ul
-                  aria-labelledby="pf-random-id-4"
+                  aria-labelledby="pf-random-id-26"
                   class="pf-v6-c-label-group__list"
                   role="list"
                 >
@@ -686,7 +716,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
         <button
           aria-controls="advanced-options"
           class="pf-v6-c-button pf-m-link"
-          data-ouia-component-id="OUIA-Generated-Button-link-2"
+          data-ouia-component-id="OUIA-Generated-Button-link-29"
           data-ouia-component-type="PF6/Button"
           data-ouia-safe="true"
           id="advanced-option-toggle"
@@ -704,11 +734,11 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                 fill="currentColor"
                 height="1em"
                 role="img"
-                viewBox="0 0 256 512"
+                viewBox="0 0 20 20"
                 width="1em"
               >
                 <path
-                  d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                  d="M18.71 5.29a.996.996 0 0 0-1.41 0l-7.29 7.29-7.3-7.29a.987.987 0 0 0-1.41-.02.987.987 0 0 0-.02 1.41l.02.02 7.65 7.65c.29.29.68.44 1.06.44s.77-.15 1.06-.44l7.65-7.65a.996.996 0 0 0 0-1.41Z"
                 />
               </svg>
             </span>
@@ -729,7 +759,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
       >
         <small
           class="pf-v6-c-content--small"
-          data-ouia-component-id="OUIA-Generated-Content-3"
+          data-ouia-component-id="OUIA-Generated-Content-30"
           data-ouia-component-type="PF6/Content"
           data-ouia-safe="true"
           data-pf-content="true"
@@ -749,7 +779,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                 aria-invalid="false"
                 checked=""
                 class="pf-v6-c-check__input"
-                data-ouia-component-id="OUIA-Generated-Checkbox-5"
+                data-ouia-component-id="OUIA-Generated-Checkbox-33"
                 data-ouia-component-type="PF6/Checkbox"
                 data-ouia-safe="true"
                 id="toDisk-checkbox"
@@ -814,7 +844,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   <input
                     aria-invalid="false"
                     aria-label="max size value"
-                    data-ouia-component-id="OUIA-Generated-TextInputBase-3"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-36"
                     data-ouia-component-type="PF6/TextInput"
                     data-ouia-safe="true"
                     id="maxSize"
@@ -834,7 +864,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   <select
                     aria-invalid="false"
                     aria-label="Max size units input"
-                    data-ouia-component-id="OUIA-Generated-FormSelect-default-3"
+                    data-ouia-component-id="OUIA-Generated-FormSelect-38"
                     data-ouia-component-type="PF6/FormSelect"
                     data-ouia-safe="true"
                   >
@@ -869,12 +899,24 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                         fill="currentColor"
                         height="1em"
                         role="img"
-                        viewBox="0 0 320 512"
                         width="1em"
                       >
-                        <path
-                          d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                        />
+                        <svg
+                          class="pf-v6-icon-default"
+                          viewBox="0 0 320 512"
+                        >
+                          <path
+                            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                          />
+                        </svg>
+                        <svg
+                          class="pf-v6-icon-rh-ui"
+                          viewBox="0 0 32 32"
+                        >
+                          <path
+                            d="M16 24.792c-.384 0-.769-.146-1.061-.438L2.293 11.707a.999.999 0 1 1 1.414-1.414L16 22.586l12.293-12.293a.999.999 0 1 1 1.414 1.414L17.061 24.353a1.497 1.497 0 0 1-1.061.438Z"
+                          />
+                        </svg>
                       </svg>
                     </span>
                   </span>
@@ -933,7 +975,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   <input
                     aria-invalid="false"
                     aria-label="Max age duration"
-                    data-ouia-component-id="OUIA-Generated-TextInputBase-4"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-41"
                     data-ouia-component-type="PF6/TextInput"
                     data-ouia-safe="true"
                     id="maxAgeDuration"
@@ -953,7 +995,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                   <select
                     aria-invalid="false"
                     aria-label="Max Age units Input"
-                    data-ouia-component-id="OUIA-Generated-FormSelect-default-4"
+                    data-ouia-component-id="OUIA-Generated-FormSelect-43"
                     data-ouia-component-type="PF6/FormSelect"
                     data-ouia-safe="true"
                   >
@@ -988,12 +1030,24 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
                         fill="currentColor"
                         height="1em"
                         role="img"
-                        viewBox="0 0 320 512"
                         width="1em"
                       >
-                        <path
-                          d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                        />
+                        <svg
+                          class="pf-v6-icon-default"
+                          viewBox="0 0 320 512"
+                        >
+                          <path
+                            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                          />
+                        </svg>
+                        <svg
+                          class="pf-v6-icon-rh-ui"
+                          viewBox="0 0 32 32"
+                        >
+                          <path
+                            d="M16 24.792c-.384 0-.769-.146-1.061-.438L2.293 11.707a.999.999 0 1 1 1.414-1.414L16 22.586l12.293-12.293a.999.999 0 1 1 1.414 1.414L17.061 24.353a1.497 1.497 0 0 1-1.061.438Z"
+                          />
+                        </svg>
                       </svg>
                     </span>
                   </span>
@@ -1032,7 +1086,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
         >
           <button
             class="pf-v6-c-button pf-m-primary pf-m-progress"
-            data-ouia-component-id="OUIA-Generated-Button-primary-1"
+            data-ouia-component-id="OUIA-Generated-Button-primary-44"
             data-ouia-component-type="PF6/Button"
             data-ouia-safe="true"
             data-quickstart-id="crf-create-btn"
@@ -1047,7 +1101,7 @@ exports[`<CustomRecordingForm /> renders correctly 1`] = `
           </button>
           <button
             class="pf-v6-c-button pf-m-secondary"
-            data-ouia-component-id="OUIA-Generated-Button-secondary-1"
+            data-ouia-component-id="OUIA-Generated-Button-secondary-45"
             data-ouia-component-type="PF6/Button"
             data-ouia-safe="true"
             type="button"

@@ -8,7 +8,7 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
     </h1>
     <div
       class="pf-v6-c-card pf-m-compact"
-      data-ouia-component-id="OUIA-Generated-Card-19"
+      data-ouia-component-id="OUIA-Generated-Card-185"
       data-ouia-component-type="PF6/Card"
       data-ouia-safe="true"
       id=""
@@ -21,10 +21,10 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
         >
           <div
             class="pf-v6-c-toolbar"
-            data-ouia-component-id="OUIA-Generated-Toolbar-19"
+            data-ouia-component-id="OUIA-Generated-Toolbar-188"
             data-ouia-component-type="PF6/Toolbar"
             data-ouia-safe="true"
-            id="pf-random-id-47"
+            id="pf-random-id-187"
           >
             <div
               class="pf-v6-c-toolbar__content"
@@ -155,12 +155,24 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
                       fill="currentColor"
                       height="1em"
                       role="img"
-                      viewBox="0 0 448 512"
                       width="1em"
                     >
-                      <path
-                        d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
-                      />
+                      <svg
+                        class="pf-v6-icon-default"
+                        viewBox="0 0 448 512"
+                      >
+                        <path
+                          d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+                        />
+                      </svg>
+                      <svg
+                        class="pf-v6-icon-rh-ui"
+                        viewBox="0 0 32 32"
+                      >
+                        <path
+                          d="m30.447 15.105-28-14A1.001 1.001 0 0 0 1 2v28a1.003 1.003 0 0 0 1 1c.153 0 .306-.035.447-.105l28-14a1 1 0 0 0 0-1.79ZM3 28.382V3.618L27.764 16 3 28.382Z"
+                        />
+                      </svg>
                     </svg>
                   </button>
                 </div>
@@ -172,7 +184,7 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
                       aria-expanded="false"
                       aria-label="Insert sample query"
                       class="pf-v6-c-menu-toggle pf-m-plain pf-v6-c-code-editor__controls-item"
-                      data-ouia-component-id="OUIA-Generated-MenuToggle-plain-19"
+                      data-ouia-component-id="OUIA-Generated-MenuToggle-plain-193"
                       data-ouia-component-type="PF6/MenuToggle"
                       data-ouia-safe="true"
                       type="button"
@@ -186,12 +198,24 @@ exports[`<RecordingAnalytics /> renders correctly 1`] = `
                           fill="currentColor"
                           height="1em"
                           role="img"
-                          viewBox="0 0 512 512"
                           width="1em"
                         >
-                          <path
-                            d="M80 368H16a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0-16-16zm0-320H16A16 16 0 0 0 0 64v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16zm0 160H16a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0-16-16zm416 176H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-320H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16zm0 160H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16z"
-                          />
+                          <svg
+                            class="pf-v6-icon-default"
+                            viewBox="0 0 512 512"
+                          >
+                            <path
+                              d="M80 368H16a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0-16-16zm0-320H16A16 16 0 0 0 0 64v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16zm0 160H16a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0-16-16zm416 176H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16zm0-320H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16zm0 160H176a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16z"
+                            />
+                          </svg>
+                          <svg
+                            class="pf-v6-icon-rh-ui"
+                            viewBox="0 0 32 32"
+                          >
+                            <path
+                              d="M31 16a1 1 0 0 1-1 1H9a1 1 0 0 1 0-2h21a1 1 0 0 1 1 1Zm-1 9H9a1 1 0 0 0 0 2h21a1 1 0 0 0 0-2ZM9 7h21a1 1 0 0 0 0-2H9a1 1 0 0 0 0 2ZM2 4.51a1.5 1.5 0 1 0 .001 3.001A1.5 1.5 0 0 0 2 4.51Zm0 10a1.5 1.5 0 1 0 .001 3.001A1.5 1.5 0 0 0 2 14.51Zm0 10a1.5 1.5 0 1 0 .001 3.001A1.5 1.5 0 0 0 2 24.51Z"
+                            />
+                          </svg>
                         </svg>
                       </span>
                     </button>

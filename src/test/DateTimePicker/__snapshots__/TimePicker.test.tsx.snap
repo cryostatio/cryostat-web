@@ -81,64 +81,6 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 <button
                   aria-label="Increment hour24 value"
                   class="pf-v6-c-button pf-m-primary datetime-picker__time-spin-box up"
-                  data-ouia-component-id="OUIA-Generated-Button-primary-1"
-                  data-ouia-component-type="PF6/Button"
-                  data-ouia-safe="true"
-                  type="button"
-                >
-                  <span
-                    class="pf-v6-c-button__icon"
-                  >
-                    <span
-                      class="pf-v6-c-icon pf-m-lg"
-                    >
-                      <span
-                        class="pf-v6-c-icon__content"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="pf-v6-svg"
-                          fill="currentColor"
-                          height="1em"
-                          role="img"
-                          viewBox="0 0 320 512"
-                          width="1em"
-                        >
-                          <path
-                            d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"
-                          />
-                        </svg>
-                      </span>
-                    </span>
-                  </span>
-                </button>
-              </div>
-              <div
-                class="pf-v6-l-stack__item"
-              >
-                <span
-                  class="pf-v6-c-form-control datetime-picker__number-input"
-                >
-                  <input
-                    aria-invalid="false"
-                    aria-label="Input hour24 value"
-                    data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-                    data-ouia-component-type="PF6/TextInput"
-                    data-ouia-safe="true"
-                    id="hour24-input"
-                    max="23"
-                    min="0"
-                    type="number"
-                    value="13"
-                  />
-                </span>
-              </div>
-              <div
-                class="pf-v6-l-stack__item"
-              >
-                <button
-                  aria-label="Decrement hour24 value"
-                  class="pf-v6-c-button pf-m-primary datetime-picker__time-spin-box down"
                   data-ouia-component-id="OUIA-Generated-Button-primary-2"
                   data-ouia-component-type="PF6/Button"
                   data-ouia-safe="true"
@@ -159,12 +101,94 @@ exports[`<TimePicker/> renders correctly 1`] = `
                           fill="currentColor"
                           height="1em"
                           role="img"
-                          viewBox="0 0 320 512"
                           width="1em"
                         >
-                          <path
-                            d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"
-                          />
+                          <svg
+                            class="pf-v6-icon-default"
+                            viewBox="0 0 320 512"
+                          >
+                            <path
+                              d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"
+                            />
+                          </svg>
+                          <svg
+                            class="pf-v6-icon-rh-ui"
+                            viewBox="0 0 32 32"
+                          >
+                            <path
+                              d="M29 22a.997.997 0 0 1-.707-.293L16 9.414 3.707 21.707a.999.999 0 1 1-1.414-1.414L14.939 7.646a1.501 1.501 0 0 1 2.121 0l12.646 12.646a.999.999 0 0 1-.707 1.707Z"
+                            />
+                          </svg>
+                        </svg>
+                      </span>
+                    </span>
+                  </span>
+                </button>
+              </div>
+              <div
+                class="pf-v6-l-stack__item"
+              >
+                <span
+                  class="pf-v6-c-form-control datetime-picker__number-input"
+                >
+                  <input
+                    aria-invalid="false"
+                    aria-label="Input hour24 value"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-4"
+                    data-ouia-component-type="PF6/TextInput"
+                    data-ouia-safe="true"
+                    id="hour24-input"
+                    max="23"
+                    min="0"
+                    type="number"
+                    value="13"
+                  />
+                </span>
+              </div>
+              <div
+                class="pf-v6-l-stack__item"
+              >
+                <button
+                  aria-label="Decrement hour24 value"
+                  class="pf-v6-c-button pf-m-primary datetime-picker__time-spin-box down"
+                  data-ouia-component-id="OUIA-Generated-Button-primary-5"
+                  data-ouia-component-type="PF6/Button"
+                  data-ouia-safe="true"
+                  type="button"
+                >
+                  <span
+                    class="pf-v6-c-button__icon"
+                  >
+                    <span
+                      class="pf-v6-c-icon pf-m-lg"
+                    >
+                      <span
+                        class="pf-v6-c-icon__content"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="pf-v6-svg"
+                          fill="currentColor"
+                          height="1em"
+                          role="img"
+                          width="1em"
+                        >
+                          <svg
+                            class="pf-v6-icon-default"
+                            viewBox="0 0 320 512"
+                          >
+                            <path
+                              d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"
+                            />
+                          </svg>
+                          <svg
+                            class="pf-v6-icon-rh-ui"
+                            viewBox="0 0 32 32"
+                          >
+                            <path
+                              d="M16 24.792c-.384 0-.769-.146-1.061-.438L2.293 11.707a.999.999 0 1 1 1.414-1.414L16 22.586l12.293-12.293a.999.999 0 1 1 1.414 1.414L17.061 24.353a1.497 1.497 0 0 1-1.061.438Z"
+                            />
+                          </svg>
                         </svg>
                       </span>
                     </span>
@@ -190,7 +214,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
               >
                 <h4
                   class="pf-v6-c-title pf-m-h4 datetime-picker__time-text-top-label"
-                  data-ouia-component-id="OUIA-Generated-Title-2"
+                  data-ouia-component-id="OUIA-Generated-Title-6"
                   data-ouia-component-type="PF6/Title"
                   data-ouia-safe="true"
                 >
@@ -203,7 +227,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 <button
                   aria-label="Increment minute value"
                   class="pf-v6-c-button pf-m-primary datetime-picker__time-spin-box up"
-                  data-ouia-component-id="OUIA-Generated-Button-primary-3"
+                  data-ouia-component-id="OUIA-Generated-Button-primary-7"
                   data-ouia-component-type="PF6/Button"
                   data-ouia-safe="true"
                   type="button"
@@ -223,12 +247,24 @@ exports[`<TimePicker/> renders correctly 1`] = `
                           fill="currentColor"
                           height="1em"
                           role="img"
-                          viewBox="0 0 320 512"
                           width="1em"
                         >
-                          <path
-                            d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"
-                          />
+                          <svg
+                            class="pf-v6-icon-default"
+                            viewBox="0 0 320 512"
+                          >
+                            <path
+                              d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"
+                            />
+                          </svg>
+                          <svg
+                            class="pf-v6-icon-rh-ui"
+                            viewBox="0 0 32 32"
+                          >
+                            <path
+                              d="M29 22a.997.997 0 0 1-.707-.293L16 9.414 3.707 21.707a.999.999 0 1 1-1.414-1.414L14.939 7.646a1.501 1.501 0 0 1 2.121 0l12.646 12.646a.999.999 0 0 1-.707 1.707Z"
+                            />
+                          </svg>
                         </svg>
                       </span>
                     </span>
@@ -244,7 +280,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                   <input
                     aria-invalid="false"
                     aria-label="Input minute value"
-                    data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-9"
                     data-ouia-component-type="PF6/TextInput"
                     data-ouia-safe="true"
                     id="minute-input"
@@ -261,7 +297,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 <button
                   aria-label="Decrement minute value"
                   class="pf-v6-c-button pf-m-primary datetime-picker__time-spin-box down"
-                  data-ouia-component-id="OUIA-Generated-Button-primary-4"
+                  data-ouia-component-id="OUIA-Generated-Button-primary-10"
                   data-ouia-component-type="PF6/Button"
                   data-ouia-safe="true"
                   type="button"
@@ -281,12 +317,24 @@ exports[`<TimePicker/> renders correctly 1`] = `
                           fill="currentColor"
                           height="1em"
                           role="img"
-                          viewBox="0 0 320 512"
                           width="1em"
                         >
-                          <path
-                            d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"
-                          />
+                          <svg
+                            class="pf-v6-icon-default"
+                            viewBox="0 0 320 512"
+                          >
+                            <path
+                              d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"
+                            />
+                          </svg>
+                          <svg
+                            class="pf-v6-icon-rh-ui"
+                            viewBox="0 0 32 32"
+                          >
+                            <path
+                              d="M16 24.792c-.384 0-.769-.146-1.061-.438L2.293 11.707a.999.999 0 1 1 1.414-1.414L16 22.586l12.293-12.293a.999.999 0 1 1 1.414 1.414L17.061 24.353a1.497 1.497 0 0 1-1.061.438Z"
+                            />
+                          </svg>
                         </svg>
                       </span>
                     </span>
@@ -312,7 +360,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
               >
                 <h4
                   class="pf-v6-c-title pf-m-h4 datetime-picker__time-text-top-label"
-                  data-ouia-component-id="OUIA-Generated-Title-3"
+                  data-ouia-component-id="OUIA-Generated-Title-11"
                   data-ouia-component-type="PF6/Title"
                   data-ouia-safe="true"
                 >
@@ -325,7 +373,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 <button
                   aria-label="Increment second value"
                   class="pf-v6-c-button pf-m-primary datetime-picker__time-spin-box up"
-                  data-ouia-component-id="OUIA-Generated-Button-primary-5"
+                  data-ouia-component-id="OUIA-Generated-Button-primary-12"
                   data-ouia-component-type="PF6/Button"
                   data-ouia-safe="true"
                   type="button"
@@ -345,12 +393,24 @@ exports[`<TimePicker/> renders correctly 1`] = `
                           fill="currentColor"
                           height="1em"
                           role="img"
-                          viewBox="0 0 320 512"
                           width="1em"
                         >
-                          <path
-                            d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"
-                          />
+                          <svg
+                            class="pf-v6-icon-default"
+                            viewBox="0 0 320 512"
+                          >
+                            <path
+                              d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"
+                            />
+                          </svg>
+                          <svg
+                            class="pf-v6-icon-rh-ui"
+                            viewBox="0 0 32 32"
+                          >
+                            <path
+                              d="M29 22a.997.997 0 0 1-.707-.293L16 9.414 3.707 21.707a.999.999 0 1 1-1.414-1.414L14.939 7.646a1.501 1.501 0 0 1 2.121 0l12.646 12.646a.999.999 0 0 1-.707 1.707Z"
+                            />
+                          </svg>
                         </svg>
                       </span>
                     </span>
@@ -366,7 +426,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                   <input
                     aria-invalid="false"
                     aria-label="Input second value"
-                    data-ouia-component-id="OUIA-Generated-TextInputBase-3"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-14"
                     data-ouia-component-type="PF6/TextInput"
                     data-ouia-safe="true"
                     id="second-input"
@@ -383,7 +443,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
                 <button
                   aria-label="Decrement second value"
                   class="pf-v6-c-button pf-m-primary datetime-picker__time-spin-box down"
-                  data-ouia-component-id="OUIA-Generated-Button-primary-6"
+                  data-ouia-component-id="OUIA-Generated-Button-primary-15"
                   data-ouia-component-type="PF6/Button"
                   data-ouia-safe="true"
                   type="button"
@@ -403,12 +463,24 @@ exports[`<TimePicker/> renders correctly 1`] = `
                           fill="currentColor"
                           height="1em"
                           role="img"
-                          viewBox="0 0 320 512"
                           width="1em"
                         >
-                          <path
-                            d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"
-                          />
+                          <svg
+                            class="pf-v6-icon-default"
+                            viewBox="0 0 320 512"
+                          >
+                            <path
+                              d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"
+                            />
+                          </svg>
+                          <svg
+                            class="pf-v6-icon-rh-ui"
+                            viewBox="0 0 32 32"
+                          >
+                            <path
+                              d="M16 24.792c-.384 0-.769-.146-1.061-.438L2.293 11.707a.999.999 0 1 1 1.414-1.414L16 22.586l12.293-12.293a.999.999 0 1 1 1.414 1.414L17.061 24.353a1.497 1.497 0 0 1-1.061.438Z"
+                            />
+                          </svg>
                         </svg>
                       </span>
                     </span>

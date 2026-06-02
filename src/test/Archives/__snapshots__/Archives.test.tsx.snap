@@ -11,7 +11,7 @@ exports[`<Archives /> renders correctly 1`] = `
       <nav
         aria-label="Breadcrumb"
         class="pf-v6-c-breadcrumb"
-        data-ouia-component-id="OUIA-Generated-Breadcrumb-5"
+        data-ouia-component-id="OUIA-Generated-Breadcrumb-15"
         data-ouia-component-type="PF6/Breadcrumb"
         data-ouia-safe="true"
       >
@@ -38,7 +38,7 @@ exports[`<Archives /> renders correctly 1`] = `
         >
           <div
             class="pf-v6-c-card pf-m-compact"
-            data-ouia-component-id="OUIA-Generated-Card-5"
+            data-ouia-component-id="OUIA-Generated-Card-16"
             data-ouia-component-type="PF6/Card"
             data-ouia-safe="true"
             id=""
@@ -48,7 +48,7 @@ exports[`<Archives /> renders correctly 1`] = `
             >
               <div
                 class="pf-v6-c-tabs pf-m-animate-current pf-m-initializing-accent"
-                data-ouia-component-id="OUIA-Generated-Tabs-4"
+                data-ouia-component-id="OUIA-Generated-Tabs-18"
                 data-ouia-component-type="PF6/Tabs"
                 data-ouia-safe="true"
                 id="archives"
