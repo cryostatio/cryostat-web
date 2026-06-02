@@ -110,7 +110,7 @@ jobs:
         podman images
     - name: Push PR test image to ghcr.io
       id: push-to-ghcr
-      uses: redhat-actions/push-to-registry@v2.7.1
+      uses: redhat-actions/push-to-registry@v2.8
       with:
         registry: ghcr.io/${{ github.repository_owner }}
         image: cryostat-web
