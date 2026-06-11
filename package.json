@@ -145,7 +145,8 @@
   },
   "resolutions": {
     "@types/react": "^17.0.69",
-    "lodash": "^4.17.23"
+    "lodash": "^4.17.23",
+    "dompurify": "^3.4.0"
   },
   "packageManager": "yarn@4.13.0"
 }
