@@ -144,14 +144,9 @@
     "victory-zoom-container": "^37.3.6"
   },
   "resolutions": {
-<<<<<<< HEAD
     "@types/react": "^17.0.69",
-    "lodash": "^4.17.23"
-=======
-    "@types/react": "17.0.93",
-    "lodash": "4.18.1",
+    "lodash": "^4.17.23",
     "dompurify": "^3.4.0"
->>>>>>> 5068100 (chore(deps): force dompurify 3.4.0 resolution (#2295))
   },
   "packageManager": "yarn@4.13.0"
 }
