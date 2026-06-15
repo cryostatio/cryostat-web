@@ -5289,7 +5289,7 @@ __metadata:
     semver: "npm:7.8.1"
     showdown: "npm:2.1.0"
     style-loader: "npm:4.0.0"
-    svg-url-loader: "npm:8.0.0"
+    svg-url-loader: "npm:8.1.0"
     terser-webpack-plugin: "npm:5.6.1"
     ts-jest: "npm:29.4.11"
     ts-loader: "npm:9.6.0"
@@ -14783,14 +14783,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svg-url-loader@npm:8.0.0":
-  version: 8.0.0
-  resolution: "svg-url-loader@npm:8.0.0"
+"svg-url-loader@npm:8.1.0":
+  version: 8.1.0
+  resolution: "svg-url-loader@npm:8.1.0"
   dependencies:
     file-loader: "npm:~6.2.0"
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 10/c4fa2da32915807a79239dfc4ee09f9a875291108ba242cf1d971fb3e141b1f5886386c1f45a5261a0e825012fbc6cd04acc22c0f0611272747318e1c66e092e
+  checksum: 10/837889ab4111a40e57c21a2e881412284b4790381ba830ba62285e253e0dc2bdf9bc4aceddb1b1de26afe369febd46bc13ad8581bd6c60c10df33c88d839722c
   languageName: node
   linkType: hard
 
