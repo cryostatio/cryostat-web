@@ -15,7 +15,7 @@
  */
 
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
-import { HeapDump, NullableTarget, Target } from '@app/Shared/Services/api.types';
+import { HeapDump, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
 import {
@@ -305,6 +305,14 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
     },
     [setSelectedHeapDump, setAnalysisResult, heapDumps, target, queryHeapDumpAnalysis],
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((msg) => {
+        queryHeapDumpAnalysis(msg.message.heapDumpId, msg.message.jvmId);
+      }),
+    );
+  }, [addSubscription, context.notificationChannel]);
 
   React.useEffect(() => {
     addSubscription(
