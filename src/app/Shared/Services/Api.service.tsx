@@ -91,6 +91,7 @@ import {
 import { NotificationService } from './Notifications.service';
 import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
+import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 
 export class ApiService {
   private readonly archiveEnabled = new BehaviorSubject<boolean>(true);
@@ -820,6 +821,44 @@ export class ApiService {
       `diagnostics/targets/${jvmId}/threaddump/${threadDumpId}/analyze`,
       {
         method: 'POST',
+      },
+      undefined,
+      suppressNotifications,
+    ).pipe(
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
+  analyzeHeapDump(
+    jvmId: string,
+    heapDumpId: string,
+    suppressNotifications = false,
+  ): Observable<HeapDumpAnalysisResult> {
+    return this.sendRequest(
+      'beta',
+      `diagnostics/targets/${jvmId}/heapdump/${heapDumpId}/analyze`,
+      {
+        method: 'POST',
+      },
+      undefined,
+      suppressNotifications,
+    ).pipe(
+      concatMap((resp) => resp.json()),
+      first(),
+    );
+  }
+
+  getHeapDumpReport(
+    jvmId: string,
+    heapDumpId: string,
+    suppressNotifications = false,
+  ): Observable<HeapDumpAnalysisResult> {
+    return this.sendRequest(
+      'beta',
+      `diagnostics/targets/${jvmId}/heapdump/${heapDumpId}/analyze`,
+      {
+        method: 'GET',
       },
       undefined,
       suppressNotifications,

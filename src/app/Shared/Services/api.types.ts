@@ -733,6 +733,7 @@ export enum NotificationCategory {
   HeapDumpFailure = 'HeapDumpFailure',
   HeapDumpDeleted = 'HeapDumpDeleted',
   HeapDumpMetadataUpdated = 'HeapDumpMetadataUpdated',
+  HeapDumpAnalysisSuccess = 'HeapDumpAnalysisSuccess',
   ThreadDumpSuccess = 'ThreadDumpSuccess',
   ThreadDumpFailure = 'ThreadDumpFailure',
   ThreadDumpDeleted = 'ThreadDumpDeleted',

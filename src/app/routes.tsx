@@ -45,6 +45,7 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
+import { HeapDumpAnalysis } from './Diagnostics/Analysis/HeapDumps/HeapDumpAnalysis';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
@@ -213,6 +214,15 @@ const diagnosticsRoutes: IAppRoute[] = [
     path: toPath('/analyze-thread-dumps'),
     title: 'Analyze Thread Dumps',
     description: 'Analyze Thread Dump Data',
+    navGroup: DIAGNOSTICS,
+    navSubgroup: ANALYZE,
+  },
+  {
+    component: HeapDumpAnalysis,
+    label: 'Analyze Heap Dumps',
+    path: toPath('/analyze-heap-dumps'),
+    title: 'Analyze Heap Dumps',
+    description: 'Analyze Heap Dump Data',
     navGroup: DIAGNOSTICS,
     navSubgroup: ANALYZE,
   },
