@@ -231,7 +231,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
 
     setSelectedHeapDump(heapDumpId);
     if (jvmId != '' && heapDumpId != '') {
-      context.api.analyzeHeapDump(jvmId, heapDumpId).subscribe({ next: handleHeapDumpAnalysis });
+      context.api.getHeapDumpReport(jvmId, heapDumpId).subscribe({ next: handleHeapDumpAnalysis });
     }
     dispatch(modalPrefillClearIntent());
   }, [
@@ -262,7 +262,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
       if (selectedJvmId) {
         addSubscription(
           context.api
-            .analyzeHeapDump(selectedJvmId, heapDump)
+            .getHeapDumpReport(selectedJvmId, heapDump)
             .pipe(finalize(() => setIsAnalysisLoading(false)))
             .subscribe({
               next: handleHeapDumpAnalysis,
@@ -278,7 +278,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
             concatMap((target: Target | undefined) => {
               if (target) {
                 selectedHeapDumpJvmIdRef.current = target.jvmId;
-                return context.api.analyzeHeapDump(target.jvmId ? target.jvmId : '', heapDump);
+                return context.api.getHeapDumpReport(target.jvmId ? target.jvmId : '', heapDump);
               }
               return EMPTY;
             }),
@@ -309,7 +309,15 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.HeapDumpAnalysisSuccess).subscribe((msg) => {
-        queryHeapDumpAnalysis(msg.message.heapDumpId, msg.message.jvmId);
+        addSubscription(
+          context.api
+            .getHeapDumpReport(msg.message.jvmId, msg.message.heapDumpId)
+            .pipe(finalize(() => setIsAnalysisLoading(false)))
+            .subscribe({
+              next: handleHeapDumpAnalysis,
+            }),
+        );
+        return;
       }),
     );
   }, [addSubscription, context.notificationChannel]);
