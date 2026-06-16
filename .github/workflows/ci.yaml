@@ -22,13 +22,13 @@ jobs:
       matrix:
         node-version: ['lts/*']
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v6.0.3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v6.4.0
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
-    - uses: bahmutov/npm-install@v1
+    - uses: bahmutov/npm-install@v1.12.1
     - run: yarn format:check
   eslint-check:
     runs-on: ubuntu-latest
@@ -36,13 +36,13 @@ jobs:
       matrix:
         node-version: ['lts/*']
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v6.0.3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v6.4.0
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
-    - uses: bahmutov/npm-install@v1
+    - uses: bahmutov/npm-install@v1.12.1
     - run: yarn eslint:check --max-warnings 0
   type-check:
     runs-on: ubuntu-latest
@@ -50,13 +50,13 @@ jobs:
       matrix:
         node-version: ['lts/*']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-      - uses: bahmutov/npm-install@v1
+      - uses: bahmutov/npm-install@v1.12.1
       - run: yarn type-check
   test:
     runs-on: ubuntu-latest
@@ -64,13 +64,13 @@ jobs:
       matrix:
         node-version: ['lts/*']
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v6.0.3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v6.4.0
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
-    - uses: bahmutov/npm-install@v1
+    - uses: bahmutov/npm-install@v1.12.1
     - run: yarn test:ci
   integration-test:
     runs-on: ubuntu-latest
@@ -78,16 +78,16 @@ jobs:
       matrix:
         node-version: ['lts/*']
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v6.0.3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v6.4.0
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
-    - uses: bahmutov/npm-install@v1
+    - uses: bahmutov/npm-install@v1.12.1
     - name: Setup firefox
       id: setup-firefox
-      uses: browser-actions/setup-firefox@v1
+      uses: browser-actions/setup-firefox@v1.7.2
       with:
         firefox-version: latest
     - name: Download geckodriver
