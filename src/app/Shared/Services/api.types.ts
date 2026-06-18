@@ -726,8 +726,6 @@ export enum NotificationCategory {
   GrafanaUploadFail = 'GrafanaUploadFailure',
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
   LayoutTemplateCreated = 'LayoutTemplateCreated', // generated client-side
-  TargetCredentialsStored = 'TargetCredentialsStored',
-  TargetCredentialsDeleted = 'TargetCredentialsDeleted',
   HeapDumpSuccess = 'HeapDumpSuccess',
   HeapDumpUploaded = 'HeapDumpUploaded',
   HeapDumpFailure = 'HeapDumpFailure',

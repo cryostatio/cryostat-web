@@ -375,22 +375,6 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TargetCredentialsStored,
-    {
-      variant: AlertVariant.success,
-      title: 'Target Credentials stored',
-      body: (evt) => `Credentials stored for target: ${evt.message.target}`,
-    } as NotificationMessageMapper,
-  ],
-  [
-    NotificationCategory.TargetCredentialsDeleted,
-    {
-      variant: AlertVariant.success,
-      title: 'Target Credentials deleted',
-      body: (evt) => `Credentials deleted for target: ${evt.message.target}`,
-    } as NotificationMessageMapper,
-  ],
-  [
     NotificationCategory.HeapDumpSuccess,
     {
       variant: AlertVariant.success,
