@@ -495,6 +495,42 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
+    NotificationCategory.CredentialsUpdated,
+    {
+      variant: AlertVariant.info,
+      title: 'Credentials updated',
+      body: (evt) => `Credentials updated for: ${evt.message.matchExpression}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionCreated,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression created',
+      body: (evt) => `Expression created: ${evt.message.matchExpression}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionUpdated,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression updated',
+      body: (evt) => `MatchExpression updated: ${evt.message.matchExpression}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionDeleted,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression deleted',
+      body: (evt) => `MatchExpression deleted: ${evt.message.matchExpression}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
     NotificationCategory.ReportSuccess,
     {
       variant: AlertVariant.info,

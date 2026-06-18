@@ -148,7 +148,7 @@ export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResour
     case 'automatedRules':
       return [NotificationCategory.RuleCreated, NotificationCategory.RuleUpdated];
     case 'credentials':
-      return [NotificationCategory.CredentialsStored, NotificationCategory.TargetCredentialsStored];
+      return [NotificationCategory.CredentialsStored, NotificationCategory.TargetCredentialsStored, NotificationCategory.CredentialsUpdated];
     case 'report':
       return [NotificationCategory.ReportSuccess];
     default:
