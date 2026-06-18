@@ -957,66 +957,6 @@ exports[`<NotificationControl/> renders correctly 1`] = `
               data-ouia-component-id="OUIA-Generated-Switch-26"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
-              for="TargetCredentialsStored"
-            >
-              <input
-                aria-labelledby="TargetCredentialsStored-label"
-                checked=""
-                class="pf-v6-c-switch__input"
-                id="TargetCredentialsStored"
-                role="switch"
-                type="checkbox"
-              />
-              <span
-                class="pf-v6-c-switch__toggle"
-              />
-              <span
-                aria-hidden="true"
-                class="pf-v6-c-switch__label"
-                id="TargetCredentialsStored-label"
-              >
-                Target Credentials stored
-              </span>
-            </label>
-          </div>
-          <div
-            class="pf-v6-l-stack__item"
-          >
-            <label
-              class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-27"
-              data-ouia-component-type="PF6/Switch"
-              data-ouia-safe="true"
-              for="TargetCredentialsDeleted"
-            >
-              <input
-                aria-labelledby="TargetCredentialsDeleted-label"
-                checked=""
-                class="pf-v6-c-switch__input"
-                id="TargetCredentialsDeleted"
-                role="switch"
-                type="checkbox"
-              />
-              <span
-                class="pf-v6-c-switch__toggle"
-              />
-              <span
-                aria-hidden="true"
-                class="pf-v6-c-switch__label"
-                id="TargetCredentialsDeleted-label"
-              >
-                Target Credentials deleted
-              </span>
-            </label>
-          </div>
-          <div
-            class="pf-v6-l-stack__item"
-          >
-            <label
-              class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-28"
-              data-ouia-component-type="PF6/Switch"
-              data-ouia-safe="true"
               for="HeapDumpSuccess"
             >
               <input
@@ -1044,7 +984,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-29"
+              data-ouia-component-id="OUIA-Generated-Switch-27"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="HeapDumpUploaded"
@@ -1074,7 +1014,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-30"
+              data-ouia-component-id="OUIA-Generated-Switch-28"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="HeapDumpFailure"
@@ -1104,7 +1044,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-31"
+              data-ouia-component-id="OUIA-Generated-Switch-29"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="HeapDumpDeleted"
@@ -1134,7 +1074,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-32"
+              data-ouia-component-id="OUIA-Generated-Switch-30"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="HeapDumpMetadataUpdated"
@@ -1164,7 +1104,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-33"
+              data-ouia-component-id="OUIA-Generated-Switch-31"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="ThreadDumpSuccess"
@@ -1194,7 +1134,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-34"
+              data-ouia-component-id="OUIA-Generated-Switch-32"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="ThreadDumpFailure"
@@ -1224,7 +1164,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-35"
+              data-ouia-component-id="OUIA-Generated-Switch-33"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="ThreadDumpDeleted"
@@ -1254,7 +1194,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-36"
+              data-ouia-component-id="OUIA-Generated-Switch-34"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="ThreadDumpMetadataUpdated"
@@ -1284,7 +1224,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-37"
+              data-ouia-component-id="OUIA-Generated-Switch-35"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="TriggerCreated"
@@ -1314,7 +1254,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-38"
+              data-ouia-component-id="OUIA-Generated-Switch-36"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="TriggerDeleted"
@@ -1344,7 +1284,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-39"
+              data-ouia-component-id="OUIA-Generated-Switch-37"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="CredentialsStored"
@@ -1374,7 +1314,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-40"
+              data-ouia-component-id="OUIA-Generated-Switch-38"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="CredentialsDeleted"
@@ -1404,7 +1344,127 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-39"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="CredentialsUpdated"
+            >
+              <input
+                aria-labelledby="CredentialsUpdated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="CredentialsUpdated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="CredentialsUpdated-label"
+              >
+                Credentials updated
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-40"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ExpressionCreated"
+            >
+              <input
+                aria-labelledby="ExpressionCreated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ExpressionCreated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ExpressionCreated-label"
+              >
+                MatchExpression created
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
               data-ouia-component-id="OUIA-Generated-Switch-41"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ExpressionDeleted"
+            >
+              <input
+                aria-labelledby="ExpressionDeleted-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ExpressionDeleted"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ExpressionDeleted-label"
+              >
+                MatchExpression deleted
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-42"
+              data-ouia-component-type="PF6/Switch"
+              data-ouia-safe="true"
+              for="ExpressionUpdated"
+            >
+              <input
+                aria-labelledby="ExpressionUpdated-label"
+                checked=""
+                class="pf-v6-c-switch__input"
+                id="ExpressionUpdated"
+                role="switch"
+                type="checkbox"
+              />
+              <span
+                class="pf-v6-c-switch__toggle"
+              />
+              <span
+                aria-hidden="true"
+                class="pf-v6-c-switch__label"
+                id="ExpressionUpdated-label"
+              >
+                MatchExpression updated
+              </span>
+            </label>
+          </div>
+          <div
+            class="pf-v6-l-stack__item"
+          >
+            <label
+              class="pf-v6-c-switch"
+              data-ouia-component-id="OUIA-Generated-Switch-43"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="ReportSuccess"
@@ -1434,7 +1494,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-42"
+              data-ouia-component-id="OUIA-Generated-Switch-44"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="ReportFailure"
@@ -1464,7 +1524,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-43"
+              data-ouia-component-id="OUIA-Generated-Switch-45"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="AsyncProfilerCreated"
@@ -1494,7 +1554,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-44"
+              data-ouia-component-id="OUIA-Generated-Switch-46"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="AsyncProfilerStopped"
@@ -1524,7 +1584,7 @@ exports[`<NotificationControl/> renders correctly 1`] = `
           >
             <label
               class="pf-v6-c-switch"
-              data-ouia-component-id="OUIA-Generated-Switch-45"
+              data-ouia-component-id="OUIA-Generated-Switch-47"
               data-ouia-component-type="PF6/Switch"
               data-ouia-safe="true"
               for="AsyncProfilerDeleted"
