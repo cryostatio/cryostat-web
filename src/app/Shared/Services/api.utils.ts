@@ -492,7 +492,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.info,
       title: 'MatchExpression created',
-      body: (evt) => `Expression created: ${evt.message.matchExpression}`,
+      body: (evt) => `Expression created: ${evt.message.script}`,
       hidden: true,
     } as NotificationMessageMapper,
   ],
@@ -501,7 +501,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.info,
       title: 'MatchExpression updated',
-      body: (evt) => `MatchExpression updated: ${evt.message.matchExpression}`,
+      body: (evt) => `MatchExpression updated: ${evt.message.script}`,
       hidden: true,
     } as NotificationMessageMapper,
   ],
@@ -510,7 +510,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.info,
       title: 'MatchExpression deleted',
-      body: (evt) => `MatchExpression deleted: ${evt.message.matchExpression}`,
+      body: (evt) => `MatchExpression deleted: ${evt.message.script}`,
       hidden: true,
     } as NotificationMessageMapper,
   ],
