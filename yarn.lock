@@ -6387,25 +6387,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"dompurify@npm:^3.4.0":
-  version: 3.4.9
-  resolution: "dompurify@npm:3.4.9"
-=======
-"dompurify@npm:3.4.11":
+"dompurify@npm:^3.4.11":
   version: 3.4.11
   resolution: "dompurify@npm:3.4.11"
->>>>>>> d67d1d6 (chore(deps): update dependency dompurify to v3.4.11 [security] (#2320))
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-<<<<<<< HEAD
-  checksum: 10/2d651dcf413646e4a66202b424eade1f2a793fb22fe83dcb5a0800349ad879344fd92e76fd494ef06fb10ecb051660207844e7900156cef3e61942fdac405aa0
-=======
   checksum: 10/d0473e1a22ed9cc23d86ef426717bce866913d1a725512a9478985bd917b272e0faba5f1d6ad8b2e37f3f4219206c4385162d7c984cfedcd23396e1e6ae0bc5e
->>>>>>> d67d1d6 (chore(deps): update dependency dompurify to v3.4.11 [security] (#2320))
   languageName: node
   linkType: hard
 

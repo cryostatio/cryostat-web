@@ -144,15 +144,9 @@
     "victory-zoom-container": "^37.3.6"
   },
   "resolutions": {
-<<<<<<< HEAD
     "@types/react": "^17.0.69",
     "lodash": "^4.17.23",
-    "dompurify": "^3.4.0"
-=======
-    "@types/react": "17.0.93",
-    "lodash": "4.18.1",
-    "dompurify": "3.4.11"
->>>>>>> d67d1d6 (chore(deps): update dependency dompurify to v3.4.11 [security] (#2320))
+    "dompurify": "^3.4.11"
   },
   "packageManager": "yarn@4.13.0"
 }
