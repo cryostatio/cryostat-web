@@ -5308,7 +5308,6 @@ __metadata:
     react-i18next: "npm:^15.7.3"
     react-joyride: "npm:^2.9.3"
     react-redux: "npm:7.2.9"
-<<<<<<< HEAD
     react-router-dom: "npm:5.3.x"
     react-router-dom-v5-compat: "npm:^6.11.2"
     react-test-renderer: "npm:^17.0.2"
@@ -5316,7 +5315,7 @@ __metadata:
     rimraf: "npm:^6.1.2"
     rxjs: "npm:^7.8.2"
     selenium-webdriver: "npm:^4.40.0"
-    semver: "npm:^7.7.3"
+    semver: "npm:^7.8.5"
     showdown: "npm:^2.1.0"
     style-loader: "npm:^4.0.0"
     svg-url-loader: "npm:^8.0.0"
@@ -5350,49 +5349,6 @@ __metadata:
     webpack-cli: "npm:^6.0.1"
     webpack-dev-server: "npm:^5.2.3"
     webpack-merge: "npm:^6.0.1"
-=======
-    react-router-dom: "npm:5.3.4"
-    react-router-dom-v5-compat: "npm:6.30.4"
-    react-test-renderer: "npm:17.0.2"
-    regenerator-runtime: "npm:0.14.1"
-    rimraf: "npm:6.1.3"
-    rxjs: "npm:7.8.2"
-    selenium-webdriver: "npm:4.44.0"
-    semver: "npm:7.8.5"
-    showdown: "npm:2.1.0"
-    style-loader: "npm:4.0.0"
-    svg-url-loader: "npm:8.1.0"
-    terser-webpack-plugin: "npm:5.6.1"
-    ts-jest: "npm:29.4.11"
-    ts-loader: "npm:9.6.0"
-    tsconfig-paths-webpack-plugin: "npm:4.2.0"
-    tslib: "npm:2.8.1"
-    typescript: "npm:5.9.3"
-    url-loader: "npm:4.1.1"
-    victory-area: "npm:37.3.6"
-    victory-axis: "npm:37.3.6"
-    victory-bar: "npm:37.3.6"
-    victory-box-plot: "npm:37.3.6"
-    victory-chart: "npm:37.3.6"
-    victory-core: "npm:37.3.6"
-    victory-create-container: "npm:37.3.6"
-    victory-cursor-container: "npm:37.3.6"
-    victory-group: "npm:37.3.6"
-    victory-legend: "npm:37.3.6"
-    victory-line: "npm:37.3.6"
-    victory-pie: "npm:37.3.6"
-    victory-scatter: "npm:37.3.6"
-    victory-stack: "npm:37.3.6"
-    victory-tooltip: "npm:37.3.6"
-    victory-voronoi-container: "npm:37.3.6"
-    victory-zoom-container: "npm:37.3.6"
-    wait-on: "npm:9.0.10"
-    webpack: "npm:5.107.2"
-    webpack-bundle-analyzer: "npm:5.3.0"
-    webpack-cli: "npm:7.0.3"
-    webpack-dev-server: "npm:5.2.5"
-    webpack-merge: "npm:6.0.1"
->>>>>>> 0749e94 (fix(deps): update dependency semver to v7.8.5 (#2319))
   languageName: unknown
   linkType: soft
 
@@ -13977,18 +13933,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-=======
-"semver@npm:7.8.5":
-  version: 7.8.5
-  resolution: "semver@npm:7.8.5"
-  bin:
-    semver: bin/semver.js
-  checksum: 10/9b01d2ff11e6e4a4539b7ca3c5f280c8704cb397a28504469f2ed4f00ad2194748d756647362a9712fff30984d15772ab7f083108c2fb508e2096ae9e708f22c
-  languageName: node
-  linkType: hard
-
->>>>>>> 0749e94 (fix(deps): update dependency semver to v7.8.5 (#2319))
 "semver@npm:^6.0.0, semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
@@ -14004,6 +13948,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10/26bdc6d58b29528f4142d29afb8526bc335f4fc04c4a10f2b98b217f277a031c66736bf82d3d3bb354a2f6a3ae50f18fd62b053c4ac3f294a3d10a61f5075b75
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.8.5":
+  version: 7.8.5
+  resolution: "semver@npm:7.8.5"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/9b01d2ff11e6e4a4539b7ca3c5f280c8704cb397a28504469f2ed4f00ad2194748d756647362a9712fff30984d15772ab7f083108c2fb508e2096ae9e708f22c
   languageName: node
   linkType: hard
 
