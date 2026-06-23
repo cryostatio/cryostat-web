@@ -5315,7 +5315,7 @@ __metadata:
     rimraf: "npm:^6.1.2"
     rxjs: "npm:^7.8.2"
     selenium-webdriver: "npm:^4.40.0"
-    semver: "npm:^7.7.3"
+    semver: "npm:^7.8.5"
     showdown: "npm:^2.1.0"
     style-loader: "npm:^4.0.0"
     svg-url-loader: "npm:^8.0.0"
@@ -13948,6 +13948,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10/26bdc6d58b29528f4142d29afb8526bc335f4fc04c4a10f2b98b217f277a031c66736bf82d3d3bb354a2f6a3ae50f18fd62b053c4ac3f294a3d10a61f5075b75
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.8.5":
+  version: 7.8.5
+  resolution: "semver@npm:7.8.5"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/9b01d2ff11e6e4a4539b7ca3c5f280c8704cb397a28504469f2ed4f00ad2194748d756647362a9712fff30984d15772ab7f083108c2fb508e2096ae9e708f22c
   languageName: node
   linkType: hard
 
