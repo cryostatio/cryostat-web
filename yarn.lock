@@ -5267,7 +5267,7 @@ __metadata:
     svg-url-loader: "npm:8.1.0"
     terser-webpack-plugin: "npm:5.6.1"
     ts-jest: "npm:29.4.11"
-    ts-loader: "npm:9.6.0"
+    ts-loader: "npm:9.6.1"
     tsconfig-paths-webpack-plugin: "npm:4.2.0"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.3"
@@ -15224,9 +15224,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-loader@npm:9.6.0":
-  version: 9.6.0
-  resolution: "ts-loader@npm:9.6.0"
+"ts-loader@npm:9.6.1":
+  version: 9.6.1
+  resolution: "ts-loader@npm:9.6.1"
   dependencies:
     chalk: "npm:^4.1.0"
     enhanced-resolve: "npm:^5.0.0"
@@ -15240,7 +15240,7 @@ __metadata:
   peerDependenciesMeta:
     loader-utils:
       optional: true
-  checksum: 10/0f4b5fcafb419aee49b29a68fd05149d3dcdff17fcba7277b866125e3df6bd7ecfd8f7208dd755ace9b371bb3f4cefdc0d3de71da12a9342c3ebd2adb21ca5fc
+  checksum: 10/c0353835445ff31ac5a21f40760c745f7727b1a340058cf44e25791427956fb9f89d2c35dde0ee734677ec747c7e3ff7bbd447ca49ee16cf207d0bfe8118c965
   languageName: node
   linkType: hard
 
