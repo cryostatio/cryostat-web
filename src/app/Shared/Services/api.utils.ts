@@ -375,22 +375,6 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TargetCredentialsStored,
-    {
-      variant: AlertVariant.success,
-      title: 'Target Credentials stored',
-      body: (evt) => `Credentials stored for target: ${evt.message.target}`,
-    } as NotificationMessageMapper,
-  ],
-  [
-    NotificationCategory.TargetCredentialsDeleted,
-    {
-      variant: AlertVariant.success,
-      title: 'Target Credentials deleted',
-      body: (evt) => `Credentials deleted for target: ${evt.message.target}`,
-    } as NotificationMessageMapper,
-  ],
-  [
     NotificationCategory.HeapDumpSuccess,
     {
       variant: AlertVariant.success,
@@ -501,6 +485,42 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Credentials deleted',
       body: (evt) => `Credentials deleted for: ${evt.message.matchExpression}`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.CredentialsUpdated,
+    {
+      variant: AlertVariant.info,
+      title: 'Credentials updated',
+      body: (evt) => `Credentials updated for: ${evt.message.matchExpression}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionCreated,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression created',
+      body: (evt) => `Expression created: ${evt.message.script}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionUpdated,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression updated',
+      body: (evt) => `MatchExpression updated: ${evt.message.script}`,
+      hidden: true,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ExpressionDeleted,
+    {
+      variant: AlertVariant.info,
+      title: 'MatchExpression deleted',
+      body: (evt) => `MatchExpression deleted: ${evt.message.script}`,
+      hidden: true,
     } as NotificationMessageMapper,
   ],
   [
