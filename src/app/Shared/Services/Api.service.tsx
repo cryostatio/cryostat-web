@@ -15,6 +15,7 @@
  */
 
 import { LayoutTemplate, SerialLayoutTemplate } from '@app/Dashboard/types';
+import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 import { createBlobURL } from '@app/utils/utils';
 import { ValidatedOptions } from '@patternfly/react-core';
 import _ from 'lodash';
@@ -91,7 +92,6 @@ import {
 import { NotificationService } from './Notifications.service';
 import { CryostatContext } from './Services';
 import { TargetService } from './Target.service';
-import { HeapDumpAnalysisResult } from '@app/Diagnostics/Analysis/HeapDumps/types';
 
 export class ApiService {
   private readonly archiveEnabled = new BehaviorSubject<boolean>(true);

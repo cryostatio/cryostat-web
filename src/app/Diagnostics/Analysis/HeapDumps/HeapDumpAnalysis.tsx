@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import { LoadingView } from '@app/Shared/Components/LoadingView';
 import { modalPrefillClearIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { HeapDump, NotificationCategory, NullableTarget, Target } from '@app/Shared/Services/api.types';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetView } from '@app/TargetView/TargetView';
+import { useSort } from '@app/utils/hooks/useSort';
 import { useSubscriptions } from '@app/utils/hooks/useSubscriptions';
+import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
 import {
   Card,
   CardBody,
@@ -31,10 +35,24 @@ import {
   Tabs,
   TabTitleText,
 } from '@patternfly/react-core';
+import { TopologyIcon } from '@patternfly/react-icons';
+import {
+  ExpandableRowContent,
+  SortByDirection,
+  Table,
+  TableVariant,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, EMPTY, finalize, first, map, of } from 'rxjs';
+import { AggregateDataCard } from '../AggregateDataCard.tsx';
+import { HeapDumpSelector } from './HeapDumpSelector';
 import {
   AggregateValue,
   DuplicateArray,
@@ -49,24 +67,6 @@ import {
   ProblemField,
   WeakHashMapEntry,
 } from './types';
-import { TopologyIcon } from '@patternfly/react-icons';
-import { HeapDumpSelector } from './HeapDumpSelector';
-import { TargetView } from '@app/TargetView/TargetView';
-import { LoadingView } from '@app/Shared/Components/LoadingView';
-import {
-  ExpandableRowContent,
-  SortByDirection,
-  Table,
-  TableVariant,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@patternfly/react-table';
-import { hashCode, sortResources, TableColumn } from '@app/utils/utils';
-import { useSort } from '@app/utils/hooks/useSort';
-import { AggregateDataCard } from '../AggregateDataCard.tsx';
 
 export interface HeapDumpAnalysisProps {}
 
@@ -588,7 +588,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         return;
       }),
     );
-  }, [addSubscription, context.notificationChannel]);
+  }, [addSubscription, handleHeapDumpAnalysis, setIsAnalysisLoading, context.api, context.notificationChannel]);
 
   React.useEffect(() => {
     addSubscription(
@@ -824,7 +824,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         return emptyTableState('No Problem Field Details Found');
       }
     },
-    [problemFieldSubColumns],
+    [emptyTableState],
   );
 
   const collectionsSubTable = React.useCallback((classAndOvhds: ProblemClass[]) => {
@@ -1358,7 +1358,7 @@ export const HeapDumpAnalysis: React.FC<HeapDumpAnalysisProps> = ({ ...props }) 
         )}
       </Card>
     );
-  }, [analysisResult]);
+  }, [emptyTableState, histogramRows]);
 
   const collectionsTable = React.useMemo(() => {
     if (displayedCollectionRowData) {

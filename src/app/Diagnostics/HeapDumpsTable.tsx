@@ -70,11 +70,11 @@ import { ISortBy, SortByDirection, Table, Tbody, Td, ThProps, Tr } from '@patter
 import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, concatMap, first, forkJoin, Observable, of } from 'rxjs';
 import { ColumnConfig, DiagnosticsTable } from './DiagnosticsTable';
 import { filterHeapDumps, HeapDumpFilters, HeapDumpFiltersCategories } from './Filters/HeapDumpFilters';
 import { HeapDumpLabelsPanel } from './HeapDumpLabelsPanel';
-import { useNavigate } from 'react-router-dom-v5-compat';
 
 const tableColumns: TableColumn[] = [
   {

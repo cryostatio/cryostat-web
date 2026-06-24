@@ -22,6 +22,7 @@ import AsyncProfiler from './AsyncProfiler/AsyncProfiler';
 import CreateAsyncProfilerSession from './AsyncProfiler/CreateAsyncProfilerSession';
 import Dashboard from './Dashboard/Dashboard';
 import DashboardSolo from './Dashboard/DashboardSolo';
+import { HeapDumpAnalysis } from './Diagnostics/Analysis/HeapDumps/HeapDumpAnalysis';
 import ThreadDumpAnalysis from './Diagnostics/Analysis/ThreadDumpAnalysis';
 import { AnalyzeHeapDumps } from './Diagnostics/AnalyzeHeapDumps';
 import AnalyzeThreadDumps from './Diagnostics/AnalyzeThreadDumps';
@@ -45,7 +46,6 @@ import CaptureSmartTriggers from './Triggers/CaptureSmartTriggers';
 import { useDocumentTitle } from './utils/hooks/useDocumentTitle';
 import { useFeatureLevel } from './utils/hooks/useFeatureLevel';
 import { accessibleRouteChangeHandler, BASEPATH, toPath } from './utils/utils';
-import { HeapDumpAnalysis } from './Diagnostics/Analysis/HeapDumps/HeapDumpAnalysis';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Routes.NavGroups.OVERVIEW';
